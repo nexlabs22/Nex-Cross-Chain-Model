@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@lifi/wallet-management": "^2.3.4",
+    "@lifi/widget": "^2.4.5",
     "@sendgrid/mail": "^7.7.0",
     "next": "latest",
+    "pino-pretty": "^10.2.0",
     "react": "latest",
     "react-dom": "latest"
   },
