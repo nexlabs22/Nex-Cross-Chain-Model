@@ -12,6 +12,7 @@
     "@lifi/wallet-management": "^2.3.4",
     "@lifi/widget": "^2.4.5",
     "@sendgrid/mail": "^7.7.0",
+    "@svgr/webpack": "^8.1.0",
     "@szhsin/react-menu": "^4.0.3",
     "@types/react-color": "^3.0.7",
     "next": "latest",
