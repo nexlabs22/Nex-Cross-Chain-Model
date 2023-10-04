@@ -13,6 +13,41 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      colors: {
+        whiteBackground:{
+          500: "#F2F2F2"
+        },
+        whiteText:{
+          500: "#F2F2F2"
+        },
+        blackText:{
+          500: "#2A2A2A"
+        },
+        colorOne: {
+          500: "#91AC9A"
+        },
+        colorTwo: {
+          500: "#A9C3B6"
+        },
+        colorThree: {
+          500: "#B7D1D3"
+        },
+        colorFour: {
+          500: "#8FB8CA"
+        },
+        colorFive: {
+          500: "#A6C3CE"
+        },
+        colorSix: {
+          500: "#CEDFDF"
+        },
+        nexLightGreen: {
+          500: "#089981",
+        },
+        nexLightRed:{
+          500: "#F23645"
+        }
+      }
     },
   },
   plugins: [],

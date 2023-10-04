@@ -2,6 +2,133 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Circular Std";
+  src: url('../assets/fonts/CircularStd-Book.ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Circular Std";
+  src: url('../assets/fonts/CircularStd-Medium.ttf');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Circular Std";
+  src: url('../assets/fonts/CircularStd-Bold.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Circular Std";
+  src: url('../assets/fonts/CircularStd-Black.ttf');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ARPDisplay-20";
+  src: url('../assets/fonts/ARPDisplay-20.ttf');
+}
+
+@font-face {
+  font-family: "ARPDisplay-40";
+  src: url('../assets/fonts/ARPDisplay-40.ttf');
+}
+
+@font-face {
+  font-family: "ARPDisplay-80";
+  src: url('../assets/fonts/ARPDisplay-80.ttf');
+}
+
+@font-face {
+  font-family: "ARPDisplay-150";
+  src: url('../assets/fonts/ARPDisplay-150.ttf');
+}
+
+@font-face {
+  font-family: "ARPDisplay-240";
+  src: url('../assets/fonts/ARPDisplay-240.ttf');
+}
+
+@font-face {
+  font-family: 'KrubRegular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Krub Regular'), url('../assets/fonts/Krub-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'KrubBold';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Krub Bold'), url('../assets/fonts/Krub-Bold.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'KrubBoldItalic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Krub Bold Italic'), url('../assets/fonts/Krub-BoldItalic.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'KrubLightRegular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Krub Light Regular'), url('../assets/fonts/Krub-Light.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'KrubMediumRegular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Krub Medium Regular'), url('../assets/fonts/Krub-Medium.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'KrubSemiBoldRegular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Krub SemiBold Regular'), url('../assets/fonts/Krub-SemiBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'montreal';
+  font-style: normal;
+  font-weight: normal;
+  src: local('montreal'), url('../assets/fonts/PPNeueMontreal-Regular.ttf') format('woff');
+}
+
+@font-face {
+  font-family: 'montrealBold';
+  font-style: normal;
+  font-weight: bold;
+  src: local('montreal'), url('../assets/fonts/PPNeueMontreal-Bold.ttf') format('woff');
+}
+
+@font-face {
+  font-family: 'montrealBoldItalic';
+  font-style: normal;
+  font-weight: bold;
+  src: local('montreal'), url('../assets/fonts/PPNeueMontreal-BoldItalic.ttf') format('woff');
+}
+
+@font-face {
+  font-family: 'pangram';
+  font-style: normal;
+  font-weight: normal;
+  src: local('pangram'), url('../assets/fonts/pp-pangram-sans-rounded.woff') format('woff');
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -25,3 +152,83 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.montreal{
+  font-family: 'montreal';
+}
+
+.montrealBold{
+  font-family: 'montrealBold';
+}
+
+.montrealBoldItalic{
+  font-family: 'montrealBoldItalic';
+}
+
+.pangram{
+  font-family: 'pangram';
+}
+
+.ARPDisplay-20{
+  font-family: 'ARPDisplay-20';
+}
+
+.ARPDisplay-40{
+  font-family: 'ARPDisplay-40';
+}
+
+.ARPDisplay-80{
+  font-family: 'ARPDisplay-80';
+}
+
+.ARPDisplay-150{
+  font-family: 'ARPDisplay-150';
+}
+
+.ARPDisplay-240{
+  font-family: 'ARPDisplay-240';
+}
+
+.KrubRegular{
+  font-family: 'KrubRegular';
+}
+
+.KrubBold{
+  font-family: 'KrubBold';
+}
+
+.KrubMedium{
+  font-family: 'KrubMediumRegular';
+}
+
+.ReactModal__Overlay{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+
+#coinsList::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 20px;
+}
+
+#coinsList::-webkit-scrollbar-track {
+  background-color: rgb(176, 176, 176);
+  width: 4px;
+  border-radius: 20px;
+}
+
+#coinsList::-webkit-scrollbar-thumb {
+  background-color:rgb(116, 116, 116);
+  width: 4px;
+  border-radius: 20px;
+}
+
+.sc-gEvEer{
+  max-height: 30vh !important;
+  overflow: hidden !important;
+  z-index: 1000 !important;
+}
+
