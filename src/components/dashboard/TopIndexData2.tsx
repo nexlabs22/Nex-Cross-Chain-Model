@@ -1,3 +1,5 @@
+"use client"
+
 import { GrBitcoin } from 'react-icons/gr'
 import { FaEthereum } from 'react-icons/fa'
 import { SiTether, SiBinance } from 'react-icons/si'

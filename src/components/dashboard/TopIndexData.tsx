@@ -1,3 +1,5 @@
+"use client"
+
 import { GrBitcoin } from 'react-icons/gr'
 import { FaEthereum } from 'react-icons/fa'
 import { SiTether, SiBinance } from 'react-icons/si'
@@ -5,9 +7,7 @@ import { BiDollarCircle, BiPlus } from 'react-icons/bi'
 import { CiGlobe, CiStreamOn } from 'react-icons/ci'
 import { IoCopyOutline } from 'react-icons/io5'
 import { CgArrowsExchange } from 'react-icons/cg'
-
 import DashboardChartBox from './ChartBox'
-
 import { useLandingPageStore } from '@store/store'
 
 const TopIndexData = () => {
