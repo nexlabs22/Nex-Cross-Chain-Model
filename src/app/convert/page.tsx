@@ -1,4 +1,5 @@
-// import Image from 'next/image'
+// 'use client'
+
 import { LifiWidget } from '@components/LifiWidget'
 
 export default function Convert() {

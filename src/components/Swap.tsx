@@ -9,7 +9,7 @@ import { BiSolidChevronDown } from 'react-icons/bi'
 import { AiOutlineSwap } from 'react-icons/ai'
 
 // Store
-import useTradePageStore from '@/app/zustand/tradeStore'
+import useTradePageStore from '@/store/tradeStore'
 
 // Components:
 import GenericModal from './GenericModal'
@@ -38,7 +38,7 @@ const Swap = () => {
 		setFromCurrencyModalOpen(false)
 	}
 
-    const openToCurrencyModal = () => {
+	const openToCurrencyModal = () => {
 		setToCurrencyModalOpen(true)
 	}
 
@@ -106,23 +106,21 @@ const Swap = () => {
 							<p className="text-xs text-blackText-500 pangram bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p>
 						</div>
 					</div>
-					<div
-						className="w-full h-fit flex flex-row items-center justify-between gap-2"
-						
-					>
+					<div className="w-full h-fit flex flex-row items-center justify-between gap-2">
 						<input
 							type="text"
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 pangram placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 						/>
-						<div className="w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer" onClick={() => {
-							openFromCurrencyModal()
-						}}>
+						<div
+							className="w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
+							onClick={() => {
+								openFromCurrencyModal()
+							}}
+						>
 							<div className="flex flex-row items-center justify-start">
 								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={10} height={10} className="h-5 w-5 aspect-square mt-1 mr-1"></Image>
-								<h5 className="text-xl text-blackText-500 pangram">
-                                    {swapFromCur.Symbol}
-                                </h5>
+								<h5 className="text-xl text-blackText-500 pangram">{swapFromCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
@@ -146,14 +144,15 @@ const Swap = () => {
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 pangram placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 						/>
-						<div className="w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer" onClick={() => {
-							openToCurrencyModal()
-						}}>
+						<div
+							className="w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
+							onClick={() => {
+								openToCurrencyModal()
+							}}
+						>
 							<div className="flex flex-row items-center justify-start">
 								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={10} height={10} className="h-5 w-5 aspect-square mt-1 mr-1"></Image>
-								<h5 className="text-xl text-blackText-500 pangram">
-                                    {swapToCur.Symbol}
-                                </h5>
+								<h5 className="text-xl text-blackText-500 pangram">{swapToCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
@@ -177,12 +176,19 @@ const Swap = () => {
 			</div>
 			<GenericModal isOpen={isFromCurrencyModalOpen} onRequestClose={closeFromCurrencyModal}>
 				<div className="w-full h-fit px-2">
-					<ReactSearchAutocomplete items={coinsList} formatResult={formatResult} autoFocus className='relative z-50' />
+					<ReactSearchAutocomplete items={coinsList} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
-						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id='coinsList'>
+						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
 							{coinsList.map((item, index) => {
 								return (
-									<div key={index} className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300" onClick={()=>{changeSwapFromCur(item); closeFromCurrencyModal()}}>
+									<div
+										key={index}
+										className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300"
+										onClick={() => {
+											changeSwapFromCur(item)
+											closeFromCurrencyModal()
+										}}
+									>
 										<div className="flex flex-row items-center justify-start gap-3">
 											<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150 mt-1"></Image>
 											<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
@@ -195,14 +201,21 @@ const Swap = () => {
 					</div>
 				</div>
 			</GenericModal>
-            <GenericModal isOpen={isToCurrencyModalOpen} onRequestClose={closeToCurrencyModal}>
+			<GenericModal isOpen={isToCurrencyModalOpen} onRequestClose={closeToCurrencyModal}>
 				<div className="w-full h-fit px-2">
-					<ReactSearchAutocomplete items={coinsList} formatResult={formatResult} autoFocus className='relative z-50' />
+					<ReactSearchAutocomplete items={coinsList} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
-						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto px-2 py-2" id='coinsList'>
+						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto px-2 py-2" id="coinsList">
 							{coinsList.map((item, index) => {
 								return (
-									<div key={index} className="flex flex-row items-center justify-between mb-5 cursor-pointer" onClick={()=>{changeSwapToCur(item); closeToCurrencyModal()}}>
+									<div
+										key={index}
+										className="flex flex-row items-center justify-between mb-5 cursor-pointer"
+										onClick={() => {
+											changeSwapToCur(item)
+											closeToCurrencyModal()
+										}}
+									>
 										<div className="flex flex-row items-center justify-start gap-3">
 											<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150 mt-1"></Image>
 											<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>

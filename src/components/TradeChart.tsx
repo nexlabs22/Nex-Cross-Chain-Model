@@ -16,7 +16,7 @@ import Switch from 'react-switch'
 import { SketchPicker, TwitterPicker, GithubPicker, BlockPicker, CirclePicker, SwatchesPicker, CompactPicker, ColorResult } from 'react-color'
 
 // Store
-import useTradePageStore from '@/app/zustand/tradeStore'
+import useTradePageStore from '@/store/tradeStore'
 
 const TradeChartBox = () => {
 	const { isChartSettingsModalOpen, setChartSettingsModalOpen } = useTradePageStore()

@@ -23,6 +23,7 @@
     "react-icons": "^4.11.0",
     "react-modal": "^3.16.1",
     "react-search-autocomplete": "^8.5.2",
+    "react-slick": "^0.29.0",
     "react-switch": "^7.0.0",
     "zustand": "^4.4.2"
   },
@@ -31,6 +32,7 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@types/react-modal": "^3.16.1",
+    "@types/react-slick": "^0.23.10",
     "autoprefixer": "latest",
     "encoding": "^0.1.13",
     "eslint": "latest",

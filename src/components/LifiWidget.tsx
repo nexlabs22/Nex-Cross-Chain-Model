@@ -1,4 +1,5 @@
 'use client'
+
 import { LiFiWidget, WidgetConfig } from '@lifi/widget'
 import { use, useMemo } from 'react'
 
