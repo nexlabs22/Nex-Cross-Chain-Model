@@ -43,7 +43,7 @@ const TradeChartBox = () => {
 				<div className="w-full h-fit flex flex-row items-center justify-between">
 					<div className="w-fit h-fit p-2">
 						<div className="w-fit h-fit flex flex-row items-center justify-start mb-1">
-							<h5 className="pangram text-xl text-blackText-500 mr-2">CRYPTO5</h5>
+							<h5 className="montrealBold text-xl text-blackText-500 mr-2">CRYPTO5</h5>
 							<BiSolidChevronRight color="#2F2F2F" size={20} className="mt-1" />
 						</div>
 						<div className="w-fit h-fit flex flex-row items-center justify-between gap-3">
