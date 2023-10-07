@@ -110,8 +110,8 @@ const TopIndexData = () => {
 			<div className="flex flex-row items-center justify-between gap-10">
 				<div className="h-full w-8/12">
 					<div className="flex flex-row items-center justify-start">
-						<h5 className="ARPDisplay-150 mr-3 text-3xl text-blackText-500">{defaultIndexObject?.name}</h5>
-						<h5 className="ARPDisplay-80 rounded-lg bg-colorOne-500 px-3 py-1 text-base text-whiteText-500">{defaultIndexObject?.symbol}</h5>
+						<h5 className="montrealBold mr-3 text-4xl text-blackText-500">{defaultIndexObject?.name}</h5>
+						<h5 className="montral rounded-lg bg-colorOne-500 px-3 py-1 text-base text-whiteText-500">{defaultIndexObject?.symbol}</h5>
 					</div>
 					<div className="mt-5 flex flex-row items-center justify-start">
 						<div className="flex flex-row items-center justify-start">
@@ -124,13 +124,13 @@ const TopIndexData = () => {
 								)
 							})}
 						</div>
-						<h5 className="ARPDisplay-80 flex items-center justify-center text-xs text-blackText-500">+{defaultIndexObject?.underlyingAssets.length} Assets</h5>
+						<h5 className="montreal flex items-center justify-center text-xs text-blackText-500">+{defaultIndexObject?.underlyingAssets.length} Assets</h5>
 					</div>
-					<h5 className="KrubMedium mb-10 mt-6 w-full text-lg text-blackText-500">{defaultIndexObject?.description}</h5>
+					<h5 className="pangramCompact mb-10 mt-6 w-full text-lg text-blackText-500">{defaultIndexObject?.description}</h5>
 				</div>
 				<div className="h-52 w-[1px] bg-blackText-500/20"></div>
 				<div className="flex h-full w-4/12 flex-col items-start justify-between">
-					<h5 className="ARPDisplay-150 text-sm text-blackText-500">Other Nex Labs products</h5>
+					<h5 className="montrealBold text-sm text-blackText-500">Other Nex Labs products</h5>
 					<div className="h-fit w-full pb-8 pt-5">
 						<div className="flex h-full w-full flex-row items-start justify-between">
 							<div className="h-full w-full">
@@ -144,15 +144,15 @@ const TopIndexData = () => {
 										}
 									}}
 								>
-									<h5 className="ARPDisplay-150 mr-3 text-xl text-blackText-500">{othertIndexObject?.name}</h5>
-									<h5 className="ARPDisplay-80 rounded-lg bg-colorOne-500 px-3 py-1 text-base text-whiteText-500">{othertIndexObject?.symbol}</h5>
+									<h5 className="montrealBold mr-3 text-xl text-blackText-500">{othertIndexObject?.name}</h5>
+									<h5 className="montralBold rounded-lg bg-colorOne-500 px-3 py-1 text-base text-whiteText-500">{othertIndexObject?.symbol}</h5>
 								</div>
 
-								<p className="KrubMedium my-3 w-full text-base text-blackText-500">{othertIndexObject?.shortDescription}</p>
+								<p className="pangramCompact my-3 w-full text-base text-blackText-500">{othertIndexObject?.shortDescription}</p>
 								<div className="flex h-fit w-fit flex-row items-center justify-between rounded-lg bg-colorOne-500 py-1 pl-2 pr-3">
 									<BiPlus color="#F2F2F2" size={18} />
 									<h5
-										className="ARPDisplay-80 ml-2 cursor-pointer text-base text-whiteText-500"
+										className="montrealBold ml-2 cursor-pointer text-base text-whiteText-500"
 										onClick={() => {
 											if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
 												changeDefaultIndex('ANFI')
@@ -175,36 +175,36 @@ const TopIndexData = () => {
 			<div className="my-8 flex flex-row items-center justify-between gap-24">
 				<div className="flex w-2/6 flex-row items-center justify-between">
 					<div>
-						<h5 className="ARPDisplay-80 mb-5 text-base text-gray-400">Market Cap</h5>
-						<h5 className="ARPDisplay-80 text-base text-blackText-500">${defaultIndexObject?.mktCap}</h5>
+						<h5 className="montrealBold mb-5 text-base text-gray-400">Market Cap</h5>
+						<h5 className="pangramMedium text-base text-blackText-500">${defaultIndexObject?.mktCap}</h5>
 					</div>
 					<div>
-						<h5 className="ARPDisplay-80 mb-5 text-base text-gray-400">Market Price</h5>
-						<h5 className="ARPDisplay-80 text-base text-blackText-500">${defaultIndexObject?.mktPrice}</h5>
+						<h5 className="montrealBold mb-5 text-base text-gray-400">Market Price</h5>
+						<h5 className="pangramMedium text-base text-blackText-500">${defaultIndexObject?.mktPrice}</h5>
 					</div>
 					<div>
-						<h5 className="ARPDisplay-80 mb-5 text-base text-gray-400">24h Change</h5>
-						<h5 className="ARPDisplay-80 text-base text-blackText-500">+${defaultIndexObject?.chg24h}</h5>
+						<h5 className="montrealBold mb-5 text-base text-gray-400">24h Change</h5>
+						<h5 className="pangramMedium text-base text-blackText-500">+${defaultIndexObject?.chg24h}</h5>
 					</div>
 				</div>
 				<div className="w-4/6">
 					<div className="mb-5 flex w-full flex-row items-center justify-start">
 						<div className="mr-5 flex flex-row items-center justify-between">
 							<CiGlobe color="#9CAAC6" size={20} />
-							<h5 className="ARPDisplay-80 ml-2 text-base text-gray-400">Token address</h5>
+							<h5 className="montrealBold ml-2 text-base text-gray-400">Token address</h5>
 						</div>
 						<div className="flex flex-row items-center justify-between">
-							<h5 className="ARPDisplay-80 mr-2 text-base text-blackText-500">{defaultIndexObject?.tokenAddress}</h5>
+							<h5 className="pangramMedium mr-2 text-base text-blackText-500">{defaultIndexObject?.tokenAddress}</h5>
 							<IoCopyOutline color="#A9C3B6" size={20} />
 						</div>
 					</div>
 					<div className="flex w-full flex-row items-center justify-start">
 						<div className="mr-5 flex flex-row items-center justify-between">
 							<CiStreamOn color="#9CAAC6" size={20} />
-							<h5 className="ARPDisplay-80 ml-2 text-base text-gray-400">Managment fee</h5>
+							<h5 className="montrealBold ml-2 text-base text-gray-400">Managment fee</h5>
 						</div>
 						<div className="flex flex-row items-center justify-between">
-							<h5 className="ARPDisplay-80 text-base text-blackText-500">{defaultIndexObject?.managementFee}%</h5>
+							<h5 className="pangramMedium text-base text-blackText-500">{defaultIndexObject?.managementFee}%</h5>
 						</div>
 					</div>
 				</div>
@@ -215,9 +215,9 @@ const TopIndexData = () => {
 
 			<div>
 				<div className="my-10 flex flex-row items-center justify-start">
-					<h5 className="ARPDisplay-150 text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
+					<h5 className="montrealBold text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
 					<CgArrowsExchange color="#91AC9A" size={35} className="mx-2" />
-					<h5 className="ARPDisplay-150 text-2xl text-blackText-500">World{"'"}s best indices</h5>
+					<h5 className="montrealBold text-2xl text-blackText-500">World{"'"}s best indices</h5>
 				</div>
 
 				<div className="h-[90vh] w-full rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">

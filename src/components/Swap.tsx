@@ -59,6 +59,12 @@ const Swap = () => {
 			name: 'ANFI',
 			Symbol: 'AIF',
 		},
+		{
+			id: 2,
+			logo: "https://assets.coincap.io/assets/icons/usdc@2x.png",
+			name: "USD Coin",
+			Symbol: "USDC"
+		}
 	])
 
 	async function getCoins() {
@@ -77,9 +83,13 @@ const Swap = () => {
 		})
 	}
 
-	useEffect(() => {
-		getCoins()
-	}, [])
+	function Switch(){
+		let switchReserve: Coin = swapFromCur;
+		changeSwapFromCur(swapToCur);
+		changeSwapToCur(switchReserve);
+	}
+
+	
 
 	const formatResult = (item: Coin) => {
 		return (
@@ -96,21 +106,21 @@ const Swap = () => {
 	return (
 		<>
 			<div className="h-full w-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-start justify-start px-4 py-3">
-				<h5 className="text-xl text-blackText-500 pangram mb-6 text-center w-full">Swap</h5>
+				<h5 className="text-xl text-blackText-500 montrealBold mb-3 text-center w-full">Swap</h5>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
-					<div className="w-full h-fit flex flex-row items-center justify-between mb-2">
-						<p className="text-base montreal text-gray-500 w-1/3">You pay</p>
+					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
+						<p className="text-base pangramLight text-gray-500 w-1/3">You pay</p>
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
-							<p className="text-xs text-blackText-500 pangram bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MIN</p>
-							<p className="text-xs text-blackText-500 pangram bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
-							<p className="text-xs text-blackText-500 pangram bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p>
+							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MIN</p>
+							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
+							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p>
 						</div>
 					</div>
-					<div className="w-full h-fit flex flex-row items-center justify-between gap-2">
+					<div className="w-full h-fit flex flex-row items-center justify-between gap-1">
 						<input
 							type="text"
 							placeholder="0.00"
-							className=" w-2/3 border-none text-2xl text-blackText-500 pangram placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
+							className=" w-2/3 border-none text-2xl text-blackText-500 pangramMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 						/>
 						<div
 							className="w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
@@ -120,29 +130,31 @@ const Swap = () => {
 						>
 							<div className="flex flex-row items-center justify-start">
 								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={10} height={10} className="h-5 w-5 aspect-square mt-1 mr-1"></Image>
-								<h5 className="text-xl text-blackText-500 pangram">{swapFromCur.Symbol}</h5>
+								<h5 className="text-xl text-blackText-500 montrealBold pt-1">{swapFromCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
 
-					<p className="text-base montreal text-gray-500 pt-5">Balance: 2910 BTC</p>
+					<p className="text-base pangramMedium text-gray-500 pt-3">Balance: 2910 BTC</p>
 				</div>
 
-				<div className="w-full my-6 px-2 flex flex-row items-center justify-center">
+				<div className="w-full my-2 px-2 flex flex-row items-center justify-center">
 					<div className=" bg-blackText-500 w-2/5 h-[1px]"></div>
-					<div className="w-fit h-fit rounded-full mx-3 bg-blackText-500 p-2">
+					<div className="w-fit h-fit rounded-full mx-3 bg-blackText-500 p-2 cursor-pointer" onClick={()=>{
+						Switch();
+					}}>
 						<AiOutlineSwap color="#F2F2F2" size={20} className="rotate-90" />
 					</div>
 					<div className=" bg-blackText-500 w-2/5 h-[1px]"></div>
 				</div>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
-					<p className="text-base montreal text-gray-500 pb-2">You Recieve</p>
+					<p className="text-base pangramLight text-gray-500 pb-1">You Recieve</p>
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-2">
 						<input
 							type="text"
 							placeholder="0.00"
-							className=" w-2/3 border-none text-2xl text-blackText-500 pangram placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
+							className=" w-2/3 border-none text-2xl text-blackText-500 pangramMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 						/>
 						<div
 							className="w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
@@ -152,25 +164,25 @@ const Swap = () => {
 						>
 							<div className="flex flex-row items-center justify-start">
 								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={10} height={10} className="h-5 w-5 aspect-square mt-1 mr-1"></Image>
-								<h5 className="text-xl text-blackText-500 pangram">{swapToCur.Symbol}</h5>
+								<h5 className="text-xl text-blackText-500 montrealBold pt-1">{swapToCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
-					<p className="text-base montreal text-gray-500 pt-5">Balance: 2910 BTC</p>
+					<p className="text-base pangramMedium text-gray-500 pt-3">Balance: 2910 BTC</p>
 				</div>
 				<div className="h-fit w-full mt-6">
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className="text-sm pangram text-black/70 pb-2">Gas Fees</p>
-						<p className="text-sm pangram text-black/70 pb-2">0.01 ETH</p>
+						<p className="text-sm pangramMedium text-black/70 pb-2">Gas Fees</p>
+						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH</p>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className="text-sm pangram text-black/70 pb-2">Platform Fees</p>
-						<p className="text-sm pangram text-black/70 pb-2">0.01 ETH (1%)</p>
+						<p className="text-sm pangramMedium text-black/70 pb-2">Platform Fees</p>
+						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH (1%)</p>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className="text-sm pangram text-black/70 pb-2">Total Transaction Cost</p>
-						<p className="text-sm pangram text-black/70 pb-2">0.02 ETH</p>
+						<p className="text-sm pangramMedium text-black/70 pb-2">Total Transaction Cost</p>
+						<p className="text-sm pangramLight text-black/70 pb-2">0.02 ETH</p>
 					</div>
 				</div>
 			</div>

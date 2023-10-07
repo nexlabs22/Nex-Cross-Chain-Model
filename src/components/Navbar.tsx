@@ -28,10 +28,10 @@ const Navbar = () => {
             Swap
           </h5>
           <h5 className="montreal mr-8 text-xl text-blackText-500">
-            Learn
+            Convert
           </h5>
           <h5 className="montreal mr-8 text-xl text-blackText-500">
-            Contact
+            Portfolio
           </h5>
         </div>
         
