@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import Slider from "react-slick";
@@ -6,54 +6,23 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { BsChevronCompactRight, BsCheckCircleFill, BsChevronCompactLeft } from "react-icons/bs";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+import dynamic from 'next/dynamic'
+import { useChartDataStore, useLandingPageStore } from '@/store/store'
+import { comparisonIndices } from '@/constants/comparisionIndices'
+const Chart = dynamic(() => import('@components/dashboardChart'), { loading: () => <p>Loading ...</p>, ssr: false })
+// const Chart = dynamic(() => import('@components/dashboard/chart'), { loading: () => <p>Loading ...</p>, ssr: false })
 
 const DashboardChartBox = () => {
-  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
-  const comparisonIndices = [
-    {
-      id: 1,
-      name: "S&P 500",
-      logo: "https://s3-symbol-logo.tradingview.com/indices/s-and-p-500.svg",
-      price: 4402.21,
-      change: "-0.94",
-    },
-    {
-      id: 2,
-      name: "Nasdaq 100",
-      logo: "https://s3-symbol-logo.tradingview.com/indices/nasdaq-100.svg",
-      price: 14969.92,
-      change: "-1.46",
-    },
-    {
-      id: 3,
-      name: "Dow 30",
-      logo: "https://s3-symbol-logo.tradingview.com/indices/dow-30.svg",
-      price: 34440.89,
-      change: "-0.22",
-    },
-    {
-      id: 4,
-      name: "Nasdaq Composite",
-      logo: "https://s3-symbol-logo.tradingview.com/indices/nasdaq-composite.svg",
-      price: 13469.13,
-      change: "-0.44",
-    },
-    {
-      id: 5,
-      name: "NYSE Composite",
-      logo: "https://s3-symbol-logo.tradingview.com/country/US.svg",
-      price: 15859.6188,
-      change: "-0.44",
-    },
-    {
-      id: 6,
-      name: "Swiss Market Index",
-      logo: "https://s3-symbol-logo.tradingview.com/indices/swiss-market-index--big.svg",
-      price: 11123.6,
-      change: "-0.27",
-    },
-  ];
+	const { defaultIndex } = useLandingPageStore()
+	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
+
+	console.log("Selected Indices",selectedIndices)
+
+	const {chartData,IndexData ,fetchIndexData, removeIndex} =  useChartDataStore()
+	useEffect(()=>{
+		fetchIndexData({tableName:'histcomp', index:defaultIndex})	
+	},[defaultIndex,fetchIndexData])
 
   const PrevArrow = ({ onClick }: { onClick: () => void }) => (
     <div
@@ -100,7 +69,7 @@ const DashboardChartBox = () => {
 
   return (
     <div className="h-full w-full p-3">
-      <div className="h-fit w-full overflow-hidden" id="comparisonBox">
+      <div className="h-fit w-full p-2 overflow-hidden" id="comparisonBox">
         <Slider {...settings}>
           {comparisonIndices.map((item, index) => {
             return (
@@ -108,19 +77,22 @@ const DashboardChartBox = () => {
                 <div
                   className="mx-2 flex h-[90%] w-full cursor-pointer flex-row items-center justify-between rounded-3xl px-3 py-[10px] hover:bg-gray-200/50"
                   style={{
-                    backgroundColor: selectedIndices.includes(item.id) ? '#A9C3B6BB' : '#F2F2F2'
+                    backgroundColor: selectedIndices.includes(item.columnName) ? '#A9C3B6BB' : '#F2F2F2'
                   }}
                   id="comparisonItem"
-                  onClick={()=>{
-                    if(!selectedIndices.includes(item.id)){
-                        setSelectedIndices(prevState => [...prevState, item.id])
-                        
-                    }else{
-                        setSelectedIndices(prevState => prevState.filter(i => {return i != item.id}))
-                        
-                    }
-                    
-                  }}
+                  onClick={() => {
+					if (!selectedIndices.includes(item.columnName)) {
+						fetchIndexData({tableName: 'histcomp', index: item.columnName})
+						setSelectedIndices((prevState) => [...prevState, item.columnName])
+					} else {
+						removeIndex(item.columnName)
+						setSelectedIndices((prevState) =>
+							prevState.filter((i) => {
+								return i != item.columnName
+							})
+						)
+					}
+				}}
                 >
                   <div className="flex w-9/12 flex-row items-center py-4 justify-start">
                     <Image
@@ -146,7 +118,7 @@ const DashboardChartBox = () => {
                   </div>
                   <div className="flex w-3/12 flex-row items-center justify-end pr-5">
                     {
-                        selectedIndices.includes(item.id) ? (<BsCheckCircleFill color="#91AC9A" size={25} />) : (<IoIosCheckmarkCircleOutline color="#CCCCCC" size={25} />)
+                        selectedIndices.includes(item.columnName) ? (<BsCheckCircleFill color="#91AC9A" size={25} />) : (<IoIosCheckmarkCircleOutline color="#CCCCCC" size={25} />)
                     }
                   </div>
                 </div>
@@ -155,6 +127,7 @@ const DashboardChartBox = () => {
           })}
         </Slider>
       </div>
+		<Chart data={IndexData} />
     </div>
   );
 };

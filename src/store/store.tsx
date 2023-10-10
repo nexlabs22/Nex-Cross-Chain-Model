@@ -22,45 +22,59 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 }))
 
 interface chartDataStoreType {
-	chartData: { [key: string]: chartDataType[] }
-	ANFIData: { time: number; value: number }[]
-	CRYPTO5Data: { time: number; value: number }[]
-	loading: boolean
-	error: string | null
-	fetchIndexData: ({ tableName, index }: { tableName: string; index: string }) => void
+	chartData: { [key: string]: chartDataType[] },
+	IndexData: { time: number, value: number }[]
+	selectedIndex: { time: number, open: number, high: number, low: number, close: number }[]
+	loading: boolean,
+	error: string | null,
+	fetchIndexData: ({ tableName, index }: { tableName: string, index: string }) => void
+	removeIndex: (indexName: string) => void
 }
 
 const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	chartData: {},
-	ANFIData: [],
-	CRYPTO5Data: [],
+	IndexData: [],
+	selectedIndex: [],
 	loading: false,
 	error: null,
 	fetchIndexData: async ({ tableName, index }) => {
 		try {
 			set({ loading: true, error: null })
-			let columnNames = 'btc,xaut,bnb,eth,usdt,usdc'
-			if (index === 'CRYPTO5') {
-				columnNames = 'btc,bnb,eth,usdt,usdc'
-			} else if (index === 'ANFI') {
-				columnNames = 'btc,xaut'
-			}
-			const response = await fetch(`/api/backend/spotDatabase?columnName=${columnNames}&tableName=${encodeURIComponent(tableName)}`)
+
+			const response = await fetch(
+				`/api/spotDatabase?indexName=${index}&tableName=${encodeURIComponent(
+					tableName
+				)}`
+			)
 
 			const inputData = await response.json()
 
 			set((state) => {
-				const updatedChartData = state.chartData
-				updatedChartData[index] = inputData
-
-				return {
-					chartData: updatedChartData,
-					ANFIData: getIndexData('ANFI', inputData),
-					CRYPTO5Data: getIndexData('CRYPTO5', inputData),
+				if (index === 'ANFI' || index === 'CRYPTO5') {
+					return {
+						IndexData: getIndexData(index, inputData),
+					}
+				} else {
+					const updatedChartData = state.chartData
+					updatedChartData[index] = inputData
+					return {
+						chartData: updatedChartData,
+					}
 				}
 			})
-		} catch (err) {}
+
+		} catch (err) {
+
+		}
 	},
+	removeIndex: async (indexName: string) => {
+		set((state) => {
+			const activeIndex = state.chartData
+			delete activeIndex[indexName];
+
+			return ({ chartData: activeIndex })
+		})
+	}
 }))
 
 export { useLandingPageStore, useChartDataStore }
