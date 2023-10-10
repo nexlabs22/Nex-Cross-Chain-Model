@@ -14,7 +14,9 @@
     "@svgr/webpack": "^8.1.0",
     "@szhsin/react-menu": "^4.0.3",
     "@types/react-color": "^3.0.7",
+    "lightweight-charts": "^4.1.0",
     "next": "latest",
+    "pg": "^8.11.3",
     "pino-pretty": "^10.2.0",
     "react": "latest",
     "react-color": "^2.19.3",
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "@types/node": "latest",
+    "@types/pg": "^8.10.3",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@types/react-modal": "^3.16.1",
