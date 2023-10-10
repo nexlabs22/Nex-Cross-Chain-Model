@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { BiMenuAltRight } from 'react-icons/bi'
 import { CiMenuFries } from 'react-icons/ci'
+import ConnectButton from './ConnectButton'
 
 const DappNavbar = () => {
 	return (
@@ -24,7 +25,8 @@ const DappNavbar = () => {
 					<Link href={"/convert"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Convert</h5></Link>
 					<h5 className="pangramMedium font-base mr-8 text-blackText-500">Portfolio</h5>
 				</div>
-				<div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div>
+				{/* <div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div> */}
+				<ConnectButton/>
 			</div>
 		</section>
 	)
