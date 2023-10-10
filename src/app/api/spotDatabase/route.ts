@@ -1,6 +1,6 @@
 import QueryCommaSplit, { QueryforIndex } from '@/constants/query'
 import connectToSpotDb from '@/utils/connectToSpotDb'
-
+//small change
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest, response: NextResponse) {

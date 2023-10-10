@@ -1,6 +1,6 @@
 import { Client } from 'pg'
 
-const connectToSpotDb =async () => {
+const connectToSpotDb = async () => {
 	const client = new Client()
 	try {
 		await client.connect()
@@ -10,6 +10,5 @@ const connectToSpotDb =async () => {
 	}
 	return client
 }
-
 
 export default connectToSpotDb
