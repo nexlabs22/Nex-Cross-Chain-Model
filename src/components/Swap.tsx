@@ -19,17 +19,107 @@ import axios from 'axios'
 // Assets:
 import circle from '@assets/images/circle.png'
 import { it } from 'node:test'
+import { useAddress, useContract, useContractRead, useContractWrite } from '@thirdweb-dev/react'
+import { goerliAnfiFactory, goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
+import { indexFactoryAbi, indexTokenAbi, tokenAbi } from '@/constants/abi'
+import { toast } from 'react-toastify'
 
 type Coin = {
 	id: number
 	logo: string
 	name: string
 	Symbol: string
+	address:string
 }
 
 const Swap = () => {
+
+	const [firstInputValue, setFirstInputValue] = useState<number | null>(0);
+	const [secondInputValue, setSecondInputValue] = useState<number | null>(0);
+
 	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur } = useTradePageStore()
 
+	const address = useAddress();
+
+	//integration hooks
+	const factoryContract = useContract(
+		goerliAnfiFactory,
+		indexFactoryAbi,
+	  );
+	
+	const fromTokenContract = useContract(
+	swapFromCur.address,
+	tokenAbi,
+	);
+
+	const toTokenContract = useContract(
+		swapToCur.address,
+		tokenAbi,
+	);
+	
+	const fromTokenBalance = useContractRead(fromTokenContract.contract, "balanceOf", [address]);
+	const toTokenBalance = useContractRead(toTokenContract.contract, "balanceOf", [address]);
+	const fromTokenAllowance = useContractRead(fromTokenContract.contract, "allowance", [address, goerliAnfiFactory]);
+	
+	
+
+	const approveHook = useContractWrite(fromTokenContract.contract, "approve");
+	const mintRequestHook = useContractWrite(factoryContract.contract, "addMintRequest");
+	
+	// useEffect(() => {
+	// 	console.log("balance :", Number(indexTokenBalance.data)/1e18)
+	// },[indexTokenBalance.data])
+
+	useEffect(() => {
+		if(approveHook.isSuccess){
+		fromTokenAllowance.refetch()
+		approveHook.reset()
+		}
+	}, [approveHook.isSuccess, approveHook, fromTokenAllowance])
+
+	useEffect(() => {
+		if(mintRequestHook.isSuccess){
+		fromTokenBalance.refetch()
+		toTokenBalance.refetch()
+		fromTokenAllowance.refetch()
+		mintRequestHook.reset()
+		}
+	}, [mintRequestHook.isSuccess, mintRequestHook, fromTokenBalance, toTokenBalance, fromTokenAllowance])
+
+	useEffect(() => {
+		if (approveHook.isLoading) {
+			console.log()
+			toast.dismiss()
+			toast.loading('Approving ...')
+			// approveHook.reset()
+		} else if (approveHook.isSuccess) {
+			toast.dismiss()
+			toast.success('Approved Successfully!')
+			// approveHook.reset()
+		} else if (approveHook.isError) {
+			toast.dismiss()
+			toast.error('Approving Failed!')
+			// approveHook.reset()
+		}
+	}, [approveHook.isLoading, approveHook.isSuccess, approveHook.isError])
+
+	useEffect(() => {
+		if (mintRequestHook.isLoading) {
+			console.log()
+			toast.dismiss()
+			toast.loading('Sending Request ...')
+			// approveHook.reset()
+		} else if (mintRequestHook.isSuccess) {
+			toast.dismiss()
+			toast.success('Sent Request Successfully!')
+			// approveHook.reset()
+		} else if (mintRequestHook.isError) {
+			toast.dismiss()
+			toast.error('Sending Request Failed!')
+			// approveHook.reset()
+		}
+	}, [mintRequestHook.isLoading, mintRequestHook.isSuccess, mintRequestHook.isError])
+	
 	const openFromCurrencyModal = () => {
 		setFromCurrencyModalOpen(true)
 	}
@@ -52,18 +142,21 @@ const Swap = () => {
 			logo: circle.src,
 			name: 'CRYPTO5',
 			Symbol: 'CR5',
+			address: ''
 		},
 		{
 			id: 1,
 			logo: circle.src,
 			name: 'ANFI',
-			Symbol: 'AIF',
+			Symbol: 'ANFI',
+			address:goerliAnfiIndexToken
 		},
 		{
 			id: 2,
 			logo: "https://assets.coincap.io/assets/icons/usdc@2x.png",
 			name: "USD Coin",
-			Symbol: "USDC"
+			Symbol: "USDC",
+			address: goerliUsdtAddress
 		}
 	])
 
@@ -77,6 +170,7 @@ const Swap = () => {
 					name: coinsData[id].name,
 					Symbol: coinsData[id].symbol,
 					logo: 'https://assets.coincap.io/assets/icons/' + coinsData[id].symbol.toString().toLowerCase() + '@2x.png',
+					address:''
 				}
 				setCoinsList((prevState) => [...prevState, coinObject])
 			}
@@ -103,6 +197,45 @@ const Swap = () => {
 		)
 	}
 
+	const changeFirstInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e?.target?.value) {
+			setFirstInputValue(Number(e?.target?.value))
+			setSecondInputValue(Number(e?.target?.value))
+			// console.log('input', stakeAmount)
+		} else {
+			setFirstInputValue(null)
+		}
+	}
+
+	const changeSecondInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (Number(e?.target?.value)) {
+			setSecondInputValue(Number(e?.target?.value))
+			// console.log('input', stakeAmount)
+		} else {
+			setSecondInputValue(null)
+			// setSecondInputValue(Number(e?.target?.value))
+
+		}
+	}
+
+	function approve() {
+		try {
+			approveHook.mutateAsync({args: [goerliAnfiFactory, (Number(firstInputValue)*1e18).toString()]})
+		} catch (error) {
+			console.log('approve error', error)
+		}
+	}
+
+	function mintRequest() {
+		try {
+			mintRequestHook.mutateAsync({args: [(Number(firstInputValue)*1e18).toString()]})
+		} catch (error) {
+			console.log('mint error', error)
+		}
+	}
+
+	
+
 	return (
 		<>
 			<div className="h-full w-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-start justify-start px-4 py-3">
@@ -111,9 +244,9 @@ const Swap = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-base pangramLight text-gray-500 w-1/3">You pay</p>
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
-							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MIN</p>
-							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
-							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p>
+							<p onClick={() => setFirstInputValue(1)} className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MIN</p>
+							<p onClick={() => setFirstInputValue(Number(fromTokenBalance.data)/2e18)} className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
+							<p onClick={() => setFirstInputValue(Number(fromTokenBalance.data)/1e18)} className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p>
 						</div>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-1">
@@ -121,6 +254,8 @@ const Swap = () => {
 							type="text"
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 pangramMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
+							onChange={changeFirstInputValue}
+							value={firstInputValue ? (firstInputValue) as number : 0}
 						/>
 						<div
 							className="w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
@@ -136,7 +271,7 @@ const Swap = () => {
 						</div>
 					</div>
 
-					<p className="text-base pangramMedium text-gray-500 pt-3">Balance: 2910 BTC</p>
+					<p className="text-base pangramMedium text-gray-500 pt-3">Balance: {(Number(fromTokenBalance.data)/1e18).toFixed(2)} {swapFromCur.Symbol}</p>
 				</div>
 
 				<div className="w-full my-2 px-2 flex flex-row items-center justify-center">
@@ -155,6 +290,8 @@ const Swap = () => {
 							type="text"
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 pangramMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
+							onChange={changeSecondInputValue}
+							value={secondInputValue ? secondInputValue as number : 0}
 						/>
 						<div
 							className="w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
@@ -169,9 +306,21 @@ const Swap = () => {
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
-					<p className="text-base pangramMedium text-gray-500 pt-3">Balance: 2910 BTC</p>
+					<p className="text-base pangramMedium text-gray-500 pt-3">Balance: {(Number(toTokenBalance.data)/1e18).toFixed(2)} {swapToCur.Symbol}</p>
 				</div>
 				<div className="h-fit w-full mt-6">
+				<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2 py-3">
+							{Number(fromTokenAllowance.data)/1e18 < Number(firstInputValue) ?
+							(
+							<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">Approve</button>
+							) :
+							(
+							<button onClick={mintRequest} className="text-xl text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MINT</button>
+							)
+							}
+							{/* <p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
+							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p> */}
+				</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Gas Fees</p>
 						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH</p>
