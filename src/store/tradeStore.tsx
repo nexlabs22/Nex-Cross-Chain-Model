@@ -1,12 +1,14 @@
 "use client"; // This is a client component 👈🏽
 import { create } from 'zustand'
 import circle from '@assets/images/circle.png'
+import { goerliAnfiIndexToken, zeroAddress } from '@/constants/contractAddresses';
 
 type Coin = {
 	id: number
 	logo: string
 	name: string
 	Symbol: string
+	address: string
 }
 
 type TradePageStore = {
@@ -61,6 +63,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		logo: circle.src,
 		name: 'CRYPTO5',
 		Symbol: 'CR5',
+		address: zeroAddress
 	},
 	changeSwapFromCur: (cur: Coin) => set((state) => ({ swapFromCur: cur })),
 
@@ -69,6 +72,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		logo: circle.src,
 		name: 'ANFI',
 		Symbol: 'AIF',
+		address: goerliAnfiIndexToken
 	},
 	changeSwapToCur: (cur: Coin) => set((state) => ({ swapToCur: cur })),
 
