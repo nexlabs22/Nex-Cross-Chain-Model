@@ -4,14 +4,15 @@ import {
 	DeepPartial,
 	LayoutOptions,
 	LineStyle,
-	LineWidth,
+	TimePointIndex,
 	PriceScaleMode,
 	PriceScaleOptions,
 	TimeScaleOptions,
 } from 'lightweight-charts'
-import { useChartDataStore } from '@/store/store';
+import { useChartDataStore, useLandingPageStore } from '@/store/store';
 import chartDataType from '@/store/storeTypes';
 import { comparisonIndices } from '@/constants/comparisionIndices';
+import getTooltipDate, { convertTo13DigitsTimestamp } from '@/utils/conversionFunctions';
 
 
 interface GradientAreaChartProps {
@@ -27,12 +28,9 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const minValue = Math.min(...data.map((point) => point.value))
 	const maxValue = Math.max(...data.map((point) => point.value))
 	const num = Object.keys(chartData).length
-
-	
+	const { defaultIndex } = useLandingPageStore()
 
 	useEffect(() => {
-		console.log(chartContainerRef.current)
-
 		if (chartContainerRef.current) {
 			chartRef.current = createChart(chartContainerRef.current, {
 				width: chartContainerRef.current.offsetWidth,
@@ -66,20 +64,132 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				priceLineVisible: false,
 			})
 
+
+
 			const handleResize = () => {
-				if(chartContainerRef.current){
-					chartRef.current.applyOptions({ 
+				if (chartContainerRef.current) {
+					chartRef.current.applyOptions({
 						width: chartContainerRef.current.offsetWidth,
 						height: chartContainerRef.current.clientHeight * 0.83
 					})
 				}
-			
+
 			}
 
 			areaSeries.setData(data)
 
+			const toolTipWidth = 80;
+			const toolTipHeight = 80;
+			const toolTipMargin = 15;
+			const container = chartContainerRef.current
+			const chart = chartRef.current
+
+			const toolTip = document.createElement('div');
+			toolTip.style.width = '175px';
+			toolTip.style.height = '65px';
+			toolTip.style.position = 'absolute';
+			toolTip.style.display = 'none';
+			toolTip.style.padding = '8px';
+			toolTip.style.boxSizing = 'border-box';
+			toolTip.style.fontSize = '12px';
+			toolTip.style.textAlign = 'left';
+			toolTip.style.zIndex = '1000';
+			toolTip.style.top = '12px';
+			toolTip.style.left = '12px';
+			toolTip.style.pointerEvents = 'none';
+			toolTip.style.border = '1px solid';
+			toolTip.style.borderRadius = '10px';
+			toolTip.style.background = 'white';
+			toolTip.style.color = 'black';
+			toolTip.style.borderColor = 'black';
+
+			container.appendChild(toolTip);
+
+			type CrosshairMoveEventParam = {
+				seriesData: any;
+				time?: TimePointIndex;
+				point?: { x: number; y: number };
+			};
+
+			const selectedCompIndexes = Object.keys(chartData)
+			if(selectedCompIndexes.length >0){
+				const incHeight = selectedCompIndexes.length*25 as number
+				toolTip.style.height = (Number(toolTip.style.height.split('px')[0]) + incHeight) + 'px'
+			}
+
+			chart.subscribeCrosshairMove((param: CrosshairMoveEventParam) => {	
+				if (
+					param.point === undefined ||
+					!param.time ||
+					param.point.x < 0 ||
+					param.point.x > container.clientWidth ||
+					param.point.y < 0 ||
+					param.point.y > container.clientHeight
+				) {
+					toolTip.style.display = 'none';
+				} else {
+					const dateStr = param.time;
+					toolTip.style.display = 'block';
+					const data = param.seriesData.get(areaSeries);
+					const price = data.value !== undefined ? data.value : data.close;
+					let toolTipContent = 
+					`<div style="color: ${'black'}">
+						${getTooltipDate(convertTo13DigitsTimestamp(dateStr))}
+					</div>
+					<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
+						<Image
+							src={test}
+							alt="tooltip logo"
+							style="width:22px;
+							   height:22px; 
+							   margin-right:5px ; 
+							   margin-left:0.75rem; 
+							   border-radius:50%;">
+						</Image>
+						${defaultIndex}: ${Math.round(100 * price) / 100}
+					</div>`
+
+					if (param.seriesData.size > 1) {
+						const mapEntries = Array.from((param.seriesData as Map<string, any>).entries());  
+						for (const [index, [, value]] of mapEntries.entries()) {
+							if(index-1>=0){
+								const indexDetails = comparisonIndices.find((item) => item.columnName === selectedCompIndexes[index-1]);
+								toolTipContent += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.color}">`
+								toolTipContent += `<Image
+													src=${indexDetails?.logo}
+													alt="tooltip logo"
+													style="width:22px;
+														   height:22px; 
+														   margin-right:5px ; 
+														   margin-left:0.75rem; 
+														   border-radius:50%;">
+												   </Image>`
+								toolTipContent += `${indexDetails?.shortName}: ${Math.round(100 * value.value) / 100}`
+								toolTipContent += `</div>`
+							}
+						}
+						
+					}
+
+					toolTip.innerHTML =toolTipContent;
+
+					const y = param.point.y;
+					let left = param.point.x + toolTipMargin;
+					if (left > container.clientWidth - toolTipWidth) {
+						left = param.point.x - toolTipMargin - toolTipWidth;
+					}
+
+					let top = y + toolTipMargin;
+					if (top > container.clientHeight - toolTipHeight) {
+						top = y - toolTipHeight - toolTipMargin;
+					}
+					toolTip.style.left = left + 'px';
+					toolTip.style.top = top + 'px';
+				}
+			});
+
+
 			Object.entries(chartData).forEach(([key, value]) => {
-				console.log(key, value)
 				const indexDetails = comparisonIndices.find((item) => item.columnName === key);
 				const areaSeries = chartRef.current.addLineSeries({
 					lineWidth: 2,
@@ -95,7 +205,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 				})
 
-				const formatedLineData = value.map((data)=>{
+				const formatedLineData = value.map((data) => {
 					return {
 						time: data.time,
 						value: Number(data.open)
@@ -104,28 +214,28 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				formatedLineData.sort((a, b) => a.time - b.time);
 				areaSeries.setData(formatedLineData)
 			})
-				// Hide axes
-				chartRef.current.applyOptions({
-					leftPriceScale: getAxesOptions(false),
-					rightPriceScale: getAxesOptions(true),
-				})
+			// Hide axes
+			chartRef.current.applyOptions({
+				leftPriceScale: getAxesOptions(false),
+				rightPriceScale: getAxesOptions(true),
+			})
 
-				chartRef.current.applyOptions({
-					grid: {
-						horzLines: { visible: false },
-						vertLines: { visible: false },
-					},
-				})
+			chartRef.current.applyOptions({
+				grid: {
+					horzLines: { visible: false },
+					vertLines: { visible: false },
+				},
+			})
 
-				chartRef.current.timeScale().fitContent();
-				window.addEventListener('resize', handleResize)
+			chartRef.current.timeScale().fitContent();
+			window.addEventListener('resize', handleResize)
 
-				return () => {
-					window.removeEventListener('resize', handleResize)
-					chartRef.current.remove()
-				}
+			return () => {
+				window.removeEventListener('resize', handleResize)
+				chartRef.current.remove()
 			}
-	}, [chartData, data, maxValue, minValue, num])
+		}
+	}, [chartData, data, maxValue, minValue, num, defaultIndex])
 
 
 	return (
