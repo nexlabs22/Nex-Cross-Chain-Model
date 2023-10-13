@@ -17,8 +17,6 @@ const DashboardChartBox = () => {
 	const { defaultIndex } = useLandingPageStore()
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
 
-	console.log("Selected Indices",selectedIndices)
-
 	const {chartData,IndexData ,fetchIndexData, removeIndex} =  useChartDataStore()
 	useEffect(()=>{
 		fetchIndexData({tableName:'histcomp', index:defaultIndex})	
