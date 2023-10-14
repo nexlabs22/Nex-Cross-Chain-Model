@@ -286,6 +286,7 @@ body {
   justify-content: flex-start;
 }
 
+
 #comparisonBox .slick-slide div.indexDataContainer{
   display: flex !important;
   flex-direction: column !important;
