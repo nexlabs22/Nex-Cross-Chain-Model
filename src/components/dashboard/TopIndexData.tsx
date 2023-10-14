@@ -111,7 +111,7 @@ const TopIndexData = () => {
 				<div className="h-full w-8/12">
 					<div className="flex flex-row items-center justify-start">
 						<h5 className="montrealBold mr-3 text-4xl text-blackText-500">{defaultIndexObject?.name}</h5>
-						<h5 className="montral rounded-lg bg-colorOne-500 px-3 py-1 text-base text-whiteText-500">{defaultIndexObject?.symbol}</h5>
+						<h5 className="montral rounded-lg bg-colorOne-500 px-3 py-1 mt-1 text-base text-whiteText-500">{defaultIndexObject?.symbol}</h5>
 					</div>
 					<div className="mt-5 flex flex-row items-center justify-start">
 						<div className="flex flex-row items-center justify-start">
@@ -145,7 +145,7 @@ const TopIndexData = () => {
 									}}
 								>
 									<h5 className="montrealBold mr-3 text-xl text-blackText-500">{othertIndexObject?.name}</h5>
-									<h5 className="montralBold rounded-lg bg-colorOne-500 px-3 py-1 text-base text-whiteText-500">{othertIndexObject?.symbol}</h5>
+									<h5 className="montralBold rounded-lg bg-colorOne-500 px-3 py-1 mt-1 text-base text-whiteText-500">{othertIndexObject?.symbol}</h5>
 								</div>
 
 								<p className="pangramCompact my-3 w-full text-base text-blackText-500">{othertIndexObject?.shortDescription}</p>

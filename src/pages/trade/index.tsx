@@ -15,11 +15,8 @@ export default function Trade() {
 					<TradeChartBox />
 				</div>
 				<div className="w-3/12 h-full flex flex-col items-center justify-start gap-2">
-					<div className="w-full h-4/5 ">
+					<div className="w-full h-full ">
 						<Swap />
-					</div>
-					<div className="w-full h-1/5">
-					<RecieptsBox />
 					</div>
 				</div>
 			</section>

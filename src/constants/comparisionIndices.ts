@@ -8,6 +8,7 @@ export const comparisonIndices = [
 		price: 4402.21,
 		change: '-0.94',
 		color: 'red',
+		selectionColor: "#F23645"
 	},
 	{
 		id: 2,
@@ -18,6 +19,7 @@ export const comparisonIndices = [
 		price: 34440.89,
 		change: '-0.22',
 		color: 'blue',
+		selectionColor: "#1666BA"
 	},
 	{
 		id: 3,
@@ -28,6 +30,7 @@ export const comparisonIndices = [
 		price: 13469.13,
 		change: '-0.44',
 		color: 'magenta',
+		selectionColor: "#FF246A"
 	},
 	{
 		id: 4,
@@ -38,5 +41,6 @@ export const comparisonIndices = [
 		price: 15859.6188,
 		change: '-0.44',
 		color: 'green',
+		selectionColor: "#089981"
 	},
 ]
