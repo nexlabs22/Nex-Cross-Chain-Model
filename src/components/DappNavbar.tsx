@@ -18,12 +18,12 @@ const DappNavbar = () => {
 			</div>
 			<div className="hidden flex-row items-center justify-start md:visible md:flex">
 				<div className="flex flex-row items-center justify-evenly">
-					<Link href={'/dashboard'}>
+					<Link href={'/'}>
 						<h5 className="pangramMedium font-base mr-8 text-blackText-500">Dashboard</h5>
 					</Link>
 					<Link href={"/trade"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Swap</h5></Link>
 					<Link href={"/convert"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Convert</h5></Link>
-					<h5 className="pangramMedium font-base mr-8 text-blackText-500">Portfolio</h5>
+					<Link href={"/portfolio"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Portfolio</h5></Link>
 				</div>
 				{/* <div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div> */}
 				<ConnectButton/>
