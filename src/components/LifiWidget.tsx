@@ -46,5 +46,9 @@ export const LifiWidget = () => {
 		}),
 		[]
 	)
-	return <LiFiWidget integrator="nexlabs.io" config={widgetConfig} />
+	return (
+		<div className='w-fit h-fit overflow-hidden'>
+			<LiFiWidget integrator="nexlabs.io" config={widgetConfig} />
+		</div>
+	)
 }
