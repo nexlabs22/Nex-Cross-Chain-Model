@@ -277,8 +277,8 @@ body {
 }
 
 #comparisonBox .slick-slide div.indexContainer {
-  margin: 0 40px !important;
-  height: 13vh;
+  
+  
   border-radius: 15px;
   display: flex !important;
   flex-direction: row !important;
