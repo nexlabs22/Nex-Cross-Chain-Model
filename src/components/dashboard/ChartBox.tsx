@@ -66,49 +66,51 @@ const DashboardChartBox = () => {
 
 	return (
 		<div className="h-full w-full p-3">
-			<div className="h-fit w-full p-2 overflow-hidden" id="comparisonBox">
-				<Slider {...settings}>
-					{comparisonIndices.map((item, index) => {
-						return (
-							<div key={index} className="indexContainer">
-								<div
-									className="mx-2 flex h-[90%] w-full cursor-pointer flex-row items-center justify-between rounded-3xl px-3 py-[10px] hover:bg-gray-200/50"
-									
-									id="comparisonItem"
-									onClick={() => {
-										if (!selectedIndices.includes(item.columnName)) {
-											fetchIndexData({ tableName: 'histcomp', index: item.columnName })
-											setSelectedIndices((prevState) => [...prevState, item.columnName])
-										} else {
-											removeIndex(item.columnName)
-											setSelectedIndices((prevState) =>
-												prevState.filter((i) => {
-													return i != item.columnName
-												})
-											)
-										}
-									}}
-								>
-									<div className="flex w-9/12 flex-row items-center py-4 justify-start">
-										<Image src={item.logo} width={50} height={50} alt="zef" className="mr-6 ml-3 rounded-full"></Image>
-										<div className="indexDataContainer flex h-fit w-3/5 flex-col items-start justify-center">
-											<h5 className="montrealBold mb-2 text-lg" style={{
-                        color: selectedIndices.includes(item.columnName) ? item.selectionColor : "#2A2A2A"
-                      }}>{item.name}</h5>
-											<div className="flex w-full flex-row items-center justify-start">
-												<h5 className="pangramCompact mr-5 text-sm text-blackText-500">{item.price} USD</h5>
-												<h5 className="pangramCompact text-sm text-nexLightRed-500">{item.change}%</h5>
-											</div>
+			<div className="w-full relative z-50 h-fit flex flex-row gap-3 items-center justify-center">
+				{comparisonIndices.map((item, index) => {
+					return (
+						<div key={index} className="indexContainer h-fit w-1/4">
+							<div
+								className="flex h-fit w-full cursor-pointer flex-row items-center justify-between rounded-3xl px-3 py-[10px] hover:bg-gray-200/50"
+								id="comparisonItem"
+								onClick={() => {
+									if (!selectedIndices.includes(item.columnName)) {
+										fetchIndexData({ tableName: 'histcomp', index: item.columnName })
+										setSelectedIndices((prevState) => [...prevState, item.columnName])
+									} else {
+										removeIndex(item.columnName)
+										setSelectedIndices((prevState) =>
+											prevState.filter((i) => {
+												return i != item.columnName
+											})
+										)
+									}
+								}}
+							>
+								<div className="flex w-10/12 flex-row items-center py-4 justify-start">
+									<Image src={item.logo} width={50} height={50} alt="zef" className="mr-3 ml-3 rounded-full"></Image>
+									<div className="indexDataContainer flex h-fit w-3/5 flex-col items-start justify-center">
+										<h5
+											className="montrealBold mb-2 text-base"
+											style={{
+												color: selectedIndices.includes(item.columnName) ? item.selectionColor : '#2A2A2A',
+											}}
+										>
+											{item.name}
+										</h5>
+										<div className="flex w-full flex-row items-center justify-start">
+											<h5 className="pangramCompact mr-5 text-sm text-blackText-500">{item.price} USD</h5>
+											<h5 className="pangramCompact text-sm text-nexLightRed-500">{item.change}%</h5>
 										</div>
 									</div>
-									<div className="flex w-3/12 flex-row items-center justify-end pr-5">
-										{selectedIndices.includes(item.columnName) ? <BsCheckCircleFill color={item.selectionColor} size={25} /> : <IoIosCheckmarkCircleOutline color="#CCCCCC" size={25} />}
-									</div>
+								</div>
+								<div className="flex w-2/12 flex-row items-center justify-end pr-5">
+									{selectedIndices.includes(item.columnName) ? <BsCheckCircleFill color={item.selectionColor} size={25} /> : <IoIosCheckmarkCircleOutline color="#CCCCCC" size={25} />}
 								</div>
 							</div>
-						)
-					})}
-				</Slider>
+						</div>
+					)
+				})}
 			</div>
 			<Chart data={IndexData} />
 		</div>
