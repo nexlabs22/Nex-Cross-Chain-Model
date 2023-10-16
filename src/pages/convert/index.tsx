@@ -21,7 +21,7 @@ export default function Convert() {
 					</p>
 				</div>
 				<div className="w-1/3 h-fit flex flex-col items-center justify-center">
-					<LifiWidget></LifiWidget>
+					{/*<LifiWidget></LifiWidget>*/}
 				</div>
 			</section>
 			<Footer />
