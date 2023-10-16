@@ -2,7 +2,17 @@
 
 import DappNavbar from '@/components/DappNavbar'
 import { LifiWidget } from '@components/LifiWidget'
+import dynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
+
+export const LiFiWidgetNext = dynamic(() => import('@/components/LifiWidget').then((module) => module.LifiWidget) as any, {
+	ssr: false,
+	loading: () => (
+		<div className="h-full w-full flex flex-row items-center justify-center">
+			<h5 className="text-xl text-blackText-500 montrealBold">Loading ...</h5>
+		</div>
+	),
+})
 
 export default function Convert() {
 	return (
@@ -17,11 +27,16 @@ export default function Convert() {
 						cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 					</p>
 					<p className="pangramCompact text-xl text-blackText-500 w-11/12">
-					At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
+						At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
+						cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam
+						libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
+						Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic
+						tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
 					</p>
 				</div>
 				<div className="w-1/3 h-fit flex flex-col items-center justify-center">
 					{/*<LifiWidget></LifiWidget>*/}
+					<LiFiWidgetNext></LiFiWidgetNext>
 				</div>
 			</section>
 			<Footer />
