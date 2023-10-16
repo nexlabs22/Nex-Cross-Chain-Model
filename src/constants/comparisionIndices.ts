@@ -7,7 +7,6 @@ export const comparisonIndices = [
 		logo: 'https://s3-symbol-logo.tradingview.com/indices/s-and-p-500.svg',
 		price: 4402.21,
 		change: '-0.94',
-		color: 'red',
 		selectionColor: "#F23645"
 	},
 	{
@@ -18,7 +17,6 @@ export const comparisonIndices = [
 		logo: 'https://s3-symbol-logo.tradingview.com/indices/dow-30.svg',
 		price: 34440.89,
 		change: '-0.22',
-		color: 'blue',
 		selectionColor: "#1666BA"
 	},
 	{
@@ -29,8 +27,7 @@ export const comparisonIndices = [
 		logo: 'https://s3-symbol-logo.tradingview.com/indices/nasdaq-composite.svg',
 		price: 13469.13,
 		change: '-0.44',
-		color: 'magenta',
-		selectionColor: "#FF246A"
+		selectionColor: "#FFA024"
 	},
 	{
 		id: 4,
@@ -40,7 +37,6 @@ export const comparisonIndices = [
 		logo: 'https://s3-symbol-logo.tradingview.com/country/US.svg',
 		price: 15859.6188,
 		change: '-0.44',
-		color: 'green',
 		selectionColor: "#089981"
 	},
 ]
