@@ -39,61 +39,69 @@ const TradeChartBox = () => {
 
 	return (
 		<>
-			<div className="h-full w-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-center justify-start px-4 py-3">
-				<div className="w-full h-fit flex flex-row items-center justify-between">
-					<div className="w-fit h-fit p-2">
-						<div className="w-fit h-fit flex flex-row items-center justify-start mb-1">
-							<h5 className="montrealBold text-xl text-blackText-500 mr-2">CRYPTO5</h5>
-							<BiSolidChevronRight color="#2F2F2F" size={20} className="mt-1" />
+			<div className="w-full h-full flex flex-col items-center justify-start gap-2">
+				<div className="h-4/5 w-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-center justify-start px-4 py-3">
+					<div className="w-full h-fit flex flex-row items-center justify-between">
+						<div className="w-fit h-fit p-2">
+							<div className="w-fit h-fit flex flex-row items-center justify-start mb-1">
+								<h5 className="montrealBold text-xl text-blackText-500 mr-2">CRYPTO5</h5>
+								
+							</div>
+							<div className="w-fit h-fit flex flex-row items-center justify-between gap-3">
+								<p className="montrealBold text-xs text-gray-400">$203.89</p>
+								<p className="montrealBold text-xs text-nexLightGreen-500">+1.023%</p>
+							</div>
 						</div>
-						<div className="w-fit h-fit flex flex-row items-center justify-between gap-3">
-							<p className="montrealBold text-xs text-gray-400">$203.89</p>
-							<p className="montrealBold text-xs text-nexLightGreen-500">+1.023%</p>
-						</div>
-					</div>
-					<div className="w-fit h-fit flex flex-row items-center justify-between gap-5">
-						<div className="flex flex-row items-center justify-normal border-2 border-blackText-500/50 rounded-lg">
-							<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1m</h5>
-							<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1h</h5>
-							<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1d</h5>
-							<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 cursor-pointer hover:bg-colorOne-500/30">1w</h5>
-						</div>
-						<div className="flex flex-row items-start justify-start gap-3">
-							<Menu
-								menuButton={
-									<MenuButton>
-										<MdOutlineCandlestickChart color="#2F2F2F" size={20} />
-									</MenuButton>
-								}
-								transition
-								direction="bottom"
-								align="end"
-								arrow
-							>
-								<div className="w-full h-fit py-1 px-2 flex flex-col items-start justify-start gap-1">
-									<p className="montrealBold text-sm text-blackText-500 mb-2">Chart type :</p>
-									<div className="w-full h-fit flex flex-row items-center justify-start gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded-lg">
-										<MdOutlineCandlestickChart color="#2F2F2F" size={20} />
-										<p className="montrealBold text-xs text-blackText-500">Candle Sticks</p>
+						<div className="w-fit h-fit flex flex-row items-center justify-between gap-5">
+							<div className="flex flex-row items-center justify-normal border-2 border-blackText-500/50 rounded-lg">
+								<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1m</h5>
+								<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1h</h5>
+								<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1d</h5>
+								<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 cursor-pointer hover:bg-colorOne-500/30">1w</h5>
+							</div>
+							<div className="flex flex-row items-start justify-start gap-3">
+								<Menu
+									menuButton={
+										<MenuButton>
+											<MdOutlineCandlestickChart color="#2F2F2F" size={20} />
+										</MenuButton>
+									}
+									transition
+									direction="bottom"
+									align="end"
+									arrow
+								>
+									<div className="w-full h-fit py-1 px-2 flex flex-col items-start justify-start gap-1">
+										<p className="montrealBold text-sm text-blackText-500 mb-2">Chart type :</p>
+										<div className="w-full h-fit flex flex-row items-center justify-start gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded-lg">
+											<MdOutlineCandlestickChart color="#2F2F2F" size={20} />
+											<p className="montrealBold text-xs text-blackText-500">Candle Sticks</p>
+										</div>
+										<div className="w-full h-fit flex flex-row items-center justify-start gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded-lg">
+											<MdOutlineShowChart color="#2F2F2F" size={20} />
+											<p className="montrealBold text-xs text-blackText-500">Line</p>
+										</div>
 									</div>
-									<div className="w-full h-fit flex flex-row items-center justify-start gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded-lg">
-										<MdOutlineShowChart color="#2F2F2F" size={20} />
-										<p className="montrealBold text-xs text-blackText-500">Line</p>
-									</div>
-								</div>
-							</Menu>
-							<AiOutlineSetting
-								color="#2F2F2F"
-								className="cursor-pointer"
-								size={20}
-								onClick={() => {
-									openChartSettingsModal()
-								}}
-							/>
+								</Menu>
+								<AiOutlineSetting
+									color="#2F2F2F"
+									className="cursor-pointer"
+									size={20}
+									onClick={() => {
+										openChartSettingsModal()
+									}}
+								/>
+							</div>
 						</div>
 					</div>
 				</div>
+				<div className="h-1/5 w-full border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-row items-start justify-start p-2 rounded-xl">
+					<h5 className='montrealBold text-lg text-blackText-500'>
+						NFT Reciepts
+					</h5>
+				</div>
 			</div>
+
 			<GenericModal isOpen={isChartSettingsModalOpen} onRequestClose={closeChartSettingsModal}>
 				<div className="w-full h-fit px-2">
 					<h5 className="montrealBold text-blackText-500 text-xl mb-5">Chart Settings</h5>
