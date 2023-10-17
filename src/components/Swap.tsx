@@ -311,13 +311,13 @@ const Swap = () => {
 					</p>
 				</div>
 				<div className="h-fit w-full mt-6">
-					<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2 py-3">
+					<div className="w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3">
 						{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
 							<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
 								Approve
 							</button>
 						) : (
-							<button onClick={mintRequest} className="text-xl text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
+							<button onClick={mintRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
 								{
 									swapFromCur.Symbol == "USDC" ? "Mint" : "Burn"
 								}

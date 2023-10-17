@@ -1,17 +1,20 @@
-"use client"
+'use client'
 
-import { GrBitcoin } from 'react-icons/gr'
+import { GrBitcoin, GrFormClose } from 'react-icons/gr'
 import { FaEthereum } from 'react-icons/fa'
 import { SiTether, SiBinance } from 'react-icons/si'
 import { BiDollarCircle, BiPlus } from 'react-icons/bi'
 import { CiGlobe, CiStreamOn } from 'react-icons/ci'
-import { IoCopyOutline } from 'react-icons/io5'
+import { IoCopyOutline, IoClose } from 'react-icons/io5'
 import { CgArrowsExchange } from 'react-icons/cg'
 import DashboardChartBox from './ChartBox'
-import { useLandingPageStore } from '@store/store'
+import { useChartDataStore, useLandingPageStore } from '@/store/store'
 
 const TopIndexData = () => {
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
+	const { chartData, IndexData, removeIndex } = useChartDataStore()
+
+	const compIndex = Object.keys(chartData)
 
 	const IndicesWithDetails = [
 		{
@@ -214,12 +217,65 @@ const TopIndexData = () => {
 			</div>
 
 			<div>
-				<div className="my-10 flex flex-row items-center justify-start">
+				<div className="mt-10 mb-5 flex flex-row items-center justify-start">
 					<h5 className="montrealBold text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
 					<CgArrowsExchange color="#91AC9A" size={35} className="mx-2" />
 					<h5 className="montrealBold text-2xl text-blackText-500">World{"'"}s best indices</h5>
 				</div>
-
+				<div className="w-full mb-5 flex flex-row items-center justify-start gap-2">
+					{compIndex.includes('sandp') ? (
+						<div
+							className="w-fit h-fit p-3 flex flex-row items-center justify-center gap-4 rounded-3xl"
+							style={{
+								backgroundColor: 'red',
+							}}
+						>
+							<h5 className="text-sm montrealBold text-whiteText-500">S&P 500</h5>
+							
+						</div>
+					) : (
+						''
+					)}
+					{compIndex.includes('dow') ? (
+						<div
+							className="w-fit h-fit p-3 flex flex-row items-center justify-center gap-4 rounded-3xl"
+							style={{
+								backgroundColor: 'blue',
+							}}
+						>
+							<h5 className="text-sm montrealBold text-whiteText-500">Dow 30</h5>
+							
+						</div>
+					) : (
+						''
+					)}
+					{compIndex.includes('nasdaq') ? (
+						<div
+							className="w-fit h-fit p-3 flex flex-row items-center justify-center gap-4 rounded-3xl"
+							style={{
+								backgroundColor: '#FF00FF',
+							}}
+						>
+							<h5 className="text-sm montrealBold text-whiteText-500">Nasdaq Composite</h5>
+							
+						</div>
+					) : (
+						''
+					)}
+					{compIndex.includes('nyse') ? (
+						<div
+							className="w-fit h-fit p-3 flex flex-row items-center justify-center gap-4 rounded-3xl"
+							style={{
+								backgroundColor: '#089981',
+							}}
+						>
+							<h5 className="text-sm montrealBold text-whiteText-500">NYSE Composite</h5>
+							
+						</div>
+					) : (
+						''
+					)}
+				</div>
 				<div className="h-[90vh] w-full rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
 					<DashboardChartBox />
 				</div>
