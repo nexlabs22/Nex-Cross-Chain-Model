@@ -23,6 +23,7 @@ import { useAddress, useContract, useContractRead, useContractWrite } from '@thi
 import { goerliAnfiFactory, goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
 import { indexFactoryAbi, indexTokenAbi, tokenAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
+import PaymentModal from './PaymentModal'
 
 type Coin = {
 	id: number
@@ -33,6 +34,9 @@ type Coin = {
 }
 
 const Swap = () => {
+	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
+	const [isChecked, setChecked] = useState(false);
+
 	const [firstInputValue, setFirstInputValue] = useState<number | null>(0)
 	const [secondInputValue, setSecondInputValue] = useState<number | null>(0)
 
@@ -107,6 +111,18 @@ const Swap = () => {
 			// approveHook.reset()
 		}
 	}, [mintRequestHook.isLoading, mintRequestHook.isSuccess, mintRequestHook.isError])
+
+	const toggleCheckbox = () => {
+		setChecked(!isChecked);
+	  };
+
+	const openPaymentModal = () => {
+		setPaymentModalOpen(true)
+	}
+
+	const closePaymentModal = () => {
+		setPaymentModalOpen(false)
+	}
 
 	const openFromCurrencyModal = () => {
 		setFromCurrencyModalOpen(true)
@@ -213,7 +229,11 @@ const Swap = () => {
 
 	function mintRequest() {
 		try {
+			if(isChecked){
+				openPaymentModal()
+			}else{
 			mintRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
+			}
 		} catch (error) {
 			console.log('mint error', error)
 		}
@@ -221,6 +241,7 @@ const Swap = () => {
 
 	return (
 		<>
+			<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
 			<div className="h-full w-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-start justify-start px-4 py-3">
 				<h5 className="text-xl text-blackText-500 montrealBold mb-3 text-center w-full">Swap</h5>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
@@ -310,6 +331,12 @@ const Swap = () => {
 						Balance: {(Number(toTokenBalance.data) / 1e18).toFixed(2)} {swapToCur.Symbol}
 					</p>
 				</div>
+				<div className='pt-2'>
+				<label className="inline-flex items-center space-x-2 cursor-pointer">
+					<input type="checkbox" checked={isChecked} onChange={toggleCheckbox} className="form-checkbox h-5 w-5 text-blue-600" />
+					<span className="text-gray-700">Use Fiat payment</span>
+				</label>
+				</div>
 				<div className="h-fit w-full mt-6">
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3">
 						{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
@@ -318,10 +345,7 @@ const Swap = () => {
 							</button>
 						) : (
 							<button onClick={mintRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
-								{
-									swapFromCur.Symbol == "USDC" ? "Mint" : "Burn"
-								}
-								
+								{swapFromCur.Symbol == 'USDC' ? 'Mint' : 'Burn'}
 							</button>
 						)}
 						{/* <p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
