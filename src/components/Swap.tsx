@@ -25,6 +25,16 @@ import { indexFactoryAbi, indexTokenAbi, tokenAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import PaymentModal from './PaymentModal'
 
+import { Network, Alchemy } from "alchemy-sdk";
+
+// Optional Config object, but defaults to demo api-key and eth-mainnet.
+const settings = {
+	apiKey: "LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1", // Replace with your Alchemy API Key.
+	network: Network.ETH_GOERLI, // Replace with your network.
+  };
+
+const alchemy = new Alchemy(settings);
+
 type Coin = {
 	id: number
 	logo: string
@@ -40,7 +50,7 @@ const Swap = () => {
 	const [firstInputValue, setFirstInputValue] = useState<number | null>(0)
 	const [secondInputValue, setSecondInputValue] = useState<number | null>(0)
 
-	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur } = useTradePageStore()
+	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage } = useTradePageStore()
 
 	const address = useAddress()
 
@@ -57,6 +67,9 @@ const Swap = () => {
 
 	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
 	const mintRequestHook = useContractWrite(factoryContract.contract, 'addMintRequest')
+	const burnRequestHook = useContractWrite(factoryContract.contract, 'burn')
+
+	
 
 	// useEffect(() => {
 	// 	console.log("balance :", Number(indexTokenBalance.data)/1e18)
@@ -70,13 +83,14 @@ const Swap = () => {
 	}, [approveHook.isSuccess, approveHook, fromTokenAllowance])
 
 	useEffect(() => {
-		if (mintRequestHook.isSuccess) {
+		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess) {
 			fromTokenBalance.refetch()
 			toTokenBalance.refetch()
 			fromTokenAllowance.refetch()
 			mintRequestHook.reset()
+			burnRequestHook.reset()
 		}
-	}, [mintRequestHook.isSuccess, mintRequestHook, fromTokenBalance, toTokenBalance, fromTokenAllowance])
+	}, [mintRequestHook.isSuccess, burnRequestHook.isSuccess, mintRequestHook, burnRequestHook, fromTokenBalance, toTokenBalance, fromTokenAllowance])
 
 	useEffect(() => {
 		if (approveHook.isLoading) {
@@ -111,6 +125,41 @@ const Swap = () => {
 			// approveHook.reset()
 		}
 	}, [mintRequestHook.isLoading, mintRequestHook.isSuccess, mintRequestHook.isError])
+
+	useEffect(() => {
+		if (burnRequestHook.isLoading) {
+			console.log()
+			toast.dismiss()
+			toast.loading('Sending Request ...')
+			// approveHook.reset()
+		} else if (burnRequestHook.isSuccess) {
+			toast.dismiss()
+			toast.success('Sent Request Successfully!')
+			// approveHook.reset()
+		} else if (burnRequestHook.isError) {
+			toast.dismiss()
+			toast.error('Sending Request Failed!')
+			// approveHook.reset()
+		}
+	}, [burnRequestHook.isLoading, burnRequestHook.isSuccess, burnRequestHook.isError])
+
+	useEffect(() => {
+	async function getUserNft() {
+		if(address){
+		let response = await alchemy.nft.getNftsForOwner(address as string)
+		const length = response.ownedNfts.length
+		const image = response.ownedNfts[length - 1].rawMetadata?.image
+		if(image){
+			setNftImage(image)
+		}
+		}
+	  }
+	  if(mintRequestHook.isSuccess || burnRequestHook.isSuccess){
+	  getUserNft()
+	  }
+	},[mintRequestHook.isSuccess, burnRequestHook.isSuccess, address, nftImage, setNftImage])
+	
+
 
 	const toggleCheckbox = () => {
 		setChecked(!isChecked);
@@ -219,23 +268,39 @@ const Swap = () => {
 		}
 	}
 
-	function approve() {
+	async function approve() {
 		try {
-			approveHook.mutateAsync({ args: [goerliAnfiFactory, (Number(firstInputValue) * 1e18).toString()] })
+			if(isChecked){
+				openPaymentModal()
+			}else{
+			await approveHook.mutateAsync({ args: [goerliAnfiFactory, (Number(firstInputValue) * 1e18).toString()] })
+			}
 		} catch (error) {
 			console.log('approve error', error)
 		}
 	}
 
-	function mintRequest() {
+	async function mintRequest() {
 		try {
 			if(isChecked){
 				openPaymentModal()
 			}else{
-			mintRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
+			await mintRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
 			}
 		} catch (error) {
 			console.log('mint error', error)
+		}
+	}
+
+	async function burnRequest() {
+		try {
+			if(isChecked){
+				openPaymentModal()
+			}else{
+				await burnRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
+			}
+		} catch (error) {
+			console.log('burn error', error)
 		}
 	}
 
@@ -339,30 +404,38 @@ const Swap = () => {
 				</div>
 				<div className="h-fit w-full mt-6">
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3">
+						{swapToCur.Symbol == 'AIF' ? 
+						<>
 						{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
-							<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
+							<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-blue-200 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
 								Approve
 							</button>
 						) : (
 							<button onClick={mintRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
-								{swapFromCur.Symbol == 'USDC' ? 'Mint' : 'Burn'}
+								Mint
 							</button>
 						)}
+						</>
+						 : 
+							<button onClick={burnRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+								Burn
+							</button>
+						}
 						{/* <p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
 							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p> */}
 					</div>
-					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
+					{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Gas Fees</p>
 						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH</p>
-					</div>
+					</div> */}
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Platform Fees</p>
-						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH (1%)</p>
+						<p className="text-sm pangramLight text-black/70 pb-2">{Number(firstInputValue)*0.001} USD (0.1%)</p>
 					</div>
-					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
+					{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Total Transaction Cost</p>
 						<p className="text-sm pangramLight text-black/70 pb-2">0.02 ETH</p>
-					</div>
+					</div> */}
 				</div>
 			</div>
 			<GenericModal isOpen={isFromCurrencyModalOpen} onRequestClose={closeFromCurrencyModal}>

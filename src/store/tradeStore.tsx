@@ -1,7 +1,7 @@
 "use client"; // This is a client component 👈🏽
 import { create } from 'zustand'
 import circle from '@assets/images/circle.png'
-import { goerliAnfiIndexToken, zeroAddress } from '@/constants/contractAddresses';
+import { goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses';
 
 type Coin = {
 	id: number
@@ -42,6 +42,10 @@ type TradePageStore = {
 	swapToAmount: number,
 	setSwapToAmount: (amount: number) =>void
 
+	// NFT Image:
+	nftImage: string,
+	setNftImage: (image: string) =>void
+
 }
 
 const useTradePageStore = create<TradePageStore>()((set) => ({
@@ -59,11 +63,11 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 	setToCurrencyModalOpen: (open: boolean) => set((state) => ({ isToCurrencyModalOpen: open })),
 
 	swapFromCur: {
-		id: 0,
-		logo: circle.src,
-		name: 'CRYPTO5',
-		Symbol: 'CR5',
-		address: zeroAddress
+		id: 2,
+		logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
+		name: 'USD Coin',
+		Symbol: 'USDC',
+		address: goerliUsdtAddress
 	},
 	changeSwapFromCur: (cur: Coin) => set((state) => ({ swapFromCur: cur })),
 
@@ -81,6 +85,9 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	swapToAmount: 0,
 	setSwapToAmount: (amount: number) => set((state) => ({ swapToAmount: amount })),
+
+	nftImage: "",
+	setNftImage: (image: string) => set((state) => ({ nftImage: image })),
 
 }))
 
