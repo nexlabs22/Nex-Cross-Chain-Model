@@ -18,6 +18,7 @@
     "@thirdweb-dev/react": "^4.0.1",
     "@thirdweb-dev/sdk": "^4.0.0",
     "@types/react-color": "^3.0.7",
+    "alchemy-sdk": "^2.10.1",
     "ethers": "^5.7.2",
     "lightweight-charts": "^4.1.0",
     "next": "latest",
