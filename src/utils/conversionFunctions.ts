@@ -22,4 +22,10 @@ function convertTo13DigitsTimestamp(timestamp:number): number{
     }
 }
 
-export {convertTo13DigitsTimestamp}
+function dateToEpoch(dateString: string): number {
+    const dateObject = new Date(dateString);
+    const epochTime = dateObject.getTime()/1000; // Convert to seconds (Unix timestamp)
+    return epochTime;
+}
+
+export {convertTo13DigitsTimestamp, dateToEpoch}

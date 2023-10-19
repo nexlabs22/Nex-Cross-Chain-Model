@@ -1,12 +1,16 @@
-export default interface chartDataType {
+export interface chartDataType {
 	time: number
 	open: number
 	high: number
 	low: number
 	close: number
 }
+export interface lineChartDataType {
+	time: number | string | Date
+	value: number
+}
 
-export default interface dataFromDatabasetype {
+export interface dataFromDatabasetype {
 	time: number
 	eth: number
 	bnb: number
