@@ -18,7 +18,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
 	try {
 		let columnName = indexName
 		if (indexName === 'CRYPTO5') {
-			columnName = 'btc,bnb,eth,usdt,usdc'
+			columnName = 'btc,bnb,eth,ripple,steth'
 		} else if (indexName === 'ANFI') {
 			columnName = 'btc,xaut'
 		}
