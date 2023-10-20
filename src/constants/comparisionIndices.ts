@@ -35,7 +35,7 @@ export const comparisonIndices = [
         shortName: 'NYSE',
 		columnName: 'nyse',
 		logo: 'https://s3-symbol-logo.tradingview.com/country/US.svg',
-		price: 15859.6188,
+		price: 15859.61,
 		change: '-0.44',
 		selectionColor: "#089981"
 	},

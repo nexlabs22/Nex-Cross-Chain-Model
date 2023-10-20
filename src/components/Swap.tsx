@@ -25,15 +25,20 @@ import { indexFactoryAbi, indexTokenAbi, tokenAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import PaymentModal from './PaymentModal'
 
-import { Network, Alchemy } from "alchemy-sdk";
+import { Network, Alchemy } from 'alchemy-sdk'
+
+import { BsInfoCircle } from 'react-icons/bs'
+
+import cr5Logo from '@assets/images/cr5.png'
+import anfiLogo from '@assets/images/anfi.png'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
-	apiKey: "LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1", // Replace with your Alchemy API Key.
+	apiKey: 'LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1', // Replace with your Alchemy API Key.
 	network: Network.ETH_GOERLI, // Replace with your network.
-  };
+}
 
-const alchemy = new Alchemy(settings);
+const alchemy = new Alchemy(settings)
 
 type Coin = {
 	id: number
@@ -45,12 +50,13 @@ type Coin = {
 
 const Swap = () => {
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
-	const [isChecked, setChecked] = useState(false);
+	const [isChecked, setChecked] = useState(false)
 
 	const [firstInputValue, setFirstInputValue] = useState<number | null>(0)
 	const [secondInputValue, setSecondInputValue] = useState<number | null>(0)
 
-	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage } = useTradePageStore()
+	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage } =
+		useTradePageStore()
 
 	const address = useAddress()
 
@@ -68,8 +74,6 @@ const Swap = () => {
 	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
 	const mintRequestHook = useContractWrite(factoryContract.contract, 'addMintRequest')
 	const burnRequestHook = useContractWrite(factoryContract.contract, 'burn')
-
-	
 
 	// useEffect(() => {
 	// 	console.log("balance :", Number(indexTokenBalance.data)/1e18)
@@ -144,26 +148,24 @@ const Swap = () => {
 	}, [burnRequestHook.isLoading, burnRequestHook.isSuccess, burnRequestHook.isError])
 
 	useEffect(() => {
-	async function getUserNft() {
-		if(address){
-		let response = await alchemy.nft.getNftsForOwner(address as string)
-		const length = response.ownedNfts.length
-		const image = response.ownedNfts[length - 1].rawMetadata?.image
-		if(image){
-			setNftImage(image)
+		async function getUserNft() {
+			if (address) {
+				let response = await alchemy.nft.getNftsForOwner(address as string)
+				const length = response.ownedNfts.length
+				const image = response.ownedNfts[length - 1].rawMetadata?.image
+				if (image) {
+					setNftImage(image)
+				}
+			}
 		}
+		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess) {
+			getUserNft()
 		}
-	  }
-	  if(mintRequestHook.isSuccess || burnRequestHook.isSuccess){
-	  getUserNft()
-	  }
-	},[mintRequestHook.isSuccess, burnRequestHook.isSuccess, address, nftImage, setNftImage])
-	
-
+	}, [mintRequestHook.isSuccess, burnRequestHook.isSuccess, address, nftImage, setNftImage])
 
 	const toggleCheckbox = () => {
-		setChecked(!isChecked);
-	  };
+		setChecked(!isChecked)
+	}
 
 	const openPaymentModal = () => {
 		setPaymentModalOpen(true)
@@ -192,14 +194,14 @@ const Swap = () => {
 	const [coinsList, setCoinsList] = useState<Coin[]>([
 		{
 			id: 0,
-			logo: circle.src,
+			logo: cr5Logo.src,
 			name: 'CRYPTO5',
 			Symbol: 'CR5',
 			address: '',
 		},
 		{
 			id: 1,
-			logo: circle.src,
+			logo: anfiLogo.src,
 			name: 'ANFI',
 			Symbol: 'ANFI',
 			address: goerliAnfiIndexToken,
@@ -213,22 +215,7 @@ const Swap = () => {
 		},
 	])
 
-	async function getCoins() {
-		await axios.get('https://api.coincap.io/v2/assets/').then(function (response) {
-			let coinsData = response.data.data
-			console.log(coinsData)
-			for (let id in coinsData) {
-				let coinObject: Coin = {
-					id: coinsData[id].rank + 1,
-					name: coinsData[id].name,
-					Symbol: coinsData[id].symbol,
-					logo: 'https://assets.coincap.io/assets/icons/' + coinsData[id].symbol.toString().toLowerCase() + '@2x.png',
-					address: '',
-				}
-				setCoinsList((prevState) => [...prevState, coinObject])
-			}
-		})
-	}
+	
 
 	function Switch() {
 		let switchReserve: Coin = swapFromCur
@@ -270,10 +257,10 @@ const Swap = () => {
 
 	async function approve() {
 		try {
-			if(isChecked){
+			if (isChecked) {
 				openPaymentModal()
-			}else{
-			await approveHook.mutateAsync({ args: [goerliAnfiFactory, (Number(firstInputValue) * 1e18).toString()] })
+			} else {
+				await approveHook.mutateAsync({ args: [goerliAnfiFactory, (Number(firstInputValue) * 1e18).toString()] })
 			}
 		} catch (error) {
 			console.log('approve error', error)
@@ -282,10 +269,10 @@ const Swap = () => {
 
 	async function mintRequest() {
 		try {
-			if(isChecked){
+			if (isChecked) {
 				openPaymentModal()
-			}else{
-			await mintRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
+			} else {
+				await mintRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
 			}
 		} catch (error) {
 			console.log('mint error', error)
@@ -294,9 +281,9 @@ const Swap = () => {
 
 	async function burnRequest() {
 		try {
-			if(isChecked){
+			if (isChecked) {
 				openPaymentModal()
-			}else{
+			} else {
 				await burnRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
 			}
 		} catch (error) {
@@ -396,31 +383,31 @@ const Swap = () => {
 						Balance: {(Number(toTokenBalance.data) / 1e18).toFixed(2)} {swapToCur.Symbol}
 					</p>
 				</div>
-				<div className='pt-2'>
-				<label className="inline-flex items-center space-x-2 cursor-pointer">
-					<input type="checkbox" checked={isChecked} onChange={toggleCheckbox} className="form-checkbox h-5 w-5 text-blue-600" />
-					<span className="text-gray-700">Use Fiat payment</span>
-				</label>
+				<div className="pt-2">
+					<label className="inline-flex items-center space-x-2 cursor-pointer">
+						<input type="checkbox" checked={isChecked} onChange={toggleCheckbox} className="form-checkbox h-5 w-5 text-blue-600" />
+						<span className="text-gray-700">Use Fiat payment</span>
+					</label>
 				</div>
 				<div className="h-fit w-full mt-6">
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3">
-						{swapToCur.Symbol == 'AIF' ? 
-						<>
-						{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
-							<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-blue-200 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
-								Approve
-							</button>
+						{swapToCur.Symbol == 'AIF' ? (
+							<>
+								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
+									<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-blue-200 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+										Approve
+									</button>
+								) : (
+									<button onClick={mintRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+										Mint
+									</button>
+								)}
+							</>
 						) : (
-							<button onClick={mintRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
-								Mint
-							</button>
-						)}
-						</>
-						 : 
 							<button onClick={burnRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
 								Burn
 							</button>
-						}
+						)}
 						{/* <p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
 							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p> */}
 					</div>
@@ -430,7 +417,10 @@ const Swap = () => {
 					</div> */}
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Platform Fees</p>
-						<p className="text-sm pangramLight text-black/70 pb-2">{Number(firstInputValue)*0.001} USD (0.1%)</p>
+						<div className="flex flex-row items-center justify-start gap-2">
+							<p className="text-sm pangramLight text-black/70">{Number(firstInputValue) * 0.001} USD (0.1%)</p>
+							<BsInfoCircle color="#2A2A2A" size={15} className="cursor-pointer"></BsInfoCircle>
+						</div>
 					</div>
 					{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Total Transaction Cost</p>

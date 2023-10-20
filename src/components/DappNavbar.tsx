@@ -1,16 +1,21 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { BiMenuAltRight } from 'react-icons/bi'
 import { CiMenuFries } from 'react-icons/ci'
 import ConnectButton from './ConnectButton'
+
+import logo1 from '@assets/images/logo1.png'
+import logo2 from '@assets/images/logo2.png'
 
 const DappNavbar = () => {
 	return (
 		<section className="flex h-fit w-screen flex-row items-center justify-between px-4 py-4 md:px-10 md:py-6">
 			<Link href={'/'}>
 				<div className="flex flex-row items-center justify-between">
-					<div className=" mr-2 h-12 w-12 rounded-full bg-colorOne-500"></div>
-					<h5 className="montrealBold text-xl text-blackText-500">Nex Labs</h5>
+					<div className=" mr-2 h-fit w-fit">
+						<Image src={logo1} alt="nex labs logo" className="w-28"></Image>
+					</div>
 				</div>
 			</Link>
 			<div className="h-fit w-fit md:hidden">
@@ -21,12 +26,18 @@ const DappNavbar = () => {
 					<Link href={'/'}>
 						<h5 className="pangramMedium font-base mr-8 text-blackText-500">Dashboard</h5>
 					</Link>
-					<Link href={"/trade"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Swap</h5></Link>
-					<Link href={"/convert"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Convert</h5></Link>
-					<Link href={"/portfolio"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Portfolio</h5></Link>
+					<Link href={'/trade'}>
+						<h5 className="pangramMedium font-base mr-8 text-blackText-500">Trade</h5>
+					</Link>
+					<Link href={'/convert'}>
+						<h5 className="pangramMedium font-base mr-8 text-blackText-500">Convert</h5>
+					</Link>
+					<Link href={'/portfolio'}>
+						<h5 className="pangramMedium font-base mr-8 text-blackText-500">Portfolio</h5>
+					</Link>
 				</div>
 				{/* <div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div> */}
-				<ConnectButton/>
+				<ConnectButton />
 			</div>
 		</section>
 	)
