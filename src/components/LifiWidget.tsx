@@ -21,8 +21,8 @@ export const LifiWidget = () => {
 			// ],
 			// },
 			containerStyle: {
-				boxShadow: '0px 8px 32px rgba(0, 0, 0, 0.08)',
-				borderRadius: '16px',
+				boxShadow: '0px 0px 3px 1px rgba(16,16,16,0.4)',
+				borderRadius: '30px',
 			},
 			// I used colors from:
 			// https://github.com/nexlabs22/landingPage/blob/main/tailwind.config.cjs
