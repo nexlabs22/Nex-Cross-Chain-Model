@@ -76,6 +76,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			}
 
+			data.sort((a, b) => Number(a.time) - Number(b.time))
 			areaSeries.setData(data)
 
 			const container = chartContainerRef.current

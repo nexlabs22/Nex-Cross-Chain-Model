@@ -1,6 +1,8 @@
 "use client"; // This is a client component 👈🏽
 import { create } from 'zustand'
 import circle from '@assets/images/circle.png'
+import cr5Logo from '@assets/images/cr5.png'
+import anfiLogo from '@assets/images/anfi.png'
 import { goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses';
 
 type Coin = {
@@ -73,9 +75,9 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	swapToCur: {
 		id: 1,
-		logo: circle.src,
+		logo: cr5Logo.src,
 		name: 'ANFI',
-		Symbol: 'AIF',
+		Symbol: 'ANFI',
 		address: goerliAnfiIndexToken
 	},
 	changeSwapToCur: (cur: Coin) => set((state) => ({ swapToCur: cur })),

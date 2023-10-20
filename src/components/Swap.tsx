@@ -215,22 +215,7 @@ const Swap = () => {
 		},
 	])
 
-	async function getCoins() {
-		await axios.get('https://api.coincap.io/v2/assets/').then(function (response) {
-			let coinsData = response.data.data
-			console.log(coinsData)
-			for (let id in coinsData) {
-				let coinObject: Coin = {
-					id: coinsData[id].rank + 1,
-					name: coinsData[id].name,
-					Symbol: coinsData[id].symbol,
-					logo: 'https://assets.coincap.io/assets/icons/' + coinsData[id].symbol.toString().toLowerCase() + '@2x.png',
-					address: '',
-				}
-				setCoinsList((prevState) => [...prevState, coinObject])
-			}
-		})
-	}
+	
 
 	function Switch() {
 		let switchReserve: Coin = swapFromCur
@@ -433,7 +418,7 @@ const Swap = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Platform Fees</p>
 						<div className="flex flex-row items-center justify-start gap-2">
-							<p className="text-sm pangramLight text-black/70 pb-2">{Number(firstInputValue) * 0.001} USD (0.1%)</p>
+							<p className="text-sm pangramLight text-black/70">{Number(firstInputValue) * 0.001} USD (0.1%)</p>
 							<BsInfoCircle color="#2A2A2A" size={15} className="cursor-pointer"></BsInfoCircle>
 						</div>
 					</div>
