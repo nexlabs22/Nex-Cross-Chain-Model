@@ -10,16 +10,14 @@ import dynamic from 'next/dynamic'
 import { useChartDataStore, useLandingPageStore } from '@/store/store'
 import { comparisonIndices } from '@/constants/comparisionIndices'
 const Chart = dynamic(() => import('@components/dashboardChart'), { loading: () => <p>Loading ...</p>, ssr: false })
-// const Chart = dynamic(() => import('@components/dashboard/chart'), { loading: () => <p>Loading ...</p>, ssr: false })
 
 const DashboardChartBox = () => {
 	const { defaultIndex } = useLandingPageStore()
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
-
-	const { chartData, IndexData, fetchIndexData, removeIndex } = useChartDataStore()
+	const { IndexData, fetchIndexData, removeIndex, selectedDuration, selectDuration } = useChartDataStore()
 	useEffect(() => {
-		fetchIndexData({ tableName: 'histcomp', index: defaultIndex })
-	}, [defaultIndex, fetchIndexData])
+		fetchIndexData({ tableName: 'histcomp', index: defaultIndex})
+	}, [defaultIndex, fetchIndexData, selectedDuration])
 
 	const PrevArrow = ({ onClick }: { onClick: () => void }) => (
 		<div
@@ -75,7 +73,7 @@ const DashboardChartBox = () => {
 								id="comparisonItem"
 								onClick={() => {
 									if (!selectedIndices.includes(item.columnName)) {
-										fetchIndexData({ tableName: 'histcomp', index: item.columnName })
+										fetchIndexData({ tableName: 'histcomp', index: item.columnName})
 										setSelectedIndices((prevState) => [...prevState, item.columnName])
 									} else {
 										removeIndex(item.columnName)
@@ -112,6 +110,114 @@ const DashboardChartBox = () => {
 					)
 				})}
 			</div>
+			<div className="flex flex-row items-start justify-start px-2">
+				<button
+					type="button"
+					className={
+						selectedDuration == 30
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(30)
+					}}
+				>
+					<p className="circularMedium text-base text-black">1M</p>
+				</button>
+				<button
+					type="button"
+					className={
+						selectedDuration == 180
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(180)
+					}}
+				>
+					<p className="circularMedium text-base text-black">6M</p>
+				</button>
+				<button
+					type="button"
+					className={
+						selectedDuration == -1
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(-1)
+					}}
+				>
+					<p className="circularMedium text-base text-black">YTD</p>
+				</button>
+				<button
+					type="button"
+					className={
+						selectedDuration == 360
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(360)
+					}}
+				>
+					<p className="circularMedium text-base text-black">1Y</p>
+				</button>
+				<button
+					type="button"
+					className={
+						selectedDuration == 1080
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(1080)
+					}}
+				>
+					<p className="circularMedium text-base text-black">3Y</p>
+				</button>
+				<button
+					type="button"
+					className={
+						selectedDuration == 1800
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(1800)
+					}}
+				>
+					<p className="circularMedium text-base text-black">5Y</p>
+				</button>
+			</div>
+			{/* <div className="flex flex-row items-start justify-start px-2">
+				<button
+					type="button"
+					className={
+						selectedDuration == 30
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(30)
+					}}
+				>
+					<p className="circularMedium text-base text-black">1M</p>
+				</button>
+				<button
+					type="button"
+					className={
+						selectedDuration == 180
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(180)
+					}}
+				>
+					<p className="circularMedium text-base text-black">6M</p>
+				</button>
+			</div> */}
 			<Chart data={IndexData} />
 		</div>
 	)

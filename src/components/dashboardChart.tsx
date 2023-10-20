@@ -10,9 +10,9 @@ import {
 	TimeScaleOptions,
 } from 'lightweight-charts'
 import { useChartDataStore, useLandingPageStore } from '@/store/store';
-import chartDataType from '@/store/storeTypes';
+import { chartDataType, lineChartDataType } from '@/store/storeTypes';
 import { comparisonIndices } from '@/constants/comparisionIndices';
-import getTooltipDate, { convertTo13DigitsTimestamp } from '@/utils/conversionFunctions';
+import getTooltipDate, { convertTo13DigitsTimestamp, dateToEpoch } from '@/utils/conversionFunctions';
 
 
 interface GradientAreaChartProps {
@@ -29,12 +29,13 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const maxValue = Math.max(...data.map((point) => point.value))
 	const num = Object.keys(chartData).length
 	const { defaultIndex } = useLandingPageStore()
+	const { selectedDuration } = useChartDataStore()
 
 	useEffect(() => {
 		if (chartContainerRef.current) {
 			chartRef.current = createChart(chartContainerRef.current, {
 				width: chartContainerRef.current.offsetWidth,
-				height: chartContainerRef.current.offsetHeight * 0.83,
+				height: chartContainerRef.current.offsetHeight * 0.78,
 				timeScale: {
 					locked: true, // Lock the time scale to prevent dragging
 					rightOffset: 0, // Ensure the x-axis extends to the right edge of the chart
@@ -64,19 +65,41 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				priceLineVisible: false,
 			})
 
-
+			function historyRangeFilter(unsortedData: lineChartDataType[]) {
+				const timeNow = Math.floor(Date.now() / 1000) //current epoc time
+				let sortedData: lineChartDataType[] = []
+				console.log(selectedDuration)
+				if(selectedDuration !== -1){
+					unsortedData.map((data) => {
+						if (selectedDuration && timeNow - Number(data.time) < selectedDuration * 86400) { //86400sec in 1 day
+							sortedData.push(data)
+						}
+					})
+				}else{
+					unsortedData.map((data) => {
+						const timestampOfFirstDayOfYear = dateToEpoch(`01-01-${(new Date()).getFullYear()}`)
+						if (selectedDuration && Number(data.time) > timestampOfFirstDayOfYear) { 
+							sortedData.push(data)
+						}
+					})
+				}
+				sortedData.sort((a, b) => Number(a.time) - Number(b.time))
+				return sortedData
+			}
 
 			const handleResize = () => {
 				if (chartContainerRef.current) {
 					chartRef.current.applyOptions({
 						width: chartContainerRef.current.offsetWidth,
-						height: chartContainerRef.current.clientHeight * 0.83
+						height: chartContainerRef.current.clientHeight * 0.78
 					})
 				}
+				// console.log('inside handleResize function', chartContainerRef.current?.clientWidth)
+				// chartRef.current.applyOptions({ width: Number(chartContainerRef.current?.clientWidth) * 0.90 })
 
 			}
 
-			areaSeries.setData(data)
+			areaSeries.setData(historyRangeFilter(data))
 
 			const container = chartContainerRef.current
 			container.style.position = 'relative'
@@ -187,9 +210,10 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					const dateStr = param.time;
 					toolTip.style.display = 'block';
 					const data = param.seriesData.get(areaSeries);
-					const price = data.value !== undefined ? data.value : data.close;
-					let toolTipContent =
-						`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
+					if (data && data !== undefined) {
+						const price = data && data.value !== undefined ? data.value : data.close;
+						let toolTipContent =
+							`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
 							src={test}
 							alt="tooltip logo"
@@ -197,32 +221,33 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 							   height:22px; 
 							   margin-right:5px ; 
 							   border-radius:50%;">
-						</Image>
-						${defaultIndex}: ${Math.round(100 * price) / 100}
-					</div>`
+							   </Image>
+							   ${defaultIndex}: ${Math.round(100 * price) / 100}
+							   </div>`
 
-					if (param.seriesData.size > 1) {
-						const mapEntries = Array.from((param.seriesData as Map<string, any>).entries());
-						for (const [index, [, value]] of mapEntries.entries()) {
-							if (index - 1 >= 0) {
-								const indexDetails = comparisonIndices.find((item) => item.columnName === selectedCompIndexes[index - 1]);
-								toolTipContent += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
-								toolTipContent += `<Image
-													src=${indexDetails?.logo}
-													alt="tooltip logo"
+						if (param.seriesData.size > 1) {
+							const mapEntries = Array.from((param.seriesData as Map<string, any>).entries());
+							for (const [index, [, value]] of mapEntries.entries()) {
+								if (index - 1 >= 0) {
+									const indexDetails = comparisonIndices.find((item) => item.columnName === selectedCompIndexes[index - 1]);
+									toolTipContent += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
+									toolTipContent += `<Image
+								src=${indexDetails?.logo}
+								alt="tooltip logo"
 													style="width:22px;
 														   height:22px; 
 														   margin-right:5px ; 
 														   border-radius:50%;">
 												   </Image>`
-								toolTipContent += `${indexDetails?.shortName}: ${Math.round(100 * value.value) / 100}`
-								toolTipContent += `</div>`
+									toolTipContent += `${indexDetails?.shortName}: ${Math.round(100 * value.value) / 100}`
+									toolTipContent += `</div>`
+								}
 							}
+
 						}
 
+						toolTip.innerHTML = toolTipContent;
 					}
-
-					toolTip.innerHTML = toolTipContent;
 				}
 			});
 
@@ -250,7 +275,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					}
 				})
 				formatedLineData.sort((a, b) => a.time - b.time);
-				areaSeries.setData(formatedLineData)
+				areaSeries.setData(historyRangeFilter(formatedLineData))
 			})
 			// Hide axes
 			chartRef.current.applyOptions({
@@ -270,11 +295,11 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			return () => {
 				window.removeEventListener('resize', handleResize)
-				toolTip.innerHTML=''
+				toolTip.innerHTML = ''
 				chartRef.current.remove()
 			}
 		}
-	}, [chartData, data, maxValue, minValue, num, defaultIndex])
+	}, [chartData, data, maxValue, minValue, num, defaultIndex, selectedDuration])
 
 
 	return (
