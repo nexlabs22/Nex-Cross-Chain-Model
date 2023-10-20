@@ -21,7 +21,7 @@ const DappNavbar = () => {
 					<Link href={'/'}>
 						<h5 className="pangramMedium font-base mr-8 text-blackText-500">Dashboard</h5>
 					</Link>
-					<Link href={"/trade"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Swap</h5></Link>
+					<Link href={"/trade"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Trade</h5></Link>
 					<Link href={"/convert"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Convert</h5></Link>
 					<Link href={"/portfolio"}><h5 className="pangramMedium font-base mr-8 text-blackText-500">Portfolio</h5></Link>
 				</div>
