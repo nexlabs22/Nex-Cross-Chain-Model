@@ -339,6 +339,36 @@ body {
   }
 }
 
+.Toastify__toast {
+	background-color: #F2F2F2 !important;
+	color: #2A2A2A !important;
+}
+
+.Toastify__progress-bar--info {
+	background-color: #A6C3CE !important;
+}
+
+.Toastify__progress-bar--success {
+	background-color: #089981;
+}
+
+.Toastify__progress-bar--warning {
+	background-color: #ED9733;
+}
+
+.Toastify__progress-bar--error {
+	background-color: #F23645;
+}
+
+.Toastify__close-button > svg {
+	color: #dbdbdb;
+}
+
+.Toastify__close-button {
+	color: #dbdbdb;
+}
+
+
 ::-webkit-scrollbar {
   width: 8px;
 }
