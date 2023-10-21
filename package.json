@@ -22,6 +22,7 @@
     "alchemy-sdk": "^2.10.1",
     "ethers": "^5.7.2",
     "lightweight-charts": "^4.1.0",
+    "lottie-react": "^2.4.0",
     "next": "latest",
     "pg": "^8.11.3",
     "pino-pretty": "^10.2.0",

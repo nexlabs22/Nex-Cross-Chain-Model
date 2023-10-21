@@ -14,7 +14,6 @@ import useTradePageStore from '@/store/tradeStore'
 // Components:
 import GenericModal from './GenericModal'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
-import axios from 'axios'
 
 // Assets:
 import circle from '@assets/images/circle.png'
@@ -23,6 +22,7 @@ import { useAddress, useContract, useContractRead, useContractWrite } from '@thi
 import { goerliAnfiFactory, goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
 import { indexFactoryAbi, indexTokenAbi, tokenAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
+import Lottie from 'lottie-react'
 import PaymentModal from './PaymentModal'
 
 import { Network, Alchemy } from 'alchemy-sdk'
@@ -31,6 +31,9 @@ import { BsInfoCircle } from 'react-icons/bs'
 
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
+import cookingAnimation from '@assets/lottie/cooking.json'
+
+import { GenericToast } from './GenericToast'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -54,6 +57,8 @@ const Swap = () => {
 
 	const [firstInputValue, setFirstInputValue] = useState<number | null>(0)
 	const [secondInputValue, setSecondInputValue] = useState<number | null>(0)
+
+	const [cookingModalVisible, setCookingModalVisible] = useState<boolean>(false)
 
 	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage } =
 		useTradePageStore()
@@ -101,14 +106,24 @@ const Swap = () => {
 			console.log()
 			toast.dismiss()
 			toast.loading('Approving ...')
+			GenericToast({
+				type: 'loading',
+				message: 'Approving...',
+			})
 			// approveHook.reset()
 		} else if (approveHook.isSuccess) {
 			toast.dismiss()
-			toast.success('Approved Successfully!')
+			GenericToast({
+				type: 'success',
+				message: 'Approved Successfully!',
+			})
 			// approveHook.reset()
 		} else if (approveHook.isError) {
 			toast.dismiss()
-			toast.error('Approving Failed!')
+			GenericToast({
+				type: 'error',
+				message: 'Approving Failed!',
+			})
 			// approveHook.reset()
 		}
 	}, [approveHook.isLoading, approveHook.isSuccess, approveHook.isError])
@@ -117,15 +132,24 @@ const Swap = () => {
 		if (mintRequestHook.isLoading) {
 			console.log()
 			toast.dismiss()
-			toast.loading('Sending Request ...')
+			GenericToast({
+				type: 'loading',
+				message: 'Sending Request ...',
+			})
 			// approveHook.reset()
 		} else if (mintRequestHook.isSuccess) {
 			toast.dismiss()
-			toast.success('Sent Request Successfully!')
+			GenericToast({
+				type: 'success',
+				message: 'Sent Request Successfully!',
+			})
 			// approveHook.reset()
 		} else if (mintRequestHook.isError) {
 			toast.dismiss()
-			toast.error('Sending Request Failed!')
+			GenericToast({
+				type: 'error',
+				message: 'Sending Request Failed!',
+			})
 			// approveHook.reset()
 		}
 	}, [mintRequestHook.isLoading, mintRequestHook.isSuccess, mintRequestHook.isError])
@@ -134,15 +158,25 @@ const Swap = () => {
 		if (burnRequestHook.isLoading) {
 			console.log()
 			toast.dismiss()
-			toast.loading('Sending Request ...')
+
+			GenericToast({
+				type: 'loading',
+				message: 'Sending Request ...',
+			})
 			// approveHook.reset()
 		} else if (burnRequestHook.isSuccess) {
 			toast.dismiss()
-			toast.success('Sent Request Successfully!')
+			GenericToast({
+				type: 'success',
+				message: 'Sent Request Successfully!',
+			})
 			// approveHook.reset()
 		} else if (burnRequestHook.isError) {
 			toast.dismiss()
-			toast.error('Sending Request Failed!')
+			GenericToast({
+				type: 'error',
+				message: 'Sending Request Failed!',
+			})
 			// approveHook.reset()
 		}
 	}, [burnRequestHook.isLoading, burnRequestHook.isSuccess, burnRequestHook.isError])
@@ -214,8 +248,6 @@ const Swap = () => {
 			address: goerliUsdtAddress,
 		},
 	])
-
-	
 
 	function Switch() {
 		let switchReserve: Coin = swapFromCur
@@ -480,6 +512,21 @@ const Swap = () => {
 							})}
 						</div>
 					</div>
+				</div>
+			</GenericModal>
+			<GenericModal isOpen={cookingModalVisible} onRequestClose={()=>{setCookingModalVisible(false)}}>
+				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
+					<Lottie
+						animationData={cookingAnimation}
+						loop={true}
+						style={{
+							height: 200,
+							width: 400,
+							overflow: 'hidden',
+						}}
+					/>
+					<h5 className='montrealBold text-blackText-500 text-2xl text-center w-full -mt-6'>THE MAGIC IS HAPPENING...</h5>
+					<h5 className='montreal text-blackText-500 text-lg text-center w-9/12 my-2'>Your NFT receipt is being minted. Once it is ready, you can find it the {"\""}Receipts{"\""} section.</h5>
 				</div>
 			</GenericModal>
 		</>
