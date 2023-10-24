@@ -105,7 +105,7 @@ const Swap = () => {
 		if (approveHook.isLoading) {
 			console.log()
 			toast.dismiss()
-			toast.loading('Approving ...')
+			// toast.loading('Approving ...')
 			GenericToast({
 				type: 'loading',
 				message: 'Approving...',
@@ -423,7 +423,7 @@ const Swap = () => {
 				</div>
 				<div className="h-fit w-full mt-6">
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3">
-						{swapToCur.Symbol == 'AIF' ? (
+						{swapToCur.address == goerliAnfiIndexToken ? (
 							<>
 								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
 									<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-blue-200 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
