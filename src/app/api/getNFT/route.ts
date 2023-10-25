@@ -45,7 +45,8 @@ export async function GET(request: NextRequest, response: NextResponse) {
         
 	} catch (error) {
 		console.log(error)
-		return NextResponse.json({ message: 'incorrect axios combine request nftfloor' }, { status: 404 })
+		return NextResponse.json({ message: 'incorrect axios combine request nftfloor', error }, { status: 404 })
 	}
 }
 
+export const dynamic = 'force-dynamic'
