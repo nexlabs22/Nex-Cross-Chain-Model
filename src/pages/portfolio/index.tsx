@@ -74,7 +74,7 @@ export default function Portfolio() {
 							<TabPanel>
 								<div className="w-full h-fit p-4">
 									<div
-										className="px-4 py-8 grid grid-cols-7 grid-rows-1 rounded-2xl bg-gradient-to-br from-gray-300 to-transparent shadow- shadow-blackText-500"
+										className="px-4 py-8 grid grid-cols-7 grid-rows-1 rounded-2xl bg-gray-300 shadow- shadow-blackText-500"
 										style={{
 											backgroundImage: 'linear-gradient(180deg, #F0F0F0 0%, rgba(240, 240, 240, 0.00) 117.95%);',
 											boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25);',
