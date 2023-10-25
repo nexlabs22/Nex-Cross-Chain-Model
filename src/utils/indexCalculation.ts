@@ -26,26 +26,26 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 		const CRYPTO5Data: { time: number; value: number }[] = []	
  
 		const startData = data.find((data)=>{
-			return (data.btc !== null && data.eth !== null && data.bnb !== null && data.ripple !== null && data.steth !== null)
+			return (data.btc !== null && data.eth !== null && data.bnb !== null && data.ripple !== null && data.sol !== null)
 		})
 
 		const startBtcPrice = startData ? startData.btc : 0
 		const startEthPrice = startData ? startData.eth : 0
 		const startBnbPrice = startData ? startData.bnb : 0
 		const startRipplePrice = startData ? startData.ripple : 0
-		const startStethPrice = startData ? startData.steth : 0
+		const startSolPrice = startData ? startData.sol : 0
 		// const startUsdcPrice = startData ? startData.usdc : 0
 		// const startUsdtPrice = startData ? startData.usdt : 0
 
 		data.map((item) => {
 			const dataObj: { time: number; value: number } = { time: 0, value: 0 }
-			if (item.btc !== null && item.eth !== null && item.bnb !== null && item.ripple !== null && item.steth !== null) {
+			if (item.btc !== null && item.eth !== null && item.bnb !== null && item.ripple !== null && item.sol !== null) {
 				const price =
 					(0.5 * item.btc) / startBtcPrice +
 					(0.25 * item.eth) / startEthPrice + 
 					(0.12 * item.ripple) / startRipplePrice + 
 					(0.08 * item.bnb) / startBnbPrice + 
-					(0.05 * item.steth) / startStethPrice
+					(0.05 * item.sol) / startSolPrice
 				dataObj.time = item.time
 				dataObj.value = price
 				CRYPTO5Data.push(dataObj)
