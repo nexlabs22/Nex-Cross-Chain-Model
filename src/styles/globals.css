@@ -388,3 +388,36 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #a9c3b6;
 }
+
+
+.react-tabs__tab--selected{
+  background-color: transparent !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: solid 3px #91AC9A !important;
+}
+
+.react-tabs__tab--selected:focus{
+  background-color: transparent !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: solid 3px #91AC9A !important;
+}
+
+.react-tabs__tab--selected::after{
+  background-color: #91AC9A !important;
+}
+
+.react-tabs__tab--selected h5{
+  color: #91AC9A !important;
+}
+
+.react-tabs__tab{
+  color: #2a2a2a5a !important;
+}
+
+#reactgooglegraph-1{
+  font-family: 'montrealBold' !important;
+}
