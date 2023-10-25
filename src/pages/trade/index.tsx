@@ -12,12 +12,17 @@ import captureHtmlAsImage from '@/components/capture'
 export default function Trade() {
 	const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
 
+	const operationTypeExample = 'MINT TOKEN REQUEST'
+	const amountExample = '182K'
+	const timeExample = 939723
+
 	const ref = useRef<HTMLDivElement>(null)
 
 	const captureImage = useCallback(() => {
 		if (ref.current === null) {
 			return
 		}
+		
 
 		toPng(ref.current, { cacheBust: true })
 			.then((dataUrl) => {
@@ -58,9 +63,9 @@ export default function Trade() {
 									backgroundImage: `url('https://media.discordapp.net/attachments/981580623342862336/1166428923245121566/NEX_background_1.png?ex=654a7496&is=6537ff96&hm=8e8831a7fa9a16b5b3c6b33b045ca24b9aec4e5609411631df3281ce52ea3a9b&=&width=567&height=567')`,
 								}}
 							>
-								<h5 className="montrealBold text-whiteText-500 text-xl">MINT TOKEN REQUEST</h5>
-								<h5 className="montrealBold text-whiteText-500 text-xl">AMOUNT : 182K</h5>
-								<h5 className="montrealBold text-whiteText-500 text-xl">TIME : 939723</h5>
+								<h5 className="montrealBold text-whiteText-500 text-xl">{operationTypeExample}</h5>
+								<h5 className="montrealBold text-whiteText-500 text-xl">AMOUNT : {amountExample}</h5>
+								<h5 className="montrealBold text-whiteText-500 text-xl">TIME : {timeExample}</h5>
 							</div>
 						</div>
 						<div
