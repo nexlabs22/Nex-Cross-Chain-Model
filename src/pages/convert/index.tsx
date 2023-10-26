@@ -19,7 +19,7 @@ export const LiFiWidgetNext = dynamic(() => import('@/components/LifiWidget').th
 export default function Convert() {
 	return (
 		<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
-			<section className="h-full w-fit overflow-x-hidde" id="convertPage">
+			<section className="h-full w-fit overflow-x-hidde">
 				<DappNavbar />
 				<section className="w-screen h-fit overflow-x-hidden flex flex-row items-center justify-center pt-10">
 					

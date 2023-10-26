@@ -11,7 +11,7 @@ import logo2 from '@assets/images/logo2.png'
 const DappNavbar = () => {
 	return (
 		<section className="flex h-fit w-screen flex-row items-center justify-between px-4 py-4 md:px-10 md:py-6 relative z-50">
-			<Link href={'/'}>
+			<Link href={'https://landing-page-spot-index.vercel.app/'}>
 				<div className="flex flex-row items-center justify-between">
 					<div className=" mr-2 h-fit w-fit">
 						<Image src={logo1} alt="nex labs logo" className="w-28"></Image>

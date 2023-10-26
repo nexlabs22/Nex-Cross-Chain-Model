@@ -17,13 +17,13 @@ import logo2 from "@assets/images/logo2.png";
 
 const Footer = () => {
   return (
-    <section className="flex h-[50vh] w-screen flex-col items-center justify-end mt-16">
+    <section className="flex h-[50vh] w-screen flex-col items-center justify-end mt-20">
       <div className="h-[1px] w-full bg-gray-300/50"></div>
       <div className="flex h-fit w-full flex-row items-center justify-start gap-3 pb-20 pt-16">
         <div className="h-full w-1/3 px-10">
           <div className="flex w-fit flex-row items-center justify-between">
             <div className=" mr-2 h-fit w-fit">
-              <Image src={logo1} alt="nex labs logo" className="w-28"></Image>
+              <Image src={logo2} alt="nex labs logo" className="w-14"></Image>
             </div>
           </div>
           <h5 className="pangramMedium mb-10 mt-5 w-4/5 text-2xl text-blackText-500">
@@ -66,15 +66,6 @@ const Footer = () => {
           <Link href={"https://nex-labs.gitbook.io/nex-dex/"}>
             <h5 className="pangramMedium text-xl mb-5 text-blackText-500">
               Whitepaper
-            </h5>
-          </Link>
-          <Link
-            href={
-              "https://moodglobalservices.notion.site/Nex-Labs-Business-Plan-bc9a4a0d91824642ad3a2d1c312a2f01"
-            }
-          >
-            <h5 className="pangramMedium text-xl mb-5 text-blackText-500">
-              Business Plan
             </h5>
           </Link>
         </div>
@@ -129,11 +120,11 @@ const Footer = () => {
       <div className="flex h-fit w-full flex-row items-center justify-center px-20 py-3">
         <div className="flex flex-row items-center justify-between">
           <div className=" mr-2 h-fit w-fit">
-          <Image src={logo1} alt="nex labs logo" className="w-10"></Image>
+          <Image src={logo1} alt="nex labs logo" className="w-20"></Image>
           </div>
         </div>
-        <h5 className="ARPDisplay-80 mx-5 my-0 text-sm text-blackText-500">-</h5>
-        <h5 className="pangramLight my-0 text-sm text-blackText-500">
+        <h5 className="ARPDisplay-80 mx-5 mt-2 text-sm text-blackText-500">-</h5>
+        <h5 className="pangramLight my-0 text-base text-blackText-500">
           © Copyright Nex Labs B.V. 2023 - All rights reserved
         </h5>
       </div>

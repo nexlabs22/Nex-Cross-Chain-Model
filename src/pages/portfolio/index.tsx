@@ -74,23 +74,20 @@ export default function Portfolio() {
 							<TabPanel>
 								<div className="w-full h-fit p-4">
 									<div
-										className="px-4 py-8 grid grid-cols-7 grid-rows-1 rounded-2xl bg-gray-300 shadow- shadow-blackText-500"
-										style={{
-											backgroundImage: 'linear-gradient(180deg, #F0F0F0 0%, rgba(240, 240, 240, 0.00) 117.95%);',
-											boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25);',
-										}}
+										className="px-4 py-8 grid grid-cols-7 grid-rows-1 rounded-2xl bg-gradient-to-tr from-gray-300 to-whiteBackground-500 shadow- shadow-blackText-500"
+										
 									>
 										<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 											<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
 											<h5 className="montrealBold text-xl text-blackText-500">ANFI</h5>
-											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$102.58</h5>
-											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">68%</h5>
+											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$0</h5>
+											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">0%</h5>
 										</div>
 										<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 											<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
 											<h5 className="montrealBold text-xl text-blackText-500">CRYPTO 5</h5>
-											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$12.58</h5>
-											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">32%</h5>
+											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$0</h5>
+											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">0%</h5>
 										</div>
 									</div>
 								</div>
