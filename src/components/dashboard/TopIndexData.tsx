@@ -118,13 +118,13 @@ const TopIndexData = () => {
 	const othertIndexObject = IndicesWithDetails.find((o) => o.symbol != defaultIndex)
 
 	return (
-		<section className="px-10 py-16">
-			<div className="flex flex-row items-center justify-between gap-4 mb-6">
-				<div className="h-full w-1/2 rounded-2xl py-6 border-[2px] border-gray-300">
+		<section className="px-2 lg:px-10 py-16">
+			<div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-6">
+				<div className="h-full w-full lg:w-1/2 rounded-2xl py-6 border-[2px] border-gray-300">
 					<div className="flex flex-row items-center justify-start px-6">
 						<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-						<h5 className="montrealBold mr-3 text-4xl text-blackText-500">{defaultIndexObject?.name}</h5>
-						<h5 className="montral rounded-lg bg-colorOne-500 px-3 py-1 mt-1 text-base text-whiteText-500">{defaultIndexObject?.symbol}</h5>
+						<h5 className="montrealBold mr-3 text-2xl lg:text-4xl text-blackText-500">{defaultIndexObject?.name}</h5>
+						<h5 className="hidden lg:block montral rounded-2xl bg-colorOne-500 px-3 py-1 mt-1 text-base text-whiteText-500">{defaultIndexObject?.symbol}</h5>
 					</div>
 					<div className="mt-5 flex flex-row items-center justify-start px-6">
 						<div className="flex flex-row items-center justify-start">
@@ -142,7 +142,7 @@ const TopIndexData = () => {
 					<div className="w-full h-[1px] bg-gray-300 my-4"></div>
 					<h5 className="pangramCompact px-6 w-full text-lg text-blackText-500">{defaultIndexObject?.description}</h5>
 				</div>
-				<div className="h-full w-1/2 rounded-2xl py-6 border-[2px] border-gray-300">
+				<div className="h-full w-full lg:w-1/2 rounded-2xl py-6 border-[2px] border-gray-300">
 					<div
 						className="flex flex-row items-center justify-start px-6"
 						onClick={() => {
@@ -154,8 +154,8 @@ const TopIndexData = () => {
 						}}
 					>
 						<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-						<h5 className="montrealBold mr-3 text-4xl text-blackText-500">{othertIndexObject?.name}</h5>
-						<h5 className="montral rounded-lg bg-colorOne-500 px-3 py-1 mt-1 text-base text-whiteText-500">{defaultIndexObject?.symbol}</h5>
+						<h5 className="montrealBold mr-3 text-2xl lg:text-4xl text-blackText-500">{othertIndexObject?.name}</h5>
+						<h5 className="hidden lg:block montral rounded-2xl bg-colorOne-500 px-3 py-1 mt-1 text-base text-whiteText-500">{othertIndexObject?.symbol}</h5>
 					</div>
 					<div className="mt-5 flex flex-row items-center justify-start px-6">
 						<div className="flex flex-row items-center justify-start">
@@ -177,7 +177,7 @@ const TopIndexData = () => {
 			<div className="flex w-full flex-row items-center justify-center">
 				<div className="h-[1px] w-full bg-blackText-500/20"></div>
 			</div>
-			<div className="my-8 flex flex-row items-center justify-between gap-24">
+			<div className="hidden my-8 lg:flex flex-row items-center justify-between gap-24">
 				<div className="flex w-2/6 flex-row items-center justify-between">
 					<div>
 						<h5 className="montrealBold mb-5 text-base text-gray-400">Market Cap</h5>
@@ -202,8 +202,8 @@ const TopIndexData = () => {
 							<h5 className="pangramMedium mr-2 text-base text-blackText-500">null</h5>
 							<IoCopyOutline color="#A9C3B6" size={20} />
 						</div>
-						<Link href={"/"}>
-							<Image src={etherscanLogo} alt='etherscan' height={22} width={22}></Image>
+						<Link href={'/'}>
+							<Image src={etherscanLogo} alt="etherscan" height={22} width={22}></Image>
 						</Link>
 					</div>
 					<div className="flex w-full flex-row items-center justify-start">
@@ -215,6 +215,25 @@ const TopIndexData = () => {
 							<h5 className="pangramMedium text-base text-blackText-500">{defaultIndexObject?.managementFee}%</h5>
 						</div>
 					</div>
+				</div>
+			</div>
+
+			<div className="grid grid-cols-2 grid-rows-2 grid-col gap-y-5 lg:hidden px-2 py-5">
+				<div className="flex flex-col items-center justify-center">
+					<h5 className="montrealBold mb-5 text-xl text-gray-400">Market Cap</h5>
+					<h5 className="pangramMedium text-lg text-blackText-500">${defaultIndexObject?.mktCap}</h5>
+				</div>
+				<div className="flex flex-col items-center justify-center">
+					<h5 className="montrealBold mb-5 text-xl text-gray-400">Market Cap</h5>
+					<h5 className="pangramMedium text-lg text-blackText-500">${defaultIndexObject?.mktCap}</h5>
+				</div>
+				<div className="flex flex-col items-center justify-center">
+					<h5 className="montrealBold mb-5 text-xl text-gray-400">Market Cap</h5>
+					<h5 className="pangramMedium text-lg text-blackText-500">${defaultIndexObject?.mktCap}</h5>
+				</div>
+				<div className="flex flex-col items-center justify-center">
+					<h5 className="montrealBold mb-5 text-xl text-gray-400">Market Cap</h5>
+					<h5 className="pangramMedium text-lg text-blackText-500">${defaultIndexObject?.mktCap}</h5>
 				</div>
 			</div>
 			<div className="flex w-full flex-row items-center justify-center">
