@@ -98,7 +98,7 @@ const TradeChartBox = () => {
 				<div className="h-1/5 w-full border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-row items-start justify-start p-2 rounded-xl">
 					<div className='flex gap-3'>
 					<h5 className='montrealBold text-lg text-blackText-500'>
-						NFT Reciepts
+						Order Book
 					</h5>
 					<div className="w-auto h-auto flex justify-center">
 					{nftImage &&

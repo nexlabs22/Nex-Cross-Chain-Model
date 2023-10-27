@@ -5,7 +5,7 @@ import RecieptsBox from '@/components/RecieptsBox'
 import TradeChartBox from '@/components/TradeChart'
 
 import React, { useEffect, useState, useCallback, useRef } from 'react'
-import { toPng } from 'html-to-image'
+import { toPng, toSvg } from 'html-to-image'
 
 import captureHtmlAsImage from '@/components/capture'
 
@@ -24,7 +24,7 @@ export default function Trade() {
 		}
 		
 
-		toPng(ref.current, { cacheBust: true })
+		toSvg(ref.current, { cacheBust: true })
 			.then((dataUrl) => {
 				const link = document.createElement('a')
 				link.download = 'my-image-name.png'

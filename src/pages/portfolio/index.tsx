@@ -8,6 +8,8 @@ import Footer from '@/components/Footer'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import 'react-tabs/style/react-tabs.css'
 import { Chart } from 'react-google-charts'
+import { useAddress } from '@thirdweb-dev/react'
+import GenericAvatar from '@/components/GenericAvatar'
 
 import bg from '@assets/images/3d hologram.png'
 import anfiLogo from '@assets/images/anfi.png'
@@ -17,7 +19,11 @@ import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
 
+
 export default function Portfolio() {
+
+	const address = useAddress();
+
 	const data = [
 		['Asset', 'Percentage'],
 		['CRYPTO 5', 68],
@@ -42,12 +48,18 @@ export default function Portfolio() {
 				<DappNavbar />
 				<section className="w-screen h-fit pt-10">
 					<div className="w-full h-fit px-20 py-5 flex flex-row items-center justify-between mb-10">
-						<div className="w-2/5 h-fit flex flex-row items-center justify-between gap-8">
-							<div className="w-2/5 aspect-square bg-colorOne-500 rounded-full"></div>
-							<div className="w-2/3 h-fit flex flex-col items-start justify-start gap-2">
+						<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
+							 {
+								address && address != "" ? <GenericAvatar walletAddress={address}></GenericAvatar> : <div className="w-40 lg:w-2/5 aspect-square bg-colorOne-500 rounded-full">
+								
+							</div>
+							 }
+							<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
 								<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
 								<div className="flex flex-row items-center justify-start gap-2">
-									<h5 className="text-base text-gray-500 pangramMedium">0x3e5a06...8d85f7e8ff38</h5>
+									<h5 className="text-base text-gray-500 pangramMedium">{
+										address && address != "" ? address.toString().slice(0,7) + "..." + address.toString().substring(address.toString().length -  7): "Connect your wallet" 
+									}</h5>
 									<div className=" bg-colorTwo-500/50 w-fit h-fit p-2 rounded-full">
 										<BiCopy color="#000000" size={15} />
 									</div>
@@ -61,9 +73,9 @@ export default function Portfolio() {
 								</div>
 							</div>
 						</div>
-						<div className="w-3/5 h-fit" id="smallChartBox"></div>
+						<div className="hidden lg:flex w-3/5 h-fit" id="smallChartBox"></div>
 					</div>
-					<div className="w-full h-fit px-20">
+					<div className="w-full h-fit px-2 lg:px-20">
 						<Tabs>
 							<TabList>
 								<Tab>
@@ -74,30 +86,27 @@ export default function Portfolio() {
 							<TabPanel>
 								<div className="w-full h-fit p-4">
 									<div
-										className="px-4 py-8 grid grid-cols-7 grid-rows-1 rounded-2xl bg-gray-300 shadow- shadow-blackText-500"
-										style={{
-											backgroundImage: 'linear-gradient(180deg, #F0F0F0 0%, rgba(240, 240, 240, 0.00) 117.95%);',
-											boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25);',
-										}}
+										className="px-4 py-8 grid grid-cols-2 grid-rows-auto lg:rid-cols-7 lg:grid-rows-1 rounded-2xl bg-gradient-to-tr from-gray-300 to-whiteBackground-500 shadow- shadow-blackText-500"
+										
 									>
 										<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 											<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
 											<h5 className="montrealBold text-xl text-blackText-500">ANFI</h5>
-											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$102.58</h5>
-											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">68%</h5>
+											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$0</h5>
+											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">0%</h5>
 										</div>
 										<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 											<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
 											<h5 className="montrealBold text-xl text-blackText-500">CRYPTO 5</h5>
-											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$12.58</h5>
-											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">32%</h5>
+											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$0</h5>
+											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">0%</h5>
 										</div>
 									</div>
 								</div>
 							</TabPanel>
 						</Tabs>
 					</div>
-					<div className="w-full h-fit px-20 mt-10">
+					<div className="w-full h-fit px-5 lg:px-20 mt-10">
 						<h5 className="montrealBold text-3xl text-blackText-500">Assets Distribution</h5>
 						<div className="w-full h-fit flex flex-row items-center justify-start">
 							<Chart
