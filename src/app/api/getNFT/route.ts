@@ -15,13 +15,17 @@ export async function GET(request: NextRequest, response: NextResponse) {
 	    const requestType = searchParams.get('type') ? searchParams.get('type') : 'mint'
 	    const requestAmount = searchParams.get('amount') ? searchParams.get('amount') : 100e18
 	    const requestTime = searchParams.get('time') ? searchParams.get('time') : 1697687662
+	    const indexName = searchParams.get('indexName') ? searchParams.get('indexName') : "ANFI"
 
 	
         
 
 
-        const oldSvg = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        const oldSvg = `<svg width="250" height="250" xmlns="http://www.w3.org/2000/svg">
         <rect width="100%" height="100%" fill="lightgray" />
+        <text x="50%" y="15%" dominant-baseline="middle" text-anchor="middle" font-size="16">
+        ${indexName}
+        </text>
         <text x="50%" y="30%" dominant-baseline="middle" text-anchor="middle" font-size="16">
         requestType:
         ${requestType}
