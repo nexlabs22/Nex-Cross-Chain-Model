@@ -421,3 +421,28 @@ body {
 #reactgooglegraph-1{
   font-family: 'montrealBold' !important;
 }
+
+.menu-wrap{
+  width: 100vw !important;
+  background-color: #F2F2F2 !important;
+}
+
+.menu-wrap .head{
+  display: none  !important;
+  height: 0px !important;
+}
+
+.menu-wrap .menu{
+  background-color: #F2F2F2 !important;
+  height: 100vh !important;
+}
+
+@media only screen and (max-width: 600px) {
+  .tw-connect-wallet{
+    font-size: 2rem !important;
+    padding: 3% 4% !important;
+    width: 80vw !important;
+    height: 10vh !important;
+    background-color: #91AC9A !important;
+  }
+}

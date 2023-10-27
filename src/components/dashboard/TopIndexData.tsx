@@ -236,16 +236,27 @@ const TopIndexData = () => {
 					<h5 className="pangramMedium text-lg text-blackText-500">${defaultIndexObject?.mktCap}</h5>
 				</div>
 			</div>
+			<div className="flex flex-row items-center justify-center gap-1 lg:hidden px-2">
+				<CiGlobe color="#9CAAC6" size={20} />
+				<h5 className="montrealBold text-xl text-gray-400">Token address</h5>
+			</div>
+			<div className="flex flex-row items-center justify-center gap-2 lg:hidden px-2 py-2">
+				<h5 className="pangramMedium text-lg text-blackText-500">null</h5>
+				<IoCopyOutline color="#A9C3B6" size={25} />
+				<Link href={'/'}>
+					<Image src={etherscanLogo} alt="etherscan" height={25} width={25}></Image>
+				</Link>
+			</div>
 			<div className="flex w-full flex-row items-center justify-center">
 				<div className="h-[1px] w-full bg-blackText-500/20"></div>
 			</div>
 
 			<div>
-				<div className="mt-10 mb-5 flex flex-row items-center justify-start">
-					<h5 className="montrealBold text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
+				<div className="mt-10 mb-5 flex flex-row items-center justify-center lg:justify-start">
+					<h5 className="montrealBold  text-xl lg:text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
 					<CgArrowsExchange color="#91AC9A" size={35} className="mx-2" />
-					<h5 className="montrealBold text-2xl text-blackText-500">World{"'"}s best indices</h5>
-					<div className="w-fit h-fit p-3 ml-2 flex flex-row items-center justify-center gap-4 rounded-3xl bg-colorOne-500">
+					<h5 className="montrealBold text-xl lg:text-2xl text-blackText-500">World{"'"}s best indices</h5>
+					<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-4 rounded-3xl bg-colorOne-500">
 						<h5 className="text-sm montrealBold text-whiteText-500">{defaultIndexObject?.name}</h5>
 					</div>
 				</div>
