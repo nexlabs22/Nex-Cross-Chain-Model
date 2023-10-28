@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 
 // Icons:
-import { BiSolidChevronRight } from 'react-icons/bi'
+import { BiSolidChevronRight, BiChevronDown } from 'react-icons/bi'
 import { AiOutlineSetting } from 'react-icons/ai'
 import { MdOutlineShowChart, MdOutlineCandlestickChart } from 'react-icons/md'
 
@@ -45,15 +45,37 @@ const TradeChartBox = () => {
 						<div className="w-fit h-fit p-2">
 							<div className="w-fit h-fit flex flex-row items-center justify-start mb-1">
 								<h5 className="montrealBold text-xl text-blackText-500 mr-2">CRYPTO5</h5>
-								
 							</div>
 							<div className="w-fit h-fit flex flex-row items-center justify-between gap-3">
 								<p className="montrealBold text-xs text-gray-400">$203.89</p>
 								<p className="montrealBold text-xs text-nexLightGreen-500">+1.023%</p>
 							</div>
 						</div>
-						<div className="w-fit h-fit flex flex-row items-center justify-between gap-5">
-							<div className="flex flex-row items-center justify-normal border-2 border-blackText-500/50 rounded-lg">
+						<div className="w-fit h-fit flex flex-row items-center justify-between gap-2 lg:gap-5">
+							<div className="flex flex-row items-center justify-start lg:hidden">
+								<Menu
+									menuButton={
+										<MenuButton>
+											<div className="flex flex-row items-center justify-center hover:bg-colorOne-500/30">
+												<h5 className="montrealBold text-sm text-blackText-500 py-1 cursor-pointer">1m</h5>
+												<BiChevronDown color="#2F2F2F" size={20}></BiChevronDown>
+											</div>
+										</MenuButton>
+									}
+									transition
+									direction="bottom"
+									align="end"
+									arrow
+								>
+									<div className="w-full h-fit py-1 px-2 flex flex-col items-start justify-start gap-1">
+									<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1  cursor-pointer">1 Minute</h5>
+										<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 cursor-pointer">1 Hour</h5>
+										<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 cursor-pointer">1 Day</h5>
+										<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 cursor-pointer">1 Week</h5>
+									</div>
+								</Menu>
+							</div>
+							<div className="hidden lg:flex flex-row items-center justify-normal border-2 border-blackText-500/50 rounded-lg">
 								<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1m</h5>
 								<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1h</h5>
 								<h5 className="montrealBold text-sm text-blackText-500 px-3 py-1 border-r-2 border-r-blackText-500/50 cursor-pointer hover:bg-colorOne-500/30">1d</h5>
@@ -96,21 +118,19 @@ const TradeChartBox = () => {
 					</div>
 				</div>
 				<div className="h-1/5 w-full border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-row items-start justify-start p-2 rounded-xl">
-					<div className='flex gap-3'>
-					<h5 className='montrealBold text-lg text-blackText-500'>
-						Order Book
-					</h5>
-					<div className="w-auto h-auto flex justify-center">
-					{nftImage &&
-					<Image 
-					alt="image" 
-					src={nftImage}
-					width={100}
-					height={100}
-					// fill={true}
-					/>
-					}
-					</div>
+					<div className="flex gap-3">
+						<h5 className="montrealBold text-lg text-blackText-500">Order Book</h5>
+						<div className="w-auto h-auto flex justify-center">
+							{nftImage && (
+								<Image
+									alt="image"
+									src={nftImage}
+									width={100}
+									height={100}
+									// fill={true}
+								/>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>
