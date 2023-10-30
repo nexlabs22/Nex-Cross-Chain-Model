@@ -83,6 +83,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 						}
 					})
 				}
+				console.log("array length",sortedData.length)
 				sortedData.sort((a, b) => Number(a.time) - Number(b.time))
 				return sortedData
 			}

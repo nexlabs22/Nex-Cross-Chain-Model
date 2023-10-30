@@ -16,6 +16,8 @@ export interface dataFromDatabasetype {
 	bnb: number
 	xaut: number
 	btc: number
+	ripple: number
+	sol: number
 	usdt: number
 	usdc: number
 }
