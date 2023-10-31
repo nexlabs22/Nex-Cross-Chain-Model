@@ -17,6 +17,7 @@ import { SketchPicker, TwitterPicker, GithubPicker, BlockPicker, CirclePicker, S
 
 // Store
 import useTradePageStore from '@/store/tradeStore'
+import OrderBook from './OrderBook'
 
 const TradeChartBox = () => {
 	const { isChartSettingsModalOpen, setChartSettingsModalOpen, nftImage } = useTradePageStore()
@@ -95,24 +96,7 @@ const TradeChartBox = () => {
 						</div>
 					</div>
 				</div>
-				<div className="h-1/5 w-full border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-row items-start justify-start p-2 rounded-xl">
-					<div className='flex gap-3'>
-					<h5 className='montrealBold text-lg text-blackText-500'>
-						NFT Reciepts
-					</h5>
-					<div className="w-auto h-auto flex justify-center">
-					{nftImage &&
-					<Image 
-					alt="image" 
-					src={nftImage}
-					width={100}
-					height={100}
-					// fill={true}
-					/>
-					}
-					</div>
-					</div>
-				</div>
+				<OrderBook/>
 			</div>
 
 			<GenericModal isOpen={isChartSettingsModalOpen} onRequestClose={closeChartSettingsModal}>

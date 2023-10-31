@@ -19,6 +19,9 @@ type TradePageStore = {
 	defaultIndex: string
 	changeDefaultIndex : (index: string) => void
 
+	openMobileMenu: boolean
+	setOpenMobileMenu: (open: boolean) => void
+
 	isChartSettingsModalOpen: boolean;
 	setChartSettingsModalOpen: (open: boolean) => void
 
@@ -57,6 +60,9 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	isChartSettingsModalOpen: false,
 	setChartSettingsModalOpen: (open: boolean) => set((state) => ({ isChartSettingsModalOpen: open })),
+
+	openMobileMenu: false,
+	setOpenMobileMenu: (open: boolean) => set((state) => ({ openMobileMenu: open })),
 
 	isFromCurrencyModalOpen: false,
 	setFromCurrencyModalOpen: (open: boolean) => set((state) => ({ isFromCurrencyModalOpen: open })),

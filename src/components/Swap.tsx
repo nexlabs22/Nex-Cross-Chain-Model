@@ -364,7 +364,7 @@ const Swap = () => {
 							}}
 						>
 							<div className="flex flex-row items-center justify-start">
-								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={10} height={10} className="h-5 w-5 aspect-square mt-1 mr-1"></Image>
+								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={20} height={20} className="mt-1 mr-1"></Image>
 								<h5 className="text-xl text-blackText-500 montrealBold pt-1">{swapFromCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
@@ -405,7 +405,7 @@ const Swap = () => {
 							}}
 						>
 							<div className="flex flex-row items-center justify-start">
-								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={10} height={10} className="h-5 w-5 aspect-square mt-1 mr-1"></Image>
+								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={20} height={20} className=" mt-1 mr-1"></Image>
 								<h5 className="text-xl text-blackText-500 montrealBold pt-1">{swapToCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
@@ -476,7 +476,7 @@ const Swap = () => {
 										}}
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150 mt-1"></Image>
+											<Image src={item.logo} alt={item.name} width={20} height={20} className="mt-1"></Image>
 											<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
 										</div>
 										<h5 className="text-sm text-gray-300 montreal italic">{item.Symbol}</h5>
@@ -503,7 +503,7 @@ const Swap = () => {
 										}}
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150 mt-1"></Image>
+											<Image src={item.logo} alt={item.name} width={20} height={20} className="mt-1"></Image>
 											<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
 										</div>
 										<h5 className="text-sm text-gray-300 montreal italic">{item.Symbol}</h5>
