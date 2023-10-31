@@ -1,8 +1,9 @@
-
 //small change
 import { NextResponse, NextRequest } from 'next/server'
-import TestNFT from '../../../components/TestNFT';
-import { NextApiResponse } from 'next';
+import TestNFT from '../../../components/TestNFT'
+import { NextApiResponse } from 'next'
+// import {HtmlResponseComponent} from '../../../components/HtmlResponseComponent';
+import { renderToStaticMarkup } from 'react-dom/server'
 
 export async function GET(request: NextRequest, response: NextResponse) {
 	try {
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
         <body>
             <div class="custom-card">
                 <div class="card-content">
-                    <div class="font-bold text-4xl mb-3">${indexName}</div>
+                    <div class="font-bold text-4xl mb-2">${indexName}</div>
                     <div class="mt-4">
                         <div class="flex text-3xl items-center mt-5 justify-center gap-2">
                             <div>Type:</div>
@@ -84,4 +85,3 @@ export async function GET(request: NextRequest, response: NextResponse) {
 }
 
 export const dynamic = 'force-dynamic'
-

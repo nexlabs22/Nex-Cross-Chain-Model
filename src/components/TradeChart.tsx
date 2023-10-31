@@ -17,6 +17,7 @@ import { SketchPicker, TwitterPicker, GithubPicker, BlockPicker, CirclePicker, S
 
 // Store
 import useTradePageStore from '@/store/tradeStore'
+import OrderBook from './OrderBook'
 
 const TradeChartBox = () => {
 	const { isChartSettingsModalOpen, setChartSettingsModalOpen, nftImage } = useTradePageStore()
