@@ -332,18 +332,18 @@ const Swap = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-base pangramLight text-gray-500 w-1/3">You pay</p>
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
-							<p onClick={() => setFirstInputValue(1)} className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
+							<p onClick={() => setFirstInputValue(1)} className="text-base lg:text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
 								MIN
 							</p>
 							<p
 								onClick={() => setFirstInputValue(Number(fromTokenBalance.data) / 2e18)}
-								className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
+								className="text-base lg:text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
 							>
 								HALF
 							</p>
 							<p
 								onClick={() => setFirstInputValue(Number(fromTokenBalance.data) / 1e18)}
-								className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
+								className="text-base lg:text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
 							>
 								MAX
 							</p>
@@ -358,7 +358,7 @@ const Swap = () => {
 							value={firstInputValue ? (firstInputValue as number) : 0}
 						/>
 						<div
-							className="w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
+							className="w-2/5 lg:w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
 							onClick={() => {
 								openFromCurrencyModal()
 							}}
@@ -399,7 +399,7 @@ const Swap = () => {
 							value={secondInputValue ? (secondInputValue as number) : 0}
 						/>
 						<div
-							className="w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
+							className="w-2/5 lg:w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
 							onClick={() => {
 								openToCurrencyModal()
 							}}
@@ -476,7 +476,7 @@ const Swap = () => {
 										}}
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={20} height={20} className="mt-1"></Image>
+											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
 											<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
 										</div>
 										<h5 className="text-sm text-gray-300 montreal italic">{item.Symbol}</h5>
@@ -503,7 +503,7 @@ const Swap = () => {
 										}}
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={20} height={20} className="mt-1"></Image>
+											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
 											<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
 										</div>
 										<h5 className="text-sm text-gray-300 montreal italic">{item.Symbol}</h5>

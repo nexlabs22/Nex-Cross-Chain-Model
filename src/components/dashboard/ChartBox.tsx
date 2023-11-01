@@ -64,10 +64,10 @@ const DashboardChartBox = () => {
 
 	return (
 		<div className="h-full w-full p-3">
-			<div className="w-full relative z-50 h-fit flex flex-row gap-3 items-center justify-center">
+			<div className="w-full relative z-50 h-fit flex flex-row gap-3 overflow-x-scroll lg:overflow-x-hidden items-center justify-start lg:justify-center">
 				{comparisonIndices.map((item, index) => {
 					return (
-						<div key={index} className="indexContainer h-fit w-1/4">
+						<div key={index} className="indexContainer h-fit w-screen lg:w-1/4">
 							<div
 								className="flex h-fit w-full cursor-pointer flex-row items-center justify-between rounded-3xl px-3 py-[10px] hover:bg-gray-200/50"
 								id="comparisonItem"
@@ -85,7 +85,7 @@ const DashboardChartBox = () => {
 									}
 								}}
 							>
-								<div className="flex w-10/12 flex-row items-center py-4 justify-start">
+								<div className="flex w-full lg:w-10/12 flex-row items-center py-4 justify-start">
 									<Image src={item.logo} width={50} height={50} alt="zef" className="mr-3 ml-3 rounded-full"></Image>
 									<div className="indexDataContainer flex h-fit w-3/5 flex-col items-start justify-center">
 										<h5
@@ -97,8 +97,8 @@ const DashboardChartBox = () => {
 											{item.name}
 										</h5>
 										<div className="flex w-full flex-row items-center justify-start">
-											<h5 className="pangramCompact mr-5 text-sm text-blackText-500">{item.price} USD</h5>
-											<h5 className="pangramCompact text-sm text-nexLightRed-500">{item.change}%</h5>
+											<h5 className="pangramCompact lg:mr-5 text-sm text-blackText-500">{item.price} USD</h5>
+											<h5 className="hidden lg:block pangramCompact text-sm text-nexLightRed-500">{item.change}%</h5>
 										</div>
 									</div>
 								</div>
@@ -110,6 +110,7 @@ const DashboardChartBox = () => {
 					)
 				})}
 			</div>
+			
 			<div className="flex flex-row items-start justify-start px-2">
 				<button
 					type="button"

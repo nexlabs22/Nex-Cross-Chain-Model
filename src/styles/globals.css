@@ -278,8 +278,6 @@ body {
 }
 
 #comparisonBox .slick-slide div.indexContainer {
-  
-  
   border-radius: 15px;
   display: flex !important;
   flex-direction: row !important;
