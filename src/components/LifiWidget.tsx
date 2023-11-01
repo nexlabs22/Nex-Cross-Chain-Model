@@ -43,6 +43,7 @@ export const LifiWidget = () => {
 			integrator: 'nexlabs.io',
 			toToken: '0x7f5c764cbc14f9669b88837ca1490cca17c31607',
 			toChain: 'pol',
+			fee: 0.01
 		}),
 		[]
 	)
