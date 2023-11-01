@@ -444,3 +444,7 @@ body {
     background-color: #91AC9A !important;
   }
 }
+
+.ReactModal__Content, .ReactModal__Content--after-open{
+  border: none !important;
+}
