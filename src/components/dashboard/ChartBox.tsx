@@ -31,7 +31,7 @@ const DashboardChartBox = () => {
 	const { defaultIndex } = useLandingPageStore()
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
 	const { IndexData, fetchIndexData, removeIndex, selectedDuration, selectDuration } = useChartDataStore()
-	const [classesModalOpen, setClassesModalOpen] = useState<boolean>(true)
+	const [classesModalOpen, setClassesModalOpen] = useState<boolean>(false)
 	const [classesCategory, setClassesCategory] = useState<string>('indices')
 
 	const openClassesModal = () => {
