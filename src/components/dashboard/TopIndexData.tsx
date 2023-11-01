@@ -1,20 +1,28 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
+
+//Components
+import DashboardChartBox from './ChartBox'
+
+// Store
+import { useChartDataStore, useLandingPageStore } from '@/store/store'
+
+// Logos and icons : 
 import { GrBitcoin, GrFormClose } from 'react-icons/gr'
 import { FaEthereum } from 'react-icons/fa'
 import { SiTether, SiBinance, SiRipple } from 'react-icons/si'
-import { BiDollarCircle, BiPlus } from 'react-icons/bi'
+import { AiOutlineArrowRight } from 'react-icons/ai'
 import { CiGlobe, CiStreamOn } from 'react-icons/ci'
 import { IoCopyOutline, IoClose } from 'react-icons/io5'
+import { IoIosArrowDown } from 'react-icons/io'
 import { CgArrowsExchange } from 'react-icons/cg'
 import { TbCurrencySolana } from 'react-icons/tb'
-import DashboardChartBox from './ChartBox'
-import { useChartDataStore, useLandingPageStore } from '@/store/store'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import etherscanLogo from '@assets/images/etherscan.png'
-import Link from 'next/link'
+
 
 const TopIndexData = () => {
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
@@ -117,14 +125,19 @@ const TopIndexData = () => {
 	const defaultIndexObject = IndicesWithDetails.find((o) => o.symbol === defaultIndex)
 	const othertIndexObject = IndicesWithDetails.find((o) => o.symbol != defaultIndex)
 
+
 	return (
 		<section className="px-2 lg:px-10 py-16">
 			<div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-6">
-				<div className="h-full w-full lg:w-1/2 rounded-2xl py-6 border-[2px] border-gray-300">
-					<div className="flex flex-row items-center justify-start px-6">
-						<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-						<h5 className="montrealBold mr-3 text-2xl lg:text-4xl text-blackText-500">{defaultIndexObject?.name}</h5>
-						<h5 className="hidden lg:block montral rounded-2xl bg-colorOne-500 px-3 py-1 mt-1 text-base text-whiteText-500">{defaultIndexObject?.symbol}</h5>
+				<div
+					className="h-full w-full lg:w-1/2 rounded-2xl py-6 border-[2px] border-colorOne-500 shadow-md shadow-colorOne-500"
+					
+				>
+					<div className="flex flex-row items-center justify-between px-6 w-full">
+						<div className="flex flex-row items-center justify-start">
+							<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
+							<h5 className="montrealBold mr-3 text-2xl lg:text-4xl text-blackText-500">{defaultIndexObject?.name}</h5>
+						</div>
 					</div>
 					<div className="mt-5 flex flex-row items-center justify-start px-6">
 						<div className="flex flex-row items-center justify-start">
@@ -142,20 +155,25 @@ const TopIndexData = () => {
 					<div className="w-full h-[1px] bg-gray-300 my-4"></div>
 					<h5 className="pangramCompact px-6 w-full text-lg text-blackText-500">{defaultIndexObject?.description}</h5>
 				</div>
-				<div className="h-full w-full lg:w-1/2 rounded-2xl py-6 border-[2px] border-gray-300">
-					<div
-						className="flex flex-row items-center justify-start px-6"
-						onClick={() => {
-							if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
-								changeDefaultIndex('ANFI')
-							} else {
-								changeDefaultIndex('CRYPTO5')
-							}
-						}}
-					>
-						<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-						<h5 className="montrealBold mr-3 text-2xl lg:text-4xl text-blackText-500">{othertIndexObject?.name}</h5>
-						<h5 className="hidden lg:block montral rounded-2xl bg-colorOne-500 px-3 py-1 mt-1 text-base text-whiteText-500">{othertIndexObject?.symbol}</h5>
+				<div
+					className="h-full w-full lg:w-1/2 rounded-2xl py-6 border-[2px] border-gray-300 cursor-pointer hover:shadow-md hover:shadow-gray-200"
+					onClick={() => {
+						if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
+							changeDefaultIndex('ANFI')
+						} else {
+							changeDefaultIndex('CRYPTO5')
+						}
+					}}
+				>
+					<div className="flex flex-row items-center justify-between px-6 w-full">
+						<div className="flex flex-row items-center justify-start">
+							<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
+							<h5 className="montrealBold mr-3 text-2xl lg:text-4xl text-blackText-500">{othertIndexObject?.name} </h5>
+						</div>
+						<div className="flex flex-row items-center justify-center gap-1 bg-colorOne-500 py-2 px-4 rounded-full">
+							<h5 className="text-sm montreal text-whiteText-500">See {othertIndexObject?.name}</h5>
+							<AiOutlineArrowRight color="#F2F2F2" size={20} />
+						</div>
 					</div>
 					<div className="mt-5 flex flex-row items-center justify-start px-6">
 						<div className="flex flex-row items-center justify-start">
@@ -255,13 +273,14 @@ const TopIndexData = () => {
 				<div className="mt-10 mb-5 flex flex-row items-center justify-center lg:justify-start">
 					<h5 className="montrealBold  text-xl lg:text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
 					<CgArrowsExchange color="#91AC9A" size={35} className="mx-2" />
-					<h5 className="montrealBold text-xl lg:text-2xl text-blackText-500">World{"'"}s best indices</h5>
-					<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-4 rounded-3xl bg-colorOne-500">
+					<h5 className="montrealBold text-xl lg:text-2xl text-blackText-500">World{"'"}s best assets</h5>
+					<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl bg-colorOne-500">
 						<h5 className="text-sm montrealBold text-whiteText-500">{defaultIndexObject?.name}</h5>
+						<IoIosArrowDown color="#F2F2F2" size={15} />
 					</div>
 				</div>
 
-				<div className="h-[90vh] w-full rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
+				<div className="h-fit w-full">
 					<DashboardChartBox />
 				</div>
 			</div>
