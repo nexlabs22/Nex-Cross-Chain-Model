@@ -40,19 +40,19 @@ export default function Trade() {
 	return (
 		<main className="flex min-h-screen h-fit w-screen bg-whiteBackground-500 flex-col items-center justify-start">
 			<DappNavbar />
-			<section className="w-full h-full flex flex-row items-center justify-start gap-2 p-5">
-				<div className="w-9/12 h-full ">
+			<section className="w-full h-full flex flex-col lg:flex-row items-center justify-start gap-2 p-5">
+				<div className="w-full lg:w-9/12 h-full ">
 					<TradeChartBox />
 				</div>
-				<div className="w-3/12 h-full flex flex-col items-center justify-start gap-2">
+				<div className="w-full lg:w-3/12 h-full flex flex-col items-center justify-start gap-2">
 					<div className="w-full h-full ">
 						<Swap />
 					</div>
 				</div>
 			</section>
-			<section className="w-full h-full flex flex-row items-center justify-start gap-2 p-5">
-				<div className="w-9/12 h-full "></div>
-				<div className="w-3/12 h-full flex flex-col items-center justify-start gap-2">
+			<section className="w-full h-full flex flex-col lg:flex-row items-center justify-start gap-2 p-5">
+				<div className="w-full lg:w-9/12 h-full "></div>
+				<div className="w-full lg:w-3/12 h-full flex flex-col items-center justify-start gap-2">
 					<div className="w-full h-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-start justify-start px-4 py-3">
 						<h5 className="montrealBold text-blackText-500 text-base mb-5">Reciepts</h5>
 						<div className="rounded-2xl overflow-hidden h-full w-full">

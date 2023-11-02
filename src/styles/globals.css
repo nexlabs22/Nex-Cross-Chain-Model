@@ -278,8 +278,6 @@ body {
 }
 
 #comparisonBox .slick-slide div.indexContainer {
-  
-  
   border-radius: 15px;
   display: flex !important;
   flex-direction: row !important;
@@ -445,4 +443,8 @@ body {
     height: 10vh !important;
     background-color: #91AC9A !important;
   }
+}
+
+.ReactModal__Content, .ReactModal__Content--after-open{
+  border: none !important;
 }
