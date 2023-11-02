@@ -1,10 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useContractEvents, useContract, useAddress } from "@thirdweb-dev/react";
 import { goerliAnfiFactory } from '@/constants/contractAddresses';
 import { indexFactoryAbi } from '@/constants/abi';
+import { GetPositionsHistory } from '@/hooks/getTradeHistory';
+import HistoryTable from './TradeTable';
 
 export default function OrderBook() {
+
+ const [finalOrders, setFinalOrders] = useState<any>()
+
  const address = useAddress()
+
+ const trades = GetPositionsHistory(goerliAnfiFactory, "ANFI");
+
+ useEffect(() => {
+  console.log("trades:", trades.data)
+ },[trades.data])
+
   // Your smart contract address
  const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
  const mintEventData = useContractEvents(
@@ -34,10 +46,18 @@ export default function OrderBook() {
       },
   );
 
-//   useEffect(() => {
-//     console.log("OrderBook mint event data: ", mintEventData.data);
-//     console.log("OrderBook burn event data: ", burnEventData.data);
-//   },[mintEventData.data, burnEventData.data])
+  const mergedArray =(mintEventData.data && burnEventData.data) && mintEventData.data.concat(burnEventData.data);
+
+    // useEffect(() => {
+      // console.log("mintEventData", mintEventData.data)
+      // console.log("burnEventData", burnEventData.data)
+      // if(mintEventData.data && burnEventData.data){
+        // const mergedArray = mintEventData.data.concat(burnEventData.data);
+        // const filteredMergedArray = mergedArray.filter()
+        // setFinalOrders(mergedArray)
+        // console.log("mergedArray", mergedArray)
+      // }
+    // }, [mintEventData, burnEventData])
 
   useEffect(() => {
     if(address){
@@ -51,22 +71,14 @@ export default function OrderBook() {
 
   return (
     <div className="h-1/5 w-full border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-row items-start justify-start p-2 rounded-xl">
-					<div className='flex gap-3'>
-					<h5 className='montrealBold text-lg text-blackText-500'>
-						Order Book
-					</h5>
-					<div className="w-auto h-auto flex justify-center">
-					{/* {nftImage &&
-					<Image 
-					alt="image" 
-					src={nftImage}
-					width={100}
-					height={100}
-					// fill={true}
-					/>
-					} */}
-					</div>
-					</div>
-				</div>
+		<div className='grid gap-3'>
+		  <h5 className='montrealBold text-lg text-blackText-500'>
+		  	Order Book
+			</h5>
+    <div className="overflow-auto py-2">
+    <HistoryTable/>
+    </div>
+    </div>
+    </div>
   )
 }
