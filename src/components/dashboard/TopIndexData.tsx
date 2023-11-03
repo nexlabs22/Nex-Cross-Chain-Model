@@ -172,7 +172,6 @@ const TopIndexData = () => {
 						</div>
 						<div className="flex flex-row items-center justify-center gap-1 bg-colorOne-500 py-2 px-4 rounded-full">
 							<h5 className="text-sm montreal text-whiteText-500">See {othertIndexObject?.name}</h5>
-							<AiOutlineArrowRight color="#F2F2F2" size={20} />
 						</div>
 					</div>
 					<div className="mt-5 flex flex-row items-center justify-start px-6">
