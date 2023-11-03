@@ -68,7 +68,6 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			function historyRangeFilter(unsortedData: lineChartDataType[]) {
 				const timeNow = Math.floor(Date.now() / 1000) //current epoc time
 				let sortedData: lineChartDataType[] = []
-				console.log(selectedDuration)
 				if(selectedDuration !== -1){
 					unsortedData.map((data) => {
 						if (selectedDuration && timeNow - Number(data.time) < selectedDuration * 86400) { //86400sec in 1 day
@@ -83,7 +82,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 						}
 					})
 				}
-				console.log("array length",sortedData.length)
+
 				sortedData.sort((a, b) => Number(a.time) - Number(b.time))
 				return sortedData
 			}
@@ -92,7 +91,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				if (chartContainerRef.current) {
 					chartRef.current.applyOptions({
 						width: chartContainerRef.current.offsetWidth,
-						height: chartContainerRef.current.clientHeight * 0.78
+						height: chartContainerRef.current.clientHeight * 0.5
 					})
 				}
 				// console.log('inside handleResize function', chartContainerRef.current?.clientWidth)
@@ -269,7 +268,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 				})
 
-				const formatedLineData = value.map((data) => {
+				const formatedLineData = value.data.map((data) => {
 					return {
 						time: data.time,
 						value: Number(data.open)
@@ -322,12 +321,13 @@ export default GradientAreaChart
 function getAxesOptions(visible: boolean): PriceScaleOptions {
 	return {
 		mode: 2,
+		// mode: 1,
 		visible: visible,
-		autoScale: false, // You can set this to your desired value
+		autoScale: true, // You can set this to your desired value
 		invertScale: false, // You can set this to your desired value
 		alignLabels: false, // You can set this to your desired value
 		scaleMargins: {
-			top: 0, // You can set this to your desired value
+			top: 0.2, // You can set this to your desired value
 			bottom: 0, // You can set this to your desired value
 		},
 		borderVisible: false, // You can set this to your desired value

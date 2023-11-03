@@ -28,4 +28,22 @@ function dateToEpoch(dateString: string): number {
     return epochTime;
 }
 
-export {convertTo13DigitsTimestamp, dateToEpoch}
+function isSameDay(time1: number, time2: number){
+  const time1Converted = new Date(convertTo13DigitsTimestamp(time1))
+  const time2Converted = new Date(convertTo13DigitsTimestamp(time2))
+    return (
+      time1Converted.getFullYear() === time2Converted.getFullYear() &&
+      time1Converted.getMonth() === time2Converted.getMonth() &&
+      time1Converted.getDate() === time2Converted.getDate()
+    );
+  }
+function isSameMonth(time1: number, time2: number){
+    const time1Converted = new Date(convertTo13DigitsTimestamp(time1))
+    const time2Converted = new Date(convertTo13DigitsTimestamp(time2))
+    return (
+      time1Converted.getFullYear() === time2Converted.getFullYear() &&
+      time1Converted.getMonth() === time2Converted.getMonth()
+    );
+  }
+
+export {convertTo13DigitsTimestamp, dateToEpoch, isSameDay,isSameMonth}

@@ -19,6 +19,7 @@ import { IoCopyOutline, IoClose } from 'react-icons/io5'
 import { IoIosArrowDown } from 'react-icons/io'
 import { CgArrowsExchange } from 'react-icons/cg'
 import { TbCurrencySolana } from 'react-icons/tb'
+import { useEffect } from 'react'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import etherscanLogo from '@assets/images/etherscan.png'
@@ -26,9 +27,11 @@ import etherscanLogo from '@assets/images/etherscan.png'
 
 const TopIndexData = () => {
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
-	const { chartData, IndexData, removeIndex } = useChartDataStore()
+	const { setANFIWeightage } = useChartDataStore()
 
-	const compIndex = Object.keys(chartData)
+	useEffect(()=>{
+		setANFIWeightage()
+	},[setANFIWeightage])
 
 	const IndicesWithDetails = [
 		{
