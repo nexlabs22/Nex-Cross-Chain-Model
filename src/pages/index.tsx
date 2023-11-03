@@ -13,6 +13,7 @@ const Dashboard: NextPage = () => {
 			<main className="m-0 h-screen w-screen bg-whiteBackground-500 p-0 overflow-x-hidden">
 				<DappNavbar />
 				<TopIndexData />
+				<div className='w-full h-10 bg-transparent'></div>
 				<Footer />
 			</main>
 	)
