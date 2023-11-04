@@ -18,9 +18,10 @@ export async function GET(request: NextRequest, response: NextResponse) {
 	try {
 		let columnName = indexName
 		if (indexName === 'CRYPTO5') {
-			columnName = 'btc,bnb,eth,ripple,sol'
+			// columnName = 'btc,bnb,eth,ripple,sol'
+			columnName = 'bitcoin,binancecoin,ethereum,ripple,solana,litecoin, dogecoin,monero,stellar,ethereumclassic,bitcoincash,cardano,eos,bitcoincashsv,chainlink,polkadot,okb'
 		} else if (indexName === 'ANFI') {
-			columnName = 'btc,xaut'
+			columnName = 'bitcoin,gold'
 		}
 
 		let query = ''
@@ -35,7 +36,12 @@ export async function GET(request: NextRequest, response: NextResponse) {
 			return NextResponse.json({ message: 'no good fetch', data: res.rows }, { status: 400 })
 		}
 
-		return NextResponse.json(res.rows, { status: 200 })
+		if(indexName === 'CRYPTO5'){
+			const top5Cryptos = await client.query(`Select timestamp,top5 from top5crypto WHERE timestamp >= '1401580800000' order by timestamp`).then((res)=> res.rows)
+			return NextResponse.json({data:res.rows, top5Cryptos} ,{ status: 200 })
+		}
+
+		return NextResponse.json({data:res.rows}, { status: 200 })
 	} catch (error) {
 		console.log(error)
 		return NextResponse.json({ message: 'incorrect axios combine request nftfloor' }, { status: 404 })

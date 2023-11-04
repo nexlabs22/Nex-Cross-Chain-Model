@@ -95,14 +95,17 @@ const DashboardChartBox = () => {
 			assetClasses: [
 				{
 					name: 'bitcoin',
+					colName:'bitcoin',
 					logo: btc.src,
 				},
 				{
 					name: 'gold',
+					colName:'gold',
 					logo: gold.src,
 				},
 				{
 					name: 'oil',
+					colName:'oil',
 					logo: oil.src,
 				},
 			],
@@ -112,18 +115,22 @@ const DashboardChartBox = () => {
 			assetClasses: [
 				{
 					name: 's&p',
+					colName: 'sandp',
 					logo: sandp.src,
 				},
 				{
 					name: 'dow30',
+					colName: 'dow',
 					logo: dow.src,
 				},
 				{
 					name: 'nasdaq',
+					colName: 'nasdaq',
 					logo: nasdaq.src,
 				},
 				{
 					name: 'nyse',
+					colName:'nyse',
 					logo: nyse.src,
 				},
 			],
@@ -181,6 +188,9 @@ const DashboardChartBox = () => {
 									return (
 										<div
 											key={key}
+											onClick={()=>{
+												fetchIndexData({ tableName: 'histcomp', index: assetClass.colName})
+											}}
 											className="w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
 										>
 											<div className="flex flex-row items-center justify-start gap-2">
@@ -267,6 +277,19 @@ const DashboardChartBox = () => {
 							}}
 						>
 							<p className="circularMedium text-base text-black">1M</p>
+						</button>
+						<button
+							type="button"
+							className={
+								selectedDuration == 60
+									? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+									: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+							}
+							onClick={() => {
+								selectDuration(60)
+							}}
+						>
+							<p className="circularMedium text-base text-black">2M</p>
 						</button>
 						<button
 							type="button"
@@ -362,18 +385,15 @@ const DashboardChartBox = () => {
 					<p className="circularMedium text-base text-black">6M</p>
 				</button>
 			</div> */}
-					<div className="w-full h-fit py-3">
-						<Chart data={IndexData} />
-					</div>
+					<Chart data={IndexData} />
 				</div>
 			</section>
 			<GenericModal isOpen={classesModalOpen} onRequestClose={closeClassesModal} modalWidth={40}>
 				<div className="w-full h-fit px-2 flex flex-row items-center justify-start">
 					<div className="h-fit w-2/5 border-r border-r-blackText-500/30 px-2 pt-3 pb-10 flex flex-col items-start justify-start gap-10">
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
-								classesCategory == 'indices' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
-							}`}
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'indices' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								}`}
 							onClick={() => {
 								setClassesCategory('indices')
 							}}
@@ -381,9 +401,8 @@ const DashboardChartBox = () => {
 							Indices
 						</h5>
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
-								classesCategory == 'goods' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
-							}`}
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'goods' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								}`}
 							onClick={() => {
 								setClassesCategory('goods')
 							}}
@@ -391,9 +410,8 @@ const DashboardChartBox = () => {
 							Goods
 						</h5>
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
-								classesCategory == 'cryptocurrencies' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
-							}`}
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'cryptocurrencies' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								}`}
 							onClick={() => {
 								setClassesCategory('cryptocurrencies')
 							}}
@@ -403,10 +421,12 @@ const DashboardChartBox = () => {
 					</div>
 					<div className="h-full w-3/5 grid grid-cols-3 auto-rows-max justify-start items-start gap-y-5 px-3">
 						{
-							allClasses.map((cls, key)=>{
-								if(cls.category == classesCategory) {
-									return(
-										<div key={key} className='flex flex-col items-center justify-center rounded-xl cursor-pointer w-full p-3 hover:bg-gray-200/50'>
+							allClasses.map((cls, key) => {
+								// console.log(cls)
+								if (cls.category == classesCategory) {
+									return (
+										<div key={key}
+											className='flex flex-col items-center justify-center rounded-xl cursor-pointer w-full p-3 hover:bg-gray-200/50'>
 											<div className=' bg-center bg-contain bg-no-repeat w-2/5 border border-gray-100 shadow-md shadow-gray-200 aspect-square rounded-full' style={{
 												backgroundImage: `url(${cls.logo})`
 											}}></div>

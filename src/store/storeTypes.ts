@@ -12,12 +12,25 @@ export interface lineChartDataType {
 
 export interface dataFromDatabasetype {
 	time: number
-	eth: number
-	bnb: number
+	ethereum: number
+	binancecoin: number
 	xaut: number
-	btc: number
+	gold: string
+	bitcoin: number
 	ripple: number
-	sol: number
-	usdt: number
-	usdc: number
+	litecoin: number
+	dogecoin: number
+	monero: number
+	stellar: number
+	ethereumclassic: number
+	bitcoincash: number
+	cardano: number
+	eos: number
+	bitcoincashsv: number
+	chainlink: number
+	polkadot: number
+	solana: number
+	okb: number
+	[key: string]: number|string
+
 }
