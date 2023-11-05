@@ -9,6 +9,8 @@ import {
 	PriceScaleOptions,
 	TimeScaleOptions,
 } from 'lightweight-charts'
+import anfiLogo from '@assets/images/anfi.png'
+import cr5Logo from '@assets/images/cr5.png'
 import { useChartDataStore, useLandingPageStore } from '@/store/store';
 import { chartDataType, lineChartDataType } from '@/store/storeTypes';
 import { comparisonIndices } from '@/constants/comparisionIndices';
@@ -68,16 +70,16 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			function historyRangeFilter(unsortedData: lineChartDataType[]) {
 				const timeNow = Math.floor(Date.now() / 1000) //current epoc time
 				let sortedData: lineChartDataType[] = []
-				if(selectedDuration !== -1){
+				if (selectedDuration !== -1) {
 					unsortedData.map((data) => {
 						if (selectedDuration && timeNow - Number(data.time) < selectedDuration * 86400) { //86400sec in 1 day
 							sortedData.push(data)
 						}
 					})
-				}else{
+				} else {
 					unsortedData.map((data) => {
 						const timestampOfFirstDayOfYear = dateToEpoch(`01-01-${(new Date()).getFullYear()}`)
-						if (selectedDuration && Number(data.time) > timestampOfFirstDayOfYear) { 
+						if (selectedDuration && Number(data.time) > timestampOfFirstDayOfYear) {
 							sortedData.push(data)
 						}
 					})
@@ -128,7 +130,10 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				point?: { x: number; y: number };
 			};
 
-			const selectedCompIndexes = Object.keys(chartData)
+			const selectedCompIndexes = Object.keys(chartData).filter((i) => {
+				const res = comparisonIndices.find((item) => item.columnName === i && item.parentClass === defaultIndex)
+				if (res) return true;
+			})
 			if (selectedCompIndexes.length > 0) {
 				const incHeight = selectedCompIndexes.length * 25 as number
 				toolTip.style.height = (Number(toolTip.style.height.split('px')[0]) + incHeight) + 'px'
@@ -137,7 +142,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			let toolTipContentStatic =
 				`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 				<Image
-					src={test}
+				src="${defaultIndex === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 					alt="tooltip logo"
 					style="width:22px;
 					   height:22px; 
@@ -149,18 +154,21 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			if (selectedCompIndexes.length > 0) {
 				selectedCompIndexes.map((index) => {
-					const indexDetails = comparisonIndices.find((item) => item.columnName === index);
-					toolTipContentStatic += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
-					toolTipContentStatic += `<Image
-											src=${indexDetails?.logo}
-											alt="tooltip logo"
+					const indexDetails = comparisonIndices.find((item) => item.columnName === index && item.parentClass === defaultIndex);
+					if (indexDetails) {
+
+						toolTipContentStatic += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
+						toolTipContentStatic += `<Image
+						src=${indexDetails?.logo}
+						alt="tooltip logo"
 											style="width:22px;
 												   height:22px; 
 												   margin-right:5px ; 
 												   border-radius:50%;">
 										   </Image>`
-					toolTipContentStatic += `${indexDetails?.shortName}`
-					toolTipContentStatic += `</div>`
+						toolTipContentStatic += `${indexDetails?.shortName}`
+						toolTipContentStatic += `</div>`
+					}
 				})
 			}
 
@@ -178,7 +186,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					let toolTipContent =
 						`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
-							src={test}
+						src="${defaultIndex === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 							alt="tooltip logo"
 							style="width:22px;
 							   height:22px; 
@@ -215,13 +223,13 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 						let toolTipContent =
 							`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
-							src={test}
+						src="${defaultIndex === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 							alt="tooltip logo"
 							style="width:22px;
 							   height:22px; 
 							   margin-right:5px ; 
 							   border-radius:50%;">
-							   </Image>
+						</Image>
 							   ${defaultIndex}: ${Math.round(100 * price) / 100}
 							   </div>`
 
@@ -251,31 +259,34 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				}
 			});
 
-
 			Object.entries(chartData).forEach(([key, value]) => {
-				const indexDetails = comparisonIndices.find((item) => item.columnName === key);
-				const areaSeries = chartRef.current.addLineSeries({
-					lineWidth: 2,
-					color: indexDetails?.selectionColor,
-				})
+				const indexDetails = comparisonIndices.find((item) => item.columnName === key && item.parentClass === defaultIndex);
+				console.log(indexDetails)
+				if (indexDetails) {
 
-				areaSeries.priceScale().applyOptions({
-					drawTicks: true,
-					scaleMargins: {
-						top: 0.05,
-						bottom: 0.05,
-					},
+					const areaSeries = chartRef.current.addLineSeries({
+						lineWidth: 2,
+						color: indexDetails?.selectionColor,
+					})
 
-				})
+					areaSeries.priceScale().applyOptions({
+						drawTicks: true,
+						scaleMargins: {
+							top: 0.05,
+							bottom: 0.05,
+						},
 
-				const formatedLineData = value.data.map((data) => {
-					return {
-						time: data.time,
-						value: Number(data.open)
-					}
-				})
-				formatedLineData.sort((a, b) => a.time - b.time);
-				areaSeries.setData(historyRangeFilter(formatedLineData))
+					})
+
+					const formatedLineData = value.data.map((data) => {
+						return {
+							time: data.time,
+							value: Number(data.open)
+						}
+					})
+					formatedLineData.sort((a, b) => a.time - b.time);
+					areaSeries.setData(historyRangeFilter(formatedLineData))
+				}
 			})
 			// Hide axes
 			chartRef.current.applyOptions({

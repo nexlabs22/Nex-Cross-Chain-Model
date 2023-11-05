@@ -4,7 +4,7 @@ function QueryCommaSplit(tableName: string, columnName: string) {
     SELECT stampsec AS time,
            CASE
                WHEN strpos(${columnName}, ',') > 0 THEN SPLIT_PART(${columnName}, ',', 1)
-               ELSE NULL
+               ELSE ${columnName}
            END AS open,
            CASE
                WHEN strpos(${columnName}, ',') > 0 THEN SPLIT_PART(${columnName}, ',', 2)

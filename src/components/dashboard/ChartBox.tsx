@@ -188,9 +188,20 @@ const DashboardChartBox = () => {
 									return (
 										<div
 											key={key}
-											onClick={()=>{
-												fetchIndexData({ tableName: 'histcomp', index: assetClass.colName})
+											onClick={() => {
+												if (!selectedIndices.includes(assetClass.colName)) {
+													fetchIndexData({ tableName: 'histcomp', index: assetClass.colName})
+													setSelectedIndices((prevState) => [...prevState, assetClass.colName])
+												} else {
+													removeIndex(assetClass.colName)
+													setSelectedIndices((prevState) =>
+														prevState.filter((i) => {
+															return i != assetClass.colName
+														})
+													)
+												}
 											}}
+											
 											className="w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
 										>
 											<div className="flex flex-row items-center justify-start gap-2">
