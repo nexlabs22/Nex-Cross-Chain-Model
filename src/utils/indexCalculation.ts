@@ -180,7 +180,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 
 		console.log('firstEntryOfEachMonth',firstEntryOfEachMonth)
 
-		let isFirstIndex = false;
+		let isCreationDay = true;
 		let divisor = 0
 		const firstEntryKey = sortedMap.keys().next().value;
 		const firstEntryValue = sortedMap.get(firstEntryKey);
@@ -195,8 +195,8 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 				}
 			})
 
-			if (!isFirstIndex) {
-				isFirstIndex = true
+			if (isCreationDay) {
+				isCreationDay = false
 				enteredMonthTimestamp = foundFirstData[0].date
 				const arr = dataArr[0]
 				divisor = ((arr.priceBtc * arr.weightBtc * 1) + (arr.priceGold * arr.weightGold * 1)) /100
@@ -317,7 +317,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 
 		console.log(sortedProcessedData);
 		console.log(firstEntryOfEachMonth);
-		let isFirstIndex = false;
+		let isCreationDay = true;
 		let divisor = 0
 		const firstEntryKey = sortedProcessedData.keys().next().value;
 		const firstEntryValue = sortedProcessedData.get(firstEntryKey);
@@ -332,8 +332,8 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 				}
 			})
 
-			if (!isFirstIndex) {
-				isFirstIndex = true
+			if (isCreationDay) {
+				isCreationDay = false
 				enteredMonthTimestamp = foundFirstData[0].date
 				divisor = dataArr.reduce((accumulator, obj) => {
 					return accumulator + (obj.weight * Number(obj.price) * 1); //base mul is 1 for the starting
