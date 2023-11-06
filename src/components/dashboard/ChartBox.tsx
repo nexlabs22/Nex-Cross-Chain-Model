@@ -140,37 +140,44 @@ const DashboardChartBox = () => {
 	const allClasses = [
 		{
 			name: 'bitcoin',
+			colName:'bitcoin',
 			logo: btc.src,
 			category: "cryptocurrencies"
 		},
 		{
 			name: 'gold',
+			colName:'gold',
 			logo: gold.src,
 			category: "goods"
 		},
 		{
 			name: 'oil',
+			colName:'oil',
 			logo: oil.src,
 			category: "goods"
 		},
 
 		{
 			name: 's&p',
+			colName:'sandp',
 			logo: sandp.src,
 			category: "indices"
 		},
 		{
 			name: 'dow30',
+			colName:'dow',
 			logo: dow.src,
 			category: "indices"
 		},
 		{
 			name: 'nasdaq',
+			colName:'nasdaq',
 			logo: nasdaq.src,
 			category: "indices"
 		},
 		{
 			name: 'nyse',
+			colName:'nyse',
 			logo: nyse.src,
 			category: "indices"
 		},
@@ -437,7 +444,20 @@ const DashboardChartBox = () => {
 								if (cls.category == classesCategory) {
 									return (
 										<div key={key}
-											className='flex flex-col items-center justify-center rounded-xl cursor-pointer w-full p-3 hover:bg-gray-200/50'>
+											onClick={()=>{
+												if (!selectedIndices.includes(cls.colName)) {
+													fetchIndexData({ tableName: 'histcomp', index: cls.colName})
+													setSelectedIndices((prevState) => [...prevState, cls.colName])
+												} else {
+													removeIndex(cls.colName)
+													setSelectedIndices((prevState) =>
+														prevState.filter((i) => {
+															return i != cls.colName
+														})
+													)
+												}
+											}}
+											className={`flex flex-col items-center justify-center rounded-xl cursor-pointer w-full p-3 hover:bg-gray-200/50 ${selectedIndices.includes(cls.colName) ? 'bg-gray-200/50' : ''}`}>
 											<div className=' bg-center bg-contain bg-no-repeat w-2/5 border border-gray-100 shadow-md shadow-gray-200 aspect-square rounded-full' style={{
 												backgroundImage: `url(${cls.logo})`
 											}}></div>
