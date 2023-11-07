@@ -11,7 +11,7 @@ import Footer from '@components/Footer'
 const Dashboard: NextPage = () => {
 	return (
 		<main className="m-0 h-screen w-screen bg-whiteBackground-500 p-0 overflow-x-hidden">
-			Test branch, small change
+			Test branch, small change again
 			<DappNavbar />
 			<TopIndexData />
 			<div className="w-full h-10 bg-transparent"></div>
