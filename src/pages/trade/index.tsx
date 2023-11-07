@@ -22,7 +22,6 @@ export default function Trade() {
 		if (ref.current === null) {
 			return
 		}
-		
 
 		toSvg(ref.current, { cacheBust: true })
 			.then((dataUrl) => {
@@ -75,7 +74,7 @@ export default function Trade() {
 							}}
 						>
 							<h5 className="montrealBold text-blackText-500 text-base">
-								Get Image <small>(button for testing)</small>{' '}
+								Get Image <small>(button to test the )</small>{' '}
 							</h5>
 						</div>
 					</div>
