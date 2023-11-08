@@ -435,6 +435,10 @@ body {
   height: 100vh !important;
 }
 
+.med_test_class{
+  background-color: red;
+}
+
 @media only screen and (max-width: 600px) {
   .tw-connect-wallet{
     font-size: 2rem !important;
