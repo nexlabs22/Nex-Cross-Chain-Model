@@ -33,6 +33,7 @@ export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker
 
 	// useEffect(() => {
 	const getHistory = useCallback(async () => {
+		console.log("getHistory")
 		setPositions([])
 
 		const client = createPublicClient({
@@ -113,7 +114,7 @@ export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker
 
 	useEffect(() => {
 		getHistory()
-	}, [getHistory])
+	}, [getHistory, exchangeAddress])
 
 	return {
 		data: positions,

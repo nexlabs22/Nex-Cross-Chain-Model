@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import circle from '@assets/images/circle.png'
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
-import { goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses';
+import { goerliAnfiFactory, goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses';
 
 type Coin = {
 	id: number
@@ -11,6 +11,7 @@ type Coin = {
 	name: string
 	Symbol: string
 	address: string
+	factoryAddress: string
 }
 
 type TradePageStore = {
@@ -75,7 +76,8 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
 		name: 'USD Coin',
 		Symbol: 'USDC',
-		address: goerliUsdtAddress
+		address: goerliUsdtAddress,
+		factoryAddress: ''
 	},
 	changeSwapFromCur: (cur: Coin) => set((state) => ({ swapFromCur: cur })),
 
@@ -84,7 +86,8 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		logo: cr5Logo.src,
 		name: 'ANFI',
 		Symbol: 'ANFI',
-		address: goerliAnfiIndexToken
+		address: goerliAnfiIndexToken,
+		factoryAddress: goerliAnfiFactory
 	},
 	changeSwapToCur: (cur: Coin) => set((state) => ({ swapToCur: cur })),
 
