@@ -18,14 +18,14 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 // Assets:
 import circle from '@assets/images/circle.png'
 import { it } from 'node:test'
-import { useAddress, useContract, useContractRead, useContractWrite } from '@thirdweb-dev/react'
-import { goerliAnfiFactory, goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
+import { UseContractResult, useAddress, useContract, useContractRead, useContractWrite } from '@thirdweb-dev/react'
+import { goerliAnfiFactory, goerliAnfiIndexToken, goerliCrypto5Factory, goerliCrypto5IndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
 import { indexFactoryAbi, indexTokenAbi, tokenAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import Lottie from 'lottie-react'
 import PaymentModal from './PaymentModal'
 
-import { Network, Alchemy } from 'alchemy-sdk'
+import { Network, Alchemy, BigNumber } from 'alchemy-sdk'
 
 import { BsInfoCircle } from 'react-icons/bs'
 
@@ -34,6 +34,8 @@ import anfiLogo from '@assets/images/anfi.png'
 import cookingAnimation from '@assets/lottie/cooking.json'
 
 import { GenericToast } from './GenericToast'
+import { parseEther } from 'viem'
+import { num } from '@/hooks/math'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -49,6 +51,7 @@ type Coin = {
 	name: string
 	Symbol: string
 	address: string
+	factoryAddress: string
 }
 
 const Swap = () => {
@@ -66,7 +69,9 @@ const Swap = () => {
 	const address = useAddress()
 
 	//integration hooks
-	const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
+	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
+	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, indexFactoryAbi)
+	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, indexFactoryAbi)
 
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
 
@@ -74,11 +79,11 @@ const Swap = () => {
 
 	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
 	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
-	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, goerliAnfiFactory])
+	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
 
 	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
-	const mintRequestHook = useContractWrite(factoryContract.contract, 'addMintRequest')
-	const burnRequestHook = useContractWrite(factoryContract.contract, 'burn')
+	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'addMintRequest')
+	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'burn')
 
 	// useEffect(() => {
 	// 	console.log("balance :", Number(indexTokenBalance.data)/1e18)
@@ -122,7 +127,7 @@ const Swap = () => {
 			toast.dismiss()
 			GenericToast({
 				type: 'error',
-				message: 'Approving Failed!',
+				message: `Approving Failed!`,
 			})
 			// approveHook.reset()
 		}
@@ -148,7 +153,7 @@ const Swap = () => {
 			toast.dismiss()
 			GenericToast({
 				type: 'error',
-				message: 'Sending Request Failed!',
+				message: `Sending Request Failed!`,
 			})
 			// approveHook.reset()
 		}
@@ -181,21 +186,21 @@ const Swap = () => {
 		}
 	}, [burnRequestHook.isLoading, burnRequestHook.isSuccess, burnRequestHook.isError])
 
-	useEffect(() => {
-		async function getUserNft() {
-			if (address) {
-				let response = await alchemy.nft.getNftsForOwner(address as string)
-				const length = response.ownedNfts.length
-				const image = response.ownedNfts[length - 1].rawMetadata?.image
-				if (image) {
-					setNftImage(image)
-				}
-			}
-		}
-		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess) {
-			getUserNft()
-		}
-	}, [mintRequestHook.isSuccess, burnRequestHook.isSuccess, address, nftImage, setNftImage])
+	// useEffect(() => {
+	// 	async function getUserNft() {
+	// 		if (address) {
+	// 			let response = await alchemy.nft.getNftsForOwner(address as string)
+	// 			const length = response.ownedNfts.length
+	// 			const image = response.ownedNfts[length - 1].rawMetadata?.image
+	// 			if (image) {
+	// 				setNftImage(image)
+	// 			}
+	// 		}
+	// 	}
+	// 	if (mintRequestHook.isSuccess || burnRequestHook.isSuccess) {
+	// 		getUserNft()
+	// 	}
+	// }, [mintRequestHook.isSuccess, burnRequestHook.isSuccess, address, nftImage, setNftImage])
 
 	const toggleCheckbox = () => {
 		setChecked(!isChecked)
@@ -231,7 +236,8 @@ const Swap = () => {
 			logo: cr5Logo.src,
 			name: 'CRYPTO5',
 			Symbol: 'CR5',
-			address: '',
+			address: goerliCrypto5IndexToken,
+			factoryAddress: goerliCrypto5Factory
 		},
 		{
 			id: 1,
@@ -239,6 +245,7 @@ const Swap = () => {
 			name: 'ANFI',
 			Symbol: 'ANFI',
 			address: goerliAnfiIndexToken,
+			factoryAddress: goerliAnfiFactory
 		},
 		{
 			id: 2,
@@ -246,6 +253,7 @@ const Swap = () => {
 			name: 'USD Coin',
 			Symbol: 'USDC',
 			address: goerliUsdtAddress,
+			factoryAddress: ''
 		},
 	])
 
@@ -288,11 +296,19 @@ const Swap = () => {
 	}
 
 	async function approve() {
+		const convertedValue = parseEther((Number(firstInputValue)*1001/1000)?.toString() as string)
+		// const convertedValue = BigNumber.from(3*1001/1000)
 		try {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				await approveHook.mutateAsync({ args: [goerliAnfiFactory, (Number(firstInputValue) * 1e18).toString()] })
+				if(num(fromTokenBalance.data) < Number(firstInputValue)){
+					return GenericToast({
+						type: 'error',
+						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
+					})
+				}
+				await approveHook.mutateAsync({ args: [swapToCur.factoryAddress, convertedValue] })
 			}
 		} catch (error) {
 			console.log('approve error', error)
@@ -304,7 +320,18 @@ const Swap = () => {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				await mintRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
+				if(num(fromTokenBalance.data) < Number(firstInputValue)){
+					return GenericToast({
+						type: 'error',
+						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
+					})
+				}
+				await mintRequestHook.mutateAsync({ 
+					args: [(Number(firstInputValue) * 1e18).toString(), address], 
+					overrides:{
+						gasLimit:1000000
+					}
+				})
 			}
 		} catch (error) {
 			console.log('mint error', error)
@@ -316,7 +343,13 @@ const Swap = () => {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				await burnRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString()] })
+				if(num(fromTokenBalance.data) < Number(firstInputValue)){
+					return GenericToast({
+						type: 'error',
+						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
+					})
+				} 
+				await burnRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString(), address] })
 			}
 		} catch (error) {
 			console.log('burn error', error)
@@ -423,9 +456,9 @@ const Swap = () => {
 				</div>
 				<div className="h-fit w-full mt-6">
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3">
-						{swapToCur.address == goerliAnfiIndexToken ? (
+						{swapToCur.address == goerliAnfiIndexToken || swapToCur.address == goerliCrypto5IndexToken? (
 							<>
-								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
+								{Number(fromTokenAllowance.data) < Number(firstInputValue)*1e18*1.001 ? (
 									<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-blue-200 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
 										Approve
 									</button>

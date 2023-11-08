@@ -28,17 +28,17 @@ const RecieptsBox = () => {
     );
     
     // var listener = factoryContract?.contract.events.ListenToAll((ContractEvent<object> anyEvent) => Debug.Log("Event occurred: " + anyEvent.data));
-    var listener = factoryContract.contract?.events.listenToAllEvents(async (event) => {
-        if(event.data?.requester == address){
-            const ownIds: BigNumber[] | undefined = await nftContract.contract?.erc721.getOwnedTokenIds(address)
-            const lastIndex = ownIds && ownIds?.length - 1 as number
-            const lastId = ownIds?[lastIndex]:0
-            // console.log("ownIds: ", lastId)
-            const metadata = await nftContract.contract?.erc721.getTokenMetadata(lastId as number)
-            // console.log("metadata: ", metadata)
-            setImageURI(metadata?.image as string)
-        }
-    })
+    // var listener = factoryContract.contract?.events.listenToAllEvents(async (event) => {
+    //     if(event.data?.requester == address){
+    //         const ownIds: BigNumber[] | undefined = await nftContract.contract?.erc721.getOwnedTokenIds(address)
+    //         const lastIndex = ownIds && ownIds?.length - 1 as number
+    //         const lastId = ownIds?[lastIndex]:0
+    //         // console.log("ownIds: ", lastId)
+    //         const metadata = await nftContract.contract?.erc721.getTokenMetadata(lastId as number)
+    //         // console.log("metadata: ", metadata)
+    //         setImageURI(metadata?.image as string)
+    //     }
+    // })
 
     return(
         <section className="w-full h-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 p-2">
@@ -48,13 +48,13 @@ const RecieptsBox = () => {
             {/* {true && */}
             (
             <div className="w-auto h-auto flex justify-center">
-            <Image 
+            {/* <Image 
             alt="image" 
             src={testURI}
             width={100}
             height={100}
             // fill={true}
-            />
+            /> */}
             <p className="montrealBold text-blackText-500 text-base">HHH</p>
             </div>
             {/* )} */}

@@ -1,13 +1,18 @@
 import { goerliAnfiFactory } from '@/constants/contractAddresses'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
 import { FormatToViewNumber } from '@/hooks/math'
-import React from 'react'
+import useTradePageStore from '@/store/tradeStore'
+import React, { useEffect } from 'react'
 
 function HistoryTable() {
 
 	
+	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage } =
+		useTradePageStore()
 
-	const positionHistory = GetPositionsHistory(goerliAnfiFactory, "ANFI")
+	const positionHistory = GetPositionsHistory(swapToCur.factoryAddress as `0x${string}`, swapToCur.Symbol)
+
+	
 
 	const roundNumber = (number: number) => {
 		return FormatToViewNumber({ value: number, returnType: 'number' })
@@ -55,7 +60,7 @@ function HistoryTable() {
 									className="text-gray-700 child:px-4 child:text-[10px] bg-white"
 								>
 									<td>{convertTime(position?.timestamp)}</td>
-									<td>ANFI</td>
+									<td>{swapToCur.Symbol}</td>
 									<td>
 										<div
 											className={`h-5 rounded px-3 py-1 capitalize ${position.side === 'Mint Request' ? ' text-green-500' : 'text-red-500'
