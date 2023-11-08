@@ -131,7 +131,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			};
 
 			const selectedCompIndexes = Object.keys(chartData).filter((i) => {
-				const res = comparisonIndices.find((item) => item.columnName === i && item.parentClass === defaultIndex)
+				const res = comparisonIndices.find((item) => item.columnName === i )
 				if (res) return true;
 			})
 			if (selectedCompIndexes.length > 0) {
@@ -154,7 +154,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			if (selectedCompIndexes.length > 0) {
 				selectedCompIndexes.map((index) => {
-					const indexDetails = comparisonIndices.find((item) => item.columnName === index && item.parentClass === defaultIndex);
+					const indexDetails = comparisonIndices.find((item) => item.columnName === index );
 					if (indexDetails) {
 
 						toolTipContentStatic += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
@@ -260,8 +260,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			});
 
 			Object.entries(chartData).forEach(([key, value]) => {
-				const indexDetails = comparisonIndices.find((item) => item.columnName === key && item.parentClass === defaultIndex);
-				console.log(indexDetails)
+				const indexDetails = comparisonIndices.find((item) => item.columnName === key);
 				if (indexDetails) {
 
 					const areaSeries = chartRef.current.addLineSeries({
