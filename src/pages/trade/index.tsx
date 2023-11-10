@@ -52,8 +52,8 @@ export default function Trade() {
 			<section className="w-full h-full flex flex-col lg:flex-row items-center justify-start gap-2 p-5">
 				<div className="w-full lg:w-9/12 h-full "></div>
 				<div className="w-full lg:w-3/12 h-full flex flex-col items-center justify-start gap-2">
-					<div className="w-full h-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-start justify-start px-4 py-3">
-						<h5 className="montrealBold text-blackText-500 text-base mb-5">Reciepts</h5>
+					<div className="w-full h-full rounded-xl shadow shadow-blackText-500 flex flex-col items-start justify-start px-4 py-3">
+						<h5 className="interBlack text-blackText-500 text-base mb-5">Reciepts</h5>
 						<div className="rounded-2xl overflow-hidden h-full w-full">
 							<div
 								ref={ref}
@@ -68,12 +68,12 @@ export default function Trade() {
 							</div>
 						</div>
 						<div
-							className="w-full h-fit cursor-pointer bg-colorOne-500 flex flex-row items-center justify-center my-5 rounded-xl py-3"
+							className="w-full h-fit cursor-pointer bg-colorSeven-500 shadow shadow-blackText-500 flex flex-row items-center justify-center my-5 rounded-xl py-3"
 							onClick={() => {
 								captureImage()
 							}}
 						>
-							<h5 className="montrealBold text-blackText-500 text-base">
+							<h5 className="montrealBold text-white titleShadow interBold text-base">
 								Get Image <small>(button to test the )</small>{' '}
 							</h5>
 						</div>

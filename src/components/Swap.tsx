@@ -326,24 +326,24 @@ const Swap = () => {
 	return (
 		<>
 			<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
-			<div className="h-full w-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-start justify-start px-4 py-3">
-				<h5 className="text-xl text-blackText-500 montrealBold mb-3 text-center w-full">Swap</h5>
+			<div className="h-full w-full rounded-xl shadow shadow-blackText-500 flex flex-col items-start justify-start px-4 py-3">
+				<h5 className="text-xl text-blackText-500 interBlack mb-3 text-center w-full">Swap</h5>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className="text-base pangramLight text-gray-500 w-1/3">You pay</p>
+						<p className="text-base interMedium text-gray-500 w-1/3">You pay</p>
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
-							<p onClick={() => setFirstInputValue(1)} className="text-base lg:text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
+							<p onClick={() => setFirstInputValue(1)} className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
 								MIN
 							</p>
 							<p
 								onClick={() => setFirstInputValue(Number(fromTokenBalance.data) / 2e18)}
-								className="text-base lg:text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
+								className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
 							>
 								HALF
 							</p>
 							<p
 								onClick={() => setFirstInputValue(Number(fromTokenBalance.data) / 1e18)}
-								className="text-base lg:text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
+								className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
 							>
 								MAX
 							</p>
@@ -353,7 +353,7 @@ const Swap = () => {
 						<input
 							type="text"
 							placeholder="0.00"
-							className=" w-2/3 border-none text-2xl text-blackText-500 pangramMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
+							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 							onChange={changeFirstInputValue}
 							value={firstInputValue ? (firstInputValue as number) : 0}
 						/>
@@ -365,13 +365,13 @@ const Swap = () => {
 						>
 							<div className="flex flex-row items-center justify-start">
 								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={20} height={20} className="mt-1 mr-1"></Image>
-								<h5 className="text-xl text-blackText-500 montrealBold pt-1">{swapFromCur.Symbol}</h5>
+								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapFromCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
 
-					<p className="text-base pangramMedium text-gray-500 pt-3">
+					<p className="text-base interMedium text-gray-500 pt-3">
 						Balance: {(Number(fromTokenBalance.data) / 1e18).toFixed(2)} {swapFromCur.Symbol}
 					</p>
 				</div>
@@ -389,12 +389,12 @@ const Swap = () => {
 					<div className=" bg-blackText-500 w-2/5 h-[1px]"></div>
 				</div>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
-					<p className="text-base pangramLight text-gray-500 pb-1">You Recieve</p>
+					<p className="text-base interMedium text-gray-500 pb-1">You Recieve</p>
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-2">
 						<input
 							type="text"
 							placeholder="0.00"
-							className=" w-2/3 border-none text-2xl text-blackText-500 pangramMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
+							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 							onChange={changeSecondInputValue}
 							value={secondInputValue ? (secondInputValue as number) : 0}
 						/>
@@ -406,19 +406,19 @@ const Swap = () => {
 						>
 							<div className="flex flex-row items-center justify-start">
 								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={20} height={20} className=" mt-1 mr-1"></Image>
-								<h5 className="text-xl text-blackText-500 montrealBold pt-1">{swapToCur.Symbol}</h5>
+								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapToCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
-					<p className="text-base pangramMedium text-gray-500 pt-3">
+					<p className="text-base interMedium text-gray-500 pt-3">
 						Balance: {(Number(toTokenBalance.data) / 1e18).toFixed(2)} {swapToCur.Symbol}
 					</p>
 				</div>
 				<div className="pt-2">
 					<label className="inline-flex items-center space-x-2 cursor-pointer">
 						<input type="checkbox" checked={isChecked} onChange={toggleCheckbox} className="form-checkbox h-5 w-5 text-blue-600" />
-						<span className="text-gray-700">Use Fiat payment</span>
+						<span className="text-gray-700 interMedium">Use Fiat payment</span>
 					</label>
 				</div>
 				<div className="h-fit w-full mt-6">
@@ -426,17 +426,17 @@ const Swap = () => {
 						{swapToCur.address == goerliAnfiIndexToken ? (
 							<>
 								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
-									<button onClick={approve} className="text-xl text-blackText-500 pangramMedium bg-blue-200 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+									<button onClick={approve} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
 										Approve
 									</button>
 								) : (
-									<button onClick={mintRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+									<button onClick={mintRequest} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
 										Mint
 									</button>
 								)}
 							</>
 						) : (
-							<button onClick={burnRequest} className="text-xl text-blackText-500 pangramMedium bg-colorOne-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+							<button onClick={burnRequest} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
 								Burn
 							</button>
 						)}
@@ -448,9 +448,9 @@ const Swap = () => {
 						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH</p>
 					</div> */}
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className="text-sm pangramMedium text-black/70 pb-2">Platform Fees</p>
+						<p className="text-sm interMedium text-black/70 pb-2">Platform Fees</p>
 						<div className="flex flex-row items-center justify-start gap-2">
-							<p className="text-sm pangramLight text-black/70">{Number(firstInputValue) * 0.001} USD (0.1%)</p>
+							<p className="text-sm interMedium text-black/70">{Number(firstInputValue) * 0.001} USD (0.1%)</p>
 							<BsInfoCircle color="#2A2A2A" size={15} className="cursor-pointer"></BsInfoCircle>
 						</div>
 					</div>
@@ -477,9 +477,9 @@ const Swap = () => {
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
 											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
+											<h5 className="text-base text-blackText-500 interBold">{item.Symbol}</h5>
 										</div>
-										<h5 className="text-sm text-gray-300 montreal italic">{item.Symbol}</h5>
+										<h5 className="text-sm text-gray-300 inter italic">{item.Symbol}</h5>
 									</div>
 								)
 							})}
@@ -504,9 +504,9 @@ const Swap = () => {
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
 											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
+											<h5 className="text-base text-blackText-500 interBold">{item.Symbol}</h5>
 										</div>
-										<h5 className="text-sm text-gray-300 montreal italic">{item.Symbol}</h5>
+										<h5 className="text-sm text-gray-300 inter italic">{item.Symbol}</h5>
 									</div>
 								)
 							})}
@@ -525,8 +525,8 @@ const Swap = () => {
 							overflow: 'hidden',
 						}}
 					/>
-					<h5 className='montrealBold text-blackText-500 text-2xl text-center w-full -mt-6'>THE MAGIC IS HAPPENING...</h5>
-					<h5 className='montreal text-blackText-500 text-lg text-center w-9/12 my-2'>Your NFT receipt is being minted. Once it is ready, you can find it the {"\""}Receipts{"\""} section.</h5>
+					<h5 className='InterBold text-blackText-500 text-2xl text-center w-full -mt-6'>THE MAGIC IS HAPPENING...</h5>
+					<h5 className='interMedium text-blackText-500 text-lg text-center w-9/12 my-2'>Your NFT receipt is being minted. Once it is ready, you can find it the {"\""}Receipts{"\""} section.</h5>
 				</div>
 			</GenericModal>
 		</>

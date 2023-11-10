@@ -31,8 +31,8 @@ export const LifiWidget = () => {
 					primary: { main: '#B7D1D3' }, //ColorThree
 					secondary: { main: '#8FB8CA' }, //ColorFour
 					background: {
-						paper: '#91AC9A', // ColorOne
-						default: '#A9C3B6', // ColorTwo
+						paper: '#86afbfe6', // ColorOne
+						default: '#5E869B', // ColorTwo
 					},
 					grey: {
 						300: '#000000', // border light theme

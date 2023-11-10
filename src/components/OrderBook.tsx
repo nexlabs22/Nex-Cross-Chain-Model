@@ -70,7 +70,7 @@ export default function OrderBook() {
   },[address])
 
   return (
-    <div className="h-1/5 w-full border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-row items-start justify-start p-2 rounded-xl">
+    <div className="h-1/5 w-full shadow shadow-blackText-500 flex flex-row items-start justify-start p-2 rounded-xl">
 		<div className='grid gap-3'>
 		  <h5 className='montrealBold text-lg text-blackText-500'>
 		  	Order Book

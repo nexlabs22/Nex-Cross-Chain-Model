@@ -41,7 +41,7 @@ const TradeChartBox = () => {
 	return (
 		<>
 			<div className="w-full h-full flex flex-col items-center justify-start gap-2">
-				<div className="h-4/5 w-full rounded-xl border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-col items-center justify-start px-4 py-3">
+				<div className="h-4/5 w-full rounded-xl shadow shadow-blackText-500 flex flex-col items-center justify-start px-4 py-3">
 					<div className="w-full h-fit flex flex-row items-center justify-between">
 						<div className="w-fit h-fit p-2">
 							<div className="w-fit h-fit flex flex-row items-center justify-start mb-1">
@@ -118,7 +118,7 @@ const TradeChartBox = () => {
 						</div>
 					</div>
 				</div>
-				<div className="h-1/5 w-full border border-colorTwo-500/40 shadow shadow-colorTwo-500 flex flex-row items-start justify-start p-2 rounded-xl">
+				<div className="h-1/5 w-full shadow shadow-blackText-500 flex flex-row items-start justify-start p-2 rounded-xl">
 					<div className="flex gap-3">
 						<h5 className="montrealBold text-lg text-blackText-500">Order Book</h5>
 						<div className="w-auto h-auto flex justify-center">

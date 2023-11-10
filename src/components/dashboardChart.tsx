@@ -140,7 +140,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			}
 
 			let toolTipContentStatic =
-				`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
+				`<div style="font-size: 14px; z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 				<Image
 				src="${defaultIndex === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 					alt="tooltip logo"
@@ -238,7 +238,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 							for (const [index, [, value]] of mapEntries.entries()) {
 								if (index - 1 >= 0) {
 									const indexDetails = comparisonIndices.find((item) => item.columnName === selectedCompIndexes[index - 1]);
-									toolTipContent += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
+									toolTipContent += `<div style="font-size: 14px; z-index: 100; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
 									toolTipContent += `<Image
 								src=${indexDetails?.logo}
 								alt="tooltip logo"
