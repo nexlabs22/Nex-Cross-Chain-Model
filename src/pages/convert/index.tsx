@@ -10,8 +10,8 @@ import bg from '@assets/images/3d hologram.png'
 export const LiFiWidgetNext = dynamic(() => import('@/components/LifiWidget').then((module) => module.LifiWidget) as any, {
 	ssr: false,
 	loading: () => (
-		<div className="h-full w-full flex flex-row items-center justify-center">
-			<h5 className="text-xl text-blackText-500 montrealBold">Loading ...</h5>
+		<div className="h-screen xl:h-[80vh] w-full flex flex-row items-center justify-center">
+			<h5 className="text-xl text-blackText-500 interBlack">Loading ...</h5>
 		</div>
 	),
 })

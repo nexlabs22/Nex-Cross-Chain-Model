@@ -15,6 +15,7 @@
     "@popperjs/core": "^2.11.8",
     "@sendgrid/mail": "^7.7.0",
     "@svgr/webpack": "^8.1.0",
+    "@szhsin/react-accordion": "^1.2.3",
     "@szhsin/react-menu": "^4.0.3",
     "@thirdweb-dev/react": "^4.0.1",
     "@thirdweb-dev/sdk": "^4.0.0",
