@@ -14,8 +14,7 @@ export const comparisonIndices = [
 		logo: sandp.src,
 		price: 4402.21,
 		change: '-0.94',
-		parentClass: 'CRYPTO5',
-		selectionColor: "#F23645"
+		selectionColor: "#F23645" // Cherry Red
 	},
 	{
 		id: 2,
@@ -25,8 +24,7 @@ export const comparisonIndices = [
 		logo: dow.src,
 		price: 34440.89,
 		change: '-0.22',
-		parentClass: 'CRYPTO5',
-		selectionColor: "#1666BA"
+		selectionColor: "#1666BA" //Blue
 	},
 	{
 		id: 3,
@@ -36,8 +34,7 @@ export const comparisonIndices = [
 		logo: nasdaq.src,
 		price: 13469.13,
 		change: '-0.44',
-		parentClass: 'CRYPTO5',
-		selectionColor: "#FFA024"
+		selectionColor: "#a132ab" // purple
 	},
 	{
 		id: 4,
@@ -47,8 +44,7 @@ export const comparisonIndices = [
 		logo: nyse.src,
 		price: 15859.61,
 		change: '-0.44',
-		parentClass: 'CRYPTO5',
-		selectionColor: "#089981"
+		selectionColor: "#089981" //Teal
 	},
 	{
 		id: 5,
@@ -58,8 +54,7 @@ export const comparisonIndices = [
 		logo: btc.src,
 		price: 15859.61,
 		change: '-0.44',
-		parentClass: 'ANFI',
-		selectionColor: "#1666BA"
+		selectionColor: "#16b5ba" //Cyan
 	},
 	{
 		id: 6,
@@ -69,8 +64,7 @@ export const comparisonIndices = [
 		logo: gold.src,
 		price: 15859.61,
 		change: '-0.44',
-		parentClass: 'ANFI',
-		selectionColor: "#FFA024"
+		selectionColor: "#FFA024" // Yellow golden
 	},
 	{
 		id: 7,
@@ -80,7 +74,6 @@ export const comparisonIndices = [
 		logo: oil.src,
 		price: 15859.61,
 		change: '-0.44',
-		parentClass: 'ANFI',
-		selectionColor: "#4d614c"
+		selectionColor: "#4d614c" //Dark green
 	}
 ]

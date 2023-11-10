@@ -97,19 +97,19 @@ const DashboardChartBox = () => {
 					name: 'bitcoin',
 					colName:'bitcoin',
 					logo: btc.src,
-					selectionColor: "#1F51FF"
+					selectionColor: comparisonIndices.find(index => index.columnName === 'bitcoin')?.selectionColor
 				},
 				{
 					name: 'gold',
 					colName:'gold',
 					logo: gold.src,
-					selectionColor: "#FFBF00"
+					selectionColor: comparisonIndices.find(index => index.columnName === 'gold')?.selectionColor
 				},
 				{
 					name: 'oil',
 					colName:'oil',
 					logo: oil.src,
-					selectionColor: "#023020"
+					selectionColor: comparisonIndices.find(index => index.columnName === 'oil')?.selectionColor
 				},
 			],
 		},
@@ -120,25 +120,25 @@ const DashboardChartBox = () => {
 					name: 's&p',
 					colName: 'sandp',
 					logo: sandp.src,
-					selectionColor: "#FF3232"
+					selectionColor: comparisonIndices.find(index => index.columnName === 'sandp')?.selectionColor
 				},
 				{
 					name: 'dow30',
 					colName: 'dow',
 					logo: dow.src,
-					selectionColor: "#1F51FF"
+					selectionColor: comparisonIndices.find(index => index.columnName === 'dow')?.selectionColor
 				},
 				{
 					name: 'nasdaq',
 					colName: 'nasdaq',
 					logo: nasdaq.src,
-					selectionColor: "#FFBF00"
+					selectionColor: comparisonIndices.find(index => index.columnName === 'nasdaq')?.selectionColor
 				},
 				{
 					name: 'nyse',
 					colName:'nyse',
 					logo: nyse.src,
-					selectionColor: "#40B5AD"
+					selectionColor: comparisonIndices.find(index => index.columnName === 'nyse')?.selectionColor
 				},
 			],
 		},
@@ -451,7 +451,6 @@ const DashboardChartBox = () => {
 					<div className="h-full w-3/5 grid grid-cols-3 auto-rows-max justify-start items-start gap-y-5 px-3">
 						{
 							allClasses.map((cls, key) => {
-								// console.log(cls)
 								if (cls.category == classesCategory) {
 									return (
 										<div key={key}

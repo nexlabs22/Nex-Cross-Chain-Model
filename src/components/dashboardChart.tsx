@@ -96,8 +96,6 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 						height: chartContainerRef.current.clientHeight * 0.5
 					})
 				}
-				// console.log('inside handleResize function', chartContainerRef.current?.clientWidth)
-				// chartRef.current.applyOptions({ width: Number(chartContainerRef.current?.clientWidth) * 0.90 })
 
 			}
 
