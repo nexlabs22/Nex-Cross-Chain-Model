@@ -8,7 +8,7 @@ import Footer from '@/components/Footer'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import 'react-tabs/style/react-tabs.css'
 import { Chart } from 'react-google-charts'
-import { useAddress } from '@thirdweb-dev/react'
+import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
 
 import bg from '@assets/images/3d hologram.png'
@@ -18,17 +18,29 @@ import cr5Logo from '@assets/images/cr5.png'
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
+import { goerliAnfiIndexToken, goerliCrypto5IndexToken } from '@/constants/contractAddresses'
+import { indexTokenAbi } from '@/constants/abi'
+import { FormatToViewNumber, num } from '@/hooks/math'
 
 
 export default function Portfolio() {
 
 	const address = useAddress();
 
+	const anfiTokenContract = useContract(goerliAnfiIndexToken, indexTokenAbi)
+	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
+
+	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [address])
+	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [address])
+	// const fiatBalance = 
+	const anfiPercent = num(anfiTokenBalance.data)/(num(crypto5TokenBalance.data)+num(anfiTokenBalance.data))
+	const crypto5Percent = num(crypto5TokenBalance.data)/(num(crypto5TokenBalance.data)+num(anfiTokenBalance.data))
+
 	const data = [
 		['Asset', 'Percentage'],
-		['CRYPTO 5', 68],
-		['ANFI', 28],
-		['FIAT', 4],
+		['CRYPTO 5', crypto5Percent ? crypto5Percent : 45 ],
+		['ANFI', anfiPercent ? anfiPercent : 50],
+		['FIAT', anfiPercent ? 0 : 5],
 	]
 
 	const options = {
@@ -92,14 +104,14 @@ export default function Portfolio() {
 										<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 											<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
 											<h5 className="montrealBold text-xl text-blackText-500">ANFI</h5>
-											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$0</h5>
-											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">0%</h5>
+											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$ {anfiTokenBalance.data ? FormatToViewNumber({value: num(anfiTokenBalance.data), returnType:'string'}) : 0}</h5>
+											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">3%</h5>
 										</div>
 										<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 											<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
 											<h5 className="montrealBold text-xl text-blackText-500">CRYPTO 5</h5>
-											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$0</h5>
-											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">0%</h5>
+											<h5 className="montrealBold text-2xl text-blackText-500 mb-2">$ {crypto5TokenBalance.data ? FormatToViewNumber({value: num(crypto5TokenBalance.data), returnType:'string'}) : 0}</h5>
+											<h5 className="montrealBoldItalic text-base text-nexLightGreen-500">1%</h5>
 										</div>
 									</div>
 								</div>

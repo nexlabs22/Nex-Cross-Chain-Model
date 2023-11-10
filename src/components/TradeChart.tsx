@@ -18,6 +18,7 @@ import { SketchPicker, TwitterPicker, GithubPicker, BlockPicker, CirclePicker, S
 // Store
 import useTradePageStore from '@/store/tradeStore'
 import OrderBook from './OrderBook'
+import HistoryTable from './TradeTable'
 
 const TradeChartBox = () => {
 	const { isChartSettingsModalOpen, setChartSettingsModalOpen, nftImage } = useTradePageStore()
@@ -121,7 +122,7 @@ const TradeChartBox = () => {
 				<div className="h-1/5 w-full shadow shadow-blackText-500 flex flex-row items-start justify-start p-2 rounded-xl">
 					<div className="flex gap-3">
 						<h5 className="montrealBold text-lg text-blackText-500">Order Book</h5>
-						<div className="w-auto h-auto flex justify-center">
+						{/* <div className="w-auto h-auto flex justify-center">
 							{nftImage && (
 								<Image
 									alt="image"
@@ -131,7 +132,10 @@ const TradeChartBox = () => {
 									// fill={true}
 								/>
 							)}
-						</div>
+						</div> */}
+						<div className="overflow-auto py-2">
+    						<HistoryTable/>
+    					</div>
 					</div>
 				</div>
 			</div>
