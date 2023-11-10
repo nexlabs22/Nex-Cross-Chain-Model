@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@amcharts/amcharts4": "^4.10.38",
     "@lifi/widget": "^2.4.5",
     "@paperxyz/js-client-sdk": "^0.2.5",
     "@paperxyz/react-client-sdk": "^1.1.3",

@@ -66,26 +66,26 @@ const DappNavbar = () => {
 						></AiOutlineClose>
 					</div>
 					<div className="w-full h-full flex flex-col items-center justify-around">
-						<div className='w-fit h-fit flex flex-col items-center justify-center gap-10'>
+						<div className='w-fit h-fit flex flex-col items-center justify-center gap-12'>
 							<Link href={'/'} onClick={() => {
 								setOpenMobileMenu(false)
 							}}>
-								<h5 className="interMedium text-3xl text-blackText-500">Dashboard</h5>
+								<h5 className="interBold text-3xl text-blackText-500">Dashboard</h5>
 							</Link>
 							<Link href={'/trade'} onClick={() => {
 								setOpenMobileMenu(false)
 							}}>
-								<h5 className="interMedium text-3xl text-blackText-500">Trade</h5>
+								<h5 className="interBold text-3xl text-blackText-500">Trade</h5>
 							</Link>
 							<Link href={'/convert'} onClick={() => {
 								setOpenMobileMenu(false)
 							}}>
-								<h5 className="interMedium text-3xl text-blackText-500">Convert</h5>
+								<h5 className="interBold text-3xl text-blackText-500">Convert</h5>
 							</Link>
 							<Link href={'/portfolio'} onClick={() => {
 								setOpenMobileMenu(false)
 							}}>
-								<h5 className="interMedium text-3xl text-blackText-500">Portfolio</h5>
+								<h5 className="interBold text-3xl text-blackText-500">Portfolio</h5>
 							</Link>
 						</div>
 						<div className="pt-10">

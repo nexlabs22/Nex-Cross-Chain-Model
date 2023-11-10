@@ -354,7 +354,7 @@ body {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  border-bottom: solid 3px #91AC9A !important;
+  border-bottom: solid 3px #5E869B !important;
 }
 
 .react-tabs__tab--selected:focus{
@@ -362,15 +362,15 @@ body {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  border-bottom: solid 3px #91AC9A !important;
+  border-bottom: solid 3px #5E869B !important;
 }
 
 .react-tabs__tab--selected::after{
-  background-color: #91AC9A !important;
+  background-color: #5E869B !important;
 }
 
 .react-tabs__tab--selected h5{
-  color: #91AC9A !important;
+  color: #5E869B !important;
 }
 
 .react-tabs__tab{
@@ -378,7 +378,7 @@ body {
 }
 
 #reactgooglegraph-1{
-  font-family: 'montrealBold' !important;
+  font-family: 'interBold' !important;
 }
 
 .overlay{
@@ -416,7 +416,20 @@ body {
 .tw-connect-wallet{
   font-family: 'interBold' !important;
   background-color: #5E869B !important;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  box-shadow: 0 1px 2px 1px rgb(0 0 0 / 0.4) !important;
+  color: #FFFFFF !important;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+#chartdiv
+  > div
+  > svg
+  > g
+  > g:nth-child(2)
+  > g:nth-child(2)
+  > g
+  > g:nth-child(3) {
+  display: none !important;
 }
 
 @media only screen and (max-width: 600px) {
