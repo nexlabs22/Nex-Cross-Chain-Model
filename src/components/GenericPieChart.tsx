@@ -19,13 +19,13 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 1000);
 
-      // Set background color
+
       renderer.setClearColor(0xf2f2f2);
 
       renderer.setSize(canvas.width, canvas.height);
 
       const radius = 5;
-      const height = 1; // Set the extrusion height
+      const height = 1; 
 
       let startAngle = 0;
 
@@ -57,7 +57,6 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
 
         const slice = new THREE.Mesh(geometry, material);
 
-        // Attach user data to the slice for reference
         slice.userData = {
           label: sliceData.label,
           percentage: sliceData.percentage,
@@ -70,15 +69,12 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
         startAngle = endAngle;
       });
 
-      // Adjust camera position for a slight angle from the bottom
       camera.position.set(0, -8, 13);
       camera.lookAt(0, 0, 0);
 
-      // Add ambient light for better shading
       const ambientLight = new THREE.AmbientLight(0xffffff);
       scene.add(ambientLight);
 
-      // Add directional light for shading
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
       directionalLight.position.set(5, 5, 5);
       scene.add(directionalLight);
@@ -99,15 +95,12 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
         if (intersects.length > 0) {
           const newIntersectedSlice = intersects[0].object as THREE.Mesh;
 
-          // Adjust the emissive color for an inset shadow effect
           if (newIntersectedSlice.material instanceof THREE.MeshPhongMaterial) {
-            newIntersectedSlice.material.emissiveIntensity = 0.02; // Adjust the intensity as needed
+            newIntersectedSlice.material.emissiveIntensity = 0.02; 
           }
 
-          // Scale up the hovered slice
           newIntersectedSlice.scale.set(1.1, 1.1, 1.1);
 
-          // Scale down all other slices
           slices.forEach((slice) => {
             if (slice !== newIntersectedSlice) {
               slice.scale.set(1, 1, 1);
@@ -116,7 +109,6 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
 
           intersectedSlice = newIntersectedSlice;
         } else {
-          // Reset scale for all slices if no intersection
           slices.forEach((slice) => {
             slice.scale.set(1, 1, 1);
 
@@ -137,14 +129,12 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
         renderer.render(scene, camera);
       };
 
-      // Save the original positions of slices
       slices.forEach((slice) => {
         slice.userData.originalPosition = slice.position.clone();
       });
 
       animate();
 
-      // Create legend
       data.forEach((sliceData) => {
         const legendItem = document.createElement('div');
         legendItem.className = 'legend-item';
@@ -163,26 +153,19 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
       });
 
       return () => {
-        // Remove event listener on component unmount
         window.removeEventListener('mousemove', handleMouseMove);
 
-        // Dispose of existing objects in the scene
         slices.forEach((slice) => {
           scene.remove(slice);
           slice.geometry.dispose();
-          //slice.material.dispose();
         });
 
-        // Clear the scene
         scene.clear();
 
-        // Dispose of the renderer
         renderer.dispose();
 
-        // Clear the camera
         camera.clear();
 
-        // Clear the legend
         legend.innerHTML = '';
       };
     }
