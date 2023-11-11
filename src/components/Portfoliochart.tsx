@@ -1,63 +1,69 @@
-import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
-import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import { useEffect, useLayoutEffect } from 'react';
+'use client'
 
+import React, { useEffect, useLayoutEffect } from 'react'
+import * as am5 from '@amcharts/amcharts5'
+import * as am5percent from '@amcharts/amcharts5/percent'
+import * as am4core from '@amcharts/amcharts4/core'
+import * as am4charts from '@amcharts/amcharts4/charts'
+import am4themes_animated from '@amcharts/amcharts4/themes/animated'
 
+am4core.useTheme(am4themes_animated)
 
-am4core.useTheme(am4themes_animated);
+const PortfolioChart = () => {
+	useLayoutEffect(() => {
+		// Dynamically import amCharts modules to ensure they are loaded on the client side
 
-const PortfolioChart= () => {
-    useEffect(() => {
-        let chart = am4core.create('chartdiv', am4charts.PieChart3D)
+		
+		// Themes end
+
+		let chart = am4core.create('chartdiv', am4charts.PieChart3D)
 		chart.hiddenState.properties.opacity = 0 // this creates initial fade-in
 
-		chart.legend = new am4charts.Legend()
-        chart.data = [
+		chart.data = [
 			{
-				label: 'ANFI',
-				amount: '37%',
-				litres: 133,
-				color: am4core.color('#86afbfe6'),
+				country: 'Lithuania',
+				litres: 501.9,
 			},
 			{
-				label: 'CRYPTO 5',
-				amount: '63%',
-				litres: 227,
-				color: am4core.color('#5E869B'),
+				country: 'Czech Republic',
+				litres: 301.9,
+			},
+			{
+				country: 'Ireland',
+				litres: 201.1,
+			},
+			{
+				country: 'Germany',
+				litres: 165.8,
+			},
+			{
+				country: 'Australia',
+				litres: 139.9,
+			},
+			{
+				country: 'Austria',
+				litres: 128.3,
 			},
 		]
 
+		chart.innerRadius = am4core.percent(40)
+		chart.depth = 120
+
+		chart.legend = new am4charts.Legend()
+
 		let series = chart.series.push(new am4charts.PieSeries3D())
 		series.dataFields.value = 'litres'
-		series.dataFields.category = 'label'
+		series.dataFields.depthValue = 'litres'
+		series.dataFields.category = 'country'
+		series.slices.template.cornerRadius = 5
+		series.colors.step = 3
 
-		series.labels.template.properties.fontFamily = 'interBold'
-		series.labels.template.properties.fontSize = 20
-		//series.labels.template.fill = "#fff"
-        series.labels.template.text = '{category}\n[#5E869B]{amount}'
+		return () => {
+			chart.dispose()
+		}
+	}, [])
 
-		series.hiddenInLegend = true
-		series.slices.template.propertyFields.fill = 'color'
-
-		series.ticks.template.strokeWidth = 2
-		//series.ticks.template.stroke = "#000"
-		series.ticks.template.strokeOpacity = 0.7
-		//series.ticks.template.margin = am4core.Sprite;
-        let fillModifier = new am4core.LinearGradientModifier()
-		fillModifier.opacities = [1, 0.9]
-		fillModifier.offsets = [0.5, 0.8]
-		//fillModifier.gradient.rotation = 90;
-
-		series.slices.template.fillModifier = fillModifier
-    
-      return () => {
-        chart.dispose();
-      };
-    }, [])
-    return(
-        <div id="chartdiv" style={{ width: '100%', height: '500px', marginBottom: '10%' }}></div>
-    )
+	return <div id="chartdiv" style={{ width: '100%', height: '500px', marginBottom: '10%' }}></div>
 }
 
-export default PortfolioChart;
+export default PortfolioChart

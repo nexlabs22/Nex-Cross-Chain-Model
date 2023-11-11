@@ -1,4 +1,4 @@
-
+'use client'
 
 import Image from 'next/image'
 import DappNavbar from '@/components/DappNavbar'
@@ -8,9 +8,6 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import 'react-tabs/style/react-tabs.css'
 import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
-import * as am4core from '@amcharts/amcharts4/core'
-import * as am4charts from '@amcharts/amcharts4/charts'
-import am4themes_animated from '@amcharts/amcharts4/themes/animated'
 import { useEffect } from 'react'
 
 import bg from '@assets/images/3d hologram.png'
@@ -24,12 +21,7 @@ import { goerliAnfiIndexToken, goerliCrypto5IndexToken } from '@/constants/contr
 import { indexTokenAbi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 
-const DynamicAmChartsComponent = dynamic(
-	() => import('../../components/Portfoliochart'),
-	{ ssr: false }
-  );
-
-
+import GenericPieChart from '@/components/GenericPieChart'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -50,6 +42,19 @@ export default function Portfolio() {
 		['FIAT', anfiPercent ? 0 : 5],
 	]
 
+	const PieChartdata = [
+		{
+			label: 'ANFI',
+			percentage: '37%',
+			color: '#86afbf',
+		},
+		{
+			label: 'CRYPTO 5',
+			percentage: '63%',
+			color: '#5E869B',
+		},
+	]
+
 	const options = {
 		is3D: true,
 		fontName: 'montrealBold',
@@ -62,55 +67,6 @@ export default function Portfolio() {
 		},
 	}
 
-	useEffect(() => {
-		// Themes begin
-		am4core.useTheme(am4themes_animated)
-		// Themes end
-
-		let chart = am4core.create('chartdiv', am4charts.PieChart3D)
-		chart.hiddenState.properties.opacity = 0 // this creates initial fade-in
-
-		chart.legend = new am4charts.Legend()
-
-		chart.data = [
-			{
-				label: 'ANFI',
-				amount: '37%',
-				litres: 133,
-				color: am4core.color('#86afbfe6'),
-			},
-			{
-				label: 'CRYPTO 5',
-				amount: '63%',
-				litres: 227,
-				color: am4core.color('#5E869B'),
-			},
-		]
-
-		let series = chart.series.push(new am4charts.PieSeries3D())
-		series.dataFields.value = 'litres'
-		series.dataFields.category = 'label'
-
-		series.labels.template.properties.fontFamily = 'interBold'
-		series.labels.template.properties.fontSize = 20
-		//series.labels.template.fill = "#fff"
-		series.labels.template.text = '{category}\n[#5E869B]{amount}'
-
-		series.hiddenInLegend = true
-		series.slices.template.propertyFields.fill = 'color'
-
-		series.ticks.template.strokeWidth = 2
-		//series.ticks.template.stroke = "#000"
-		series.ticks.template.strokeOpacity = 0.7
-		//series.ticks.template.margin = am4core.Sprite;
-
-		let fillModifier = new am4core.LinearGradientModifier()
-		fillModifier.opacities = [1, 0.9]
-		fillModifier.offsets = [0.5, 0.8]
-		//fillModifier.gradient.rotation = 90;
-
-		series.slices.template.fillModifier = fillModifier
-	})
 	return (
 		<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 			<section className="h-full w-fit overflow-x-hidde">
@@ -174,8 +130,8 @@ export default function Portfolio() {
 					</div>
 					<div className="w-full h-fit px-5 lg:px-20 mt-10">
 						<h5 className="interBlack text-3xl text-blackText-500">Assets Distribution</h5>
-						<div className="w-full h-fit flex flex-row items-center justify-start">
-						<DynamicAmChartsComponent />
+						<div className="w-full h-fit flex flex-row items-center justify-start mb-20">
+							<GenericPieChart data={PieChartdata} />
 						</div>
 					</div>
 				</section>

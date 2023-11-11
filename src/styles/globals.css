@@ -445,3 +445,24 @@ body {
 .ReactModal__Content, .ReactModal__Content--after-open{
   border: none !important;
 }
+
+.legend-item{
+  width: fit-content !important;
+  height: fit-content !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.color-circle{
+  height: 1.2rem !important;
+  width: 1.2rem !important;
+  border-radius: 50% !important;
+}
+
+.label-text{
+  font-size: 1.2rem !important;
+  font-family: 'interBold' !important;
+  color: #2A2A2A !important;
+}
