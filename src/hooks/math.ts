@@ -2,7 +2,7 @@ import { BigNumber } from 'alchemy-sdk'
 
 export const num = (value: string | BigNumber | unknown) => Number(value) / 1e18
 
-function formatAsString(value: number): string {
+export function formatAsString(value: number): string {
 	let result
 	const checkValue = Math.abs(value)
 
@@ -18,7 +18,7 @@ function formatAsString(value: number): string {
 	return result
 }
 
-function formatAsNumber(value: number): number {
+export function formatAsNumber(value: number): number {
 	let result: number
 	const checkValue = Math.abs(value)
 
@@ -31,7 +31,7 @@ function formatAsNumber(value: number): number {
 	return result
 }
 
-function formatAsPercent(value: number): string {
+export function formatAsPercent(value: number): string {
 	return value.toFixed(2) + '%'
 }
 

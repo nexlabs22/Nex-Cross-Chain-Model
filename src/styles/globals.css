@@ -3,102 +3,38 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Circular Std";
-  src: url('../assets/fonts/CircularStd-Book.ttf');
+  font-family: 'inter';
+  font-style: normal;
   font-weight: 400;
-  font-style: normal;
+  src: url('../assets/fonts/Inter-Regular.ttf') format('ttf');
 }
 
 @font-face {
-  font-family: "Circular Std";
-  src: url('../assets/fonts/CircularStd-Medium.ttf');
+  font-family: 'interMedium';
+  font-style: normal;
   font-weight: 500;
-  font-style: normal;
+  src: url('../assets/fonts/Inter-Medium.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "Circular Std";
-  src: url('../assets/fonts/CircularStd-Bold.ttf');
+  font-family: 'interBold';
+  font-style: normal;
   font-weight: 700;
-  font-style: normal;
+  src: url('../assets/fonts/Inter-Bold.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "Circular Std";
-  src: url('../assets/fonts/CircularStd-Black.ttf');
+  font-family: 'interExtraBold';
+  font-style: normal;
+  font-weight: 800;
+  src: url('../assets/fonts/Inter-ExtraBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'interBlack';
+  font-style: normal;
   font-weight: 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ARPDisplay-20";
-  src: url('../assets/fonts/ARPDisplay-20.ttf');
-}
-
-@font-face {
-  font-family: "ARPDisplay-40";
-  src: url('../assets/fonts/ARPDisplay-40.ttf');
-}
-
-@font-face {
-  font-family: "ARPDisplay-80";
-  src: url('../assets/fonts/ARPDisplay-80.ttf');
-}
-
-@font-face {
-  font-family: "ARPDisplay-150";
-  src: url('../assets/fonts/ARPDisplay-150.ttf');
-}
-
-@font-face {
-  font-family: "ARPDisplay-240";
-  src: url('../assets/fonts/ARPDisplay-240.ttf');
-}
-
-@font-face {
-  font-family: 'KrubRegular';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Krub Regular'), url('../assets/fonts/Krub-Regular.woff') format('woff');
-}
-
-@font-face {
-  font-family: 'KrubBold';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Krub Bold'), url('../assets/fonts/Krub-Bold.woff') format('woff');
-}
-
-
-@font-face {
-  font-family: 'KrubBoldItalic';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Krub Bold Italic'), url('../assets/fonts/Krub-BoldItalic.woff') format('woff');
-}
-
-
-@font-face {
-  font-family: 'KrubLightRegular';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Krub Light Regular'), url('../assets/fonts/Krub-Light.woff') format('woff');
-}
-
-
-@font-face {
-  font-family: 'KrubMediumRegular';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Krub Medium Regular'), url('../assets/fonts/Krub-Medium.woff') format('woff');
-}
-
-
-@font-face {
-  font-family: 'KrubSemiBoldRegular';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Krub SemiBold Regular'), url('../assets/fonts/Krub-SemiBold.woff') format('woff');
+  src: url('../assets/fonts/Inter-Black.ttf') format('truetype');
 }
 
 @font-face {
@@ -183,6 +119,26 @@ body {
     overflow-x: hidden !important;
 }
 
+.inter {
+  font-family: 'inter';
+}
+
+.interMedium {
+  font-family: 'interMedium';
+}
+
+.interBold {
+  font-family: 'interBold';
+}
+
+.interExtraBold {
+  font-family: 'interExtraBold';
+}
+
+.interBlack {
+  font-family: 'interBlack';
+}
+
 .montreal{
   font-family: 'montreal';
 }
@@ -244,6 +200,11 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  z-index: 99999 !important;
+}
+
+.szh-accordion__item-btn{
+  width: 100% !important;
 }
 
 
@@ -368,7 +329,7 @@ body {
 
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
 }
 
 /* Track */
@@ -378,13 +339,13 @@ body {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #829c8f;
+  background: #5E869B;
   border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #a9c3b6;
+  background: #8db1c4;
 }
 
 
@@ -393,7 +354,7 @@ body {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  border-bottom: solid 3px #91AC9A !important;
+  border-bottom: solid 3px #5E869B !important;
 }
 
 .react-tabs__tab--selected:focus{
@@ -401,15 +362,15 @@ body {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  border-bottom: solid 3px #91AC9A !important;
+  border-bottom: solid 3px #5E869B !important;
 }
 
 .react-tabs__tab--selected::after{
-  background-color: #91AC9A !important;
+  background-color: #5E869B !important;
 }
 
 .react-tabs__tab--selected h5{
-  color: #91AC9A !important;
+  color: #5E869B !important;
 }
 
 .react-tabs__tab{
@@ -417,12 +378,17 @@ body {
 }
 
 #reactgooglegraph-1{
-  font-family: 'montrealBold' !important;
+  font-family: 'interBold' !important;
+}
+
+.overlay{
+  z-index: 9999 !important;
 }
 
 .menu-wrap{
   width: 100vw !important;
   background-color: #F2F2F2 !important;
+  z-index: 9999 !important;
 }
 
 .menu-wrap .head{
@@ -435,16 +401,68 @@ body {
   height: 100vh !important;
 }
 
+.med_test_class{
+  background-color: red;
+}
+
+.med_test_class2{
+  background-color: red;
+}
+
+.titleShadow {
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.tw-connect-wallet{
+  font-family: 'interBold' !important;
+  background-color: #5E869B !important;
+  box-shadow: 0 1px 2px 1px rgb(0 0 0 / 0.4) !important;
+  color: #FFFFFF !important;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+#chartdiv
+  > div
+  > svg
+  > g
+  > g:nth-child(2)
+  > g:nth-child(2)
+  > g
+  > g:nth-child(3) {
+  display: none !important;
+}
+
 @media only screen and (max-width: 600px) {
   .tw-connect-wallet{
     font-size: 2rem !important;
     padding: 3% 4% !important;
     width: 80vw !important;
     height: 10vh !important;
-    background-color: #91AC9A !important;
+    background-color: #5E869B !important;
   }
 }
 
 .ReactModal__Content, .ReactModal__Content--after-open{
   border: none !important;
+}
+
+.legend-item{
+  width: fit-content !important;
+  height: fit-content !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.color-circle{
+  height: 1.2rem !important;
+  width: 1.2rem !important;
+  border-radius: 50% !important;
+}
+
+.label-text{
+  font-size: 1.2rem !important;
+  font-family: 'interBold' !important;
+  color: #2A2A2A !important;
 }

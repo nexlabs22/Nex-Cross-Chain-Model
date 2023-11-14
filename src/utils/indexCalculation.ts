@@ -32,9 +32,6 @@ function getIndexValue(arr: processedDataType[], base: number, div: number) {
 	return value / div
 }
 function getANFIndexValue(arr: ANFIDataType[], base: number, div: number) {
-	// const value = arr.reduce((accumulator, obj) => {
-	// 	return accumulator + (obj.weight * Number(obj.price) * base);
-	// }, 0);
 	const selectedArr = arr[0]
 	const value = ((selectedArr.priceBtc * selectedArr.weightBtc * base) + (selectedArr.priceGold * selectedArr.weightGold * base))
 	return value / div
@@ -100,33 +97,34 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 				for (let i = 0; i < data.length; i++) {
 					const item = data[i];
 
-					if (item.time === closeDate) {
-						foundCloseDate = true;
+					if (item.time === openDate) {
+						openDateFound = true;
 					}
 
-					if (foundCloseDate) {
+					if (openDateFound) {
 						result.push(item);
 
-						if (item.time === openDate) {
-							openDateFound = true;
+						if (item.time === closeDate) {
+							foundCloseDate = true;
 							break;
 						}
 					}
 				}
 
-				if (!openDateFound) {
-					const openDateIndex = data.findIndex(item => item.time > openDate);
+				if (!foundCloseDate) {
+					const closeDateIndex = data.findIndex(item => item.time > closeDate);
 
-					if (openDateIndex !== -1) {
-						result.splice(openDateIndex);
+					if (closeDateIndex !== -1) {
+						result.splice(closeDateIndex);
 					}
 				}
-
+				
 				return calculatePriceChange(result);
 			}
 
-
+		
 			const { bitcoin, gold } = findPriceDataInRange(data, closeDate, openDate)
+
 			if (bitcoin && gold) {
 
 				const volatilityBtc = bitcoin / 100
@@ -178,8 +176,6 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 			}
 		});
 
-		console.log('firstEntryOfEachMonth',firstEntryOfEachMonth)
-
 		let isCreationDay = true;
 		let divisor = 0
 		const firstEntryKey = sortedMap.keys().next().value;
@@ -226,26 +222,22 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 						}) as ANFIDataType[]
 						const oldBase = baseMult
 						baseMult = getANFIndexValue(alteredPrev, oldBase, divisor) * (1 / getANFIndexValue(foundFirstData, oldBase, divisor))
-						// console.log('baseMult',baseMult)
 					}
 				}
 
 				anfiObj.time = timestamp
-				// console.log('base mutl before cal price:', baseMult)
 				anfiObj.value = getANFIndexValue(dataArr, baseMult, divisor)
 				ANFIData.push(anfiObj)
 			}
 
 		});
 
-		console.log(ANFIData)
 		return ANFIData
 	} else if (index === 'CRYPTO5') {
 
 		type CRYPTO5 = { time: number; value: number }
 
 		const CRYPTO5Data: CRYPTO5[] = []
-
 		const processedData = new Map<number, processedDataType[]>()
 
 		data.forEach((list) => {
@@ -287,7 +279,6 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 							obj.date = new Date(time * 1000).toDateString()
 							existingArray?.push(obj)
 						}
-
 					})
 				}
 
@@ -315,8 +306,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 			}
 		});
 
-		console.log(sortedProcessedData);
-		console.log(firstEntryOfEachMonth);
+
 		let isCreationDay = true;
 		let divisor = 0
 		const firstEntryKey = sortedProcessedData.keys().next().value;
@@ -364,19 +354,16 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 						}) as processedDataType[]
 						const oldBase = baseMult
 						baseMult = getIndexValue(alteredPrev, oldBase, divisor) * (1 / getIndexValue(foundFirstData, oldBase, divisor))
-						// console.log('baseMult',baseMult)
 					}
 				}
 
 				cr5Obj.time = timestamp
-				console.log('base mutl before cal price:', baseMult)
 				cr5Obj.value = getIndexValue(dataArr, baseMult, divisor)
 				CRYPTO5Data.push(cr5Obj)
 			}
 
 		});
 
-		console.log(CRYPTO5Data)
 		return CRYPTO5Data
 	}
 }

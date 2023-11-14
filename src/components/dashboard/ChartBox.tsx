@@ -97,16 +97,19 @@ const DashboardChartBox = () => {
 					name: 'bitcoin',
 					colName:'bitcoin',
 					logo: btc.src,
+					selectionColor: comparisonIndices.find(index => index.columnName === 'bitcoin')?.selectionColor
 				},
 				{
 					name: 'gold',
 					colName:'gold',
 					logo: gold.src,
+					selectionColor: comparisonIndices.find(index => index.columnName === 'gold')?.selectionColor
 				},
 				{
 					name: 'oil',
 					colName:'oil',
 					logo: oil.src,
+					selectionColor: comparisonIndices.find(index => index.columnName === 'oil')?.selectionColor
 				},
 			],
 		},
@@ -117,21 +120,25 @@ const DashboardChartBox = () => {
 					name: 's&p',
 					colName: 'sandp',
 					logo: sandp.src,
+					selectionColor: comparisonIndices.find(index => index.columnName === 'sandp')?.selectionColor
 				},
 				{
 					name: 'dow30',
 					colName: 'dow',
 					logo: dow.src,
+					selectionColor: comparisonIndices.find(index => index.columnName === 'dow')?.selectionColor
 				},
 				{
 					name: 'nasdaq',
 					colName: 'nasdaq',
 					logo: nasdaq.src,
+					selectionColor: comparisonIndices.find(index => index.columnName === 'nasdaq')?.selectionColor
 				},
 				{
 					name: 'nyse',
 					colName:'nyse',
 					logo: nyse.src,
+					selectionColor: comparisonIndices.find(index => index.columnName === 'nyse')?.selectionColor
 				},
 			],
 		},
@@ -209,7 +216,9 @@ const DashboardChartBox = () => {
 												}
 											}}
 											
-											className="w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
+											className="w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200" style={{
+												backgroundColor: selectedIndices.includes(assetClass.colName) ? assetClass.selectionColor : "transparent"
+											}}
 										>
 											<div className="flex flex-row items-center justify-start gap-2">
 												<div
@@ -218,7 +227,9 @@ const DashboardChartBox = () => {
 														backgroundImage: `url('${assetClass.logo}')`,
 													}}
 												></div>
-												<h5 className="montrealBold text-lg text-blackText-500 uppercase">{assetClass.name}</h5>
+												<h5 className={`montrealBold text-lg uppercase ${selectedIndices.includes(assetClass.colName) ? "titleShadow" : ""}`} style={{
+													color: selectedIndices.includes(assetClass.colName) ? "#FFFFFF" : "#2A2A2A"
+												}}>{assetClass.name}</h5>
 											</div>
 											<h5 className="pangramCompact text-sm text-nexLightGreen-500">+1.02%</h5>
 										</div>
@@ -440,7 +451,6 @@ const DashboardChartBox = () => {
 					<div className="h-full w-3/5 grid grid-cols-3 auto-rows-max justify-start items-start gap-y-5 px-3">
 						{
 							allClasses.map((cls, key) => {
-								// console.log(cls)
 								if (cls.category == classesCategory) {
 									return (
 										<div key={key}

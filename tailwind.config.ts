@@ -41,6 +41,12 @@ const config: Config = {
         colorSix: {
           500: "#CEDFDF"
         },
+        colorSeven: {
+          500: "#5E869B"
+        },
+        lightBlueBackground:{
+          500: "#86afbfe6"
+        },
         nexLightGreen: {
           500: "#089981",
         },
