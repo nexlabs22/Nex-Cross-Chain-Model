@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { Shape, ExtrudeGeometry } from 'three';
-
+import * as TWEEN from '@tweenjs/tween.js';
 interface PieChart3DProps {
   data: { label: string; percentage: string; color: string }[];
 }
@@ -19,21 +19,21 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 1000);
 
-
       renderer.setClearColor(0xf2f2f2);
 
       renderer.setSize(canvas.width, canvas.height);
 
       const radius = 5;
-      const height = 1; 
+      const height = 1;
 
       let startAngle = 0;
 
+      // Create slices
       data.forEach((sliceData, index) => {
         const percentage = parseFloat(sliceData.percentage);
         const endAngle = startAngle + (percentage / 100) * Math.PI * 2;
 
-        const shape = new Shape();
+        const shape = new THREE.Shape();
         shape.moveTo(0, 0);
         shape.arc(0, 0, radius, startAngle, endAngle, false);
         shape.lineTo(0, 0);
@@ -54,6 +54,9 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
           shininess: 0,
           specular: new THREE.Color(0x000000),
         });
+
+        // Set initial emissive intensity to 0
+        material.emissiveIntensity = 0;
 
         const slice = new THREE.Mesh(geometry, material);
 
@@ -96,21 +99,33 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
           const newIntersectedSlice = intersects[0].object as THREE.Mesh;
 
           if (newIntersectedSlice.material instanceof THREE.MeshPhongMaterial) {
-            newIntersectedSlice.material.emissiveIntensity = 0.02; 
+            newIntersectedSlice.material.emissiveIntensity = 0.02;
+
+            // Tween the scale
+            new TWEEN.Tween(newIntersectedSlice.scale)
+              .to({ x: 1.1, y: 1.1, z: 1.1 }, 500)
+              .easing(TWEEN.Easing.Quadratic.Out)
+              .start();
+
+            slices.forEach((slice) => {
+              if (slice !== newIntersectedSlice) {
+                // Tween the scale
+                new TWEEN.Tween(slice.scale)
+                  .to({ x: 1, y: 1, z: 1 }, 500)
+                  .easing(TWEEN.Easing.Quadratic.Out)
+                  .start();
+              }
+            });
           }
-
-          newIntersectedSlice.scale.set(1.1, 1.1, 1.1);
-
-          slices.forEach((slice) => {
-            if (slice !== newIntersectedSlice) {
-              slice.scale.set(1, 1, 1);
-            }
-          });
 
           intersectedSlice = newIntersectedSlice;
         } else {
           slices.forEach((slice) => {
-            slice.scale.set(1, 1, 1);
+            // Tween the scale
+            new TWEEN.Tween(slice.scale)
+              .to({ x: 1, y: 1, z: 1 }, 500)
+              .easing(TWEEN.Easing.Quadratic.Out)
+              .start();
 
             if (slice.material instanceof THREE.MeshPhongMaterial) {
               slice.material.emissiveIntensity = 0;
@@ -127,6 +142,7 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
         requestAnimationFrame(animate);
 
         renderer.render(scene, camera);
+        TWEEN.update(); // Update Tween.js animations
       };
 
       slices.forEach((slice) => {
@@ -174,7 +190,7 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <canvas ref={canvasRef} width={400} height={400} style={{ border: 'none' }} />
-      <div ref={legendRef} style={{ display: 'flex', marginTop: '10px', flexDirection: "row", alignItems: "center", justifyContent: 'center', gap: "15px" }}></div>
+      <div ref={legendRef} style={{ display: 'flex', marginTop: '10px', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '15px' }}></div>
     </div>
   );
 };
