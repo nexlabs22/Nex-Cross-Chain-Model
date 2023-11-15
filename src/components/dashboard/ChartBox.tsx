@@ -30,9 +30,13 @@ import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
 const DashboardChartBox = () => {
 	const { defaultIndex } = useLandingPageStore()
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
-	const { IndexData, fetchIndexData, removeIndex, selectedDuration, selectDuration } = useChartDataStore()
+	const { fetchIndexData, removeIndex, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data} = useChartDataStore()
 	const [classesModalOpen, setClassesModalOpen] = useState<boolean>(false)
 	const [classesCategory, setClassesCategory] = useState<string>('indices')
+
+	useEffect(()=>{
+		console.log('dayChange',dayChange )
+	},[dayChange])
 
 	const openClassesModal = () => {
 		setClassesModalOpen(true)
@@ -42,9 +46,10 @@ const DashboardChartBox = () => {
 		setClassesModalOpen(false)
 	}
 
-	useEffect(() => {
-		fetchIndexData({ tableName: 'histcomp', index: defaultIndex })
-	}, [defaultIndex, fetchIndexData, selectedDuration])
+	// useEffect(() => {
+	// 	fetchIndexData({ tableName: 'histcomp', index: defaultIndex })
+	// }, [defaultIndex, fetchIndexData, selectedDuration])
+
 
 	const PrevArrow = ({ onClick }: { onClick: () => void }) => (
 		<div
@@ -95,19 +100,19 @@ const DashboardChartBox = () => {
 			assetClasses: [
 				{
 					name: 'bitcoin',
-					colName:'bitcoin',
+					colName: 'bitcoin',
 					logo: btc.src,
 					selectionColor: comparisonIndices.find(index => index.columnName === 'bitcoin')?.selectionColor
 				},
 				{
 					name: 'gold',
-					colName:'gold',
+					colName: 'gold',
 					logo: gold.src,
 					selectionColor: comparisonIndices.find(index => index.columnName === 'gold')?.selectionColor
 				},
 				{
 					name: 'oil',
-					colName:'oil',
+					colName: 'oil',
 					logo: oil.src,
 					selectionColor: comparisonIndices.find(index => index.columnName === 'oil')?.selectionColor
 				},
@@ -136,7 +141,7 @@ const DashboardChartBox = () => {
 				},
 				{
 					name: 'nyse',
-					colName:'nyse',
+					colName: 'nyse',
 					logo: nyse.src,
 					selectionColor: comparisonIndices.find(index => index.columnName === 'nyse')?.selectionColor
 				},
@@ -147,44 +152,44 @@ const DashboardChartBox = () => {
 	const allClasses = [
 		{
 			name: 'bitcoin',
-			colName:'bitcoin',
+			colName: 'bitcoin',
 			logo: btc.src,
 			category: "cryptocurrencies"
 		},
 		{
 			name: 'gold',
-			colName:'gold',
+			colName: 'gold',
 			logo: gold.src,
 			category: "goods"
 		},
 		{
 			name: 'oil',
-			colName:'oil',
+			colName: 'oil',
 			logo: oil.src,
 			category: "goods"
 		},
 
 		{
 			name: 's&p',
-			colName:'sandp',
+			colName: 'sandp',
 			logo: sandp.src,
 			category: "indices"
 		},
 		{
 			name: 'dow30',
-			colName:'dow',
+			colName: 'dow',
 			logo: dow.src,
 			category: "indices"
 		},
 		{
 			name: 'nasdaq',
-			colName:'nasdaq',
+			colName: 'nasdaq',
 			logo: nasdaq.src,
 			category: "indices"
 		},
 		{
 			name: 'nyse',
-			colName:'nyse',
+			colName: 'nyse',
 			logo: nyse.src,
 			category: "indices"
 		},
@@ -204,7 +209,7 @@ const DashboardChartBox = () => {
 											key={key}
 											onClick={() => {
 												if (!selectedIndices.includes(assetClass.colName)) {
-													fetchIndexData({ tableName: 'histcomp', index: assetClass.colName})
+													fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
 													setSelectedIndices((prevState) => [...prevState, assetClass.colName])
 												} else {
 													removeIndex(assetClass.colName)
@@ -215,7 +220,7 @@ const DashboardChartBox = () => {
 													)
 												}
 											}}
-											
+
 											className="w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200" style={{
 												backgroundColor: selectedIndices.includes(assetClass.colName) ? assetClass.selectionColor : "transparent"
 											}}
@@ -231,7 +236,7 @@ const DashboardChartBox = () => {
 													color: selectedIndices.includes(assetClass.colName) ? "#FFFFFF" : "#2A2A2A"
 												}}>{assetClass.name}</h5>
 											</div>
-											<h5 className="pangramCompact text-sm text-nexLightGreen-500">+1.02%</h5>
+											<h5 className={`pangramCompact text-sm ${Number(dayChange[assetClass.colName]) > 0 ? 'text-nexLightGreen-500': 'text-nexLightRed-500' }`}>{`${Number(dayChange[assetClass.colName]) > 0 ? '+'+dayChange[assetClass.colName] : dayChange[assetClass.colName]}`}</h5>
 										</div>
 									)
 								})
@@ -246,53 +251,6 @@ const DashboardChartBox = () => {
 					</div>
 				</div>
 				<div className="h-[80vh] w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
-					{/*<div className="w-full relative z-50 h-fit flex flex-row gap-3 overflow-x-scroll lg:overflow-x-hidden items-center justify-start lg:justify-center">
-				{comparisonIndices.map((item, index) => {
-					return (
-						<div key={index} className="indexContainer h-fit w-screen lg:w-1/4">
-							<div
-								className="flex h-fit w-full cursor-pointer flex-row items-center justify-between rounded-3xl px-3 py-[10px] hover:bg-gray-200/50"
-								id="comparisonItem"
-								onClick={() => {
-									if (!selectedIndices.includes(item.columnName)) {
-										fetchIndexData({ tableName: 'histcomp', index: item.columnName})
-										setSelectedIndices((prevState) => [...prevState, item.columnName])
-									} else {
-										removeIndex(item.columnName)
-										setSelectedIndices((prevState) =>
-											prevState.filter((i) => {
-												return i != item.columnName
-											})
-										)
-									}
-								}}
-							>
-								<div className="flex w-full lg:w-10/12 flex-row items-center py-4 justify-start">
-									<Image src={item.logo} width={50} height={50} alt="zef" className="mr-3 ml-3 rounded-full"></Image>
-									<div className="indexDataContainer flex h-fit w-3/5 flex-col items-start justify-center">
-										<h5
-											className="montrealBold mb-2 text-base"
-											style={{
-												color: selectedIndices.includes(item.columnName) ? item.selectionColor : '#2A2A2A',
-											}}
-										>
-											{item.name}
-										</h5>
-										<div className="flex w-full flex-row items-center justify-start">
-											<h5 className="pangramCompact lg:mr-5 text-sm text-blackText-500">{item.price} USD</h5>
-											<h5 className="hidden lg:block pangramCompact text-sm text-nexLightRed-500">{item.change}%</h5>
-										</div>
-									</div>
-								</div>
-								<div className="flex w-2/12 flex-row items-center justify-end pr-5">
-									{selectedIndices.includes(item.columnName) ? <BsCheckCircleFill color={item.selectionColor} size={25} /> : <IoIosCheckmarkCircleOutline color="#CCCCCC" size={25} />}
-								</div>
-							</div>
-						</div>
-					)
-				})}
-			</div>*/}
-
 					<div className="flex flex-row items-start justify-start px-2">
 						<button
 							type="button"
@@ -414,7 +372,19 @@ const DashboardChartBox = () => {
 					<p className="circularMedium text-base text-black">6M</p>
 				</button>
 			</div> */}
-					<Chart data={IndexData} />
+					{
+					// loading ? (
+					// 	<div className="flex items-center justify-center h-full">
+					// 		<p>Loading...</p>
+					// 	</div>
+					// ) : (
+						defaultIndex === 'ANFI' ? (
+							<Chart data={ANFIData} />
+						) : (<Chart data={CR5Data} />)
+
+
+					// )
+					}
 				</div>
 			</section>
 			<GenericModal isOpen={classesModalOpen} onRequestClose={closeClassesModal} modalWidth={40}>
@@ -454,9 +424,10 @@ const DashboardChartBox = () => {
 								if (cls.category == classesCategory) {
 									return (
 										<div key={key}
-											onClick={()=>{
+											onClick={() => {
+												closeClassesModal();
 												if (!selectedIndices.includes(cls.colName)) {
-													fetchIndexData({ tableName: 'histcomp', index: cls.colName})
+													fetchIndexData({ tableName: 'histcomp', index: cls.colName })
 													setSelectedIndices((prevState) => [...prevState, cls.colName])
 												} else {
 													removeIndex(cls.colName)

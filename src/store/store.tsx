@@ -1,8 +1,10 @@
 import { create } from 'zustand'
-import { chartDataType } from './storeTypes'
+import { chartDataType, dayChangeType } from './storeTypes'
 import getIndexData from '@utils/indexCalculation'
 import axios from 'axios'
 import { isSameDay } from '@/utils/conversionFunctions'
+import { dayChangeInitial } from './storeInitialValues'
+import get24hDayChangePer from '@utils/get24hDayChangePer'
 
 type LandingPageStore = {
 	//Select slide index
@@ -24,14 +26,17 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 }))
 
 interface value {
-	data:chartDataType[]
+	data: chartDataType[]
 }
 
 interface chartDataStoreType {
 	chartData: { [key: string]: value },
 	IndexData: { time: number, value: number }[],
+	ANFIData: { time: number, value: number }[],
+	CR5Data: { time: number, value: number }[],
 	selectedIndex: { time: number, open: number, high: number, low: number, close: number }[],
-	ANFIWeightage: {time:number, btc:number, gold:number}[],
+	ANFIWeightage: { time: number, btc: number, gold: number }[],
+	dayChange: dayChangeType,
 	loading: boolean,
 	error: Error | null
 	selectedDuration: number
@@ -39,18 +44,23 @@ interface chartDataStoreType {
 	fetchIndexData: ({ tableName, index }: { tableName: string, index: string }) => void
 	removeIndex: (indexName: string) => void
 	setANFIWeightage: () => void
+	setDayChangePer: () => void
 }
 
 const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	chartData: {},
 	IndexData: [],
+	ANFIData: [],
+	CR5Data: [],
 	selectedIndex: [],
 	ANFIWeightage: [],
+	dayChange: dayChangeInitial,
 	loading: false,
 	error: null,
 	selectedDuration: 360,
 	selectDuration: (duration: number) => set((state) => ({ selectedDuration: duration })),
 	fetchIndexData: async ({ tableName, index }) => {
+		console.log(index)
 		try {
 			set({ loading: true, error: null })
 			const response = await fetch(
@@ -60,9 +70,12 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			const inputData = await response.json()
 
 			set((state) => {
-				if (index === 'ANFI' || index === 'CRYPTO5') {
+				if (index === 'OurIndex') {
+					const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
+					const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
 					return {
-						IndexData: getIndexData(index, inputData.data, state.ANFIWeightage, inputData?.top5Cryptos),
+						ANFIData: anfiIndexPrices,
+						CR5Data: cr5IndexPrices,
 						loading: false
 					}
 				} else {
@@ -80,8 +93,6 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			} else {
 				set({ error: new Error('Error fetching chart data') })
 			}
-		} finally {
-			set({ loading: false })
 		}
 	},
 	removeIndex: async (indexName: string) => {
@@ -96,34 +107,57 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 		const bitcoinMC_URL = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max`;
 		const goldMC_URL = `https://api.coingecko.com/api/v3/coins/tether-gold/market_chart?vs_currency=usd&days=max`;
 		const bitcoinMarketCaps = await axios.get(bitcoinMC_URL)
-		.then((res) => res.data.market_caps)
-		.then((res)=> res.filter((timestamp: number[])=> {
-			const date = new Date(timestamp[0]);
-			return date.getDate() === 1;
-		}))
+			.then((res) => res.data.market_caps)
+			.then((res) => res.filter((timestamp: number[]) => {
+				const date = new Date(timestamp[0]);
+				return date.getDate() === 1;
+			}))
 		const goldMarketCaps = await axios.get(goldMC_URL)
-		.then((res) => res.data.market_caps)
-		.then((res)=> res.filter((timestamp: number[])=> {
-			const date = new Date(timestamp[0]);
-			return date.getDate() === 1;
-		}))
+			.then((res) => res.data.market_caps)
+			.then((res) => res.filter((timestamp: number[]) => {
+				const date = new Date(timestamp[0]);
+				return date.getDate() === 1;
+			}))
 
-		const weightageResult:{time:number, btc:number, gold:number}[]  = []
+		const weightageResult: { time: number, btc: number, gold: number }[] = []
 
-		bitcoinMarketCaps.map((btc:number[])=>{
-			goldMarketCaps.map((gold: number[])=>{
-				const obj:{time:number, btc:number, gold:number} = {time:0,btc:0,gold:0}
-				if(isSameDay(btc[0],gold[0])){
+		bitcoinMarketCaps.map((btc: number[]) => {
+			goldMarketCaps.map((gold: number[]) => {
+				const obj: { time: number, btc: number, gold: number } = { time: 0, btc: 0, gold: 0 }
+				if (isSameDay(btc[0], gold[0])) {
 					obj.time = btc[0];
-					obj.btc = (btc[1]/(btc[1]+gold[1]));
-					obj.gold = (gold[1]/(btc[1]+gold[1]));
-					weightageResult.push(obj);					
+					obj.btc = (btc[1] / (btc[1] + gold[1]));
+					obj.gold = (gold[1] / (btc[1] + gold[1]));
+					weightageResult.push(obj);
 				}
 			})
 		})
 
-		set({ANFIWeightage: weightageResult})
-	}
+		set({ ANFIWeightage: weightageResult })
+	},
+	setDayChangePer: async () => {
+		const response = await fetch(
+			`/api/get24Change`
+		)
+		const data = await response.json()
+		// const cryptoChange:{ [key: string]: { usd_24h_change: number } } = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true').then((res)=>res.data);
+
+
+		// Object.entries(cryptoChange).forEach(([key, value]: [string, { usd_24h_change: number }]) => {
+		// 	data[key] = value.usd_24h_change;
+		//   });
+
+		// console.log(cryptoChange)
+		console.log(data)
+
+		set((state) => {
+			// console.log(state.chartData);
+			return {
+				dayChange: data.changes
+			}
+		})
+
+	},
 }))
 
 export { useLandingPageStore, useChartDataStore }

@@ -32,5 +32,15 @@ export interface dataFromDatabasetype {
 	solana: number
 	okb: number
 	[key: string]: number|string
+}
 
+export interface dayChangeType {
+	sandp: number
+	dow: number
+	nasdaq: number
+	nyse: number
+	oil: number
+	gold: number
+	bitcoin: number
+	[key: string]: number|string
 }

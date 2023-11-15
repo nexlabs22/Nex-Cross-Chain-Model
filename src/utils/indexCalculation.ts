@@ -37,12 +37,10 @@ function getANFIndexValue(arr: ANFIDataType[], base: number, div: number) {
 	return value / div
 }
 
-export default function getIndexData(index: string, data: dataFromDatabasetype[], ANFIWeightage: { time: number, btc: number, gold: number }[], top5: { timestamp: string, top5: string }[]) {
+export default function getIndexData(index: string, data: dataFromDatabasetype[], top5: { timestamp: string, top5: string }[]) {
 
 	if (index === 'ANFI') {
 		const ANFIData: { time: number; value: number }[] = []
-
-
 		const anfiWeightMap = new Map<number, {
 			date: string
 			weightBtc: number
@@ -67,6 +65,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 			function calculatePriceChange(data: dataFromDatabasetype[]): PriceChange {
 				let totalBitcoinReturns = 0;
 				let totalGoldReturns = 0;
+				data.sort((a,b)=>b.time - a.time)
 
 				for (let i = 1; i < data.length; i++) {
 					const prevDayBitcoinPrice = data[i - 1].bitcoin;
@@ -91,6 +90,8 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 
 			function findPriceDataInRange(data: dataFromDatabasetype[], closeDate: number, openDate: number): PriceChange {
 				const result: dataFromDatabasetype[] = [];
+				data.sort((a,b)=>a.time - b.time)
+
 				let foundCloseDate = false;
 				let openDateFound = false;
 
@@ -129,10 +130,11 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 
 				const volatilityBtc = bitcoin / 100
 				const volatilityGold = gold / 100
-
+				
 				const inverseVolatilityBtc = 1 / volatilityBtc
 				const inverseVolatilityGold = 1 / volatilityGold
-
+				
+				
 				const sumOfInverVol = inverseVolatilityBtc + inverseVolatilityGold
 				const weightBTC = inverseVolatilityBtc / sumOfInverVol
 				const weightGold = inverseVolatilityGold / sumOfInverVol
@@ -234,7 +236,6 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 
 		return ANFIData
 	} else if (index === 'CRYPTO5') {
-
 		type CRYPTO5 = { time: number; value: number }
 
 		const CRYPTO5Data: CRYPTO5[] = []
