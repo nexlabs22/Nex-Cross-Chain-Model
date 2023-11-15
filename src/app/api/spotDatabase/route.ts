@@ -17,15 +17,17 @@ export async function GET(request: NextRequest, response: NextResponse) {
 
 	try {
 		let columnName = indexName
-		if (indexName === 'CRYPTO5') {
-			// columnName = 'btc,bnb,eth,ripple,sol'
-			columnName = 'bitcoin,binancecoin,ethereum,ripple,solana,litecoin, dogecoin,monero,stellar,ethereumclassic,bitcoincash,cardano,eos,bitcoincashsv,chainlink,polkadot,okb'
-		} else if (indexName === 'ANFI') {
-			columnName = 'bitcoin,gold'
-		}
-
+		// if (indexName === 'CRYPTO5') {
+		// 	// columnName = 'btc,bnb,eth,ripple,sol'
+		// 	columnName = 'bitcoin,binancecoin,ethereum,ripple,solana,litecoin, dogecoin,monero,stellar,ethereumclassic,bitcoincash,cardano,eos,bitcoincashsv,chainlink,polkadot,okb'
+		// } else if (indexName === 'ANFI') {
+			// 	columnName = 'bitcoin,gold'
+			// }
+		if(indexName === 'OurIndex'){
+			columnName = 'bitcoin,gold,binancecoin,ethereum,ripple,solana,litecoin, dogecoin,monero,stellar,ethereumclassic,bitcoincash,cardano,eos,bitcoincashsv,chainlink,polkadot,okb'
+		}	
 		let query = ''
-		if (indexName === 'CRYPTO5' || indexName === 'ANFI') {
+		if (indexName === 'OurIndex') {
 			query = QueryforIndex(tableName, columnName)
 		} else {
 			query = QueryCommaSplit(tableName, columnName)
@@ -36,7 +38,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
 			return NextResponse.json({ message: 'no good fetch', data: res.rows }, { status: 400 })
 		}
 
-		if(indexName === 'CRYPTO5'){
+		if(indexName === 'OurIndex'){
 			const top5Cryptos = await client.query(`Select timestamp,top5 from top5crypto WHERE timestamp >= '1401580800000' order by timestamp`).then((res)=> res.rows)
 			return NextResponse.json({data:res.rows, top5Cryptos} ,{ status: 200 })
 		}

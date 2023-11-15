@@ -27,11 +27,16 @@ import etherscanLogo from '@assets/images/etherscan.png'
 
 const TopIndexData = () => {
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
-	const { setANFIWeightage } = useChartDataStore()
+	const { setANFIWeightage, fetchIndexData, setDayChangePer } = useChartDataStore()
 
 	useEffect(() => {
-		setANFIWeightage()
-	}, [setANFIWeightage])
+		fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
+	}, [fetchIndexData])
+
+	useEffect(() => {
+		setDayChangePer();
+		setANFIWeightage();
+	}, [setANFIWeightage,setDayChangePer])
 
 	const IndicesWithDetails = [
 		{
