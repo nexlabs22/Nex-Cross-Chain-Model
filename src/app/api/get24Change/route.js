@@ -5,8 +5,8 @@ import axios from 'axios';
 
 
 export async function GET() {
+    // const symbols = ['^GSPC', '^IXIC', '^DJI', '^NYA', 'GC=F', 'CL=F','BTC-USD'];
     const symbols = ['^GSPC', '^IXIC', '^DJI', '^NYA', 'GC=F', 'CL=F'];
-    const cryptos = ['bitcoin']
     const symbolToName = {
         "^GSPC": "sandp",
         "^IXIC": "nasdaq",
@@ -14,6 +14,7 @@ export async function GET() {
         "^NYA": "nyse",
         "GC=F": "gold",
         "CL=F": "oil",
+        "BTC": "bitcoin"
     };
     const endDate = new Date();
     const startDate = getPreviousWeekday(endDate);
@@ -33,9 +34,9 @@ export async function GET() {
                 const prices = value.map(entry => entry.close);
 
                 if (prices.length >= 2) {
-                    const currentPrice = prices[prices.length - 1];
-                    const previousPrice = prices[0];
-                    const change = ((previousPrice - currentPrice) / currentPrice) * 100;
+                    const currentPrice = prices[0];
+                    const previousPrice = prices[1];
+                    const change = ((currentPrice - previousPrice) / previousPrice) * 100;
 
                     const symbolName = symbolToName[key];
                     changes[symbolName] = change.toFixed(2);
@@ -46,13 +47,21 @@ export async function GET() {
         } else {
             return NextResponse.json({ message: `No historical data available for the symbol ${key}` }, { status: 400 })
         }
-        changes['bitcoin'] = 0;
-        
+        // changes['bitcoin'] = 0;
+
         // const cryptoStr = cryptos.join('%2C')
         // const cryptoChange = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${cryptoStr}&vs_currencies=usd&include_24hr_change=true`).then((res)=>res.data);
-		// Object.entries(cryptoChange).forEach(([key, value]) => {
-		// 	changes[key] = value.usd_24h_change.toFixed(2);
-		//   });
+        const cryptoChange = await axios.get(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=BTC`, {
+            headers: {
+                'X-CMC_PRO_API_KEY': '48240a2e-47fc-4810-9b59-e01911a148ab',
+            },
+        }).then((res) => res.data.data);
+
+        console.log(cryptoChange.BTC[0].quote.USD.percent_change_24h)
+        Object.entries(cryptoChange).forEach(([key, value]) => {
+            const symbolName = symbolToName[key];
+            changes[symbolName] = value[0].quote.USD.percent_change_24h.toFixed(2);
+        });
 
         return NextResponse.json({ changes }, { status: 200 })
 
