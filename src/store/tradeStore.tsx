@@ -1,9 +1,10 @@
-"use client"; // This is a client component 👈🏽
+'use client' // This is a client component 👈🏽
 import { create } from 'zustand'
+import { useShallow } from 'zustand/shallow'
 import circle from '@assets/images/circle.png'
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
-import { goerliAnfiFactory, goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses';
+import { goerliAnfiFactory, goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
 
 type Coin = {
 	id: number
@@ -15,48 +16,51 @@ type Coin = {
 }
 
 type TradePageStore = {
-	
 	//dashboard default index
 	defaultIndex: string
-	changeDefaultIndex : (index: string) => void
+	changeDefaultIndex: (index: string) => void
 
 	openMobileMenu: boolean
 	setOpenMobileMenu: (open: boolean) => void
 
-	isChartSettingsModalOpen: boolean;
+	isChartSettingsModalOpen: boolean
 	setChartSettingsModalOpen: (open: boolean) => void
 
-	isFromCurrencyModalOpen: boolean;
+	isFromCurrencyModalOpen: boolean
 	setFromCurrencyModalOpen: (open: boolean) => void
 
-	isToCurrencyModalOpen: boolean;
+	isToCurrencyModalOpen: boolean
 	setToCurrencyModalOpen: (open: boolean) => void
 
-	// Swap from currency : 
-	swapFromCur: Coin,
+	selectedPortfolioChartSliceIndex: string
+	setSelectedPortfolioChartSliceIndex: (index: string) => void
+
+	// Swap from currency :
+	swapFromCur: Coin
 	changeSwapFromCur: (cur: Coin) => void
 
 	// Swap from value :
-	swapFromAmount: number,
-	setSwapFromAmount: (amount: number) =>void
+	swapFromAmount: number
+	setSwapFromAmount: (amount: number) => void
 
-	// Swap to currency : 
-	swapToCur: Coin,
+	// Swap to currency :
+	swapToCur: Coin
 	changeSwapToCur: (cur: Coin) => void
 
 	// Swap to value :
-	swapToAmount: number,
-	setSwapToAmount: (amount: number) =>void
+	swapToAmount: number
+	setSwapToAmount: (amount: number) => void
 
 	// NFT Image:
-	nftImage: string,
-	setNftImage: (image: string) =>void
-
+	nftImage: string
+	setNftImage: (image: string) => void
 }
 
 const useTradePageStore = create<TradePageStore>()((set) => ({
+	selectedPortfolioChartSliceIndex: 'ANFI',
+	setSelectedPortfolioChartSliceIndex: (index: string) => set((state) => ({ defaultIndex: index })),
 
-	defaultIndex: "CRYPTO5",
+	defaultIndex: 'CRYPTO5',
 	changeDefaultIndex: (index: string) => set((state) => ({ defaultIndex: index })),
 
 	isChartSettingsModalOpen: false,
@@ -77,7 +81,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		name: 'USD Coin',
 		Symbol: 'USDC',
 		address: goerliUsdtAddress,
-		factoryAddress: ''
+		factoryAddress: '',
 	},
 	changeSwapFromCur: (cur: Coin) => set((state) => ({ swapFromCur: cur })),
 
@@ -87,7 +91,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		name: 'ANFI',
 		Symbol: 'ANFI',
 		address: goerliAnfiIndexToken,
-		factoryAddress: goerliAnfiFactory
+		factoryAddress: goerliAnfiFactory,
 	},
 	changeSwapToCur: (cur: Coin) => set((state) => ({ swapToCur: cur })),
 
@@ -97,9 +101,8 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 	swapToAmount: 0,
 	setSwapToAmount: (amount: number) => set((state) => ({ swapToAmount: amount })),
 
-	nftImage: "",
+	nftImage: '',
 	setNftImage: (image: string) => set((state) => ({ nftImage: image })),
-
 }))
 
 export default useTradePageStore
