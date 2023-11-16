@@ -2,11 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { Shape, ExtrudeGeometry } from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
+import useTradePageStore from '@/store/tradeStore';
+
 interface PieChart3DProps {
   data: { label: string; percentage: string; color: string }[];
 }
 
 const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
+
+  const {selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex} = useTradePageStore();
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
   const slices: THREE.Mesh[] = [];
@@ -101,9 +106,12 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
           if (newIntersectedSlice.material instanceof THREE.MeshPhongMaterial) {
             newIntersectedSlice.material.emissiveIntensity = 0.02;
 
+            //setSelectedPortfolioChartSliceIndex(newIntersectedSlice.userData.label)
+            console.log('Hovered Slice Data:', newIntersectedSlice.userData.label);
+            
             // Tween the scale
             new TWEEN.Tween(newIntersectedSlice.scale)
-              .to({ x: 1.1, y: 1.1, z: 1.1 }, 500)
+              .to({ x: 1.1, y: 1.1, z: 1.1 }, 200)
               .easing(TWEEN.Easing.Quadratic.Out)
               .start();
 
@@ -111,7 +119,7 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
               if (slice !== newIntersectedSlice) {
                 // Tween the scale
                 new TWEEN.Tween(slice.scale)
-                  .to({ x: 1, y: 1, z: 1 }, 500)
+                  .to({ x: 1, y: 1, z: 1 }, 200)
                   .easing(TWEEN.Easing.Quadratic.Out)
                   .start();
               }
@@ -123,7 +131,7 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
           slices.forEach((slice) => {
             // Tween the scale
             new TWEEN.Tween(slice.scale)
-              .to({ x: 1, y: 1, z: 1 }, 500)
+              .to({ x: 1, y: 1, z: 1 }, 200)
               .easing(TWEEN.Easing.Quadratic.Out)
               .start();
 

@@ -9,6 +9,7 @@ import 'react-tabs/style/react-tabs.css'
 import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
 import { useEffect } from 'react'
+import useTradePageStore from '@/store/tradeStore'
 
 import bg from '@assets/images/3d hologram.png'
 import anfiLogo from '@assets/images/anfi.png'
@@ -22,9 +23,11 @@ import { indexTokenAbi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 
 import GenericPieChart from '@/components/GenericPieChart'
+import Link from 'next/link'
 
 export default function Portfolio() {
 	const address = useAddress()
+	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
 
 	const anfiTokenContract = useContract(goerliAnfiIndexToken, indexTokenAbi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
@@ -46,12 +49,12 @@ export default function Portfolio() {
 		{
 			label: 'ANFI',
 			percentage: '37%',
-			color: '#86afbf',
+			color: '#133140',
 		},
 		{
 			label: 'CRYPTO 5',
 			percentage: '63%',
-			color: '#5E869B',
+			color: '#b5e7ff',
 		},
 	]
 
@@ -106,7 +109,7 @@ export default function Portfolio() {
 
 							<TabPanel>
 								<div className="w-full h-fit p-4">
-									<div className="px-4 py-8 grid grid-cols-2 grid-rows-auto lg:rid-cols-7 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
+									<div className="px-4 py-8 grid grid-cols-8 grid-rows-auto lg:rid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
 										<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 											<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
 											<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
@@ -130,8 +133,42 @@ export default function Portfolio() {
 					</div>
 					<div className="w-full h-fit px-5 lg:px-20 mt-10">
 						<h5 className="interBlack text-3xl text-blackText-500">Assets Distribution</h5>
-						<div className="w-full h-fit flex flex-row items-center justify-start mb-20">
-							<GenericPieChart data={PieChartdata} />
+						<div className="w-full h-full flex flex-row items-start justify-around">
+							<div className="w-1/2 h-fit flex flex-row items-center justify-start mb-20">
+								<GenericPieChart data={PieChartdata} />
+							</div>
+							<div className="w-1/2 h-full flex flex-col items-start justify-start gap-4 pt-28">
+								<h5 className="interBold text-xl text-blackText-500">
+									Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
+								</h5>
+								<div className="flex flex-row items-center justify-between gap-2">
+									<h5 className="interBold text-xl text-blackText-500">
+										Smart contract : <span className="interMedium">0xJN820...093NEZ</span>
+									</h5>
+									<div className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full">
+										<BiCopy color="#000000" size={12} />
+									</div>
+								</div>
+								<div className="flex flex-row items-center justify-between gap-2">
+									<h5 className="interBold text-xl text-blackText-500">
+										Last transaction : <span className="interMedium">0xJN820...093NEZ</span>
+									</h5>
+									<div className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full">
+										<BiCopy color="#000000" size={12} />
+									</div>
+								</div>
+								<div className="flex flex-row items-center justify-between gap-2">
+									<h5 className="interBold text-xl text-blackText-500">
+										Owned amount : <span className="interMedium">283.2</span>
+									</h5>
+								</div>
+								<div className="flex flex-row items-center justify-between gap-2">
+									<h5 className="interBold text-xl text-blackText-500">
+										Txn history : <span className="interMedium text-colorSeven-500"><Link href="">See More</Link></span>
+									</h5>
+									
+								</div>
+							</div>
 						</div>
 					</div>
 				</section>
