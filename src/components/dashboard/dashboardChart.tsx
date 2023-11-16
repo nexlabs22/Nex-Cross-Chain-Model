@@ -100,6 +100,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			}
 
 			areaSeries.setData(historyRangeFilter(data))
+			console.log('dataa', data)	
 
 			const container = chartContainerRef.current
 			container.style.position = 'relative'
