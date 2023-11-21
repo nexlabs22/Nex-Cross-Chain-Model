@@ -21,13 +21,18 @@ import { BsCalendar4 } from 'react-icons/bs'
 import { goerliAnfiIndexToken, goerliCrypto5IndexToken } from '@/constants/contractAddresses'
 import { indexTokenAbi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { toast } from 'react-toastify'
+import { GenericToast } from '@/components/GenericToast'
+import GenericModal from '@/components/GenericModal'
+import QRCode from 'react-qr-code'
 
 import GenericPieChart from '@/components/GenericPieChart'
 import Link from 'next/link'
 
 export default function Portfolio() {
 	const address = useAddress()
+	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
 
 	const anfiTokenContract = useContract(goerliAnfiIndexToken, indexTokenAbi)
@@ -36,16 +41,27 @@ export default function Portfolio() {
 	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [address])
 	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [address])
 	// const fiatBalance =
-	const anfiPercent = num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data)) * 100
-	const crypto5Percent = num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data)) * 100
+	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
+	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 
-	const [isCopied, setIsCopied] = useState(false);
+	const [isCopied, setIsCopied] = useState(false)
 
 	const handleCopy = () => {
-		setIsCopied(true);
-		setTimeout(() => setIsCopied(false), 2000); // Reset "copied" state after 2 seconds
-	};
-
+		if(address){
+			setIsCopied(true)
+		setTimeout(() => setIsCopied(false), 2000) // Reset "copied" state after 2 seconds
+		GenericToast({
+			type: 'success',
+			message: 'Copied !',
+		})
+		}else{
+			GenericToast({
+				type: 'error',
+				message: 'Please connect your wallet !',
+			})
+		}
+		
+	}
 
 	const data = [
 		['Asset', 'Percentage'],
@@ -432,7 +448,6 @@ export default function Portfolio() {
 		{ time: '2019-05-28', value: 179.11 },
 	]
 
-
 	return (
 		<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 			<section className="h-full w-fit overflow-x-hidde">
@@ -452,10 +467,19 @@ export default function Portfolio() {
 											<BiCopy color="#000000" size={15} />
 										</CopyToClipboard>
 									</div>
-									<div className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full">
+									<div
+										className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full cursor-pointer"
+										onClick={() => {
+											if(address) setQRModalVisible(true)
+											else GenericToast({
+												type: 'error',
+												message: `Please connect your wallet!`,
+											})
+										}}
+									>
 										<PiQrCodeDuotone color="#000000" size={15} />
 									</div>
-									{isCopied && <div style={{ color: 'green' }}>Copied!</div>}
+									
 								</div>
 								<div className=" bg-colorSeven-500 w-fit h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
 									<BsCalendar4 color="#FFFFFF" size={15} />
@@ -467,8 +491,8 @@ export default function Portfolio() {
 							<Chart data={complexData} />
 						</div> */}
 						<div className="lg:flex w-2/5 "></div>
-						<div className="lg:flex w-1/5 justify-end mr-0 opacity-50" id="smallChartBox">
-								<Chart data={complexData} />
+						<div className="lg:flex w-1/5 justify-end mr-0 relative" id="smallChartBox">
+						<Chart data={complexData} />
 						</div>
 					</div>
 					<div className="w-full h-fit px-2 lg:px-20">
@@ -536,9 +560,11 @@ export default function Portfolio() {
 								</div>
 								<div className="flex flex-row items-center justify-between gap-2">
 									<h5 className="interBold text-xl text-blackText-500">
-										Txn history : <span className="interMedium text-colorSeven-500"><Link href="">See More</Link></span>
+										Txn history :{' '}
+										<span className="interMedium text-colorSeven-500">
+											<Link href="">See More</Link>
+										</span>
 									</h5>
-									
 								</div>
 							</div>
 						</div>
@@ -549,6 +575,25 @@ export default function Portfolio() {
 			<div className="w-fit h-fit pt-16">
 				<Footer />
 			</div>
+			<GenericModal
+				isOpen={QRModalVisible}
+				onRequestClose={() => {
+					setQRModalVisible(false)
+				}}
+			>
+				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
+					{address ? (
+						<div className='h-fit w-fit'>
+							<QRCode size={256} style={{ height: 'auto', maxWidth: '100%', width: '100%' }} value={address} viewBox={`0 0 256 256`} />
+						</div>
+					) : (
+						''
+					)}
+					{
+						address ? (<h5 className="InterMedium text-blackText-500 text-xl text-center w-full my-10">{address}</h5>) : ("")
+					}
+				</div>
+			</GenericModal>
 		</main>
 	)
 }
