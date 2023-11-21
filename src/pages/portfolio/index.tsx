@@ -47,12 +47,20 @@ export default function Portfolio() {
 	const [isCopied, setIsCopied] = useState(false)
 
 	const handleCopy = () => {
-		setIsCopied(true)
+		if(address){
+			setIsCopied(true)
 		setTimeout(() => setIsCopied(false), 2000) // Reset "copied" state after 2 seconds
 		GenericToast({
 			type: 'success',
 			message: 'Copied !',
 		})
+		}else{
+			GenericToast({
+				type: 'error',
+				message: 'Please connect your wallet !',
+			})
+		}
+		
 	}
 
 	const data = [
