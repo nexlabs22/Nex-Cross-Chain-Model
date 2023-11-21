@@ -1,14 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import {
-	createChart,
-	DeepPartial,
-	LayoutOptions,
-	LineStyle,
-	LineWidth,
-	PriceScaleMode,
-	PriceScaleOptions,
-	TimeScaleOptions,
-} from 'lightweight-charts'
+import { createChart, DeepPartial, LayoutOptions, LineStyle, LineWidth, PriceScaleMode, PriceScaleOptions, TimeScaleOptions } from 'lightweight-charts'
 
 interface GradientAreaChartProps {
 	data: { time: string | number | Date; value: number }[]
@@ -23,13 +14,12 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 	useEffect(() => {
 		if (chartContainerRef.current) {
-
 			chartRef.current = createChart(chartContainerRef.current, {
 				width: chartContainerRef.current.offsetWidth,
 				height: 100,
 				timeScale: {
 					locked: true, // Lock the time scale to prevent dragging
-                    visible: false,
+					visible: false,
 					rightOffset: 0, // Ensure the x-axis extends to the right edge of the chart
 					leftOffset: 0, // Ensure the x-axis extends to the left edge of the chart
 					fixLeftEdge: true, // Fix the left edge of the x-axis to the chart's left edge
@@ -43,17 +33,17 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				} as DeepPartial<TimeScaleOptions>,
 				handleScale: false,
 				handleScroll: true,
-                crosshair: {
+				crosshair: {
 					vertLine: {
 						visible: false,
 					},
-					horzLine:{
+					horzLine: {
 						visible: false,
 					},
-                    mode: 0
+					mode: 0,
 				},
 				layout: {
-					background: { color: 'transparent' }
+					background: { color: 'transparent' },
 					// backgroundColor: 'red', // Set the background color to transparent
 				} as DeepPartial<LayoutOptions>, // Use type assertion to specify the type
 			})
@@ -75,7 +65,7 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			areaSeries.setData(data)
 
-            chartRef.current.timeScale().fitContent();
+			chartRef.current.timeScale().fitContent()
 
 			// Hide axes
 			chartRef.current.applyOptions({
@@ -83,7 +73,7 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				rightPriceScale: getAxesOptions(false),
 			})
 
-            chartRef.current.applyOptions({
+			chartRef.current.applyOptions({
 				grid: {
 					horzLines: { visible: false },
 					vertLines: { visible: false },
@@ -92,7 +82,7 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			// Prevent default behavior of mouse wheel (scrolling)
 			chartContainerRef.current.addEventListener('wheel', (e) => e.preventDefault(), { passive: false })
-            return () => {
+			return () => {
 				// window.removeEventListener('resize', handleResize)
 				// toolTip.innerHTML = ''
 				chartRef.current.remove()
@@ -101,15 +91,26 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	}, [data])
 
 	return (
+		<div className='relative w-full h-[15vh]'>
+		<div className="absolute top-0 left-0 w-full h-full z-50">
+		  {/* Content with text goes here */}
+		  <div className="py-4 px-[10%] flex flex-col items-end justify-start h-full w-full">
+			<h1 className='text-2xl text-blackText-500 titleShadow interBold'>$10</h1>
+			<h1 className='text-lg text-nexLightGreen-500 titleShadow interMedium'>+0.29%</h1>
+			{/* Add any other text or components as needed */}
+		  </div>
+		</div>
+  
 		<div
-			ref={chartContainerRef}
-			className="w-screen"
-			style={{
-				width: '100%',
-				height: '100%',
-				overflow: 'hidden', // Hide scrollbars
-			}}
+		  ref={chartContainerRef}
+		  className="absolute top-0 left-0 w-full h-full z-0"
+		  style={{
+			width: '100%',
+			height: '100%',
+			overflow: 'hidden', // Hide scrollbars
+		  }}
 		/>
+	  </div>
 	)
 }
 
@@ -129,10 +130,9 @@ function getAxesOptions(visible: boolean): PriceScaleOptions {
 		},
 		borderVisible: false, // You can set this to your desired value
 		// drawTicks: false,
-        ticksVisible: false,
+		ticksVisible: false,
 		minimumWidth: 100,
 		borderColor: '#ffffff00',
 		entireTextOnly: true,
-        
 	}
 }

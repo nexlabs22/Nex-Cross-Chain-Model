@@ -48,6 +48,7 @@
     "react-icons": "^4.11.0",
     "react-modal": "^3.16.1",
     "react-popper": "^2.3.0",
+    "react-qr-code": "^2.0.12",
     "react-search-autocomplete": "^8.5.2",
     "react-slick": "^0.29.0",
     "react-spring": "^9.7.3",
