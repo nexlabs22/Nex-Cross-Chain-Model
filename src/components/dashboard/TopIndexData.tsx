@@ -34,9 +34,9 @@ const TopIndexData = () => {
 	}, [fetchIndexData])
 
 	useEffect(() => {
-		setDayChangePer();
-		setANFIWeightage();
-	}, [setANFIWeightage,setDayChangePer])
+		setDayChangePer()
+		setANFIWeightage()
+	}, [setANFIWeightage, setDayChangePer])
 
 	const IndicesWithDetails = [
 		{
@@ -249,12 +249,8 @@ const TopIndexData = () => {
 							</div>
 						}
 					>
-						<div className='w-full h-fit flex flex-col items-start justify-start gap-2 px-2 py-3'>
-							<h5 className='interMedium text-blackText-500 text-xl'>
-								{
-									defaultIndexObject?.description
-								}
-							</h5>
+						<div className="w-full h-fit flex flex-col items-start justify-start gap-2 px-2 py-3">
+							<h5 className="interMedium text-blackText-500 text-xl">{defaultIndexObject?.description}</h5>
 						</div>
 						<div className="grid grid-cols-2 grid-rows-2 grid-col gap-y-5 lg:hidden px-2 py-5">
 							<div className="flex flex-col items-center justify-center">
@@ -294,6 +290,7 @@ const TopIndexData = () => {
 			</div>
 
 			<div>
+				<div className="w-full h-fit flex flex-row items-center justify-between">
 				<div className="mt-6 xl:mt-10 mb-5 flex flex-row items-center justify-center lg:justify-start">
 					<h5 className="interBlack  text-xl lg:text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
 					<CgArrowsExchange color="#5E869B" size={35} className="mx-2" />
@@ -303,6 +300,11 @@ const TopIndexData = () => {
 						<IoIosArrowDown color="#F2F2F2" size={15} />
 					</div>
 				</div>
+				<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl bg-colorSeven-500 shadow-sm shadow-blackText-500">
+						<h5 className="text-sm interExtraBold text-whiteText-500">1M</h5>
+					</div>
+				</div>
+				
 
 				<div className="h-fit w-full">
 					<DashboardChartBox />

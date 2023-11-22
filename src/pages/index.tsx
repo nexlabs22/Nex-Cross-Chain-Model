@@ -8,8 +8,9 @@ const Dashboard: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Dashboard</title>
-				<meta name="description" content="Overview of spot index trading products" />
+				<title>Nexlabs.io, welcome!</title>
+				<meta name="description" content="NexLabs: decentralized trading platform" />
+				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="m-0 h-screen w-screen bg-whiteBackground-500 p-0 overflow-x-hidden">
 				<DappNavbar />
