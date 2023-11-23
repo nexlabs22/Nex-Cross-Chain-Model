@@ -46,4 +46,10 @@ function isSameMonth(time1: number, time2: number){
     );
   }
 
-export {convertTo13DigitsTimestamp, dateToEpoch, isSameDay,isSameMonth}
+function getTimestampDaysAgo(numberOfDays: number): number {
+    const millisecondsInDay = 24 * 60 * 60 * 1000; 
+    const timestampDaysAgo = Date.now() - numberOfDays * millisecondsInDay;
+    return Math.floor(timestampDaysAgo / 1000); 
+  };
+
+export {convertTo13DigitsTimestamp, dateToEpoch, isSameDay,isSameMonth,getTimestampDaysAgo}

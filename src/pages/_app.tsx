@@ -19,11 +19,13 @@ import {
 import { Goerli } from '@thirdweb-dev/chains'
 import { Theme, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { ApolloProvider } from '@apollo/client';
+import apolloClient from '@/utils/apollo-client';
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
-		<ToastContainer
+			<ToastContainer
 				position="bottom-right"
 				autoClose={5000}
 				hideProgressBar={false}
@@ -43,11 +45,11 @@ export default function App({ Component, pageProps }: AppProps) {
 					coinbaseWallet(),
 					walletConnect(),
 					safeWallet({
-					  personalWallets: [
-						metamaskWallet(),
-						coinbaseWallet(),
-						walletConnect(),
-					  ],
+						personalWallets: [
+							metamaskWallet(),
+							coinbaseWallet(),
+							walletConnect(),
+						],
 					}),
 					localWallet(),
 					embeddedWallet(),
@@ -57,9 +59,11 @@ export default function App({ Component, pageProps }: AppProps) {
 					frameWallet(),
 					rainbowWallet(),
 					phantomWallet(),
-				  ]}
+				]}
 			>
-				<Component {...pageProps} />
+				<ApolloProvider client={apolloClient}>
+					<Component {...pageProps} />
+				</ApolloProvider>
 			</ThirdwebProvider>
 		</>
 	)
