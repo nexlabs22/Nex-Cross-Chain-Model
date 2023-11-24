@@ -22,7 +22,6 @@ import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, anfi
 import { indexTokenAbi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { toast } from 'react-toastify'
 import { GenericToast } from '@/components/GenericToast'
 import GenericModal from '@/components/GenericModal'
 import QRCode from 'react-qr-code'
@@ -66,30 +65,37 @@ export default function Portfolio() {
 		variables: { poolAddress: crypto5PoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90) },
 	});
 
-	let anfiPrice = 0; let cr5Price = 0;
-	let anfi24hChng = 0; let cr524hChng = 0;
-	const chartArr: { time: number, value: number }[] = [];
-	if ((!loadingCR5 && !loadingAnfi) && (!errorCR5 && !errorAnfi)) {
+	// let anfiPrice = 0; let cr5Price = 0;
+	// let anfi24hChng = 0; let cr524hChng = 0;
+	const [chartArr, setChartArr] = useState<{ time: number, value: number }[]>([]);
+	const [indexPrices, setIndexPrices] = useState({anfi: 0, cr5:0});
+	const [index24hChange, setIndex24hChange] = useState({anfi: 0, cr5:0});
+	
+	if ((!loadingCR5 && !loadingAnfi) && (!errorCR5 && !errorAnfi) && chartArr.length == 0 && !!anfiPercent && !!crypto5Percent) {
+		const chartData: { time: number, value: number }[] = [];
 		const ANFIData = dataAnfi.poolDayDatas
 		const CR5Data = dataCR5.poolDayDatas
 		for (let i = 0; i <= ANFIData.length - 1; i++) {
 			const chartObj: { time: number, value: number } = { time: 0, value: 0 };
-			const value = anfiPercent / 100 * Number(ANFIData[i].token0Price) + crypto5Percent / 100 * Number(CR5Data[i].token0Price)
+			const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i].token0Price)
 			chartObj.time = ANFIData[i].date
 			chartObj.value = value
-			chartArr.push(chartObj)
+			chartData.push(chartObj)
 		}
+		setChartArr(chartData)
 
-		anfiPrice = (ANFIData[ANFIData.length - 1].token0Price * anfiPercent / 100) * num(anfiTokenBalance.data)
-		cr5Price = (CR5Data[CR5Data.length - 1].token0Price * crypto5Percent / 100) * num(crypto5TokenBalance.data)
+		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price  * num(anfiTokenBalance.data)
+		const cr5Price = CR5Data[CR5Data.length - 1].token0Price * num(crypto5TokenBalance.data)
+		setIndexPrices({anfi: anfiPrice, cr5:cr5Price})
 
 		const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price
 		const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price
-		anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100;
+		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100;
 
 		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price
 		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price
-		cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100;
+		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100;
+		setIndex24hChange({anfi:anfi24hChng, cr5:cr524hChng})
 
 	}
 
@@ -284,18 +290,18 @@ export default function Portfolio() {
 												<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
-													$ {anfiPrice ? FormatToViewNumber({ value: anfiPrice, returnType: 'string' }) : 0}
+													$ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0}
 												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">{anfi24hChng.toFixed(2)}%</h5>
+												<h5 className="interMedium italic text-base text-white titleShadow">{address ? index24hChange.anfi.toFixed(2): 0}%</h5>
 											</div>
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
 												<h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
-													$ {cr5Price ? FormatToViewNumber({ value: cr5Price, returnType: 'string' }) : 0}
+													$ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0}
 												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">{cr524hChng.toFixed(2)}%</h5>
+												<h5 className="interMedium italic text-base text-white titleShadow">{address ? index24hChange.cr5.toFixed(2): 0}%</h5>
 											</div>
 										</div>
 									</div>
