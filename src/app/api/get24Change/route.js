@@ -29,10 +29,10 @@ export async function GET() {
 
         if (historicalData) {
             Object.entries(historicalData).forEach(([key, value]) => {
-                console.log(key, value);
+                // console.log(key, value);
 
                 const prices = value.map(entry => entry.close);
-
+                // console.log(prices)
                 if (prices.length >= 2) {
                     const currentPrice = prices[0];
                     const previousPrice = prices[1];
@@ -53,11 +53,10 @@ export async function GET() {
         // const cryptoChange = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${cryptoStr}&vs_currencies=usd&include_24hr_change=true`).then((res)=>res.data);
         const cryptoChange = await axios.get(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=BTC`, {
             headers: {
-                'X-CMC_PRO_API_KEY': '48240a2e-47fc-4810-9b59-e01911a148ab',
+                'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_KEY,
             },
         }).then((res) => res.data.data);
 
-        console.log(cryptoChange.BTC[0].quote.USD.percent_change_24h)
         Object.entries(cryptoChange).forEach(([key, value]) => {
             const symbolName = symbolToName[key];
             changes[symbolName] = value[0].quote.USD.percent_change_24h.toFixed(2);
