@@ -2,10 +2,11 @@ import React, { useEffect, useRef } from 'react'
 import { createChart, DeepPartial, LayoutOptions, LineStyle, LineWidth, PriceScaleMode, PriceScaleOptions, TimeScaleOptions } from 'lightweight-charts'
 
 interface GradientAreaChartProps {
-	data: { time: string | number | Date; value: number }[]
+	data: { time: string | number | Date; value: number }[],
+	change: number
 }
 
-const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
+const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) => {
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
 
@@ -49,11 +50,11 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			})
 
 			const areaSeries = chartRef.current.addAreaSeries({
-				topColor: '#089981', // Set the top color for the gradient
+				topColor: change < 0 ? "#F23645":change > 0 ? '#089981': '#F2F2F2', // Set the top color for the gradient
 				bottomColor: 'white', // Set the bottom color for the gradient as transparent
 				lineStyle: LineStyle.Solid, // Use smooth line style
 				base: minValue, // Set the base to maxValue
-				lineColor: '#089981', // Set the line color as transparent
+				lineColor: change < 0 ? "#F23645": '#089981', // Set the line color as transparent
 				lineWidth: 1,
 				priceLineVisible: false,
 			})
@@ -95,8 +96,8 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 		<div className="absolute top-0 left-0 w-full h-full z-50">
 		  {/* Content with text goes here */}
 		  <div className="py-4 px-[10%] flex flex-col items-end justify-start h-full w-full">
-			<h1 className='text-2xl text-blackText-500 titleShadow interBold'>$10</h1>
-			<h1 className='text-lg text-nexLightGreen-500 titleShadow interMedium'>+0.29%</h1>
+			<h1 className='text-2xl text-blackText-500 titleShadow interBold'>${data[data.length-1]?.value.toFixed(2)}</h1>
+			<h1 className={`text-lg ${change>0?'text-nexLightGreen-500':change<0?'text-nexLightRed-500':'text-black'} titleShadow interMedium`}>{change?change.toFixed(2):0}%</h1>
 			{/* Add any other text or components as needed */}
 		  </div>
 		</div>
