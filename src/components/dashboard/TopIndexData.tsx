@@ -223,7 +223,7 @@ const TopIndexData = () => {
 						</div>
 						<div className="flex flex-row items-center justify-between">
 							<h5 className="interMedium mr-2 text-base text-colorSeven-500">null</h5>
-							<GenericAddressTooltip color='#2A2A2A' address='0x18C41549ee05F893B5eA6ede6f8dccC1a9C16f44'>
+							<GenericAddressTooltip color='#5E869B' address='0x18C41549ee05F893B5eA6ede6f8dccC1a9C16f44'>
 								<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
 							</GenericAddressTooltip>
 						</div>

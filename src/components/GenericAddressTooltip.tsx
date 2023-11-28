@@ -19,7 +19,7 @@ const GenericAddressTooltip: React.FC<TooltipProps> = ({ children, color, addres
 
 			{isHovered && (
 				<div
-					className="w-fit h-fit absolute pt-2 shadow-md rounded-md bottom-full left-1/2 transform -translate-x-1/2"
+					className="w-fit h-fit absolute pt-2 shadow-md rounded-xl bottom-full left-1/2 transform -translate-x-1/2"
 					style={{
 						backgroundColor: color,
 					}}
