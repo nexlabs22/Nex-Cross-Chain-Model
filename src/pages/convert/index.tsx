@@ -1,11 +1,13 @@
 'use client'
 
+import Image from 'next/image'
 import DappNavbar from '@/components/DappNavbar'
 import { LifiWidget } from '@components/LifiWidget'
 import dynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
 
-import bg from '@assets/images/3d hologram.png'
+import sphere from '@assets/images/abstract.gif'
+
 import Head from 'next/head'
 
 export const LiFiWidgetNext = dynamic(() => import('@/components/LifiWidget').then((module) => module.LifiWidget) as any, {
@@ -29,7 +31,9 @@ export default function Convert() {
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit overflow-x-hidden flex flex-row items-center justify-center px-4 pt-10">
+						<Image src={sphere} className='w-auto h-[80vh] -ml-[20vw] -mt-20' alt='sphere'></Image>
 						<LiFiWidgetNext></LiFiWidgetNext>
+						
 					</section>
 				</section>
 
