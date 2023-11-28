@@ -6,12 +6,14 @@ import Link from 'next/link'
 //Components
 import DashboardChartBox from './ChartBox'
 import { Accordion, AccordionItem } from '@szhsin/react-accordion'
+import GenericAddressTooltip from '../GenericAddressTooltip'
 
 // Store
 import { useChartDataStore, useLandingPageStore } from '@/store/store'
 
 // Logos and icons :
 import { GrBitcoin, GrFormClose } from 'react-icons/gr'
+import { BsInfoCircle } from 'react-icons/bs'
 import { FaEthereum } from 'react-icons/fa'
 import { SiTether, SiBinance, SiRipple } from 'react-icons/si'
 import { AiOutlinePlus } from 'react-icons/ai'
@@ -220,12 +222,11 @@ const TopIndexData = () => {
 							<h5 className="interExtraBold ml-2 text-base text-gray-400">Token address</h5>
 						</div>
 						<div className="flex flex-row items-center justify-between">
-							<h5 className="interMedium mr-2 text-base text-blackText-500">null</h5>
-							<IoCopyOutline color="#5E869B" size={20} />
+							<h5 className="interMedium mr-2 text-base text-colorSeven-500">null</h5>
+							<GenericAddressTooltip color='#2A2A2A' address='0x3e5a32fD3062f1e4DD2116B000Bd8D85F7E8FF38'>
+								<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
+							</GenericAddressTooltip>
 						</div>
-						<Link href={'/'}>
-							<Image src={etherscanLogo} alt="etherscan" height={22} width={22}></Image>
-						</Link>
 					</div>
 					<div className="flex w-full flex-row items-center justify-start">
 						<div className="mr-5 flex flex-row items-center justify-between">
@@ -276,10 +277,8 @@ const TopIndexData = () => {
 						</div>
 						<div className="flex flex-row items-center justify-center gap-2 lg:hidden px-2 py-2">
 							<h5 className="interMedium text-lg text-blackText-500">null</h5>
-							<IoCopyOutline color="#5E869B" size={25} />
-							<Link href={'/'}>
-								<Image src={etherscanLogo} alt="etherscan" height={25} width={25}></Image>
-							</Link>
+
+							<BsInfoCircle color="#5E869B" size={25} />
 						</div>
 					</AccordionItem>
 				</Accordion>
@@ -291,20 +290,17 @@ const TopIndexData = () => {
 
 			<div>
 				<div className="w-full h-fit flex flex-row items-center justify-between">
-				<div className="mt-6 xl:mt-10 mb-5 flex flex-row items-center justify-center lg:justify-start">
-					<h5 className="interBlack  text-xl lg:text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
-					<CgArrowsExchange color="#5E869B" size={35} className="mx-2" />
-					<h5 className="interBlack text-xl lg:text-2xl text-blackText-500">World{"'"}s best assets</h5>
-					<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl bg-colorSeven-500 shadow-sm shadow-blackText-500">
-						<h5 className="text-sm interExtraBold text-whiteText-500">{defaultIndexObject?.name}</h5>
-						<IoIosArrowDown color="#F2F2F2" size={15} />
+					<div className="mt-6 xl:mt-10 mb-5 flex flex-row items-center justify-center lg:justify-start">
+						<h5 className="interBlack  text-xl lg:text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
+						<CgArrowsExchange color="#5E869B" size={35} className="mx-2" />
+						<h5 className="interBlack text-xl lg:text-2xl text-blackText-500">World{"'"}s best assets</h5>
+						<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl bg-colorSeven-500 shadow-sm shadow-blackText-500">
+							<h5 className="text-sm interExtraBold text-whiteText-500">{defaultIndexObject?.name}</h5>
+							<IoIosArrowDown color="#F2F2F2" size={15} />
+						</div>
 					</div>
+					
 				</div>
-				<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl bg-colorSeven-500 shadow-sm shadow-blackText-500">
-						<h5 className="text-sm interExtraBold text-whiteText-500">1M</h5>
-					</div>
-				</div>
-				
 
 				<div className="h-fit w-full">
 					<DashboardChartBox />
