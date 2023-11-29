@@ -18,6 +18,7 @@ import hybrid from '@assets/images/hybrid.png'
 import crypto from '@assets/images/crypto.png'
 import circle from '@assets/images/circle.png'
 import { GoChevronDown } from 'react-icons/go'
+import Head from 'next/head'
 
 interface Subcategory {
 	name: string
@@ -144,6 +145,12 @@ export default function Explore() {
 	}
 
 	return (
+		<>
+		<Head>
+				<title>Nexlabs.io, welcome!</title>
+				<meta name="description" content="Traders love the Nex Labs platform for its wide selection of CeFi and DeFi products. Explore margin trading, derivatives, staking, and more - this blog covers all the offerings so you can optimize your crypto portfolio." />
+				<link rel="icon" href="/favicon.ico" />
+			</Head>
 		<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 			<section className="h-full w-fit overflow-x-hidde">
 				<DappNavbar />
@@ -275,5 +282,6 @@ export default function Explore() {
 				<Footer />
 			</div>
 		</main>
+		</>
 	)
 }

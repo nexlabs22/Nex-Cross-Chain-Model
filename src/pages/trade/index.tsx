@@ -41,7 +41,7 @@ export default function Trade() {
 		<>
 			<Head>
 				<title>Nexlabs.io, welcome!</title>
-				<meta name="description" content="NexLabs: decentralized trading platform" />
+				<meta name="description" content="Nex Labs is reinventing trading with the cutting-edge trade page. Seamlessly swap, trade and invest in innovative indices, and access unique products - all integrated with your wallet for smooth trading." />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="flex min-h-screen h-fit w-screen bg-whiteBackground-500 flex-col items-center justify-start">

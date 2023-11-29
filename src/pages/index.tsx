@@ -9,7 +9,7 @@ const Dashboard: NextPage = () => {
 		<>
 			<Head>
 				<title>Nexlabs.io, welcome!</title>
-				<meta name="description" content="NexLabs: decentralized trading platform" />
+				<meta name="description" content="NexLabs decentralized trading platform allows seamless crypto swapping, trading, and index tracking. Learn how this innovative platform is making decentralized finance more accessible and transparent." />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="m-0 h-screen w-screen bg-whiteBackground-500 p-0 overflow-x-hidden">
