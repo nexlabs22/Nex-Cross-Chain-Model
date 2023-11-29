@@ -37,7 +37,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 		if (chartContainerRef.current) {
 			chartRef.current = createChart(chartContainerRef.current, {
 				width: chartContainerRef.current.offsetWidth,
-				height: chartContainerRef.current.offsetHeight * 0.78,
+				height: chartContainerRef.current.offsetHeight * 0.80,
 				timeScale: {
 					locked: true, // Lock the time scale to prevent dragging
 					rightOffset: 0, // Ensure the x-axis extends to the right edge of the chart
@@ -100,7 +100,6 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			}
 
 			areaSeries.setData(historyRangeFilter(data))
-			console.log('dataa', data)	
 
 			const container = chartContainerRef.current
 			container.style.position = 'relative'
@@ -115,7 +114,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			toolTip.style.fontSize = '12px';
 			toolTip.style.textAlign = 'left';
 			toolTip.style.zIndex = '1000';
-			toolTip.style.top = '20px';
+			toolTip.style.top = '00px';
 			toolTip.style.left = '20px';
 			toolTip.style.pointerEvents = 'none';
 			toolTip.style.background = 'transparent';
