@@ -99,6 +99,7 @@ const SwapV2 = () => {
 
 	useEffect(() => {
 		async function getIssuanceOutput() {
+			try {
 			if(swapToCur.address == goerliAnfiV2IndexToken){
 			const output = await issuanceContract.callStatic.getIssuanceAmountOut2(
 				convertedInputValue.toString(),
@@ -106,13 +107,18 @@ const SwapV2 = () => {
 				"3"
 			)
 			setSecondInputValue(num(output))
+			
 			}
+		} catch (error) {
+			console.log("getIssuanceOutput error:", error)
+		}
 		}
 		getIssuanceOutput()
 	}, [firstInputValue, convertedInputValue, issuanceContract, swapFromCur.address ,swapToCur.address])
 
 	useEffect(() => {
 		async function getRedemptionOutput() {
+			try {
 			if(swapFromCur.address == goerliAnfiV2IndexToken){
 			const output = await redemptionContract.callStatic.getRedemptionAmountOut2(
 				convertedInputValue.toString(),
@@ -120,21 +126,15 @@ const SwapV2 = () => {
 				 "3"
 			)
 			setSecondInputValue(num(output))
-			}
+			}		
+		} catch (error) {
+			console.log("getRedemptionOutput error:", error)	
+		}
 		}
 		getRedemptionOutput()
-	}, [firstInputValue, convertedInputValue, issuanceContract, swapFromCur.address ,swapToCur.address])
+	}, [firstInputValue, convertedInputValue, issuanceContract, swapFromCur.address ,swapToCur.address, redemptionContract.callStatic])
 
-	useEffect(() => {
-		return;
-		// console.log("redemptionOutput :", Number(redemptionOutput.data)/1e18)
-		if(swapFromCur.address == goerliAnfiV2IndexToken){
-			setSecondInputValue(num(redemptionOutput.data))
-		}
-		if(swapToCur.address == goerliAnfiV2IndexToken){
-			setSecondInputValue(num(issuanceOutput.data))
-		}
-	},[swapFromCur.address, swapToCur.address, issuanceOutput.data, redemptionOutput.data])
+	
 
 	useEffect(() => {
 		if (approveHook.isSuccess) {
