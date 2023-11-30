@@ -123,8 +123,8 @@ export default function Portfolio() {
 
 	const data = [
 		['Asset', 'Percentage'],
-		['CRYPTO 5', crypto5Percent ? crypto5Percent : 45],
-		['ANFI', anfiPercent ? anfiPercent : 50],
+		['CRYPTO 5', crypto5Percent ? crypto5Percent : 0],
+		['ANFI', anfiPercent ? anfiPercent:0],
 		['FIAT', anfiPercent ? 0 : 5],
 	]
 
@@ -271,7 +271,7 @@ export default function Portfolio() {
 								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-								<Chart data={address ? chartArr : emptyData} change={portfolio24hChange} />
+								<Chart data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData} change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange:0} />
 							</div>
 						</div>
 						<div className="w-full h-fit px-2 lg:px-20">
@@ -291,9 +291,9 @@ export default function Portfolio() {
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}
-													$ {indexPrices.anfi ? indexPrices.anfi.toFixed(2) : 0}
+													$ {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(2) : 0}
 												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">{address ? index24hChange.anfi.toFixed(2): 0}%</h5>
+												<h5 className="interMedium italic text-base text-white titleShadow">{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.anfi.toFixed(2): 0}%</h5>
 											</div>
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
@@ -301,9 +301,9 @@ export default function Portfolio() {
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}
-													$ {indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
+													$ {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
 												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">{address ? index24hChange.cr5.toFixed(2): 0}%</h5>
+												<h5 className="interMedium italic text-base text-white titleShadow">{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2): 0}%</h5>
 											</div>
 										</div>
 									</div>

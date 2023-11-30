@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { createChart, DeepPartial, LayoutOptions, LineStyle, LineWidth, PriceScaleMode, PriceScaleOptions, TimeScaleOptions } from 'lightweight-charts'
+import { useAddress } from '@thirdweb-dev/react';
 
 interface GradientAreaChartProps {
 	data: { time: string | number | Date; value: number }[],
@@ -7,6 +8,7 @@ interface GradientAreaChartProps {
 }
 
 const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) => {
+	const address = useAddress()
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
 
@@ -50,11 +52,11 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) =
 			})
 
 			const areaSeries = chartRef.current.addAreaSeries({
-				topColor: change < 0 ? "#F23645":change > 0 ? '#089981': '#F2F2F2', // Set the top color for the gradient
-				bottomColor: 'white', // Set the bottom color for the gradient as transparent
+				topColor: address && change  < 0 ? "#F23645":address && change > 0 ? '#089981': '#F2F2F2', // Set the top color for the gradient
+				bottomColor: '#F2F2F2', // Set the bottom color for the gradient as transparent
 				lineStyle: LineStyle.Solid, // Use smooth line style
 				base: minValue, // Set the base to maxValue
-				lineColor: change < 0 ? "#F23645": '#089981', // Set the line color as transparent
+				lineColor: address && change < 0 ? "#F23645":address && change > 0? '#089981': '#000000', // Set the line color as transparent
 				lineWidth: 1,
 				priceLineVisible: false,
 			})
@@ -97,7 +99,7 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) =
 		  {/* Content with text goes here */}
 		  <div className="py-4 px-[10%] flex flex-col items-end justify-start h-full w-full">
 			<h1 className='text-2xl text-blackText-500 titleShadow interBold'>${data[data.length-1]?.value.toFixed(2)}</h1>
-			<h1 className={`text-lg ${change>0?'text-nexLightGreen-500':change<0?'text-nexLightRed-500':'text-black'} titleShadow interMedium`}>{change?change.toFixed(2):0}%</h1>
+			<h1 className={`text-lg ${address && change>0?'text-nexLightGreen-500':address && change<0?'text-nexLightRed-500':'text-black'} titleShadow interMedium`}>{address?change?change.toFixed(2):0:0}%</h1>
 			{/* Add any other text or components as needed */}
 		  </div>
 		</div>
