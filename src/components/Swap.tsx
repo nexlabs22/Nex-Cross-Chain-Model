@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react'
 // icons :
 import { BiSolidChevronDown } from 'react-icons/bi'
 import { AiOutlineSwap } from 'react-icons/ai'
+import { CiWallet } from 'react-icons/ci'
+import { LiaWalletSolid } from 'react-icons/lia'
 
 // Store
 import useTradePageStore from '@/store/tradeStore'
@@ -14,7 +16,7 @@ import useTradePageStore from '@/store/tradeStore'
 // Components:
 import GenericModal from './GenericModal'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
-
+import Switch from 'react-switch'
 // Assets:
 import circle from '@assets/images/circle.png'
 import { it } from 'node:test'
@@ -36,6 +38,7 @@ import cookingAnimation from '@assets/lottie/cooking.json'
 import { GenericToast } from './GenericToast'
 import { parseEther } from 'viem'
 import { num } from '@/hooks/math'
+import GenericTooltip from './GenericTooltip'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -237,7 +240,7 @@ const Swap = () => {
 			name: 'CRYPTO5',
 			Symbol: 'CR5',
 			address: goerliCrypto5IndexToken,
-			factoryAddress: goerliCrypto5Factory
+			factoryAddress: goerliCrypto5Factory,
 		},
 		{
 			id: 1,
@@ -245,7 +248,7 @@ const Swap = () => {
 			name: 'ANFI',
 			Symbol: 'ANFI',
 			address: goerliAnfiIndexToken,
-			factoryAddress: goerliAnfiFactory
+			factoryAddress: goerliAnfiFactory,
 		},
 		{
 			id: 2,
@@ -253,11 +256,11 @@ const Swap = () => {
 			name: 'USD Coin',
 			Symbol: 'USDC',
 			address: goerliUsdtAddress,
-			factoryAddress: ''
+			factoryAddress: '',
 		},
 	])
 
-	function Switch() {
+	function Switching() {
 		let switchReserve: Coin = swapFromCur
 		changeSwapFromCur(swapToCur)
 		changeSwapToCur(switchReserve)
@@ -296,13 +299,13 @@ const Swap = () => {
 	}
 
 	async function approve() {
-		const convertedValue = parseEther((Number(firstInputValue)*1001/1000)?.toString() as string)
+		const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
 		// const convertedValue = BigNumber.from(3*1001/1000)
 		try {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				if(num(fromTokenBalance.data) < Number(firstInputValue)){
+				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
 					return GenericToast({
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
@@ -320,17 +323,17 @@ const Swap = () => {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				if(num(fromTokenBalance.data) < Number(firstInputValue)){
+				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
 					return GenericToast({
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
 				}
-				await mintRequestHook.mutateAsync({ 
-					args: [(Number(firstInputValue) * 1e18).toString(), address], 
-					overrides:{
-						gasLimit:1000000
-					}
+				await mintRequestHook.mutateAsync({
+					args: [(Number(firstInputValue) * 1e18).toString(), address],
+					overrides: {
+						gasLimit: 1000000,
+					},
 				})
 			}
 		} catch (error) {
@@ -343,12 +346,12 @@ const Swap = () => {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				if(num(fromTokenBalance.data) < Number(firstInputValue)){
+				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
 					return GenericToast({
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
-				} 
+				}
 				await burnRequestHook.mutateAsync({ args: [(Number(firstInputValue) * 1e18).toString(), address] })
 			}
 		} catch (error) {
@@ -403,10 +406,15 @@ const Swap = () => {
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
-
-					<p className="text-base interMedium text-gray-500 pt-3">
-						Balance: {(Number(fromTokenBalance.data) / 1e18).toFixed(2)} {swapFromCur.Symbol}
-					</p>
+					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
+						<span className="text-sm interMedium text-gray-500">≈ $28.4</span>
+						<div className="flex flex-row items-center justify-end gap-1">
+							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
+							<span className="text-sm interMedium text-gray-500">
+								{(Number(fromTokenBalance.data) / 1e18).toFixed(2)} {swapFromCur.Symbol}
+							</span>
+						</div>
+					</div>
 				</div>
 
 				<div className="w-full my-2 px-2 flex flex-row items-center justify-center">
@@ -414,7 +422,7 @@ const Swap = () => {
 					<div
 						className="w-fit h-fit rounded-full mx-3 bg-blackText-500 p-2 cursor-pointer"
 						onClick={() => {
-							Switch()
+							Switching()
 						}}
 					>
 						<AiOutlineSwap color="#F2F2F2" size={20} className="rotate-90" />
@@ -444,32 +452,65 @@ const Swap = () => {
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
-					<p className="text-base interMedium text-gray-500 pt-3">
-						Balance: {(Number(toTokenBalance.data) / 1e18).toFixed(2)} {swapToCur.Symbol}
-					</p>
+					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
+						<span className="text-sm interMedium text-gray-500">≈ $28.4</span>
+						<div className="flex flex-row items-center justify-end gap-1">
+							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
+							<span className="text-sm interMedium text-gray-500">
+								{(Number(toTokenBalance.data) / 1e18).toFixed(2)} {swapToCur.Symbol}
+							</span>
+						</div>
+					</div>
 				</div>
-				<div className="pt-2">
-					<label className="inline-flex items-center space-x-2 cursor-pointer">
-						<input type="checkbox" checked={isChecked} onChange={toggleCheckbox} className="form-checkbox h-5 w-5 text-blue-600" />
-						<span className="text-gray-700 interMedium">Use Fiat payment</span>
-					</label>
+				<div className="pt-8">
+					<div className="flex flex-row items-center gap-2">
+						<Switch onChange={toggleCheckbox} checked={isChecked} height={14} width={35} handleDiameter={20} />
+						<div className="flex flex-row items-center justify-start gap-1">
+							<span className="text-gray-700 interMedium text-sm">Use Fiat payment</span>
+							<span>
+								<GenericTooltip
+									color="#5E869B"
+									content={
+										<div>
+											<p className=" text-whiteText-500 text-sm interBold mb-2">No cryptocurrencies in your wallet? No problem!</p>
+											<p className=" text-whiteText-500 text-sm interMedium">
+												Revolutionize your trading experience with Nex Labs – introducing fiat payments for the first time, providing you seamless and convenient transactions in
+												traditional currencies.
+											</p>
+										</div>
+									}
+								>
+									<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
+								</GenericTooltip>
+							</span>
+						</div>
+					</div>
 				</div>
 				<div className="h-fit w-full mt-6">
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3">
-						{swapToCur.address == goerliAnfiIndexToken || swapToCur.address == goerliCrypto5IndexToken? (
+						{swapToCur.address == goerliAnfiIndexToken || swapToCur.address == goerliCrypto5IndexToken ? (
 							<>
 								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) ? (
-									<button onClick={approve} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+									<button
+										onClick={approve}
+										className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+									>
 										Approve
 									</button>
 								) : (
-									<button onClick={mintRequest} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+									<button
+										onClick={mintRequest}
+										className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+									>
 										Mint
 									</button>
 								)}
 							</>
 						) : (
-							<button onClick={burnRequest} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+							<button
+								onClick={burnRequest}
+								className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+							>
 								Burn
 							</button>
 						)}
@@ -484,7 +525,18 @@ const Swap = () => {
 						<p className="text-sm interMedium text-black/70 pb-2">Platform Fees</p>
 						<div className="flex flex-row items-center justify-start gap-2">
 							<p className="text-sm interMedium text-black/70">{Number(firstInputValue) * 0.001} USD (0.1%)</p>
-							<BsInfoCircle color="#2A2A2A" size={15} className="cursor-pointer"></BsInfoCircle>
+							<GenericTooltip
+								color="#5E869B"
+								content={
+									<div>
+										<p className=" text-whiteText-500 text-sm interMedium">
+											Platform fees support ongoing development and security, ensuring a sustainable and innovative decentralized financial ecosystem.
+										</p>
+									</div>
+								}
+							>
+								<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
+							</GenericTooltip>
 						</div>
 					</div>
 					{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
@@ -547,7 +599,12 @@ const Swap = () => {
 					</div>
 				</div>
 			</GenericModal>
-			<GenericModal isOpen={cookingModalVisible} onRequestClose={()=>{setCookingModalVisible(false)}}>
+			<GenericModal
+				isOpen={cookingModalVisible}
+				onRequestClose={() => {
+					setCookingModalVisible(false)
+				}}
+			>
 				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
 					<Lottie
 						animationData={cookingAnimation}
@@ -558,8 +615,10 @@ const Swap = () => {
 							overflow: 'hidden',
 						}}
 					/>
-					<h5 className='InterBold text-blackText-500 text-2xl text-center w-full -mt-6'>THE MAGIC IS HAPPENING...</h5>
-					<h5 className='interMedium text-blackText-500 text-lg text-center w-9/12 my-2'>Your NFT receipt is being minted. Once it is ready, you can find it the {"\""}Receipts{"\""} section.</h5>
+					<h5 className="InterBold text-blackText-500 text-2xl text-center w-full -mt-6">THE MAGIC IS HAPPENING...</h5>
+					<h5 className="interMedium text-blackText-500 text-lg text-center w-9/12 my-2">
+						Your NFT receipt is being minted. Once it is ready, you can find it the {'"'}Receipts{'"'} section.
+					</h5>
 				</div>
 			</GenericModal>
 		</>

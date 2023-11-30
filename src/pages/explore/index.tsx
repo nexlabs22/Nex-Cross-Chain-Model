@@ -12,6 +12,10 @@ import '@szhsin/react-menu/dist/transitions/slide.css'
 // assets :
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
+import cefi from '@assets/images/cefi.jpg'
+import defi from '@assets/images/defi.jpg'
+import hybrid from '@assets/images/hybrid.png'
+import crypto from '@assets/images/crypto.png'
 import circle from '@assets/images/circle.png'
 import { GoChevronDown } from 'react-icons/go'
 
@@ -35,9 +39,9 @@ export default function Explore() {
 	const [selectedCategory, setSelectedCategory] = useState<String>('defi')
 	const [searchResult, setSearchResult] = useState<Product>()
 	const [selectedSubCategory, setSelectedsubCategory] = useState<Subcategory>({
-		name: 'defi sub 1',
+		name: 'Hybrid Indices',
 		symbol: 'defi1',
-		logo: circle.src,
+		logo: hybrid.src,
 	})
 
 	function toggleCategory() {
@@ -46,29 +50,14 @@ export default function Explore() {
 
 	const subCategories = [
 		{
-			name: 'defi sub 1',
+			name: 'Hybrid Indices',
 			symbol: 'defi1',
-			logo: circle.src,
+			logo: hybrid.src,
 		},
 		{
-			name: 'defi sub 2',
+			name: 'Cryptocurrencies',
 			symbol: 'defi2',
-			logo: circle.src,
-		},
-		{
-			name: 'defi sub 2',
-			symbol: 'defi3',
-			logo: circle.src,
-		},
-		{
-			name: 'cefi sub 1',
-			symbol: 'cefi1',
-			logo: circle.src,
-		},
-		{
-			name: 'cefi sub 1',
-			symbol: 'cefi1',
-			logo: circle.src,
+			logo: crypto.src,
 		},
 	]
 
@@ -97,7 +86,7 @@ export default function Explore() {
 			logo: circle.src,
 			address: '0xIE9303...0392K0',
 			totalSupply: 109338,
-			category: 'defi',
+			category: 'cefi',
 			subcategory: 'defi2',
 		},
 		{
@@ -106,62 +95,8 @@ export default function Explore() {
 			logo: circle.src,
 			address: '0xIE9303...0392K0',
 			totalSupply: 109338,
-			category: 'defi',
+			category: 'cefi',
 			subcategory: 'defi2',
-		},
-		{
-			name: 'Product 5',
-			symbol: 'PR5',
-			logo: circle.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
-			category: 'defi',
-			subcategory: 'defi3',
-		},
-		{
-			name: 'Product 6',
-			symbol: 'PR6',
-			logo: circle.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
-			category: 'defi',
-			subcategory: 'defi3',
-		},
-		{
-			name: 'Product 7',
-			symbol: 'PR7',
-			logo: circle.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
-			category: 'cefi',
-			subcategory: 'cefi1',
-		},
-		{
-			name: 'Product 8',
-			symbol: 'PR8',
-			logo: circle.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
-			category: 'cefi',
-			subcategory: 'cefi1',
-		},
-		{
-			name: 'Product 9',
-			symbol: 'PR3',
-			logo: circle.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
-			category: 'cefi',
-			subcategory: 'cefi1',
-		},
-		{
-			name: 'Product 10',
-			symbol: 'PR10',
-			logo: circle.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
-			category: 'cefi',
-			subcategory: 'cefi2',
 		},
 	]
 
@@ -216,55 +151,43 @@ export default function Explore() {
 					<h5 className="text-xl text-slate-700 interMedium text-center">Explore products and assets on Nex Labs</h5>
 					<div className=" mt-10 mb-2 w-11/12 h-fit mx-auto flex flex-row items-center justify-center gap-2">
 						<div
-							className={`w-1/3 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-								selectedCategory == 'cefi' ? 'shadow-colorSeven-500' : ' bg-zinc-200/30'
+							className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
+								selectedCategory == 'cefi' ? ' shadow-colorSeven-500 bg-colorSeven-500/80' : ' bg-zinc-200/30'
 							} p-5 cursor-pointer gap-2`}
-							onClick={() => {setSelectedCategory('cefi'); setSelectedsubCategory(subCategories[3])}}
+							
+							onClick={() => {setSelectedCategory('cefi'); setSelectedsubCategory(subCategories[1])}}
 						>
 							<div
-								className={`h-24 w-28 border border-slate-300 rounded-lg flex flex-row items-center justify-center ${
-									selectedCategory == 'cefi' ? ' bg-gradient-to-br from-colorSix-500 to-colorFour-500' : ''
-								}`}
-							></div>
+							
+								className={`h-24 w-28 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center ${selectedCategory == "cefi ? 'opacity-100' : ' opacity-40' "}`}
+							>
+								<div className='w-11/12 aspect-square bg-center bg-contain bg-no-repeat' style={{
+									backgroundImage: `url('${cefi.src}')`
+								}}></div>
+							</div>
 							<div className="w-fit h-fit flex flex-col items-start justify-between">
-								<h5 className={`interBold text-2xl ${selectedCategory == 'cefi' ? ' text-colorSeven-500' : 'text-blackText-500'}`}>CeFi</h5>
-								<h5 className={`interBold text-base ${selectedCategory == 'cefi' ? ' text-colorSeven-500' : 'text-blackText-500'}`}>
+								<h5 className={`interBold text-2xl ${selectedCategory == 'cefi' ? ' text-whiteText-500 titleShadow' : 'text-colorSeven-500/30'}`}>CeFi</h5>
+								<h5 className={`interBold text-base ${selectedCategory == 'cefi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
 									CeFi involves traditional centralized financial systems, like banks and institutions.
 								</h5>
 							</div>
 						</div>
 						<div
-							className={`w-1/3 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-								selectedCategory == 'defi' ? 'shadow-colorSeven-500' : 'bg-zinc-200/30'
+							className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
+								selectedCategory == 'defi' ? 'shadow-colorSeven-500 bg-colorSeven-500/80' : 'bg-zinc-200/30'
 							} p-5 cursor-pointer gap-2`}
 							onClick={() => {setSelectedCategory('defi'); setSelectedsubCategory(subCategories[0])}}
 						>
 							<div
-								className={`h-24 w-28 border border-slate-300 rounded-lg flex flex-row items-center justify-center ${
-									selectedCategory == 'defi' ? ' bg-gradient-to-br from-colorSix-500 to-colorFour-500' : ''
-								}`}
-							></div>
-							<div className="w-fit h-fit flex flex-col items-start justify-between">
-								<h5 className={`interBold text-2xl ${selectedCategory == 'defi' ? ' text-colorSeven-500' : 'text-blackText-500'}`}>DeFi</h5>
-								<h5 className={`interBold text-base ${selectedCategory == 'defi' ? ' text-colorSeven-500' : 'text-blackText-500'}`}>
-									DeFi uses decentralized tech, sidestepping traditional financial middlemen.
-								</h5>
+								className={`h-24 w-24 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center  ${selectedCategory == "defi ? 'opacity-100' : ' opacity-40' "}`}
+							>
+								<div className='w-11/12 aspect-square bg-center bg-contain bg-no-repeat' style={{
+									backgroundImage: `url('${defi.src}')`
+								}}></div>
 							</div>
-						</div>
-						<div
-							className={`w-1/3 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-								selectedCategory == 'defi' ? 'shadow-colorSeven-500' : 'bg-zinc-200/30'
-							} p-5 cursor-pointer gap-2`}
-							onClick={() => {setSelectedCategory('defi'); setSelectedsubCategory(subCategories[0])}}
-						>
-							<div
-								className={`h-24 w-28 border border-slate-300 rounded-lg flex flex-row items-center justify-center ${
-									selectedCategory == 'defi' ? ' bg-gradient-to-br from-colorSix-500 to-colorFour-500' : ''
-								}`}
-							></div>
 							<div className="w-fit h-fit flex flex-col items-start justify-between">
-								<h5 className={`interBold text-2xl ${selectedCategory == 'defi' ? ' text-colorSeven-500' : 'text-blackText-500'}`}>DeFi</h5>
-								<h5 className={`interBold text-base ${selectedCategory == 'defi' ? ' text-colorSeven-500' : 'text-blackText-500'}`}>
+								<h5 className={`interBold text-2xl ${selectedCategory == 'defi' ? ' text-whiteText-500 titleShadow' : ' text-colorSeven-500/30'}`}>DeFi</h5>
+								<h5 className={`interBold text-base ${selectedCategory == 'defi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
 									DeFi uses decentralized tech, sidestepping traditional financial middlemen.
 								</h5>
 							</div>
@@ -279,7 +202,7 @@ export default function Explore() {
 										<div className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
 											<div className="flex flex-row items-center justify-start gap-2">
 												<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}></Image>
-												<h5 className="text-base text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
+												<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
 											</div>
 											<GoChevronDown color="#F2F2F2" size={20} />
 										</div>
@@ -294,8 +217,8 @@ export default function Explore() {
 									return (
 										<div key={id} className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50" onClick={()=>{setSelectedsubCategory(sub)}}>
 											<div className="flex flex-row items-center justify-start gap-2">
-												<Image src={selectedSubCategory.logo} width={25} height={25} alt={sub.name}></Image>
-												<h5 className="text-base text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{sub.name}</h5>
+												<Image src={sub.logo} width={25} height={25} alt={sub.name}></Image>
+												<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{sub.name}</h5>
 											</div>
 											<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
 										</div>

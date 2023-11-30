@@ -42,6 +42,7 @@
     "next": "latest",
     "pg": "^8.11.3",
     "pino-pretty": "^10.2.0",
+    "rc-switch": "^4.1.0",
     "react": "latest",
     "react-burger-menu": "^3.0.9",
     "react-color": "^2.19.3",

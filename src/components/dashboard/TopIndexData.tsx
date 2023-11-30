@@ -26,6 +26,7 @@ import { useEffect } from 'react'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import etherscanLogo from '@assets/images/etherscan.png'
+import GenericTooltip from '../GenericTooltip'
 
 const TopIndexData = () => {
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
@@ -203,16 +204,65 @@ const TopIndexData = () => {
 			<div className="hidden my-8 lg:flex flex-row items-center justify-between gap-24">
 				<div className="flex w-2/6 flex-row items-center justify-between">
 					<div>
-						<h5 className="interExtraBold mb-5 text-base text-gray-400">Market Cap</h5>
-						<h5 className="interMedium text-base text-blackText-500">${defaultIndexObject?.mktCap}</h5>
+						<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
+							<h5 className="interExtraBold text-base text-gray-400">Market Cap</h5>
+							<span>
+								<GenericTooltip
+									color="#5E869B"
+									content={
+										<div>
+											<p className=" text-whiteText-500 text-sm interBold mb-1">Market Cap:</p>
+											<p className=" text-whiteText-500 text-sm interMedium">
+												The total value of a cryptocurrency, calculated by multiplying its price by the circulating supply. It indicates the cryptocurrency{"'"}s significance in the
+												market.
+											</p>
+										</div>
+									}
+								>
+									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
+								</GenericTooltip>
+							</span>
+						</div>
+
+						<h5 className="interMedium text-base text-colorSeven-500">${defaultIndexObject?.mktCap}</h5>
 					</div>
 					<div>
-						<h5 className="interExtraBold mb-5 text-base text-gray-400">Market Price</h5>
-						<h5 className="interMedium text-base text-blackText-500">${defaultIndexObject?.mktPrice}</h5>
+						<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
+							<h5 className="interExtraBold text-base text-gray-400">Market Price</h5>
+							<span>
+								<GenericTooltip
+									color="#5E869B"
+									content={
+										<div>
+											<p className=" text-whiteText-500 text-sm interBold mb-1">Market Price:</p>
+											<p className=" text-whiteText-500 text-sm interMedium">The current value of a single unit of cryptocurrency in the market, indicating its buying or selling cost.</p>
+										</div>
+									}
+								>
+									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
+								</GenericTooltip>
+							</span>
+						</div>
+						<h5 className="interMedium text-base text-colorSeven-500">${defaultIndexObject?.mktPrice}</h5>
 					</div>
 					<div>
-						<h5 className="interExtraBold mb-5 text-base text-gray-400">24h Change</h5>
-						<h5 className="interMedium text-base text-blackText-500">+${defaultIndexObject?.chg24h}</h5>
+					<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
+							<h5 className="interExtraBold text-base text-gray-400">24h Change</h5>
+							<span>
+								<GenericTooltip
+									color="#5E869B"
+									content={
+										<div>
+											<p className=" text-whiteText-500 text-sm interBold mb-1">24h Change:</p>
+											<p className=" text-whiteText-500 text-sm interMedium">the percentage difference in a cryptocurrency{"'"}s price over the past day, reflecting recent price performance.</p>
+										</div>
+									}
+								>
+									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
+								</GenericTooltip>
+							</span>
+						</div>
+						<h5 className="interMedium text-base text-colorSeven-500">+${defaultIndexObject?.chg24h}</h5>
 					</div>
 				</div>
 				<div className="w-4/6">
@@ -223,8 +273,8 @@ const TopIndexData = () => {
 						</div>
 						<div className="flex flex-row items-center justify-between">
 							<h5 className="interMedium mr-2 text-base text-colorSeven-500">null</h5>
-							<GenericAddressTooltip color='#2A2A2A' address='0x18C41549ee05F893B5eA6ede6f8dccC1a9C16f44'>
-								<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
+							<GenericAddressTooltip color="#5E869B" address="0x18C41549ee05F893B5eA6ede6f8dccC1a9C16f44">
+								<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
 							</GenericAddressTooltip>
 						</div>
 					</div>
@@ -299,7 +349,6 @@ const TopIndexData = () => {
 							<IoIosArrowDown color="#F2F2F2" size={15} />
 						</div>
 					</div>
-					
 				</div>
 
 				<div className="h-fit w-full">

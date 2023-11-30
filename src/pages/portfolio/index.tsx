@@ -290,7 +290,8 @@ export default function Portfolio() {
 												<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
-													$ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0}
+													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}
+													$ {indexPrices.anfi ? indexPrices.anfi.toFixed(2) : 0}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">{address ? index24hChange.anfi.toFixed(2): 0}%</h5>
 											</div>
@@ -299,7 +300,8 @@ export default function Portfolio() {
 												<h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
-													$ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0}
+													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}
+													$ {indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">{address ? index24hChange.cr5.toFixed(2): 0}%</h5>
 											</div>

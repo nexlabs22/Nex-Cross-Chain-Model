@@ -19,16 +19,16 @@ const GenericAddressTooltip: React.FC<TooltipProps> = ({ children, color, addres
 
 			{isHovered && (
 				<div
-					className="w-fit h-fit absolute pt-2 shadow-md rounded-md bottom-full left-1/2 transform -translate-x-1/2"
+					className="w-fit h-fit absolute pt-2 shadow-md rounded-xl bottom-full left-1/2 transform -translate-x-1/2"
 					style={{
 						backgroundColor: color,
 					}}
 				>
 					<div className="w-[30rem] h-fit flex flex-col items-start justify-start gap-2 px-3">
 						<h5 className="interBold text-whiteText-500 text-lg">Contract name 1</h5>
-						<h5 className="interMedium text-whiteText-500 text-sm">Address: {address}</h5>
-						<h5 className="interMedium text-whiteText-500 text-sm">Total supply: $78622.32</h5>
-						<h5 className="interMedium text-whiteText-500 text-sm">Total holders: 875</h5>
+						<h5 className="interMedium text-gray-300 text-sm">Address: {address}</h5>
+						<h5 className="interMedium text-gray-300 text-sm">Total supply: $78622.32</h5>
+						<h5 className="interMedium text-gray-300 text-sm">Total holders: 875</h5>
 					</div>
 					<div className="mt-3 border-t w-full h-fit border-t-whiteText-500 flex flex-row items-center justify-center">
 						<div className="w-1/2 py-2 h-fit flex flex-row items-center justify-center border-r border-r-whiteText-500 gap-5">
