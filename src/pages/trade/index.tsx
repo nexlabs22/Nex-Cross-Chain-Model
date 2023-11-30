@@ -9,6 +9,7 @@ import { toPng, toSvg } from 'html-to-image'
 
 import captureHtmlAsImage from '@/components/capture'
 import Head from 'next/head'
+import SwapV2 from '@/components/SwapV2'
 
 export default function Trade() {
 	const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
@@ -52,7 +53,8 @@ export default function Trade() {
 					</div>
 					<div className="w-full lg:w-3/12 h-full flex flex-col items-center justify-start gap-2">
 						<div className="w-full h-full ">
-							<Swap />
+							{/* <Swap /> */}
+							<SwapV2 />
 						</div>
 					</div>
 				</section>

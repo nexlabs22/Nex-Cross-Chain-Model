@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/shallow'
 import circle from '@assets/images/circle.png'
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
-import { goerliAnfiFactory, goerliAnfiIndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
+import { goerliAnfiFactory, goerliAnfiIndexToken, goerliAnfiV2Factory, goerliAnfiV2IndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
 
 type Coin = {
 	id: number
@@ -90,8 +90,10 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		logo: cr5Logo.src,
 		name: 'ANFI',
 		Symbol: 'ANFI',
-		address: goerliAnfiIndexToken,
-		factoryAddress: goerliAnfiFactory,
+		// address: goerliAnfiIndexToken,
+		address: goerliAnfiV2IndexToken,
+		// factoryAddress: goerliAnfiFactory,
+		factoryAddress: goerliAnfiV2Factory,
 	},
 	changeSwapToCur: (cur: Coin) => set((state) => ({ swapToCur: cur })),
 
