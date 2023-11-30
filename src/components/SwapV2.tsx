@@ -37,6 +37,9 @@ import { GenericToast } from './GenericToast'
 import { parseEther } from 'viem'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { ethers } from 'ethers'
+import { LiaWalletSolid } from 'react-icons/lia'
+import Switch from 'react-switch'
+import GenericTooltip from './GenericTooltip'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -85,22 +88,22 @@ const SwapV2 = () => {
 	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
 	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
 	const convertedInputValue = firstInputValue ? parseEther((Number(firstInputValue))?.toString() as string) : 0
-	const issuanceOutput = useContractRead(mintFactoryContract.contract, 'getIssuanceAmountOut', [convertedInputValue.toString(), swapFromCur.address ,"3"])
-	const redemptionOutput = useContractRead(burnFactoryContract.contract, 'getRedemptionAmountOut', [convertedInputValue.toString(), swapToCur.address,"3"])
+	// const issuanceOutput = useContractRead(mintFactoryContract.contract, 'getIssuanceAmountOut', [convertedInputValue.toString(), swapFromCur.address ,"3"])
+	// const redemptionOutput = useContractRead(burnFactoryContract.contract, 'getRedemptionAmountOut', [convertedInputValue.toString(), swapToCur.address,"3"])
 
 	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
 	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
 
-	const provider = new ethers.providers.JsonRpcBatchProvider("https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1");
-	const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider);
-	const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider);
 
 	useEffect(() => {
+		// console.log("ERRR")
 		async function getIssuanceOutput() {
 			try {
-			if(swapToCur.address == goerliAnfiV2IndexToken){
+			if(swapToCur.address == goerliAnfiV2IndexToken && convertedInputValue){
+			const provider = new ethers.providers.JsonRpcBatchProvider("https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1");
+			const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider);
 			const output = await issuanceContract.callStatic.getIssuanceAmountOut2(
 				convertedInputValue.toString(),
 				swapFromCur.address,
@@ -114,12 +117,14 @@ const SwapV2 = () => {
 		}
 		}
 		getIssuanceOutput()
-	}, [firstInputValue, convertedInputValue, issuanceContract, swapFromCur.address ,swapToCur.address])
+	}, [firstInputValue, convertedInputValue, swapFromCur.address ,swapToCur.address, swapToCur.factoryAddress])
 
 	useEffect(() => {
 		async function getRedemptionOutput() {
 			try {
-			if(swapFromCur.address == goerliAnfiV2IndexToken){
+			if(swapFromCur.address == goerliAnfiV2IndexToken && convertedInputValue){
+			const provider = new ethers.providers.JsonRpcBatchProvider("https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1");
+			const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider);
 			const output = await redemptionContract.callStatic.getRedemptionAmountOut2(
 				convertedInputValue.toString(),
 				 swapToCur.address,
@@ -132,7 +137,7 @@ const SwapV2 = () => {
 		}
 		}
 		getRedemptionOutput()
-	}, [firstInputValue, convertedInputValue, issuanceContract, swapFromCur.address ,swapToCur.address, redemptionContract.callStatic])
+	}, [firstInputValue, convertedInputValue, swapFromCur.address ,swapToCur.address, swapFromCur.factoryAddress])
 
 	
 
@@ -278,6 +283,12 @@ const SwapV2 = () => {
 		setToCurrencyModalOpen(false)
 	}
 
+	function Switching() {
+		let switchReserve: Coin = swapFromCur
+		changeSwapFromCur(swapToCur)
+		changeSwapToCur(switchReserve)
+	}
+
 	const [coinsList, setCoinsList] = useState<Coin[]>([
 		// {
 		// 	id: 0,
@@ -313,11 +324,11 @@ const SwapV2 = () => {
 		},
 	])
 
-	function Switch() {
-		let switchReserve: Coin = swapFromCur
-		changeSwapFromCur(swapToCur)
-		changeSwapToCur(switchReserve)
-	}
+	// function Switch() {
+	// 	let switchReserve: Coin = swapFromCur
+	// 	changeSwapFromCur(swapToCur)
+	// 	changeSwapToCur(switchReserve)
+	// }
 
 	const formatResult = (item: Coin) => {
 		return (
@@ -368,7 +379,7 @@ const SwapV2 = () => {
 			return FormatToViewNumber({
 				// value: Number((userEthBalance))/1e18,
 				value: Number(ethers.utils.formatEther(userEthBalance.toString())) as number,
-				returnType: 'number',
+				returnType: 'string',
 			}) 
         }else {
 			if (!fromTokenBalance.data){
@@ -392,7 +403,7 @@ const SwapV2 = () => {
 			return FormatToViewNumber({
 				// value: Number((userEthBalance))/1e18,
 				value: parseFloat(ethers.utils.formatEther(userEthBalance.toString())) as number,
-				returnType: 'number',
+				returnType: 'string',
 			}) 
         }else {
             // return (Number(toTokenBalance.data) / 1e18).toFixed(2)
@@ -402,7 +413,7 @@ const SwapV2 = () => {
 			return FormatToViewNumber({
 				// value: Number((userEthBalance))/1e18,
 				value: parseFloat(ethers.utils.formatEther(toTokenBalance.data)) as number,
-				returnType: 'number',
+				returnType: 'string',
 			}) 
         }
     }
@@ -548,19 +559,16 @@ const SwapV2 = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-base interMedium text-gray-500 w-1/3">You pay</p>
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
-							{/* <p onClick={() => setFirstInputValue(1)} className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30"> */}
 							<p onClick={() => {if(swapFromCur.address == goerliWethAddress) {setFirstInputValue(0.00001)} else setFirstInputValue(1)}} className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
 								MIN
 							</p>
 							<p
-								// onClick={() => setFirstInputValue(Number(fromTokenBalance.data) / 2e18)}
 								onClick={() => setFirstInputValue(Number(getPrimaryBalance()) / 2e18)}
 								className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
 							>
 								HALF
 							</p>
 							<p
-								// onClick={() => setFirstInputValue(Number(fromTokenBalance.data) / 1e18)}
 								onClick={() => setFirstInputValue(Number(getSecondaryBalance()) / 1e18)}
 								className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
 							>
@@ -574,7 +582,6 @@ const SwapV2 = () => {
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 							onChange={changeFirstInputValue}
-							// value={firstInputValue ? (firstInputValue as number) : 0}
 							value={firstInputValue}
 						/>
 						<div
@@ -590,11 +597,15 @@ const SwapV2 = () => {
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
-
-					<p className="text-base interMedium text-gray-500 pt-3">
-						{/* Balance: {(Number(fromTokenBalance.data) / 1e18).toFixed(2)} {swapFromCur.Symbol} */}
-						Balance: {getPrimaryBalance()} {swapFromCur.Symbol}
-					</p>
+					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
+						<span className="text-sm interMedium text-gray-500">≈ $28.4</span>
+						<div className="flex flex-row items-center justify-end gap-1">
+							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
+							<span className="text-sm interMedium text-gray-500">
+							{getPrimaryBalance()} {swapFromCur.Symbol}
+							</span>
+						</div>
+					</div>
 				</div>
 
 				<div className="w-full my-2 px-2 flex flex-row items-center justify-center">
@@ -602,7 +613,7 @@ const SwapV2 = () => {
 					<div
 						className="w-fit h-fit rounded-full mx-3 bg-blackText-500 p-2 cursor-pointer"
 						onClick={() => {
-							Switch()
+							Switching()
 						}}
 					>
 						<AiOutlineSwap color="#F2F2F2" size={20} className="rotate-90" />
@@ -632,33 +643,65 @@ const SwapV2 = () => {
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
 						</div>
 					</div>
-					<p className="text-base interMedium text-gray-500 pt-3">
-						{/* Balance: {(Number(toTokenBalance.data) / 1e18).toFixed(2)} {swapToCur.Symbol} */}
-						Balance: {getSecondaryBalance()} {swapToCur.Symbol}
-					</p>
+					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
+						<span className="text-sm interMedium text-gray-500">≈ $28.4</span>
+						<div className="flex flex-row items-center justify-end gap-1">
+							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
+							<span className="text-sm interMedium text-gray-500">
+								{getSecondaryBalance()} {swapToCur.Symbol}
+							</span>
+						</div>
+					</div>
 				</div>
-				<div className="pt-2">
-					<label className="inline-flex items-center space-x-2 cursor-pointer">
-						<input type="checkbox" checked={isChecked} onChange={toggleCheckbox} className="form-checkbox h-5 w-5 text-blue-600" />
-						<span className="text-gray-700 interMedium">Use Fiat payment</span>
-					</label>
+				<div className="pt-8">
+					<div className="flex flex-row items-center gap-2">
+						<Switch onChange={toggleCheckbox} checked={isChecked} height={14} width={35} handleDiameter={20} />
+						<div className="flex flex-row items-center justify-start gap-1">
+							<span className="text-gray-700 interMedium text-sm">Use Fiat payment</span>
+							<span>
+								<GenericTooltip
+									color="#5E869B"
+									content={
+										<div>
+											<p className=" text-whiteText-500 text-sm interBold mb-2">No cryptocurrencies in your wallet? No problem!</p>
+											<p className=" text-whiteText-500 text-sm interMedium">
+												Revolutionize your trading experience with Nex Labs – introducing fiat payments for the first time, providing you seamless and convenient transactions in
+												traditional currencies.
+											</p>
+										</div>
+									}
+								>
+									<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
+								</GenericTooltip>
+							</span>
+						</div>
+					</div>
 				</div>
 				<div className="h-fit w-full mt-6">
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3">
-						{swapToCur.address == goerliAnfiV2IndexToken || swapToCur.address == goerliCrypto5IndexToken? (
+						{swapToCur.address == goerliAnfiV2IndexToken || swapToCur.address == goerliCrypto5IndexToken ? (
 							<>
 								{(Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue)) && swapFromCur.address != goerliWethAddress ? (
-									<button onClick={approve} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+									<button
+										onClick={approve}
+										className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+									>
 										Approve
 									</button>
 								) : (
-									<button onClick={mintRequest} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+									<button
+										onClick={mintRequest}
+										className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+									>
 										Mint
 									</button>
 								)}
 							</>
 						) : (
-							<button onClick={burnRequest} className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30">
+							<button
+								onClick={burnRequest}
+								className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+							>
 								Burn
 							</button>
 						)}
@@ -673,7 +716,18 @@ const SwapV2 = () => {
 						<p className="text-sm interMedium text-black/70 pb-2">Platform Fees</p>
 						<div className="flex flex-row items-center justify-start gap-2">
 							<p className="text-sm interMedium text-black/70">{Number(firstInputValue) * 0.001} {swapFromCur.Symbol} (0.1%)</p>
-							<BsInfoCircle color="#2A2A2A" size={15} className="cursor-pointer"></BsInfoCircle>
+							<GenericTooltip
+								color="#5E869B"
+								content={
+									<div>
+										<p className=" text-whiteText-500 text-sm interMedium">
+											Platform fees support ongoing development and security, ensuring a sustainable and innovative decentralized financial ecosystem.
+										</p>
+									</div>
+								}
+							>
+								<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
+							</GenericTooltip>
 						</div>
 					</div>
 					{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
@@ -736,7 +790,12 @@ const SwapV2 = () => {
 					</div>
 				</div>
 			</GenericModal>
-			<GenericModal isOpen={cookingModalVisible} onRequestClose={()=>{setCookingModalVisible(false)}}>
+			<GenericModal
+				isOpen={cookingModalVisible}
+				onRequestClose={() => {
+					setCookingModalVisible(false)
+				}}
+			>
 				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
 					<Lottie
 						animationData={cookingAnimation}
@@ -747,8 +806,10 @@ const SwapV2 = () => {
 							overflow: 'hidden',
 						}}
 					/>
-					<h5 className='InterBold text-blackText-500 text-2xl text-center w-full -mt-6'>THE MAGIC IS HAPPENING...</h5>
-					<h5 className='interMedium text-blackText-500 text-lg text-center w-9/12 my-2'>Your NFT receipt is being minted. Once it is ready, you can find it the {"\""}Receipts{"\""} section.</h5>
+					<h5 className="InterBold text-blackText-500 text-2xl text-center w-full -mt-6">THE MAGIC IS HAPPENING...</h5>
+					<h5 className="interMedium text-blackText-500 text-lg text-center w-9/12 my-2">
+						Your NFT receipt is being minted. Once it is ready, you can find it the {'"'}Receipts{'"'} section.
+					</h5>
 				</div>
 			</GenericModal>
 		</>
