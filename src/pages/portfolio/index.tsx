@@ -222,7 +222,7 @@ export default function Portfolio() {
 		<>
 			<Head>
 				<title>Nexlabs.io, welcome!</title>
-				<meta name="description" content="NexLabs: decentralized trading platform" />
+				<meta name="description" content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view." />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">

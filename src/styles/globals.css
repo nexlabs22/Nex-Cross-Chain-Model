@@ -299,24 +299,24 @@ body {
 }
 
 .Toastify__toast {
-	background-color: #F2F2F2 !important;
-	color: #2A2A2A !important;
+	background-color: #2A2A2A !important;
+	color: #F2F2F2 !important;
 }
 
 .Toastify__progress-bar--info {
-	background-color: #A6C3CE !important;
+	background-color: #5E869B !important;
 }
 
 .Toastify__progress-bar--success {
-	background-color: #089981;
+	background-color: #5E869B !important;
 }
 
 .Toastify__progress-bar--warning {
-	background-color: #ED9733;
+	background-color: #5E869B !important;
 }
 
 .Toastify__progress-bar--error {
-	background-color: #F23645;
+	background-color: #5E869B !important;
 }
 
 .Toastify__close-button > svg {
@@ -325,6 +325,35 @@ body {
 
 .Toastify__close-button {
 	color: #dbdbdb;
+}
+
+.shakingIcon{
+  animation: shake 0.5s ease-in-out infinite;
+}
+
+
+
+.Toastify__toast-icon div{
+  width: fit-content !important;
+  overflow: unset !important;
+}
+
+.Toastify__toast-icon svg{
+
+  scale: 2 !important;
+}
+
+.Toastify__toast-icon svg:nth-child(2){
+
+  display: none !important;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
 }
 
 
@@ -491,3 +520,15 @@ body {
   background-color: #5E869B !important;
 }
 
+.cefiCsDefiAnimated{
+  animation: moveUpDown 60s infinite alternate;
+}
+
+@keyframes moveUpDown {
+  0% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 100% 50%; /* Adjust the distance based on the desired movement */
+  }
+}
