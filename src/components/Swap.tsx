@@ -34,11 +34,17 @@ import { BsInfoCircle } from 'react-icons/bs'
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import cookingAnimation from '@assets/lottie/cooking.json'
+import loading from 'react-useanimations/lib/loading'
 
 import { GenericToast } from './GenericToast'
 import { parseEther } from 'viem'
 import { num } from '@/hooks/math'
 import GenericTooltip from './GenericTooltip'
+
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client'
+import UseAnimations from 'react-useanimations'
+import { name } from '@lifi/widget'
+import { id } from 'ethers/lib/utils'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -205,34 +211,6 @@ const Swap = () => {
 	// 	}
 	// }, [mintRequestHook.isSuccess, burnRequestHook.isSuccess, address, nftImage, setNftImage])
 
-	const toggleCheckbox = () => {
-		setChecked(!isChecked)
-	}
-
-	const openPaymentModal = () => {
-		setPaymentModalOpen(true)
-	}
-
-	const closePaymentModal = () => {
-		setPaymentModalOpen(false)
-	}
-
-	const openFromCurrencyModal = () => {
-		setFromCurrencyModalOpen(true)
-	}
-
-	const closeFromCurrencyModal = () => {
-		setFromCurrencyModalOpen(false)
-	}
-
-	const openToCurrencyModal = () => {
-		setToCurrencyModalOpen(true)
-	}
-
-	const closeToCurrencyModal = () => {
-		setToCurrencyModalOpen(false)
-	}
-
 	const [coinsList, setCoinsList] = useState<Coin[]>([
 		{
 			id: 0,
@@ -259,6 +237,88 @@ const Swap = () => {
 			factoryAddress: '',
 		},
 	])
+
+	const [loadingTokens, setLoadingTokens] = useState<boolean>(true)
+
+	const client = new ApolloClient({
+		uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
+		cache: new InMemoryCache(),
+	})
+
+	useEffect(() => {
+		const fetchAllTokens = async () => {
+			const qr = gql`
+				{
+					tokens(first: 500, orderBy: txCount, orderDirection: desc, skip: 0) {
+						id
+						symbol
+						name
+					}
+				}
+			`
+
+			console.log('jaj')
+
+			client
+				.query({
+					query: qr,
+				})
+				.then((result) => {
+					console.log(result.data.tokens)
+					const tokens = result.data.tokens;
+					const coins: Coin[] = tokens.map((coin: any) => ({
+						id: coin.id,
+						//logo: "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+						logo: "https://assets.coincap.io/assets/icons/"+ coin.symbol.toString().toLowerCase() + "@2x.png",
+						name: coin.name,
+						Symbol: coin.symbol,
+						address: coin.id,
+						factoryAddress: "",
+					  })).filter((coin: any) => coin.Symbol !== 'USDC');;
+					setCoinsList(current => [...current, ...coins]);
+					
+									
+				}).then(()=>setLoadingTokens(false))
+		}
+		fetchAllTokens()
+	}, [])
+	
+	useEffect(() => {
+	  console.log(loadingTokens)
+	}, [loadingTokens])
+	
+
+	const toggleCheckbox = () => {
+		setChecked(!isChecked)
+	}
+
+	const openPaymentModal = () => {
+		setPaymentModalOpen(true)
+	}
+
+	const closePaymentModal = () => {
+		setPaymentModalOpen(false)
+	}
+
+	const openFromCurrencyModal = () => {
+		//fetchAllTokens()
+		setFromCurrencyModalOpen(true)
+	}
+
+	const closeFromCurrencyModal = () => {
+		setFromCurrencyModalOpen(false)
+	}
+
+	const openToCurrencyModal = () => {
+		//fetchAllTokens()
+		setToCurrencyModalOpen(true)
+	}
+
+	const closeToCurrencyModal = () => {
+		setToCurrencyModalOpen(false)
+	}
+
+	
 
 	function Switching() {
 		let switchReserve: Coin = swapFromCur
@@ -549,26 +609,40 @@ const Swap = () => {
 				<div className="w-full h-fit px-2">
 					<ReactSearchAutocomplete items={coinsList} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
-						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
-							{coinsList.map((item, index) => {
-								return (
-									<div
-										key={index}
-										className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300"
-										onClick={() => {
-											changeSwapFromCur(item)
-											closeFromCurrencyModal()
-										}}
-									>
-										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className="text-base text-blackText-500 interBold">{item.Symbol}</h5>
+						{loadingTokens ? (
+							<div className="flex flex-col items-center justify-center gap-10 py-12">
+								<UseAnimations
+									animation={loading}
+									wrapperStyle={{
+										width: 'fit-content',
+									}}
+									strokeColor="#5E869B"
+									size={100}
+								/>
+								<h5 className='InterBold text-blackText-500 text-3xl text-center'>Loading ...</h5>
+							</div>
+						) : (
+							<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
+								{coinsList.map((item, index) => {
+									return (
+										<div
+											key={index}
+											className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300"
+											onClick={() => {
+												changeSwapFromCur(item)
+												closeFromCurrencyModal()
+											}}
+										>
+											<div className="flex flex-row items-center justify-start gap-3">
+												<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
+												<h5 className="text-base text-blackText-500 interBold">{item.name}</h5>
+											</div>
+											<h5 className="text-sm text-gray-300 inter italic">{item.Symbol}</h5>
 										</div>
-										<h5 className="text-sm text-gray-300 inter italic">{item.Symbol}</h5>
-									</div>
-								)
-							})}
-						</div>
+									)
+								})}
+							</div>
+						)}
 					</div>
 				</div>
 			</GenericModal>
@@ -626,3 +700,7 @@ const Swap = () => {
 }
 
 export default Swap
+function setChecked(arg0: boolean) {
+	throw new Error('Function not implemented.')
+}
+

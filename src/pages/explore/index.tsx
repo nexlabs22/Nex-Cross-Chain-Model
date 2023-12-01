@@ -6,6 +6,7 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
+import arrowDown from 'react-useanimations/lib/arrowDown'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 
@@ -18,7 +19,12 @@ import hybrid from '@assets/images/hybrid.png'
 import crypto from '@assets/images/crypto.png'
 import circle from '@assets/images/circle.png'
 import { GoChevronDown } from 'react-icons/go'
+import bg2 from '@assets/images/bg-2.png'
+
+
 import Head from 'next/head'
+import UseAnimations from 'react-useanimations'
+
 
 interface Subcategory {
 	name: string
@@ -146,142 +152,198 @@ export default function Explore() {
 
 	return (
 		<>
-		<Head>
+			<Head>
 				<title>Nexlabs.io, welcome!</title>
-				<meta name="description" content="Traders love the Nex Labs platform for its wide selection of CeFi and DeFi products. Explore margin trading, derivatives, staking, and more - this blog covers all the offerings so you can optimize your crypto portfolio." />
+				<meta
+					name="description"
+					content="Traders love the Nex Labs platform for its wide selection of CeFi and DeFi products. Explore margin trading, derivatives, staking, and more - this blog covers all the offerings so you can optimize your crypto portfolio."
+				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-		<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
-			<section className="h-full w-fit overflow-x-hidde">
-				<DappNavbar />
-				<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-4 py-10">
-					<h5 className="text-xl text-slate-700 interMedium text-center">Explore products and assets on Nex Labs</h5>
-					<div className=" mt-10 mb-2 w-11/12 h-fit mx-auto flex flex-row items-center justify-center gap-2">
-						<div
-							className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-								selectedCategory == 'cefi' ? ' shadow-colorSeven-500 bg-colorSeven-500/80' : ' bg-zinc-200/30'
-							} p-5 cursor-pointer gap-2`}
-							
-							onClick={() => {setSelectedCategory('cefi'); setSelectedsubCategory(subCategories[1])}}
-						>
+			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
+				<section className="h-full w-fit overflow-x-hidde">
+					<DappNavbar />
+					<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-4 pt-10 pb-4">
+						<h5 className="text-xl text-slate-700 interMedium text-center">Explore products and assets on Nex Labs</h5>
+						<div className=" mt-10 mb-2 w-11/12 h-fit mx-auto flex flex-row items-center justify-center gap-2">
 							<div
-							
-								className={`h-24 w-28 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center ${selectedCategory == "cefi ? 'opacity-100' : ' opacity-40' "}`}
+								className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
+									selectedCategory == 'cefi' ? ' shadow-colorSeven-500 bg-colorSeven-500/80' : ' bg-zinc-200/30'
+								} p-5 cursor-pointer gap-2`}
+								onClick={() => {
+									setSelectedCategory('cefi')
+									setSelectedsubCategory(subCategories[1])
+								}}
 							>
-								<div className='w-11/12 aspect-square bg-center bg-contain bg-no-repeat' style={{
-									backgroundImage: `url('${cefi.src}')`
-								}}></div>
+								<div
+									className={`h-24 w-28 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center ${
+										selectedCategory == "cefi ? 'opacity-100' : ' opacity-40' "
+									}`}
+								>
+									<div
+										className="w-11/12 aspect-square bg-center bg-contain bg-no-repeat"
+										style={{
+											backgroundImage: `url('${cefi.src}')`,
+										}}
+									></div>
+								</div>
+								<div className="w-fit h-fit flex flex-col items-start justify-between">
+									<h5 className={`interBold text-2xl ${selectedCategory == 'cefi' ? ' text-whiteText-500 titleShadow' : 'text-colorSeven-500/30'}`}>CeFi</h5>
+									<h5 className={`interBold text-base ${selectedCategory == 'cefi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
+										CeFi involves traditional centralized financial systems, like banks and institutions.
+									</h5>
+								</div>
 							</div>
-							<div className="w-fit h-fit flex flex-col items-start justify-between">
-								<h5 className={`interBold text-2xl ${selectedCategory == 'cefi' ? ' text-whiteText-500 titleShadow' : 'text-colorSeven-500/30'}`}>CeFi</h5>
-								<h5 className={`interBold text-base ${selectedCategory == 'cefi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
-									CeFi involves traditional centralized financial systems, like banks and institutions.
-								</h5>
+							<div
+								className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
+									selectedCategory == 'defi' ? 'shadow-colorSeven-500 bg-colorSeven-500/80' : 'bg-zinc-200/30'
+								} p-5 cursor-pointer gap-2`}
+								onClick={() => {
+									setSelectedCategory('defi')
+									setSelectedsubCategory(subCategories[0])
+								}}
+							>
+								<div
+									className={`h-24 w-24 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center  ${
+										selectedCategory == "defi ? 'opacity-100' : ' opacity-40' "
+									}`}
+								>
+									<div
+										className="w-11/12 aspect-square bg-center bg-contain bg-no-repeat"
+										style={{
+											backgroundImage: `url('${defi.src}')`,
+										}}
+									></div>
+								</div>
+								<div className="w-fit h-fit flex flex-col items-start justify-between">
+									<h5 className={`interBold text-2xl ${selectedCategory == 'defi' ? ' text-whiteText-500 titleShadow' : ' text-colorSeven-500/30'}`}>DeFi</h5>
+									<h5 className={`interBold text-base ${selectedCategory == 'defi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
+										DeFi uses decentralized tech, sidestepping traditional financial middlemen.
+									</h5>
+								</div>
 							</div>
 						</div>
-						<div
-							className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-								selectedCategory == 'defi' ? 'shadow-colorSeven-500 bg-colorSeven-500/80' : 'bg-zinc-200/30'
-							} p-5 cursor-pointer gap-2`}
-							onClick={() => {setSelectedCategory('defi'); setSelectedsubCategory(subCategories[0])}}
-						>
-							<div
-								className={`h-24 w-24 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center  ${selectedCategory == "defi ? 'opacity-100' : ' opacity-40' "}`}
-							>
-								<div className='w-11/12 aspect-square bg-center bg-contain bg-no-repeat' style={{
-									backgroundImage: `url('${defi.src}')`
-								}}></div>
-							</div>
-							<div className="w-fit h-fit flex flex-col items-start justify-between">
-								<h5 className={`interBold text-2xl ${selectedCategory == 'defi' ? ' text-whiteText-500 titleShadow' : ' text-colorSeven-500/30'}`}>DeFi</h5>
-								<h5 className={`interBold text-base ${selectedCategory == 'defi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
-									DeFi uses decentralized tech, sidestepping traditional financial middlemen.
-								</h5>
-							</div>
-						</div>
-					</div>
-					<div className="w-11/12 h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 p-12">
-						<div className="w-full h-fit flex flex-row items-center justify-between mb-6">
-							<ReactSearchAutocomplete className="w-1/3" items={products} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
-							<Menu
-								menuButton={
-									<MenuButton>
-										<div className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
-											<div className="flex flex-row items-center justify-start gap-2">
-												<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}></Image>
-												<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
+						<div className="w-11/12 h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 p-12">
+							<div className="w-full h-fit flex flex-row items-center justify-between mb-6">
+								<ReactSearchAutocomplete className="w-1/3" items={products} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
+								<Menu
+									menuButton={
+										<MenuButton>
+											<div className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
+												<div className="flex flex-row items-center justify-start gap-2">
+													<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}></Image>
+													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
+												</div>
+												<GoChevronDown color="#F2F2F2" size={20} />
 											</div>
-											<GoChevronDown color="#F2F2F2" size={20} />
-										</div>
-									</MenuButton>
-								}
-								transition
-								direction="bottom"
-								align="end"
-								className="subCatgoriesMenu"
-							>
-								{subCategories.map((sub, id) => {
-									return (
-										<div key={id} className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50" onClick={()=>{setSelectedsubCategory(sub)}}>
-											<div className="flex flex-row items-center justify-start gap-2">
-												<Image src={sub.logo} width={25} height={25} alt={sub.name}></Image>
-												<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{sub.name}</h5>
+										</MenuButton>
+									}
+									transition
+									direction="bottom"
+									align="end"
+									className="subCatgoriesMenu"
+								>
+									{subCategories.map((sub, id) => {
+										return (
+											<div
+												key={id}
+												className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50"
+												onClick={() => {
+													setSelectedsubCategory(sub)
+												}}
+											>
+												<div className="flex flex-row items-center justify-start gap-2">
+													<Image src={sub.logo} width={25} height={25} alt={sub.name}></Image>
+													<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{sub.name}</h5>
+												</div>
+												<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
 											</div>
-											<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
-										</div>
-									)
+										)
+									})}
+								</Menu>
+							</div>
+							<div className="w-full h-fit border border-gray-300 rounded-xl px-3 py-6 shadow">
+								<div className="w-full h-fit pb-6 flex -flex-row items-center justify-center">
+									<div className="w-1/4 h-fit px-1">
+										<h5 className="interMedium text-gray-500 text-base">Product / Asset</h5>
+									</div>
+									<div className="w-1/4 h-fit px-1">
+										<h5 className="interMedium text-gray-500 text-base">Symbol</h5>
+									</div>
+									<div className="w-1/4 h-fit px-1">
+										<h5 className="interMedium text-gray-500 text-base">Total Supply</h5>
+									</div>
+									<div className="w-1/4 h-fit px-1">
+										<h5 className="interMedium text-gray-500 text-base">Address</h5>
+									</div>
+								</div>
+								{products.map((product, index) => {
+									if (product.category == selectedCategory && product.subcategory == selectedSubCategory.symbol) {
+										return (
+											<div key={index}>
+												<div className="w-full h-[1px] bg-blackText-500/50"></div>
+												<div className="w-full h-fit py-4 flex -flex-row items-center justify-center cursor-pointer hover:bg-gray-200/50">
+													<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-2">
+														<Link href={'/trade'}>
+															<Image src={product.logo} alt={product.name} width={30} height={30}></Image>
+														</Link>
+														<Link href={'/trade'}>
+															<h5 className="interBold text-colorSeven-500 text-base">{product.name}</h5>
+														</Link>
+													</div>
+													<div className="w-1/4 h-fit px-1">
+														<h5 className="interMedium text-blackText-500 text-base italic">{product.symbol}</h5>
+													</div>
+													<div className="w-1/4 h-fit px-1">
+														<h5 className="interMedium text-blackText-500 text-base">${product.totalSupply}</h5>
+													</div>
+													<div className="w-1/4 h-fit px-1">
+														<h5 className="interMedium text-blackText-500 text-base">{product.address}</h5>
+													</div>
+												</div>
+											</div>
+										)
+									}
 								})}
-							</Menu>
+							</div>
 						</div>
-						<div className="w-full h-fit border border-gray-300 rounded-xl px-3 py-6 shadow">
-							<div className="w-full h-fit pb-6 flex -flex-row items-center justify-center">
-								<div className="w-1/4 h-fit px-1">
-									<h5 className="interMedium text-gray-500 text-base">Product / Asset</h5>
-								</div>
-								<div className="w-1/4 h-fit px-1">
-									<h5 className="interMedium text-gray-500 text-base">Symbol</h5>
-								</div>
-								<div className="w-1/4 h-fit px-1">
-									<h5 className="interMedium text-gray-500 text-base">Total Supply</h5>
-								</div>
-								<div className="w-1/4 h-fit px-1">
-									<h5 className="interMedium text-gray-500 text-base">Address</h5>
+					</section>
+					<section className="w-screen h-fit flex flex-col items-center justify-center px-20 pb-10">
+						<div className=" relative w-full h-fit bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
+							<div className='absolute overflow-hidden w-full h-full top-0 right-0 z-10 flex flex-row items-center justify-normal'>
+								<div className='w-1/2 h-full'></div>
+								<div className='w-1/2 h-full bg-no-repeat cefiCsDefiAnimated' style={{
+									backgroundImage: `url('${bg2.src}')`
+								}}>
+
 								</div>
 							</div>
-							{products.map((product, index) => {
-								if((product.category == selectedCategory && product.subcategory == selectedSubCategory.symbol)){
-                                    return (
-                                        <div key={index}>
-                                            <div className='w-full h-[1px] bg-blackText-500/50'></div>
-                                            <div className="w-full h-fit py-4 flex -flex-row items-center justify-center cursor-pointer hover:bg-gray-200/50">
-                                                <div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-2">
-													<Link href={'/trade'}><Image src={product.logo} alt={product.name} width={30} height={30}></Image></Link>
-                                                    <Link href={'/trade'}><h5 className="interBold text-colorSeven-500 text-base">{product.name}</h5></Link>
-                                                    
-                                                </div>
-                                                <div className="w-1/4 h-fit px-1">
-                                                    <h5 className="interMedium text-blackText-500 text-base italic">{product.symbol}</h5>
-                                                </div>
-                                                <div className="w-1/4 h-fit px-1">
-                                                    <h5 className="interMedium text-blackText-500 text-base">${product.totalSupply}</h5>
-                                                </div>
-                                                <div className="w-1/4 h-fit px-1">
-                                                    <h5 className="interMedium text-blackText-500 text-base">{product.address}</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )
-                                }
-							})}
+							<div className='relative top-0 left-0 z-40 bg-transparent'>
+								<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Cefi vs Defi</h5>
+								<p className="interMedium text-whiteText-500 text-base w-1/2 mb-3">
+									Embark on a journey through CeFi and DeFi landscapes, understanding the centralized powerhouses and the decentralized disruptors. Start exploring the two faces of finance!
+								</p>
+								<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
+									<span>Learn More</span>
+									<UseAnimations
+										animation={arrowDown}
+										wrapperStyle={{
+											width: 'fit-content',
+										}}
+										strokeColor="#5E869B"
+										size={40}
+										className=" -rotate-90"
+									/>
+								</button>
+							</div>
 						</div>
-					</div>
+					</section>
 				</section>
-			</section>
 
-			<div className="w-fit h-fit pt-0 lg:pt-16">
-				<Footer />
-			</div>
-		</main>
+				<div className="w-fit h-fit pt-0 lg:pt-16">
+					<Footer />
+				</div>
+			</main>
 		</>
 	)
 }

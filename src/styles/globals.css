@@ -520,3 +520,15 @@ body {
   background-color: #5E869B !important;
 }
 
+.cefiCsDefiAnimated{
+  animation: moveUpDown 60s infinite alternate;
+}
+
+@keyframes moveUpDown {
+  0% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 100% 50%; /* Adjust the distance based on the desired movement */
+  }
+}
