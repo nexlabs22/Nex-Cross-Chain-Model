@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import DappNavbar from '@/components/DappNavbar'
-import dynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
+import { Menu, MenuButton } from '@szhsin/react-menu'
 import arrowDown from 'react-useanimations/lib/arrowDown'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
+import useTradePageStore from '@/store/tradeStore'
+import { useRouter } from 'next/navigation'
 
 // assets :
 import cr5Logo from '@assets/images/cr5.png'
@@ -43,27 +44,30 @@ interface Product {
 }
 
 export default function Explore() {
+	const router = useRouter();
 	const [selectedCategory, setSelectedCategory] = useState<String>('defi')
+	const { selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct} = useTradePageStore()
 	const [searchResult, setSearchResult] = useState<Product>()
 	const [selectedSubCategory, setSelectedsubCategory] = useState<Subcategory>({
 		name: 'Hybrid Indices',
-		symbol: 'defi1',
+		symbol: 'sub1',
 		logo: hybrid.src,
 	})
 
 	function toggleCategory() {
+		setSelectedTradingCategory(selectedTradingCategory === 'defi' ? 'cefi' : 'defi')
 		setSelectedCategory(selectedCategory === 'defi' ? 'cefi' : 'defi')
 	}
 
 	const subCategories = [
 		{
 			name: 'Hybrid Indices',
-			symbol: 'defi1',
+			symbol: 'sub1',
 			logo: hybrid.src,
 		},
 		{
 			name: 'Cryptocurrencies',
-			symbol: 'defi2',
+			symbol: 'sub2',
 			logo: crypto.src,
 		},
 	]
@@ -76,7 +80,16 @@ export default function Explore() {
 			address: '0xIE9303...0392K0',
 			totalSupply: 20938,
 			category: 'defi',
-			subcategory: 'defi1',
+			subcategory: 'sub2',
+		},
+		{
+			name: 'CRYPTO 5',
+			symbol: 'CRYPTO5',
+			logo: cr5Logo.src,
+			address: '0xIE9303...0392K0',
+			totalSupply: 20938,
+			category: 'cefi',
+			subcategory: 'sub2',
 		},
 		{
 			name: 'Anti Inlaftion Index',
@@ -85,26 +98,18 @@ export default function Explore() {
 			address: '0xIE9303...0392K0',
 			totalSupply: 109338,
 			category: 'defi',
-			subcategory: 'defi1',
+			subcategory: 'sub1',
 		},
 		{
-			name: 'Product 3',
-			symbol: 'PR3',
-			logo: circle.src,
+			name: 'Anti Inlaftion Index',
+			symbol: 'ANFI',
+			logo: anfiLogo.src,
 			address: '0xIE9303...0392K0',
 			totalSupply: 109338,
 			category: 'cefi',
-			subcategory: 'defi2',
+			subcategory: 'sub1',
 		},
-		{
-			name: 'Product 4',
-			symbol: 'PR4',
-			logo: circle.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
-			category: 'cefi',
-			subcategory: 'defi2',
-		},
+		
 	]
 
 	const defiIcon = (
@@ -134,17 +139,18 @@ export default function Explore() {
 	)
 
 	const handleOnSelect = (item: Product) => {
-		alert(item)
-		setSearchResult(item)
+		setSelectedTradingCategory(item.category)
+		setSelectedTradingProduct(item.symbol)
+		router.push('/trade')
 	}
 
 	const formatSearchResult = (item: Product) => {
 		return (
-			<div className="w-full h-fit px-4 py-2 flex flfex-row items-center justify-start gap-2">
+			<div className="w-full h-fit px-4 py-2 flex flfex-row items-center justify-start gap-2 cursor-pointer">
 				<Image src={item.logo} width={40} height={40} alt={item.name}></Image>
 				<div className="flex flex-col items-start justify-start gap-1">
-					<h5 className="interBold text-blackText-500 text-base">{item.name}</h5>
-					<h5 className="interMedium uppercase text-blackText-500 text-sm">{item.symbol}</h5>
+					<h5 className="interBold text-colorSeven-500 text-base">{item.name} <span className='interBold uppercase text-blackText-500/50 text-sm italic'>({item.category} Product)</span> </h5>
+					<h5 className="interMedium uppercase text-colorSeven-500 text-sm">{item.symbol}</h5>
 				</div>
 			</div>
 		)
@@ -163,21 +169,21 @@ export default function Explore() {
 			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
-					<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-4 pt-10 pb-4">
+					<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-10 pt-10 pb-4">
 						<h5 className="text-xl text-slate-700 interMedium text-center">Explore products and assets on Nex Labs</h5>
-						<div className=" mt-10 mb-2 w-11/12 h-fit mx-auto flex flex-row items-center justify-center gap-2">
+						<div className=" mt-10 mb-2 w-full h-fit mx-auto flex flex-row items-center justify-center gap-2">
 							<div
 								className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-									selectedCategory == 'cefi' ? ' shadow-colorSeven-500 bg-colorSeven-500/80' : ' bg-zinc-200/30'
+									selectedTradingCategory == 'cefi' ? ' shadow-colorSeven-500 bg-colorSeven-500/80' : ' bg-zinc-200/30'
 								} p-5 cursor-pointer gap-2`}
 								onClick={() => {
-									setSelectedCategory('cefi')
-									setSelectedsubCategory(subCategories[1])
+									setSelectedTradingCategory('cefi')
+									setSelectedsubCategory(subCategories[0])
 								}}
 							>
 								<div
 									className={`h-24 w-28 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center ${
-										selectedCategory == "cefi ? 'opacity-100' : ' opacity-40' "
+										selectedTradingCategory == "cefi ? 'opacity-100' : ' opacity-40' "
 									}`}
 								>
 									<div
@@ -188,24 +194,24 @@ export default function Explore() {
 									></div>
 								</div>
 								<div className="w-fit h-fit flex flex-col items-start justify-between">
-									<h5 className={`interBold text-2xl ${selectedCategory == 'cefi' ? ' text-whiteText-500 titleShadow' : 'text-colorSeven-500/30'}`}>CeFi</h5>
-									<h5 className={`interBold text-base ${selectedCategory == 'cefi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
+									<h5 className={`interBold text-2xl ${selectedTradingCategory == 'cefi' ? ' text-whiteText-500 titleShadow' : 'text-colorSeven-500/30'}`}>CeFi</h5>
+									<h5 className={`interBold text-base ${selectedTradingCategory == 'cefi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
 										CeFi involves traditional centralized financial systems, like banks and institutions.
 									</h5>
 								</div>
 							</div>
 							<div
 								className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-									selectedCategory == 'defi' ? 'shadow-colorSeven-500 bg-colorSeven-500/80' : 'bg-zinc-200/30'
+									selectedTradingCategory == 'defi' ? 'shadow-colorSeven-500 bg-colorSeven-500/80' : 'bg-zinc-200/30'
 								} p-5 cursor-pointer gap-2`}
 								onClick={() => {
-									setSelectedCategory('defi')
+									setSelectedTradingCategory('defi')
 									setSelectedsubCategory(subCategories[0])
 								}}
 							>
 								<div
 									className={`h-24 w-24 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center  ${
-										selectedCategory == "defi ? 'opacity-100' : ' opacity-40' "
+										selectedTradingCategory == "defi ? 'opacity-100' : ' opacity-40' "
 									}`}
 								>
 									<div
@@ -216,14 +222,14 @@ export default function Explore() {
 									></div>
 								</div>
 								<div className="w-fit h-fit flex flex-col items-start justify-between">
-									<h5 className={`interBold text-2xl ${selectedCategory == 'defi' ? ' text-whiteText-500 titleShadow' : ' text-colorSeven-500/30'}`}>DeFi</h5>
-									<h5 className={`interBold text-base ${selectedCategory == 'defi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
+									<h5 className={`interBold text-2xl ${selectedTradingCategory == 'defi' ? ' text-whiteText-500 titleShadow' : ' text-colorSeven-500/30'}`}>DeFi</h5>
+									<h5 className={`interBold text-base ${selectedTradingCategory == 'defi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
 										DeFi uses decentralized tech, sidestepping traditional financial middlemen.
 									</h5>
 								</div>
 							</div>
 						</div>
-						<div className="w-11/12 h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 p-12">
+						<div className="w-full h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 p-12">
 							<div className="w-full h-fit flex flex-row items-center justify-between mb-6">
 								<ReactSearchAutocomplete className="w-1/3" items={products} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
 								<Menu
@@ -308,7 +314,7 @@ export default function Explore() {
 							</div>
 						</div>
 					</section>
-					<section className="w-screen h-fit flex flex-col items-center justify-center px-20 pb-10">
+					<section className="w-screen h-fit flex flex-col items-center justify-center px-9 pb-10">
 						<div className=" relative w-full h-fit bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
 							<div className='absolute overflow-hidden w-full h-full top-0 right-0 z-10 flex flex-row items-center justify-normal'>
 								<div className='w-1/2 h-full'></div>
