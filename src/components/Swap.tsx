@@ -657,10 +657,10 @@ const Swap = () => {
 												key={index}
 												className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-100"
 												onClick={() => {
-													console.log(item.address)
+													//console.log(item.address)
 													// Error gets trigerred here when we chose a token from LiFi API, we get the error of wrong address
-													//changeSwapFromCur(item)
-													//closeFromCurrencyModal();
+													changeSwapFromCur(item)
+													closeFromCurrencyModal();
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-3">

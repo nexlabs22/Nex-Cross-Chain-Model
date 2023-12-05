@@ -44,7 +44,7 @@ interface Product {
 export default function Explore() {
 	const router = useRouter()
 	const [selectedCategory, setSelectedCategory] = useState<String>('defi')
-	const { selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct } = useTradePageStore()
+	const { changeDefaultIndex, selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct,  } = useTradePageStore()
 	const [searchResult, setSearchResult] = useState<Product>()
 	const [selectedSubCategory, setSelectedsubCategory] = useState<Subcategory>({
 		name: 'Hybrid Indices',
@@ -289,9 +289,9 @@ export default function Explore() {
 												<div className="w-full h-[1px] bg-blackText-500/50"></div>
 												<div className="w-full h-fit py-4 flex -flex-row items-center justify-center cursor-pointer hover:bg-gray-200/50">
 													<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-2">
-														<Image src={product.logo} alt={product.name} width={30} height={30} className=' cursor-pointer' onClick={()=>{setSelectedTradingProduct("sfg"); router.push('/trade')}}></Image>
+														<Image src={product.logo} alt={product.name} width={30} height={30} className=' cursor-pointer' onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}}></Image>
 
-														<h5 className="interBold text-colorSeven-500 text-base cursor-pointer" onClick={()=>{setSelectedTradingProduct("rgerger"); router.push('/trade')}}>{product.name}</h5>
+														<h5 className="interBold text-colorSeven-500 text-base cursor-pointer" onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}}>{product.name}</h5>
 													</div>
 													<div className="w-1/4 h-fit px-1">
 														<h5 className="interMedium text-blackText-500 text-base italic">{product.symbol}</h5>
