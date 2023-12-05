@@ -22,10 +22,8 @@ import circle from '@assets/images/circle.png'
 import { GoChevronDown } from 'react-icons/go'
 import bg2 from '@assets/images/bg-2.png'
 
-
 import Head from 'next/head'
 import UseAnimations from 'react-useanimations'
-
 
 interface Subcategory {
 	name: string
@@ -44,9 +42,9 @@ interface Product {
 }
 
 export default function Explore() {
-	const router = useRouter();
+	const router = useRouter()
 	const [selectedCategory, setSelectedCategory] = useState<String>('defi')
-	const { selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct} = useTradePageStore()
+	const { selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct } = useTradePageStore()
 	const [searchResult, setSearchResult] = useState<Product>()
 	const [selectedSubCategory, setSelectedsubCategory] = useState<Subcategory>({
 		name: 'Hybrid Indices',
@@ -109,7 +107,6 @@ export default function Explore() {
 			category: 'cefi',
 			subcategory: 'sub1',
 		},
-		
 	]
 
 	const defiIcon = (
@@ -149,7 +146,9 @@ export default function Explore() {
 			<div className="w-full h-fit px-4 py-2 flex flfex-row items-center justify-start gap-2 cursor-pointer">
 				<Image src={item.logo} width={40} height={40} alt={item.name}></Image>
 				<div className="flex flex-col items-start justify-start gap-1">
-					<h5 className="interBold text-colorSeven-500 text-base">{item.name} <span className='interBold uppercase text-blackText-500/50 text-sm italic'>({item.category} Product)</span> </h5>
+					<h5 className="interBold text-colorSeven-500 text-base">
+						{item.name} <span className="interBold uppercase text-blackText-500/50 text-sm italic">({item.category} Product)</span>{' '}
+					</h5>
 					<h5 className="interMedium uppercase text-colorSeven-500 text-sm">{item.symbol}</h5>
 				</div>
 			</div>
@@ -290,12 +289,9 @@ export default function Explore() {
 												<div className="w-full h-[1px] bg-blackText-500/50"></div>
 												<div className="w-full h-fit py-4 flex -flex-row items-center justify-center cursor-pointer hover:bg-gray-200/50">
 													<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-2">
-														<Link href={'/trade'}>
-															<Image src={product.logo} alt={product.name} width={30} height={30}></Image>
-														</Link>
-														<Link href={'/trade'}>
-															<h5 className="interBold text-colorSeven-500 text-base">{product.name}</h5>
-														</Link>
+														<Image src={product.logo} alt={product.name} width={30} height={30} className=' cursor-pointer' onClick={()=>{setSelectedTradingProduct("sfg"); router.push('/trade')}}></Image>
+
+														<h5 className="interBold text-colorSeven-500 text-base cursor-pointer" onClick={()=>{setSelectedTradingProduct("rgerger"); router.push('/trade')}}>{product.name}</h5>
 													</div>
 													<div className="w-1/4 h-fit px-1">
 														<h5 className="interMedium text-blackText-500 text-base italic">{product.symbol}</h5>
@@ -316,15 +312,16 @@ export default function Explore() {
 					</section>
 					<section className="w-screen h-fit flex flex-col items-center justify-center px-9 pb-10">
 						<div className=" relative w-full h-fit bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
-							<div className='absolute overflow-hidden w-full h-full top-0 right-0 z-10 flex flex-row items-center justify-normal'>
-								<div className='w-1/2 h-full'></div>
-								<div className='w-1/2 h-full bg-no-repeat cefiCsDefiAnimated' style={{
-									backgroundImage: `url('${bg2.src}')`
-								}}>
-
-								</div>
+							<div className="absolute overflow-hidden w-full h-full top-0 right-0 z-10 flex flex-row items-center justify-normal">
+								<div className="w-1/2 h-full"></div>
+								<div
+									className="w-1/2 h-full bg-no-repeat cefiCsDefiAnimated"
+									style={{
+										backgroundImage: `url('${bg2.src}')`,
+									}}
+								></div>
 							</div>
-							<div className='relative top-0 left-0 z-40 bg-transparent'>
+							<div className="relative top-0 left-0 z-40 bg-transparent">
 								<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Cefi vs Defi</h5>
 								<p className="interMedium text-whiteText-500 text-base w-1/2 mb-3">
 									Embark on a journey through CeFi and DeFi landscapes, understanding the centralized powerhouses and the decentralized disruptors. Start exploring the two faces of finance!
