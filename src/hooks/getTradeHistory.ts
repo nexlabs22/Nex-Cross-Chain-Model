@@ -20,6 +20,7 @@ interface Positions {
 
 export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker: string) {
 	// const accountAddress = useAccountAddressStore((state) => state.accountAddress)
+	// if(!exchangeAddress) return;
 	const [accountAddress, setAccountAddress] = useState<`0x${string}` | string>()
     const address = useAddress()
 
@@ -38,12 +39,13 @@ export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker
 
 		const client = createPublicClient({
 			chain: goerli,
+			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
 			transport: http(`https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1`),
 		})
 
 		const positions0: Positions[] = []
-
-		if (!accountAddress || exchangeAddress === zeroAddress) return
+		return;
+		if (!accountAddress || exchangeAddress === zeroAddress || !exchangeAddress) return
 		//store open long history
 		// console.log(exchangeAddress)
 		const mintRequestlogs = await client.getLogs({
