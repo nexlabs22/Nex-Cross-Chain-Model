@@ -15,6 +15,7 @@ import { useChartDataStore, useLandingPageStore } from '@/store/store';
 import { chartDataType, lineChartDataType } from '@/store/storeTypes';
 import { comparisonIndices } from '@/constants/comparisionIndices';
 import getTooltipDate, { convertTo13DigitsTimestamp, dateToEpoch } from '@/utils/conversionFunctions';
+import useTradePageStore from '@/store/tradeStore';
 
 
 interface GradientAreaChartProps {
@@ -31,6 +32,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const maxValue = Math.max(...data.map((point) => point.value))
 	const num = Object.keys(chartData).length
 	const { defaultIndex } = useLandingPageStore()
+	const { selectedTradingProduct } = useTradePageStore()
 	const { selectedDuration } = useChartDataStore()
 
 	useEffect(() => {
@@ -137,17 +139,20 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				toolTip.style.height = (Number(toolTip.style.height.split('px')[0]) + incHeight) + 'px'
 			}
 
+			const location = window.location.pathname
+			const ourIndexName = location === '/trade' ? selectedTradingProduct : defaultIndex;
+
 			let toolTipContentStatic =
 				`<div style="font-size: 14px; z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 				<Image
-				src="${defaultIndex === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
+				src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 					alt="tooltip logo"
 					style="width:22px;
 					   height:22px; 
 					   margin-right:5px ; 
 					   border-radius:50%;">
 				</Image>
-				${defaultIndex}
+				${ourIndexName}
 			</div>`
 
 			if (selectedCompIndexes.length > 0) {
@@ -184,14 +189,14 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					let toolTipContent =
 						`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
-						src="${defaultIndex === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
+						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 							alt="tooltip logo"
 							style="width:22px;
 							   height:22px; 
 							   margin-right:5px ; 
 							   border-radius:50%;">
 						</Image>
-						${defaultIndex}
+						${ourIndexName}
 					</div>`
 
 					if (selectedCompIndexes.length > 0) {
@@ -221,14 +226,14 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 						let toolTipContent =
 							`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
-						src="${defaultIndex === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
+						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 							alt="tooltip logo"
 							style="width:22px;
 							   height:22px; 
 							   margin-right:5px ; 
 							   border-radius:50%;">
 						</Image>
-							   ${defaultIndex}: ${Math.round(100 * price) / 100}
+							   ${ourIndexName}: ${Math.round(100 * price) / 100}
 							   </div>`
 
 						if (param.seriesData.size > 1) {
