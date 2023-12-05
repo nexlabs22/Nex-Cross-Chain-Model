@@ -17,8 +17,7 @@ import useTradePageStore from '@/store/tradeStore'
 import { GoTriangleDown } from 'react-icons/go'
 
 const TradeChartBox = () => {
-	const { defaultIndex, } = useLandingPageStore()
-	const { selectedTradingProduct, } = useTradePageStore()
+	const { selectedTradingProduct, defaultIndex } = useTradePageStore()
 	const { fetchIndexData, removeIndex, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data } = useChartDataStore()
 	
 	useEffect(() => {
@@ -35,7 +34,7 @@ const TradeChartBox = () => {
 						<div className='flex flex-col items-start justify-start'>
 							<h5 className='interBlack text-lg text-blackText-500'>
 								{
-									selectedTradingProduct
+									defaultIndex
 								}
 							</h5>
 							<h5 className='interMedium text-sm text-nexLightGreen-500'>
@@ -118,7 +117,7 @@ const TradeChartBox = () => {
 					</div>
 					
 					{
-						selectedTradingProduct === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />
+						defaultIndex === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />
 					}
 				</div>
 			</section>
