@@ -524,6 +524,10 @@ body {
   animation: moveUpDown 60s infinite alternate;
 }
 
+.tipsBox{
+  animation: moveUpDown 60s infinite alternate;
+}
+
 @keyframes moveUpDown {
   0% {
     background-position: 100% 0%;

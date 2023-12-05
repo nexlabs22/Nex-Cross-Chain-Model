@@ -10,38 +10,28 @@ const Chart = dynamic(() => import('@/components/dashboard/dashboardChart'), { l
 
 // Store
 import { useChartDataStore, useLandingPageStore } from '@/store/store'
-import useTradePageStore from '@/store/tradeStore'
 
 // Icons and logos :
 
 import { GoTriangleDown } from 'react-icons/go'
 
 const TradeChartBox = () => {
-	const { defaultIndex, } = useLandingPageStore()
-	const { selectedTradingProduct, } = useTradePageStore()
+	const { defaultIndex } = useLandingPageStore()
+	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
 	const { fetchIndexData, removeIndex, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data } = useChartDataStore()
-	
+	const [classesModalOpen, setClassesModalOpen] = useState<boolean>(false)
+	const [classesCategory, setClassesCategory] = useState<string>('indices')
+
 	useEffect(() => {
 		console.log('dayChange', dayChange)
-		console.log(selectedTradingProduct)
 	}, [dayChange])
 
 
 	return (
 		<>
-			<section className="h-full w-full">
-				<div className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
-					<div className="flex flex-row items-start justify-between px-2 mt-2 mb-6">
-						<div className='flex flex-col items-start justify-start'>
-							<h5 className='interBlack text-lg text-blackText-500'>
-								{
-									selectedTradingProduct
-								}
-							</h5>
-							<h5 className='interMedium text-sm text-nexLightGreen-500'>
-								+1.23%
-							</h5>
-						</div>
+			<section className="h-fit w-full">
+				<div className="h-[50vh] w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
+					<div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
 						<Menu
 							menuButton={
 								<div className="w-fit h-fit px-3 py-2 ml-2 hidden lg:flex flex-row items-center justify-center gap-1 rounded-md bg-colorSeven-500 shadow-sm shadow-blackText-500">
@@ -116,9 +106,43 @@ const TradeChartBox = () => {
 							</div>
 						</Menu>
 					</div>
-					
+					{/* <div className="flex flex-row items-start justify-start px-2">
+				<button
+					type="button"
+					className={
+						selectedDuration == 30
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(30)
+					}}
+				>
+					<p className="circularMedium text-base text-black">1M</p>
+				</button>
+				<button
+					type="button"
+					className={
+						selectedDuration == 180
+							? 'selectedDurationBtn flex flex-row items-center justify-center rounded-lg border border-solid border-black px-2 py-1 mx-1'
+							: 'flex flex-row items-center justify-center rounded-lg px-2 py-1 hover:bg-darkModeAccordionBackground-500 mx-1'
+					}
+					onClick={() => {
+						selectDuration(180)
+					}}
+				>
+					<p className="circularMedium text-base text-black">6M</p>
+				</button>
+			</div> */}
 					{
-						selectedTradingProduct === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />
+						// loading ? (
+						// 	<div className="flex items-center justify-center h-full">
+						// 		<p>Loading...</p>
+						// 	</div>
+						// ) : (
+						defaultIndex === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />
+
+						// )
 					}
 				</div>
 			</section>
