@@ -24,14 +24,13 @@ export default function Convert() {
 		<>
 			<Head>
 				<title>Nexlabs.io, welcome!</title>
-				<meta name="description" content="NexLabs: decentralized trading platform" />
+				<meta name="description" content="Nex Labs' convert page features a lifi widget enabling one-stop bridging, swapping, and native gas delivery making complex trades simple." />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit overflow-x-hidden flex flex-row items-center justify-center px-4 pt-10">
-						<Image src={sphere} className='w-auto h-[80vh] -ml-[20vw] -mt-20' alt='sphere'></Image>
 						<LiFiWidgetNext></LiFiWidgetNext>
 						
 					</section>

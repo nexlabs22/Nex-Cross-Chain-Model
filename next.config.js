@@ -30,6 +30,38 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'raw.githubusercontent.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'static.debank.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets.coingecko.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 's2.coinmarketcap.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'token-icons.s3.amazonaws.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'fuselogo.s3.eu-central-1.amazonaws.com'
+      },
+      {
+        protocol: 'https',
         hostname: 's3-symbol-logo.tradingview.com'
       },
       {

@@ -6,8 +6,7 @@ import { useEffect, useState } from 'react'
 
 // icons :
 import { BiSolidChevronDown } from 'react-icons/bi'
-import { AiOutlineSwap } from 'react-icons/ai'
-import { CiWallet } from 'react-icons/ci'
+import { AiOutlineSwap, AiOutlinePlus } from 'react-icons/ai'
 import { LiaWalletSolid } from 'react-icons/lia'
 
 // Store
@@ -18,8 +17,6 @@ import GenericModal from './GenericModal'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Switch from 'react-switch'
 // Assets:
-import circle from '@assets/images/circle.png'
-import { it } from 'node:test'
 import { UseContractResult, useAddress, useContract, useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { goerliAnfiFactory, goerliAnfiIndexToken, goerliCrypto5Factory, goerliCrypto5IndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
 import { indexFactoryAbi, indexTokenAbi, tokenAbi } from '@/constants/abi'
@@ -27,18 +24,21 @@ import { toast } from 'react-toastify'
 import Lottie from 'lottie-react'
 import PaymentModal from './PaymentModal'
 
-import { Network, Alchemy, BigNumber } from 'alchemy-sdk'
+import { Network, Alchemy } from 'alchemy-sdk'
 
 import { BsInfoCircle } from 'react-icons/bs'
 
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import cookingAnimation from '@assets/lottie/cooking.json'
+import loading from 'react-useanimations/lib/loading'
 
 import { GenericToast } from './GenericToast'
 import { parseEther } from 'viem'
 import { num } from '@/hooks/math'
 import GenericTooltip from './GenericTooltip'
+
+import UseAnimations from 'react-useanimations'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -205,6 +205,119 @@ const Swap = () => {
 	// 	}
 	// }, [mintRequestHook.isSuccess, burnRequestHook.isSuccess, address, nftImage, setNftImage])
 
+
+	const [reserveCoinsList, setreserveCoinsList] = useState<Coin[][]>([
+		[
+			{
+				id: 0,
+				logo: cr5Logo.src,
+				name: 'CRYPTO5',
+				Symbol: 'CR5',
+				address: goerliCrypto5IndexToken,
+				factoryAddress: goerliCrypto5Factory,
+			},
+			{
+				id: 1,
+				logo: anfiLogo.src,
+				name: 'ANFI',
+				Symbol: 'ANFI',
+				address: goerliAnfiIndexToken,
+				factoryAddress: goerliAnfiFactory,
+			},
+			{
+				id: 2,
+				logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
+				name: 'USD Coin',
+				Symbol: 'USDC',
+				address: goerliUsdtAddress,
+				factoryAddress: '',
+			},
+		],
+	])
+
+	const [allCoinsList, setAllCoinsList] = useState<Coin[][]>([
+		[
+			{
+				id: 0,
+				logo: cr5Logo.src,
+				name: 'CRYPTO5',
+				Symbol: 'CR5',
+				address: goerliCrypto5IndexToken,
+				factoryAddress: goerliCrypto5Factory,
+			},
+			{
+				id: 1,
+				logo: anfiLogo.src,
+				name: 'ANFI',
+				Symbol: 'ANFI',
+				address: goerliAnfiIndexToken,
+				factoryAddress: goerliAnfiFactory,
+			},
+			{
+				id: 2,
+				logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
+				name: 'USD Coin',
+				Symbol: 'USDC',
+				address: goerliUsdtAddress,
+				factoryAddress: '',
+			},
+		],
+	])
+	const [coinsList, setCoinsList] = useState<Coin[]>([])
+
+	const [loadingTokens, setLoadingTokens] = useState<boolean>(true)
+	const [currentArrayId, setCurrentArrayId] = useState<number>(0)
+
+	const fetchAllLiFiTokens = async () => {
+		const options = {
+			method: 'GET',
+			headers: { accept: 'application/json' },
+		}
+
+		try {
+			const response = await fetch(`https://li.quest/v1/tokens`, options)
+			const data = await response.json()
+
+			const tokenSets = data.tokens
+			const coins: Coin[] = Object.keys(tokenSets).flatMap((key) => {
+				const tokenSet = tokenSets[key]
+				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any }) => ({
+					id: coin.address,
+					logo: coin.logoURI && coin.logoURI != '' ? coin.logoURI : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU',
+					name: coin.name,
+					Symbol: coin.symbol,
+					address: coin.address,
+					factoryAddress: '',
+				}))
+			})
+
+			return coins
+		} catch (error) {
+			console.error(error)
+			return [] // Ensure a value is returned even in case of an error
+		}
+	}
+
+	function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+		const chunks: T[][] = []
+		for (let i = 0; i < array.length; i += chunkSize) {
+			chunks.push(array.slice(i, i + chunkSize))
+		}
+		return chunks
+	}
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const initialCoins = await fetchAllLiFiTokens()
+			const dividedArrays = chunkArray(initialCoins, 100)
+			setAllCoinsList(dividedArrays)
+			setCoinsList(dividedArrays[currentArrayId])
+			setLoadingTokens(false)
+		}
+
+		fetchData()
+	}, [])
+
 	const toggleCheckbox = () => {
 		setChecked(!isChecked)
 	}
@@ -218,6 +331,7 @@ const Swap = () => {
 	}
 
 	const openFromCurrencyModal = () => {
+		//fetchAllTokens()
 		setFromCurrencyModalOpen(true)
 	}
 
@@ -226,39 +340,13 @@ const Swap = () => {
 	}
 
 	const openToCurrencyModal = () => {
+		//fetchAllTokens()
 		setToCurrencyModalOpen(true)
 	}
 
 	const closeToCurrencyModal = () => {
 		setToCurrencyModalOpen(false)
 	}
-
-	const [coinsList, setCoinsList] = useState<Coin[]>([
-		{
-			id: 0,
-			logo: cr5Logo.src,
-			name: 'CRYPTO5',
-			Symbol: 'CR5',
-			address: goerliCrypto5IndexToken,
-			factoryAddress: goerliCrypto5Factory,
-		},
-		{
-			id: 1,
-			logo: anfiLogo.src,
-			name: 'ANFI',
-			Symbol: 'ANFI',
-			address: goerliAnfiIndexToken,
-			factoryAddress: goerliAnfiFactory,
-		},
-		{
-			id: 2,
-			logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
-			name: 'USD Coin',
-			Symbol: 'USDC',
-			address: goerliUsdtAddress,
-			factoryAddress: '',
-		},
-	])
 
 	function Switching() {
 		let switchReserve: Coin = swapFromCur
@@ -549,26 +637,51 @@ const Swap = () => {
 				<div className="w-full h-fit px-2">
 					<ReactSearchAutocomplete items={coinsList} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
-						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
-							{coinsList.map((item, index) => {
-								return (
-									<div
-										key={index}
-										className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300"
-										onClick={() => {
-											changeSwapFromCur(item)
-											closeFromCurrencyModal()
-										}}
-									>
-										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className="text-base text-blackText-500 interBold">{item.Symbol}</h5>
-										</div>
-										<h5 className="text-sm text-gray-300 inter italic">{item.Symbol}</h5>
+						{loadingTokens ? (
+							<div className="flex flex-col items-center justify-center gap-10 py-12">
+								<UseAnimations
+									animation={loading}
+									wrapperStyle={{
+										width: 'fit-content',
+									}}
+									strokeColor="#5E869B"
+									size={100}
+								/>
+							</div>
+						) : (
+							<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
+								{coinsList.map((item, index) => {
+									if (item.logo != 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU') {
+										return (
+											<div
+												key={index}
+												className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-100"
+												onClick={() => {
+													console.log(item.address)
+													// Error gets trigerred here when we chose a token from LiFi API, we get the error of wrong address
+													//changeSwapFromCur(item)
+													//closeFromCurrencyModal();
+												}}
+											>
+												<div className="flex flex-row items-center justify-start gap-3">
+													<div className="w-fit h-fit p-[1px] shadow-sm rounded-full flex flex-row items-center justify-center">
+														<Image src={item.logo} alt={item.name} width={25} height={25} className="rounded-full"></Image>
+													</div>
+
+													<h5 className="text-base text-colorSeven-500 interBold">{item.name}</h5>
+												</div>
+												<h5 className="text-sm text-blackText-500/50 uppercase inter italic">{item.Symbol}</h5>
+											</div>
+										)
+									}
+								})}
+								<div className="w-full h-fit py-3 flex flex-row items-center justify-center">
+									<div className="h-fit w-fit cursor-pointer px-3 py-2 flex flex-row items-center justify-center rounded-lg shadow-sm  bg-blackText-500">
+										<h5 className="text-base interMedium text-whiteText-500 titleShadow">Load more</h5>
 									</div>
-								)
-							})}
-						</div>
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 			</GenericModal>
@@ -576,26 +689,43 @@ const Swap = () => {
 				<div className="w-full h-fit px-2">
 					<ReactSearchAutocomplete items={coinsList} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
-						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto px-2 py-2" id="coinsList">
-							{coinsList.map((item, index) => {
-								return (
-									<div
-										key={index}
-										className="flex flex-row items-center justify-between mb-5 cursor-pointer"
-										onClick={() => {
-											changeSwapToCur(item)
-											closeToCurrencyModal()
-										}}
-									>
-										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className="text-base text-blackText-500 interBold">{item.Symbol}</h5>
-										</div>
-										<h5 className="text-sm text-gray-300 inter italic">{item.Symbol}</h5>
-									</div>
-								)
-							})}
-						</div>
+						{loadingTokens ? (
+							<div className="flex flex-col items-center justify-center gap-10 py-12">
+								<UseAnimations
+									animation={loading}
+									wrapperStyle={{
+										width: 'fit-content',
+									}}
+									strokeColor="#5E869B"
+									size={100}
+								/>
+							</div>
+						) : (
+							<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto px-2 py-2" id="coinsList">
+								{coinsList.map((item, index) => {
+									if (item.logo != 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU') {
+										return (
+											<div
+												key={index}
+												className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-100"
+												onClick={() => {
+													changeSwapToCur(item)
+													closeToCurrencyModal()
+												}}
+											>
+												<div className="flex flex-row items-center justify-start gap-3">
+												<div className="w-fit h-fit p-[1px] shadow-sm rounded-full flex flex-row items-center justify-center">
+														<Image src={item.logo} alt={item.name} width={25} height={25} className="rounded-full"></Image>
+													</div>
+													<h5 className="text-base text-colorSeven-500 interBold">{item.name}</h5>
+												</div>
+												<h5 className="text-sm text-blackText-500/50 uppercase inter italic">{item.Symbol}</h5>
+											</div>
+										)
+									}
+								})}
+							</div>
+						)}
 					</div>
 				</div>
 			</GenericModal>
@@ -626,3 +756,6 @@ const Swap = () => {
 }
 
 export default Swap
+function setChecked(arg0: boolean) {
+	throw new Error('Function not implemented.')
+}

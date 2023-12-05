@@ -54,9 +54,22 @@ type TradePageStore = {
 	// NFT Image:
 	nftImage: string
 	setNftImage: (image: string) => void
+
+	selectedTradingCategory: string
+	setSelectedTradingCategory: (category: string) => void
+
+	selectedTradingProduct: string
+	setSelectedTradingProduct: (product: string) => void
 }
 
 const useTradePageStore = create<TradePageStore>()((set) => ({
+
+	selectedTradingProduct: 'ANFI',
+	setSelectedTradingProduct: (product: string) => set((state) => ({ selectedTradingCategory: product })),
+
+	selectedTradingCategory: 'defi',
+	setSelectedTradingCategory: (category: string) => set((state) => ({ selectedTradingCategory: category })),
+	
 	selectedPortfolioChartSliceIndex: 'ANFI',
 	setSelectedPortfolioChartSliceIndex: (index: string) => set((state) => ({ defaultIndex: index })),
 
