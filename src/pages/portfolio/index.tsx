@@ -54,7 +54,7 @@ export default function Portfolio() {
 		error: errorAnfi,
 		data: dataAnfi
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: anfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90) },
+		variables: { poolAddress: anfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 100, direction: 'asc' },
 	});
 
 	const {
@@ -62,7 +62,7 @@ export default function Portfolio() {
 		error: errorCR5,
 		data: dataCR5
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: crypto5PoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90) },
+		variables: { poolAddress: crypto5PoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 100, direction: 'asc' },
 	});
 
 	// let anfiPrice = 0; let cr5Price = 0;

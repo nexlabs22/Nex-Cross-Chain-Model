@@ -60,7 +60,6 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	selectedDuration: 360,
 	selectDuration: (duration: number) => set((state) => ({ selectedDuration: duration })),
 	fetchIndexData: async ({ tableName, index }) => {
-		console.log(index)
 		try {
 			set({ loading: true, error: null })
 			const response = await fetch(
@@ -140,23 +139,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			`/api/get24Change`
 		)
 		const data = await response.json()
-		// const cryptoChange:{ [key: string]: { usd_24h_change: number } } = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true').then((res)=>res.data);
-
-
-		// Object.entries(cryptoChange).forEach(([key, value]: [string, { usd_24h_change: number }]) => {
-		// 	data[key] = value.usd_24h_change;
-		//   });
-
-		// console.log(cryptoChange)
-		console.log(data)
-
-		set((state) => {
-			// console.log(state.chartData);
-			return {
-				dayChange: data.changes
-			}
-		})
-
+		set({ dayChange: data.changes })
 	},
 }))
 
