@@ -13,6 +13,7 @@ import { toPng, toSvg } from 'html-to-image'
 
 import captureHtmlAsImage from '@/components/capture'
 import Head from 'next/head'
+import SwapV2 from '@/components/SwapV2'
 
 export default function Trade() {
 	const { selectedTradingCategory } = useTradePageStore()
@@ -59,9 +60,10 @@ export default function Trade() {
 					<div className="w-full lg:w-9/12 flex-grow">
 						<TradeChartBox />
 					</div>
-					<div className="w-full lg:w-3/12 flex flex-col items-center justify-start gap-2">
-						<div className="w-full">
-							<Swap />
+					<div className="w-full lg:w-3/12 h-full flex flex-col items-center justify-start gap-2">
+						<div className="w-full h-full ">
+							{/* <Swap /> */}
+							<SwapV2 />
 						</div>
 					</div>
 				</section>

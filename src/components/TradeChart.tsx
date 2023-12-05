@@ -19,11 +19,10 @@ import { GoTriangleDown } from 'react-icons/go'
 const TradeChartBox = () => {
 	const { selectedTradingProduct, defaultIndex } = useTradePageStore()
 	const { fetchIndexData, removeIndex, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data } = useChartDataStore()
-	
+
 	useEffect(() => {
-		console.log('dayChange', dayChange)
-		console.log(selectedTradingProduct)
-	}, [dayChange])
+		fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
+	}, [fetchIndexData])
 
 
 	return (

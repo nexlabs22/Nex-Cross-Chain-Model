@@ -37,10 +37,6 @@ const DashboardChartBox = () => {
 	const [classesModalOpen, setClassesModalOpen] = useState<boolean>(false)
 	const [classesCategory, setClassesCategory] = useState<string>('indices')
 
-	useEffect(() => {
-		console.log('dayChange', dayChange)
-	}, [dayChange])
-
 	const openClassesModal = () => {
 		setClassesModalOpen(true)
 	}
@@ -48,6 +44,10 @@ const DashboardChartBox = () => {
 	const closeClassesModal = () => {
 		setClassesModalOpen(false)
 	}
+
+	
+	console.log('ANFIData', ANFIData)
+	console.log('CR5Data', CR5Data)
 
 	// useEffect(() => {
 	// 	fetchIndexData({ tableName: 'histcomp', index: defaultIndex })

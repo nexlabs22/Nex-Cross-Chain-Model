@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_HISTORICAL_PRICES = gql`
-  query GetHistoricalPrices($poolAddress: String!, $startingDate: Int!) {
-    poolDayDatas(first: 100, orderBy: date, where: {
+  query GetHistoricalPrices($poolAddress: String!, $startingDate: Int!, $limit: Int!, $direction: String!) {
+    poolDayDatas(first: $limit, orderBy: date, orderDirection:$direction,  where: {
             pool: $poolAddress,
             date_gt: $startingDate
            } ) {
