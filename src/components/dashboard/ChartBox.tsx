@@ -229,7 +229,7 @@ const DashboardChartBox = () => {
 										>
 											<div className="flex flex-row items-center justify-start gap-2">
 												<div
-													className="w-10 p-3 aspect-square rounded-full bg-contain bg-center bg-no-repeat cursor-pointer shadow shadow-gray-300"
+													className={`w-10 p-3 ${selectedIndices.includes(assetClass.colName) ? 'border-2 border-white p-3' : ''} aspect-square rounded-full bg-contain bg-center bg-no-repeat cursor-pointer`}
 													style={{
 														backgroundImage: `url('${assetClass.logo}')`,
 													}}
@@ -243,7 +243,7 @@ const DashboardChartBox = () => {
 													{assetClass.name}
 												</h5>
 											</div>
-											<h5 className={`pangramCompact text-sm ${Number(dayChange[assetClass.colName]) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'}`}>{`${
+											<h5 className={`pangramCompact ${selectedIndices.includes(assetClass.colName) ? ' bg-whiteText-500 p-1 rounded-full border border-gray-400' : ''} text-sm ${Number(dayChange[assetClass.colName]) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'}`}>{`${
 												Number(dayChange[assetClass.colName]) > 0 ? '+' + dayChange[assetClass.colName] : dayChange[assetClass.colName]
 											}`}</h5>
 										</div>

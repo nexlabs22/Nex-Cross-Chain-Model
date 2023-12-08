@@ -585,12 +585,12 @@ const SwapV2 = () => {
 							value={firstInputValue}
 						/>
 						<div
-							className="w-2/5 lg:w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
+							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
 							onClick={() => {
 								openFromCurrencyModal()
 							}}
 						>
-							<div className="flex flex-row items-center justify-start">
+							<div className="flex flex-row items-center justify-start w-fit">
 								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={20} height={20} className="mt-1 mr-1"></Image>
 								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapFromCur.Symbol}</h5>
 							</div>
@@ -631,12 +631,12 @@ const SwapV2 = () => {
 							value={secondInputValue}
 						/>
 						<div
-							className="w-2/5 lg:w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
+							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
 							onClick={() => {
 								openToCurrencyModal()
 							}}
 						>
-							<div className="flex flex-row items-center justify-start">
+							<div className="flex flex-row items-center justify-start ">
 								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={20} height={20} className=" mt-1 mr-1"></Image>
 								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapToCur.Symbol}</h5>
 							</div>
@@ -691,7 +691,7 @@ const SwapV2 = () => {
 								) : (
 									<button
 										onClick={mintRequest}
-										className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+										className="text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded-lg cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90"
 									>
 										Mint
 									</button>

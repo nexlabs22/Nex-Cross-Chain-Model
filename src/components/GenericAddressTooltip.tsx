@@ -26,18 +26,23 @@ const GenericAddressTooltip: React.FC<TooltipProps> = ({ children, color, addres
 				>
 					<div className="w-[30rem] h-fit flex flex-col items-start justify-start gap-2 px-3">
 						<h5 className="interBold text-whiteText-500 text-lg">Contract name 1</h5>
-						<h5 className="interMedium text-gray-300 text-sm">Address: {address}</h5>
-						<h5 className="interMedium text-gray-300 text-sm">Total supply: $78622.32</h5>
-						<h5 className="interMedium text-gray-300 text-sm">Total holders: 875</h5>
+						<div className='w-full h-fit py-2 border border-gray-300 rounded-md flex flex-col items-start justify-start gap-1'>
+						<h5 className="interMedium text-whiteText-500 text-sm px-2">Address: {address}</h5>
+						<div className='my-2 bg-gray-100/50 w-full h-[1px] '></div>
+						<h5 className="interMedium text-whiteText-500 text-sm px-2">Total supply: $78622.32</h5>
+						<div className='my-2 bg-gray-100/50 w-full h-[1px] '></div>
+						<h5 className="interMedium text-whiteText-500 text-sm px-2">Total holders: 875</h5>
+						</div>
+						
 					</div>
 					<div className="mt-3 border-t w-full h-fit border-t-whiteText-500 flex flex-row items-center justify-center">
 						<div className="w-1/2 py-2 h-fit flex flex-row items-center justify-center border-r border-r-whiteText-500 gap-5">
 							<Link href={`https://etherscan.io/token/${address}`}>
-								<IoIosSearch color="#F2F2F2" size={30} className="cursor-pointer" />
+								<IoIosSearch color="#F2F2F2" size={25} className="cursor-pointer" />
 								
 							</Link>
                             <Link href={`https://etherscan.io/token/${address}`}>
-								<h5 className="interBold text-whiteText-500 text-base cursor-pointer">
+								<h5 className="interBold text-whiteText-500 text-sm cursor-pointer">
 									EXPLORE ON
 									<br />
 									ETHERSCAN
@@ -45,8 +50,8 @@ const GenericAddressTooltip: React.FC<TooltipProps> = ({ children, color, addres
 							</Link>
 						</div>
 						<div className="w-1/2 py-2 h-fit flex flex-row items-center justify-center gap-5">
-							<IoCopyOutline color="#F2F2F2" size={30} className="cursor-pointer" />
-							<h5 className="interBold text-whiteText-500 text-base cursor-pointer">COPY ADDRESS</h5>
+							<IoCopyOutline color="#F2F2F2" size={25} className="cursor-pointer" />
+							<h5 className="interBold text-whiteText-500 text-sm cursor-pointer">COPY ADDRESS</h5>
 						</div>
 					</div>
 					<div

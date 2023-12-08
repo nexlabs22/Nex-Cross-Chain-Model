@@ -139,7 +139,7 @@ const TopIndexData = () => {
 	return (
 		<section className="px-2 h-fit lg:px-10 py-6 xl:py-16">
 			<div className="flex h-fit xl:h-[45vh] flex-row items-stretch justify-between gap-1 xl:gap-4 mb-6">
-				<div className="h-full w-full lg:w-1/2 rounded-2xl py-3 xl:py-6 bg-lightBlueBackground-500 shadow-md shadow-blackText-500/50">
+				<div className="h-full w-full lg:w-1/2 rounded-2xl py-3 xl:py-6 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50">
 					<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 						<div className="flex flex-row items-center justify-start">
 							<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
@@ -212,7 +212,7 @@ const TopIndexData = () => {
 									content={
 										<div>
 											<p className=" text-whiteText-500 text-sm interBold mb-1">Market Cap:</p>
-											<p className=" text-whiteText-500 text-sm interMedium">
+											<p className=" text-gray-200 text-sm interMedium">
 												The total value of a cryptocurrency, calculated by multiplying its price by the circulating supply. It indicates the cryptocurrency{"'"}s significance in the
 												market.
 											</p>
@@ -283,9 +283,21 @@ const TopIndexData = () => {
 							<CiStreamOn color="#9CAAC6" size={20} />
 							<h5 className="interExtraBold ml-2 text-base text-gray-400">Managment fee</h5>
 						</div>
-						<div className="flex flex-row items-center justify-between">
-							<h5 className="interMedium text-base text-blackText-500">{defaultIndexObject?.managementFee}%</h5>
+						<div className="flex flex-row items-center justify-between gap-1">
+						<h5 className="interMedium text-base text-blackText-500">{defaultIndexObject?.managementFee}%</h5>
+						<GenericTooltip
+									color="#5E869B"
+									content={
+										<div>
+											<p className=" text-whiteText-500 text-sm interBold mb-1">Management Fees:</p>
+											<p className=" text-whiteText-500 text-sm interMedium">the percentage difference in a cryptocurrency{"'"}s price over the past day, reflecting recent price performance.</p>
+										</div>
+									}
+								>
+									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
+								</GenericTooltip>
 						</div>
+						
 					</div>
 				</div>
 			</div>
@@ -344,9 +356,9 @@ const TopIndexData = () => {
 						<h5 className="interBlack  text-xl lg:text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
 						<CgArrowsExchange color="#5E869B" size={35} className="mx-2" />
 						<h5 className="interBlack text-xl lg:text-2xl text-blackText-500">World{"'"}s best assets</h5>
-						<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl bg-colorSeven-500 shadow-sm shadow-blackText-500">
+						<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500">
 							<h5 className="text-sm interExtraBold text-whiteText-500">{defaultIndexObject?.name}</h5>
-							<IoIosArrowDown color="#F2F2F2" size={15} />
+							
 						</div>
 					</div>
 				</div>

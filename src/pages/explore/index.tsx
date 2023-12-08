@@ -269,17 +269,20 @@ export default function Explore() {
 							</div>
 							<div className="w-full h-fit border border-gray-300 rounded-xl px-3 py-6 shadow">
 								<div className="w-full h-fit pb-6 flex -flex-row items-center justify-center">
-									<div className="w-1/4 h-fit px-1">
+									<div className="w-1/5 h-fit px-1">
 										<h5 className="interMedium text-gray-500 text-base">Product / Asset</h5>
 									</div>
-									<div className="w-1/4 h-fit px-1">
+									<div className="w-1/5 h-fit px-1">
 										<h5 className="interMedium text-gray-500 text-base">Symbol</h5>
 									</div>
-									<div className="w-1/4 h-fit px-1">
+									<div className="w-1/5 h-fit px-1">
 										<h5 className="interMedium text-gray-500 text-base">Total Supply</h5>
 									</div>
-									<div className="w-1/4 h-fit px-1">
+									<div className="w-1/5 h-fit px-1">
 										<h5 className="interMedium text-gray-500 text-base">Address</h5>
+									</div>
+									<div className="w-1/5 h-fit px-1">
+										
 									</div>
 								</div>
 								{products.map((product, index) => {
@@ -287,20 +290,25 @@ export default function Explore() {
 										return (
 											<div key={index}>
 												<div className="w-full h-[1px] bg-blackText-500/50"></div>
-												<div className="w-full h-fit py-4 flex -flex-row items-center justify-center cursor-pointer hover:bg-gray-200/50">
-													<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-2">
-														<Image src={product.logo} alt={product.name} width={30} height={30} className=' cursor-pointer' onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}}></Image>
+												<div className="w-full h-fit py-4 flex -flex-row items-center justify-center hover:bg-gray-200/50">
+													<div className="w-1/5 h-fit px-1 flex flex-row items-center justify-start gap-2">
+														<Image src={product.logo} alt={product.name} width={30} height={30} className='cursor-pointer' onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}}></Image>
 
 														<h5 className="interBold text-colorSeven-500 text-base cursor-pointer" onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}}>{product.name}</h5>
 													</div>
-													<div className="w-1/4 h-fit px-1">
+													<div className="w-1/5 h-fit px-1">
 														<h5 className="interMedium text-blackText-500 text-base italic">{product.symbol}</h5>
 													</div>
-													<div className="w-1/4 h-fit px-1">
+													<div className="w-1/5 h-fit px-1">
 														<h5 className="interMedium text-blackText-500 text-base">${product.totalSupply}</h5>
 													</div>
-													<div className="w-1/4 h-fit px-1">
+													<div className="w-1/5 h-fit px-1">
 														<h5 className="interMedium text-blackText-500 text-base">{product.address}</h5>
+													</div>
+													<div className="w-1/5 h-fit px-1">
+														<button onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}} className='h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-colorSeven-500 shadow-sm shadow-gray-300 '>
+															Trade
+														</button>
 													</div>
 												</div>
 											</div>
