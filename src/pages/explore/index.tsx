@@ -14,8 +14,8 @@ import { useRouter } from 'next/navigation'
 // assets :
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
-import cefi from '@assets/images/cefi.jpg'
-import defi from '@assets/images/defi.jpg'
+import cefi from '@assets/images/CeFi_1c.png'
+import defi from '@assets/images/DeFi_1a.png'
 import hybrid from '@assets/images/hybrid.png'
 import crypto from '@assets/images/crypto.png'
 import circle from '@assets/images/circle.png'
@@ -172,8 +172,8 @@ export default function Explore() {
 						<h5 className="text-xl text-slate-700 interMedium text-center">Explore products and assets on Nex Labs</h5>
 						<div className=" mt-10 mb-2 w-full h-fit mx-auto flex flex-row items-center justify-center gap-2">
 							<div
-								className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-									selectedTradingCategory == 'cefi' ? ' shadow-colorSeven-500 bg-colorSeven-500/80' : ' bg-zinc-200/30'
+								className={`w-1/2 h-fit overflow-hidden flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
+									selectedTradingCategory == 'cefi' ? ' shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500' : ' bg-zinc-200/30'
 								} p-5 cursor-pointer gap-2`}
 								onClick={() => {
 									setSelectedTradingCategory('cefi')
@@ -181,12 +181,12 @@ export default function Explore() {
 								}}
 							>
 								<div
-									className={`h-24 w-28 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center ${
+									className={`h-24 w-28 rounded-lg flex flex-row items-center justify-center ${
 										selectedTradingCategory == "cefi ? 'opacity-100' : ' opacity-40' "
 									}`}
 								>
 									<div
-										className="w-11/12 aspect-square bg-center bg-contain bg-no-repeat"
+										className={`w-full h-full scale-[1.6] -translate-x-6 ${selectedTradingCategory == "cefi" ? '' : ' grayscale brightness-75 opacity-40'} aspect-square bg-center bg-contain bg-no-repeat`}
 										style={{
 											backgroundImage: `url('${cefi.src}')`,
 										}}
@@ -200,8 +200,8 @@ export default function Explore() {
 								</div>
 							</div>
 							<div
-								className={`w-1/2 h-fit flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-									selectedTradingCategory == 'defi' ? 'shadow-colorSeven-500 bg-colorSeven-500/80' : 'bg-zinc-200/30'
+								className={`w-1/2 h-fit flex flex-row items-center overflow-hidden justify-between border border-slate-400 rounded-xl shadow ${
+									selectedTradingCategory == 'defi' ? 'shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500' : 'bg-zinc-200/30'
 								} p-5 cursor-pointer gap-2`}
 								onClick={() => {
 									setSelectedTradingCategory('defi')
@@ -209,12 +209,12 @@ export default function Explore() {
 								}}
 							>
 								<div
-									className={`h-24 w-24 overflow-hidden border bg-white border-slate-300 rounded-lg flex flex-row items-center justify-center  ${
+									className={`h-24 w-24  rounded-lg flex flex-row items-center justify-center  ${
 										selectedTradingCategory == "defi ? 'opacity-100' : ' opacity-40' "
 									}`}
 								>
 									<div
-										className="w-11/12 aspect-square bg-center bg-contain bg-no-repeat"
+										className={`w-full h-full scale-[1.6] -translate-x-6 ${selectedTradingCategory == "defi" ? '' : ' grayscale brightness-75 opacity-40'} aspect-square bg-center bg-contain bg-no-repeat`}
 										style={{
 											backgroundImage: `url('${defi.src}')`,
 										}}
@@ -234,7 +234,7 @@ export default function Explore() {
 								<Menu
 									menuButton={
 										<MenuButton>
-											<div className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
+											<div className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
 												<div className="flex flex-row items-center justify-start gap-2">
 													<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}></Image>
 													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
@@ -306,7 +306,7 @@ export default function Explore() {
 														<h5 className="interMedium text-blackText-500 text-base">{product.address}</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
-														<button onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}} className='h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-colorSeven-500 shadow-sm shadow-gray-300 '>
+														<button onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}} className='h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 '>
 															Trade
 														</button>
 													</div>

@@ -263,7 +263,7 @@ const DashboardChartBox = () => {
 					<div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
 						<Menu
 							menuButton={
-								<div className="w-fit h-fit px-3 py-2 ml-2 hidden lg:flex flex-row items-center justify-center gap-1 rounded-md bg-colorSeven-500 shadow-sm shadow-blackText-500">
+								<div className="w-fit h-fit px-3 py-2 ml-2 hidden lg:flex flex-row items-center justify-center gap-1 rounded-md bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500">
 									<h5 className="text-sm interExtraBold titleShadow text-whiteText-500">
 										{selectedDuration == 30 ? '1M' : selectedDuration == 60 ? '2M' : selectedDuration == 180 ? '6M' : selectedDuration == -1 ? 'YTD' : selectedDuration == 360 ? '1Y' : selectedDuration == 1080 ? '3Y' : selectedDuration == 1800 ? '5Y' : ''}
 									</h5>

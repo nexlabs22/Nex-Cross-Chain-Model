@@ -151,7 +151,7 @@ const TopIndexData = () => {
 							{defaultIndexObject?.underlyingAssets.map((asset, i) => {
 								const zindex = i * 10
 								return (
-									<div key={i} className="aspect-square w-fit rounded-lg bg-colorSeven-500 p-[4px] shadow-sm shadow-slate-500" style={{ zIndex: `'${zindex}'`, marginLeft: '-2%' }}>
+									<div key={i} className="aspect-square w-fit rounded-lg bg-gradient-to-tl from-colorFour-500 to-colorSeven-500  p-[4px] shadow-sm shadow-slate-500" style={{ zIndex: `'${zindex}'`, marginLeft: '-2%' }}>
 										{asset.logo}
 									</div>
 								)
@@ -177,7 +177,7 @@ const TopIndexData = () => {
 							<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
 							<h5 className="interBlack mr-3 text-xl xl:text-2xl lg:text-4xl text-blackText-500">{othertIndexObject?.name} </h5>
 						</div>
-						<div className="hidden xl:flex flex-row items-center justify-center gap-1 bg-colorSeven-500 shadow-sm shadow-blackText-500 py-2 px-4 rounded-full">
+						<div className="hidden xl:flex flex-row items-center justify-center gap-1 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 py-2 px-4 rounded-full">
 							<h5 className="text-sm interMedium text-whiteText-500">See {othertIndexObject?.name}</h5>
 						</div>
 					</div>
@@ -186,7 +186,7 @@ const TopIndexData = () => {
 							{othertIndexObject?.underlyingAssets.map((asset, i) => {
 								const zindex = i * 10
 								return (
-									<div key={i} className="aspect-square w-fit rounded-lg bg-colorSeven-500 p-[4px] shadow-sm shadow-slate-500" style={{ zIndex: `'${zindex}'`, marginLeft: '-2%' }}>
+									<div key={i} className="aspect-square w-fit rounded-lg bg-gradient-to-tl from-colorFour-500 to-colorSeven-500  p-[4px] shadow-sm shadow-slate-500" style={{ zIndex: `'${zindex}'`, marginLeft: '-2%' }}>
 										{asset.logo}
 									</div>
 								)
