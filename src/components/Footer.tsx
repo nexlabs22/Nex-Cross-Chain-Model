@@ -53,7 +53,7 @@ const Footer = () => {
           <h5 className="interBlack mb-6 text-xl text-whiteText-500">
             Nex Labs
           </h5>
-          <Link href={"/"}>
+          <Link href={"https://www.nexlabs.io/"}>
             <h5 className="interBold mb-5 text-base text-whiteText-500">Home</h5>
           </Link>
           <Link href={"https://app.nexlabs.io/"}>

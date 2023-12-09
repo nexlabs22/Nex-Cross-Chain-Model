@@ -24,7 +24,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({lightVersion}) => {
 
 	return (
 		<section className="flex h-fit w-screen flex-row items-center justify-between px-4 py-4 md:px-10 md:py-6 relative z-50">
-			<Link href={'https://landing-page-spot-index.vercel.app/'}>
+			<Link href={'https://www.nexlabs.io/'}>
 				<div className="flex flex-row items-center justify-between">
 					<div className=" mr-2 h-fit w-fit">
 						<Image src={xlogo} alt="nex labs logo" className={`w-12 brightness-[0.65] ${lightVersion ? "brightness-[0] invert" : ""} drop-shadow-sm`}></Image>
