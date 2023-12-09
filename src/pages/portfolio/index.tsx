@@ -10,6 +10,7 @@ import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
 import { useEffect, useState } from 'react'
 import useTradePageStore from '@/store/tradeStore'
+import TipsBox2 from '@/components/TipsBox'
 
 import bg from '@assets/images/3d hologram.png'
 import anfiLogo from '@assets/images/anfi.png'
@@ -23,6 +24,7 @@ import { indexTokenAbi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { GenericToast } from '@/components/GenericToast'
+import AccountRebalancingSection from '@/components/AccountRebalancingSection'
 import GenericModal from '@/components/GenericModal'
 import QRCode from 'react-qr-code'
 
@@ -33,7 +35,9 @@ import Head from 'next/head'
 import { useQuery } from '@apollo/client'
 import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
-
+import UseAnimations from 'react-useanimations'
+import arrowDown from 'react-useanimations/lib/arrowDown'
+import bg2 from '@assets/images/bg-2.png'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -52,31 +56,31 @@ export default function Portfolio() {
 	const {
 		loading: loadingAnfi,
 		error: errorAnfi,
-		data: dataAnfi
+		data: dataAnfi,
 	} = useQuery(GET_HISTORICAL_PRICES, {
 		variables: { poolAddress: anfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 100, direction: 'asc' },
-	});
+	})
 
 	const {
 		loading: loadingCR5,
 		error: errorCR5,
-		data: dataCR5
+		data: dataCR5,
 	} = useQuery(GET_HISTORICAL_PRICES, {
 		variables: { poolAddress: crypto5PoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 100, direction: 'asc' },
-	});
+	})
 
 	// let anfiPrice = 0; let cr5Price = 0;
 	// let anfi24hChng = 0; let cr524hChng = 0;
-	const [chartArr, setChartArr] = useState<{ time: number, value: number }[]>([]);
-	const [indexPrices, setIndexPrices] = useState({anfi: 0, cr5:0});
-	const [index24hChange, setIndex24hChange] = useState({anfi: 0, cr5:0});
-	
-	if ((!loadingCR5 && !loadingAnfi) && (!errorCR5 && !errorAnfi) && chartArr.length == 0 && !!anfiPercent && !!crypto5Percent) {
-		const chartData: { time: number, value: number }[] = [];
+	const [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
+	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
+	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
+
+	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && !!anfiPercent && !!crypto5Percent) {
+		const chartData: { time: number; value: number }[] = []
 		const ANFIData = dataAnfi.poolDayDatas
 		const CR5Data = dataCR5.poolDayDatas
 		for (let i = 0; i <= ANFIData.length - 1; i++) {
-			const chartObj: { time: number, value: number } = { time: 0, value: 0 };
+			const chartObj: { time: number; value: number } = { time: 0, value: 0 }
 			const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i].token0Price)
 			chartObj.time = ANFIData[i].date
 			chartObj.value = value
@@ -84,24 +88,23 @@ export default function Portfolio() {
 		}
 		setChartArr(chartData)
 
-		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price  * num(anfiTokenBalance.data)
+		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price * num(anfiTokenBalance.data)
 		const cr5Price = CR5Data[CR5Data.length - 1].token0Price * num(crypto5TokenBalance.data)
-		setIndexPrices({anfi: anfiPrice, cr5:cr5Price})
+		setIndexPrices({ anfi: anfiPrice, cr5: cr5Price })
 
 		const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price
 		const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price
-		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100;
+		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
 
 		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price
 		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price
-		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100;
-		setIndex24hChange({anfi:anfi24hChng, cr5:cr524hChng})
-
+		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
+		setIndex24hChange({ anfi: anfi24hChng, cr5: cr524hChng })
 	}
 
 	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value
 	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value
-	const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100;
+	const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
 
 	const [isCopied, setIsCopied] = useState(false)
 
@@ -124,7 +127,7 @@ export default function Portfolio() {
 	const data = [
 		['Asset', 'Percentage'],
 		['CRYPTO 5', crypto5Percent ? crypto5Percent : 0],
-		['ANFI', anfiPercent ? anfiPercent:0],
+		['ANFI', anfiPercent ? anfiPercent : 0],
 		['FIAT', anfiPercent ? 0 : 5],
 	]
 
@@ -215,14 +218,17 @@ export default function Portfolio() {
 		{ time: '2018-03-29', value: 0 },
 		{ time: '2018-04-02', value: 0 },
 		{ time: '2018-04-03', value: 0 },
-		{ time: '2018-04-04', value: 0 }
+		{ time: '2018-04-04', value: 0 },
 	]
 
 	return (
 		<>
 			<Head>
 				<title>Nexlabs.io, welcome!</title>
-				<meta name="description" content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view." />
+				<meta
+					name="description"
+					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."
+				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
@@ -271,7 +277,10 @@ export default function Portfolio() {
 								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-								<Chart data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData} change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange:0} />
+								<Chart
+									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
+									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
+								/>
 							</div>
 						</div>
 						<div className="w-full h-fit px-2 lg:px-20">
@@ -290,20 +299,24 @@ export default function Portfolio() {
 												<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
-													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}
-													$ {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(2) : 0}
+													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(2) : 0}
 												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.anfi.toFixed(2): 0}%</h5>
+												<h5 className="interMedium italic text-base text-white titleShadow">
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.anfi.toFixed(2) : 0}%
+												</h5>
 											</div>
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
 												<h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
-													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}
-													$ {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
+													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}${' '}
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
 												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2): 0}%</h5>
+												<h5 className="interMedium italic text-base text-white titleShadow">
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2) : 0}%
+												</h5>
 											</div>
 										</div>
 									</div>
@@ -354,8 +367,46 @@ export default function Portfolio() {
 						</div>
 					</section>
 				</section>
-
+				<section className=" w-screen flex flex-row items-stretch justify-normal gap-1 px-10">
+					<div id='d1' className="w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
+						<div className="w-screen h-full flex flex-col items-center justify-center">
+							<div className=" relative w-full h-full bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
+								<div className="absolute overflow-hidden w-full h-full top-0 right-0 z-10 flex flex-row items-center justify-normal">
+									<div className="w-1/2 h-full"></div>
+									<div
+										className="w-1/2 h-full bg-no-repeat cefiCsDefiAnimated"
+										style={{
+											backgroundImage: `url('${bg2.src}')`,
+										}}
+									></div>
+								</div>
+								<div className="relative top-0 left-0 z-40 bg-transparent">
+									<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Keep a balanced account</h5>
+									<p className="interMedium text-whiteText-500 text-base w-1/2 mb-3">
+										Balancing a crypto account involves adjusting the allocation of various cryptocurrencies within the portfolio to manage risk and maintain desired investment proportions.
+									</p>
+									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
+										<span>Learn More</span>
+										<UseAnimations
+											animation={arrowDown}
+											wrapperStyle={{
+												width: 'fit-content',
+											}}
+											strokeColor="#5E869B"
+											size={40}
+											className=" -rotate-90"
+										/>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id='d2' className="w-3/12 flex flex-row items-center justify-center flex-grow-0 max-h-full">
+						<TipsBox2></TipsBox2>
+					</div>
+				</section>
 				<div className="w-fit h-fit pt-16">
+					c
 					<Footer />
 				</div>
 				<GenericModal
