@@ -15,7 +15,11 @@ import xlogo from '@assets/images/xlogo_s.png'
 import { Menu, SubMenu, Item } from 'burger-menu'
 import 'burger-menu/lib/index.css'
 
-const DappNavbar = () => {
+interface DappNavbarProps{
+	lightVersion?: boolean
+}
+
+const DappNavbar: React.FC<DappNavbarProps> = ({lightVersion}) => {
 	const { openMobileMenu, setOpenMobileMenu } = useTradePageStore()
 
 	return (
@@ -23,7 +27,7 @@ const DappNavbar = () => {
 			<Link href={'https://landing-page-spot-index.vercel.app/'}>
 				<div className="flex flex-row items-center justify-between">
 					<div className=" mr-2 h-fit w-fit">
-						<Image src={xlogo} alt="nex labs logo" className="w-12 brightness-[0.65] drop-shadow-sm"></Image>
+						<Image src={xlogo} alt="nex labs logo" className={`w-12 brightness-[0.65] ${lightVersion ? "brightness-[0] invert" : ""} drop-shadow-sm`}></Image>
 					</div>
 				</div>
 			</Link>
@@ -39,16 +43,16 @@ const DappNavbar = () => {
 			<div className="hidden flex-row items-center justify-start md:visible md:flex">
 				<div className="flex flex-row items-center justify-evenly">
 					<Link href={'/'}>
-						<h5 className="interMedium font-base mr-8 text-blackText-500">Dashboard</h5>
+						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Dashboard</h5>
 					</Link>
 					<Link href={'/explore'}>
-						<h5 className="interMedium font-base mr-8 text-blackText-500">Trade</h5>
+						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Trade</h5>
 					</Link>
 					<Link href={'/convert'}>
-						<h5 className="interMedium font-base mr-8 text-blackText-500">Convert</h5>
+						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Convert</h5>
 					</Link>
 					<Link href={'/portfolio'}>
-						<h5 className="interMedium font-base mr-8 text-blackText-500">Portfolio</h5>
+						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Portfolio</h5>
 					</Link>
 				</div>
 				{/* <div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div> */}

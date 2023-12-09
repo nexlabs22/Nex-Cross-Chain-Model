@@ -33,7 +33,7 @@ export default function Convert() {
 			}}
 			>
 				<section className="h-full w-fit overflow-x-hidde">
-					<DappNavbar />
+					<DappNavbar lightVersion />
 					<section className="w-screen h-fit overflow-x-hidden flex flex-row items-center justify-center px-4 pt-10"
 					
 					>
