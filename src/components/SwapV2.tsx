@@ -289,40 +289,117 @@ const SwapV2 = () => {
 		changeSwapToCur(switchReserve)
 	}
 
-	const [coinsList, setCoinsList] = useState<Coin[]>([
-		// {
-		// 	id: 0,
-		// 	logo: cr5Logo.src,
-		// 	name: 'CRYPTO5',
-		// 	Symbol: 'CR5',
-		// 	address: goerliCrypto5IndexToken,
-		// 	factoryAddress: goerliCrypto5Factory
-		// },
-		{
-			id: 1,
-			logo: anfiLogo.src,
-			name: 'ANFI',
-			Symbol: 'ANFI',
-			address: goerliAnfiV2IndexToken,
-			factoryAddress: goerliAnfiV2Factory
-		},
-		{
-			id: 2,
-			logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
-			name: 'USD Coin',
-			Symbol: 'USDC',
-			address: goerliUsdtAddress,
-			factoryAddress: ''
-		},
-		{
-			id: 3,
-			logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
-			name: 'Ethereum',
-			Symbol: 'ETH',
-			address: goerliWethAddress,
-			factoryAddress: ''
-		},
+	const [reserveCoinsList, setreserveCoinsList] = useState<Coin[][]>([
+		[
+			{
+				id: 0,
+				logo: cr5Logo.src,
+				name: 'CRYPTO5',
+				Symbol: 'CR5',
+				address: goerliCrypto5IndexToken,
+				factoryAddress: goerliCrypto5Factory,
+			},
+			{
+				id: 1,
+				logo: anfiLogo.src,
+				name: 'ANFI',
+				Symbol: 'ANFI',
+				address: goerliAnfiIndexToken,
+				factoryAddress: goerliAnfiFactory,
+			},
+			{
+				id: 2,
+				logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
+				name: 'USD Coin',
+				Symbol: 'USDC',
+				address: goerliUsdtAddress,
+				factoryAddress: '',
+			},
+		],
 	])
+
+	const [allCoinsList, setAllCoinsList] = useState<Coin[][]>([
+		[
+			{
+				id: 0,
+				logo: cr5Logo.src,
+				name: 'CRYPTO5',
+				Symbol: 'CR5',
+				address: goerliCrypto5IndexToken,
+				factoryAddress: goerliCrypto5Factory,
+			},
+			{
+				id: 1,
+				logo: anfiLogo.src,
+				name: 'ANFI',
+				Symbol: 'ANFI',
+				address: goerliAnfiIndexToken,
+				factoryAddress: goerliAnfiFactory,
+			},
+			{
+				id: 2,
+				logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
+				name: 'USD Coin',
+				Symbol: 'USDC',
+				address: goerliUsdtAddress,
+				factoryAddress: '',
+			},
+		],
+	])
+	const [coinsList, setCoinsList] = useState<Coin[]>([])
+
+	const [loadingTokens, setLoadingTokens] = useState<boolean>(true)
+	const [currentArrayId, setCurrentArrayId] = useState<number>(0)
+
+	const fetchAllLiFiTokens = async () => {
+		const options = {
+			method: 'GET',
+			headers: { accept: 'application/json' },
+		}
+
+		try {
+			const response = await fetch(`https://li.quest/v1/tokens`, options)
+			const data = await response.json()
+
+			const tokenSets = data.tokens
+			const coins: Coin[] = Object.keys(tokenSets).flatMap((key) => {
+				const tokenSet = tokenSets[key]
+				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any }) => ({
+					id: coin.address,
+					logo: coin.logoURI && coin.logoURI != '' ? coin.logoURI : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU',
+					name: coin.name,
+					Symbol: coin.symbol,
+					address: coin.address,
+					factoryAddress: '',
+				}))
+			})
+
+			return coins
+		} catch (error) {
+			console.error(error)
+			return [] // Ensure a value is returned even in case of an error
+		}
+	}
+
+	function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+		const chunks: T[][] = []
+		for (let i = 0; i < array.length; i += chunkSize) {
+			chunks.push(array.slice(i, i + chunkSize))
+		}
+		return chunks
+	}
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const initialCoins = await fetchAllLiFiTokens()
+			const dividedArrays = chunkArray(initialCoins, 100)
+			setAllCoinsList(dividedArrays)
+			setCoinsList(dividedArrays[currentArrayId])
+			setLoadingTokens(false)
+		}
+
+		fetchData()
+	}, [])
 
 	// function Switch() {
 	// 	let switchReserve: Coin = swapFromCur
@@ -559,18 +636,18 @@ const SwapV2 = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-base interMedium text-gray-500 w-1/3">You pay</p>
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
-							<p onClick={() => {if(swapFromCur.address == goerliWethAddress) {setFirstInputValue(0.00001)} else setFirstInputValue(1)}} className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30">
+							<p onClick={() => {if(swapFromCur.address == goerliWethAddress) {setFirstInputValue(0.00001)} else setFirstInputValue(1)}} className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm">
 								MIN
 							</p>
 							<p
 								onClick={() => setFirstInputValue(Number(getPrimaryBalance()) / 2e18)}
-								className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
+								className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm"
 							>
 								HALF
 							</p>
 							<p
 								onClick={() => setFirstInputValue(Number(getSecondaryBalance()) / 1e18)}
-								className="text-base lg:text-xs text-blackText-500 interBold bg-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-colorTwo-500/30"
+								className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm"
 							>
 								MAX
 							</p>
@@ -585,12 +662,12 @@ const SwapV2 = () => {
 							value={firstInputValue}
 						/>
 						<div
-							className="w-2/5 lg:w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
+							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
 							onClick={() => {
 								openFromCurrencyModal()
 							}}
 						>
-							<div className="flex flex-row items-center justify-start">
+							<div className="flex flex-row items-center justify-start w-fit">
 								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={20} height={20} className="mt-1 mr-1"></Image>
 								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapFromCur.Symbol}</h5>
 							</div>
@@ -631,12 +708,12 @@ const SwapV2 = () => {
 							value={secondInputValue}
 						/>
 						<div
-							className="w-2/5 lg:w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
+							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
 							onClick={() => {
 								openToCurrencyModal()
 							}}
 						>
-							<div className="flex flex-row items-center justify-start">
+							<div className="flex flex-row items-center justify-start ">
 								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={20} height={20} className=" mt-1 mr-1"></Image>
 								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapToCur.Symbol}</h5>
 							</div>
@@ -684,14 +761,14 @@ const SwapV2 = () => {
 								{(Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue)) && swapFromCur.address != goerliWethAddress ? (
 									<button
 										onClick={approve}
-										className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+										className="text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
 									>
 										Approve
 									</button>
 								) : (
 									<button
 										onClick={mintRequest}
-										className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+										className="text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded-lg cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90"
 									>
 										Mint
 									</button>
@@ -700,7 +777,7 @@ const SwapV2 = () => {
 						) : (
 							<button
 								onClick={burnRequest}
-								className="text-xl text-white titleShadow interBold bg-colorSeven-500 shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
+								className="text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded cursor-pointer hover:bg-colorTwo-500/30"
 							>
 								Burn
 							</button>
