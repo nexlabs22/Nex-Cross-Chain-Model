@@ -131,12 +131,12 @@ export default function Portfolio() {
 	const PieChartdata = [
 		{
 			label: 'ANFI',
-			percentage: !!anfiPercent ? anfiPercent + '%' : '37%',
+			percentage: !!anfiPercent ? anfiPercent + '%' : '0%',
 			color: '#133140',
 		},
 		{
 			label: 'CRYPTO 5',
-			percentage: !!crypto5Percent ? crypto5Percent + '%' : '63%',
+			percentage: !!crypto5Percent ? crypto5Percent + '%' : '0%',
 			color: '#b5e7ff',
 		},
 	]
