@@ -90,7 +90,7 @@ export default function Explore() {
 			subcategory: 'sub2',
 		},
 		{
-			name: 'Anti Inlaftion Index',
+			name: 'Anti Inflation Index',
 			symbol: 'ANFI',
 			logo: anfiLogo.src,
 			address: '0xIE9303...0392K0',
@@ -99,7 +99,7 @@ export default function Explore() {
 			subcategory: 'sub1',
 		},
 		{
-			name: 'Anti Inlaftion Index',
+			name: 'Anti Inflation Index',
 			symbol: 'ANFI',
 			logo: anfiLogo.src,
 			address: '0xIE9303...0392K0',
