@@ -143,7 +143,7 @@ const TopIndexData = () => {
 					<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 						<div className="flex flex-row items-center justify-start">
 							<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-							<h5 className="interBlack mr-3 text-xl xl:text-2xl lg:text-4xl text-white titleShadow">{defaultIndexObject?.name}</h5>
+							<h5 className="interBlack mr-3 text-lg xl:text-2xl lg:text-4xl text-white titleShadow">{defaultIndexObject?.name}</h5>
 						</div>
 					</div>
 					<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
@@ -179,7 +179,7 @@ const TopIndexData = () => {
 					<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 						<div className="flex flex-row items-center justify-start">
 							<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-							<h5 className="interBlack mr-3 text-xl xl:text-2xl lg:text-4xl text-blackText-500">{othertIndexObject?.name} </h5>
+							<h5 className="interBlack mr-3 text-lg xl:text-2xl lg:text-4xl text-blackText-500">{othertIndexObject?.name} </h5>
 						</div>
 						<div className="hidden xl:flex flex-row items-center justify-center gap-1 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 py-2 px-4 rounded-full">
 							<h5 className="text-sm interMedium text-whiteText-500">See {othertIndexObject?.name}</h5>

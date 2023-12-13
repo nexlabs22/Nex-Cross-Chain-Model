@@ -160,7 +160,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					const indexDetails = comparisonIndices.find((item) => item.columnName === index );
 					if (indexDetails) {
 
-						toolTipContentStatic += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
+						toolTipContentStatic += `<div style="font-size: 14px;z-index:100; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
 						toolTipContentStatic += `<Image
 						src=${indexDetails?.logo}
 						alt="tooltip logo"
@@ -187,7 +187,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					param.point.y > container.clientHeight
 				) {
 					let toolTipContent =
-						`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
+						`<div style="font-size: 14px;z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
 						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 							alt="tooltip logo"
@@ -202,7 +202,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					if (selectedCompIndexes.length > 0) {
 						selectedCompIndexes.map((index) => {
 							const indexDetails = comparisonIndices.find((item) => item.columnName === index);
-							toolTipContent += `<div style="font-size: 14px; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
+							toolTipContent += `<div style="font-size: 14px;z-index:100; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
 							toolTipContent += `<Image
 													src=${indexDetails?.logo}
 													alt="tooltip logo"
@@ -224,7 +224,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					if (data && data !== undefined) {
 						const price = data && data.value !== undefined ? data.value : data.close;
 						let toolTipContent =
-							`<div style="font-size: 14px; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
+							`<div style="font-size: 14px;z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
 						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
 							alt="tooltip logo"
@@ -248,6 +248,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 													style="width:22px;
 														   height:22px; 
 														   margin-right:5px ; 
+														   
 														   border-radius:50%;">
 												   </Image>`
 									toolTipContent += `${indexDetails?.shortName}: ${Math.round(100 * value.value) / 100}`
@@ -322,7 +323,8 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			style={{
 				width: '100%',
 				height: '100%',
-				overflow: 'hidden', // Hide scrollbars
+				overflow: 'hidden',
+				zIndex: 1 // Hide scrollbars
 			}}
 		/>
 	)

@@ -58,7 +58,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({lightVersion}) => {
 				{/* <div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div> */}
 				<ConnectButton />
 			</div>
-			<Menu isOpen={openMobileMenu}>
+			<Menu isOpen={openMobileMenu} className=''>
 				<div className="w-full h-full">
 					<div className="flex flex-row items-center justify-end p-3">
 						<AiOutlineClose
@@ -76,7 +76,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({lightVersion}) => {
 							}}>
 								<h5 className="interBold text-3xl text-blackText-500">Dashboard</h5>
 							</Link>
-							<Link href={'/trade'} onClick={() => {
+							<Link href={'/explore'} onClick={() => {
 								setOpenMobileMenu(false)
 							}}>
 								<h5 className="interBold text-3xl text-blackText-500">Trade</h5>

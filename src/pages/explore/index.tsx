@@ -44,7 +44,7 @@ interface Product {
 export default function Explore() {
 	const router = useRouter()
 	const [selectedCategory, setSelectedCategory] = useState<String>('defi')
-	const { changeDefaultIndex, selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct,  } = useTradePageStore()
+	const { changeDefaultIndex, selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct } = useTradePageStore()
 	const [searchResult, setSearchResult] = useState<Product>()
 	const [selectedSubCategory, setSelectedsubCategory] = useState<Subcategory>({
 		name: 'Hybrid Indices',
@@ -90,7 +90,7 @@ export default function Explore() {
 			subcategory: 'sub2',
 		},
 		{
-			name: 'Anti Inlaftion Index',
+			name: 'Anti Inflation Index',
 			symbol: 'ANFI',
 			logo: anfiLogo.src,
 			address: '0xIE9303...0392K0',
@@ -99,7 +99,7 @@ export default function Explore() {
 			subcategory: 'sub1',
 		},
 		{
-			name: 'Anti Inlaftion Index',
+			name: 'Anti Inflation Index',
 			symbol: 'ANFI',
 			logo: anfiLogo.src,
 			address: '0xIE9303...0392K0',
@@ -168,11 +168,11 @@ export default function Explore() {
 			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
-					<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-10 pt-10 pb-4">
+					<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-4 xl:px-10 pt-10 pb-4">
 						<h5 className="text-xl text-slate-700 interMedium text-center">Explore products and assets on Nex Labs</h5>
-						<div className=" mt-10 mb-2 w-full h-fit mx-auto flex flex-row items-center justify-center gap-2">
+						<div className=" mt-10 mb-2 w-full h-fit mx-auto flex flex-col xl:flex-row items-center justify-center gap-2">
 							<div
-								className={`w-1/2 h-fit overflow-hidden flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
+								className={`w-full xl:w-1/2 h-fit overflow-hidden flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
 									selectedTradingCategory == 'cefi' ? ' shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500' : ' bg-zinc-200/30'
 								} p-5 cursor-pointer gap-2`}
 								onClick={() => {
@@ -180,13 +180,11 @@ export default function Explore() {
 									setSelectedsubCategory(subCategories[0])
 								}}
 							>
-								<div
-									className={`h-24 w-28 rounded-lg flex flex-row items-center justify-center ${
-										selectedTradingCategory == "cefi ? 'opacity-100' : ' opacity-40' "
-									}`}
-								>
+								<div className={`h-24 w-28 rounded-lg flex flex-row items-center justify-center ${selectedTradingCategory == "cefi ? 'opacity-100' : ' opacity-40' "}`}>
 									<div
-										className={`w-full h-full scale-[1.6] -translate-x-6 ${selectedTradingCategory == "cefi" ? '' : ' grayscale brightness-75 opacity-40'} aspect-square bg-center bg-contain bg-no-repeat`}
+										className={`w-full h-full scale-[1.6] -translate-x-6 ${
+											selectedTradingCategory == 'cefi' ? '' : ' grayscale brightness-75 opacity-40'
+										} aspect-square bg-center bg-contain bg-no-repeat`}
 										style={{
 											backgroundImage: `url('${cefi.src}')`,
 										}}
@@ -200,7 +198,7 @@ export default function Explore() {
 								</div>
 							</div>
 							<div
-								className={`w-1/2 h-fit flex flex-row items-center overflow-hidden justify-between border border-slate-400 rounded-xl shadow ${
+								className={`w-full xl:w-1/2 h-fit flex flex-row items-center overflow-hidden justify-between border border-slate-400 rounded-xl shadow ${
 									selectedTradingCategory == 'defi' ? 'shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500' : 'bg-zinc-200/30'
 								} p-5 cursor-pointer gap-2`}
 								onClick={() => {
@@ -208,13 +206,11 @@ export default function Explore() {
 									setSelectedsubCategory(subCategories[0])
 								}}
 							>
-								<div
-									className={`h-24 w-24  rounded-lg flex flex-row items-center justify-center  ${
-										selectedTradingCategory == "defi ? 'opacity-100' : ' opacity-40' "
-									}`}
-								>
+								<div className={`h-24 w-24  rounded-lg flex flex-row items-center justify-center  ${selectedTradingCategory == "defi ? 'opacity-100' : ' opacity-40' "}`}>
 									<div
-										className={`w-full h-full scale-[1.6] -translate-x-6 ${selectedTradingCategory == "defi" ? '' : ' grayscale brightness-75 opacity-40'} aspect-square bg-center bg-contain bg-no-repeat`}
+										className={`w-full h-full scale-[1.6] -translate-x-6 ${
+											selectedTradingCategory == 'defi' ? '' : ' grayscale brightness-75 opacity-40'
+										} aspect-square bg-center bg-contain bg-no-repeat`}
 										style={{
 											backgroundImage: `url('${defi.src}')`,
 										}}
@@ -228,13 +224,13 @@ export default function Explore() {
 								</div>
 							</div>
 						</div>
-						<div className="w-full h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 p-12">
-							<div className="w-full h-fit flex flex-row items-center justify-between mb-6">
-								<ReactSearchAutocomplete className="w-1/3" items={products} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
+						<div className="w-full h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 px-3 py-6 xl:p-12">
+							<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between mb-6 gap-3 xl:gap-0">
+								<ReactSearchAutocomplete className="w-[75vw] xl:w-1/3" items={products} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
 								<Menu
 									menuButton={
 										<MenuButton>
-											<div className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
+											<div className="w-[74vw] xl:w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
 												<div className="flex flex-row items-center justify-start gap-2">
 													<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}></Image>
 													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
@@ -267,34 +263,50 @@ export default function Explore() {
 									})}
 								</Menu>
 							</div>
-							<div className="w-full h-fit border border-gray-300 rounded-xl px-3 py-6 shadow">
-								<div className="w-full h-fit pb-6 flex -flex-row items-center justify-center">
-									<div className="w-1/5 h-fit px-1">
-										<h5 className="interMedium text-gray-500 text-base">Product / Asset</h5>
+							<div className="w-full h-fit border overflow-scroll border-gray-300 rounded-xl px-3 py-6 shadow hidden xl:block">
+								<div className="w-full h-fit pb-6 flex flex-row items-center justify-start xl:justify-center">
+									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1">
+										<h5 className="interMedium text-gray-500 text-base whitespace-nowrap">Product / Asset</h5>
 									</div>
-									<div className="w-1/5 h-fit px-1">
-										<h5 className="interMedium text-gray-500 text-base">Symbol</h5>
+									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1">
+										<h5 className="interMedium text-gray-500 text-base whitespace-nowrap">Symbol</h5>
 									</div>
-									<div className="w-1/5 h-fit px-1">
-										<h5 className="interMedium text-gray-500 text-base">Total Supply</h5>
+									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1">
+										<h5 className="interMedium text-gray-500 text-base whitespace-nowrap">Total Supply</h5>
 									</div>
-									<div className="w-1/5 h-fit px-1">
-										<h5 className="interMedium text-gray-500 text-base">Address</h5>
+									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1">
+										<h5 className="interMedium text-gray-500 text-base whitespace-nowrap">Address</h5>
 									</div>
-									<div className="w-1/5 h-fit px-1">
-										
-									</div>
+									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1"></div>
 								</div>
 								{products.map((product, index) => {
 									if (product.category == selectedCategory && product.subcategory == selectedSubCategory.symbol) {
 										return (
 											<div key={index}>
 												<div className="w-full h-[1px] bg-blackText-500/50"></div>
-												<div className="w-full h-fit py-4 flex -flex-row items-center justify-center hover:bg-gray-200/50">
+												<div className="w-full h-fit py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50">
 													<div className="w-1/5 h-fit px-1 flex flex-row items-center justify-start gap-2">
-														<Image src={product.logo} alt={product.name} width={30} height={30} className='cursor-pointer' onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}}></Image>
+														<Image
+															src={product.logo}
+															alt={product.name}
+															width={30}
+															height={30}
+															className="cursor-pointer"
+															onClick={() => {
+																changeDefaultIndex(product.symbol)
+																router.push('/trade')
+															}}
+														></Image>
 
-														<h5 className="interBold text-colorSeven-500 text-base cursor-pointer" onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}}>{product.name}</h5>
+														<h5
+															className="interBold text-colorSeven-500 text-base cursor-pointer"
+															onClick={() => {
+																changeDefaultIndex(product.symbol)
+																router.push('/trade')
+															}}
+														>
+															{product.name}
+														</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
 														<h5 className="interMedium text-blackText-500 text-base italic">{product.symbol}</h5>
@@ -306,7 +318,13 @@ export default function Explore() {
 														<h5 className="interMedium text-blackText-500 text-base">{product.address}</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
-														<button onClick={()=>{changeDefaultIndex(product.symbol); router.push('/trade')}} className='h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 '>
+														<button
+															onClick={() => {
+																changeDefaultIndex(product.symbol)
+																router.push('/trade')
+															}}
+															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
+														>
 															Trade
 														</button>
 													</div>
@@ -316,22 +334,73 @@ export default function Explore() {
 									}
 								})}
 							</div>
+							<div className="w-full h-fit border-gray-300 rounded-xl px-3 py-6 shadow">
+								{products.map((product, index) => {
+									if (product.category == selectedCategory && product.subcategory == selectedSubCategory.symbol) {
+										return (
+											<div key={index}>
+												<div className="flex flex-col items-start justify-start gap-3 mb-4">
+													<div className="w-full h-fit px-1 flex flex-row items-center justify-start gap-2">
+														<Image
+															src={product.logo}
+															alt={product.name}
+															width={35}
+															height={35}
+															className="cursor-pointer"
+															onClick={() => {
+																changeDefaultIndex(product.symbol)
+																router.push('/trade')
+															}}
+														></Image>
+
+														<h5
+															className="interBold text-colorSeven-500 text-lg cursor-pointer"
+															onClick={() => {
+																changeDefaultIndex(product.symbol)
+																router.push('/trade')
+															}}
+														>
+															{product.name}
+														</h5>
+													</div>
+													<div className="w-full h-fit flex flex-row items-center justify-between">
+														<div>
+															<h5 className="interMedium text-blackText-500 text-base italic">Symbol: {product.symbol}</h5>
+															<h5 className="interMedium text-blackText-500 text-base">Total Supply: <span className=' text-colorSeven-500'>${product.totalSupply}</span></h5>
+														</div>
+														<button
+															onClick={() => {
+																changeDefaultIndex(product.symbol)
+																router.push('/trade')
+															}}
+															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
+														>
+															Trade
+														</button>
+													</div>
+												</div>
+												
+											</div>
+										)
+									}
+								})}
+							</div>
 						</div>
 					</section>
-					<section className="w-screen h-fit flex flex-col items-center justify-center px-9 pb-10">
-						<div className=" relative w-full h-fit bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
-							<div className="absolute overflow-hidden w-full h-full top-0 right-0 z-10 flex flex-row items-center justify-normal">
-								<div className="w-1/2 h-full"></div>
+					<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10">
+						<div className=" relative w-full overflow-hidden h-fit bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
+							<div className="absolute overflow-hidden w-full h-full -right-10 xl:top-0 xl:right-0 z-10 flex flex-row items-center justify-normal">
+								<div className="hidden xl:block w-1/2 h-full"></div>
 								<div
-									className="w-1/2 h-full bg-no-repeat cefiCsDefiAnimated"
+									className="w-full xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
 									style={{
 										backgroundImage: `url('${bg2.src}')`,
 									}}
 								></div>
 							</div>
-							<div className="relative top-0 left-0 z-40 bg-transparent">
+							<div className="relative top-0 left-0 z-40 xl:bg-transparent ">
 								<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Cefi vs Defi</h5>
-								<p className="interMedium text-whiteText-500 text-base w-1/2 mb-3">
+								<p className="interMedium text-whiteText-500 text-base w-full xl:w-1/2 mb-3">
 									Embark on a journey through CeFi and DeFi landscapes, understanding the centralized powerhouses and the decentralized disruptors. Start exploring the two faces of finance!
 								</p>
 								<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">

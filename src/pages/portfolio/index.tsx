@@ -235,37 +235,39 @@ export default function Portfolio() {
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
-						<div className="w-full h-fit px-20 py-5 flex flex-row items-center justify-between mb-10">
+						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? <GenericAvatar walletAddress={address}></GenericAvatar> : <div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
 									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
-									<div className="flex flex-row items-center justify-start gap-2">
+									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
 										<h5 className="text-base text-gray-500 interMedium">
 											{address && address != '' ? address.toString().slice(0, 7) + '...' + address.toString().substring(address.toString().length - 7) : 'Connect your wallet'}
 										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-2 rounded-full">
-											<CopyToClipboard text={address as string} onCopy={handleCopy}>
-												<BiCopy color="#000000" size={15} />
-											</CopyToClipboard>
-										</div>
-										<div
-											className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full cursor-pointer"
-											onClick={() => {
-												if (address) setQRModalVisible(true)
-												else
-													GenericToast({
-														type: 'error',
-														message: `Please connect your wallet!`,
-													})
-											}}
-										>
-											<PiQrCodeDuotone color="#000000" size={15} />
+										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
+											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
+												<CopyToClipboard text={address as string} onCopy={handleCopy}>
+													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+												</CopyToClipboard>
+											</div>
+											<div
+												className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full cursor-pointer"
+												onClick={() => {
+													if (address) setQRModalVisible(true)
+													else
+														GenericToast({
+															type: 'error',
+															message: `Please connect your wallet!`,
+														})
+												}}
+											>
+												<PiQrCodeDuotone color="#000000" size={15} className="scale-150 xl:scale-100" />
+											</div>
 										</div>
 									</div>
-									<div className=" bg-colorSeven-500 w-fit h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
+									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
 										<BsCalendar4 color="#FFFFFF" size={15} />
-										<h5 className="text-base text-whiteText-500 montrealBold">45 Days</h5>
+										<h5 className="text-base text-whiteText-500 montrealBold">Joined 45 days ago</h5>
 									</div>
 								</div>
 							</div>
@@ -273,7 +275,7 @@ export default function Portfolio() {
 							<Chart data={complexData} />
 						</div> */}
 							<div className="lg:flex w-2/5 "></div>
-							<div className="lg:flex w-1/5 justify-end mr-0 relative" id="smallChartBox">
+							<div className="lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
 								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
@@ -293,7 +295,7 @@ export default function Portfolio() {
 
 								<TabPanel>
 									<div className="w-full h-fit p-4">
-										<div className="px-4 py-8 grid grid-cols-8 grid-rows-auto lg:rid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
+										<div className="px-4 py-8 grid grid-cols-2 grid-rows-auto xl:grid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
 												<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
@@ -325,11 +327,11 @@ export default function Portfolio() {
 						</div>
 						<div className="w-full h-fit px-5 lg:px-20 mt-10">
 							<h5 className="interBlack text-3xl text-blackText-500">Assets Distribution</h5>
-							<div className="w-full h-full flex flex-row items-start justify-around">
-								<div className="w-1/2 h-fit flex flex-row items-center justify-start mb-20">
+							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
+								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-start xl:mb-20">
 									<GenericPieChart data={PieChartdata} />
 								</div>
-								<div className="w-1/2 h-full flex flex-col items-start justify-start gap-4 pt-28">
+								<div className="w-11/12 xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
 									<h5 className="interBold text-xl text-blackText-500">
 										Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
 									</h5>
@@ -337,16 +339,16 @@ export default function Portfolio() {
 										<h5 className="interBold text-xl text-blackText-500">
 											Smart contract : <span className="interMedium">0xJN820...093NEZ</span>
 										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full">
-											<BiCopy color="#000000" size={12} />
+										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
+											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
 										</div>
 									</div>
 									<div className="flex flex-row items-center justify-between gap-2">
 										<h5 className="interBold text-xl text-blackText-500">
 											Last transaction : <span className="interMedium">0xJN820...093NEZ</span>
 										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full">
-											<BiCopy color="#000000" size={12} />
+										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
+											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
 										</div>
 									</div>
 									<div className="flex flex-row items-center justify-between gap-2">
@@ -367,14 +369,14 @@ export default function Portfolio() {
 						</div>
 					</section>
 				</section>
-				<section className=" w-screen flex flex-row items-stretch justify-normal gap-1 px-10">
-					<div id='d1' className="w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
+				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-10">
+					<div id="d1" className="w-full xl:w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
 						<div className="w-screen h-full flex flex-col items-center justify-center">
-							<div className=" relative w-full h-full bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
-								<div className="absolute overflow-hidden w-full h-full top-0 right-0 z-10 flex flex-row items-center justify-normal">
-									<div className="w-1/2 h-full"></div>
+							<div className=" relative w-full h-full overflow-hidden bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
+								<div className="absolute overflow-hidden w-full h-full -right-10 xl:top-0 xl:right-0 z-10 flex flex-row items-center justify-normal">
+									<div className="hidden xl:block w-1/2 h-full"></div>
 									<div
-										className="w-1/2 h-full bg-no-repeat cefiCsDefiAnimated"
+										className="w-full xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
 										style={{
 											backgroundImage: `url('${bg2.src}')`,
 										}}
@@ -382,8 +384,8 @@ export default function Portfolio() {
 								</div>
 								<div className="relative top-0 left-0 z-40 bg-transparent">
 									<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Keep a balanced account</h5>
-									<p className="interMedium text-whiteText-500 text-base w-1/2 mb-3">
-										Balancing a crypto account involves adjusting the allocation of various cryptocurrencies within the portfolio to manage risk and maintain desired investment proportions.
+									<p className="interMedium text-whiteText-500 text-base w-full xl:w-1/2 mb-3">
+										Balancing a crypto account involvesc adjusting the allocation of various cryptocurrencies within the portfolio to manage risk and maintain desired investment proportions.
 									</p>
 									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
 										<span>Learn More</span>
@@ -401,12 +403,12 @@ export default function Portfolio() {
 							</div>
 						</div>
 					</div>
-					<div id='d2' className="w-3/12 flex flex-row items-center justify-center flex-grow-0 max-h-full">
+					<div id="d2" className="w-full xl:w-3/12 flex flex-row items-center justify-center flex-grow-0 max-h-full">
 						<TipsBox2></TipsBox2>
 					</div>
 				</section>
-				<div className="w-fit h-fit pt-16">
-					c
+				<div className="w-fit h-fit xl:pt-16">
+					
 					<Footer />
 				</div>
 				<GenericModal
