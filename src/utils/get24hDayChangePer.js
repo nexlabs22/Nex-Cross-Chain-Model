@@ -1,4 +1,4 @@
-import getPreviousWeekday from '@/utils/general';
+import { getPreviousWeekday } from '@/utils/general';
 import yahooFinance from 'yahoo-finance';
 
 export default async function get24hDayChangePer() {

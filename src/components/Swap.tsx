@@ -41,7 +41,7 @@ import GenericTooltip from './GenericTooltip'
 
 import UseAnimations from 'react-useanimations'
 import getPoolAddress from '@/uniswap/utils'
-import { CurrentConfig } from '@/uniswap/configure'
+// import { CurrentConfig } from '@/uniswap/configure'
 // import convertToUSD from '@/utils/convertToUsd'
 import { SwapNumbers } from '@/utils/general'
 // import getPoolAddress from '@/utils/getPoolAddress'
@@ -73,14 +73,11 @@ const Swap = () => {
 
 	const [cookingModalVisible, setCookingModalVisible] = useState<boolean>(false)
 
-	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage, setEthUSDPrice, ethUSDPrice } =
+	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage } =
 		useTradePageStore()
 
 	const address = useAddress()
 
-	useEffect(() => {
-		setEthUSDPrice()
-	}, [setEthUSDPrice])
 
 	//integration hooks
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
@@ -104,89 +101,88 @@ const Swap = () => {
 
 	const [to1UsdPrice, setTo1UsdPrice] = useState<number>()
 	const [toConvertedPrice, setToConvertedPrice] = useState<number>(0)
-	console.log(from1UsdPrice, to1UsdPrice)
-	console.log(`1 ${swapFromCur.Symbol} = ${Number(from1UsdPrice) / Number(to1UsdPrice)} ${swapToCur.Symbol}`)
 
 
-	useEffect(() => {
-		// async function fetchData(tokenAddress1: string, tokenDecimal1: number, tokenAddress2: string, tokenDecimal2: number) {
-			console.log(ethUSDPrice)
-		async function fetchData(tokenDetails:Coin, place: string) {
-			try {
-				const fromPoolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals)
-				// const fromPoolAddress = '0xEdFEEeFf1DAF631b4aBC8C021Cff4b1267547eF2'
-				// const toPoolAddress = getPoolAddress(tokenAddress2, tokenDecimal2)
-				let isFromRevPool = false;
-				// let isToRevPool = false;
 
-				const chainName = tokenDetails.Symbol === 'ANFI' ? 'goerli' : 'ethereum';
-				const sdk = new ThirdwebSDK(chainName);
-				const fromPoolContract = await sdk.getContract(fromPoolAddress as string, uniswapV3PoolContractAbi);
-				// const toPoolContract = await sdk.getContract(toPoolAddress as string, uniswapV3PoolContractAbi);
+	// useEffect(() => {
+	// 	// async function fetchData(tokenAddress1: string, tokenDecimal1: number, tokenAddress2: string, tokenDecimal2: number) {
+	// 		console.log(ethUSDPrice)
+	// 	async function fetchData(tokenDetails:Coin, place: string) {
+	// 		try {
+	// 			const fromPoolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals)
+	// 			// const fromPoolAddress = '0xEdFEEeFf1DAF631b4aBC8C021Cff4b1267547eF2'
+	// 			// const toPoolAddress = getPoolAddress(tokenAddress2, tokenDecimal2)
+	// 			let isFromRevPool = false;
+	// 			// let isToRevPool = false;
 
-				const fromData = await fromPoolContract.call("slot0", []);
-				const fromToken0 = await fromPoolContract.call('token0', [])
+	// 			const chainName = tokenDetails.Symbol === 'ANFI' ? 'goerli' : 'ethereum';
+	// 			const sdk = new ThirdwebSDK(chainName);
+	// 			const fromPoolContract = await sdk.getContract(fromPoolAddress as string, uniswapV3PoolContractAbi);
+	// 			// const toPoolContract = await sdk.getContract(toPoolAddress as string, uniswapV3PoolContractAbi);
 
-				// const toData = await toPoolContract.call("slot0", []);
-				// const toToken0 = await toPoolContract.call('token0', [])
+	// 			const fromData = await fromPoolContract.call("slot0", []);
+	// 			const fromToken0 = await fromPoolContract.call('token0', [])
 
-				const fromSqrtPriceX96 = fromData.sqrtPriceX96;
-				// const toSqrtPriceX96 = toData.sqrtPriceX96;
+	// 			// const toData = await toPoolContract.call("slot0", []);
+	// 			// const toToken0 = await toPoolContract.call('token0', [])
 
-				let fromDecimal0 = Number(tokenDetails.decimals);
-				let fromDecimal1 = Number(CurrentConfig.pool.tokenB.decimals);
+	// 			const fromSqrtPriceX96 = fromData.sqrtPriceX96;
+	// 			// const toSqrtPriceX96 = toData.sqrtPriceX96;
 
-				// let toDecimal0 = Number(tokenDecimal2);
-				// let toDecimal1 = Number(CurrentConfig.pool.tokenB.decimals);
+	// 			let fromDecimal0 = Number(tokenDetails.decimals);
+	// 			let fromDecimal1 = Number(CurrentConfig.pool.tokenB.decimals);
 
-
-				if (fromToken0 !== tokenDetails.address) {
-					isFromRevPool = true;
-					[fromDecimal0, fromDecimal1] = SwapNumbers(fromDecimal0, fromDecimal1);
-				}
-				// if (toToken0 !== tokenAddress2) {
-				// 	isToRevPool = true;
-				// 	[toDecimal0, toDecimal1] = SwapNumbers(toDecimal0, toDecimal1);
-				// }
-
-				const fromCalculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** fromDecimal1 / 10 ** fromDecimal0);
-				const fromCalculatedPriceAsNumber = parseFloat(fromCalculatedPrice.toFixed(fromDecimal1));
-
-				// const toCalculatedPrice = Math.pow(toSqrtPriceX96 / 2 ** 96, 2) / (10 ** toDecimal1 / 10 ** toDecimal0);
-				// const toCalculatedPrice0AsNumber = parseFloat(toCalculatedPrice.toFixed(toDecimal1));
-
-				const fromPriceInUSD = isFromRevPool ? fromCalculatedPriceAsNumber / ethUSDPrice : (1 / fromCalculatedPriceAsNumber) / ethUSDPrice
-				// const toPriceInUSD = await convertToUSD(isToRevPool ? toCalculatedPrice0AsNumber : 1 / toCalculatedPrice0AsNumber)
+	// 			// let toDecimal0 = Number(tokenDecimal2);
+	// 			// let toDecimal1 = Number(CurrentConfig.pool.tokenB.decimals);
 
 
-				if (place === 'From') {
-					setFrom1UsdPrice(fromPriceInUSD)
-				} else {
-					setTo1UsdPrice(fromPriceInUSD)
-				}
-			} catch (err) {
-				console.log(err)
-			}
+	// 			if (fromToken0 !== tokenDetails.address) {
+	// 				isFromRevPool = true;
+	// 				[fromDecimal0, fromDecimal1] = SwapNumbers(fromDecimal0, fromDecimal1);
+	// 			}
+	// 			// if (toToken0 !== tokenAddress2) {
+	// 			// 	isToRevPool = true;
+	// 			// 	[toDecimal0, toDecimal1] = SwapNumbers(toDecimal0, toDecimal1);
+	// 			// }
 
-		}
-		console.log(swapFromCur.Symbol)
-		fetchData(swapFromCur, 'From');
-		fetchData(swapToCur, 'To');
-		// if (swapFromCur.Symbol === 'WETH' || swapFromCur.Symbol === 'ETH') {
-		// 	setFrom1UsdPrice(ethUSDPrice)
-		// } else {
-		// }
+	// 			const fromCalculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** fromDecimal1 / 10 ** fromDecimal0);
+	// 			const fromCalculatedPriceAsNumber = parseFloat(fromCalculatedPrice.toFixed(fromDecimal1));
 
-		// if (swapToCur.Symbol === 'WETH' || swapToCur.Symbol === 'ETH') {
-		// 	setTo1UsdPrice(ethUSDPrice)
-		// } else {
-		// 	// fetchData(swapFromCur.address, swapFromCur.decimals, 'From');
-		// }
+	// 			// const toCalculatedPrice = Math.pow(toSqrtPriceX96 / 2 ** 96, 2) / (10 ** toDecimal1 / 10 ** toDecimal0);
+	// 			// const toCalculatedPrice0AsNumber = parseFloat(toCalculatedPrice.toFixed(toDecimal1));
+
+	// 			const fromPriceInUSD = isFromRevPool ? fromCalculatedPriceAsNumber / ethUSDPrice : (1 / fromCalculatedPriceAsNumber) / ethUSDPrice
+	// 			// const toPriceInUSD = await convertToUSD(isToRevPool ? toCalculatedPrice0AsNumber : 1 / toCalculatedPrice0AsNumber)
 
 
-	}, [swapFromCur,
-		swapToCur,
-		ethUSDPrice])
+	// 			if (place === 'From') {
+	// 				setFrom1UsdPrice(fromPriceInUSD)
+	// 			} else {
+	// 				setTo1UsdPrice(fromPriceInUSD)
+	// 			}
+	// 		} catch (err) {
+	// 			console.log(err)
+	// 		}
+
+	// 	}
+	// 	console.log(swapFromCur.Symbol)
+	// 	fetchData(swapFromCur, 'From');
+	// 	fetchData(swapToCur, 'To');
+	// 	// if (swapFromCur.Symbol === 'WETH' || swapFromCur.Symbol === 'ETH') {
+	// 	// 	setFrom1UsdPrice(ethUSDPrice)
+	// 	// } else {
+	// 	// }
+
+	// 	// if (swapToCur.Symbol === 'WETH' || swapToCur.Symbol === 'ETH') {
+	// 	// 	setTo1UsdPrice(ethUSDPrice)
+	// 	// } else {
+	// 	// 	// fetchData(swapFromCur.address, swapFromCur.decimals, 'From');
+	// 	// }
+
+
+	// }, [swapFromCur,
+	// 	swapToCur,
+	// 	ethUSDPrice])
 
 
 	useEffect(() => {
