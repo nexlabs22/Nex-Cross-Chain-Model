@@ -46,6 +46,7 @@
     "pino-pretty": "^10.2.0",
     "rc-switch": "^4.1.0",
     "react": "latest",
+    "react-accessible-accordion": "^5.0.0",
     "react-burger-menu": "^3.0.9",
     "react-color": "^2.19.3",
     "react-copy-to-clipboard": "^5.1.0",

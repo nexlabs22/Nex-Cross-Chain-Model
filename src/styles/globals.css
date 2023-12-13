@@ -298,6 +298,10 @@ body {
   }
 }
 
+.accordion{
+  border: none !important;
+}
+
 .Toastify__toast {
 	background-color: #2A2A2A !important;
 	color: #F2F2F2 !important;
