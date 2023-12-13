@@ -10,4 +10,9 @@ function getPreviousWeekday(date: Date|string) {
     return previousDay;
 }
 
-export default getPreviousWeekday;
+function SwapNumbers(a: number, b: number): [number, number] {
+    [a, b] = [b, a];
+    return [a, b];
+}
+
+export { getPreviousWeekday, SwapNumbers};

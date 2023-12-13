@@ -19,7 +19,7 @@ const Chart = dynamic(() => import('@/components/portfolioPNLChart'), { loading:
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
-import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, anfiPoolAddress, zeroAddress } from '@/constants/contractAddresses'
+import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, goerlianfiPoolAddress, zeroAddress } from '@/constants/contractAddresses'
 import { indexTokenAbi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
@@ -58,7 +58,7 @@ export default function Portfolio() {
 		error: errorAnfi,
 		data: dataAnfi,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: anfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 100, direction: 'asc' },
+		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 100, direction: 'asc' },
 	})
 
 	const {

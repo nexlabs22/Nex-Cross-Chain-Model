@@ -10,15 +10,14 @@ import { useAddress } from '@thirdweb-dev/react'
 interface Positions {
     side: string,
     user: `0x${string}` | string,
-    nonce: number,
-    amount: number,
-    depositAddress: `0x${string}` | string,
+    tokenAddress: `0x${string}` | string,
     timestamp: number,
-    requestHash: string,
+    inputAmount: number,
+    outputAmount: number,
     indexName: string
 }
 
-export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker: string) {
+export function GetPositionsHistory2(exchangeAddress: `0x${string}`, activeTicker: string) {
 	// const accountAddress = useAccountAddressStore((state) => state.accountAddress)
 	// if(!exchangeAddress) return;
 	const [accountAddress, setAccountAddress] = useState<`0x${string}` | string>()
@@ -34,7 +33,7 @@ export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker
 
 	// useEffect(() => {
 	const getHistory = useCallback(async () => {
-		console.log("getHistory")
+		console.log("getHistory2")
 		setPositions([])
 
 		const client = createPublicClient({
@@ -51,24 +50,24 @@ export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker
 		const mintRequestlogs = await client.getLogs({
 			address: exchangeAddress,
 			event: parseAbiItem(
-				'event MintRequestAdd( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
+				// 'event MintRequestAdd( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
+				'event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time)'
 			),
 			args: {
-				requester: accountAddress as `0x${string}` ,
+				user: accountAddress as `0x${string}` ,
 			},
 			fromBlock: BigInt(0),
 		})
-		const userMintRequestLogs = mintRequestlogs.filter((log) => log.args.requester == accountAddress)
+		const userMintRequestLogs = mintRequestlogs.filter((log) => log.args.user == accountAddress)
 
 		userMintRequestLogs.forEach((log) => {
 			const obj:Positions = {
 				side: 'Mint Request',
-				user: log.args.requester as `0x${string}`,
-				nonce: Number(log.args.nonce),
-				amount: num(log.args.amount),
-				depositAddress: log.args.depositAddress as `0x${string}`,
-				timestamp: Number(log.args.timestamp),
-				requestHash: log.args.requestHash as `0x${string}`,
+				user: log.args.user as `0x${string}`,
+				inputAmount: num(log.args.inputAmount),
+				outputAmount: num(log.args.outputAmount),
+				tokenAddress: log.args.inputToken as `0x${string}`,
+				timestamp: Number(log.args.time),
 				indexName: activeTicker,
 			}
 			positions0.push(obj)
@@ -79,24 +78,24 @@ export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker
 		const burnRequestLogs = await client.getLogs({
 			address: exchangeAddress,
 			event: parseAbiItem(
-				'event Burned( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
+				// 'event Burned( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
+				'event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time)'
 			),
 			args: {
-				requester: accountAddress as `0x${string}` ,
+				user: accountAddress as `0x${string}` ,
 			},
 			fromBlock: BigInt(0),
 		})
-		const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.requester == accountAddress)
+		const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
 
 		userBurnRequestLogsLogs.forEach((log) => {
 			const obj:Positions = {
 				side: 'Burn Request',
-				user: log.args.requester as `0x${string}`,
-				nonce: Number(log.args.nonce),
-				amount: num(log.args.amount),
-				depositAddress: log.args.depositAddress as `0x${string}`,
-				timestamp: Number(log.args.timestamp),
-				requestHash: log.args.requestHash as `0x${string}`,
+				user: log.args.user as `0x${string}`,
+				inputAmount: num(log.args.inputAmount),
+				outputAmount: num(log.args.outputAmount),
+				tokenAddress: log.args.outputToken as `0x${string}`,
+				timestamp: Number(log.args.time),
 				indexName: activeTicker,
 			}
 			positions0.push(obj)

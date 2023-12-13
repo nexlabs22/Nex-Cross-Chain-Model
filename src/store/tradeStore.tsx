@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/shallow'
 import circle from '@assets/images/circle.png'
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
+import axios from 'axios'
 import { goerliAnfiFactory, goerliAnfiIndexToken, goerliAnfiV2Factory, goerliAnfiV2IndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
 
 type Coin = {
@@ -13,6 +14,7 @@ type Coin = {
 	Symbol: string
 	address: string
 	factoryAddress: string
+	decimals: number
 }
 
 type TradePageStore = {
@@ -60,6 +62,9 @@ type TradePageStore = {
 
 	selectedTradingProduct: string
 	setSelectedTradingProduct: (product: string) => void
+
+	tradeTableReload: boolean
+	setTradeTableReload: (input: boolean)=> void
 }
 
 const useTradePageStore = create<TradePageStore>()((set) => ({
@@ -90,11 +95,12 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	swapFromCur: {
 		id: 2,
-		logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
-		name: 'USD Coin',
-		Symbol: 'USDC',
+		logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
+		name: 'Tether',
+		Symbol: 'USDT',
 		address: goerliUsdtAddress,
 		factoryAddress: '',
+		decimals: 18
 	},
 	changeSwapFromCur: (cur: Coin) => set((state) => ({ swapFromCur: cur })),
 
@@ -107,6 +113,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		address: goerliAnfiV2IndexToken,
 		// factoryAddress: goerliAnfiFactory,
 		factoryAddress: goerliAnfiV2Factory,
+		decimals: 18
 	},
 	changeSwapToCur: (cur: Coin) => set((state) => ({ swapToCur: cur })),
 
@@ -118,6 +125,9 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	nftImage: '',
 	setNftImage: (image: string) => set((state) => ({ nftImage: image })),
+	
+	tradeTableReload: false,
+	setTradeTableReload: (input: boolean) => set({ tradeTableReload: input }),
 }))
 
 export default useTradePageStore
