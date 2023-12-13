@@ -28,6 +28,7 @@
     "@uniswap/sdk": "^3.0.3",
     "@uniswap/v3-sdk": "^3.10.0",
     "alchemy-sdk": "^2.10.1",
+    "bignumber.js": "^9.1.2",
     "burger-menu": "^2.0.0",
     "canvas": "^2.11.2",
     "date-fns": "^2.30.0",
