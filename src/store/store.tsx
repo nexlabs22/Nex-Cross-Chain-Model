@@ -43,6 +43,7 @@ interface chartDataStoreType {
 	selectDuration: (duration: number) => void
 	fetchIndexData: ({ tableName, index }: { tableName: string, index: string }) => void
 	removeIndex: (indexName: string) => void
+	clearChartData: () => void
 	setANFIWeightage: () => void
 	setDayChangePer: () => void
 }
@@ -102,6 +103,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			return ({ chartData: activeIndex })
 		})
 	},
+	clearChartData: async()=> set({chartData:{}}),
 	setANFIWeightage: async () => {
 		const bitcoinMC_URL = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max`;
 		const goldMC_URL = `https://api.coingecko.com/api/v3/coins/tether-gold/market_chart?vs_currency=usd&days=max`;

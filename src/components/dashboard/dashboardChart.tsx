@@ -131,7 +131,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			};
 
 			const selectedCompIndexes = Object.keys(chartData).filter((i) => {
-				const res = comparisonIndices.find((item) => item.columnName === i )
+				const res = comparisonIndices.find((item) => item.columnName === i)
 				if (res) return true;
 			})
 			if (selectedCompIndexes.length > 0) {
@@ -157,7 +157,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			if (selectedCompIndexes.length > 0) {
 				selectedCompIndexes.map((index) => {
-					const indexDetails = comparisonIndices.find((item) => item.columnName === index );
+					const indexDetails = comparisonIndices.find((item) => item.columnName === index);
 					if (indexDetails) {
 
 						toolTipContentStatic += `<div style="font-size: 14px;z-index:100; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
@@ -263,34 +263,37 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				}
 			});
 
-			Object.entries(chartData).forEach(([key, value]) => {
-				const indexDetails = comparisonIndices.find((item) => item.columnName === key);
-				if (indexDetails) {
+			if(location !== '/trade') {
+				Object.entries(chartData).forEach(([key, value]) => {
+					const indexDetails = comparisonIndices.find((item) => item.columnName === key);
+					if (indexDetails) {
 
-					const areaSeries = chartRef.current.addLineSeries({
-						lineWidth: 2,
-						color: indexDetails?.selectionColor,
-					})
+						const areaSeries = chartRef.current.addLineSeries({
+							lineWidth: 2,
+							color: indexDetails?.selectionColor,
+						})
 
-					areaSeries.priceScale().applyOptions({
-						drawTicks: true,
-						scaleMargins: {
-							top: 0.05,
-							bottom: 0.05,
-						},
+						areaSeries.priceScale().applyOptions({
+							drawTicks: true,
+							scaleMargins: {
+								top: 0.05,
+								bottom: 0.05,
+							},
 
-					})
+						})
 
-					const formatedLineData = value.data.map((data) => {
-						return {
-							time: data.time,
-							value: Number(data.open)
-						}
-					})
-					formatedLineData.sort((a, b) => a.time - b.time);
-					areaSeries.setData(historyRangeFilter(formatedLineData))
-				}
-			})
+						const formatedLineData = value.data.map((data) => {
+							return {
+								time: data.time,
+								value: Number(data.open)
+							}
+						})
+						formatedLineData.sort((a, b) => a.time - b.time);
+						areaSeries.setData(historyRangeFilter(formatedLineData))
+					}
+				})
+			}
+
 			// Hide axes
 			chartRef.current.applyOptions({
 				leftPriceScale: getAxesOptions(false),
