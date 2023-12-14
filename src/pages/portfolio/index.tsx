@@ -19,8 +19,8 @@ const Chart = dynamic(() => import('@/components/portfolioPNLChart'), { loading:
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
-import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, goerlianfiPoolAddress, zeroAddress } from '@/constants/contractAddresses'
-import { indexTokenAbi } from '@/constants/abi'
+import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, goerlianfiPoolAddress, zeroAddress, goerliAnfiV2IndexToken, goerliUsdtAddress, goerliLinkAddress, goerliLinkWethPoolAddress } from '@/constants/contractAddresses'
+import { indexTokenAbi,indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { GenericToast } from '@/components/GenericToast'
@@ -44,11 +44,13 @@ export default function Portfolio() {
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
 
-	const anfiTokenContract = useContract(goerliAnfiIndexToken, indexTokenAbi)
+	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
+	// const crypto5TokenContract = useContract(goerliLinkAddress, indexTokenV2Abi)
 
 	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
 	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
+	// const crypto5TokenBalance = 
 
 	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
@@ -58,7 +60,7 @@ export default function Portfolio() {
 		error: errorAnfi,
 		data: dataAnfi,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 100, direction: 'asc' },
+		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
 	const {
@@ -66,7 +68,7 @@ export default function Portfolio() {
 		error: errorCR5,
 		data: dataCR5,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: crypto5PoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 100, direction: 'asc' },
+		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
 	// let anfiPrice = 0; let cr5Price = 0;
@@ -75,7 +77,7 @@ export default function Portfolio() {
 	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
 	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
 
-	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && !!anfiPercent && !!crypto5Percent) {
+	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
 		const chartData: { time: number; value: number }[] = []
 		const ANFIData = dataAnfi.poolDayDatas
 		const CR5Data = dataCR5.poolDayDatas
@@ -302,7 +304,7 @@ export default function Portfolio() {
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(2) : 0}
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(4) : 0}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
 													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.anfi.toFixed(2) : 0}%
@@ -317,7 +319,8 @@ export default function Portfolio() {
 													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2) : 0}%
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? '0.00' : '0.00'}%
+													{/* {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2) : 0}% */}
 												</h5>
 											</div>
 										</div>
