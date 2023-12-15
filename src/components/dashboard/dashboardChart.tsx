@@ -130,7 +130,10 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				point?: { x: number; y: number };
 			};
 
-			const selectedCompIndexes = Object.keys(chartData).filter((i) => {
+			const location = window.location.pathname
+			const ourIndexName = location === '/trade' ? selectedTradingProduct : defaultIndex;
+
+			const selectedCompIndexes = location === '/trade' ?[]: Object.keys(chartData).filter((i) => {
 				const res = comparisonIndices.find((item) => item.columnName === i)
 				if (res) return true;
 			})
@@ -138,9 +141,6 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				const incHeight = selectedCompIndexes.length * 25 as number
 				toolTip.style.height = (Number(toolTip.style.height.split('px')[0]) + incHeight) + 'px'
 			}
-
-			const location = window.location.pathname
-			const ourIndexName = location === '/trade' ? selectedTradingProduct : defaultIndex;
 
 			let toolTipContentStatic =
 				`<div style="font-size: 14px; z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
@@ -242,15 +242,15 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 								if (index - 1 >= 0) {
 									const indexDetails = comparisonIndices.find((item) => item.columnName === selectedCompIndexes[index - 1]);
 									toolTipContent += `<div style="font-size: 14px; z-index: 100; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
-									toolTipContent += `<Image
-								src=${indexDetails?.logo}
-								alt="tooltip logo"
-													style="width:22px;
-														   height:22px; 
-														   margin-right:5px ; 
-														   
-														   border-radius:50%;">
-												   </Image>`
+									toolTipContent += 
+									`<Image
+										src=${indexDetails?.logo}
+										alt="tooltip logo"
+										style="width:22px;
+											   height:22px; 
+											   margin-right:5px ; 			   
+											   border-radius:50%;">
+									 </Image>`
 									toolTipContent += `${indexDetails?.shortName}: ${Math.round(100 * value.value) / 100}`
 									toolTipContent += `</div>`
 								}
