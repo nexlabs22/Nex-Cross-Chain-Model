@@ -24,6 +24,10 @@ const TradeChartBox = () => {
 		fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
 	}, [fetchIndexData])
 
+	const chartData = selectedTradingProduct === 'ANFI' ? ANFIData  : CR5Data;
+	const todayPrice = chartData[chartData.length - 1]?.value
+	const yesterdayPrice = chartData[chartData.length - 2]?.value
+	const chart24hchange = ((todayPrice - yesterdayPrice) / yesterdayPrice) * 100
 
 	return (
 		<>
@@ -37,7 +41,7 @@ const TradeChartBox = () => {
 								}
 							</h5>
 							<h5 className='interMedium text-sm text-nexLightGreen-500'>
-								+1.23%
+							{chart24hchange ? chart24hchange > 0 ?  '+ ' + chart24hchange.toFixed(2) :chart24hchange.toFixed(2) : '0.00' }%
 							</h5>
 						</div>
 						<Menu
@@ -114,10 +118,10 @@ const TradeChartBox = () => {
 							</div>
 						</Menu>
 					</div>
-					
-					{
+					<Chart data={chartData} />
+					{/* {
 						defaultIndex === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />
-					}
+					} */}
 				</div>
 			</section>
 			

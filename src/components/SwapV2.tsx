@@ -83,7 +83,6 @@ const SwapV2 = () => {
 
 	const [firstInputValue, setFirstInputValue] = useState<string>('0')
 	const [secondInputValue, setSecondInputValue] = useState<string>('0')
-	console.log('firstInputValue', firstInputValue)
 
 	const [cookingModalVisible, setCookingModalVisible] = useState<boolean>(false)
 	const [userEthBalance, setUserEthBalance] = useState<number>(0)
@@ -102,6 +101,7 @@ const SwapV2 = () => {
 		setTradeTableReload,
 	} = useTradePageStore()
 
+	const OurIndexCoins = ['ANFI', 'CRYPTO5'];
 	const address = useAddress()
 	const signer = useSigner()
 
@@ -111,8 +111,8 @@ const SwapV2 = () => {
 	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, indexFactoryV2Abi)
 
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
-
 	const toTokenContract = useContract(swapToCur.address, tokenAbi)
+
 	// const anfiFactoryContract = useContract(goerliAnfi, tokenAbi)
 
 	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
@@ -168,7 +168,7 @@ const SwapV2 = () => {
 	const [ethPrice, setEthPrice] = useState(0)
 
 	useEffect(() => {
-		const handleWeth = async () => {
+		const getUSDWethPrice = async () => {
 			const wethPriceinUsd = await axios
 				.get('https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd')
 				.then((res) => res.data.weth.usd)
@@ -177,16 +177,13 @@ const SwapV2 = () => {
 			setEthPrice(wethPriceinUsd)
 		}
 
-		handleWeth()
+		getUSDWethPrice()
 	}, [])
-
-	// console.log(from1UsdPrice, to1UsdPrice)
 
 	useEffect(() => {
 		async function fetchData(tokenDetails: Coin, place: string) {
 			try {
 				const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
-				console.log(tokenDetails.Symbol, poolAddress)
 				let isRevPool = false
 
 				const chainName = isMainnet ? 'ethereum' : 'goerli'
@@ -197,37 +194,19 @@ const SwapV2 = () => {
 				const token0 = await poolContract.call('token0', [])
 
 				const fromSqrtPriceX96 = data.sqrtPriceX96
-				console.log(fromSqrtPriceX96.toString(), token0)
 
 				let decimal0 = Number(tokenDetails.decimals)
-				// let decimal1 = Number(tokenB.decimals);
 				let decimal1 = 18
 
 				if (token0 !== tokenDetails.address) {
 					isRevPool = true
-					;[decimal0, decimal1] = SwapNumbers(decimal0, decimal1)
+						;[decimal0, decimal1] = SwapNumbers(decimal0, decimal1)
 				}
 
 				const calculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** decimal1 / 10 ** decimal0)
 				const calculatedPriceAsNumber = parseFloat(calculatedPrice.toFixed(decimal1))
 
-				console.log(tokenDetails.Symbol, isRevPool, calculatedPriceAsNumber, 1 / calculatedPriceAsNumber)
-
-				// WHEN isRev is true
-				console.log(`1 WETH = ${calculatedPriceAsNumber} ${tokenDetails.Symbol}`)
-				console.log(`1 ${tokenDetails.Symbol} = ${1 / calculatedPriceAsNumber} WETH`)
-
-				//WHEN isRev is False
-				console.log(`1 WETH = ${1 / calculatedPriceAsNumber} ${tokenDetails.Symbol}`)
-				console.log(`1 ${tokenDetails.Symbol} = ${calculatedPriceAsNumber} WETH`)
-
-				// console.log(`1 WETH = ${(1 / calculatedPriceAsNumber)/1e18} ${tokenDetails.Symbol}`)
-				// console.log(`1 WETH = ${(calculatedPriceAsNumber)/1e18} ${tokenDetails.Symbol}`)
-
-				// console.log('ethUSDPrice',ethUSDPrice)
-				// const fromPriceInUSD = isRevPool ? await convertToUSD(calculatedPriceAsNumber) : await convertToUSD(1 / calculatedPriceAsNumber)
 				const fromPriceInUSD = isRevPool ? calculatedPriceAsNumber / ethPrice : 1 / calculatedPriceAsNumber / ethPrice
-				// console.log(tokenDetails.Symbol,isRevPool,await convertToUSD(calculatedPriceAsNumber), await convertToUSD(1 / calculatedPriceAsNumber))
 
 				if (place === 'From') {
 					setFrom1UsdPrice(fromPriceInUSD)
@@ -235,24 +214,14 @@ const SwapV2 = () => {
 					setTo1UsdPrice(fromPriceInUSD)
 				}
 
-				// if (swapFromCur.Symbol === 'WETH' || swapFromCur.Symbol === 'ETH') {
-				// 	if (!isRevPool) setFrom1UsdPrice( calculatedPriceAsNumber)
-				// 	else setFrom1UsdPrice(1 /calculatedPriceAsNumber)
-				// }
-				// if (swapToCur.Symbol === 'WETH' || swapToCur.Symbol === 'ETH') {
-				// 	if (!isRevPool) setTo1UsdPrice(calculatedPriceAsNumber)
-				// 	else setTo1UsdPrice(1 / calculatedPriceAsNumber)
-				// }
+
 				if (swapFromCur.Symbol === 'WETH' || swapFromCur.Symbol === 'ETH') {
 					setFrom1UsdPrice(ethPrice)
-					// if (!isRevPool) setFrom1UsdPrice(1 / calculatedPriceAsNumber)
-					// else setFrom1UsdPrice(calculatedPriceAsNumber)
 				}
 				if (swapToCur.Symbol === 'WETH' || swapToCur.Symbol === 'ETH') {
 					setTo1UsdPrice(ethPrice)
-					// if (!isRevPool) setTo1UsdPrice(1 / calculatedPriceAsNumber)
-					// else setTo1UsdPrice(calculatedPriceAsNumber)
 				}
+
 			} catch (err) {
 				console.log(err)
 			}
@@ -264,97 +233,6 @@ const SwapV2 = () => {
 			fetchData(swapToCur, 'To')
 		}
 	}, [swapFromCur, swapToCur, ethPrice, isMainnet])
-
-	// useEffect(()=>{
-	// 	async function getPrice(tokenDetails1: Coin, tokenDetails2: Coin) {
-	// 		try {
-	// 			const fromPoolAddress = getPoolAddress(tokenDetails1.address, tokenDetails1.decimals, isMainnet)
-	// 			const toPoolAddress = getPoolAddress(tokenDetails2.address, tokenDetails2.decimals, isMainnet)
-
-	// 			console.log(fromPoolAddress)
-	// 			console.log(toPoolAddress)
-	// 			// console.log(tokenDetails1.address, tokenDetails2.address)
-	// 			// console.log(tokenDetails1.address, tokenDetails2.address)
-	// 			let isFromRevPool = false;
-	// 			let isToRevPool = false;
-
-	// 			const chainName = isMainnet ? 'ethereum': 'goerli' ;
-	// 			// console.log("chainName--> ", chainName)
-	// 			const sdk = new ThirdwebSDK(chainName);
-
-	// 			const fromPoolContract = await sdk.getContract(fromPoolAddress ? fromPoolAddress: zeroAddress as string, uniswapV3PoolContractAbi);
-	// 			const toPoolContract = await sdk.getContract(toPoolAddress as string, uniswapV3PoolContractAbi);
-
-	// 			const fromData = await fromPoolContract.call("slot0", []);
-	// 			const fromToken0 = await fromPoolContract.call('token0', [])
-
-	// 			const toData = await toPoolContract.call("slot0", []);
-	// 			const toToken0 = await toPoolContract.call('token0', [])
-
-	// 			const fromSqrtPriceX96 = fromData.sqrtPriceX96;
-	// 			const toSqrtPriceX96 = toData.sqrtPriceX96;
-
-	// 			let fromDecimal0 = Number(tokenDetails1.decimals);
-	// 			let fromDecimal1 = 18;
-	// 			let toDecimal0 = Number(tokenDetails2.decimals);
-	// 			let toDecimal1 = 18;
-
-	// 			if (fromToken0 !== tokenDetails1.address) {
-	// 				isFromRevPool = true;
-	// 				[fromDecimal0, fromDecimal1] = SwapNumbers(fromDecimal0, fromDecimal1);
-	// 			}
-	// 			if (toToken0 !== tokenDetails2.address) {
-	// 				isToRevPool = true;
-	// 				[toDecimal0, toDecimal1] = SwapNumbers(toDecimal0, toDecimal1);
-	// 			}
-
-	// 			const fromCalculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** fromDecimal1 / 10 ** fromDecimal0);
-	// 			const fromCalculatedPriceAsNumber = parseFloat(fromCalculatedPrice.toFixed(fromDecimal1));
-
-	// 			const toCalculatedPrice = Math.pow(toSqrtPriceX96 / 2 ** 96, 2) / (10 ** toDecimal1 / 10 ** toDecimal0);
-	// 			const toCalculatedPriceAsNumber = parseFloat(toCalculatedPrice.toFixed(toDecimal1));
-
-	// 			// console.log('isFromRevPool', isFromRevPool)
-	// 			// console.log('isToRevPool', isToRevPool)
-
-	// 			// // WHEN isRev is true
-	// 			// console.log(' ---- CASE 1 ------')
-	// 			// console.log(`1 WETH = ${fromCalculatedPriceAsNumber} ${tokenDetails1.Symbol}`)
-	// 			// console.log(`1 ${tokenDetails1.Symbol} = ${1/fromCalculatedPriceAsNumber} WETH`)
-
-	// 			// //WHEN isRev is False
-	// 			// console.log(' ---- CASE 2 ------')
-	// 			// console.log(`1 WETH = ${1/fromCalculatedPriceAsNumber} ${tokenDetails1.Symbol}`)
-	// 			// console.log(`1 ${tokenDetails1.Symbol} = ${fromCalculatedPriceAsNumber} WETH`)
-
-	// 			// // WHEN isRev is true
-	// 			// console.log(' ---- WHEN isRev is True ------')
-	// 			// console.log(`1 WETH = ${toCalculatedPriceAsNumber} ${tokenDetails2.Symbol}`)
-	// 			// console.log(`1 ${tokenDetails2.Symbol} = ${1/toCalculatedPriceAsNumber} WETH`)
-
-	// 			// //WHEN isRev is False
-	// 			// console.log(' ---- WHEN isRev is False ------')
-	// 			// console.log(`1 WETH = ${1/toCalculatedPriceAsNumber} ${tokenDetails2.Symbol}`)
-	// 			// console.log(`1 ${tokenDetails2.Symbol} = ${toCalculatedPriceAsNumber} WETH`)
-
-	// 			// console.log(`1  ${tokenDetails1.Symbol} ${1/fromCalculatedPriceAsNumber} = ${toCalculatedPriceAsNumber} ${tokenDetails2.Symbol} `)
-
-	// 			const fromPriceInUSD = await convertToUSD(isFromRevPool ? fromCalculatedPriceAsNumber : 1 / fromCalculatedPriceAsNumber)
-	// 			const toPriceInUSD = await convertToUSD(isToRevPool ? toCalculatedPriceAsNumber : 1 / toCalculatedPriceAsNumber)
-
-	// 			setFrom1UsdPrice(fromPriceInUSD)
-	// 			setTo1UsdPrice(toPriceInUSD)
-
-	// 			// console.log(toPriceInUSD)
-	// 		} catch (err) {
-	// 			console.log(err)
-	// 		}
-
-	// 	}
-
-	// 	getPrice(swapFromCur, swapToCur);
-
-	// },[swapFromCur, swapToCur, isMainnet])
 
 	useEffect(() => {
 		if (approveHook.isSuccess) {
@@ -515,16 +393,7 @@ const SwapV2 = () => {
 		setToCurrencyModalOpen(false)
 	}
 
-	function Switching() {
-		let switchReserve: Coin = swapFromCur
-		changeSwapFromCur(swapToCur)
-		changeSwapToCur(switchReserve)
-		// let inputReserve = secondInputValue
-		setSecondInputValue(firstInputValue)
-		// setFirstInputValue(inputReserve)
-	}
-
-	const [reserveCoinsList, setreserveCoinsList] = useState<Coin[][]>([
+	const [testnetCoinsList, setTestnetCoinsList] = useState<Coin[][]>([
 		[
 			// {
 			// 	id: 0,
@@ -565,46 +434,46 @@ const SwapV2 = () => {
 		],
 	])
 
-	const [allCoinsList, setAllCoinsList] = useState<Coin[][]>([
-		[
-			// {
-			// 	id: 0,
-			// 	logo: cr5Logo.src,
-			// 	name: 'CRYPTO5',
-			// 	Symbol: 'CR5',
-			// 	address: goerliCrypto5IndexToken,
-			// 	factoryAddress: goerliCrypto5Factory,
-			// 	decimals: 18
-			// },
-			{
-				id: 1,
-				logo: anfiLogo.src,
-				name: 'ANFI',
-				Symbol: 'ANFI',
-				address: goerliAnfiV2IndexToken,
-				factoryAddress: goerliAnfiV2Factory,
-				decimals: 18,
-			},
-			{
-				id: 2,
-				logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
-				name: 'Tether',
-				Symbol: 'USDT',
-				address: goerliUsdtAddress,
-				factoryAddress: '',
-				decimals: 18,
-			},
-			{
-				id: 3,
-				logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
-				name: 'Ethereum',
-				Symbol: 'ETH',
-				address: goerliWethAddress,
-				factoryAddress: '',
-				decimals: 18,
-			},
-		],
-	])
+	const [allCoinsList, setAllCoinsList] = useState<Coin[][]>([[]])
+	// [
+	// 	// {
+	// 	// 	id: 0,
+	// 	// 	logo: cr5Logo.src,
+	// 	// 	name: 'CRYPTO5',
+	// 	// 	Symbol: 'CR5',
+	// 	// 	address: goerliCrypto5IndexToken,
+	// 	// 	factoryAddress: goerliCrypto5Factory,
+	// 	// 	decimals: 18
+	// 	// },
+	// 	{
+	// 		id: 1,
+	// 		logo: anfiLogo.src,
+	// 		name: 'ANFI',
+	// 		Symbol: 'ANFI',
+	// 		address: goerliAnfiV2IndexToken,
+	// 		factoryAddress: goerliAnfiV2Factory,
+	// 		decimals: 18,
+	// 	},
+	// 	{
+	// 		id: 2,
+	// 		logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
+	// 		name: 'Tether',
+	// 		Symbol: 'USDT',
+	// 		address: goerliUsdtAddress,
+	// 		factoryAddress: '',
+	// 		decimals: 18,
+	// 	},
+	// 	{
+	// 		id: 3,
+	// 		logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
+	// 		name: 'Ethereum',
+	// 		Symbol: 'ETH',
+	// 		address: goerliWethAddress,
+	// 		factoryAddress: '',
+	// 		decimals: 18,
+	// 	},
+	// ],
+	// ])
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
 
 	const [loadingTokens, setLoadingTokens] = useState<boolean>(true)
@@ -667,6 +536,48 @@ const SwapV2 = () => {
 	// 	changeSwapToCur(switchReserve)
 	// }
 
+	// const finalCoinList = isMainnet ? coinsList : testnetCoinsList[0]
+	// const OurIndexCoinList: Coin[] = finalCoinList.filter(coin => OurIndexCoins.includes(coin.Symbol));
+	// const OtherCoinList: Coin[] = finalCoinList.filter(coin => !OurIndexCoins.includes(coin.Symbol));
+	// const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([OurIndexCoinList, OtherCoinList])
+
+	useEffect(() => {
+		const finalCoinList = isMainnet ? coinsList : testnetCoinsList[0];
+		const OurIndexCoinList: Coin[] = finalCoinList.filter(coin => OurIndexCoins.includes(coin.Symbol));
+		const OtherCoinList: Coin[] = finalCoinList.filter(coin => !OurIndexCoins.includes(coin.Symbol));
+		setMergedCoinList([OtherCoinList, OurIndexCoinList]);
+	  }, [isMainnet]);
+
+	const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([[], []])
+
+
+	function Switching() {
+		let switchReserve: Coin = swapFromCur;
+		changeSwapFromCur(swapToCur)
+		changeSwapToCur(switchReserve)
+
+		if(OurIndexCoins.includes(switchReserve.Symbol)){
+			if(mergedCoinList[0].some(obj => OurIndexCoins.includes(obj.Symbol))){
+				const newArray = [mergedCoinList[1], mergedCoinList[0]]
+				setMergedCoinList(newArray)
+			}else{
+				const newArray = [mergedCoinList[0], mergedCoinList[1]]
+				setMergedCoinList(newArray)
+				
+			}
+		}else{
+			if(mergedCoinList[0].some(obj => OurIndexCoins.includes(obj.Symbol))){
+				const newArray = [mergedCoinList[0], mergedCoinList[1]]
+				setMergedCoinList(newArray)
+			}else{
+				const newArray = [mergedCoinList[1], mergedCoinList[0]]
+				setMergedCoinList(newArray)
+			}
+		}
+
+		setSecondInputValue(firstInputValue)
+	}
+
 	const formatResult = (item: Coin) => {
 		return (
 			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1" key={item.id}>
@@ -686,10 +597,6 @@ const SwapV2 = () => {
 	useEffect(() => {
 		const fromNewPrice = Number(firstInputValue) * Number(from1UsdPrice)
 		setFromConvertedPrice(fromNewPrice)
-
-		// console.log(Number(secondInputValue), Number(to1UsdPrice))
-		// const toNewPrice = Number(secondInputValue) * Number(to1UsdPrice)
-		// setToConvertedPrice(toNewPrice)
 	}, [from1UsdPrice, firstInputValue, secondInputValue, to1UsdPrice])
 
 	useEffect(() => {
@@ -698,20 +605,14 @@ const SwapV2 = () => {
 	}, [secondInputValue, to1UsdPrice])
 
 	useEffect(() => {
-		// console.log((Number(from1UsdPrice) / Number(to1UsdPrice)), Number(firstInputValue))
-		// console.log((Number(from1UsdPrice) / Number(to1UsdPrice)) * Number(firstInputValue))
 		const convertedAmout = (Number(from1UsdPrice) / Number(to1UsdPrice)) * Number(firstInputValue)
-		// console.log(convertedAmout)
 		if (isMainnet) {
 			setSecondInputValue(convertedAmout.toString())
 		}
 	}, [from1UsdPrice, to1UsdPrice, firstInputValue, isMainnet])
 
 	const changeSecondInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-		// if (Number(e?.target?.value)) {
-		// setSecondInputValue(Number(e?.target?.value))
 		setSecondInputValue(e?.target?.value)
-		// }
 	}
 
 	function getPrimaryBalance() {
@@ -902,9 +803,9 @@ const SwapV2 = () => {
 			console.log('burn error', error)
 		}
 	}
-	const finalCoinList = isMainnet ? coinsList : reserveCoinsList[0]
+
+
 	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'ANFI') ? true : false
-	console.log(isMainnet)
 
 	return (
 		<>
@@ -1049,9 +950,8 @@ const SwapV2 = () => {
 									<button
 										onClick={approve}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${
-											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-										} hover:bg-colorTwo-500/30`}
+										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+											} hover:bg-colorTwo-500/30`}
 									>
 										Approve
 									</button>
@@ -1059,9 +959,8 @@ const SwapV2 = () => {
 									<button
 										onClick={mintRequest}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded-lg ${
-											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-										} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded-lg ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+											} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
 									>
 										Mint
 									</button>
@@ -1071,9 +970,8 @@ const SwapV2 = () => {
 							<button
 								onClick={burnRequest}
 								disabled={isButtonDisabled}
-								className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${
-									isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-								} hover:bg-colorTwo-500/30`}
+								className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+									} hover:bg-colorTwo-500/30`}
 							>
 								Burn
 							</button>
@@ -1116,26 +1014,24 @@ const SwapV2 = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
 						<button
 							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
-							} interBold text-xl`}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
+								} interBold text-xl`}
 						>
 							Mainnet
 						</button>
 						<button
 							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								!isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
-							} interBold text-xl`}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${!isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
+								} interBold text-xl`}
 						>
 							Testnet
 						</button>
 					</div>
 
-					<ReactSearchAutocomplete items={finalCoinList} formatResult={formatResult} autoFocus className="relative z-50" />
+					<ReactSearchAutocomplete items={mergedCoinList[0]} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
 						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
-							{finalCoinList.map((item, index) => {
+							{mergedCoinList[0].map((item, index) => {
 								return (
 									<div
 										key={index}
@@ -1162,25 +1058,23 @@ const SwapV2 = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
 						<button
 							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
-							} interBold text-xl`}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
+								} interBold text-xl`}
 						>
 							Mainnet
 						</button>
 						<button
 							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								!isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
-							} interBold text-xl`}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${!isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
+								} interBold text-xl`}
 						>
 							Testnet
 						</button>
 					</div>
-					<ReactSearchAutocomplete items={finalCoinList} formatResult={formatResult} autoFocus className="relative z-50" />
+					<ReactSearchAutocomplete items={mergedCoinList[1]} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
 						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto px-2 py-2" id="coinsList">
-							{finalCoinList.map((item, index) => {
+							{mergedCoinList[1].map((item, index) => {
 								return (
 									<div
 										key={index}
