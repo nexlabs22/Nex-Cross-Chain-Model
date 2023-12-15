@@ -19,7 +19,9 @@ const Footer = () => {
 					<div className="flex h-full w-full flex-col items-start justify-start px-10 xl:w-1/3 xl:items-start">
 						<div className="flex w-fit flex-row items-center justify-between">
 							<div className=" mr-2 h-fit w-fit">
-								<Image src={xlogo} alt="nex labs logo" className="w-14 brightness-0 invert"></Image>
+								<Link href={'https://www.nexlabs.io/'}>
+									<Image src={xlogo} alt="nex labs logo" className="w-14 brightness-0 invert"></Image>
+								</Link>
 							</div>
 						</div>
 						<h5 className="interBlack mb-10 mt-5 w-3/5 text-xl text-whiteText-500">Index your trades, your investment, your future.</h5>

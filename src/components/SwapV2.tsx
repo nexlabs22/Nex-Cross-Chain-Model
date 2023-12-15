@@ -19,12 +19,23 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import circle from '@assets/images/circle.png'
 import { it } from 'node:test'
 import { UseContractResult, toWei, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
-import { goerlianfiPoolAddress, goerliAnfiFactory, goerliAnfiIndexToken, goerliAnfiV2Factory, goerliAnfiV2IndexToken, goerliCrypto5Factory, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, zeroAddress } from '@/constants/contractAddresses'
+import {
+	goerlianfiPoolAddress,
+	goerliAnfiFactory,
+	goerliAnfiIndexToken,
+	goerliAnfiV2Factory,
+	goerliAnfiV2IndexToken,
+	goerliCrypto5Factory,
+	goerliCrypto5IndexToken,
+	goerliUsdtAddress,
+	goerliWethAddress,
+	zeroAddress,
+} from '@/constants/contractAddresses'
 import { indexFactoryAbi, indexFactoryV2Abi, indexTokenAbi, tokenAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import Lottie from 'lottie-react'
 import PaymentModal from './PaymentModal'
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 import { Network, Alchemy, BigNumber } from 'alchemy-sdk'
 
@@ -72,16 +83,27 @@ const SwapV2 = () => {
 
 	const [firstInputValue, setFirstInputValue] = useState<string>('0')
 	const [secondInputValue, setSecondInputValue] = useState<string>('0')
-	console.log("firstInputValue",firstInputValue)
+	console.log('firstInputValue', firstInputValue)
 
 	const [cookingModalVisible, setCookingModalVisible] = useState<boolean>(false)
-	const [userEthBalance, setUserEthBalance] = useState<number>(0);
+	const [userEthBalance, setUserEthBalance] = useState<number>(0)
 
-	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage, setTradeTableReload } =
-		useTradePageStore()
+	const {
+		isFromCurrencyModalOpen,
+		isToCurrencyModalOpen,
+		setFromCurrencyModalOpen,
+		setToCurrencyModalOpen,
+		changeSwapFromCur,
+		changeSwapToCur,
+		swapFromCur,
+		swapToCur,
+		nftImage,
+		setNftImage,
+		setTradeTableReload,
+	} = useTradePageStore()
 
 	const address = useAddress()
-	const signer = useSigner();
+	const signer = useSigner()
 
 	//integration hooks
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
@@ -95,8 +117,8 @@ const SwapV2 = () => {
 
 	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
 	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
-	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])	
-	const convertedInputValue = firstInputValue ? parseEther((Number(firstInputValue))?.toString() as string) : 0
+	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
+	const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
 	// const issuanceOutput = useContractRead(mintFactoryContract.contract, 'getIssuanceAmountOut', [convertedInputValue.toString(), swapFromCur.address ,"3"])
 	// const redemptionOutput = useContractRead(burnFactoryContract.contract, 'getRedemptionAmountOut', [convertedInputValue.toString(), swapToCur.address,"3"])
 
@@ -105,24 +127,18 @@ const SwapV2 = () => {
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
 
-
 	useEffect(() => {
 		// console.log("ERRR")
 		async function getIssuanceOutput() {
 			try {
 				if (swapToCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
-					const provider = new ethers.providers.JsonRpcBatchProvider("https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1");
-					const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider);
-					const output = await issuanceContract.callStatic.getIssuanceAmountOut2(
-						convertedInputValue.toString(),
-						swapFromCur.address,
-						"3"
-					)
+					const provider = new ethers.providers.JsonRpcBatchProvider('https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1')
+					const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
+					const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
 					setSecondInputValue(num(output).toString())
-
 				}
 			} catch (error) {
-				console.log("getIssuanceOutput error:", error)
+				console.log('getIssuanceOutput error:', error)
 			}
 		}
 		getIssuanceOutput()
@@ -132,17 +148,13 @@ const SwapV2 = () => {
 		async function getRedemptionOutput() {
 			try {
 				if (swapFromCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
-					const provider = new ethers.providers.JsonRpcBatchProvider("https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1");
-					const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider);
-					const output = await redemptionContract.callStatic.getRedemptionAmountOut2(
-						convertedInputValue.toString(),
-						swapToCur.address,
-						"3"
-					)
+					const provider = new ethers.providers.JsonRpcBatchProvider('https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1')
+					const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
+					const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
 					setSecondInputValue(num(output).toString())
 				}
 			} catch (error) {
-				console.log("getRedemptionOutput error:", error)
+				console.log('getRedemptionOutput error:', error)
 			}
 		}
 		getRedemptionOutput()
@@ -153,71 +165,68 @@ const SwapV2 = () => {
 
 	const [to1UsdPrice, setTo1UsdPrice] = useState<number>()
 	const [toConvertedPrice, setToConvertedPrice] = useState<number>(0)
-	const [ ethPrice, setEthPrice] = useState(0)
+	const [ethPrice, setEthPrice] = useState(0)
 
-	useEffect(()=>{
-		const handleWeth = async () =>{
-			const wethPriceinUsd = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd")
-			.then(res => res.data.weth.usd)
-			.catch(err=> console.log(err))
+	useEffect(() => {
+		const handleWeth = async () => {
+			const wethPriceinUsd = await axios
+				.get('https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd')
+				.then((res) => res.data.weth.usd)
+				.catch((err) => console.log(err))
 
 			setEthPrice(wethPriceinUsd)
 		}
 
 		handleWeth()
-	},[])
+	}, [])
 
 	// console.log(from1UsdPrice, to1UsdPrice)
-
 
 	useEffect(() => {
 		async function fetchData(tokenDetails: Coin, place: string) {
 			try {
-			
 				const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
-				console.log(tokenDetails.Symbol,poolAddress)
-				let isRevPool = false;
+				console.log(tokenDetails.Symbol, poolAddress)
+				let isRevPool = false
 
-				const chainName = isMainnet ? 'ethereum': 'goerli' ;
-				const sdk = new ThirdwebSDK(chainName);
-				const poolContract = await sdk.getContract(poolAddress as string, uniswapV3PoolContractAbi);
+				const chainName = isMainnet ? 'ethereum' : 'goerli'
+				const sdk = new ThirdwebSDK(chainName)
+				const poolContract = await sdk.getContract(poolAddress as string, uniswapV3PoolContractAbi)
 
-				const data = await poolContract.call("slot0", []);
+				const data = await poolContract.call('slot0', [])
 				const token0 = await poolContract.call('token0', [])
-				
-				const fromSqrtPriceX96 = data.sqrtPriceX96;
+
+				const fromSqrtPriceX96 = data.sqrtPriceX96
 				console.log(fromSqrtPriceX96.toString(), token0)
 
-				let decimal0 = Number(tokenDetails.decimals);
+				let decimal0 = Number(tokenDetails.decimals)
 				// let decimal1 = Number(tokenB.decimals);
-				let decimal1 = 18;
-
+				let decimal1 = 18
 
 				if (token0 !== tokenDetails.address) {
-					isRevPool = true;
-					[decimal0, decimal1] = SwapNumbers(decimal0, decimal1);
+					isRevPool = true
+					;[decimal0, decimal1] = SwapNumbers(decimal0, decimal1)
 				}
 
-				const calculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** decimal1 / 10 ** decimal0);
-				const calculatedPriceAsNumber = parseFloat(calculatedPrice.toFixed(decimal1));
+				const calculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** decimal1 / 10 ** decimal0)
+				const calculatedPriceAsNumber = parseFloat(calculatedPrice.toFixed(decimal1))
 
 				console.log(tokenDetails.Symbol, isRevPool, calculatedPriceAsNumber, 1 / calculatedPriceAsNumber)
 
 				// WHEN isRev is true
 				console.log(`1 WETH = ${calculatedPriceAsNumber} ${tokenDetails.Symbol}`)
-				console.log(`1 ${tokenDetails.Symbol} = ${1/calculatedPriceAsNumber} WETH`)
-				
-				//WHEN isRev is False
-				console.log(`1 WETH = ${1/calculatedPriceAsNumber} ${tokenDetails.Symbol}`)
-				console.log(`1 ${tokenDetails.Symbol} = ${calculatedPriceAsNumber} WETH`)
+				console.log(`1 ${tokenDetails.Symbol} = ${1 / calculatedPriceAsNumber} WETH`)
 
+				//WHEN isRev is False
+				console.log(`1 WETH = ${1 / calculatedPriceAsNumber} ${tokenDetails.Symbol}`)
+				console.log(`1 ${tokenDetails.Symbol} = ${calculatedPriceAsNumber} WETH`)
 
 				// console.log(`1 WETH = ${(1 / calculatedPriceAsNumber)/1e18} ${tokenDetails.Symbol}`)
 				// console.log(`1 WETH = ${(calculatedPriceAsNumber)/1e18} ${tokenDetails.Symbol}`)
 
 				// console.log('ethUSDPrice',ethUSDPrice)
 				// const fromPriceInUSD = isRevPool ? await convertToUSD(calculatedPriceAsNumber) : await convertToUSD(1 / calculatedPriceAsNumber)
-				const fromPriceInUSD = isRevPool ? calculatedPriceAsNumber/ethPrice : (1 / calculatedPriceAsNumber)/ethPrice
+				const fromPriceInUSD = isRevPool ? calculatedPriceAsNumber / ethPrice : 1 / calculatedPriceAsNumber / ethPrice
 				// console.log(tokenDetails.Symbol,isRevPool,await convertToUSD(calculatedPriceAsNumber), await convertToUSD(1 / calculatedPriceAsNumber))
 
 				if (place === 'From') {
@@ -244,20 +253,17 @@ const SwapV2 = () => {
 					// if (!isRevPool) setTo1UsdPrice(1 / calculatedPriceAsNumber)
 					// else setTo1UsdPrice(calculatedPriceAsNumber)
 				}
-
 			} catch (err) {
 				console.log(err)
 			}
-
 		}
-		if (swapFromCur.Symbol !== 'WETH' && swapFromCur.Symbol !== 'ETH') { fetchData(swapFromCur, 'From') }
-		if (swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH') { fetchData(swapToCur, 'To') }
-
-
-
-	}, [swapFromCur,
-		swapToCur,
-		ethPrice, isMainnet])
+		if (swapFromCur.Symbol !== 'WETH' && swapFromCur.Symbol !== 'ETH') {
+			fetchData(swapFromCur, 'From')
+		}
+		if (swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH') {
+			fetchData(swapToCur, 'To')
+		}
+	}, [swapFromCur, swapToCur, ethPrice, isMainnet])
 
 	// useEffect(()=>{
 	// 	async function getPrice(tokenDetails1: Coin, tokenDetails2: Coin) {
@@ -275,7 +281,7 @@ const SwapV2 = () => {
 	// 			const chainName = isMainnet ? 'ethereum': 'goerli' ;
 	// 			// console.log("chainName--> ", chainName)
 	// 			const sdk = new ThirdwebSDK(chainName);
-				
+
 	// 			const fromPoolContract = await sdk.getContract(fromPoolAddress ? fromPoolAddress: zeroAddress as string, uniswapV3PoolContractAbi);
 	// 			const toPoolContract = await sdk.getContract(toPoolAddress as string, uniswapV3PoolContractAbi);
 
@@ -292,7 +298,6 @@ const SwapV2 = () => {
 	// 			let fromDecimal1 = 18;
 	// 			let toDecimal0 = Number(tokenDetails2.decimals);
 	// 			let toDecimal1 = 18;
-
 
 	// 			if (fromToken0 !== tokenDetails1.address) {
 	// 				isFromRevPool = true;
@@ -316,17 +321,17 @@ const SwapV2 = () => {
 	// 			// console.log(' ---- CASE 1 ------')
 	// 			// console.log(`1 WETH = ${fromCalculatedPriceAsNumber} ${tokenDetails1.Symbol}`)
 	// 			// console.log(`1 ${tokenDetails1.Symbol} = ${1/fromCalculatedPriceAsNumber} WETH`)
-				
+
 	// 			// //WHEN isRev is False
 	// 			// console.log(' ---- CASE 2 ------')
 	// 			// console.log(`1 WETH = ${1/fromCalculatedPriceAsNumber} ${tokenDetails1.Symbol}`)
 	// 			// console.log(`1 ${tokenDetails1.Symbol} = ${fromCalculatedPriceAsNumber} WETH`)
-				
+
 	// 			// // WHEN isRev is true
 	// 			// console.log(' ---- WHEN isRev is True ------')
 	// 			// console.log(`1 WETH = ${toCalculatedPriceAsNumber} ${tokenDetails2.Symbol}`)
 	// 			// console.log(`1 ${tokenDetails2.Symbol} = ${1/toCalculatedPriceAsNumber} WETH`)
-				
+
 	// 			// //WHEN isRev is False
 	// 			// console.log(' ---- WHEN isRev is False ------')
 	// 			// console.log(`1 WETH = ${1/toCalculatedPriceAsNumber} ${tokenDetails2.Symbol}`)
@@ -348,9 +353,8 @@ const SwapV2 = () => {
 	// 	}
 
 	// 	getPrice(swapFromCur, swapToCur);
-		
-	// },[swapFromCur, swapToCur, isMainnet])
 
+	// },[swapFromCur, swapToCur, isMainnet])
 
 	useEffect(() => {
 		if (approveHook.isSuccess) {
@@ -369,7 +373,18 @@ const SwapV2 = () => {
 			burnRequestHook.reset()
 			setTradeTableReload(true)
 		}
-	}, [mintRequestHook.isSuccess, mintRequestEthHook.isSuccess, burnRequestHook.isSuccess, mintRequestHook, mintRequestEthHook, burnRequestHook, fromTokenBalance, toTokenBalance, fromTokenAllowance, setTradeTableReload])
+	}, [
+		mintRequestHook.isSuccess,
+		mintRequestEthHook.isSuccess,
+		burnRequestHook.isSuccess,
+		mintRequestHook,
+		mintRequestEthHook,
+		burnRequestHook,
+		fromTokenBalance,
+		toTokenBalance,
+		fromTokenAllowance,
+		setTradeTableReload,
+	])
 
 	useEffect(() => {
 		if (approveHook.isLoading) {
@@ -474,7 +489,6 @@ const SwapV2 = () => {
 	const toggleMainnetCheckbox = () => {
 		setIsmainnet(!isMainnet)
 		console.log(!isMainnet)
-
 	}
 
 	const openPaymentModal = () => {
@@ -528,7 +542,7 @@ const SwapV2 = () => {
 				Symbol: 'ANFI',
 				address: goerliAnfiV2IndexToken,
 				factoryAddress: goerliAnfiV2Factory,
-				decimals: 18
+				decimals: 18,
 			},
 			{
 				id: 2,
@@ -537,7 +551,7 @@ const SwapV2 = () => {
 				Symbol: 'USDT',
 				address: goerliUsdtAddress,
 				factoryAddress: '',
-				decimals: 18
+				decimals: 18,
 			},
 			{
 				id: 3,
@@ -546,8 +560,8 @@ const SwapV2 = () => {
 				Symbol: 'ETH',
 				address: goerliWethAddress,
 				factoryAddress: '',
-				decimals: 18
-			}
+				decimals: 18,
+			},
 		],
 	])
 
@@ -569,7 +583,7 @@ const SwapV2 = () => {
 				Symbol: 'ANFI',
 				address: goerliAnfiV2IndexToken,
 				factoryAddress: goerliAnfiV2Factory,
-				decimals: 18
+				decimals: 18,
 			},
 			{
 				id: 2,
@@ -578,7 +592,7 @@ const SwapV2 = () => {
 				Symbol: 'USDT',
 				address: goerliUsdtAddress,
 				factoryAddress: '',
-				decimals: 18
+				decimals: 18,
 			},
 			{
 				id: 3,
@@ -587,8 +601,8 @@ const SwapV2 = () => {
 				Symbol: 'ETH',
 				address: goerliWethAddress,
 				factoryAddress: '',
-				decimals: 18
-			}
+				decimals: 18,
+			},
 		],
 	])
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
@@ -609,7 +623,7 @@ const SwapV2 = () => {
 			const tokenSets = data.tokens
 			const coins: Coin[] = Object.keys(tokenSets).flatMap((key) => {
 				const tokenSet = tokenSets[key]
-				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any, decimals: any }) => ({
+				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any; decimals: any }) => ({
 					id: coin.address,
 					logo: coin.logoURI && coin.logoURI != '' ? coin.logoURI : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU',
 					name: coin.name,
@@ -676,24 +690,22 @@ const SwapV2 = () => {
 		// console.log(Number(secondInputValue), Number(to1UsdPrice))
 		// const toNewPrice = Number(secondInputValue) * Number(to1UsdPrice)
 		// setToConvertedPrice(toNewPrice)
-
 	}, [from1UsdPrice, firstInputValue, secondInputValue, to1UsdPrice])
 
-	useEffect(()=>{
+	useEffect(() => {
 		const toNewPrice = Number(secondInputValue) * Number(to1UsdPrice)
 		setToConvertedPrice(toNewPrice)
-	},[secondInputValue,to1UsdPrice])
+	}, [secondInputValue, to1UsdPrice])
 
 	useEffect(() => {
 		// console.log((Number(from1UsdPrice) / Number(to1UsdPrice)), Number(firstInputValue))
 		// console.log((Number(from1UsdPrice) / Number(to1UsdPrice)) * Number(firstInputValue))
 		const convertedAmout = (Number(from1UsdPrice) / Number(to1UsdPrice)) * Number(firstInputValue)
 		// console.log(convertedAmout)
-		if(isMainnet){
+		if (isMainnet) {
 			setSecondInputValue(convertedAmout.toString())
 		}
 	}, [from1UsdPrice, to1UsdPrice, firstInputValue, isMainnet])
-
 
 	const changeSecondInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
 		// if (Number(e?.target?.value)) {
@@ -716,8 +728,9 @@ const SwapV2 = () => {
 		} else {
 			if (!fromTokenBalance.data) {
 				return 0
-			} else
-				// return (Number(fromTokenBalance.data) / 1e18).toFixed(2)
+			}
+			// return (Number(fromTokenBalance.data) / 1e18).toFixed(2)
+			else
 				return FormatToViewNumber({
 					// value: Number((fromTokenBalance.data))/1e18,
 					value: Number(ethers.utils.formatEther(fromTokenBalance.data)) as number,
@@ -753,15 +766,14 @@ const SwapV2 = () => {
 	useEffect(() => {
 		const getEtherBalance = async () => {
 			if (address && signer) {
-				const balance = await signer?.provider?.getBalance(address as string);
-				const convertedBalance = ethers.utils.formatEther(balance as BigNumber);
-				console.log("Balance converted", convertedBalance)
-				setUserEthBalance(Number(balance));
+				const balance = await signer?.provider?.getBalance(address as string)
+				const convertedBalance = ethers.utils.formatEther(balance as BigNumber)
+				console.log('Balance converted', convertedBalance)
+				setUserEthBalance(Number(balance))
 			}
 		}
 		getEtherBalance()
 	}, [signer, address])
-
 
 	// useEffect(() => {
 	//     const getEtherBalance = async() => {
@@ -775,9 +787,8 @@ const SwapV2 = () => {
 	//     getEtherBalance()
 	// },[signer, address])
 
-
 	async function approve() {
-		const convertedValue = parseEther((Number(firstInputValue) * 1001 / 1000)?.toString() as string)
+		const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
 		// const convertedValue = BigNumber.from(3*1001/1000)
 		try {
 			if (isChecked) {
@@ -788,7 +799,7 @@ const SwapV2 = () => {
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
-				}else if(Number(firstInputValue) <= 0){
+				} else if (Number(firstInputValue) <= 0) {
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to approve`,
@@ -819,21 +830,17 @@ const SwapV2 = () => {
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
-				}else if(Number(firstInputValue) <= 0){
+				} else if (Number(firstInputValue) <= 0) {
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to mint`,
 					})
 				}
 				await mintRequestHook.mutateAsync({
-					args: [
-						swapFromCur.address,
-						(Number(firstInputValue) * 1e18).toString(),
-						"3"
-					],
+					args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
 					overrides: {
-						gasLimit: 1000000
-					}
+						gasLimit: 1000000,
+					},
 				})
 			}
 		} catch (error) {
@@ -843,7 +850,7 @@ const SwapV2 = () => {
 
 	async function mintRequestEth() {
 		try {
-			const convertedValue = parseEther((Number(firstInputValue) * 1001 / 1000)?.toString() as string)
+			const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
 			if (isChecked) {
 				openPaymentModal()
 			} else {
@@ -852,20 +859,18 @@ const SwapV2 = () => {
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
-				}else if(Number(firstInputValue) <= 0){
+				} else if (Number(firstInputValue) <= 0) {
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to mint`,
 					})
 				}
 				await mintRequestEthHook.mutateAsync({
-					args: [
-						(Number(firstInputValue) * 1e18).toString(),
-					],
+					args: [(Number(firstInputValue) * 1e18).toString()],
 					overrides: {
 						gasLimit: 1000000,
-						value: convertedValue
-					}
+						value: convertedValue,
+					},
 				})
 			}
 		} catch (error) {
@@ -883,26 +888,22 @@ const SwapV2 = () => {
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
-				}else if(Number(firstInputValue) <= 0){
+				} else if (Number(firstInputValue) <= 0) {
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to burn`,
 					})
 				}
 				await burnRequestHook.mutateAsync({
-					args: [
-						(Number(firstInputValue) * 1e18).toString(),
-						swapToCur.address,
-						"3"
-					]
+					args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
 				})
 			}
 		} catch (error) {
 			console.log('burn error', error)
 		}
 	}
-	const finalCoinList = isMainnet? coinsList: reserveCoinsList[0]
-	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'ANFI') ? true: false
+	const finalCoinList = isMainnet ? coinsList : reserveCoinsList[0]
+	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'ANFI') ? true : false
 	console.log(isMainnet)
 
 	return (
@@ -914,7 +915,14 @@ const SwapV2 = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-base interMedium text-gray-500 w-1/3">You pay</p>
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
-							<p onClick={() => { if (swapFromCur.address == goerliWethAddress) { setFirstInputValue('0.00001') } else setFirstInputValue('1') }} className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm">
+							<p
+								onClick={() => {
+									if (swapFromCur.address == goerliWethAddress) {
+										setFirstInputValue('0.00001')
+									} else setFirstInputValue('1')
+								}}
+								className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm"
+							>
 								MIN
 							</p>
 							<p
@@ -925,7 +933,7 @@ const SwapV2 = () => {
 								HALF
 							</p>
 							<p
-								onClick={() => setFirstInputValue((Number(getPrimaryBalance())).toString())}
+								onClick={() => setFirstInputValue(Number(getPrimaryBalance()).toString())}
 								className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm"
 							>
 								MAX
@@ -938,7 +946,7 @@ const SwapV2 = () => {
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 							onChange={changeFirstInputValue}
-							value={firstInputValue ? (firstInputValue) : ''}
+							value={firstInputValue ? firstInputValue : ''}
 						/>
 						<div
 							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
@@ -954,7 +962,7 @@ const SwapV2 = () => {
 						</div>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
-						<span className="text-sm interMedium text-gray-500">≈ ${fromConvertedPrice ? (fromConvertedPrice).toFixed(4) : '0.00'}</span>
+						<span className="text-sm interMedium text-gray-500">≈ ${fromConvertedPrice ? fromConvertedPrice.toFixed(4) : '0.00'}</span>
 						<div className="flex flex-row items-center justify-end gap-1">
 							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
 							<span className="text-sm interMedium text-gray-500">
@@ -984,7 +992,7 @@ const SwapV2 = () => {
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 							onChange={changeSecondInputValue}
-							value={secondInputValue && secondInputValue !== 'NaN' ? (Number(secondInputValue).toFixed(6)) : 0}
+							value={secondInputValue && secondInputValue !== 'NaN' ? Number(secondInputValue).toFixed(6) : 0}
 						/>
 						<div
 							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
@@ -1037,11 +1045,13 @@ const SwapV2 = () => {
 					<div className={`w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3`}>
 						{swapToCur.address == goerliAnfiV2IndexToken || swapToCur.address == goerliCrypto5IndexToken ? (
 							<>
-								{(Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue)) && swapFromCur.address != goerliWethAddress ? (
+								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) && swapFromCur.address != goerliWethAddress ? (
 									<button
 										onClick={approve}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${isButtonDisabled?'cursor-not-allowed opacity-50':'cursor-pointer'} hover:bg-colorTwo-500/30`}
+										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${
+											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+										} hover:bg-colorTwo-500/30`}
 									>
 										Approve
 									</button>
@@ -1049,7 +1059,9 @@ const SwapV2 = () => {
 									<button
 										onClick={mintRequest}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded-lg ${isButtonDisabled?'cursor-not-allowed opacity-50':'cursor-pointer'} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded-lg ${
+											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+										} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
 									>
 										Mint
 									</button>
@@ -1059,7 +1071,9 @@ const SwapV2 = () => {
 							<button
 								onClick={burnRequest}
 								disabled={isButtonDisabled}
-								className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${isButtonDisabled?'cursor-not-allowed opacity-50':'cursor-pointer'} hover:bg-colorTwo-500/30`}
+								className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${
+									isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+								} hover:bg-colorTwo-500/30`}
 							>
 								Burn
 							</button>
@@ -1074,7 +1088,9 @@ const SwapV2 = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm interMedium text-black/70 pb-2">Platform Fees</p>
 						<div className="flex flex-row items-center justify-start gap-2">
-							<p className="text-sm interMedium text-black/70">{FormatToViewNumber({value: (Number(firstInputValue) * 0.001), returnType: 'string'})} {swapFromCur.Symbol} (0.1%)</p>
+							<p className="text-sm interMedium text-black/70">
+								{FormatToViewNumber({ value: Number(firstInputValue) * 0.001, returnType: 'string' })} {swapFromCur.Symbol} (0.1%)
+							</p>
 							<GenericTooltip
 								color="#5E869B"
 								content={
@@ -1097,11 +1113,25 @@ const SwapV2 = () => {
 			</div>
 			<GenericModal isOpen={isFromCurrencyModalOpen} onRequestClose={closeFromCurrencyModal}>
 				<div className="w-full h-fit px-2">
-					<div className='flex flow-row m-2'>
-						<h5 className='mx-2'>Testnet</h5>
-						<Switch onChange={toggleMainnetCheckbox} checked={isMainnet} height={14} width={35} handleDiameter={20} />
-						<h5 className='mx-2'>Mainnet</h5>
+					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
+						<button
+							onClick={toggleMainnetCheckbox}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
+								isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
+							} interBold text-xl`}
+						>
+							Mainnet
+						</button>
+						<button
+							onClick={toggleMainnetCheckbox}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
+								!isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
+							} interBold text-xl`}
+						>
+							Testnet
+						</button>
 					</div>
+
 					<ReactSearchAutocomplete items={finalCoinList} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
 						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
@@ -1129,10 +1159,23 @@ const SwapV2 = () => {
 			</GenericModal>
 			<GenericModal isOpen={isToCurrencyModalOpen} onRequestClose={closeToCurrencyModal}>
 				<div className="w-full h-fit px-2">
-				<div className='flex flow-row m-2'>
-						<h5 className='mx-2'>Testnet</h5>
-						<Switch onChange={toggleMainnetCheckbox} checked={isMainnet} height={14} width={35} handleDiameter={20} />
-						<h5 className='mx-2'>Mainnet</h5>
+					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
+						<button
+							onClick={toggleMainnetCheckbox}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
+								isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
+							} interBold text-xl`}
+						>
+							Mainnet
+						</button>
+						<button
+							onClick={toggleMainnetCheckbox}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
+								!isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
+							} interBold text-xl`}
+						>
+							Testnet
+						</button>
 					</div>
 					<ReactSearchAutocomplete items={finalCoinList} formatResult={formatResult} autoFocus className="relative z-50" />
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">

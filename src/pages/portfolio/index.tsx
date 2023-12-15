@@ -38,6 +38,7 @@ import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
 import UseAnimations from 'react-useanimations'
 import arrowDown from 'react-useanimations/lib/arrowDown'
 import bg2 from '@assets/images/bg-2.png'
+import HistoryTable from '@/components/TradeTable'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -369,6 +370,10 @@ export default function Portfolio() {
 						</div>
 					</section>
 				</section>
+				<section className="w-full h-fit mb-10 px-10">
+				<h5 className="interBlack text-3xl text-blackText-500 mb-4">Transactions History</h5>
+					<HistoryTable />
+				</section>
 				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-10">
 					<div id="d1" className="w-full xl:w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
 						<div className="w-screen h-full flex flex-col items-center justify-center">
@@ -383,22 +388,25 @@ export default function Portfolio() {
 									></div>
 								</div>
 								<div className="relative top-0 left-0 z-40 bg-transparent">
-									<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Keep a balanced account</h5>
-									<p className="interMedium text-whiteText-500 text-base w-full xl:w-1/2 mb-3">
-										Balancing a crypto account involvesc adjusting the allocation of various cryptocurrencies within the portfolio to manage risk and maintain desired investment proportions.
+									<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Automatic Rebalancing Mechanism</h5>
+									<p className="interMedium text-whiteText-500 text-base w-full xl:w-3/5 mb-3">
+										Our automatic rebalancing system ensures the proper distribution of assets in the index by regularly monitoring market capitalizations, triggering adjustments as needed
+										to align with the desired weights, and executing trades accordingly.
 									</p>
-									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-										<span>Learn More</span>
-										<UseAnimations
-											animation={arrowDown}
-											wrapperStyle={{
-												width: 'fit-content',
-											}}
-											strokeColor="#5E869B"
-											size={40}
-											className=" -rotate-90"
-										/>
-									</button>
+									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
+										<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
+											<span>Learn More</span>
+											<UseAnimations
+												animation={arrowDown}
+												wrapperStyle={{
+													width: 'fit-content',
+												}}
+												strokeColor="#5E869B"
+												size={40}
+												className=" -rotate-90"
+											/>
+										</button>
+									</Link>
 								</div>
 							</div>
 						</div>
@@ -408,7 +416,6 @@ export default function Portfolio() {
 					</div>
 				</section>
 				<div className="w-fit h-fit xl:pt-16">
-					
 					<Footer />
 				</div>
 				<GenericModal
