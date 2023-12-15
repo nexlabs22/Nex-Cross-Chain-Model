@@ -224,7 +224,7 @@ export default function Explore() {
 								</div>
 							</div>
 						</div>
-						<div className="w-full h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 px-3 py-6 xl:p-12">
+						<div className=" w-full h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 px-3 py-6 xl:p-12">
 							<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between mb-6 gap-3 xl:gap-0">
 								<ReactSearchAutocomplete className="w-[75vw] xl:w-1/3" items={products} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
 								<Menu
@@ -334,7 +334,7 @@ export default function Explore() {
 									}
 								})}
 							</div>
-							<div className="w-full h-fit border-gray-300 rounded-xl px-3 py-6 shadow">
+							<div className="w-full h-fit border-gray-300 block xl:hidden rounded-xl px-3 py-6 shadow">
 								{products.map((product, index) => {
 									if (product.category == selectedCategory && product.subcategory == selectedSubCategory.symbol) {
 										return (
@@ -348,7 +348,7 @@ export default function Explore() {
 															height={35}
 															className="cursor-pointer"
 															onClick={() => {
-																changeDefaultIndex(product.symbol)
+																changeDefaultIndex(product.symbol.toUpperCase())
 																router.push('/trade')
 															}}
 														></Image>
@@ -366,7 +366,9 @@ export default function Explore() {
 													<div className="w-full h-fit flex flex-row items-center justify-between">
 														<div>
 															<h5 className="interMedium text-blackText-500 text-base italic">Symbol: {product.symbol}</h5>
-															<h5 className="interMedium text-blackText-500 text-base">Total Supply: <span className=' text-colorSeven-500'>${product.totalSupply}</span></h5>
+															<h5 className="interMedium text-blackText-500 text-base">
+																Total Supply: <span className=" text-colorSeven-500">${product.totalSupply}</span>
+															</h5>
 														</div>
 														<button
 															onClick={() => {
@@ -379,7 +381,6 @@ export default function Explore() {
 														</button>
 													</div>
 												</div>
-												
 											</div>
 										)
 									}
@@ -403,18 +404,20 @@ export default function Explore() {
 								<p className="interMedium text-whiteText-500 text-base w-full xl:w-1/2 mb-3">
 									Embark on a journey through CeFi and DeFi landscapes, understanding the centralized powerhouses and the decentralized disruptors. Start exploring the two faces of finance!
 								</p>
-								<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-									<span>Learn More</span>
-									<UseAnimations
-										animation={arrowDown}
-										wrapperStyle={{
-											width: 'fit-content',
-										}}
-										strokeColor="#5E869B"
-										size={40}
-										className=" -rotate-90"
-									/>
-								</button>
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'}>
+									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
+										<span>Learn More</span>
+										<UseAnimations
+											animation={arrowDown}
+											wrapperStyle={{
+												width: 'fit-content',
+											}}
+											strokeColor="#5E869B"
+											size={40}
+											className=" -rotate-90"
+										/>
+									</button>
+								</Link>
 							</div>
 						</div>
 					</section>

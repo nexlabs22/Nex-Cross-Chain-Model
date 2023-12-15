@@ -13,7 +13,9 @@ const MobileFooterSection = () => {
 	return (
 		<section className="px-2 pb-4 pt-10 ">
 			<div className="h-fit w-full rounded-[30px] bg-colorSeven-500 px-6 py-8 md:p-10">
-				<Image src={xLogo} alt="nex logo" width={22} height={22} className="w-12 md:scale-[2] md:ml-6 md:mt-6 md:mb-14 brightness-0 drop-shadow-sm invert"></Image>
+				<Link href={'https://www.nexlabs.io/'}>
+					<Image src={xLogo} alt="nex logo" width={22} height={22} className="w-12 md:scale-[2] md:ml-6 md:mt-6 md:mb-14 brightness-0 drop-shadow-sm invert"></Image>
+				</Link>
 				<h5 className="interBold my-4 md:mb-12 text-2xl md:text-4xl md:w-1/2 text-white">Index your trades, your investment, your future</h5>
 				<Accordion allowZeroExpanded>
 					<AccordionItem className="w-full border-none bg-transparent px-0 shadow-none">
@@ -46,13 +48,13 @@ const MobileFooterSection = () => {
 							</div>
 							<div className="mb-4 md:mb-6 flex h-fit w-full flex-row items-center justify-start gap-2">
 								<div className=" h-2 w-2 md:h-4 md:w-4 rounded-full bg-white"></div>
-								<Link href={'https://github.com/nexlabs22/…ices-Model-Contracts'} target='_blank'>
+								<Link href={'https://github.com/nexlabs22/…ices-Model-Contracts'} target="_blank">
 									<h5 className="interBold text-xl md:text-3xl text-white">Public reposiroty</h5>
 								</Link>
 							</div>
 							<div className="mb-4 md:mb-6 flex h-fit w-full flex-row items-center justify-start gap-2">
 								<div className=" h-2 w-2 md:h-4 md:w-4 rounded-full bg-white"></div>
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/'} target='_blank'>
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/'} target="_blank">
 									<h5 className="interBold text-xl md:text-3xl text-white">Whitepaper</h5>
 								</Link>
 							</div>
@@ -76,31 +78,31 @@ const MobileFooterSection = () => {
 						<AccordionItemPanel className="w-full px-2 py-2">
 							<div className="mb-4 md:mb-6 flex h-fit w-full flex-row items-center justify-start gap-2">
 								<div className=" h-2 w-2 md:h-4 md:w-4 rounded-full bg-white"></div>
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'} target='_blank'>
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'} target="_blank">
 									<h5 className="interBold text-xl md:text-3xl text-white">Spot - Indices</h5>
 								</Link>
 							</div>
 							<div className="mb-4 md:mb-6 flex h-fit w-full flex-row items-center justify-start gap-2">
 								<div className=" h-2 w-2 md:h-4 md:w-4 rounded-full bg-white"></div>
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/'} target='_blank'>
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/'} target="_blank">
 									<h5 className="interBold text-xl md:text-3xl text-white">Protocol structure</h5>
 								</Link>
 							</div>
 							<div className="mb-4 md:mb-6 flex h-fit w-full flex-row items-center justify-start gap-2">
 								<div className=" h-2 w-2 md:h-4 md:w-4 rounded-full bg-white"></div>
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/token-and-smart-contract-details/address-and-ticker'} target='_blank'>
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/token-and-smart-contract-details/address-and-ticker'} target="_blank">
 									<h5 className="interBold text-xl md:text-3xl text-white">Token & smart contract details</h5>
 								</Link>
 							</div>
 							<div className="mb-4 md:mb-6 flex h-fit w-full flex-row items-center justify-start gap-2">
 								<div className=" h-2 w-2 md:h-4 md:w-4 rounded-full bg-white"></div>
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/additional-information/roadmap'} target='_blank'>
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/additional-information/roadmap'} target="_blank">
 									<h5 className="interBold text-xl md:text-3xl text-white">Roadmap</h5>
 								</Link>
 							</div>
 							<div className="mb-4 md:mb-6 flex h-fit w-full flex-row items-center justify-start gap-2">
 								<div className=" h-2 w-2 md:h-4 md:w-4 rounded-full bg-white"></div>
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/additional-information/faq'} target='_blank'>
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/additional-information/faq'} target="_blank">
 									<h5 className="interBold text-xl md:text-3xl text-white">FAQ</h5>
 								</Link>
 							</div>
