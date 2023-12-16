@@ -15,6 +15,7 @@ import TipsBox2 from '@/components/TipsBox'
 import bg from '@assets/images/3d hologram.png'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
+import { MdOutlineDangerous } from 'react-icons/md'
 const Chart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
@@ -39,6 +40,7 @@ import UseAnimations from 'react-useanimations'
 import arrowDown from 'react-useanimations/lib/arrowDown'
 import bg2 from '@assets/images/bg-2.png'
 import HistoryTable from '@/components/TradeTable'
+import TopHolders from '@/components/topHolders'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -374,8 +376,19 @@ export default function Portfolio() {
 					</section>
 				</section>
 				<section className="w-full h-fit mb-10 px-10">
-				<h5 className="interBlack text-3xl text-blackText-500 mb-4">Transactions History</h5>
-					<HistoryTable />
+					<h5 className="interBlack text-3xl text-blackText-500 mb-4">Transactions History</h5>
+					{address ? (
+						<HistoryTable />
+					) : (
+						<div className="w-full h-fit bg-gray-300 border border-gray-200 rounded-2xl py-20 flex flex-row items-center justify-center gap-1">
+							<MdOutlineDangerous color="#F23645" size={30} />
+							<h5 className="interMedium text-base text-gray-500">No connected wallet</h5>
+						</div>
+					)}
+				</section>
+				<section className="w-full h-fit mb-10 px-10">
+				<h5 className="interBlack text-3xl text-blackText-500 mb-4">Top Holders</h5>
+					<TopHolders />
 				</section>
 				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-10">
 					<div id="d1" className="w-full xl:w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
