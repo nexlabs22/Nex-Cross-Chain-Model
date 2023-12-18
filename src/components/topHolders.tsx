@@ -26,7 +26,7 @@ function TopHolders() {
 	// const positionHistory = GetPositionsHistory(swapToCur.factoryAddress as `0x${string}`, swapToCur.Symbol)
 	// const positionHistory = GetPositionsHistory2(swapToCur.factoryAddress as `0x${string}`, swapToCur.Symbol)
 	// useEffect(() => {
-	const positionHistory = GetPositionsHistory2(goerliAnfiV2Factory as `0x${string}`, 'ANFI')
+	const positionHistory = GetPositionsHistory2()
 	useEffect(() => {
 		if (tradeTableReload) {
 			positionHistory.reload()
