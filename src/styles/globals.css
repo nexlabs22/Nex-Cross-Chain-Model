@@ -298,9 +298,16 @@ body {
   }
 }
 
+.accordion{
+  border: none !important;
+}
+
 .Toastify__toast {
 	background-color: #2A2A2A !important;
 	color: #F2F2F2 !important;
+  border-radius: 12px !important;
+  border: solid 1px black !important;
+  font-family: 'interBold' !important;
 }
 
 .Toastify__progress-bar--info {
@@ -414,6 +421,24 @@ body {
   z-index: 9999 !important;
 }
 
+/*
+.MuiScopedCssBaseline-root{
+  border: 1px solid rgba(255, 255, 255, 0.01) !important;
+
+    background: rgba(255, 255, 255, 0.41) !important;
+
+    box-shadow: 0px 3px 5px 0px rgba(94, 134, 155, 0.80), -2px -2px 4px 0px rgba(58, 66, 70, 0.15) inset !important;
+    backdrop-filter: blur(11.199999809265137px) !important;
+}
+
+.MuiContainer-root{
+
+    background: rgba(255, 255, 255, 0) !important;
+
+    backdrop-filter: blur(11.199999809265137px) !important;
+}
+*/
+
 .menu-wrap{
   width: 100vw !important;
   background-color: #F2F2F2 !important;
@@ -448,6 +473,10 @@ body {
   box-shadow: 0 1px 2px 1px rgb(0 0 0 / 0.4) !important;
   color: #FFFFFF !important;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+.disabled {
+  cursor: not-allowed;
 }
 
 #chartdiv

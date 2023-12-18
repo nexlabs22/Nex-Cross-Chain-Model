@@ -18,8 +18,9 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Switch from 'react-switch'
 // Assets:
 import { UseContractResult, useAddress, useContract, useContractRead, useContractWrite } from '@thirdweb-dev/react'
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { goerliAnfiFactory, goerliAnfiIndexToken, goerliCrypto5Factory, goerliCrypto5IndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
-import { indexFactoryAbi, indexTokenAbi, tokenAbi } from '@/constants/abi'
+import { indexFactoryAbi, indexTokenAbi, tokenAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import Lottie from 'lottie-react'
 import PaymentModal from './PaymentModal'
@@ -35,10 +36,15 @@ import loading from 'react-useanimations/lib/loading'
 
 import { GenericToast } from './GenericToast'
 import { parseEther } from 'viem'
-import { num } from '@/hooks/math'
+import { FormatToViewNumber, num } from '@/hooks/math'
 import GenericTooltip from './GenericTooltip'
 
 import UseAnimations from 'react-useanimations'
+import getPoolAddress from '@/uniswap/utils'
+// import { CurrentConfig } from '@/uniswap/configure'
+// import convertToUSD from '@/utils/convertToUsd'
+import { SwapNumbers } from '@/utils/general'
+// import getPoolAddress from '@/utils/getPoolAddress'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -55,14 +61,15 @@ type Coin = {
 	Symbol: string
 	address: string
 	factoryAddress: string
+	decimals: number
 }
 
 const Swap = () => {
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
 	const [isChecked, setChecked] = useState(false)
 
-	const [firstInputValue, setFirstInputValue] = useState<number | null>(0)
-	const [secondInputValue, setSecondInputValue] = useState<number | null>(0)
+	const [firstInputValue, setFirstInputValue] = useState<number | string | null>(0)
+	const [secondInputValue, setSecondInputValue] = useState<number | string | null>(0)
 
 	const [cookingModalVisible, setCookingModalVisible] = useState<boolean>(false)
 
@@ -70,6 +77,7 @@ const Swap = () => {
 		useTradePageStore()
 
 	const address = useAddress()
+
 
 	//integration hooks
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
@@ -88,9 +96,94 @@ const Swap = () => {
 	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'addMintRequest')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'burn')
 
+	const [from1UsdPrice, setFrom1UsdPrice] = useState<number>()
+	const [fromConvertedPrice, setFromConvertedPrice] = useState<number>(0)
+
+	const [to1UsdPrice, setTo1UsdPrice] = useState<number>()
+	const [toConvertedPrice, setToConvertedPrice] = useState<number>(0)
+
+
+
 	// useEffect(() => {
-	// 	console.log("balance :", Number(indexTokenBalance.data)/1e18)
-	// },[indexTokenBalance.data])
+	// 	// async function fetchData(tokenAddress1: string, tokenDecimal1: number, tokenAddress2: string, tokenDecimal2: number) {
+	// 		console.log(ethUSDPrice)
+	// 	async function fetchData(tokenDetails:Coin, place: string) {
+	// 		try {
+	// 			const fromPoolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals)
+	// 			// const fromPoolAddress = '0xEdFEEeFf1DAF631b4aBC8C021Cff4b1267547eF2'
+	// 			// const toPoolAddress = getPoolAddress(tokenAddress2, tokenDecimal2)
+	// 			let isFromRevPool = false;
+	// 			// let isToRevPool = false;
+
+	// 			const chainName = tokenDetails.Symbol === 'ANFI' ? 'goerli' : 'ethereum';
+	// 			const sdk = new ThirdwebSDK(chainName);
+	// 			const fromPoolContract = await sdk.getContract(fromPoolAddress as string, uniswapV3PoolContractAbi);
+	// 			// const toPoolContract = await sdk.getContract(toPoolAddress as string, uniswapV3PoolContractAbi);
+
+	// 			const fromData = await fromPoolContract.call("slot0", []);
+	// 			const fromToken0 = await fromPoolContract.call('token0', [])
+
+	// 			// const toData = await toPoolContract.call("slot0", []);
+	// 			// const toToken0 = await toPoolContract.call('token0', [])
+
+	// 			const fromSqrtPriceX96 = fromData.sqrtPriceX96;
+	// 			// const toSqrtPriceX96 = toData.sqrtPriceX96;
+
+	// 			let fromDecimal0 = Number(tokenDetails.decimals);
+	// 			let fromDecimal1 = Number(CurrentConfig.pool.tokenB.decimals);
+
+	// 			// let toDecimal0 = Number(tokenDecimal2);
+	// 			// let toDecimal1 = Number(CurrentConfig.pool.tokenB.decimals);
+
+
+	// 			if (fromToken0 !== tokenDetails.address) {
+	// 				isFromRevPool = true;
+	// 				[fromDecimal0, fromDecimal1] = SwapNumbers(fromDecimal0, fromDecimal1);
+	// 			}
+	// 			// if (toToken0 !== tokenAddress2) {
+	// 			// 	isToRevPool = true;
+	// 			// 	[toDecimal0, toDecimal1] = SwapNumbers(toDecimal0, toDecimal1);
+	// 			// }
+
+	// 			const fromCalculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** fromDecimal1 / 10 ** fromDecimal0);
+	// 			const fromCalculatedPriceAsNumber = parseFloat(fromCalculatedPrice.toFixed(fromDecimal1));
+
+	// 			// const toCalculatedPrice = Math.pow(toSqrtPriceX96 / 2 ** 96, 2) / (10 ** toDecimal1 / 10 ** toDecimal0);
+	// 			// const toCalculatedPrice0AsNumber = parseFloat(toCalculatedPrice.toFixed(toDecimal1));
+
+	// 			const fromPriceInUSD = isFromRevPool ? fromCalculatedPriceAsNumber / ethUSDPrice : (1 / fromCalculatedPriceAsNumber) / ethUSDPrice
+	// 			// const toPriceInUSD = await convertToUSD(isToRevPool ? toCalculatedPrice0AsNumber : 1 / toCalculatedPrice0AsNumber)
+
+
+	// 			if (place === 'From') {
+	// 				setFrom1UsdPrice(fromPriceInUSD)
+	// 			} else {
+	// 				setTo1UsdPrice(fromPriceInUSD)
+	// 			}
+	// 		} catch (err) {
+	// 			console.log(err)
+	// 		}
+
+	// 	}
+	// 	console.log(swapFromCur.Symbol)
+	// 	fetchData(swapFromCur, 'From');
+	// 	fetchData(swapToCur, 'To');
+	// 	// if (swapFromCur.Symbol === 'WETH' || swapFromCur.Symbol === 'ETH') {
+	// 	// 	setFrom1UsdPrice(ethUSDPrice)
+	// 	// } else {
+	// 	// }
+
+	// 	// if (swapToCur.Symbol === 'WETH' || swapToCur.Symbol === 'ETH') {
+	// 	// 	setTo1UsdPrice(ethUSDPrice)
+	// 	// } else {
+	// 	// 	// fetchData(swapFromCur.address, swapFromCur.decimals, 'From');
+	// 	// }
+
+
+	// }, [swapFromCur,
+	// 	swapToCur,
+	// 	ethUSDPrice])
+
 
 	useEffect(() => {
 		if (approveHook.isSuccess) {
@@ -215,6 +308,7 @@ const Swap = () => {
 				Symbol: 'CR5',
 				address: goerliCrypto5IndexToken,
 				factoryAddress: goerliCrypto5Factory,
+				decimals: 18
 			},
 			{
 				id: 1,
@@ -223,6 +317,7 @@ const Swap = () => {
 				Symbol: 'ANFI',
 				address: goerliAnfiIndexToken,
 				factoryAddress: goerliAnfiFactory,
+				decimals: 18
 			},
 			{
 				id: 2,
@@ -231,6 +326,7 @@ const Swap = () => {
 				Symbol: 'USDC',
 				address: goerliUsdtAddress,
 				factoryAddress: '',
+				decimals: 6
 			},
 		],
 	])
@@ -244,6 +340,7 @@ const Swap = () => {
 				Symbol: 'CR5',
 				address: goerliCrypto5IndexToken,
 				factoryAddress: goerliCrypto5Factory,
+				decimals: 6
 			},
 			{
 				id: 1,
@@ -252,6 +349,7 @@ const Swap = () => {
 				Symbol: 'ANFI',
 				address: goerliAnfiIndexToken,
 				factoryAddress: goerliAnfiFactory,
+				decimals: 6
 			},
 			{
 				id: 2,
@@ -260,6 +358,7 @@ const Swap = () => {
 				Symbol: 'USDC',
 				address: goerliUsdtAddress,
 				factoryAddress: '',
+				decimals: 18
 			},
 		],
 	])
@@ -281,13 +380,14 @@ const Swap = () => {
 			const tokenSets = data.tokens
 			const coins: Coin[] = Object.keys(tokenSets).flatMap((key) => {
 				const tokenSet = tokenSets[key]
-				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any }) => ({
+				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any, decimals: any }) => ({
 					id: coin.address,
 					logo: coin.logoURI && coin.logoURI != '' ? coin.logoURI : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU',
 					name: coin.name,
 					Symbol: coin.symbol,
 					address: coin.address,
 					factoryAddress: '',
+					decimals: coin.decimals,
 				}))
 			})
 
@@ -352,6 +452,7 @@ const Swap = () => {
 		let switchReserve: Coin = swapFromCur
 		changeSwapFromCur(swapToCur)
 		changeSwapToCur(switchReserve)
+		setSecondInputValue(firstInputValue)
 	}
 
 	const formatResult = (item: Coin) => {
@@ -368,21 +469,34 @@ const Swap = () => {
 
 	const changeFirstInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e?.target?.value) {
+			const enteredValue = Number(e?.target?.value)
 			setFirstInputValue(Number(e?.target?.value))
-			setSecondInputValue(Number(e?.target?.value))
-			// console.log('input', stakeAmount)
+
 		} else {
 			setFirstInputValue(null)
 		}
 	}
 
+	useEffect(() => {
+		const fromNewPrice = Number(firstInputValue) * Number(from1UsdPrice)
+		setFromConvertedPrice(fromNewPrice)
+
+		const toNewPrice = Number(secondInputValue) * Number(to1UsdPrice)
+		setToConvertedPrice(toNewPrice)
+
+	}, [from1UsdPrice, firstInputValue, secondInputValue, to1UsdPrice])
+
+	useEffect(() => {
+		setSecondInputValue(((Number(from1UsdPrice) / Number(to1UsdPrice)) * Number(firstInputValue)).toFixed(4))
+	}, [from1UsdPrice, to1UsdPrice, firstInputValue])
+
+
 	const changeSecondInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (Number(e?.target?.value)) {
 			setSecondInputValue(Number(e?.target?.value))
-			// console.log('input', stakeAmount)
+
 		} else {
 			setSecondInputValue(null)
-			// setSecondInputValue(Number(e?.target?.value))
 		}
 	}
 
@@ -479,7 +593,7 @@ const Swap = () => {
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 							onChange={changeFirstInputValue}
-							value={firstInputValue ? (firstInputValue as number) : 0}
+							value={firstInputValue ? (Number(firstInputValue)) : 0}
 						/>
 						<div
 							className="w-2/5 lg:w-1/3 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
@@ -495,11 +609,11 @@ const Swap = () => {
 						</div>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
-						<span className="text-sm interMedium text-gray-500">≈ $28.4</span>
+						<span className="text-sm interMedium text-gray-500">≈ ${(fromConvertedPrice).toFixed(4)}</span>
 						<div className="flex flex-row items-center justify-end gap-1">
 							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
 							<span className="text-sm interMedium text-gray-500">
-								{(Number(fromTokenBalance.data) / 1e18).toFixed(2)} {swapFromCur.Symbol}
+								{Number(fromTokenBalance.data) ? (Number(fromTokenBalance.data) / 1e18).toFixed(2) : '0.00'} {swapFromCur.Symbol}
 							</span>
 						</div>
 					</div>
@@ -525,7 +639,7 @@ const Swap = () => {
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 							onChange={changeSecondInputValue}
-							value={secondInputValue ? (secondInputValue as number) : 0}
+							value={secondInputValue ? (Number(secondInputValue).toFixed(4)) : 0}
 						/>
 						<div
 							className="w-2/5 lg:w-1/3 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
@@ -541,11 +655,12 @@ const Swap = () => {
 						</div>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
-						<span className="text-sm interMedium text-gray-500">≈ $28.4</span>
+						{/* <span className="text-sm interMedium text-gray-500">≈ ${(toConvertedPrice).toFixed(4)}</span> */}
+						<span className="text-sm interMedium text-gray-500">≈ ${FormatToViewNumber({value: toConvertedPrice, returnType:'string'})}</span>
 						<div className="flex flex-row items-center justify-end gap-1">
 							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
 							<span className="text-sm interMedium text-gray-500">
-								{(Number(toTokenBalance.data) / 1e18).toFixed(2)} {swapToCur.Symbol}
+								{Number(toTokenBalance.data) ? (Number(toTokenBalance.data) / 1e18).toFixed(2) : '0.00'} {swapToCur.Symbol}
 							</span>
 						</div>
 					</div>
@@ -657,10 +772,10 @@ const Swap = () => {
 												key={index}
 												className="flex flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-100"
 												onClick={() => {
-													console.log(item.address)
+													//console.log(item.address)
 													// Error gets trigerred here when we chose a token from LiFi API, we get the error of wrong address
-													//changeSwapFromCur(item)
-													//closeFromCurrencyModal();
+													changeSwapFromCur(item)
+													closeFromCurrencyModal();
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-3">

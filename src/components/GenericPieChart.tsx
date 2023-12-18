@@ -9,8 +9,7 @@ interface PieChart3DProps {
 }
 
 const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
-
-  const {selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex} = useTradePageStore();
+  const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
@@ -33,25 +32,24 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
 
       let startAngle = 0;
 
-      // Create slices
-      data.forEach((sliceData, index) => {
-        const percentage = parseFloat(sliceData.percentage);
-        const endAngle = startAngle + (percentage / 100) * Math.PI * 2;
+      // Check if both categories have 0% values
+      const totalPercentage = data.reduce((total, sliceData) => total + parseFloat(sliceData.percentage), 0);
 
-        const shape = new THREE.Shape();
-        shape.moveTo(0, 0);
-        shape.arc(0, 0, radius, startAngle, endAngle, false);
-        shape.lineTo(0, 0);
+      if (totalPercentage === 0) {
+        // If both categories have 0% values, create a default gray slice
+        const defaultShape = new THREE.Shape();
+        defaultShape.moveTo(0, 0);
+        defaultShape.absarc(0, 0, radius, 0, Math.PI * 2, false);
 
-        const extrudeSettings = {
+        const defaultExtrudeSettings = {
           depth: height,
           bevelEnabled: false,
         };
 
-        const geometry = new ExtrudeGeometry(shape, extrudeSettings);
-        const material = new THREE.MeshPhongMaterial({
-          color: new THREE.Color(sliceData.color),
-          emissive: new THREE.Color('#ffffff'),
+        const defaultGeometry = new ExtrudeGeometry(defaultShape, defaultExtrudeSettings);
+        const defaultMaterial = new THREE.MeshPhongMaterial({
+          color: new THREE.Color('#FFFFFF'), // Use a gray color or any other color you prefer
+          emissive: new THREE.Color('#999999'),
           flatShading: true,
           side: THREE.DoubleSide,
           transparent: true,
@@ -60,22 +58,50 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
           specular: new THREE.Color(0x000000),
         });
 
-        // Set initial emissive intensity to 0
-        material.emissiveIntensity = 0;
+        const defaultSlice = new THREE.Mesh(defaultGeometry, defaultMaterial);
+        scene.add(defaultSlice);
+      } else {
+        // Create slices based on the provided data
+        data.forEach((sliceData, index) => {
+          const percentage = parseFloat(sliceData.percentage);
+          const endAngle = startAngle + (percentage / 100) * Math.PI * 2;
 
-        const slice = new THREE.Mesh(geometry, material);
+          const shape = new THREE.Shape();
+          shape.moveTo(0, 0);
+          shape.arc(0, 0, radius, startAngle, endAngle, false);
+          shape.lineTo(0, 0);
 
-        slice.userData = {
-          label: sliceData.label,
-          percentage: sliceData.percentage,
-          color: sliceData.color,
-        };
+          const extrudeSettings = {
+            depth: height,
+            bevelEnabled: false,
+          };
 
-        slices.push(slice);
-        scene.add(slice);
+          const geometry = new ExtrudeGeometry(shape, extrudeSettings);
+          const material = new THREE.MeshPhongMaterial({
+            color: new THREE.Color(sliceData.color),
+            emissive: new THREE.Color('#ffffff'),
+            flatShading: true,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.9,
+            shininess: 0,
+            specular: new THREE.Color(0x000000),
+          });
 
-        startAngle = endAngle;
-      });
+          const slice = new THREE.Mesh(geometry, material);
+
+          slice.userData = {
+            label: sliceData.label,
+            percentage: sliceData.percentage,
+            color: sliceData.color,
+          };
+
+          slices.push(slice);
+          scene.add(slice);
+
+          startAngle = endAngle;
+        });
+      }
 
       camera.position.set(0, -8, 13);
       camera.lookAt(0, 0, 0);
@@ -106,9 +132,8 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
           if (newIntersectedSlice.material instanceof THREE.MeshPhongMaterial) {
             newIntersectedSlice.material.emissiveIntensity = 0.02;
 
-            //setSelectedPortfolioChartSliceIndex(newIntersectedSlice.userData.label)
             console.log('Hovered Slice Data:', newIntersectedSlice.userData.label);
-            
+
             // Tween the scale
             new TWEEN.Tween(newIntersectedSlice.scale)
               .to({ x: 1.1, y: 1.1, z: 1.1 }, 200)

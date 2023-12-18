@@ -25,7 +25,7 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 		case 'success':
 			toast.success(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2' },
+				style: { color: '#F2F2F2', fontWeight: '900' },
 				icon: <UseAnimations animation={checkmark} wrapperStyle={{
           width: 'fit-content',
         }} strokeColor="#5E869B" size={40} />,
@@ -34,7 +34,7 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 		case 'info':
 			toast.info(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2' },
+				style: { color: '#F2F2F2', fontWeight: '900' },
 				icon: <UseAnimations animation={help} wrapperStyle={{
           width: 'fit-content',
         }} strokeColor="#5E869B" size={40} />,
@@ -43,7 +43,7 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 		case 'warning':
 			toast.warning(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2' },
+				style: { color: '#F2F2F2', fontWeight: '900' },
 				icon: <UseAnimations animation={alertTriangle} wrapperStyle={{
           width: 'fit-content',
         }} strokeColor="#5E869B" size={40} />,
@@ -52,7 +52,7 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 		case 'error':
 			toast.error(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2' },
+				style: { color: '#F2F2F2', fontWeight: '900' },
 				icon: <UseAnimations animation={alertCircle} wrapperStyle={{
           width: 'fit-content',
         }} strokeColor="#5E869B" size={40} />,
@@ -61,7 +61,7 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 		case 'loading':
 			toast.loading(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2' },
+				style: { color: '#F2F2F2', fontWeight: '900' },
 				icon: (
 					<UseAnimations
 						animation={loading}
@@ -75,6 +75,6 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 			})
 			break
 		default:
-			toast(message, { bodyStyle: { backgroundColor: '#2A2A2A' }, style: { color: '#F2F2F2' }, progressClassName: 'custom-toast-progress' })
+			toast(message, { bodyStyle: { backgroundColor: '#2A2A2A' }, style: { color: '#F2F2F2', fontWeight: '900' }, progressClassName: 'custom-toast-progress' })
 	}
 }

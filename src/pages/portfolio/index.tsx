@@ -10,19 +10,22 @@ import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
 import { useEffect, useState } from 'react'
 import useTradePageStore from '@/store/tradeStore'
+import TipsBox2 from '@/components/TipsBox'
 
 import bg from '@assets/images/3d hologram.png'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
+import { MdOutlineDangerous } from 'react-icons/md'
 const Chart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
-import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, anfiPoolAddress, zeroAddress } from '@/constants/contractAddresses'
-import { indexTokenAbi } from '@/constants/abi'
+import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, goerlianfiPoolAddress, zeroAddress, goerliAnfiV2IndexToken, goerliUsdtAddress, goerliLinkAddress, goerliLinkWethPoolAddress } from '@/constants/contractAddresses'
+import { indexTokenAbi,indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { GenericToast } from '@/components/GenericToast'
+import AccountRebalancingSection from '@/components/AccountRebalancingSection'
 import GenericModal from '@/components/GenericModal'
 import QRCode from 'react-qr-code'
 
@@ -33,18 +36,24 @@ import Head from 'next/head'
 import { useQuery } from '@apollo/client'
 import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
-
+import UseAnimations from 'react-useanimations'
+import arrowDown from 'react-useanimations/lib/arrowDown'
+import bg2 from '@assets/images/bg-2.png'
+import HistoryTable from '@/components/TradeTable'
+import TopHolders from '@/components/topHolders'
 
 export default function Portfolio() {
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
 
-	const anfiTokenContract = useContract(goerliAnfiIndexToken, indexTokenAbi)
+	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
+	// const crypto5TokenContract = useContract(goerliLinkAddress, indexTokenV2Abi)
 
 	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
 	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
+	// const crypto5TokenBalance = 
 
 	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
@@ -52,31 +61,31 @@ export default function Portfolio() {
 	const {
 		loading: loadingAnfi,
 		error: errorAnfi,
-		data: dataAnfi
+		data: dataAnfi,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: anfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90) },
-	});
+		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+	})
 
 	const {
 		loading: loadingCR5,
 		error: errorCR5,
-		data: dataCR5
+		data: dataCR5,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: crypto5PoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90) },
-	});
+		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+	})
 
 	// let anfiPrice = 0; let cr5Price = 0;
 	// let anfi24hChng = 0; let cr524hChng = 0;
-	const [chartArr, setChartArr] = useState<{ time: number, value: number }[]>([]);
-	const [indexPrices, setIndexPrices] = useState({anfi: 0, cr5:0});
-	const [index24hChange, setIndex24hChange] = useState({anfi: 0, cr5:0});
-	
-	if ((!loadingCR5 && !loadingAnfi) && (!errorCR5 && !errorAnfi) && chartArr.length == 0 && !!anfiPercent && !!crypto5Percent) {
-		const chartData: { time: number, value: number }[] = [];
+	const [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
+	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
+	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
+
+	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
+		const chartData: { time: number; value: number }[] = []
 		const ANFIData = dataAnfi.poolDayDatas
 		const CR5Data = dataCR5.poolDayDatas
 		for (let i = 0; i <= ANFIData.length - 1; i++) {
-			const chartObj: { time: number, value: number } = { time: 0, value: 0 };
+			const chartObj: { time: number; value: number } = { time: 0, value: 0 }
 			const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i].token0Price)
 			chartObj.time = ANFIData[i].date
 			chartObj.value = value
@@ -84,24 +93,23 @@ export default function Portfolio() {
 		}
 		setChartArr(chartData)
 
-		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price  * num(anfiTokenBalance.data)
+		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price * num(anfiTokenBalance.data)
 		const cr5Price = CR5Data[CR5Data.length - 1].token0Price * num(crypto5TokenBalance.data)
-		setIndexPrices({anfi: anfiPrice, cr5:cr5Price})
+		setIndexPrices({ anfi: anfiPrice, cr5: cr5Price })
 
 		const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price
 		const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price
-		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100;
+		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
 
 		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price
 		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price
-		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100;
-		setIndex24hChange({anfi:anfi24hChng, cr5:cr524hChng})
-
+		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
+		setIndex24hChange({ anfi: anfi24hChng, cr5: cr524hChng })
 	}
 
 	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value
 	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value
-	const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100;
+	const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
 
 	const [isCopied, setIsCopied] = useState(false)
 
@@ -124,19 +132,19 @@ export default function Portfolio() {
 	const data = [
 		['Asset', 'Percentage'],
 		['CRYPTO 5', crypto5Percent ? crypto5Percent : 0],
-		['ANFI', anfiPercent ? anfiPercent:0],
+		['ANFI', anfiPercent ? anfiPercent : 0],
 		['FIAT', anfiPercent ? 0 : 5],
 	]
 
 	const PieChartdata = [
 		{
 			label: 'ANFI',
-			percentage: !!anfiPercent ? anfiPercent + '%' : '37%',
+			percentage: !!anfiPercent ? anfiPercent + '%' : '0%',
 			color: '#133140',
 		},
 		{
 			label: 'CRYPTO 5',
-			percentage: !!crypto5Percent ? crypto5Percent + '%' : '63%',
+			percentage: !!crypto5Percent ? crypto5Percent + '%' : '0%',
 			color: '#b5e7ff',
 		},
 	]
@@ -215,51 +223,56 @@ export default function Portfolio() {
 		{ time: '2018-03-29', value: 0 },
 		{ time: '2018-04-02', value: 0 },
 		{ time: '2018-04-03', value: 0 },
-		{ time: '2018-04-04', value: 0 }
+		{ time: '2018-04-04', value: 0 },
 	]
 
 	return (
 		<>
 			<Head>
 				<title>Nexlabs.io, welcome!</title>
-				<meta name="description" content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view." />
+				<meta
+					name="description"
+					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."
+				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
-						<div className="w-full h-fit px-20 py-5 flex flex-row items-center justify-between mb-10">
+						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? <GenericAvatar walletAddress={address}></GenericAvatar> : <div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
 									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
-									<div className="flex flex-row items-center justify-start gap-2">
+									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
 										<h5 className="text-base text-gray-500 interMedium">
 											{address && address != '' ? address.toString().slice(0, 7) + '...' + address.toString().substring(address.toString().length - 7) : 'Connect your wallet'}
 										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-2 rounded-full">
-											<CopyToClipboard text={address as string} onCopy={handleCopy}>
-												<BiCopy color="#000000" size={15} />
-											</CopyToClipboard>
-										</div>
-										<div
-											className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full cursor-pointer"
-											onClick={() => {
-												if (address) setQRModalVisible(true)
-												else
-													GenericToast({
-														type: 'error',
-														message: `Please connect your wallet!`,
-													})
-											}}
-										>
-											<PiQrCodeDuotone color="#000000" size={15} />
+										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
+											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
+												<CopyToClipboard text={address as string} onCopy={handleCopy}>
+													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+												</CopyToClipboard>
+											</div>
+											<div
+												className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full cursor-pointer"
+												onClick={() => {
+													if (address) setQRModalVisible(true)
+													else
+														GenericToast({
+															type: 'error',
+															message: `Please connect your wallet!`,
+														})
+												}}
+											>
+												<PiQrCodeDuotone color="#000000" size={15} className="scale-150 xl:scale-100" />
+											</div>
 										</div>
 									</div>
-									<div className=" bg-colorSeven-500 w-fit h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
+									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
 										<BsCalendar4 color="#FFFFFF" size={15} />
-										<h5 className="text-base text-whiteText-500 montrealBold">45 Days</h5>
+										<h5 className="text-base text-whiteText-500 montrealBold">Joined 45 days ago</h5>
 									</div>
 								</div>
 							</div>
@@ -267,11 +280,14 @@ export default function Portfolio() {
 							<Chart data={complexData} />
 						</div> */}
 							<div className="lg:flex w-2/5 "></div>
-							<div className="lg:flex w-1/5 justify-end mr-0 relative" id="smallChartBox">
+							<div className="lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
 								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-								<Chart data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData} change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange:0} />
+								<Chart
+									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
+									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
+								/>
 							</div>
 						</div>
 						<div className="w-full h-fit px-2 lg:px-20">
@@ -284,26 +300,31 @@ export default function Portfolio() {
 
 								<TabPanel>
 									<div className="w-full h-fit p-4">
-										<div className="px-4 py-8 grid grid-cols-8 grid-rows-auto lg:rid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
+										<div className="px-4 py-8 grid grid-cols-2 grid-rows-auto xl:grid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
 												<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
-													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}
-													$ {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(2) : 0}
+													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(4) : 0}
 												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.anfi.toFixed(2): 0}%</h5>
+												<h5 className="interMedium italic text-base text-white titleShadow">
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.anfi.toFixed(2) : 0}%
+												</h5>
 											</div>
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
 												<h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
-													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}
-													$ {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
+													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}${' '}
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
 												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2): 0}%</h5>
+												<h5 className="interMedium italic text-base text-white titleShadow">
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? '0.00' : '0.00'}%
+													{/* {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2) : 0}% */}
+												</h5>
 											</div>
 										</div>
 									</div>
@@ -312,11 +333,11 @@ export default function Portfolio() {
 						</div>
 						<div className="w-full h-fit px-5 lg:px-20 mt-10">
 							<h5 className="interBlack text-3xl text-blackText-500">Assets Distribution</h5>
-							<div className="w-full h-full flex flex-row items-start justify-around">
-								<div className="w-1/2 h-fit flex flex-row items-center justify-start mb-20">
+							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
+								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-start xl:mb-20">
 									<GenericPieChart data={PieChartdata} />
 								</div>
-								<div className="w-1/2 h-full flex flex-col items-start justify-start gap-4 pt-28">
+								<div className="w-11/12 xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
 									<h5 className="interBold text-xl text-blackText-500">
 										Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
 									</h5>
@@ -324,16 +345,16 @@ export default function Portfolio() {
 										<h5 className="interBold text-xl text-blackText-500">
 											Smart contract : <span className="interMedium">0xJN820...093NEZ</span>
 										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full">
-											<BiCopy color="#000000" size={12} />
+										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
+											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
 										</div>
 									</div>
 									<div className="flex flex-row items-center justify-between gap-2">
 										<h5 className="interBold text-xl text-blackText-500">
 											Last transaction : <span className="interMedium">0xJN820...093NEZ</span>
 										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-2 rounded-full">
-											<BiCopy color="#000000" size={12} />
+										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
+											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
 										</div>
 									</div>
 									<div className="flex flex-row items-center justify-between gap-2">
@@ -354,8 +375,63 @@ export default function Portfolio() {
 						</div>
 					</section>
 				</section>
-
-				<div className="w-fit h-fit pt-16">
+				<section className="w-full h-fit mb-10 px-10">
+					<h5 className="interBlack text-3xl text-blackText-500 mb-4">Transactions History</h5>
+					{address ? (
+						<HistoryTable />
+					) : (
+						<div className="w-full h-fit bg-gray-300 border border-gray-200 rounded-2xl py-20 flex flex-row items-center justify-center gap-1">
+							<MdOutlineDangerous color="#F23645" size={30} />
+							<h5 className="interMedium text-base text-gray-500">No connected wallet</h5>
+						</div>
+					)}
+				</section>
+				<section className="w-full h-fit mb-10 px-10">
+				<h5 className="interBlack text-3xl text-blackText-500 mb-4">Top Holders</h5>
+					<TopHolders />
+				</section>
+				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-10">
+					<div id="d1" className="w-full xl:w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
+						<div className="w-screen h-full flex flex-col items-center justify-center">
+							<div className=" relative w-full h-full overflow-hidden bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
+								<div className="absolute overflow-hidden w-full h-full -right-10 xl:top-0 xl:right-0 z-10 flex flex-row items-center justify-normal">
+									<div className="hidden xl:block w-1/2 h-full"></div>
+									<div
+										className="w-full xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
+										style={{
+											backgroundImage: `url('${bg2.src}')`,
+										}}
+									></div>
+								</div>
+								<div className="relative top-0 left-0 z-40 bg-transparent">
+									<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Automatic Rebalancing Mechanism</h5>
+									<p className="interMedium text-whiteText-500 text-base w-full xl:w-3/5 mb-3">
+										Our automatic rebalancing system ensures the proper distribution of assets in the index by regularly monitoring market capitalizations, triggering adjustments as needed
+										to align with the desired weights, and executing trades accordingly.
+									</p>
+									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
+										<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
+											<span>Learn More</span>
+											<UseAnimations
+												animation={arrowDown}
+												wrapperStyle={{
+													width: 'fit-content',
+												}}
+												strokeColor="#5E869B"
+												size={40}
+												className=" -rotate-90"
+											/>
+										</button>
+									</Link>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="d2" className="w-full xl:w-3/12 flex flex-row items-center justify-center flex-grow-0 max-h-full">
+						<TipsBox2></TipsBox2>
+					</div>
+				</section>
+				<div className="w-fit h-fit xl:pt-16">
 					<Footer />
 				</div>
 				<GenericModal

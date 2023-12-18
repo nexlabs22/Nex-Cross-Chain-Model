@@ -8,6 +8,7 @@ const customDarkTheme = darkTheme({
       modalBg: "#5E869B",
       // accentButtonBg: "#91AC9A",
       primaryButtonBg: "#5E869B",
+      
       // secondaryButtonBg: "#91AC9A",
       connectedButtonBg: "#5E869B",
       dropdownBg: "#5E869B",

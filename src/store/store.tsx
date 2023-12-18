@@ -43,6 +43,7 @@ interface chartDataStoreType {
 	selectDuration: (duration: number) => void
 	fetchIndexData: ({ tableName, index }: { tableName: string, index: string }) => void
 	removeIndex: (indexName: string) => void
+	clearChartData: () => void
 	setANFIWeightage: () => void
 	setDayChangePer: () => void
 }
@@ -60,7 +61,6 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	selectedDuration: 360,
 	selectDuration: (duration: number) => set((state) => ({ selectedDuration: duration })),
 	fetchIndexData: async ({ tableName, index }) => {
-		console.log(index)
 		try {
 			set({ loading: true, error: null })
 			const response = await fetch(
@@ -103,6 +103,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			return ({ chartData: activeIndex })
 		})
 	},
+	clearChartData: async()=> set({chartData:{}}),
 	setANFIWeightage: async () => {
 		const bitcoinMC_URL = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max`;
 		const goldMC_URL = `https://api.coingecko.com/api/v3/coins/tether-gold/market_chart?vs_currency=usd&days=max`;
@@ -140,23 +141,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			`/api/get24Change`
 		)
 		const data = await response.json()
-		// const cryptoChange:{ [key: string]: { usd_24h_change: number } } = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true').then((res)=>res.data);
-
-
-		// Object.entries(cryptoChange).forEach(([key, value]: [string, { usd_24h_change: number }]) => {
-		// 	data[key] = value.usd_24h_change;
-		//   });
-
-		// console.log(cryptoChange)
-		console.log(data)
-
-		set((state) => {
-			// console.log(state.chartData);
-			return {
-				dayChange: data.changes
-			}
-		})
-
+		set({ dayChange: data.changes })
 	},
 }))
 

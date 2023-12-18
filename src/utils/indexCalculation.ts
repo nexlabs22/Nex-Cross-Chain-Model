@@ -52,11 +52,12 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 		data.map((closeData) => {
 			const closeDate = closeData.time;
 			const oneYearAgoDate = subYears(new Date(closeDate * 1000), 1); // Subtract one year
-			const openDate = dateToEpoch(oneYearAgoDate)
+			const calculatedOpenDate = dateToEpoch(oneYearAgoDate)
 
 			const openData = data.find((item) => {
-				return isSameDay(item.time, openDate);
+				return isSameDay(item.time, calculatedOpenDate) || item.time >= calculatedOpenDate;
 			});
+			const openDate = openData ? openData.time : calculatedOpenDate
 			interface PriceChange {
 				bitcoin: number; // Calculated Bitcoin price change
 				gold: number; // Calculated Gold price change

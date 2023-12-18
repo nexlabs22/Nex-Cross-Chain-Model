@@ -31,7 +31,7 @@ const GenericTooltip: React.FC<TooltipProps> = ({ children, color, content }) =>
   const tooltipContent = content ? ReactDOMServer.renderToStaticMarkup(content) : '';
 
   return (
-    <div className="flex flex-row items-center justify-center w-fit h-fit" data-tooltip-id={id} data-tooltip-html={tooltipContent}>
+    <div className=" flex flex-row items-center justify-center w-fit h-fit" data-tooltip-id={id} data-tooltip-html={tooltipContent}>
       {children}
       <Tooltip id={id} opacity={1} style={{
 		backgroundColor: color,

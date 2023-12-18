@@ -1,4 +1,4 @@
-import getPreviousWeekday from '@/utils/general';
+import { getPreviousWeekday } from '@/utils/general';
 import yahooFinance from 'yahoo-finance';
 import { NextResponse } from 'next/server';
 import axios from 'axios';
