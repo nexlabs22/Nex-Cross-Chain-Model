@@ -14,7 +14,8 @@ function HistoryTable() {
 	const positionHistory = GetPositionsHistory2()
 
 	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([]);
-	const path = window.location.pathname
+	// const path = window.location.pathname
+	const path = typeof window !== 'undefined' ? window.location.pathname : '/';
 	useEffect(() => {
 		const allowedSymbols = ['ANFI', 'CRYPTO5'];
 		const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter(symbol => allowedSymbols.includes(symbol));
