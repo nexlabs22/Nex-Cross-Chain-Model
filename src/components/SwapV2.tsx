@@ -47,7 +47,7 @@ import cookingAnimation from '@assets/lottie/cooking.json'
 
 import { GenericToast } from './GenericToast'
 import { parseEther } from 'viem'
-import { FormatToViewNumber, num } from '@/hooks/math'
+import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
 import { ethers } from 'ethers'
 import { LiaWalletSolid } from 'react-icons/lia'
 import Switch from 'react-switch'
@@ -128,7 +128,6 @@ const SwapV2 = () => {
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
 
 	useEffect(() => {
-		// console.log("ERRR")
 		async function getIssuanceOutput() {
 			try {
 				if (swapToCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
@@ -591,6 +590,14 @@ const SwapV2 = () => {
 	}
 
 	const changeFirstInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const enteredValue = e?.target?.value 
+		if(Number(enteredValue) != 0 && Number(enteredValue) < 0.00001){
+			GenericToast({
+				type: 'error',
+				message: 'Please enter the input value greater than this value...',
+			})
+			return 
+		}
 		setFirstInputValue(e?.target?.value)
 	}
 
@@ -863,7 +870,7 @@ const SwapV2 = () => {
 						</div>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
-						<span className="text-sm interMedium text-gray-500">≈ ${fromConvertedPrice ? fromConvertedPrice.toFixed(4) : '0.00'}</span>
+						<span className="text-sm interMedium text-gray-500">≈ ${fromConvertedPrice ? FormatToViewNumber({value:fromConvertedPrice, returnType: 'string'}) : '0.00'}</span>
 						<div className="flex flex-row items-center justify-end gap-1">
 							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
 							<span className="text-sm interMedium text-gray-500">
@@ -893,7 +900,7 @@ const SwapV2 = () => {
 							placeholder="0.00"
 							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
 							onChange={changeSecondInputValue}
-							value={secondInputValue && secondInputValue !== 'NaN' ? Number(secondInputValue).toFixed(6) : 0}
+							value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue))  : 0}
 						/>
 						<div
 							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"

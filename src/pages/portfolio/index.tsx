@@ -49,11 +49,9 @@ export default function Portfolio() {
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
-	// const crypto5TokenContract = useContract(goerliLinkAddress, indexTokenV2Abi)
 
 	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
 	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
-	// const crypto5TokenBalance = 
 
 	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
@@ -307,10 +305,10 @@ export default function Portfolio() {
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(4) : 0}
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? FormatToViewNumber({value:indexPrices.anfi,returnType:'string'}) : '0.00'}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.anfi.toFixed(2) : 0}%
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.anfi,returnType:'string'}) : '0.00'}%
 												</h5>
 											</div>
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
@@ -319,7 +317,7 @@ export default function Portfolio() {
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
+													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? FormatToViewNumber({value:indexPrices.cr5,returnType:'string'}) : '0.00'}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
 													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? '0.00' : '0.00'}%
