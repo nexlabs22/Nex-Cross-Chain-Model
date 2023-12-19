@@ -44,7 +44,7 @@ export function GetPositionsHistory2() {
 		const client = createPublicClient({
 			chain: goerli,
 			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			transport: http(`https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1`),
+			transport: http(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`),
 		})
 
 		const positions0: Positions[] = []

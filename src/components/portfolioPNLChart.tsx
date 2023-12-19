@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { createChart, DeepPartial, LayoutOptions, LineStyle, LineWidth, PriceScaleMode, PriceScaleOptions, TimeScaleOptions } from 'lightweight-charts'
 import { useAddress } from '@thirdweb-dev/react';
+import { FormatToViewNumber } from '@/hooks/math';
 
 interface GradientAreaChartProps {
 	data: { time: string | number | Date; value: number }[],
@@ -98,8 +99,8 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) =
 		<div className="absolute top-0 left-0 w-full h-full z-50">
 		  {/* Content with text goes here */}
 		  <div className="py-4 px-[10%] flex flex-col items-end justify-start h-full w-full">
-			<h1 className='text-2xl text-blackText-500 titleShadow interBold'>${data[data.length-1]?.value.toFixed(4)}</h1>
-			<h1 className={`text-lg ${address && change>0?'text-nexLightGreen-500':address && change<0?'text-nexLightRed-500':'text-black'} titleShadow interMedium`}>{address?change?change.toFixed(2):0:0}%</h1>
+			<h1 className='text-2xl text-blackText-500 titleShadow interBold'>${data[data.length-1]?.value ? FormatToViewNumber({value: data[data.length-1]?.value ,returnType: 'string'}): '0.00' }</h1>
+			<h1 className={`text-lg ${address && change>0?'text-nexLightGreen-500':address && change<0?'text-nexLightRed-500':'text-black'} titleShadow interMedium`}>{address?change?FormatToViewNumber({value:change,returnType:'string'}):'0.00':'0.00'}%</h1>
 			{/* Add any other text or components as needed */}
 		  </div>
 		</div>
