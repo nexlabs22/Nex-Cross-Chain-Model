@@ -131,7 +131,7 @@ const SwapV2 = () => {
 		async function getIssuanceOutput() {
 			try {
 				if (swapToCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
-					const provider = new ethers.providers.JsonRpcBatchProvider('https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1')
+					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
 					const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
 					const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
 					setSecondInputValue(num(output).toString())
@@ -147,7 +147,7 @@ const SwapV2 = () => {
 		async function getRedemptionOutput() {
 			try {
 				if (swapFromCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
-					const provider = new ethers.providers.JsonRpcBatchProvider('https://eth-goerli.g.alchemy.com/v2/LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1')
+					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
 					const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
 					const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
 					setSecondInputValue(num(output).toString())

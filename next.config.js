@@ -11,6 +11,9 @@ const nextConfig = {
   
       return config
     },
+    env: {
+      ALCHEMY_KEY: process.env.ALCHEMY_KEY,
+    },
     reactStrictMode: true,
     swcMinify: true,
     transpilePackages: ['@lifi/widget', '@lifi/wallet-management'],
