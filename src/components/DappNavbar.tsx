@@ -45,7 +45,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({lightVersion}) => {
 					<Link href={'/'}>
 						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Dashboard</h5>
 					</Link>
-					<Link href={'/explore'}>
+					<Link href={'/trade'}>
 						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Trade</h5>
 					</Link>
 					<Link href={'/convert'}>
@@ -76,7 +76,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({lightVersion}) => {
 							}}>
 								<h5 className="interBold text-3xl text-blackText-500">Dashboard</h5>
 							</Link>
-							<Link href={'/explore'} onClick={() => {
+							<Link href={'/trade'} onClick={() => {
 								setOpenMobileMenu(false)
 							}}>
 								<h5 className="interBold text-3xl text-blackText-500">Trade</h5>
