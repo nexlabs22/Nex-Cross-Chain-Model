@@ -99,6 +99,7 @@ const SwapV2 = () => {
 		nftImage,
 		setNftImage,
 		setTradeTableReload,
+		setEthPriceInUsd
 	} = useTradePageStore()
 
 	const OurIndexCoins = ['ANFI', 'CRYPTO5'];
@@ -174,6 +175,7 @@ const SwapV2 = () => {
 				.catch((err) => console.log(err))
 
 			setEthPrice(wethPriceinUsd)
+			setEthPriceInUsd(wethPriceinUsd)
 		}
 
 		getUSDWethPrice()

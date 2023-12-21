@@ -6,8 +6,8 @@ export function formatAsString(value: number): string {
 	let result
 	const checkValue = Math.abs(value)
 
-	if (checkValue < 0.001) result = checkValue.toFixed(Math.max(0, -Math.floor(Math.log10(checkValue)) || 0) + 1)
-	else if (checkValue < 100) result = checkValue.toFixed(3)
+	if (checkValue < 0.0001) result = checkValue.toFixed(Math.max(0, -Math.floor(Math.log10(checkValue)) || 0) )
+	else if (checkValue < 100) result = checkValue.toFixed(2)
 	else if (checkValue <= 1000) result = checkValue.toFixed(2)
 	else if (checkValue < 10_000) result = checkValue.toLocaleString('en-US')
 	else if (checkValue < 1_000_000) result = (checkValue / 1000).toFixed(2) + 'K'

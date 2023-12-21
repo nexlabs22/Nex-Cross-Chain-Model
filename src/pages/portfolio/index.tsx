@@ -301,27 +301,26 @@ export default function Portfolio() {
 										<div className="px-4 py-8 grid grid-cols-2 grid-rows-auto xl:grid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
-												<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
+												{/* <h5 className="interBlack text-xl text-white titleShadow">ANFI</h5> */}
+												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(anfiTokenBalance.data).toFixed(2): '0.00'} ANFI </h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
-													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? FormatToViewNumber({value:indexPrices.anfi,returnType:'string'}) : '0.00'}
+													{address && (num(anfiTokenBalance.data) > 0 ) && indexPrices.anfi ? FormatToViewNumber({value:indexPrices.anfi,returnType:'string'}) : '0.00'}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.anfi,returnType:'string'}) : '0.00'}%
+													{address && (num(anfiTokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.anfi,returnType:'string'}) : '0.00'}%
 												</h5>
 											</div>
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
-												<h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5>
+												{/* <h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5> */}
+												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(crypto5TokenBalance.data).toFixed(2): '0.00'} CRYPTO5 </h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
-													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? FormatToViewNumber({value:indexPrices.cr5,returnType:'string'}) : '0.00'}
+													{address && (num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? FormatToViewNumber({value:indexPrices.cr5,returnType:'string'}) : '0.00'}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? '0.00' : '0.00'}%
-													{/* {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2) : 0}% */}
+													{address && (num(crypto5TokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.cr5,returnType:'string'}) : '0.00'}%
 												</h5>
 											</div>
 										</div>

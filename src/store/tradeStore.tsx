@@ -65,6 +65,9 @@ type TradePageStore = {
 
 	tradeTableReload: boolean
 	setTradeTableReload: (input: boolean)=> void
+
+	ethPriceInUsd: number
+	setEthPriceInUsd: (input: number)=> void
 }
 
 const useTradePageStore = create<TradePageStore>()((set) => ({
@@ -128,6 +131,9 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 	
 	tradeTableReload: false,
 	setTradeTableReload: (input: boolean) => set({ tradeTableReload: input }),
+
+	ethPriceInUsd: 0,
+	setEthPriceInUsd: (input: number) => set({ ethPriceInUsd: input }),
 }))
 
 export default useTradePageStore
