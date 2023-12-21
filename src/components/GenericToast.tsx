@@ -1,17 +1,17 @@
-import UseAnimations from 'react-useanimations'
 
-// Animated Icons :
-import alertCircle from 'react-useanimations/lib/alertCircle'
-import alertTriangle from 'react-useanimations/lib/alertTriangle'
-import checkmark from 'react-useanimations/lib/checkmark'
-import help from 'react-useanimations/lib/help'
-import loading from 'react-useanimations/lib/loading'
 
 import { BiErrorCircle, BiLoader } from 'react-icons/bi'
+import { TiWarningOutline } from "react-icons/ti";
+
 import { BsCheckCircleFill } from 'react-icons/bs'
 import { AiOutlineWarning, AiOutlineInfoCircle } from 'react-icons/ai'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { RiLoader2Line } from 'react-icons/ri'
+import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
+import { VscError } from "react-icons/vsc";
+
+import { GoInfo } from 'react-icons/go'
 
 type ToastType = 'success' | 'info' | 'warning' | 'error' | 'loading'
 
@@ -26,36 +26,28 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 			toast.success(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
 				style: { color: '#F2F2F2', fontWeight: '900' },
-				icon: <UseAnimations animation={checkmark} wrapperStyle={{
-          width: 'fit-content',
-        }} strokeColor="#5E869B" size={40} />,
+				icon: <IoIosCheckmarkCircleOutline size={20} color="#5E869B"/>,
 			})
 			break
 		case 'info':
 			toast.info(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
 				style: { color: '#F2F2F2', fontWeight: '900' },
-				icon: <UseAnimations animation={help} wrapperStyle={{
-          width: 'fit-content',
-        }} strokeColor="#5E869B" size={40} />,
+				icon: <GoInfo size={20} color="#5E869B"/>,
 			})
 			break
 		case 'warning':
 			toast.warning(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
 				style: { color: '#F2F2F2', fontWeight: '900' },
-				icon: <UseAnimations animation={alertTriangle} wrapperStyle={{
-          width: 'fit-content',
-        }} strokeColor="#5E869B" size={40} />,
+				icon: <TiWarningOutline size={20} color="#5E869B"/>,
 			})
 			break
 		case 'error':
 			toast.error(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
 				style: { color: '#F2F2F2', fontWeight: '900' },
-				icon: <UseAnimations animation={alertCircle} wrapperStyle={{
-          width: 'fit-content',
-        }} strokeColor="#5E869B" size={40} />,
+				icon: <VscError size={20} color="#5E869B"/>,
 			})
 			break
 		case 'loading':
@@ -63,14 +55,8 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
 				style: { color: '#F2F2F2', fontWeight: '900' },
 				icon: (
-					<UseAnimations
-						animation={loading}
-						wrapperStyle={{
-							width: 'fit-content',
-						}}
-						strokeColor="#5E869B"
-						size={30}
-					/>
+					
+					<RiLoader2Line size={20} color="#5E869B"/>
 				),
 			})
 			break

@@ -1,7 +1,7 @@
 import Image from "next/image";
-import arrowDown from "react-useanimations/lib/arrowDown";
+
 import bg2 from "@assets/images/bg-2.png";
-import UseAnimations from "react-useanimations";
+import { GoArrowRight } from "react-icons/go";
 
 const AccountRebalancingSection = () => {
   return (
@@ -27,15 +27,7 @@ const AccountRebalancingSection = () => {
           </p>
           <button className="interBold flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl bg-gradient-to-tr from-white to-[#E7E7E7] active:translate-y-[1px] active:shadow-black px-4 py-1 text-base text-blackText-500 shadow">
             <span>Learn More</span>
-            <UseAnimations
-              animation={arrowDown}
-              wrapperStyle={{
-                width: "fit-content",
-              }}
-              strokeColor="#5E869B"
-              size={40}
-              className=" -rotate-90"
-            />
+            <GoArrowRight color="#6F97AB" size={30} />
           </button>
         </div>
       </div>

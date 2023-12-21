@@ -26,7 +26,10 @@ import { useEffect } from 'react'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import etherscanLogo from '@assets/images/etherscan.png'
+import managment from '@assets/images/managment.png'
 import GenericTooltip from '../GenericTooltip'
+
+import { GoArrowRight } from 'react-icons/go'
 
 const TopIndexData = () => {
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
@@ -209,7 +212,7 @@ const TopIndexData = () => {
 			<div className="flex w-full flex-row items-center justify-center">
 				<div className="h-[1px] w-full bg-blackText-500/20"></div>
 			</div>
-			<div className="hidden my-8 lg:flex flex-row items-center justify-between gap-24">
+			<div className="hidden my-2 lg:flex flex-row items-center justify-between gap-24">
 				<div className="flex w-2/6 flex-row items-center justify-between">
 					<div>
 						<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
@@ -275,39 +278,56 @@ const TopIndexData = () => {
 						<h5 className="interMedium text-base text-colorSeven-500">+${defaultIndexObject?.chg24h}</h5>
 					</div>
 				</div>
-				<div className="w-4/6">
-					<div className="mb-5 flex w-full flex-row items-center justify-start gap-1">
-						<div className="mr-5 flex flex-row items-center justify-between">
-							<CiGlobe color="#9CAAC6" size={20} />
-							<h5 className="interExtraBold ml-2 text-base text-gray-400">Token address</h5>
+				<div className="w-4/6 flex flex-row items-center justify-between">
+					<div className="h-fit w-1/3">
+						<div className="mb-5 flex w-full flex-row items-center justify-start gap-1">
+							<div className="mr-5 flex flex-row items-center justify-between">
+								<CiGlobe color="#9CAAC6" size={20} />
+								<h5 className="interExtraBold ml-2 text-base text-gray-400">Token address</h5>
+							</div>
+							<div className="flex flex-row items-center justify-between">
+								<h5 className="interMedium mr-2 text-base text-colorSeven-500">null</h5>
+								<GenericAddressTooltip color="#5E869B" address="0x18C41549ee05F893B5eA6ede6f8dccC1a9C16f44">
+									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
+								</GenericAddressTooltip>
+							</div>
 						</div>
-						<div className="flex flex-row items-center justify-between">
-							<h5 className="interMedium mr-2 text-base text-colorSeven-500">null</h5>
-							<GenericAddressTooltip color="#5E869B" address="0x18C41549ee05F893B5eA6ede6f8dccC1a9C16f44">
-								<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
-							</GenericAddressTooltip>
+						<div className="flex w-full flex-row items-center justify-start">
+							<div className="mr-5 flex flex-row items-center justify-between">
+								<CiStreamOn color="#9CAAC6" size={20} />
+								<h5 className="interExtraBold ml-2 text-base text-gray-400">Managment fee</h5>
+							</div>
+							<div className="flex flex-row items-center justify-between gap-1">
+								<h5 className="interMedium text-base text-blackText-500">{defaultIndexObject?.managementFee}%</h5>
+								<GenericTooltip
+									color="#5E869B"
+									content={
+										<div>
+											<p className=" text-whiteText-500 text-sm interBold mb-1">Management Fees:</p>
+											<p className=" text-whiteText-500 text-sm interMedium">
+												the percentage difference in a cryptocurrency{"'"}s price over the past day, reflecting recent price performance.
+											</p>
+										</div>
+									}
+								>
+									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
+								</GenericTooltip>
+							</div>
 						</div>
 					</div>
-					<div className="flex w-full flex-row items-center justify-start">
-						<div className="mr-5 flex flex-row items-center justify-between">
-							<CiStreamOn color="#9CAAC6" size={20} />
-							<h5 className="interExtraBold ml-2 text-base text-gray-400">Managment fee</h5>
-						</div>
-						<div className="flex flex-row items-center justify-between gap-1">
-							<h5 className="interMedium text-base text-blackText-500">{defaultIndexObject?.managementFee}%</h5>
-							<GenericTooltip
-								color="#5E869B"
-								content={
-									<div>
-										<p className=" text-whiteText-500 text-sm interBold mb-1">Management Fees:</p>
-										<p className=" text-whiteText-500 text-sm interMedium">
-											the percentage difference in a cryptocurrency{"'"}s price over the past day, reflecting recent price performance.
-										</p>
-									</div>
-								}
-							>
-								<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
-							</GenericTooltip>
+					<div className="flex-grow p-2 flex flex-row items-center justify-end">
+						<div className="w-2/3 relative overflow-hidden h-28 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 rounded-2xl">
+							<Image src={managment} alt="managment section" className="absolute z-10 -right-32 -bottom-32 scale-50"></Image>
+							<div className="absolute h-full top-0 left-0 w-4/5 z-50 flex flex-col items-start justify-start p-4">
+								<h5 className="interBold text-whiteText-500 titleShadow text-2xl mb-3">Nexlabs Fees</h5>
+								
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/fee-structure'}>
+									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
+										<span>Learn More</span>
+										<GoArrowRight color="#6F97AB" size={30} />
+									</button>
+								</Link>
+							</div>
 						</div>
 					</div>
 				</div>

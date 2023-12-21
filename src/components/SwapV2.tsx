@@ -1110,7 +1110,9 @@ const SwapV2 = () => {
 				}}
 			>
 				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
-					<Lottie
+					{
+						/*
+						<Lottie
 						animationData={cookingAnimation}
 						loop={true}
 						style={{
@@ -1119,6 +1121,8 @@ const SwapV2 = () => {
 							overflow: 'hidden',
 						}}
 					/>
+						*/
+					}
 					<h5 className="InterBold text-blackText-500 text-2xl text-center w-full -mt-6">THE MAGIC IS HAPPENING...</h5>
 					<h5 className="interMedium text-blackText-500 text-lg text-center w-9/12 my-2">
 						Your NFT receipt is being minted. Once it is ready, you can find it the {'"'}Receipts{'"'} section.

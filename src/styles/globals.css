@@ -347,7 +347,7 @@ body {
 
 .Toastify__toast-icon svg{
 
-  scale: 2 !important;
+  scale: 1.4 !important;
 }
 
 .Toastify__toast-icon svg:nth-child(2){

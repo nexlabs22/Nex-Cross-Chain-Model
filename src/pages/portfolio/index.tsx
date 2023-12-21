@@ -36,11 +36,11 @@ import Head from 'next/head'
 import { useQuery } from '@apollo/client'
 import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
-import UseAnimations from 'react-useanimations'
-import arrowDown from 'react-useanimations/lib/arrowDown'
+
 import bg2 from '@assets/images/bg-2.png'
 import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
+import { GoArrowRight } from 'react-icons/go'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -410,15 +410,7 @@ export default function Portfolio() {
 									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
 										<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
 											<span>Learn More</span>
-											<UseAnimations
-												animation={arrowDown}
-												wrapperStyle={{
-													width: 'fit-content',
-												}}
-												strokeColor="#5E869B"
-												size={40}
-												className=" -rotate-90"
-											/>
+											<GoArrowRight color="#FFFFFF" size={30} />
 										</button>
 									</Link>
 								</div>
