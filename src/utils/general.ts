@@ -15,4 +15,8 @@ function SwapNumbers(a: number, b: number): [number, number] {
     return [a, b];
 }
 
-export { getPreviousWeekday, SwapNumbers};
+function reduceAddress(address:string){
+    return address.toString().slice(0, 7) + '...' + address.toString().substring(address.toString().length - 7)
+}
+
+export { getPreviousWeekday, SwapNumbers, reduceAddress};

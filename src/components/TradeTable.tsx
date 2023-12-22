@@ -1,25 +1,42 @@
-import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory } from '@/constants/contractAddresses'
+import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, tokenAddresses } from '@/constants/contractAddresses'
+import { tokens } from '@/constants/goerliTokens'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
-import { FormatToViewNumber } from '@/hooks/math'
+import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 import useTradePageStore from '@/store/tradeStore'
 import { Positions } from '@/types/tradeTableTypes'
+import convertToUSD from '@/utils/convertToUsd'
 import React, { useEffect, useState } from 'react'
 
 function HistoryTable() {
-
-
-	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage, setTradeTableReload, tradeTableReload } =
-		useTradePageStore()
+	const {
+		isFromCurrencyModalOpen,
+		isToCurrencyModalOpen,
+		setFromCurrencyModalOpen,
+		setToCurrencyModalOpen,
+		changeSwapFromCur,
+		changeSwapToCur,
+		swapFromCur,
+		swapToCur,
+		nftImage,
+		setNftImage,
+		setTradeTableReload,
+		tradeTableReload,
+		setEthPriceInUsd,
+		ethPriceInUsd,
+	} = useTradePageStore()
 	const positionHistory = GetPositionsHistory2()
 
-	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([]);
-	// const path = window.location.pathname
-	const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
+	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 	useEffect(() => {
-		const allowedSymbols = ['ANFI', 'CRYPTO5'];
-		const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter(symbol => allowedSymbols.includes(symbol));
-		if (path === '/trade') {
+		setEthPriceInUsd()
+	}, [])
+
+	useEffect(() => {
+		const allowedSymbols = ['ANFI', 'CRYPTO5']
+		const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
+		if (path === '/tradeIndex') {
 			const data = positionHistory.data.filter((data) => {
 				return activeTicker.includes(data.indexName)
 			})
@@ -29,16 +46,12 @@ function HistoryTable() {
 		}
 	}, [path, positionHistory.data, swapFromCur.Symbol, swapToCur.Symbol])
 
-
 	useEffect(() => {
-
 		if (tradeTableReload) {
 			positionHistory.reload()
-			setTradeTableReload(false);
+			setTradeTableReload(false)
 		}
 	}, [positionHistory, setTradeTableReload, tradeTableReload])
-
-
 
 	const roundNumber = (number: number) => {
 		return FormatToViewNumber({ value: number, returnType: 'number' })
@@ -50,28 +63,38 @@ function HistoryTable() {
 		const localTime = date.toLocaleTimeString('en-US')
 		return localDate + ' ' + localTime
 	}
+	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
+
+	useEffect(() => {
+		async function getUsdPrices() {
+			tokens.map(async (token) => {
+				if (token.symbol !== 'CRYPTO5' && ethPriceInUsd > 0) {
+					const obj = usdPrices
+					obj[token.address] = await convertToUSD(token.address, ethPriceInUsd, false) // false as for testnet tokens
+					if (Object.keys(usdPrices).length === tokens.length - 1) {
+						setUsdPrices(obj)
+					}
+				}
+			})
+		}
+
+		getUsdPrices()
+	}, [ethPriceInUsd])
+
 
 	return (
-		<div className='w-full h-full '>
-			<div className='h-full'>
+		<div className="w-full h-full ">
+			<div className="h-full">
 				<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] w-full table-fixed border-collapse overflow-hidden rounded-xl border shadow-xl dark:border-[#161C10] md:min-w-[700px]">
-					<thead className='sticky top-0'>
+					<thead className="sticky top-0">
 						<tr className="text-md interBold bg-colorSeven-500 text-whiteText-500">
-							<th
-								onClick={() => {
-									// console.log('HGJF', positionHistory.data)
-								}}
-								className="px-4 py-2 text-left"
-							>
+							<th className="px-4 py-2 text-left" >
 								Time
 							</th>
 							<th className="px-4 py-2 text-left">Pair</th>
 							<th className="px-4 py-2 text-left">Side</th>
 							<th className="px-4 py-2 text-left">Input Amount</th>
 							<th className="px-4 py-2 text-left">Output Amount</th>
-							{/* <th className="px-4 text-left">Fee</th> */}
-							{/* <th className="px-4 text-left">Total</th> */}
-							{/* <th className="px-4 text-left">Hash</th> */}
 						</tr>
 					</thead>
 					{/* </table>
@@ -79,7 +102,7 @@ function HistoryTable() {
 			<div className="max-h-64 overflow-y-auto">
 				<table className="w-full"> */}
 					<tbody className='overflow-y-scroll overflow-x-hidden bg-gray-200'>
-						{positionHistoryData.map((position: { timestamp: number; indexName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; side: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.PromiseLikeOfReactNode | null | undefined; inputAmount: any; outputAmount: any }, i: React.Key | null | undefined) => {
+						{positionHistoryData.map((position: { timestamp: number; tokenAddress: string ;indexName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; side: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.PromiseLikeOfReactNode | null | undefined; inputAmount: any; outputAmount: any }, i: React.Key | null | undefined) => {
 							return (
 								<>
 									<tr
@@ -103,8 +126,8 @@ function HistoryTable() {
 												{position.side}
 											</div>
 										</td>
-										<td className='px-4 text-left py-3'>{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} USD</td>
-										<td className='px-4 text-left py-3'>{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} USD</td>
+										<td className='px-4 text-left py-3'>{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} {position.side === 'Mint Request'? Object.keys(tokenAddresses).find(key => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <em>({usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]): 0} USD) </em> </td>
+										<td className='px-4 text-left py-3'>{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} {position.side === 'Burn Request'? Object.keys(tokenAddresses).find(key => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <em>({usdPrices ? formatNumber(position.outputAmount * usdPrices[position.tokenAddress]): 0} USD) </em></td>
 										{/* <td>{Number(position.amount * 1.001)} USD</td> */}
 										{/* <td className="text-left">{position.requestHash}</td> */}
 									</tr>
