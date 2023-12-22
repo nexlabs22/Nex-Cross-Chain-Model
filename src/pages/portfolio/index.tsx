@@ -40,7 +40,7 @@ import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
 import bg2 from '@assets/images/bg-2.png'
 import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
-import { GoArrowRight } from 'react-icons/go'
+import { reduceAddress } from '@/utils/general'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -245,7 +245,7 @@ export default function Portfolio() {
 									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
 									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
 										<h5 className="text-base text-gray-500 interMedium">
-											{address && address != '' ? address.toString().slice(0, 7) + '...' + address.toString().substring(address.toString().length - 7) : 'Connect your wallet'}
+											{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}
 										</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
 											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
@@ -301,27 +301,26 @@ export default function Portfolio() {
 										<div className="px-4 py-8 grid grid-cols-2 grid-rows-auto xl:grid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
-												<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
+												{/* <h5 className="interBlack text-xl text-white titleShadow">ANFI</h5> */}
+												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(anfiTokenBalance.data).toFixed(2): '0.00'} ANFI </h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
-													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? FormatToViewNumber({value:indexPrices.anfi,returnType:'string'}) : '0.00'}
+													{address && (num(anfiTokenBalance.data) > 0 ) && indexPrices.anfi ? FormatToViewNumber({value:indexPrices.anfi,returnType:'string'}) : '0.00'}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.anfi,returnType:'string'}) : '0.00'}%
+													{address && (num(anfiTokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.anfi,returnType:'string'}) : '0.00'}%
 												</h5>
 											</div>
-											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
+											<div className="w-[14vw] h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
-												<h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5>
+												{/* <h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5> */}
+												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(crypto5TokenBalance.data).toFixed(2): '0.00'} CRYPTO5 </h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
-													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
 													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? FormatToViewNumber({value:indexPrices.cr5,returnType:'string'}) : '0.00'}
+													{address && (num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? FormatToViewNumber({value:indexPrices.cr5,returnType:'string'}) : '0.00'}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? '0.00' : '0.00'}%
-													{/* {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2) : 0}% */}
+													{address && (num(crypto5TokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.cr5,returnType:'string'}) : '0.00'}%
 												</h5>
 											</div>
 										</div>

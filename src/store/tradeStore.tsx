@@ -64,7 +64,10 @@ type TradePageStore = {
 	setSelectedTradingProduct: (product: string) => void
 
 	tradeTableReload: boolean
-	setTradeTableReload: (input: boolean)=> void
+	setTradeTableReload: (input: boolean) => void
+
+	ethPriceInUsd: number
+	setEthPriceInUsd: () => void
 }
 
 const useTradePageStore = create<TradePageStore>()((set) => ({
@@ -128,6 +131,16 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 	
 	tradeTableReload: false,
 	setTradeTableReload: (input: boolean) => set({ tradeTableReload: input }),
+
+	ethPriceInUsd: 0,
+	setEthPriceInUsd: async () => {
+		const wethPriceinUsd = await axios
+			.get('https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd')
+			.then((res) => res.data.weth.usd)
+			.catch((err) => console.log(err))
+			console.log(wethPriceinUsd)
+		set({ ethPriceInUsd: wethPriceinUsd })
+	},
 }))
 
 export default useTradePageStore

@@ -25,3 +25,4 @@ export const goerliLinkWethPoolAddress = '0x4Cff90F02897259E1aB69FF6bbD370EA1452
 export const crypto5PoolAddress = '0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
 export const factoryAddresses =  { 'ANFI': goerliAnfiV2Factory, 'CRYPTO5': goerliCrypto5Factory }
+export const tokenAddresses:{[key:string]: string} = {'ANFI': goerliAnfiIndexToken, 'USDT': goerliUsdtAddress, 'ETH': goerliWethAddress}
