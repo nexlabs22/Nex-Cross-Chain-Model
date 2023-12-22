@@ -99,12 +99,17 @@ const SwapV2 = () => {
 		nftImage,
 		setNftImage,
 		setTradeTableReload,
-		setEthPriceInUsd
+		setEthPriceInUsd,
+		ethPriceInUsd
 	} = useTradePageStore()
 
 	const OurIndexCoins = ['ANFI', 'CRYPTO5'];
 	const address = useAddress()
 	const signer = useSigner()
+
+	useEffect(()=>{
+		setEthPriceInUsd();
+	},[])
 
 	//integration hooks
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
@@ -127,6 +132,10 @@ const SwapV2 = () => {
 	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
+
+	const curr = OurIndexCoins.includes(swapFromCur.Symbol) ? swapFromCur : swapToCur
+	const IndexContract : UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
+	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data /10000;
 
 	useEffect(() => {
 		async function getIssuanceOutput() {
@@ -165,21 +174,6 @@ const SwapV2 = () => {
 
 	const [to1UsdPrice, setTo1UsdPrice] = useState<number>()
 	const [toConvertedPrice, setToConvertedPrice] = useState<number>(0)
-	const [ethPrice, setEthPrice] = useState(0)
-
-	useEffect(() => {
-		const getUSDWethPrice = async () => {
-			const wethPriceinUsd = await axios
-				.get('https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd')
-				.then((res) => res.data.weth.usd)
-				.catch((err) => console.log(err))
-
-			setEthPrice(wethPriceinUsd)
-			setEthPriceInUsd(wethPriceinUsd)
-		}
-
-		getUSDWethPrice()
-	}, [])
 
 	useEffect(() => {
 		async function fetchData(tokenDetails: Coin, place: string) {
@@ -207,7 +201,7 @@ const SwapV2 = () => {
 				const calculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** decimal1 / 10 ** decimal0)
 				const calculatedPriceAsNumber = parseFloat(calculatedPrice.toFixed(decimal1))
 
-				const fromPriceInUSD = isRevPool ? calculatedPriceAsNumber / ethPrice : 1 / calculatedPriceAsNumber / ethPrice
+				const fromPriceInUSD = isRevPool ? calculatedPriceAsNumber / ethPriceInUsd : 1 / calculatedPriceAsNumber / ethPriceInUsd
 
 				if (place === 'From') {
 					setFrom1UsdPrice(fromPriceInUSD)
@@ -217,10 +211,10 @@ const SwapV2 = () => {
 
 
 				if (swapFromCur.Symbol === 'WETH' || swapFromCur.Symbol === 'ETH') {
-					setFrom1UsdPrice(ethPrice)
+					setFrom1UsdPrice(ethPriceInUsd)
 				}
 				if (swapToCur.Symbol === 'WETH' || swapToCur.Symbol === 'ETH') {
-					setTo1UsdPrice(ethPrice)
+					setTo1UsdPrice(ethPriceInUsd)
 				}
 
 			} catch (err) {
@@ -233,7 +227,7 @@ const SwapV2 = () => {
 		if (swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH') {
 			fetchData(swapToCur, 'To')
 		}
-	}, [swapFromCur, swapToCur, ethPrice, isMainnet])
+	}, [swapFromCur, swapToCur, ethPriceInUsd, isMainnet])
 
 	useEffect(() => {
 		if (approveHook.isSuccess) {
@@ -996,7 +990,7 @@ const SwapV2 = () => {
 						<p className="text-sm interMedium text-black/70 pb-2">Platform Fees</p>
 						<div className="flex flex-row items-center justify-start gap-2">
 							<p className="text-sm interMedium text-black/70">
-								{FormatToViewNumber({ value: Number(firstInputValue) * 0.001, returnType: 'string' })} {swapFromCur.Symbol} (0.1%)
+								{FormatToViewNumber({ value: Number(firstInputValue) * feeRate, returnType: 'string' })} {swapFromCur.Symbol} ({feeRate*100} %)
 							</p>
 							<GenericTooltip
 								color="#5E869B"

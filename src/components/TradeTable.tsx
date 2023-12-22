@@ -9,17 +9,33 @@ import convertToUSD from '@/utils/convertToUsd'
 import React, { useEffect, useState } from 'react'
 
 function HistoryTable() {
-
-
-	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage, setTradeTableReload, tradeTableReload, ethPriceInUsd } =
-		useTradePageStore()
+	const {
+		isFromCurrencyModalOpen,
+		isToCurrencyModalOpen,
+		setFromCurrencyModalOpen,
+		setToCurrencyModalOpen,
+		changeSwapFromCur,
+		changeSwapToCur,
+		swapFromCur,
+		swapToCur,
+		nftImage,
+		setNftImage,
+		setTradeTableReload,
+		tradeTableReload,
+		setEthPriceInUsd,
+		ethPriceInUsd,
+	} = useTradePageStore()
 	const positionHistory = GetPositionsHistory2()
 
-	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([]);
-	const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
+	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 	useEffect(() => {
-		const allowedSymbols = ['ANFI', 'CRYPTO5'];
-		const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter(symbol => allowedSymbols.includes(symbol));
+		setEthPriceInUsd()
+	}, [])
+
+	useEffect(() => {
+		const allowedSymbols = ['ANFI', 'CRYPTO5']
+		const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
 		if (path === '/tradeIndex') {
 			const data = positionHistory.data.filter((data) => {
 				return activeTicker.includes(data.indexName)
@@ -31,14 +47,11 @@ function HistoryTable() {
 	}, [path, positionHistory.data, swapFromCur.Symbol, swapToCur.Symbol])
 
 	useEffect(() => {
-
 		if (tradeTableReload) {
 			positionHistory.reload()
-			setTradeTableReload(false);
+			setTradeTableReload(false)
 		}
 	}, [positionHistory, setTradeTableReload, tradeTableReload])
-
-
 
 	const roundNumber = (number: number) => {
 		return FormatToViewNumber({ value: number, returnType: 'number' })
@@ -50,48 +63,38 @@ function HistoryTable() {
 		const localTime = date.toLocaleTimeString('en-US')
 		return localDate + ' ' + localTime
 	}
-	const [usdPrices, setUsdPrices] = useState<{[key:string]: number}>()
+	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
 
-	useEffect(()=>{
-		async function getUsdPrices(){
-			const prices:{[key:string]: number} = {}
-			tokens.map(async (token)=>{
-				if(token.symbol !== 'CRYPTO5' && ethPriceInUsd>0){
-					if(!prices[token.address]) prices[token.address] = await convertToUSD(token.address,ethPriceInUsd,false ) // false as for testnet tokens
+	useEffect(() => {
+		async function getUsdPrices() {
+			tokens.map(async (token) => {
+				if (token.symbol !== 'CRYPTO5' && ethPriceInUsd > 0) {
+					const obj = usdPrices
+					obj[token.address] = await convertToUSD(token.address, ethPriceInUsd, false) // false as for testnet tokens
+					if (Object.keys(usdPrices).length === tokens.length - 1) {
+						setUsdPrices(obj)
+					}
 				}
 			})
-
-			if(Object.keys(prices).length === tokens.length-1){
-				setUsdPrices(prices);
-			}
 		}
 
-		getUsdPrices();
-	},[ethPriceInUsd])
-
+		getUsdPrices()
+	}, [ethPriceInUsd])
 
 
 	return (
-		<div className='w-full h-full '>
-			<div className='h-full'>
+		<div className="w-full h-full ">
+			<div className="h-full">
 				<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] w-full table-fixed border-collapse overflow-hidden rounded-xl border shadow-xl dark:border-[#161C10] md:min-w-[700px]">
-					<thead className='sticky top-0'>
+					<thead className="sticky top-0">
 						<tr className="text-md interBold bg-colorSeven-500 text-whiteText-500">
-							<th
-								onClick={() => {
-									// console.log('HGJF', positionHistory.data)
-								}}
-								className="px-4 py-2 text-left"
-							>
+							<th className="px-4 py-2 text-left" >
 								Time
 							</th>
 							<th className="px-4 py-2 text-left">Pair</th>
 							<th className="px-4 py-2 text-left">Side</th>
 							<th className="px-4 py-2 text-left">Input Amount</th>
 							<th className="px-4 py-2 text-left">Output Amount</th>
-							{/* <th className="px-4 text-left">Fee</th> */}
-							{/* <th className="px-4 text-left">Total</th> */}
-							{/* <th className="px-4 text-left">Hash</th> */}
 						</tr>
 					</thead>
 					{/* </table>

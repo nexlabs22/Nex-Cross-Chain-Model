@@ -13,6 +13,7 @@ const nextConfig = {
     },
     env: {
       ALCHEMY_KEY: process.env.ALCHEMY_KEY,
+      CHAINBASE_KEY: process.env.CHAINBASE_KEY
     },
     reactStrictMode: true,
     swcMinify: true,
