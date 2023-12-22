@@ -16,6 +16,7 @@ import { chartDataType, lineChartDataType } from '@/store/storeTypes';
 import { comparisonIndices } from '@/constants/comparisionIndices';
 import getTooltipDate, { convertTo13DigitsTimestamp, dateToEpoch } from '@/utils/conversionFunctions';
 import useTradePageStore from '@/store/tradeStore';
+import { useRouter } from 'next/router';
 
 
 interface GradientAreaChartProps {
@@ -23,6 +24,9 @@ interface GradientAreaChartProps {
 }
 
 const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
+	const router = useRouter();
+	const { index: selectedTradingProduct} = router.query;
+	// const { selectedTradingProduct } = useTradePageStore()
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
 
@@ -32,7 +36,6 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const maxValue = Math.max(...data.map((point) => point.value))
 	const num = Object.keys(chartData).length
 	const { defaultIndex } = useLandingPageStore()
-	const { selectedTradingProduct } = useTradePageStore()
 	const { selectedDuration } = useChartDataStore()
 
 	useEffect(() => {
@@ -131,9 +134,9 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			};
 
 			const location = window.location.pathname
-			const ourIndexName = location === '/trade' ? selectedTradingProduct : defaultIndex;
+			const ourIndexName = location === '/tradeIndex' ? selectedTradingProduct : defaultIndex;
 
-			const selectedCompIndexes = location === '/trade' ?[]: Object.keys(chartData).filter((i) => {
+			const selectedCompIndexes = location === '/tradeIndex' ?[]: Object.keys(chartData).filter((i) => {
 				const res = comparisonIndices.find((item) => item.columnName === i)
 				if (res) return true;
 			})
@@ -145,14 +148,14 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			let toolTipContentStatic =
 				`<div style="font-size: 14px; z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 				<Image
-				src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
+				src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src :ourIndexName === 'ANFI'? anfiLogo.src: ''}"
 					alt="tooltip logo"
 					style="width:22px;
 					   height:22px; 
 					   margin-right:5px ; 
 					   border-radius:50%;">
 				</Image>
-				${ourIndexName}
+				${ourIndexName? ourIndexName: ''}
 			</div>`
 
 			if (selectedCompIndexes.length > 0) {
@@ -189,14 +192,14 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					let toolTipContent =
 						`<div style="font-size: 14px;z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
-						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
+						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src :ourIndexName === 'ANFI'? anfiLogo.src: ''}"
 							alt="tooltip logo"
 							style="width:22px;
 							   height:22px; 
 							   margin-right:5px ; 
 							   border-radius:50%;">
 						</Image>
-						${ourIndexName}
+						${ourIndexName? ourIndexName: ''}
 					</div>`
 
 					if (selectedCompIndexes.length > 0) {
@@ -226,14 +229,14 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 						let toolTipContent =
 							`<div style="font-size: 14px;z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">	
 						<Image
-						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : anfiLogo.src}"
+						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src :ourIndexName === 'ANFI'? anfiLogo.src: ''}"
 							alt="tooltip logo"
 							style="width:22px;
 							   height:22px; 
 							   margin-right:5px ; 
 							   border-radius:50%;">
 						</Image>
-							   ${ourIndexName}: ${Math.round(100 * price) / 100}
+							   ${ourIndexName? ourIndexName:''}: ${Math.round(100 * price) / 100}
 							   </div>`
 
 						if (param.seriesData.size > 1) {
@@ -263,7 +266,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				}
 			});
 
-			if(location !== '/trade') {
+			if(location !== '/tradeIndex') {
 				Object.entries(chartData).forEach(([key, value]) => {
 					const indexDetails = comparisonIndices.find((item) => item.columnName === key);
 					if (indexDetails) {

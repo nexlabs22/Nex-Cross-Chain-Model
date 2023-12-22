@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router';
 
 // Components :
 import { Menu } from '@szhsin/react-menu'
@@ -17,7 +18,9 @@ import useTradePageStore from '@/store/tradeStore'
 import { GoTriangleDown } from 'react-icons/go'
 
 const TradeChartBox = () => {
-	const { selectedTradingProduct, defaultIndex } = useTradePageStore()
+	const router = useRouter();
+	const { index: selectedTradingProduct } = router.query;
+	// const {  defaultIndex } = useTradePageStore()
 	const { fetchIndexData, removeIndex, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data } = useChartDataStore()
 
 	useEffect(() => {
@@ -37,7 +40,7 @@ const TradeChartBox = () => {
 						<div className='flex flex-col items-start justify-start'>
 							<h5 className='interBlack text-lg text-blackText-500'>
 								{
-									defaultIndex
+									selectedTradingProduct
 								}
 							</h5>
 							<h5 className='interMedium text-sm text-nexLightGreen-500'>
