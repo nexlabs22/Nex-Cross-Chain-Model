@@ -41,6 +41,7 @@ import bg2 from '@assets/images/bg-2.png'
 import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
 import { reduceAddress } from '@/utils/general'
+import { GoArrowRight } from 'react-icons/go'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -383,10 +384,7 @@ export default function Portfolio() {
 						</div>
 					)}
 				</section>
-				<section className="w-full h-fit mb-10 px-10">
-				<h5 className="interBlack text-3xl text-blackText-500 mb-4">Top Holders</h5>
-					<TopHolders />
-				</section>
+				
 				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-10">
 					<div id="d1" className="w-full xl:w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
 						<div className="w-screen h-full flex flex-col items-center justify-center">
@@ -409,7 +407,7 @@ export default function Portfolio() {
 									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
 										<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
 											<span>Learn More</span>
-											<GoArrowRight color="#FFFFFF" size={30} />
+											<GoArrowRight color="#5E869B" size={30} />
 										</button>
 									</Link>
 								</div>

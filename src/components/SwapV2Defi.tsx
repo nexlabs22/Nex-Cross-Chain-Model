@@ -1,3 +1,5 @@
+// This is the DEFI swap component
+
 'use client' // This is a client component 👈🏽
 
 // basics :

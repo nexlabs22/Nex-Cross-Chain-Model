@@ -405,7 +405,7 @@ export default function Explore() {
 								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'}>
 									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
 										<span>Learn More</span>
-										<GoArrowRight color="#6F97AB" size={30} />
+										<GoArrowRight color="#5E869B" size={30} />
 									</button>
 								</Link>
 							</div>

@@ -19,7 +19,7 @@ import defi from '@assets/images/DeFi_1a.png'
 import hybrid from '@assets/images/hybrid.png'
 import crypto from '@assets/images/crypto.png'
 import circle from '@assets/images/circle.png'
-import { GoChevronDown } from 'react-icons/go'
+import { GoArrowRight, GoChevronDown } from 'react-icons/go'
 import bg2 from '@assets/images/bg-2.png'
 
 import Head from 'next/head'
@@ -294,7 +294,7 @@ export default function Explore() {
 															className="cursor-pointer"
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}`)
+																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
 															}}
 														></Image>
 
@@ -302,7 +302,7 @@ export default function Explore() {
 															className="interBold text-colorSeven-500 text-base cursor-pointer"
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}`)
+																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
 															}}
 														>
 															{product.name}
@@ -321,7 +321,7 @@ export default function Explore() {
 														<button
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}`)
+																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
 															}}
 															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
 														>
@@ -349,7 +349,7 @@ export default function Explore() {
 															className="cursor-pointer"
 															onClick={() => {
 																changeDefaultIndex(product.symbol.toUpperCase())
-																router.push(`/tradeIndex?index=${product.symbol}`)
+																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
 															}}
 														></Image>
 
@@ -357,7 +357,7 @@ export default function Explore() {
 															className="interBold text-colorSeven-500 text-lg cursor-pointer"
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}`)
+																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
 															}}
 														>
 															{product.name}
@@ -373,7 +373,7 @@ export default function Explore() {
 														<button
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}`)
+																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
 															}}
 															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
 														>
@@ -406,16 +406,8 @@ export default function Explore() {
 								</p>
 								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'}>
 									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-										<span>Learn More</span>
-										<UseAnimations
-											animation={arrowDown}
-											wrapperStyle={{
-												width: 'fit-content',
-											}}
-											strokeColor="#5E869B"
-											size={40}
-											className=" -rotate-90"
-										/>
+										<span>Learn More </span>
+										<GoArrowRight color="#5E869B" size={30} />
 									</button>
 								</Link>
 							</div>

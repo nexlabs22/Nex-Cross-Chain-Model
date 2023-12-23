@@ -27,7 +27,7 @@ const AccountRebalancingSection = () => {
           </p>
           <button className="interBold flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl bg-gradient-to-tr from-white to-[#E7E7E7] active:translate-y-[1px] active:shadow-black px-4 py-1 text-base text-blackText-500 shadow">
             <span>Learn More</span>
-            <GoArrowRight color="#6F97AB" size={30} />
+            <GoArrowRight color="#5E869B" size={30} />
           </button>
         </div>
       </div>

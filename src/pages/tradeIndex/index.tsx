@@ -7,14 +7,13 @@ import NFTReceiptBox from '@/components/NFTReceiptBox'
 import TipsBox from '@/components/TipsBox'
 import HistoryTable from '@/components/TradeTable'
 import useTradePageStore from '@/store/tradeStore'
-import { useRouter } from 'next/router';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { toPng, toSvg } from 'html-to-image'
 
 import captureHtmlAsImage from '@/components/capture'
 import Head from 'next/head'
-import SwapV2 from '@/components/SwapV2'
+import SwapV2 from '@/components/SwapV2Cefi'
 
 export default function Trade() {
 
