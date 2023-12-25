@@ -7,5 +7,9 @@
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
     "ethers": "^5.7.2",
     "hardhat": "^2.14.1"
+  },
+  "dependencies": {
+    "@thirdweb-dev/contracts": "^3.11.0",
+    "@uniswap/v3-periphery": "^1.4.4"
   }
 }
