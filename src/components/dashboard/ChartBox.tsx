@@ -26,6 +26,12 @@ import sandp from '@assets/images/s&p.jpeg'
 import dow from '@assets/images/dow.png'
 import nasdaq from '@assets/images/nasdaq.jpg'
 import nyse from '@assets/images/nyse.png'
+import microsoft from '@assets/images/microsoft.png'
+import paypal from '@assets/images/paypal.png'
+import asml from '@assets/images/asml.png'
+import copper from '@assets/images/copper.png'
+import lithium from '@assets/images/lithium.png'
+
 import { BsPlus } from 'react-icons/bs'
 import { BsChevronCompactRight, BsChevronCompactLeft } from 'react-icons/bs'
 import { GoTriangleDown } from 'react-icons/go'
@@ -193,6 +199,36 @@ const DashboardChartBox = () => {
 			colName: 'nyse',
 			logo: nyse.src,
 			category: 'indices',
+		},
+		{
+			name: 'Microsoft',
+			colName: 'microsoft',
+			logo: microsoft.src,
+			category: 'stocks',
+		},
+		{
+			name: 'Paypal',
+			colName: 'paypal',
+			logo: paypal.src,
+			category: 'stocks',
+		},
+		{
+			name: 'ASML',
+			colName: 'asml',
+			logo: asml.src,
+			category: 'stocks',
+		},
+		{
+			name: 'Copper',
+			colName: 'copper',
+			logo: copper.src,
+			category: 'goods',
+		},
+		{
+			name: 'Lithium',
+			colName: 'lithium',
+			logo: lithium.src,
+			category: 'goods',
 		},
 	]
 
@@ -477,6 +513,15 @@ const DashboardChartBox = () => {
 							}}
 						>
 							Cryptocurrencies
+						</h5>
+						<h5
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'stocks' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								}`}
+							onClick={() => {
+								setClassesCategory('stocks')
+							}}
+						>
+							Stocks
 						</h5>
 					</div>
 					<div className="h-full w-3/5 grid grid-cols-3 auto-rows-max justify-start items-start gap-y-5 px-3">
