@@ -48,8 +48,6 @@ const DashboardChartBox = () => {
 		setSelectedIndices([])
 	}, [defaultIndex,clearChartData])
 
-
-
 	const openClassesModal = () => {
 		setClassesModalOpen(true)
 	}
