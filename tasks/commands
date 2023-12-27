@@ -1,0 +1,6 @@
+
+
+npx hardhat send-token-and-data --source-blockchain ethereumSepolia --sender 0xC9F15403bf4e0a23B76080A307dFA3547aa8fBFE --destination-blockchain polygonMumbai --receiver 0x1e32a77Dbd774d5F9FCaF94d2aEc3e7f15C040e6 --message "Hello World" --token-address 0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05 --amount 100
+npx hardhat get-received-message-details --blockchain polygonMumbai --contract-address 0x1e32a77Dbd774d5F9FCaF94d2aEc3e7f15C040e6
+
+0x401dc7834fbfe662d0107548e4ee9f8a0983b1832cf84a587d579edce2c61563

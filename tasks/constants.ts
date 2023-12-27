@@ -41,6 +41,30 @@ export const CCIP_LnM_ADDRESSES: AddressMap = {
     [`avalancheFuji`]: `0x70F5c5C40b873EA597776DA2C21929A8282A3b35`
 }
 
+export const BasicTokenSender: AddressMap = {
+    [`ethereumSepolia`]: `0xeB08A8CA65Bc5f5dD4D54841a55bb6949fab3548`,
+    [`polygonMumbai`]: ``,
+    [`optimismGoerli`]: ``,
+    [`arbitrumTestnet`]: ``,
+    [`avalancheFuji`]: ``
+}
+
+export const BasicMessageReceiver: AddressMap = {
+    [`ethereumSepolia`]: ``,
+    [`polygonMumbai`]: `0xb33074D5b4E81bFa64763450BD69420976b75F39`,
+    [`optimismGoerli`]: ``,
+    [`arbitrumTestnet`]: ``,
+    [`avalancheFuji`]: ``
+}
+
+export const ProgrammableTokenTransfers: AddressMap = {
+    [`ethereumSepolia`]: `0xC9F15403bf4e0a23B76080A307dFA3547aa8fBFE`,
+    [`polygonMumbai`]: `0x1e32a77Dbd774d5F9FCaF94d2aEc3e7f15C040e6`,
+    [`optimismGoerli`]: ``,
+    [`arbitrumTestnet`]: ``,
+    [`avalancheFuji`]: ``
+}
+
 export const routerConfig = {
     ethereumSepolia: {
         address: `0xd0daae2231e9cb96b94c8512223533293c3693bf`,
