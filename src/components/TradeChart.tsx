@@ -43,7 +43,7 @@ const TradeChartBox = () => {
 									selectedTradingProduct
 								}
 							</h5>
-							<h5 className='interMedium text-sm text-nexLightGreen-500'>
+							<h5 className={`interMedium text-sm ${chart24hchange > 0 ? 'text-nexLightGreen-500': 'text-nexLightRed-500'}`}>
 							{chart24hchange ? chart24hchange > 0 ?  '+ ' + chart24hchange.toFixed(2) :chart24hchange.toFixed(2) : '0.00' }%
 							</h5>
 						</div>

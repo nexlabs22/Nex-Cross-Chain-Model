@@ -104,7 +104,7 @@ const DashboardChartBox = () => {
 			index: 'ANFI',
 			assetClasses: [
 				{
-					name: 'bitcoin',
+					name: 'btc',
 					colName: 'bitcoin',
 					logo: btc.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'bitcoin')?.selectionColor,
@@ -127,25 +127,25 @@ const DashboardChartBox = () => {
 			index: 'CRYPTO5',
 			assetClasses: [
 				{
-					name: 's&p',
+					name: 'GSPC',
 					colName: 'sandp',
 					logo: sandp.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'sandp')?.selectionColor,
 				},
 				{
-					name: 'dow30',
+					name: 'DJI',
 					colName: 'dow',
 					logo: dow.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'dow')?.selectionColor,
 				},
 				{
-					name: 'nasdaq',
+					name: 'IXIC',
 					colName: 'nasdaq',
 					logo: nasdaq.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'nasdaq')?.selectionColor,
 				},
 				{
-					name: 'nyse',
+					name: 'NYA ',
 					colName: 'nyse',
 					logo: nyse.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'nyse')?.selectionColor,
@@ -156,7 +156,7 @@ const DashboardChartBox = () => {
 
 	const allClasses = [
 		{
-			name: 'bitcoin',
+			name: 'BTC',
 			colName: 'bitcoin',
 			logo: btc.src,
 			category: 'cryptocurrencies',
@@ -165,47 +165,47 @@ const DashboardChartBox = () => {
 			name: 'gold',
 			colName: 'gold',
 			logo: gold.src,
-			category: 'goods',
+			category: 'commodities',
 		},
 		{
 			name: 'oil',
 			colName: 'oil',
 			logo: oil.src,
-			category: 'goods',
+			category: 'commodities',
 		},
 
 		{
-			name: 's&p',
+			name: 'GSPC',
 			colName: 'sandp',
 			logo: sandp.src,
 			category: 'indices',
 		},
 		{
-			name: 'dow30',
+			name: 'DJI',
 			colName: 'dow',
 			logo: dow.src,
 			category: 'indices',
 		},
 		{
-			name: 'nasdaq',
+			name: 'IXIC',
 			colName: 'nasdaq',
 			logo: nasdaq.src,
 			category: 'indices',
 		},
 		{
-			name: 'nyse',
+			name: 'NYA',
 			colName: 'nyse',
 			logo: nyse.src,
 			category: 'indices',
 		},
 		{
-			name: 'Microsoft',
+			name: 'MSFT',
 			colName: 'microsoft',
 			logo: microsoft.src,
 			category: 'stocks',
 		},
 		{
-			name: 'Paypal',
+			name: 'PYPL',
 			colName: 'paypal',
 			logo: paypal.src,
 			category: 'stocks',
@@ -220,13 +220,13 @@ const DashboardChartBox = () => {
 			name: 'Copper',
 			colName: 'copper',
 			logo: copper.src,
-			category: 'goods',
+			category: 'commodities',
 		},
 		{
 			name: 'Lithium',
 			colName: 'lithium',
 			logo: lithium.src,
-			category: 'goods',
+			category: 'commodities',
 		},
 	]
 
@@ -495,13 +495,13 @@ const DashboardChartBox = () => {
 							Indices
 						</h5>
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'goods' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'commodities' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
 								}`}
 							onClick={() => {
-								setClassesCategory('goods')
+								setClassesCategory('commodities')
 							}}
 						>
-							Goods
+							Commodities
 						</h5>
 						<h5
 							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'cryptocurrencies' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
