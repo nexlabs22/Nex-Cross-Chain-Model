@@ -26,6 +26,12 @@ import sandp from '@assets/images/s&p.jpeg'
 import dow from '@assets/images/dow.png'
 import nasdaq from '@assets/images/nasdaq.jpg'
 import nyse from '@assets/images/nyse.png'
+import microsoft from '@assets/images/microsoft.png'
+import paypal from '@assets/images/paypal.png'
+import asml from '@assets/images/asml.png'
+import copper from '@assets/images/copper.png'
+import lithium from '@assets/images/lithium.png'
+
 import { BsPlus } from 'react-icons/bs'
 import { BsChevronCompactRight, BsChevronCompactLeft } from 'react-icons/bs'
 import { GoTriangleDown } from 'react-icons/go'
@@ -41,8 +47,6 @@ const DashboardChartBox = () => {
 		clearChartData();
 		setSelectedIndices([])
 	}, [defaultIndex,clearChartData])
-
-
 
 	const openClassesModal = () => {
 		setClassesModalOpen(true)
@@ -100,7 +104,7 @@ const DashboardChartBox = () => {
 			index: 'ANFI',
 			assetClasses: [
 				{
-					name: 'bitcoin',
+					name: 'btc',
 					colName: 'bitcoin',
 					logo: btc.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'bitcoin')?.selectionColor,
@@ -123,25 +127,25 @@ const DashboardChartBox = () => {
 			index: 'CRYPTO5',
 			assetClasses: [
 				{
-					name: 's&p',
+					name: 'GSPC',
 					colName: 'sandp',
 					logo: sandp.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'sandp')?.selectionColor,
 				},
 				{
-					name: 'dow30',
+					name: 'DJI',
 					colName: 'dow',
 					logo: dow.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'dow')?.selectionColor,
 				},
 				{
-					name: 'nasdaq',
+					name: 'IXIC',
 					colName: 'nasdaq',
 					logo: nasdaq.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'nasdaq')?.selectionColor,
 				},
 				{
-					name: 'nyse',
+					name: 'NYA ',
 					colName: 'nyse',
 					logo: nyse.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'nyse')?.selectionColor,
@@ -152,7 +156,7 @@ const DashboardChartBox = () => {
 
 	const allClasses = [
 		{
-			name: 'bitcoin',
+			name: 'BTC',
 			colName: 'bitcoin',
 			logo: btc.src,
 			category: 'cryptocurrencies',
@@ -161,38 +165,68 @@ const DashboardChartBox = () => {
 			name: 'gold',
 			colName: 'gold',
 			logo: gold.src,
-			category: 'goods',
+			category: 'commodities',
 		},
 		{
 			name: 'oil',
 			colName: 'oil',
 			logo: oil.src,
-			category: 'goods',
+			category: 'commodities',
 		},
 
 		{
-			name: 's&p',
+			name: 'GSPC',
 			colName: 'sandp',
 			logo: sandp.src,
 			category: 'indices',
 		},
 		{
-			name: 'dow30',
+			name: 'DJI',
 			colName: 'dow',
 			logo: dow.src,
 			category: 'indices',
 		},
 		{
-			name: 'nasdaq',
+			name: 'IXIC',
 			colName: 'nasdaq',
 			logo: nasdaq.src,
 			category: 'indices',
 		},
 		{
-			name: 'nyse',
+			name: 'NYA',
 			colName: 'nyse',
 			logo: nyse.src,
 			category: 'indices',
+		},
+		{
+			name: 'MSFT',
+			colName: 'microsoft',
+			logo: microsoft.src,
+			category: 'stocks',
+		},
+		{
+			name: 'PYPL',
+			colName: 'paypal',
+			logo: paypal.src,
+			category: 'stocks',
+		},
+		{
+			name: 'ASML',
+			colName: 'asml',
+			logo: asml.src,
+			category: 'stocks',
+		},
+		{
+			name: 'Copper',
+			colName: 'copper',
+			logo: copper.src,
+			category: 'commodities',
+		},
+		{
+			name: 'Lithium',
+			colName: 'lithium',
+			logo: lithium.src,
+			category: 'commodities',
 		},
 	]
 
@@ -461,13 +495,13 @@ const DashboardChartBox = () => {
 							Indices
 						</h5>
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'goods' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'commodities' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
 								}`}
 							onClick={() => {
-								setClassesCategory('goods')
+								setClassesCategory('commodities')
 							}}
 						>
-							Goods
+							Commodities
 						</h5>
 						<h5
 							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'cryptocurrencies' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
@@ -477,6 +511,15 @@ const DashboardChartBox = () => {
 							}}
 						>
 							Cryptocurrencies
+						</h5>
+						<h5
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'stocks' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								}`}
+							onClick={() => {
+								setClassesCategory('stocks')
+							}}
+						>
+							Stocks
 						</h5>
 					</div>
 					<div className="h-full w-3/5 grid grid-cols-3 auto-rows-max justify-start items-start gap-y-5 px-3">

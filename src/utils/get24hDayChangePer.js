@@ -25,7 +25,6 @@ export default async function get24hDayChangePer() {
             });
 
             const historicalData = quotes[symbol];
-            console.log(historicalData)
 
             if (historicalData) {
                 const prices = historicalData.map(entry => entry.close);
