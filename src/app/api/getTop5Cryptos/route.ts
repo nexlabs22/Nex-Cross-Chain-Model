@@ -18,8 +18,8 @@ export async function GET() {
         });
 
         return NextResponse.json({ data: dataToReturn }, { status: 200 })
-    } catch (err) {
-        return NextResponse.json({ message: 'Error in fetching' }, { status: 400 })
+    } catch (error) {
+        return NextResponse.json({ error }, { status: 400 })
     }finally{
         await client.end();
     }
