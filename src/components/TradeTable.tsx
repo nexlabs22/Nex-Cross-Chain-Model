@@ -80,7 +80,18 @@ function HistoryTable() {
 
 		getUsdPrices()
 	}, [ethPriceInUsd])
-
+	
+	const dataToShow: { timestamp: number; tokenAddress: string; indexName: string; side: string; inputAmount: number; outputAmount: number }[] = Array.from(
+		{ length: Math.max(5, positionHistoryData.length) },
+		(_, index) => positionHistoryData[index] || {
+			timestamp: 0,
+			indexName: '',
+			inputAmount: 0,
+			outputAmount: 0,
+			tokenAddress: '',
+			side: ''
+		}
+		);
 
 	return (
 		<div className="w-full h-full ">
@@ -101,41 +112,84 @@ function HistoryTable() {
 			</div>
 			<div className="max-h-64 overflow-y-auto">
 				<table className="w-full"> */}
-					<tbody className='overflow-y-scroll overflow-x-hidden bg-gray-200'>
-						{positionHistoryData.map((position: { timestamp: number; tokenAddress: string ;indexName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; side: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.PromiseLikeOfReactNode | null | undefined; inputAmount: any; outputAmount: any }, i: React.Key | null | undefined) => {
-							return (
-								<>
-									<tr
-										key={i}
-										// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
-										className="text-gray-700 interMedium text-base border-b border-blackText-500"
-									>
-										<td className='px-4 text-left py-3'>{convertTime(position?.timestamp)}</td>
+					<tbody className="overflow-y-scroll overflow-x-hidden bg-gray-200">
+						{dataToShow.map(
+							(
+								position: {
+									timestamp: number | null
+									tokenAddress: string | null
+									indexName:
+										| string
+										| number
+										| boolean
+										| React.ReactElement<any, string | React.JSXElementConstructor<any>>
+										| Iterable<React.ReactNode>
+										| React.ReactPortal
+										| React.PromiseLikeOfReactNode
+										| null
+										| undefined
+									side:
+										| string
+										| number
+										| boolean
+										| React.ReactElement<any, string | React.JSXElementConstructor<any>>
+										| Iterable<React.ReactNode>
+										| React.PromiseLikeOfReactNode
+										| null
+										| undefined
+									inputAmount: number | null
+									outputAmount: number | null
+								},
+								i: React.Key | null | undefined
+							) => {
+								return (
+									<>
+										<tr
+											key={i}
+											// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
+											className="text-gray-700 interMedium text-base border-b border-blackText-500"
+										>
+											<td className={`px-4 text-left py-3 ${position.timestamp?'':'text-[#E5E7EB]'}`}>{position.timestamp ? convertTime(position.timestamp) : '-'}</td>
 
-										{/* <td>{swapToCur.Symbol}</td> */}
-										<td className='px-4 text-left py-3'>
-											{
-												position?.indexName
-											}
-										</td>
-										<td className='px-4 text-left py-3'>
-											<div
-												className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize interBold titleShadow ${position.side === 'Mint Request' ? ' bg-nexLightGreen-500 text-whiteText-500' : 'bg-nexLightRed-500 text-whiteText-500'
-													} flex flex-row items-center justify-center`}
-											>
-												{position.side}
-											</div>
-										</td>
-										<td className='px-4 text-left py-3'>{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} {position.side === 'Mint Request'? Object.keys(tokenAddresses).find(key => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <em>({usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]): 0} USD) </em> </td>
-										<td className='px-4 text-left py-3'>{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} {position.side === 'Burn Request'? Object.keys(tokenAddresses).find(key => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <em>({usdPrices ? formatNumber(position.outputAmount * usdPrices[position.tokenAddress]): 0} USD) </em></td>
-										{/* <td>{Number(position.amount * 1.001)} USD</td> */}
-										{/* <td className="text-left">{position.requestHash}</td> */}
-									</tr>
-
-								</>
-
-							)
-						})}
+											{/* <td>{swapToCur.Symbol}</td> */}
+											<td className={`px-4 text-left py-3 ${position.indexName?'':'text-[#E5E7EB]'}`}>{position.indexName ? position.indexName : '-'}</td>
+											<td className="px-4 text-left py-3">
+												<div
+													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side? 'interBold titleShadow' : 'text-[#E5E7EB]'}  
+													${ position.side === 'Mint Request' ? 'bg-nexLightGreen-500 text-whiteText-500' :position.side === 'Burn Request' ? 'bg-nexLightRed-500 text-whiteText-500':'bg-transparent'} flex flex-row items-center justify-center`}
+												>
+													{position.side ? position.side : '-'}
+												</div>
+											</td>
+											<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '':'text-[#E5E7EB]'}`}>
+												{position.inputAmount && position.tokenAddress ? (
+													<>
+														{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
+														{position.side === 'Mint Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
+														<em>(${usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]) : 0}) </em>{' '}
+													</>
+												) : (
+													'-'
+												)}
+											</td>
+											<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress ?'':'text-[#E5E7EB]' }`}>
+												{position.outputAmount && position.tokenAddress ? (
+													<>
+														{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
+														{position.side === 'Burn Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
+														<em>(${usdPrices ? formatNumber(position.outputAmount * usdPrices[position.tokenAddress]) : 0} ) </em>
+													</>
+												) : (
+													'-'
+												)}
+											</td>
+											{/* <td>{Number(position.amount * 1.001)} USD</td> */}
+											{/* <td className="text-left">{position.requestHash}</td> */}
+										</tr>
+									</>
+								)
+							}
+						)}
 					</tbody>
 				</table>
 			</div>

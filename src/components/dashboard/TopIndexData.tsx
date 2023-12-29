@@ -28,6 +28,9 @@ import cr5Logo from '@assets/images/cr5.png'
 import etherscanLogo from '@assets/images/etherscan.png'
 import managment from '@assets/images/managment.png'
 import GenericTooltip from '../GenericTooltip'
+import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken } from '@/constants/contractAddresses'
+import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
+import { indexTokenV2Abi } from '@/constants/abi'
 
 import { GoArrowRight } from 'react-icons/go'
 
@@ -56,7 +59,7 @@ const TopIndexData = () => {
 			mktCap: '0',
 			mktPrice: 0,
 			chg24h: '0',
-			tokenAddress: '0xF17A...9caE8D',
+			tokenAddress: goerliAnfiV2IndexToken,
 			managementFee: '1.00',
 			underlyingAssets: [
 				{
@@ -88,7 +91,7 @@ const TopIndexData = () => {
 			mktCap: '3.29M',
 			mktPrice: 824.18,
 			chg24h: '12891',
-			tokenAddress: '0xA29B...9caE8D',
+			tokenAddress: goerliCrypto5IndexToken,
 			managementFee: '1.00',
 			underlyingAssets: [
 				{
@@ -138,6 +141,10 @@ const TopIndexData = () => {
 
 	const defaultIndexObject = IndicesWithDetails.find((o) => o.symbol === defaultIndex)
 	const othertIndexObject = IndicesWithDetails.find((o) => o.symbol != defaultIndex)
+
+	const IndexContract : UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
+	const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data /1e18;
+	if(defaultIndexObject) defaultIndexObject.managementFee = feeRate.toFixed(2);
 
 	return (
 		<section className="px-2 h-fit lg:px-10 py-6 xl:py-16">
