@@ -12,9 +12,14 @@ export async function GET() {
 
         const dataToReturn:{[key:string]: number} = {timestamp: Number(result.timestamp)};
 
+        let sumOfMarketCap = 0
+        cryptoArray.forEach((pair:string)=> {
+            sumOfMarketCap += Number(pair.split(':')[1]);
+        });
+
         cryptoArray.forEach((pair:string)=> {
             const [cryptoName, marketCap] = pair.split(':');
-            dataToReturn[cryptoName] = Number(marketCap);
+            dataToReturn[cryptoName] = Number(marketCap)/sumOfMarketCap;
         });
 
         return NextResponse.json({ data: dataToReturn }, { status: 200 })
