@@ -15,6 +15,7 @@ bun dev
 ```
 
 To generate a production build
+
 ```
 yarn build
 ```
@@ -41,3 +42,16 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 push to origin master
+
+PWA notes:
+https://www.mridul.tech/tools/manifest-generator
+Variables lookup:
+https://developer.mozilla.org/en-US/docs/Web/Manifest/display
+Install best pwa package:
+https://www.npmjs.com/package/@ducanh2912/next-pwa
+npm i @ducanh2912/next-pwa && npm i -D webpack -> incompatible with our old nextjs version due to other dependencies.
+"start_url": "app.nexlabs.io",
+https://www.youtube.com/watch?v=ARNN_zmrwcw&t=256s
+create maskable icon: https://maskable.app/editor
+optional: diasable pwa in local environment:
+disable: process.env.NODE_ENV === 'development' in next.config.js

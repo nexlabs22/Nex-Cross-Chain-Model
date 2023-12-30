@@ -20,8 +20,18 @@ const Chart = dynamic(() => import('@/components/portfolioPNLChart'), { loading:
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
-import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, goerlianfiPoolAddress, zeroAddress, goerliAnfiV2IndexToken, goerliUsdtAddress, goerliLinkAddress, goerliLinkWethPoolAddress } from '@/constants/contractAddresses'
-import { indexTokenAbi,indexTokenV2Abi } from '@/constants/abi'
+import {
+	goerliAnfiIndexToken,
+	goerliCrypto5IndexToken,
+	crypto5PoolAddress,
+	goerlianfiPoolAddress,
+	zeroAddress,
+	goerliAnfiV2IndexToken,
+	goerliUsdtAddress,
+	goerliLinkAddress,
+	goerliLinkWethPoolAddress,
+} from '@/constants/contractAddresses'
+import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { GenericToast } from '@/components/GenericToast'
@@ -228,7 +238,7 @@ export default function Portfolio() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Portfolio</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."
@@ -245,9 +255,7 @@ export default function Portfolio() {
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
 									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
 									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
-										<h5 className="text-base text-gray-500 interMedium">
-											{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}
-										</h5>
+										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
 											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
 												<CopyToClipboard text={address as string} onCopy={handleCopy}>
@@ -303,25 +311,25 @@ export default function Portfolio() {
 											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
 												{/* <h5 className="interBlack text-xl text-white titleShadow">ANFI</h5> */}
-												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(anfiTokenBalance.data).toFixed(2): '0.00'} ANFI </h5>
+												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(anfiTokenBalance.data).toFixed(2) : '0.00'} ANFI </h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 ) && indexPrices.anfi ? FormatToViewNumber({value:indexPrices.anfi,returnType:'string'}) : '0.00'}
+													{address && num(anfiTokenBalance.data) > 0 && indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : '0.00'}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.anfi,returnType:'string'}) : '0.00'}%
+													{address && num(anfiTokenBalance.data) > 0 ? FormatToViewNumber({ value: index24hChange.anfi, returnType: 'string' }) : '0.00'}%
 												</h5>
 											</div>
 											<div className="w-[14vw] h-fit px-4 py-2 flex flex-col items-center justify-center">
 												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
 												{/* <h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5> */}
-												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(crypto5TokenBalance.data).toFixed(2): '0.00'} CRYPTO5 </h5>
+												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(crypto5TokenBalance.data).toFixed(2) : '0.00'} CRYPTO5 </h5>
 												<h5 className="interBold text-2xl text-white titleShadow mb-2">
 													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? FormatToViewNumber({value:indexPrices.cr5,returnType:'string'}) : '0.00'}
+													{address && num(crypto5TokenBalance.data) > 0 && indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : '0.00'}
 												</h5>
 												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(crypto5TokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.cr5,returnType:'string'}) : '0.00'}%
+													{address && num(crypto5TokenBalance.data) > 0 ? FormatToViewNumber({ value: index24hChange.cr5, returnType: 'string' }) : '0.00'}%
 												</h5>
 											</div>
 										</div>
@@ -385,7 +393,7 @@ export default function Portfolio() {
 					)}
 				</section>
 				<section className="w-full h-fit mb-10 px-10">
-				<h5 className="interBlack text-3xl text-blackText-500 mb-4">Top Holders</h5>
+					<h5 className="interBlack text-3xl text-blackText-500 mb-4">Top Holders</h5>
 					<TopHolders />
 				</section>
 				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-10">
