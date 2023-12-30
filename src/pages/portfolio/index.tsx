@@ -11,17 +11,29 @@ import GenericAvatar from '@/components/GenericAvatar'
 import { useEffect, useState } from 'react'
 import useTradePageStore from '@/store/tradeStore'
 import TipsBox2 from '@/components/TipsBox'
+import ProgressBar from '@ramonak/react-progress-bar'
 
 import bg from '@assets/images/3d hologram.png'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
+import btc from '@assets/images/btc.png'
 import { MdOutlineDangerous } from 'react-icons/md'
 const Chart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
-import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, goerlianfiPoolAddress, zeroAddress, goerliAnfiV2IndexToken, goerliUsdtAddress, goerliLinkAddress, goerliLinkWethPoolAddress } from '@/constants/contractAddresses'
-import { indexTokenAbi,indexTokenV2Abi } from '@/constants/abi'
+import {
+	goerliAnfiIndexToken,
+	goerliCrypto5IndexToken,
+	crypto5PoolAddress,
+	goerlianfiPoolAddress,
+	zeroAddress,
+	goerliAnfiV2IndexToken,
+	goerliUsdtAddress,
+	goerliLinkAddress,
+	goerliLinkWethPoolAddress,
+} from '@/constants/contractAddresses'
+import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { GenericToast } from '@/components/GenericToast'
@@ -42,6 +54,8 @@ import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
 import { reduceAddress } from '@/utils/general'
 import { GoArrowRight } from 'react-icons/go'
+import { IoMdArrowUp } from 'react-icons/io'
+import NewHistoryTable from '@/components/NewHistoryTable'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -228,7 +242,7 @@ export default function Portfolio() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Nexlabs.io</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."
@@ -245,9 +259,7 @@ export default function Portfolio() {
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
 									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
 									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
-										<h5 className="text-base text-gray-500 interMedium">
-											{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}
-										</h5>
+										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
 											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
 												<CopyToClipboard text={address as string} onCopy={handleCopy}>
@@ -289,48 +301,126 @@ export default function Portfolio() {
 								/>
 							</div>
 						</div>
-						<div className="w-full h-fit px-2 lg:px-20">
-							<Tabs>
-								<TabList>
-									<Tab>
-										<h5 className="montrealBold text-xl">Indices</h5>
-									</Tab>
-								</TabList>
-
-								<TabPanel>
-									<div className="w-full h-fit p-4">
-										<div className="px-4 py-8 grid grid-cols-2 grid-rows-auto xl:grid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
-											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
-												<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
-												{/* <h5 className="interBlack text-xl text-white titleShadow">ANFI</h5> */}
-												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(anfiTokenBalance.data).toFixed(2): '0.00'} ANFI </h5>
-												<h5 className="interBold text-2xl text-white titleShadow mb-2">
-													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 ) && indexPrices.anfi ? FormatToViewNumber({value:indexPrices.anfi,returnType:'string'}) : '0.00'}
-												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.anfi,returnType:'string'}) : '0.00'}%
-												</h5>
-											</div>
-											<div className="w-[14vw] h-fit px-4 py-2 flex flex-col items-center justify-center">
-												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
-												{/* <h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5> */}
-												<h5 className="interBlack text-xl text-white titleShadow"> {address ? num(crypto5TokenBalance.data).toFixed(2): '0.00'} CRYPTO5 </h5>
-												<h5 className="interBold text-2xl text-white titleShadow mb-2">
-													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? FormatToViewNumber({value:indexPrices.cr5,returnType:'string'}) : '0.00'}
-												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(crypto5TokenBalance.data) > 0) ? FormatToViewNumber({value:index24hChange.cr5,returnType:'string'}) : '0.00'}%
-												</h5>
+						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
+							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
+								<h5 className="interBold text-xl text-blackText-500 ">Total Portfolio Balance</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] ">$96,495,102.4</h5>
+							</div>
+							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
+								<h5 className="interBold text-xl text-blackText-500 ">Total Traded Balance</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] ">$1,248,217.81</h5>
+							</div>
+							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
+								<h5 className="interBold text-xl text-blackText-500 ">24h Change</h5>
+								<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
+									<h5 className="interExtraBold text-2xl text-nexLightGreen-500 ">$261.3</h5>
+									<div className="w-fit h-fit rounded-lg bg-nexLightGreen-500 p-1">
+										<IoMdArrowUp color="#FFFFFF" size={15} />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div className="w-full h-fit px-20 pt-5 flex flex-col items-start justify-start mb-10">
+							<h5 className=" text-blackText-500 text-2xl interBold mb-6">Asset Balances</h5>
+							<div className="w-full h-fit border border-gray-300 rounded-xl pt-6 shadow">
+								<div className="w-full h-fit pb-6 flex flex-row items-center justify-start px-3 border-b border-b-[#E4E4E4] ">
+									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
+										<h5 className="interExtraBold text-[#646464] text-base whitespace-nowrap">Asset</h5>
+									</div>
+									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
+										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Totla Balance</h5>
+									</div>
+									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
+										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Portfolio %</h5>
+									</div>
+									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
+										<h5 className="interExtraBold text-[#646464] text-base whitespace-nowrap">Action</h5>
+									</div>
+								</div>
+								<div>
+									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
+										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
+											<Image src={anfiLogo.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
+											<div>
+												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">ANFI</h5>
+												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">ANFI</h5>
 											</div>
 										</div>
+										<div className="w-1/4 h-fit px-1">
+											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 ANFI</h5>
+											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
+										</div>
+										<div className="w-1/4 h-fit px-1">
+											
+											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
+											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
+										</div>
+										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
+											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
+												Trade
+											</button>
+											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
+												Details
+											</button>
+										</div>
 									</div>
-								</TabPanel>
-							</Tabs>
+									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
+										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
+											<Image src={cr5Logo.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
+											<div>
+												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">CRYPTO 5</h5>
+												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">CR5</h5>
+											</div>
+										</div>
+										<div className="w-1/4 h-fit px-1">
+											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 CR5</h5>
+											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
+										</div>
+										<div className="w-1/4 h-fit px-1">
+											
+											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
+											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
+										</div>
+										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
+											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
+												Trade
+											</button>
+											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
+												Details
+											</button>
+										</div>
+									</div>
+									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
+										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
+											<Image src={btc.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
+											<div>
+												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">Bitcoin</h5>
+												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">BTC</h5>
+											</div>
+										</div>
+										<div className="w-1/4 h-fit px-1">
+											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 BTC</h5>
+											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
+										</div>
+										<div className="w-1/4 h-fit px-1">
+											
+											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
+											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
+										</div>
+										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
+											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
+												Trade
+											</button>
+											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
+												Details
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
-						<div className="w-full h-fit px-5 lg:px-20 mt-10">
-							<h5 className="interBlack text-3xl text-blackText-500">Assets Distribution</h5>
+						<div className="w-full hidden h-fit px-5 lg:px-20 mt-10">
+							<h5 className="interBold text-2xl text-blackText-500">Assets Distribution</h5>
 							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
 								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-start xl:mb-20">
 									<GenericPieChart data={PieChartdata} />
@@ -373,10 +463,10 @@ export default function Portfolio() {
 						</div>
 					</section>
 				</section>
-				<section className="w-full h-fit mb-10 px-10">
-					<h5 className="interBlack text-3xl text-blackText-500 mb-4">Transactions History</h5>
+				<section className="w-full h-fit mb-10 px-20">
+					<h5 className="text-blackText-500 text-2xl interBold mb-6">Transactions History</h5>
 					{address ? (
-						<HistoryTable />
+						<NewHistoryTable />
 					) : (
 						<div className="w-full h-fit bg-gray-300 border border-gray-200 rounded-2xl py-20 flex flex-row items-center justify-center gap-1">
 							<MdOutlineDangerous color="#F23645" size={30} />
@@ -384,8 +474,8 @@ export default function Portfolio() {
 						</div>
 					)}
 				</section>
-				
-				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-10">
+
+				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-20">
 					<div id="d1" className="w-full xl:w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
 						<div className="w-screen h-full flex flex-col items-center justify-center">
 							<div className=" relative w-full h-full overflow-hidden bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">

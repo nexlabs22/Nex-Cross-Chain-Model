@@ -57,7 +57,7 @@ export default function Explore() {
 
 	const subCategories = [
 		{
-			name: 'Hybrid Indices',
+			name: 'Hybrid Indieedfgerfgces',
 			symbol: 'sub1',
 			logo: hybrid.src,
 		},
