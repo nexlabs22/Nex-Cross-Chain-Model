@@ -16,12 +16,12 @@ class PDFUtils<T> {
 
     async exportToPDF(data: T[], columns: (keyof T)[], columnMapping: Record<keyof T, string>, fileName: string, chartComponentId: string) {
         this.createSettingTable(data, columns, columnMapping);
-        this.createTable(data, columns, columnMapping);
         await this.addChartImage(chartComponentId);
+        await this.createTable(data, columns, columnMapping);
         this.pdf.save(`${fileName}.pdf`);
     }
 
-    private createTable(data: T[], columns: (keyof T)[], columnMapping: Record<string, string>) {
+    private async createTable(data: T[], columns: (keyof T)[], columnMapping: Record<string, string>) {
         const colToExclude = ['initialAmount', 'monthlyInvestment', 'selectedStartMonth', 'selectedStartYear', 'selectedEndMonth', 'selectedEndYear'];
         const tableData = data.map((item) =>
             columns
@@ -38,11 +38,12 @@ class PDFUtils<T> {
         const columnsToAlignRight: string[] = ['percentageGain', 'totalGain', 'total', 'totalInvested'];
 
         const startX = 15;
-        const startY = (this.pdf as any).autoTable.previous.finalY + 10;
+        const startY = (this.pdf as any).autoTable.previous.finalY + 120;
 
         (this.pdf as any).autoTable({
             head: [header],
             body: tableData,
+            startY,
             didParseCell: (data: any) => {
                 const columnsToAlignRightIndex = columnsToAlignRight.map((col) => columns.indexOf(col as keyof T))
                 if (data.row.index >= 0) {
@@ -83,7 +84,6 @@ class PDFUtils<T> {
             body: tableData,
             theme: 'plain',
             didParseCell: (data: any) => {
-                // const columnsToAlignRightIndex = columnsToAlignRight.map((col) => columns.indexOf(col as keyof T))
                 if (data.row.index >= 0) {
                     if (data.column.index >= 0) {
                         data.cell.styles.halign = 'center';
@@ -101,7 +101,6 @@ class PDFUtils<T> {
         if (chartComponent) {
             const canvas = await html2canvas(chartComponent);
             const imgData = canvas.toDataURL('image/png');
-            console.log(imgData)
             this.pdf.addImage(imgData, 'PNG', 14, (this.pdf as any).autoTable.previous.finalY + 10, 185, 100); // Adjust the coordinates and dimensions as needed
         }
     }
