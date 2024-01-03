@@ -16,10 +16,11 @@ import ProgressBar from '@ramonak/react-progress-bar'
 import bg from '@assets/images/3d hologram.png'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
+import { useRouter } from 'next/navigation'
 import btc from '@assets/images/btc.png'
 import { MdOutlineDangerous } from 'react-icons/md'
 const PNLChart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
-const TreemapChart = dynamic(() => import('@/components/GenericTreemapChart'), { loading: () => <p>Loading ...</p>, ssr: false }) 
+const TreemapChart = dynamic(() => import('@/components/GenericTreemapChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
@@ -57,6 +58,7 @@ import { reduceAddress } from '@/utils/general'
 import { GoArrowRight } from 'react-icons/go'
 import { IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
+import { useSearchParams } from 'next/navigation'
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -163,8 +165,6 @@ export default function Portfolio() {
 		},
 	]
 
-	
-
 	const options = {
 		is3D: true,
 		fontName: 'montrealBold',
@@ -241,6 +241,8 @@ export default function Portfolio() {
 		{ time: '2018-04-03', value: 0 },
 		{ time: '2018-04-04', value: 0 },
 	]
+
+	const router = useRouter()
 
 	return (
 		<>
@@ -343,7 +345,16 @@ export default function Portfolio() {
 								<div>
 									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
 										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image src={anfiLogo.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
+											<Image
+												src={anfiLogo.src}
+												alt="anfi"
+												width={50}
+												height={50}
+												className="cursor-pointer"
+												onClick={() => {
+													router.push(`/ownedAsset?asset=anfi`)
+												}}
+											></Image>
 											<div>
 												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">ANFI</h5>
 												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">ANFI</h5>
