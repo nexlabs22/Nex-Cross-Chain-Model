@@ -103,7 +103,7 @@ function HistoryTable() {
 								Time
 							</th>
 							<th className="px-4 py-2 text-left">Pair</th>
-							<th className="px-4 py-2 text-left">Side</th>
+							<th className="px-4 py-2 text-left">Request Side</th>
 							<th className="px-4 py-2 text-left">Input Amount</th>
 							<th className="px-4 py-2 text-left">Output Amount</th>
 						</tr>
@@ -158,7 +158,7 @@ function HistoryTable() {
 													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side? 'interBold titleShadow' : 'text-[#E5E7EB]'}  
 													${ position.side === 'Mint Request' ? 'bg-nexLightGreen-500 text-whiteText-500' :position.side === 'Burn Request' ? 'bg-nexLightRed-500 text-whiteText-500':'bg-transparent'} flex flex-row items-center justify-center`}
 												>
-													{position.side ? position.side : '-'}
+													{position.side ? position.side.toString().split(" ")[0] : '-'}
 												</div>
 											</td>
 											<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '':'text-[#E5E7EB]'}`}>

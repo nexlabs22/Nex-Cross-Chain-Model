@@ -142,9 +142,9 @@ const TopIndexData = () => {
 	const defaultIndexObject = IndicesWithDetails.find((o) => o.symbol === defaultIndex)
 	const othertIndexObject = IndicesWithDetails.find((o) => o.symbol != defaultIndex)
 
-	const IndexContract : UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
-	const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data /1e18;
-	if(defaultIndexObject) defaultIndexObject.managementFee = feeRate.toFixed(2);
+	const IndexContract: UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
+	const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
+	if (defaultIndexObject) defaultIndexObject.managementFee = feeRate.toFixed(2)
 
 	return (
 		<section className="px-2 h-fit lg:px-10 py-6 xl:py-16">
@@ -312,12 +312,12 @@ const TopIndexData = () => {
 										<div>
 											<p className=" text-whiteText-500 text-sm interBold mb-1">Management Fees:</p>
 											<p className=" text-whiteText-500 text-sm interMedium">
-												the percentage difference in a cryptocurrency{"'"}s price over the past day, reflecting recent price performance.
+												We charge a competitive 1.5% annual management fee on assets under management, similar to traditional ETF providers.
 											</p>
 										</div>
 									}
 								>
-									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
+									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
 								</GenericTooltip>
 							</div>
 						</div>
@@ -327,7 +327,7 @@ const TopIndexData = () => {
 							<Image src={managment} alt="managment section" className="absolute z-10 -right-32 -bottom-32 scale-50"></Image>
 							<div className="absolute h-full top-0 left-0 w-4/5 z-50 flex flex-col items-start justify-start p-4">
 								<h5 className="interBold text-whiteText-500 titleShadow text-2xl mb-3">Nexlabs Fees</h5>
-								
+
 								<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/fee-structure'}>
 									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
 										<span>Learn More</span>
