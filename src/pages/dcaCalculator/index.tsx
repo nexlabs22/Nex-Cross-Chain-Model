@@ -16,6 +16,8 @@ const Chart = dynamic(() => import('@/components/dashboard/dashboardChart'), { l
 import { CSVLink } from 'react-csv'
 import { Document, Page, pdfjs } from 'react-pdf'
 import PDFUtils from '@/utils/pdfConfig'
+import { GenericToast } from '@/components/GenericToast'
+import { toast } from 'react-toastify'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
 
@@ -154,7 +156,11 @@ export default function DCACalculator() {
 	const timestampstring = new Date().toISOString().replace(/[-:]/g, '').split('.')[0].split('T').join('')
 	const fileName = `NEX-DCATool-${timestampstring}`
 
-	function exportPdf() {
+	async function exportPdf() {
+		GenericToast({
+			type: 'loading',
+			message: 'Exporting DCA Data as a PDF file..',
+		})
 		const dataToExport: exportdcaDataType[] = filteredIndexData.map((data) => {
 			return {
 				...data,
@@ -172,7 +178,21 @@ export default function DCACalculator() {
 			}
 		})
 
-		pdfUtils.exportToPDF(dataToExport, columns, columnMapping, fileName, 'chartId')
+		await pdfUtils.exportToPDF(dataToExport, columns, columnMapping, fileName, 'chartId').then((res)=>{
+			toast.dismiss()
+			GenericToast({
+				type: 'success',
+				message: 'PDF file downloaded successfully...',
+			})
+		})
+	}
+
+	function exportCSV() {
+		toast.dismiss()
+		GenericToast({
+			type: 'success',
+			message: 'CSV file downloaded successfully...',
+		})
 	}
 
 	return (
@@ -354,6 +374,8 @@ export default function DCACalculator() {
 									className={`text-sm mr-2 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
 										cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
 									filename={`${fileName}.csv`}
+									onClick={exportCSV}
+
 								>
 									Download CSV
 								</CSVLink>
