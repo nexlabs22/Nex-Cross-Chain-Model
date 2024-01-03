@@ -1,3 +1,5 @@
+// This is the CEFI swap component
+
 'use client' // This is a client component 👈🏽
 
 // basics :
@@ -859,7 +861,7 @@ const SwapV2 = () => {
 							}}
 						>
 							<div className="flex flex-row items-center justify-start w-fit">
-								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={20} height={20} className="mt-1 mr-1"></Image>
+								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
 								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapFromCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
@@ -905,7 +907,8 @@ const SwapV2 = () => {
 							}}
 						>
 							<div className="flex flex-row items-center justify-start ">
-								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={20} height={20} className=" mt-1 mr-1"></Image>
+								
+								<Image src={swapToCur.logo} alt={swapToCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
 								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapToCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
@@ -1106,7 +1109,9 @@ const SwapV2 = () => {
 				}}
 			>
 				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
-					<Lottie
+					{
+						/*
+						<Lottie
 						animationData={cookingAnimation}
 						loop={true}
 						style={{
@@ -1115,6 +1120,8 @@ const SwapV2 = () => {
 							overflow: 'hidden',
 						}}
 					/>
+						*/
+					}
 					<h5 className="InterBold text-blackText-500 text-2xl text-center w-full -mt-6">THE MAGIC IS HAPPENING...</h5>
 					<h5 className="interMedium text-blackText-500 text-lg text-center w-9/12 my-2">
 						Your NFT receipt is being minted. Once it is ready, you can find it the {'"'}Receipts{'"'} section.

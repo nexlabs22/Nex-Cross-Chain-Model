@@ -2,6 +2,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import useTradePageStore from '@/store/tradeStore'
+import { Menu as NavMenu, MenuItem, MenuButton } from '@szhsin/react-menu'
+import '@szhsin/react-menu/dist/index.css'
+import '@szhsin/react-menu/dist/transitions/slide.css'
+import HoverMenuWithTransition from './popper'
 
 import { BiMenuAltRight } from 'react-icons/bi'
 import { CiMenuFries } from 'react-icons/ci'
@@ -51,9 +55,8 @@ const DappNavbar: React.FC<DappNavbarProps> = ({lightVersion}) => {
 					<Link href={'/convert'}>
 						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Convert</h5>
 					</Link>
-					<Link href={'/portfolio'}>
-						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Portfolio</h5>
-					</Link>
+					<HoverMenuWithTransition key={1} menuItem="item" />
+					
 				</div>
 				{/* <div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div> */}
 				<ConnectButton />
