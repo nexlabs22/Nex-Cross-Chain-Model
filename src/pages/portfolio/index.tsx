@@ -18,7 +18,8 @@ import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import btc from '@assets/images/btc.png'
 import { MdOutlineDangerous } from 'react-icons/md'
-const Chart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
+const PNLChart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
+const TreemapChart = dynamic(() => import('@/components/GenericTreemapChart'), { loading: () => <p>Loading ...</p>, ssr: false }) 
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
@@ -162,6 +163,8 @@ export default function Portfolio() {
 		},
 	]
 
+	
+
 	const options = {
 		is3D: true,
 		fontName: 'montrealBold',
@@ -295,7 +298,7 @@ export default function Portfolio() {
 								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-								<Chart
+								<PNLChart
 									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
 									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
 								/>
@@ -351,7 +354,6 @@ export default function Portfolio() {
 											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
 										</div>
 										<div className="w-1/4 h-fit px-1">
-											
 											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
 											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
 										</div>
@@ -377,7 +379,6 @@ export default function Portfolio() {
 											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
 										</div>
 										<div className="w-1/4 h-fit px-1">
-											
 											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
 											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
 										</div>
@@ -403,7 +404,6 @@ export default function Portfolio() {
 											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
 										</div>
 										<div className="w-1/4 h-fit px-1">
-											
 											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
 											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
 										</div>
@@ -419,11 +419,11 @@ export default function Portfolio() {
 								</div>
 							</div>
 						</div>
-						<div className="w-full hidden h-fit px-5 lg:px-20 mt-10">
+						<div className="w-full h-fit px-5 lg:px-20 mt-10">
 							<h5 className="interBold text-2xl text-blackText-500">Assets Distribution</h5>
 							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
-								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-start xl:mb-20">
-									<GenericPieChart data={PieChartdata} />
+								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-10 xl:mb-20">
+									<TreemapChart />
 								</div>
 								<div className="w-11/12 xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
 									<h5 className="interBold text-xl text-blackText-500">
