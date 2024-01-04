@@ -5,7 +5,6 @@ import axios from 'axios';
 
 
 export async function GET() {
-    // const symbols = ['^GSPC', '^IXIC', '^DJI', '^NYA', 'GC=F', 'CL=F','BTC-USD'];
     const symbols = ['^GSPC', '^IXIC', '^DJI', '^NYA', 'GC=F', 'CL=F'];
     const symbolToName = {
         "^GSPC": "sandp",
@@ -29,10 +28,10 @@ export async function GET() {
 
         if (historicalData) {
             Object.entries(historicalData).forEach(([key, value]) => {
-                // console.log(key, value);
 
-                const prices = value.map(entry => entry.close);
-                // console.log(prices)
+                const prices = value
+                    .filter(entry => entry.close !== null)
+                    .map(entry => entry.close);
                 if (prices.length >= 2) {
                     const currentPrice = prices[0];
                     const previousPrice = prices[1];

@@ -60,7 +60,7 @@ import { IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
 
-export default function Portfolio() {
+export default function OwnedAsset({ params, searchParams }: { params: { slug: string }; searchParams: { [key: string]: string | string[] | undefined } }) {
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
@@ -247,7 +247,7 @@ export default function Portfolio() {
 	return (
 		<>
 			<Head>
-				<title>Portfolio</title>
+				<title>Nexlabs.io</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."
@@ -260,35 +260,11 @@ export default function Portfolio() {
 					<section className="w-screen h-fit pt-10">
 						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
-								{address && address != '' ? <GenericAvatar walletAddress={address}></GenericAvatar> : <div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>}
+								<Image src={anfiLogo} alt="anfi" width={150} height={150} className=" rounded-full"></Image>
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
+									<h5 className="text-2xl text-blackText-500 montrealBold">2,219.3 ANFI</h5>
 									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
-										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
-										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
-											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
-												<CopyToClipboard text={address as string} onCopy={handleCopy}>
-													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
-												</CopyToClipboard>
-											</div>
-											<div
-												className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full cursor-pointer"
-												onClick={() => {
-													if (address) setQRModalVisible(true)
-													else
-														GenericToast({
-															type: 'error',
-															message: `Please connect your wallet!`,
-														})
-												}}
-											>
-												<PiQrCodeDuotone color="#000000" size={15} className="scale-150 xl:scale-100" />
-											</div>
-										</div>
-									</div>
-									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
-										<BsCalendar4 color="#FFFFFF" size={15} />
-										<h5 className="text-base text-whiteText-500 montrealBold">Joined 45 days ago</h5>
+										<h5 className="text-xl text-gray-500 interMedium">$21,913.4</h5>
 									</div>
 								</div>
 							</div>
@@ -296,178 +272,57 @@ export default function Portfolio() {
 							<Chart data={complexData} />
 						</div> */}
 							<div className="lg:flex w-2/5 "></div>
-							<div className="lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
-								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
-									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
-								</div> */}
-								<PNLChart
-									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
-									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
-								/>
+							<div className="lg:flex flex-col w-2/5 items-end gap-2 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
+								<div className="w-full h-fit flex flex-row items-center justify-end gap-3">
+									<h5 className="interBold text-base text-blackText-500 ">Total Traded Balance</h5>
+									<h5 className="interBold text-base text-[#646464] ">$1,248,217.81</h5>
+								</div>
+								<div className="w-full h-fit flex flex-row items-center justify-end gap-3">
+									<h5 className="interBold text-base text-blackText-500 ">24h Change</h5>
+									<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
+										<h5 className="interExtraBold text-base text-nexLightGreen-500 ">$261.3</h5>
+										<div className="w-fit h-fit rounded-lg bg-nexLightGreen-500 p-1">
+											<IoMdArrowUp color="#FFFFFF" size={10} />
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">Total Portfolio Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">$96,495,102.4</h5>
-							</div>
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">Total Traded Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">$1,248,217.81</h5>
-							</div>
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">24h Change</h5>
-								<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
-									<h5 className="interExtraBold text-2xl text-nexLightGreen-500 ">$261.3</h5>
-									<div className="w-fit h-fit rounded-lg bg-nexLightGreen-500 p-1">
-										<IoMdArrowUp color="#FFFFFF" size={15} />
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className="w-full h-fit px-20 pt-5 flex flex-col items-start justify-start mb-10">
-							<h5 className=" text-blackText-500 text-2xl interBold mb-6">Asset Balances</h5>
-							<div className="w-full h-fit border border-gray-300 rounded-xl pt-6 shadow">
-								<div className="w-full h-fit pb-6 flex flex-row items-center justify-start px-3 border-b border-b-[#E4E4E4] ">
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464] text-base whitespace-nowrap">Asset</h5>
-									</div>
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Totla Balance</h5>
-									</div>
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Portfolio %</h5>
-									</div>
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464] text-base whitespace-nowrap">Action</h5>
-									</div>
-								</div>
-								<div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image
-												src={anfiLogo.src}
-												alt="anfi"
-												width={50}
-												height={50}
-												className="cursor-pointer"
-												onClick={() => {
+							<div className="w-full h-fit flex flex-row items-center justify-start pb-4 px-2 border-b-[2px] border-b-[#E4E4E4] ">
+                            <button className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg" onClick={() => {
 													router.push(`/ownedAsset?asset=anfi`)
-												}}
-											></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">ANFI</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">ANFI</h5>
-											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 ANFI</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image src={cr5Logo.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">CRYPTO 5</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">CR5</h5>
-											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 CR5</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image src={btc.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">Bitcoin</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">BTC</h5>
-											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 BTC</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
-								</div>
+												}}>Overview</button>
+                                <button className="py-1 px-3 shadow shadow-[#5E869B] cursor-pointer rounded-full border-[2px] border-[#5E869B] text-[#5E869B] interMedium text-lg" onClick={() => {
+													router.push(`/assetActivity?asset=anfi`)
+												}} >Activity</button>
+								
 							</div>
 						</div>
-						<div className="w-full h-fit px-5 lg:px-20 mt-10">
-							<h5 className="interBold text-2xl text-blackText-500">Assets Distribution</h5>
-							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
-								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-10 xl:mb-20">
-									<TreemapChart />
-								</div>
-								<div className="w-11/12 xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
-									<h5 className="interBold text-xl text-blackText-500">
-										Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
+						<div className="w-full px-20 h-fit">
+							<div className="w-full my-6 h-fit bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 rounded-2xl flex flex-row items-stretch justify-start">
+								<div className="h-fit w-9/12 border-r border-r-whiteBackground-500 p-10">
+									<h5 className="interBold mb-3 text-lg xl:text-2xl lg:text-2xl text-white titleShadow">Anti Inflation Index</h5>
+									<h5 className="interMedium hidden xl:block w-full text-lg leading-normal text-white titleShadow">
+										The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.
+										<br />
+										Gold has traditionally been a reliable investment. Nevertheless, it{"'"}s worth considering that Bitcoin, often referred to as {"'"}digital gold,{"'"} has the potential
+										to assume a prominent role in everyday life in the future.
 									</h5>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Smart contract : <span className="interMedium">0xJN820...093NEZ</span>
-										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
-											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
+								</div>
+								<div className="flex-grow w-3/12 border-r border-r-whiteBackground-500">
+									<div className="h-1/2 w-full border-b border-b-whiteText-500 flex flex-col items-start justify-center px-4 gap-1">
+										<h5 className="interMedium text-base text-white titleShadow">Market Cap</h5>
+										<h5 className="interExtraBold text-2xl text-white titleShadow">$1,248,217.81</h5>
+									</div>
+                                    <div className="h-1/2 w-full flex flex-col items-start justify-center px-4 gap-1">
+										<h5 className="interMedium text-base text-white titleShadow">24h Change</h5>
+										<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
+										<h5 className="interExtraBold text-2xl text-whiteText-500 titleShadow ">$261.3</h5>
+										<div className="w-fit h-fit rounded-md bg-whiteText-500 p-1">
+											<IoMdArrowUp color="#089981" size={14} />
 										</div>
 									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Last transaction : <span className="interMedium">0xJN820...093NEZ</span>
-										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
-											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
-										</div>
-									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Owned amount : <span className="interMedium">283.2</span>
-										</h5>
-									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Txn history :{' '}
-											<span className="interMedium text-colorSeven-500">
-												<Link href="">See More</Link>
-											</span>
-										</h5>
 									</div>
 								</div>
 							</div>
@@ -475,15 +330,8 @@ export default function Portfolio() {
 					</section>
 				</section>
 				<section className="w-full h-fit mb-10 px-20">
-					<h5 className="text-blackText-500 text-2xl interBold mb-6">Transactions History</h5>
-					{address ? (
-						<NewHistoryTable />
-					) : (
-						<div className="w-full h-fit bg-gray-300 border border-gray-200 rounded-2xl py-20 flex flex-row items-center justify-center gap-1">
-							<MdOutlineDangerous color="#F23645" size={30} />
-							<h5 className="interMedium text-base text-gray-500">No connected wallet</h5>
-						</div>
-					)}
+					<h5 className="text-blackText-500 text-2xl interBold mb-6">ANFI Transactions History</h5>
+					<NewHistoryTable />
 				</section>
 
 				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-20">

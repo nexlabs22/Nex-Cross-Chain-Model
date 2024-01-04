@@ -17,6 +17,7 @@ import { comparisonIndices } from '@/constants/comparisionIndices';
 import getTooltipDate, { convertTo13DigitsTimestamp, dateToEpoch } from '@/utils/conversionFunctions';
 import useTradePageStore from '@/store/tradeStore';
 import { useRouter } from 'next/router';
+import useToolPageStore from '@/store/toolStore';
 
 
 interface GradientAreaChartProps {
@@ -26,7 +27,11 @@ interface GradientAreaChartProps {
 const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const router = useRouter();
 	const { index: selectedTradingProduct} = router.query;
-	// const { selectedTradingProduct } = useTradePageStore()
+	const { defaultIndex } = useLandingPageStore()
+	const { selectedDuration } = useChartDataStore()
+	const { selectedIndex } = useToolPageStore()
+	const location = window.location.pathname
+	const ourIndexName = location === '/tradeIndex' ? selectedTradingProduct : location === '/dcaCalculator' ? selectedIndex : defaultIndex;
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
 
@@ -35,8 +40,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const minValue = Math.min(...data.map((point) => point.value))
 	const maxValue = Math.max(...data.map((point) => point.value))
 	const num = Object.keys(chartData).length
-	const { defaultIndex } = useLandingPageStore()
-	const { selectedDuration } = useChartDataStore()
+
 
 	useEffect(() => {
 		if (chartContainerRef.current) {
@@ -59,7 +63,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				handleScale: false,
 				handleScroll: true,
 				layout: {
-					background: { color: '#F3F3F3' }
+					background: { color: location === '/dcaCalculator' ? '#E3E7E7' :'#F3F3F3' }
 					// backgroundColor: 'red', // Set the background color to transparent
 				} as DeepPartial<LayoutOptions>, // Use type assertion to specify the type
 			})
@@ -104,7 +108,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			}
 
-			areaSeries.setData(historyRangeFilter(data))
+			areaSeries.setData(location === '/dcaCalculator'?data: historyRangeFilter(data))
 
 			const container = chartContainerRef.current
 			container.style.position = 'relative'
@@ -132,9 +136,6 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				time?: TimePointIndex;
 				point?: { x: number; y: number };
 			};
-
-			const location = window.location.pathname
-			const ourIndexName = location === '/tradeIndex' ? selectedTradingProduct : defaultIndex;
 
 			const selectedCompIndexes = location === '/tradeIndex' ?[]: Object.keys(chartData).filter((i) => {
 				const res = comparisonIndices.find((item) => item.columnName === i)
@@ -299,8 +300,8 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			// Hide axes
 			chartRef.current.applyOptions({
-				leftPriceScale: getAxesOptions(false),
-				rightPriceScale: getAxesOptions(true),
+				leftPriceScale: getAxesOptions(false, location),
+				rightPriceScale: getAxesOptions(true, location),
 			})
 
 			chartRef.current.applyOptions({
@@ -319,7 +320,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				chartRef.current.remove()
 			}
 		}
-	}, [chartData, data, maxValue, minValue, num, defaultIndex, selectedDuration])
+	}, [chartData, data, maxValue, minValue, num, defaultIndex, selectedDuration,location, ourIndexName])
 
 
 	return (
@@ -339,17 +340,16 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 export default GradientAreaChart
 
 // Helper function to get PriceScaleOptions
-function getAxesOptions(visible: boolean): PriceScaleOptions {
+function getAxesOptions(visible: boolean, location:string): PriceScaleOptions {
 	return {
-		mode: 2,
-		// mode: 1,
+		mode: location === '/dcaCalculator' ? 1 : 2,
 		visible: visible,
 		autoScale: true, // You can set this to your desired value
 		invertScale: false, // You can set this to your desired value
 		alignLabels: false, // You can set this to your desired value
 		scaleMargins: {
 			top: 0.2, // You can set this to your desired value
-			bottom: 0, // You can set this to your desired value
+			bottom: 0.2, // You can set this to your desired value
 		},
 		borderVisible: false, // You can set this to your desired value
 		// drawTicks: false,

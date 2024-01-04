@@ -347,7 +347,7 @@ body {
 
 .Toastify__toast-icon svg{
 
-  scale: 2 !important;
+  scale: 1.4 !important;
 }
 
 .Toastify__toast-icon svg:nth-child(2){
@@ -564,4 +564,12 @@ body {
   100% {
     background-position: 100% 50%; /* Adjust the distance based on the desired movement */
   }
+}
+
+.navSubMenu{
+  position: relative !important;
+   z-index: 999 !important;
+   padding: 0px !important;
+   border-radius: 4px !important;
+   overflow: hidden !important;
 }

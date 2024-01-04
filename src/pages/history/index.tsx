@@ -1,29 +1,20 @@
-'use client'
-
 import Image from 'next/image'
 import DappNavbar from '@/components/DappNavbar'
 import dynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
-import 'react-tabs/style/react-tabs.css'
-import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
-import { useEffect, useState } from 'react'
-import useTradePageStore from '@/store/tradeStore'
-import TipsBox2 from '@/components/TipsBox'
+import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import ProgressBar from '@ramonak/react-progress-bar'
-
-import bg from '@assets/images/3d hologram.png'
+import useTradePageStore from '@/store/tradeStore'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
-import { useRouter } from 'next/navigation'
 import btc from '@assets/images/btc.png'
 import { MdOutlineDangerous } from 'react-icons/md'
 const PNLChart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
-const TreemapChart = dynamic(() => import('@/components/GenericTreemapChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
+import { useEffect, useState } from 'react'
 import {
 	goerliAnfiIndexToken,
 	goerliCrypto5IndexToken,
@@ -42,11 +33,8 @@ import { GenericToast } from '@/components/GenericToast'
 import AccountRebalancingSection from '@/components/AccountRebalancingSection'
 import GenericModal from '@/components/GenericModal'
 import QRCode from 'react-qr-code'
-
-import GenericPieChart from '@/components/GenericPieChart'
 import Link from 'next/link'
 import Head from 'next/head'
-
 import { useQuery } from '@apollo/client'
 import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
@@ -56,11 +44,12 @@ import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
 import { reduceAddress } from '@/utils/general'
 import { GoArrowRight } from 'react-icons/go'
+import { CiExport } from 'react-icons/ci'
+
 import { IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
-import { useSearchParams } from 'next/navigation'
 
-export default function Portfolio() {
+function History() {
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
@@ -242,12 +231,10 @@ export default function Portfolio() {
 		{ time: '2018-04-04', value: 0 },
 	]
 
-	const router = useRouter()
-
 	return (
 		<>
 			<Head>
-				<title>Portfolio</title>
+				<title>Nexlabs.io</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."
@@ -325,157 +312,17 @@ export default function Portfolio() {
 								</div>
 							</div>
 						</div>
-						<div className="w-full h-fit px-20 pt-5 flex flex-col items-start justify-start mb-10">
-							<h5 className=" text-blackText-500 text-2xl interBold mb-6">Asset Balances</h5>
-							<div className="w-full h-fit border border-gray-300 rounded-xl pt-6 shadow">
-								<div className="w-full h-fit pb-6 flex flex-row items-center justify-start px-3 border-b border-b-[#E4E4E4] ">
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464] text-base whitespace-nowrap">Asset</h5>
-									</div>
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Totla Balance</h5>
-									</div>
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Portfolio %</h5>
-									</div>
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464] text-base whitespace-nowrap">Action</h5>
-									</div>
-								</div>
-								<div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image
-												src={anfiLogo.src}
-												alt="anfi"
-												width={50}
-												height={50}
-												className="cursor-pointer"
-												onClick={() => {
-													router.push(`/ownedAsset?asset=anfi`)
-												}}
-											></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">ANFI</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">ANFI</h5>
-											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 ANFI</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image src={cr5Logo.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">CRYPTO 5</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">CR5</h5>
-											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 CR5</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image src={btc.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">Bitcoin</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">BTC</h5>
-											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 BTC</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className="w-full h-fit px-5 lg:px-20 mt-10">
-							<h5 className="interBold text-2xl text-blackText-500">Assets Distribution</h5>
-							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
-								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-10 xl:mb-20">
-									<TreemapChart />
-								</div>
-								<div className="w-11/12 xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
-									<h5 className="interBold text-xl text-blackText-500">
-										Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
-									</h5>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Smart contract : <span className="interMedium">0xJN820...093NEZ</span>
-										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
-											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
-										</div>
-									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Last transaction : <span className="interMedium">0xJN820...093NEZ</span>
-										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
-											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
-										</div>
-									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Owned amount : <span className="interMedium">283.2</span>
-										</h5>
-									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Txn history :{' '}
-											<span className="interMedium text-colorSeven-500">
-												<Link href="">See More</Link>
-											</span>
-										</h5>
-									</div>
-								</div>
-							</div>
-						</div>
 					</section>
 				</section>
 				<section className="w-full h-fit mb-10 px-20">
-					<h5 className="text-blackText-500 text-2xl interBold mb-6">Transactions History</h5>
+					<div className="w-full h-fit flex flex-row items-center justify-between mb-3">
+						<h5 className="text-blackText-500 text-2xl interBold ">Transactions History</h5>
+						<button className="hidden xl:flex flex-row items-center justify-center gap-1 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 py-2 px-6 rounded-full">
+							<h5 className="text-lg interMedium text-whiteText-500">Export</h5>
+							<CiExport size={17} color="#FFFFFF" strokeWidth={1.5} />
+						</button>
+					</div>
+
 					{address ? (
 						<NewHistoryTable />
 					) : (
@@ -486,39 +333,6 @@ export default function Portfolio() {
 					)}
 				</section>
 
-				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-20">
-					<div id="d1" className="w-full xl:w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
-						<div className="w-screen h-full flex flex-col items-center justify-center">
-							<div className=" relative w-full h-full overflow-hidden bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
-								<div className="absolute overflow-hidden w-full h-full -right-10 xl:top-0 xl:right-0 z-10 flex flex-row items-center justify-normal">
-									<div className="hidden xl:block w-1/2 h-full"></div>
-									<div
-										className="w-full xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
-										style={{
-											backgroundImage: `url('${bg2.src}')`,
-										}}
-									></div>
-								</div>
-								<div className="relative top-0 left-0 z-40 bg-transparent">
-									<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Automatic Rebalancing Mechanism</h5>
-									<p className="interMedium text-whiteText-500 text-base w-full xl:w-3/5 mb-3">
-										Our automatic rebalancing system ensures the proper distribution of assets in the index by regularly monitoring market capitalizations, triggering adjustments as needed
-										to align with the desired weights, and executing trades accordingly.
-									</p>
-									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
-										<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-											<span>Learn More</span>
-											<GoArrowRight color="#5E869B" size={30} />
-										</button>
-									</Link>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div id="d2" className="w-full xl:w-3/12 flex flex-row items-center justify-center flex-grow-0 max-h-full">
-						<TipsBox2></TipsBox2>
-					</div>
-				</section>
 				<div className="w-fit h-fit xl:pt-16">
 					<Footer />
 				</div>
@@ -543,3 +357,5 @@ export default function Portfolio() {
 		</>
 	)
 }
+
+export default History

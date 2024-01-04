@@ -5,11 +5,17 @@ import sandp from '@assets/images/s&p.jpeg'
 import dow from '@assets/images/dow.png'
 import nasdaq from '@assets/images/nasdaq.jpg'
 import nyse from '@assets/images/nyse.png'
+import microsoft from '@assets/images/microsoft.png'
+import paypal from '@assets/images/paypal.png'
+import asml from '@assets/images/asml.png'
+import copper from '@assets/images/copper.png'
+import lithium from '@assets/images/lithium.png'
+
 export const comparisonIndices = [
 	{
 		id: 1,
 		name: 'S&P 500',
-        shortName: 'S&P',
+        shortName: 'GSPC',
 		columnName: 'sandp',
 		logo: sandp.src,
 		price: 4402.21,
@@ -19,7 +25,7 @@ export const comparisonIndices = [
 	{
 		id: 2,
 		name: 'Dow 30',
-        shortName: 'Dow 30',
+        shortName: 'DJI',
 		columnName: 'dow',
 		logo: dow.src,
 		price: 34440.89,
@@ -29,7 +35,7 @@ export const comparisonIndices = [
 	{
 		id: 3,
 		name: 'Nasdaq Composite',
-        shortName: 'Nasdaq',
+        shortName: 'IXIC',
 		columnName: 'nasdaq',
 		logo: nasdaq.src,
 		price: 13469.13,
@@ -39,7 +45,7 @@ export const comparisonIndices = [
 	{
 		id: 4,
 		name: 'NYSE Composite',
-        shortName: 'NYSE',
+        shortName: 'NYA',
 		columnName: 'nyse',
 		logo: nyse.src,
 		price: 15859.61,
@@ -49,7 +55,7 @@ export const comparisonIndices = [
 	{
 		id: 5,
 		name: 'Bitcoin',
-        shortName: 'Bitcoin',
+        shortName: 'BTC',
 		columnName: 'bitcoin',
 		logo: btc.src,
 		price: 15859.61,
@@ -75,5 +81,55 @@ export const comparisonIndices = [
 		price: 15859.61,
 		change: '-0.44',
 		selectionColor: "#4d614c" //Dark green
+	},
+	{
+		id: 8,
+		name: 'Copper',
+        shortName: 'Copper',
+		columnName: 'copper',
+		logo: copper.src,
+		price: 15859.61,
+		change: '-0.44',
+		selectionColor: "#B36F30" //copper brown
+	},
+	{
+		id: 8,
+		name: 'ASML',
+        shortName: 'ASML',
+		columnName: 'asml',
+		logo: asml.src,
+		price: 15859.61,
+		change: '-0.44',
+		selectionColor: "#222D65"
+	},
+	{
+		id: 9,
+		name: 'Microsoft',
+        shortName: 'MSFT',
+		columnName: 'microsoft',
+		logo: microsoft.src,
+		price: 15859.61,
+		change: '-0.44',
+		selectionColor: "#7EBB00" //light green
+	},
+	{
+		id: 10,
+		name: 'Paypal',
+        shortName: 'PYPL',
+		columnName: 'paypal',
+		logo: paypal.src,
+		price: 15859.61,
+		change: '-0.44',
+		selectionColor: "#20A6DA" 
+	},
+	{
+		id: 11,
+		name: 'Lithium',
+        shortName: 'Lithium',
+		columnName: 'lithium',
+		logo: lithium.src,
+		price: 15859.61,
+		change: '-0.44',
+		selectionColor: "#349D3F" 
 	}
 ]

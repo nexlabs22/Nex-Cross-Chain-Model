@@ -5,7 +5,6 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, MenuButton } from '@szhsin/react-menu'
-import arrowDown from 'react-useanimations/lib/arrowDown'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import useTradePageStore from '@/store/tradeStore'
@@ -23,7 +22,6 @@ import { GoArrowRight, GoChevronDown } from 'react-icons/go'
 import bg2 from '@assets/images/bg-2.png'
 
 import Head from 'next/head'
-import UseAnimations from 'react-useanimations'
 
 interface Subcategory {
 	name: string
@@ -59,7 +57,7 @@ export default function Explore() {
 
 	const subCategories = [
 		{
-			name: 'Hybrid Indices',
+			name: 'Hybrid Indieedfgerfgces',
 			symbol: 'sub1',
 			logo: hybrid.src,
 		},
@@ -138,7 +136,7 @@ export default function Explore() {
 	const handleOnSelect = (item: Product) => {
 		setSelectedTradingCategory(item.category)
 		setSelectedTradingProduct(item.symbol)
-		router.push(`/tradeIndex?index=${item.symbol}`)
+		router.push('/trade')
 	}
 
 	const formatSearchResult = (item: Product) => {
@@ -158,7 +156,7 @@ export default function Explore() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io</title>
+				<title>Nexlabs.io, welcome!</title>
 				<meta
 					name="description"
 					content="Traders love the Nex Labs platform for its wide selection of CeFi and DeFi products. Explore margin trading, derivatives, staking, and more - this blog covers all the offerings so you can optimize your crypto portfolio."
@@ -230,7 +228,7 @@ export default function Explore() {
 								<Menu
 									menuButton={
 										<MenuButton>
-											<div className="w-[74vw] xl:w-[14vw] h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
+											<div className="w-[74vw] xl:w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
 												<div className="flex flex-row items-center justify-start gap-2">
 													<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}></Image>
 													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
@@ -294,7 +292,7 @@ export default function Explore() {
 															className="cursor-pointer"
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																router.push('/trade')
 															}}
 														></Image>
 
@@ -302,7 +300,7 @@ export default function Explore() {
 															className="interBold text-colorSeven-500 text-base cursor-pointer"
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																router.push('/trade')
 															}}
 														>
 															{product.name}
@@ -321,7 +319,7 @@ export default function Explore() {
 														<button
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																router.push('/trade')
 															}}
 															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
 														>
@@ -349,7 +347,7 @@ export default function Explore() {
 															className="cursor-pointer"
 															onClick={() => {
 																changeDefaultIndex(product.symbol.toUpperCase())
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																router.push('/trade')
 															}}
 														></Image>
 
@@ -357,7 +355,7 @@ export default function Explore() {
 															className="interBold text-colorSeven-500 text-lg cursor-pointer"
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																router.push('/trade')
 															}}
 														>
 															{product.name}
@@ -373,7 +371,7 @@ export default function Explore() {
 														<button
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																router.push('/trade')
 															}}
 															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
 														>
@@ -406,7 +404,7 @@ export default function Explore() {
 								</p>
 								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'}>
 									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-										<span>Learn More </span>
+										<span>Learn More</span>
 										<GoArrowRight color="#5E869B" size={30} />
 									</button>
 								</Link>
