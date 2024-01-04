@@ -16,9 +16,7 @@ import Head from 'next/head'
 import SwapV2 from '@/components/SwapV2Cefi'
 
 export default function Trade() {
-
 	const { selectedTradingCategory } = useTradePageStore()
-
 
 	const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
 
@@ -49,7 +47,7 @@ export default function Trade() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Trade</title>
 				<meta
 					name="description"
 					content="Nex Labs is reinventing trading with the cutting-edge trade page. Seamlessly swap, trade and invest in innovative indices, and access unique products - all integrated with your wallet for smooth trading."
