@@ -14,9 +14,10 @@ interface MenuItem {
 
 interface HoverMenuWithTransitionProps {
 	menuItem: string
+	lightV?: boolean
 }
 
-const HoverMenuWithTransition: React.FC<HoverMenuWithTransitionProps> = () => {
+const HoverMenuWithTransition: React.FC<HoverMenuWithTransitionProps> = ({ menuItem, lightV }) => {
 	const ref = useRef(null)
 	const [menuState, toggle] = useMenuState({ transition: true })
 	const { anchorProps, hoverProps } = useHover(menuState.state, toggle)
@@ -26,8 +27,8 @@ const HoverMenuWithTransition: React.FC<HoverMenuWithTransitionProps> = () => {
 	return (
 		<>
 			<div className="flex h-fit w-fit flex-row items-center justify-start gap-1" ref={ref} {...anchorProps}>
-				<h5 className="interMedium font-base text-blackText-500 cursor-pointer">Portfolio</h5>
-				<BsCaretDownFill size={9} color="#252525" className="mr-5" />
+				<h5 className={`interMedium cursor-pointer font-base mr-3 ${lightV ? ' text-whiteText-500' : 'text-blackText-500'}`}>Portfolio</h5>
+				{lightV ? <BsCaretDownFill size={9} color="#FFFFFF" className="mr-5" /> : <BsCaretDownFill size={9} color="#252525" className="mr-5" />}
 			</div>
 
 			<ControlledMenu {...hoverProps} {...menuState} anchorRef={ref} onClose={() => toggle(false)} direction="bottom" align="end" menuClassName="navSubMenu">
@@ -42,7 +43,7 @@ const HoverMenuWithTransition: React.FC<HoverMenuWithTransitionProps> = () => {
 					</Link>
 				</MenuItem>
 				<MenuItem key={1} className=" hover:bg-colorSeven-500/20">
-					<Link href={''} key={1}>
+					<Link href={'/settings'} key={1}>
 						<h5 className="interMedium font-sm mr-2 text-blackText-500 py-2">Settings</h5>
 					</Link>
 				</MenuItem>
