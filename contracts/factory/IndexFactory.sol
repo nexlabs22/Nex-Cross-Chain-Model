@@ -284,97 +284,97 @@ contract IndexFactory is
     }
 
 
-    function send(
-        uint64 destinationChainSelector,
-        address receiver,
-        Client.EVMTokenAmount[] memory tokensToSendDetails,
-        PayFeesIn payFeesIn
-    ) external {
-        uint256 length = tokensToSendDetails.length;
-        require(
-            length <= i_maxTokensLength,
-            "Maximum 5 different tokens can be sent per CCIP Message"
-        );
+    // function send(
+    //     uint64 destinationChainSelector,
+    //     address receiver,
+    //     Client.EVMTokenAmount[] memory tokensToSendDetails,
+    //     PayFeesIn payFeesIn
+    // ) external {
+    //     uint256 length = tokensToSendDetails.length;
+    //     require(
+    //         length <= i_maxTokensLength,
+    //         "Maximum 5 different tokens can be sent per CCIP Message"
+    //     );
 
-        for (uint256 i = 0; i < length; ) {
-            IERC20(tokensToSendDetails[i].token).transferFrom(
-                msg.sender,
-                address(this),
-                tokensToSendDetails[i].amount
-            );
-            IERC20(tokensToSendDetails[i].token).approve(
-                i_router,
-                tokensToSendDetails[i].amount
-            );
+    //     for (uint256 i = 0; i < length; ) {
+    //         IERC20(tokensToSendDetails[i].token).transferFrom(
+    //             msg.sender,
+    //             address(this),
+    //             tokensToSendDetails[i].amount
+    //         );
+    //         IERC20(tokensToSendDetails[i].token).approve(
+    //             i_router,
+    //             tokensToSendDetails[i].amount
+    //         );
 
-            unchecked {
-                ++i;
-            }
-        }
+    //         unchecked {
+    //             ++i;
+    //         }
+    //     }
 
-        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
-            receiver: abi.encode(receiver),
-            data: "",
-            tokenAmounts: tokensToSendDetails,
-            extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
-        });
+    //     Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+    //         receiver: abi.encode(receiver),
+    //         data: "",
+    //         tokenAmounts: tokensToSendDetails,
+    //         extraArgs: "",
+    //         feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+    //     });
 
-        uint256 fee = IRouterClient(i_router).getFee(
-            destinationChainSelector,
-            message
-        );
+    //     uint256 fee = IRouterClient(i_router).getFee(
+    //         destinationChainSelector,
+    //         message
+    //     );
 
-        bytes32 messageId;
+    //     bytes32 messageId;
 
-        if (payFeesIn == PayFeesIn.LINK) {
-            // LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
+    //     if (payFeesIn == PayFeesIn.LINK) {
+    //         // LinkTokenInterface(i_link).approve(i_router, fee);
+    //         messageId = IRouterClient(i_router).ccipSend(
+    //             destinationChainSelector,
+    //             message
+    //         );
+    //     } else {
+    //         messageId = IRouterClient(i_router).ccipSend{value: fee}(
+    //             destinationChainSelector,
+    //             message
+    //         );
+    //     }
 
-        emit MessageSent(messageId);
-    }
+    //     emit MessageSent(messageId);
+    // }
 
 
 
-    /// handle a received message
-    function _ccipReceive(
-        Client.Any2EVMMessage memory any2EvmMessage
-    ) internal override {
-        bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
-        uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
-        address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
-        Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
-            .destTokenAmounts;
-        address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
-        uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
-        string memory message = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent string message
-        receivedMessages.push(messageId);
-        Message memory detail = Message(
-            sourceChainSelector,
-            sender,
-            message,
-            token,
-            amount
-        );
-        messageDetail[messageId] = detail;
+    // /// handle a received message
+    // function _ccipReceive(
+    //     Client.Any2EVMMessage memory any2EvmMessage
+    // ) internal override {
+    //     bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
+    //     uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
+    //     address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
+    //     Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
+    //         .destTokenAmounts;
+    //     address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
+    //     uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
+    //     string memory message = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent string message
+    //     receivedMessages.push(messageId);
+    //     Message memory detail = Message(
+    //         sourceChainSelector,
+    //         sender,
+    //         message,
+    //         token,
+    //         amount
+    //     );
+    //     messageDetail[messageId] = detail;
 
-        emit MessageReceived(
-            messageId,
-            sourceChainSelector,
-            sender,
-            message,
-            tokenAmounts[0]
-        );
-    }
+    //     emit MessageReceived(
+    //         messageId,
+    //         sourceChainSelector,
+    //         sender,
+    //         message,
+    //         tokenAmounts[0]
+    //     );
+    // }
 
     
 }
