@@ -16,11 +16,14 @@ const Chart = dynamic(() => import('@/components/dashboard/dashboardChart'), { l
 import { CSVLink } from 'react-csv'
 import { Document, Page, pdfjs } from 'react-pdf'
 import PDFUtils from '@/utils/pdfConfig'
+import convertElementToPDF from '@/utils/exportPdf'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
 
 export default function DCACalculator() {
 	// const pdfContainer = useRef<HTMLDivElement | null>(null)
+	const dcaChartRef = useRef<HTMLDivElement>(null)
+	const pdfRenderRef = useRef<HTMLDivElement>(null)
 
 	const { ANFIData, CR5Data, fetchIndexData, loading } = useChartDataStore()
 	const { selectedIndex, selectIndex } = useToolPageStore()
@@ -128,8 +131,20 @@ export default function DCACalculator() {
 		]),
 	]
 
-	
-	const columns: (keyof exportdcaDataType)[] = ['date', 'value', 'percentageGain', 'totalInvested', 'totalGain', 'total','initialAmount', 'monthlyInvestment', 'selectedStartMonth', 'selectedStartYear', 'selectedEndMonth', 'selectedEndYear']
+	const columns: (keyof exportdcaDataType)[] = [
+		'date',
+		'value',
+		'percentageGain',
+		'totalInvested',
+		'totalGain',
+		'total',
+		'initialAmount',
+		'monthlyInvestment',
+		'selectedStartMonth',
+		'selectedStartYear',
+		'selectedEndMonth',
+		'selectedEndYear',
+	]
 
 	const columnMapping: Record<keyof exportdcaDataType, string> = {
 		date: 'Date',
@@ -182,7 +197,7 @@ export default function DCACalculator() {
 				<meta name="description" content="" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="min-h-screen overflow-x-hidden h-fit w-screen ">
+			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500 ">
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit overflow-x-hidden flex flex-row  px-4 pt-10">
@@ -345,7 +360,7 @@ export default function DCACalculator() {
 							</div>
 						</div>
 						<div className="w-2/3 h-fit flex flex-col gap-y-5 pr-5">
-							<div className="h-[70vh] w-full ">
+							<div className="h-[70vh] w-full " ref={dcaChartRef} id="dcaChartBox">
 								<DCACalculatorChart data={filteredIndexData} />
 							</div>
 							<div className="flex flex-row ml-auto z-10">
@@ -358,7 +373,9 @@ export default function DCACalculator() {
 									Download CSV
 								</CSVLink>
 								<button
-									onClick={exportPdf}
+									onClick={async () => {
+										if (pdfRenderRef.current) await convertElementToPDF({ element: pdfRenderRef.current })
+									}}
 									className={`text-sm text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
 								>
 									Download PDF
@@ -403,6 +420,16 @@ export default function DCACalculator() {
 							</div>
 						</div>
 					</section>
+				</section>
+				<section className="w-full h-0 opacity-0">
+					<div className="w-6/12 mx-auto h-fit my-20 p-10 flex flex-col items-center justify-start" ref={pdfRenderRef}>
+						<div className="h-[70vh] w-full">
+							{
+								// Here, we can add any html and it will be part of the PDF, including images, text ... anything
+							}
+							<DCACalculatorChart data={filteredIndexData} />
+						</div>
+					</div>
 				</section>
 
 				<div className="w-fit h-fit pt-0 lg:pt-16">
