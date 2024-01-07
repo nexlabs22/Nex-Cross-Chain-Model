@@ -23,22 +23,20 @@ export default function Convert() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Swap and bridge</title>
 				<meta name="description" content="Nex Labs' convert page features a lifi widget enabling one-stop bridging, swapping, and native gas delivery making complex trades simple." />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-cover bg-center bg-no-repeat" 
-			style={{
-				backgroundImage: `url('${convert.src}')`
-			}}
+			<main
+				className="min-h-screen overflow-x-hidden h-fit w-screen bg-cover bg-center bg-no-repeat"
+				style={{
+					backgroundImage: `url('${convert.src}')`,
+				}}
 			>
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar lightVersion />
-					<section className="w-screen h-fit overflow-x-hidden flex flex-row items-center justify-center px-4 pt-10"
-					
-					>
+					<section className="w-screen h-fit overflow-x-hidden flex flex-row items-center justify-center px-4 pt-10">
 						<LiFiWidgetNext></LiFiWidgetNext>
-						
 					</section>
 				</section>
 
