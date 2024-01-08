@@ -23,15 +23,15 @@ export class UniswapV3Deployer {
 
     const weth9 = await deployer.deployWETH9() as IWETH;
     const factory = await deployer.deployFactory() as IUniswapV3Factory;
-    const router = await deployer.deployRouter(factory.target as string, weth9.target as string) as ISwapRouter;
+    const router = await deployer.deployRouter(factory.address as string, weth9.address as string) as ISwapRouter;
     const nftDescriptorLibrary = await deployer.deployNFTDescriptorLibrary() as Contract;
     // const positionDescriptor = await deployer.deployPositionDescriptor(
     //   nftDescriptorLibrary.target as string,
     //   weth9.target as string
     // );
     const positionManager = await deployer.deployNonfungiblePositionManager(
-      factory.target as string,
-      weth9.target as string,
+      factory.address as string,
+      weth9.address as string,
       // positionDescriptor.target as string
       "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
     ) as INonfungiblePositionManager;

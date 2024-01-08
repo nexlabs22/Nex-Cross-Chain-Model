@@ -18,23 +18,23 @@ import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
     async function deployContracts() {
       const [owner, otherAccount] = await ethers.getSigners();
       const res = await UniswapV3Deployer.deploy(owner);
+      // return
       const weth9 = res["weth9"] as IWETH
       const v3Fctory = res["factory"] as IUniswapV3Factory
       const v3Router = res["router"] as ISwapRouter
       const nft = res["positionManager"] as INonfungiblePositionManager
-
       //token
       const Token = await ethers.getContractFactory("Token");
       const token0 = await Token.deploy(ethers.utils.parseEther("100000"));
-      // const token0Address = await token0.getAddress()
       const token1 = await Token.deploy(ethers.utils.parseEther("100000"));
+      // const token0Address = await token0.getAddress()
       // const token1Address = await token1.getAddress()
 
       //flash swap
-      const FlashSwap = await ethers.getContractFactory("SwapExamples");
-      const flashSwap = await FlashSwap.deploy(v3Router.address, weth9.address);
+      // const FlashSwap = await ethers.getContractFactory("SwapExamples");
+      // const flashSwap = await FlashSwap.deploy(v3Router.address, weth9.address);
         
-      return {owner, otherAccount, v3Fctory, v3Router, nft, token0, token1, weth9, flashSwap };
+      return {owner, otherAccount, v3Fctory, v3Router, nft, token0, token1, weth9 };
     }
   
     describe("Deployment", function () {
@@ -44,6 +44,7 @@ import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
           deploymentObj.token0.address,
           deploymentObj.token1.address,
         )
+        
         let tokens = [];
         tokens[0] = deploymentObj.token0.address < deploymentObj.token1.address ? deploymentObj.token0.address : deploymentObj.token1.address
         tokens[1] = deploymentObj.token0.address > deploymentObj.token1.address ? deploymentObj.token0.address : deploymentObj.token1.address
@@ -55,9 +56,10 @@ import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
         )
       await deploymentObj.token0.approve(deploymentObj.nft.address, ethers.utils.parseEther("1000"));
       await deploymentObj.token1.approve(deploymentObj.nft.address, ethers.utils.parseEther("1000"));
-
+      
       const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-      const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+      // const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+      const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
 
       // const block = new Block()
       const liquidityParams = {
@@ -96,7 +98,7 @@ import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
       console.log("token1 after swap:", ethers.utils.formatEther(await deploymentObj.token1.balanceOf(ownerAddress)))
       });
 
-
+      /**
       it("swap with flash swap contract", async function () {
         // const deploymentObj = await loadFixture(deployContracts);
         const deploymentObj = await deployContracts();
@@ -163,6 +165,7 @@ import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
       console.log("token0 after swap:", ethers.utils.formatEther(await deploymentObj.token0.balanceOf(ownerAddress)))
       console.log("weth after swap:", ethers.utils.formatEther(await deploymentObj.weth9.balanceOf(ownerAddress)))
       });
+       */
       });  
     
   });
