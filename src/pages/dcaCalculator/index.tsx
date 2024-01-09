@@ -130,8 +130,20 @@ export default function DCACalculator() {
 		]),
 	]
 
-	
-	const columns: (keyof exportdcaDataType)[] = ['date', 'value', 'percentageGain', 'totalInvested', 'totalGain', 'total','initialAmount', 'monthlyInvestment', 'selectedStartMonth', 'selectedStartYear', 'selectedEndMonth', 'selectedEndYear']
+	const columns: (keyof exportdcaDataType)[] = [
+		'date',
+		'value',
+		'percentageGain',
+		'totalInvested',
+		'totalGain',
+		'total',
+		'initialAmount',
+		'monthlyInvestment',
+		'selectedStartMonth',
+		'selectedStartYear',
+		'selectedEndMonth',
+		'selectedEndYear',
+	]
 
 	const columnMapping: Record<keyof exportdcaDataType, string> = {
 		date: 'Date',
@@ -178,7 +190,7 @@ export default function DCACalculator() {
 			}
 		})
 
-		await pdfUtils.exportToPDF(dataToExport, columns, columnMapping, fileName, 'chartId').then((res)=>{
+		await pdfUtils.exportToPDF(dataToExport, columns, columnMapping, fileName, 'chartId').then((res) => {
 			toast.dismiss()
 			GenericToast({
 				type: 'success',
@@ -202,72 +214,70 @@ export default function DCACalculator() {
 				<meta name="description" content="" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="min-h-screen overflow-x-hidden h-fit w-screen ">
+			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
-					<section className="w-screen h-fit overflow-x-hidden flex flex-row  px-4 pt-10">
-						<div className="w-1/3 h-fit flex flex-col gap-y-5 px-5">
-							<div>
-								<Menu
-									menuButton={
-										<MenuButton>
-											<div className="w-[74vw] xl:w-[14vw] h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
-												<div className="flex flex-row items-center justify-start gap-2">
-													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedIndex}</h5>
-												</div>
-												<GoChevronDown color="#F2F2F2" size={20} />
+					<section className="w-screen h-fit flex flex-row items-stretch justify-start px-4 pt-10 pb-12">
+						<div className="w-3/12 h-fit flex flex-col gap-2 pl-5">
+							<Menu
+								menuButton={
+									<MenuButton>
+										<div className="w-11/12 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
+											<div className="flex flex-row items-center justify-start gap-2">
+												<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedIndex}</h5>
 											</div>
-										</MenuButton>
-									}
-									transition
-									direction="bottom"
-									align="end"
-									className="subCatgoriesMenu"
-								>
-									{indices.map((sub, id) => {
-										return (
-											<div
-												key={id}
-												className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50"
-												onClick={() => {
-													selectIndex(sub)
-												}}
-											>
-												<div className="flex flex-row items-center justify-start gap-2">
-													<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{sub}</h5>
-												</div>
-												<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
+											<GoChevronDown color="#F2F2F2" size={20} />
+										</div>
+									</MenuButton>
+								}
+								transition
+								direction="bottom"
+								align="end"
+								className="subCatgoriesMenu w-full"
+							>
+								{indices.map((sub, id) => {
+									return (
+										<div
+											key={id}
+											className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50"
+											onClick={() => {
+												selectIndex(sub)
+											}}
+										>
+											<div className="flex flex-row items-center justify-start gap-2">
+												<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{sub}</h5>
 											</div>
-										)
-									})}
-								</Menu>
-							</div>
-							<div>
-								<label className="mx-2">Initial Investment</label>
+											<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
+										</div>
+									)
+								})}
+							</Menu>
+							<div className="flex flex-col items-start justify-start gap-1 w-full">
+								<label className="interBold text-blackText-500">Initial Investment</label>
 								<input
 									type="number"
 									placeholder="0.00"
-									className="w-1/3 border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
+									className="w-11/12 border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white shadow-sm shadow-black rounded-lg active:border-none outline-none focus:border-none p-2"
 									onChange={changeInitialAmount}
 									value={initialAmount}
 								/>
 							</div>
-							<div>
-								<label className="mx-2">Monthly Investment</label>
+							<div className="flex flex-col items-start justify-start gap-1">
+								<label className="interBold text-blackText-500">Monthly Investment</label>
 								<input
 									type="number"
 									placeholder="0.00"
-									className="w-1/3 border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
+									className="w-11/12 shadow-sm shadow-black rounded-lg border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
 									onChange={changeMonthlyInvestment}
 									value={monthlyInvestment}
 								/>
 							</div>
-							<div>
-								<label className="mx-2">Start Month</label>
+							<div className="flex flex-col items-start justify-start gap-1 w-full h-fit">
+								<label className="interBold text-blackText-500">Start Month</label>
 								<Menu
 									menuButton={
-										<MenuButton>
-											<div className="w-[74vw] xl:w-[14vw] h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-white text-black gap-8 cursor-pointer">
+										<MenuButton className="w-full">
+											<div className="w-11/12 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-lg shadow-sm shadow-black bg-white text-black gap-8 cursor-pointer">
 												<div className="flex flex-row items-center justify-start gap-2">
 													<h5 className="text-sm text-blackText-500 interMedium uppercase">{selectedStartMonth}</h5>
 												</div>
@@ -278,7 +288,7 @@ export default function DCACalculator() {
 									transition
 									direction="bottom"
 									align="end"
-									className="subCatgoriesMenu"
+									className="subCatgoriesMenu w-full"
 								>
 									{months.map((sub, id) => {
 										return (
@@ -298,22 +308,22 @@ export default function DCACalculator() {
 									})}
 								</Menu>
 							</div>
-							<div>
-								<label className="mx-2">Start Year</label>
+							<div className="flex flex-col items-start justify-start gap-1">
+								<label className="interMedium text-blackText-500">Start Year</label>
 								<input
 									type="number"
 									placeholder="0.00"
-									className="w-1/3 border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
+									className="w-11/12 shadow-sm shadow-black rounded-lg border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
 									onChange={changeStartYear}
 									value={selectedStartYear}
 								/>
 							</div>
-							<div>
-								<label className="mx-2">End Month</label>
+							<div className="flex flex-col items-start justify-start gap-1">
+								<label className="interBold text-blackText-500">End Month</label>
 								<Menu
 									menuButton={
-										<MenuButton>
-											<div className="w-[74vw] xl:w-[14vw] h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-white text-black gap-8 cursor-pointer">
+										<MenuButton className="w-full">
+											<div className="w-11/12 shadow-sm shadow-black h-fit px-2 py-2 flex flex-row items-center justify-between rounded-lg bg-white text-black gap-8 cursor-pointer">
 												<div className="flex flex-row items-center justify-start gap-2">
 													<h5 className="text-sm text-blackText-500 interMedium uppercase">{selectedEndMonth}</h5>
 												</div>
@@ -324,7 +334,7 @@ export default function DCACalculator() {
 									transition
 									direction="bottom"
 									align="end"
-									className="subCatgoriesMenu"
+									className="subCatgoriesMenu w-full"
 								>
 									{months.map((sub, id) => {
 										return (
@@ -344,84 +354,83 @@ export default function DCACalculator() {
 									})}
 								</Menu>
 							</div>
-							<div>
-								<label className="mx-2">End Year</label>
+							<div className="flex flex-col items-start justify-start gap-1">
+								<label className="interBold text-blackText-500">End Year</label>
 								<input
 									type="number"
 									placeholder="0.00"
-									className="w-1/3 border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
+									className="w-11/12 shadow-sm shadow-black rounded-lg border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
 									onChange={changeEndYear}
 									value={selectedEndYear}
 								/>
 							</div>
-							<div>
-								<button
-									onClick={handleSubmit}
-									className={`text-lg text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/2 px-2 py-3 rounded-lg
+							<button
+								onClick={handleSubmit}
+								className={`text-lg my-4 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-11/12 px-2 py-3 rounded-lg
 										cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
-								>
-									Calculate
-								</button>
-							</div>
+							>
+								Calculate
+							</button>
 						</div>
-						<div className="w-2/3 h-fit flex flex-col gap-y-5 pr-5">
-							<div className="h-[70vh] w-full ">
+						<div className="w-9/12 flex-grow flex flex-col gap-y-5 pr-5">
+							<div className="h-full w-full ">
 								<DCACalculatorChart data={filteredIndexData} />
 							</div>
-							<div className="flex flex-row ml-auto z-10">
-								<CSVLink
-									data={csvData}
-									className={`text-sm mr-2 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
+						</div>
+					</section>
+					<section className="w-full h-fit px-10 flex flex-col items-center justify-start gap-3">
+						<div className="flex flex-row ml-auto z-10">
+							<CSVLink
+								data={csvData}
+								className={`text-sm mr-2 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
 										cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
-									filename={`${fileName}.csv`}
-									onClick={exportCSV}
+								filename={`${fileName}.csv`}
+								onClick={exportCSV}
+							>
+								Download CSV
+							</CSVLink>
+							<button
+								onClick={exportPdf}
+								className={`text-sm text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+							>
+								Download PDF
+							</button>
+						</div>
 
-								>
-									Download CSV
-								</CSVLink>
-								<button
-									onClick={exportPdf}
-									className={`text-sm text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
-								>
-									Download PDF
-								</button>
-							</div>
-
-							<div className="w-full bg-transparent">
-								<div className="max-h-[500px] overflow-y-scroll">
-									<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] w-full rounded-xl border shadow-xl dark:border-[#161C10] md:min-w-[700px]">
-										<thead className="sticky top-0">
-											<tr className="text-md interBold bg-colorSeven-500 text-whiteText-500">
-												<th className="px-4 py-2 text-left">Time</th>
-												<th className="px-4 py-2 text-right">Price</th>
-												<th className="px-4 py-2 text-right">Percentage Gain</th>
-												{/* <th className="px-4 py-2 text-right">Token AMT</th> */}
-												<th className="px-4 py-2 text-right">Invested Amount</th>
-												<th className="px-4 py-2 text-right">Total Gain</th>
-												<th className="px-4 py-2 text-right">Total</th>
+						<div className="w-full bg-transparent rounded-xl overflow-hidden">
+							<div className="max-h-[500px] overflow-y-scroll">
+								<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] w-full shadow-sm shadow-black md:min-w-[700px]">
+									<thead className="sticky top-0 rounded-t-xl">
+										<tr className="text-md interBold bg-colorSeven-500 text-whiteText-500">
+											<th className="px-4 py-2 text-left">Time</th>
+											<th className="px-4 py-2 text-right">Price</th>
+											<th className="px-4 py-2 text-right">Percentage Gain</th>
+											{/* <th className="px-4 py-2 text-right">Token AMT</th> */}
+											<th className="px-4 py-2 text-right">Invested Amount</th>
+											<th className="px-4 py-2 text-right">Total Gain</th>
+											<th className="px-4 py-2 text-right">Total</th>
+										</tr>
+									</thead>
+									<tbody className="overflow-x-hidden bg-gray-200">
+										{filteredIndexData.map((data: dcaDataType, i: React.Key | null | undefined) => (
+											<tr key={i} className="text-gray-700 interMedium text-base border-b  border-blackText-500">
+												<td className={`px-4 text-left py-3 `}>{data.date}</td>
+												<td className={`px-4 text-right py-3 `}>${FormatToViewNumber({ value: data.value, returnType: 'string' })}</td>
+												<td
+													className={`px-4 text-right py-3  ${
+														data.percentageGain ? (i != 0 ? (data.percentageGain > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500') : 'text-gray-500') : 'text-black'
+													}`}
+												>
+													{data.percentageGain && data.percentageGain > 0 ? '+' + data.percentageGain?.toFixed(2) : data.percentageGain?.toFixed(2)}%
+												</td>
+												{/* <td className={`px-4 text-right py-3 border-r border-blackText-500`}>${data.tokenAmt ? Number(data.tokenAmt.toFixed(2)).toLocaleString() : '0.00'}</td> */}
+												<td className={`px-4 text-right py-3 `}>${data.totalInvested ? Number(data.totalInvested.toFixed(2)).toLocaleString() : '0.00'}</td>
+												<td className={`px-4 text-right py-3 `}>{data.totalGain ? data.totalGain.toFixed(2) : '0.00'}</td>
+												<td className={`px-4 text-right py-3 `}>${data.total ? Number(data.total.toFixed(2)).toLocaleString() : '0.00'}</td>
 											</tr>
-										</thead>
-										<tbody className="overflow-x-hidden bg-gray-200">
-											{filteredIndexData.map((data: dcaDataType, i: React.Key | null | undefined) => (
-												<tr key={i} className="text-gray-700 interMedium text-base border-b  border-blackText-500">
-													<td className={`px-4 text-left py-3 border-r border-blackText-500`}>{data.date}</td>
-													<td className={`px-4 text-right py-3 border-r border-blackText-500`}>${FormatToViewNumber({ value: data.value, returnType: 'string' })}</td>
-													<td
-														className={`px-4 text-right py-3 border-r border-blackText-500 ${
-															data.percentageGain ? (i != 0 ? (data.percentageGain > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500') : 'text-gray-500') : 'text-black'
-														}`}
-													>
-														{data.percentageGain && data.percentageGain > 0 ? '+' + data.percentageGain?.toFixed(2) : data.percentageGain?.toFixed(2)}%
-													</td>
-													{/* <td className={`px-4 text-right py-3 border-r border-blackText-500`}>${data.tokenAmt ? Number(data.tokenAmt.toFixed(2)).toLocaleString() : '0.00'}</td> */}
-													<td className={`px-4 text-right py-3 border-r border-blackText-500`}>${data.totalInvested ? Number(data.totalInvested.toFixed(2)).toLocaleString() : '0.00'}</td>
-													<td className={`px-4 text-right py-3 border-r border-blackText-500`}>{data.totalGain ? data.totalGain.toFixed(2) : '0.00'}</td>
-													<td className={`px-4 text-right py-3 `}>${data.total ? Number(data.total.toFixed(2)).toLocaleString() : '0.00'}</td>
-												</tr>
-											))}
-										</tbody>
-									</table>
-								</div>
+										))}
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</section>
