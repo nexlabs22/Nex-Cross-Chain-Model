@@ -63,7 +63,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				handleScale: false,
 				handleScroll: true,
 				layout: {
-					background: { color: location === '/dcaCalculator' ? '#E3E7E7' :'#F3F3F3' }
+					background: { color: location === '/dcaCalculator' ? '#FFFFFF' :'#F3F3F3' }
 					// backgroundColor: 'red', // Set the background color to transparent
 				} as DeepPartial<LayoutOptions>, // Use type assertion to specify the type
 			})
