@@ -11,7 +11,7 @@ import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
 import "../chainlink/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-
+import "../libraries/OracleLibrary.sol";
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
@@ -140,6 +140,14 @@ contract IndexFactory is
         oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
         //set addresses
+        //set addresses
+        weth = IWETH(_weth);
+        quoter = IQuoter(_quoter);
+        swapRouterV3 = ISwapRouter(_swapRouterV3);
+        factoryV3 = IUniswapV3Factory(_factoryV3);
+        swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
+        factoryV2 = IUniswapV2Factory(_factoryV2);
+        //fee
         feeRate = 10;
         latestFeeUpdate = block.timestamp;
 
@@ -284,6 +292,175 @@ contract IndexFactory is
     }
 
 
+
+    function _swapSingle(address tokenIn, address tokenOut, uint amountIn, address _recipient, uint _swapVersion) internal returns(uint){
+        uint amountOut = getAmountOut(tokenIn, tokenOut, amountIn, _swapVersion);
+        uint swapAmountOut;
+        if(amountOut > 0){
+           swapAmountOut = indexToken.swapSingle(tokenIn, tokenOut, amountIn, _recipient, _swapVersion);
+        }
+        if(_swapVersion == 3){
+            return swapAmountOut;
+        }else{
+            return amountOut;
+        }
+    }
+
+
+    function swap(address tokenIn, address tokenOut, uint amountIn, address _recipient, uint _swapVersion) public returns(uint){
+            if(_swapVersion == 3){
+                IERC20(tokenIn).approve(address(swapRouterV3), amountIn);
+                ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
+                .ExactInputSingleParams({
+                    tokenIn: tokenIn,
+                    tokenOut: tokenOut,
+                    // pool fee 0.3%
+                    fee: 3000,
+                    recipient: _recipient,
+                    deadline: block.timestamp,
+                    amountIn: amountIn,
+                    amountOutMinimum: 0,
+                    // NOTE: In production, this value can be used to set the limit
+                    // for the price the swap will push the pool to,
+                    // which can help protect against price impact
+                    sqrtPriceLimitX96: 0
+                });
+                uint finalAmountOut = swapRouterV3.exactInputSingle(params);
+                return finalAmountOut;
+            } else{
+                address[] memory path = new address[](2);
+                path[0] = tokenIn;
+                path[1] = tokenOut;
+
+                IERC20(tokenIn).approve(address(swapRouterV2), amountIn);
+                swapRouterV2.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+                    amountIn, //amountIn
+                    0, //amountOutMin
+                    path, //path
+                    _recipient, //to
+                    block.timestamp //deadline
+                );
+                return 0;
+            }
+    }
+
+
+    function issuanceIndexTokensWithEth(uint _inputAmount) public payable {
+        uint feeAmount = (_inputAmount*feeRate)/10000;
+        uint finalAmount = _inputAmount + feeAmount;
+        require(msg.value >= finalAmount, "lower than required amount");
+        //transfer fee to the owner
+        (bool _success,) = owner().call{value: fee}("");
+        require(_success, "transfer eth fee to the owner failed");
+        weth.deposit{value: _inputAmount}();
+        weth.transfer(address(indexToken), _inputAmount);
+        uint firstPortfolioValue = getPortfolioBalance();
+        uint wethAmount = _inputAmount;
+        //swap
+        for(uint i = 0; i < totalCurrentList; i++) {
+        _swapSingle(address(weth), currentList[i], wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18, address(indexToken), tokenSwapVersion[currentList[i]]);
+        }
+       //mint index tokens
+       uint amountToMint;
+       if(indexToken.totalSupply() > 0){
+        amountToMint = (indexToken.totalSupply()*wethAmount)/firstPortfolioValue;
+       }else{
+        uint price = priceInWei();
+        amountToMint = (wethAmount*price)/1e16;
+       }
+        indexToken.mint(msg.sender, amountToMint);
+        emit Issuanced(msg.sender, address(weth), _inputAmount, amountToMint, block.timestamp);
+    }
+
+
+    function redemption(uint amountIn, address _tokenOut, uint _tokenOutSwapVersion) public returns(uint) {
+        // uint firstPortfolioValue = getPortfolioBalance();
+        uint burnPercent = amountIn*1e18/indexToken.totalSupply();
+        // uint burnPercent = 1e18;
+
+        indexToken.burn(msg.sender, amountIn);
+
+        uint outputAmount;
+        //swap
+        for(uint i = 0; i < totalCurrentList; i++) {
+        uint swapAmount = (burnPercent*IERC20(currentList[i]).balanceOf(address(indexToken)))/1e18;
+        uint swapAmountOut = _swapSingle(currentList[i], address(weth), swapAmount, address(this), tokenSwapVersion[currentList[i]]);
+        outputAmount += swapAmountOut;
+        }
+        
+        // uint outputAmount = weth.balanceOf(address(this));
+        uint fee = outputAmount*feeRate/10000;
+        if(_tokenOut == address(weth)){
+            // weth.transfer(msg.sender, outputAmount - fee);
+            weth.withdraw(outputAmount);
+            (bool _ownerSuccess,) = owner().call{value: fee}("");
+            require(_ownerSuccess, "transfer eth fee to the owner failed");
+            (bool _userSuccess,) = payable(msg.sender).call{value: outputAmount - fee}("");
+            require(_userSuccess, "transfer eth fee to the user failed");
+            emit Redemption(msg.sender, _tokenOut, amountIn, outputAmount - fee, block.timestamp);
+            return outputAmount - fee;
+        }else{
+            weth.withdraw(fee);
+            (bool _success,) = owner().call{value: fee}("");
+            require(_success, "transfer eth fee to the owner failed");
+            uint reallOut = swap(address(weth), _tokenOut, outputAmount - fee, msg.sender, _tokenOutSwapVersion);
+            emit Redemption(msg.sender, _tokenOut, amountIn, reallOut, block.timestamp);
+            return reallOut;
+        }
+
+
+    }
+
+    function getAmountOut(address tokenIn, address tokenOut, uint amountIn, uint _swapVersion) public view returns(uint finalAmountOut) {
+        uint finalAmountOut;
+        if(amountIn > 0){
+        if(_swapVersion == 3){
+           finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn), 1);
+        }else {
+            address[] memory path = new address[](2);
+            path[0] = tokenIn;
+            path[1] = tokenOut;
+            uint[] memory v2amountOut = swapRouterV2.getAmountsOut(amountIn, path);
+            finalAmountOut = v2amountOut[1];
+        }
+        }
+        return finalAmountOut;
+    }
+
+
+    function getPortfolioBalance() public view returns(uint){
+        uint totalValue;
+        for(uint i = 0; i < totalCurrentList; i++) {
+            uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+            totalValue += value;
+        }
+        return totalValue;
+    }
+
+
+
+
+    function estimateAmountOut(
+        address tokenIn,
+        address tokenOut,
+        uint128 amountIn,
+        uint32 secondsAgo
+    ) public view returns (uint amountOut) {
+        
+        address _pool = factoryV3.getPool(
+            tokenIn,
+            tokenOut,
+            3000
+        );
+
+        (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
+        amountOut = OracleLibrary.getQuoteAtTick(
+            tick,
+            amountIn,
+            tokenIn,
+            tokenOut
+        );
+    }
     // function send(
     //     uint64 destinationChainSelector,
     //     address receiver,

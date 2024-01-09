@@ -1,6 +1,6 @@
 
 import { ContractReceipt, ContractTransaction, Signer, constants } from "ethers";
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 import { BasicMessageReceiver, BasicTokenSender, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
 import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { expect } from 'chai';
@@ -105,9 +105,6 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
             v3Router.address, //v2
             v3Factory.address //v2
       )
-
-      //set minter
-      await indexToken.setMinter(indexFactory.address)
     })
     
     async function addLiquidityEth(token: Token, ethAmount: string, tokenAmount: string){
@@ -170,35 +167,78 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
     }
   
     describe("Deployment", function () {
-      
-
-      it("Test manual swap", async function () {
-        
-      });
-
-      it("Test factory single swap", async function () {
+      it("Test oracle list", async function () {
+        //adding liquidity
+        await addLiquidityEth(token0, "1", "1000")
         //update oracle list
         await updateOracleList()
+        //check oracle list
+        expect(await indexFactory.oracleList("0")).to.be.equal(token0.address)
+        expect(ethers.utils.formatEther(await indexFactory.tokenOracleMarketShare(token0.address))).to.be.equal("70.0")
+      });
+
+      it("Test manual swap", async function () {
         //adding liquidity
         const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
         const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
 
         await addLiquidityEth(token0, "1", "1000")
-        await addLiquidityEth(token1, "1", "1000")
-        
+        const params1 = {
+          tokenIn: weth9.address,
+          tokenOut: token0.address,
+          fee: FeeAmount.MEDIUM,
+          recipient: await owner.getAddress(),
+          deadline: unlockTime,
+          amountIn: ethers.utils.parseEther("0.1"),
+          amountOutMinimum:0,
+          sqrtPriceLimitX96: 0
+        }
         const ownerAddress = owner.address
-        
-        await indexFactory.issuanceIndexTokensWithEth(ethers.utils.parseEther("0.1"), {value: ethers.utils.parseEther("0.1001")})
-        console.log("token0 after issuance:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
-        console.log("token1 after issuance:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
-        console.log("index token after issuance:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
-        await network.provider.send("evm_mine");
-        console.log("portfolio after issuance:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
-        await indexFactory.redemption(ethers.utils.parseEther("20000"), weth9.address, "3")
-        console.log("index token after redemption:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
-        await network.provider.send("evm_mine");
-        console.log("portfolio after redemption:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
+        console.log("token0 before swap:", ethers.utils.formatEther(await token0.balanceOf(ownerAddress)))
+        // await deploymentObj.token0.approve(deploymentObj.v3Router.target, ethers.parseEther("10"));
+        // await deploymentObj.v3Router.exactInputSingle(params1);
+        await weth9.deposit({value:ethers.utils.parseEther("0.1")});
+        await weth9.approve(v3Router.address, ethers.utils.parseEther("0.1"));
+        console.log("weth before swap:", ethers.utils.formatEther(await weth9.balanceOf(ownerAddress)))
+
+        console.log("expected token before swap:", ethers.utils.formatEther(await indexFactory.estimateAmountOut(weth9.address, token0.address, ethers.utils.parseEther("0.1"), "1")))
+
+        await v3Router.exactInputSingle(params1);
+        console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(ownerAddress)))
+        console.log("weth after swap:", ethers.utils.formatEther(await weth9.balanceOf(ownerAddress)))
       });
+
+      /*
+      it("Test factory single swap", async function () {
+        //adding liquidity
+        const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+        const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
+
+        await addLiquidityEth(token0, "1", "1000")
+        const params1 = {
+          tokenIn: weth9.address,
+          tokenOut: token0.address,
+          fee: FeeAmount.MEDIUM,
+          recipient: await owner.getAddress(),
+          deadline: unlockTime,
+          amountIn: ethers.utils.parseEther("0.1"),
+          amountOutMinimum:0,
+          sqrtPriceLimitX96: 0
+        }
+        const ownerAddress = owner.address
+        console.log("token0 before swap:", ethers.utils.formatEther(await token0.balanceOf(ownerAddress)))
+        // await deploymentObj.token0.approve(deploymentObj.v3Router.target, ethers.parseEther("10"));
+        // await deploymentObj.v3Router.exactInputSingle(params1);
+        await weth9.deposit({value:ethers.utils.parseEther("0.1")});
+        await weth9.approve(indexFactory.address, ethers.utils.parseEther("0.1"));
+        console.log("weth before swap:", ethers.utils.formatEther(await weth9.balanceOf(ownerAddress)))
+        // await v3Router.exactInputSingle(params1);
+        await indexFactory.swap(weth9.address, token0.address, ethers.utils.parseEther("0.1"), indexFactory.address, "3");
+        console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(ownerAddress)))
+        console.log("weth after swap:", ethers.utils.formatEther(await weth9.balanceOf(ownerAddress)))
+      });
+      **/
+      
       
     });
   });
