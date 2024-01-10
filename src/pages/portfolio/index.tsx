@@ -36,7 +36,7 @@ import {
 	goerliLinkWethPoolAddress,
 } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
-import { FormatToViewNumber, num } from '@/hooks/math'
+import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { GenericToast } from '@/components/GenericToast'
 import AccountRebalancingSection from '@/components/AccountRebalancingSection'
@@ -56,9 +56,14 @@ import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
 import { reduceAddress } from '@/utils/general'
 import { GoArrowRight } from 'react-icons/go'
-import { IoMdArrowUp } from 'react-icons/io'
+import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
+import { nexTokens } from '@/constants/nexIndexTokens'
+import { nexTokenDataType } from '@/types/nexTokenData'
+import convertToUSD from '@/utils/convertToUsd'
+import usePortfolioPageStore from '@/store/portfolioStore'
+import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 
 // Firebase :
 import { getDatabase, ref, onValue, set, update } from 'firebase/database'
@@ -89,8 +94,15 @@ interface User {
 
 export default function Portfolio() {
 	const address = useAddress()
+	const router = useRouter()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
-	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
+	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex, setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
+	const { portfolioData, setDayChange } = usePortfolioPageStore()
+
+	useEffect(() => {
+		setEthPriceInUsd()
+	}, [setEthPriceInUsd])
+	
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
@@ -117,17 +129,15 @@ export default function Portfolio() {
 		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
-	// let anfiPrice = 0; let cr5Price = 0;
-	// let anfi24hChng = 0; let cr524hChng = 0;
 	const [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
-	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
-	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
+	const indexPercent = { anfi: anfiPercent, cr5: crypto5Percent }
 
 	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
 		const chartData: { time: number; value: number }[] = []
 		const ANFIData = dataAnfi.poolDayDatas
 		const CR5Data = dataCR5.poolDayDatas
 		for (let i = 0; i <= ANFIData.length - 1; i++) {
+			console.log(num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price))
 			const chartObj: { time: number; value: number } = { time: 0, value: 0 }
 			const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i].token0Price)
 			chartObj.time = ANFIData[i].date
@@ -138,28 +148,25 @@ export default function Portfolio() {
 
 		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price * num(anfiTokenBalance.data)
 		const cr5Price = CR5Data[CR5Data.length - 1].token0Price * num(crypto5TokenBalance.data)
-		setIndexPrices({ anfi: anfiPrice, cr5: cr5Price })
+		// setIndexPrices({ anfi: anfiPrice, cr5: cr5Price })
 
-		const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price
-		const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price
+		const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price || 0
+		const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price || 0
 		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
 
-		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price
-		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price
+		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price || 0
+		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price || 0
 		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
-		setIndex24hChange({ anfi: anfi24hChng, cr5: cr524hChng })
+
+		setDayChange({ anfi: todayANFIPrice - yesterdayANFIPrice, cr5: todayCR5Price - yesterdayCR5Price })
 	}
 
 	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value
 	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value
 	const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
 
-	const [isCopied, setIsCopied] = useState(false)
-
 	const handleCopy = () => {
 		if (address) {
-			setIsCopied(true)
-			setTimeout(() => setIsCopied(false), 2000) // Reset "copied" state after 2 seconds
 			GenericToast({
 				type: 'success',
 				message: 'Copied !',
@@ -269,7 +276,46 @@ export default function Portfolio() {
 		{ time: '2018-04-04', value: 0 },
 	]
 
-	const router = useRouter()
+	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
+
+	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
+
+	useEffect(() => {
+		async function getTokenDetails() {
+			const data = await Promise.all(
+				nexTokens.map(async (item: nexTokenDataType) => {
+					const calculatedUsdValue = !['CRYPTO5'].includes(item.symbol) ? (await convertToUSD(item.address, ethPriceInUsd, false)) || 0 : 0
+					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0: item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0: 0
+					const totalTokenUsd = (calculatedUsdValue * totalToken) || 0
+					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
+
+					return {
+						...item,
+						totalToken,
+						totalTokenUsd,
+						percentage,
+					}
+				})
+			)
+
+			setAssetData(data)
+		}
+
+		getTokenDetails()
+	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent])
+
+	// const storedData = localStorage.getItem('totalTradedBalance')
+	// const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
+	// const totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
+
+	// useEffect(() => {
+		// let totalTradedBalance = 0
+		// if (typeof window !== 'undefined') {
+		//   	const storedData = localStorage.getItem('totalTradedBalance');
+		// 	const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
+		// 	totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
+		// }
+	//   }, []);
 
 	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
 	const [chosenPPType, setChosenPPType] = useState<string>('none')
@@ -372,27 +418,39 @@ export default function Portfolio() {
 								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-								<PNLChart
-									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
-									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
-								/>
+								<PNLChart data={showPortfolioData ? chartArr : emptyData} change={showPortfolioData ? portfolio24hChange : 0} />
 							</div>
 						</div>
 						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
 							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 ">Total Portfolio Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">$96,495,102.4</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] ">
+									${showPortfolioData && chartArr && chartArr[chartArr.length - 1] ? FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' }) : '0.00'}
+								</h5>
 							</div>
 							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 ">Total Traded Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">$1,248,217.81</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] ">${portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString(): '0.00'}</h5>
 							</div>
 							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 ">24h Change</h5>
 								<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
-									<h5 className="interExtraBold text-2xl text-nexLightGreen-500 ">$261.3</h5>
-									<div className="w-fit h-fit rounded-lg bg-nexLightGreen-500 p-1">
-										<IoMdArrowUp color="#FFFFFF" size={15} />
+									<h5
+										className={`interExtraBold text-2xl ${
+											showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
+										} `}
+									>
+										$
+										{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
+											? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
+											: '0.00'}
+									</h5>
+									<div
+										className={`w-fit h-fit rounded-lg ${
+											showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
+										} p-1`}
+									>
+										{showPortfolioData ? portfolio24hChange > 0 ? <IoMdArrowUp color="#FFFFFF" size={15} /> : portfolio24hChange < 0 ? <IoMdArrowDown color="#FFFFFF" size={15} /> : '' : ''}
 									</div>
 								</div>
 							</div>
@@ -405,7 +463,7 @@ export default function Portfolio() {
 										<h5 className="interExtraBold text-[#646464] text-base whitespace-nowrap">Asset</h5>
 									</div>
 									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Totla Balance</h5>
+										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Total Balance</h5>
 									</div>
 									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
 										<h5 className="interExtraBold text-[#646464]  text-base whitespace-nowrap">Portfolio %</h5>
@@ -415,90 +473,53 @@ export default function Portfolio() {
 									</div>
 								</div>
 								<div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image
-												src={anfiLogo.src}
-												alt="anfi"
-												width={50}
-												height={50}
-												className="cursor-pointer"
-												onClick={() => {
-													router.push(`/ownedAsset?asset=anfi`)
-												}}
-											></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">ANFI</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">ANFI</h5>
+									{assetData.map((asset) => (
+										<>
+											<div key={asset.symbol} className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
+												<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
+													<Image
+														src={asset.logo}
+														alt="anfi"
+														width={50}
+														height={50}
+														className="cursor-pointer"
+														onClick={() => {
+															router.push(`/ownedAsset?asset=${asset.symbol.toLowerCase()}`)
+														}}
+													></Image>
+													<div>
+														<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">{asset.symbol}</h5>
+														<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">{asset.shortName}</h5>
+													</div>
+												</div>
+												<div className="w-1/4 h-fit px-1">
+													<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">
+														{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol}
+													</h5>
+													<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}</h5>
+												</div>
+												<div className="w-1/4 h-fit px-1">
+													<ProgressBar
+														completed={showPortfolioData ? Number(asset.percentage) : 0}
+														height="10px"
+														isLabelVisible={false}
+														className="w-8/12 mb-3"
+														bgColor="#5E869B"
+														baseBgColor="#A9A9A9"
+													/>
+													<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">{showPortfolioData ? asset.percentage?.toFixed(2) : '0.00'}%</h5>
+												</div>
+												<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
+													<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
+														Trade
+													</button>
+													<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
+														Details
+													</button>
+												</div>
 											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 ANFI</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image src={cr5Logo.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">CRYPTO 5</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">CR5</h5>
-											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 CR5</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
-									<div className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-											<Image src={btc.src} alt="anfi" width={50} height={50} className="cursor-pointer"></Image>
-											<div>
-												<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">Bitcoin</h5>
-												<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">BTC</h5>
-											</div>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">2.219 BTC</h5>
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">$4950.4</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1">
-											<ProgressBar completed={28.76} height="10px" isLabelVisible={false} className="w-8/12 mb-3" bgColor="#5E869B" baseBgColor="#A9A9A9" />
-											<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">28.4%</h5>
-										</div>
-										<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Trade
-											</button>
-											<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
-												Details
-											</button>
-										</div>
-									</div>
+										</>
+									))}
 								</div>
 							</div>
 						</div>
@@ -506,7 +527,7 @@ export default function Portfolio() {
 							<h5 className="interBold text-2xl text-blackText-500">Assets Distribution</h5>
 							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
 								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-10 xl:mb-20">
-									<TreemapChart />
+									<TreemapChart percentage={indexPercent} />
 								</div>
 								<div className="w-11/12 xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
 									<h5 className="interBold text-xl text-blackText-500">

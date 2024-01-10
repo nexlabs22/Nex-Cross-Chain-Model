@@ -138,7 +138,6 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 			.get('https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd')
 			.then((res) => res.data.weth.usd)
 			.catch((err) => console.log(err))
-			console.log(wethPriceinUsd)
 		set({ ethPriceInUsd: wethPriceinUsd })
 	},
 }))

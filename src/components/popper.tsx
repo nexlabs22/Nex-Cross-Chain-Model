@@ -33,17 +33,17 @@ const HoverMenuWithTransition: React.FC<HoverMenuWithTransitionProps> = ({ menuI
 
 			<ControlledMenu {...hoverProps} {...menuState} anchorRef={ref} onClose={() => toggle(false)} direction="bottom" align="end" menuClassName="navSubMenu">
 				<MenuItem key={1} className=" hover:bg-colorSeven-500/20">
-					<Link href={'/portfolio'} key={1}>
+					<Link href={'/portfolio'} key={10}>
 						<h5 className="interMedium font-sm mr-2 text-blackText-500 py-2">Overview</h5>
 					</Link>
 				</MenuItem>
-				<MenuItem key={1} className=" hover:bg-colorSeven-500/20">
-					<Link href={'/history'} key={1}>
+				<MenuItem key={2} className=" hover:bg-colorSeven-500/20">
+					<Link href={'/history'} key={20}>
 						<h5 className="interMedium font-sm mr-2 text-blackText-500 py-2">Transactions</h5>
 					</Link>
 				</MenuItem>
-				<MenuItem key={1} className=" hover:bg-colorSeven-500/20">
-					<Link href={'/settings'} key={1}>
+				<MenuItem key={3} className=" hover:bg-colorSeven-500/20">
+					<Link href={'/settings'} key={30}>
 						<h5 className="interMedium font-sm mr-2 text-blackText-500 py-2">Settings</h5>
 					</Link>
 				</MenuItem>
