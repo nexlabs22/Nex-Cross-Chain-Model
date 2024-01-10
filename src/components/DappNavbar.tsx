@@ -89,7 +89,6 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 		if(address) {
 			getUser()
 			if (connectedUser.main_wallet == 'null') {
-				
 				const newUserKey = push(child(ref(database), 'users')).key
 				set(ref(database, 'users/' + newUserKey), {
 					name: 'Nex User',
