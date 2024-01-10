@@ -49,6 +49,33 @@ import { CiExport } from 'react-icons/ci'
 import { IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
 
+// Firebase :
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+import { FaCheck } from 'react-icons/fa6'
+import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
+import ImageViewer from 'react-simple-image-viewer'
+import { Uploader } from 'uploader'
+import { UploadDropzone } from 'react-uploader'
+import 'react-image-upload/dist/index.css'
+
+interface User {
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
+}
+
 function History() {
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
@@ -231,6 +258,30 @@ function History() {
 		{ time: '2018-04-04', value: 0 },
 	]
 
+	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
+	const [chosenPPType, setChosenPPType] = useState<string>('none')
+
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
+
 	return (
 		<>
 			<Head>
@@ -247,9 +298,30 @@ function History() {
 					<section className="w-screen h-fit pt-10">
 						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
-								{address && address != '' ? <GenericAvatar walletAddress={address}></GenericAvatar> : <div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>}
+								{address && address != '' ? (
+									<div
+										className="w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
+										style={{
+											backgroundImage:
+												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
+										}}
+									>
+										
+										{connectedUser?.ppType == 'identicon' || chosenPPType == 'identicon' && uploadedPPLink == "none" ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+									</div>
+								) : (
+									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
+								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
+									<h5 className="text-xl text-blackText-500 montrealBold">
+										{connectedUser && connectedUser.main_wallet == address
+											? connectedUser.inst_name != 'x'
+												? connectedUser.inst_name
+												: connectedUser.name != 'x'
+												? connectedUser.name
+												: 'Nex User'
+											: 'Nex User'}
+									</h5>
 									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
 										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
@@ -291,25 +363,6 @@ function History() {
 									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
 									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
 								/>
-							</div>
-						</div>
-						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">Total Portfolio Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">$96,495,102.4</h5>
-							</div>
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">Total Traded Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">$1,248,217.81</h5>
-							</div>
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">24h Change</h5>
-								<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
-									<h5 className="interExtraBold text-2xl text-nexLightGreen-500 ">$261.3</h5>
-									<div className="w-fit h-fit rounded-lg bg-nexLightGreen-500 p-1">
-										<IoMdArrowUp color="#FFFFFF" size={15} />
-									</div>
-								</div>
 							</div>
 						</div>
 					</section>

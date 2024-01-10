@@ -70,7 +70,10 @@ import { getDatabase, ref, onValue, set, update } from 'firebase/database'
 import { database } from '@/utils/firebase'
 import { FaCheck } from 'react-icons/fa6'
 import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
-import ImageViewer from 'react-simple-image-viewer';
+import ImageViewer from 'react-simple-image-viewer'
+import { Uploader } from 'uploader'
+import { UploadDropzone } from 'react-uploader'
+import 'react-image-upload/dist/index.css'
 
 interface User {
 	email: string
@@ -86,6 +89,7 @@ interface User {
 	p4: boolean
 	p5: boolean
 	ppType: string
+	creationDate: string
 }
 
 export default function Settings() {
@@ -273,6 +277,7 @@ export default function Settings() {
 	const router = useRouter()
 
 	const [imageViwerOpened, setImageViwerOpened] = useState<boolean>(false)
+	const [imageUploaderOpened, setImageUploaderOpened] = useState<boolean>(false)
 
 	const [option1, setOption1] = useState<boolean>(false)
 	const [option2, setOption2] = useState<boolean>(false)
@@ -291,9 +296,16 @@ export default function Settings() {
 	const [email, setEmail] = useState<string>('')
 	const [adr, setAdr] = useState<string>('')
 	const [vatin, setVatin] = useState<string>('')
+	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
+	const [chosenPPType, setChosenPPType] = useState<string>('none')
 
 	const [connectedUser, setConnectedUser] = useState<User>()
 	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	const uploader = Uploader({
+		apiKey: 'free', // Get production API keys from Bytescale
+	})
+	const ImageUploaderOptions = { multi: false }
 
 	useEffect(() => {
 		function getUser() {
@@ -307,10 +319,10 @@ export default function Settings() {
 						setConnectedUser(potentialUser)
 						setConnectedUserId(key)
 						setOption1(potentialUser.p1)
-						setOption1(potentialUser.p2)
-						setOption1(potentialUser.p3)
-						setOption1(potentialUser.p4)
-						setOption1(potentialUser.p5)
+						setOption2(potentialUser.p2)
+						setOption3(potentialUser.p3)
+						setOption4(potentialUser.p4)
+						setOption5(potentialUser.p5)
 					}
 				}
 			})
@@ -320,21 +332,24 @@ export default function Settings() {
 
 	function saveSettings() {
 		update(ref(database, 'users/' + connectedUserId), {
-			name: name,
-			email: email,
-			address: adr,
-			vatin: vatin,
-			inst_name: instName,
-			p1: option1,
-			p2: option2,
-			p3: option3,
-			p4: option4,
-			p5: option5,
+			name: name != connectedUser?.name && name != '' ? name : connectedUser?.name,
+			email: email != connectedUser?.email && email != '' ? email : connectedUser?.email,
+			address: adr != connectedUser?.address && adr != '' ? adr : connectedUser?.address,
+			vatin: vatin != connectedUser?.vatin && vatin != '' ? vatin : connectedUser?.vatin,
+			inst_name: instName != connectedUser?.inst_name && instName != '' ? instName : connectedUser?.inst_name,
+			p1: option1 != connectedUser?.p1 ? option1 : connectedUser.p1,
+			p2: option2 != connectedUser?.p2 ? option2 : connectedUser.p2,
+			p3: option3 != connectedUser?.p3 ? option3 : connectedUser.p3,
+			p4: option4 != connectedUser?.p4 ? option4 : connectedUser.p4,
+			p5: option5 != connectedUser?.p5 ? option5 : connectedUser.p5,
+			ppLink: uploadedPPLink != 'none' ? uploadedPPLink : connectedUser?.ppLink,
+			ppType: chosenPPType != 'none' && chosenPPType != connectedUser?.ppType ? chosenPPType : connectedUser?.ppType,
 		})
 		GenericToast({
 			type: 'success',
 			message: 'Info & settings updated !',
 		})
+		router.push('/portfolio')
 	}
 
 	return (
@@ -354,15 +369,37 @@ export default function Settings() {
 						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? (
-									<div className="w-40 aspect-square flex rounded-full relative">
+									<div
+										className="w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
+										style={{
+											backgroundImage:
+												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
+										}}
+									>
 										<div className="absolute w-full h-full rounded-full z-50 bg-blackText-500 opacity-0 hover:opacity-90 flex flex-row items-center justify-center gap-2">
-											{
-												connectedUser?.ppType != "identicon" ? <MdOutlineRemoveRedEye color="#FFFFFF" size={26} className=" cursor-pointer" /> : ""
-											}
-											
-											<MdOutlineEdit color="#FFFFFF" size={26} className=" cursor-pointer"/>
+											{connectedUser?.ppType != 'identicon' ? (
+												<MdOutlineRemoveRedEye
+													color="#FFFFFF"
+													size={26}
+													className=" cursor-pointer"
+													onClick={() => {
+														setImageViwerOpened(true)
+													}}
+												/>
+											) : (
+												''
+											)}
+
+											<MdOutlineEdit
+												color="#FFFFFF"
+												size={26}
+												className=" cursor-pointer"
+												onClick={() => {
+													setImageUploaderOpened(true)
+												}}
+											/>
 										</div>
-										<GenericAvatar walletAddress={address}></GenericAvatar>
+										{connectedUser?.ppType == 'identicon' || chosenPPType == 'identicon' && uploadedPPLink == "none" ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
 									</div>
 								) : (
 									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
@@ -675,8 +712,10 @@ export default function Settings() {
 						onClick={() => {
 							saveSettings()
 						}}
-						disabled={name == "" && email == "" && adr == "" && instName == "" && vatin == "" ? true : false}
-						className={`text-xl text-white titleShadow interBold ${name == "" && email == "" && adr == "" && instName == "" && vatin == "" ? "grayscale" : ""} bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md hover:bg-colorTwo-500/30`}
+						disabled={name == '' && email == '' && adr == '' && instName == '' && vatin == '' && uploadedPPLink == 'none' && chosenPPType == connectedUser?.ppType && option1 == connectedUser.p1 && option2 == connectedUser.p2 && option3 == connectedUser.p3 && option4 == connectedUser.p4 && option5 == connectedUser.p5 ? true : false}
+						className={`text-xl text-white titleShadow interBold ${
+							name == '' && email == '' && adr == '' && instName == '' && vatin == '' && uploadedPPLink == 'none' && chosenPPType == connectedUser?.ppType && option1 == connectedUser.p1 && option2 == connectedUser.p2 && option3 == connectedUser.p3 && option4 == connectedUser.p4 && option5 == connectedUser.p5 ? 'grayscale' : ''
+						} bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md hover:bg-colorTwo-500/30`}
 					>
 						Save Settings
 					</button>
@@ -702,7 +741,58 @@ export default function Settings() {
 						{address ? <h5 className="InterMedium text-blackText-500 text-xl text-center w-full my-10">{address}</h5> : ''}
 					</div>
 				</GenericModal>
-
+				<GenericModal
+					isOpen={imageUploaderOpened}
+					onRequestClose={() => {
+						setImageUploaderOpened(false)
+					}}
+				>
+					<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
+						<h5 className="text-center interBold text-blackText-500 mb-4">Edit Profile Picture</h5>
+						<UploadDropzone
+							uploader={uploader}
+							options={ImageUploaderOptions}
+							onUpdate={(files) => {
+								setUploadedPPLink(files.map((x) => x.fileUrl).join('\n'))
+								setChosenPPType('image')
+								setImageUploaderOpened(false)
+								GenericToast({
+									type: 'success',
+									message: 'Image uploaded succesfully, don\'t foget to save the chages!',
+								})
+							}}
+							width="600px"
+							height="250px"
+						/>
+						<p className="interBold text-blackText-500 text-sm my-6">Or</p>
+						<button
+							onClick={() => {
+								setChosenPPType('identicon')
+								setImageUploaderOpened(false)
+								GenericToast({
+									type: 'success',
+									message: 'Switched to auto generated Image, don\'t foget to save the chages!',
+								})
+							}}
+							className={`text-xl mb-6 w-11/12 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 px-6 py-3 rounded-md hover:bg-colorTwo-500/30`}
+						>
+							Use Auto Generated Images
+						</button>
+					</div>
+				</GenericModal>
+				{imageViwerOpened ? (
+					<ImageViewer
+						src={[connectedUser ? connectedUser?.ppLink.toString() : '']}
+						currentIndex={0}
+						disableScroll={false}
+						closeOnClickOutside={true}
+						onClose={() => {
+							setImageViwerOpened(false)
+						}}
+					/>
+				) : (
+					''
+				)}
 			</main>
 		</>
 	)

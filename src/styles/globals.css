@@ -573,3 +573,7 @@ body {
    border-radius: 4px !important;
    overflow: hidden !important;
 }
+
+#ReactSimpleImageViewer{
+  z-index: 9999 !important;
+}
