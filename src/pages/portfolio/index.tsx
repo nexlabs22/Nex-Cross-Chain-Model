@@ -65,6 +65,33 @@ import convertToUSD from '@/utils/convertToUsd'
 import usePortfolioPageStore from '@/store/portfolioStore'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 
+// Firebase :
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+import { FaCheck } from 'react-icons/fa6'
+import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
+import ImageViewer from 'react-simple-image-viewer'
+import { Uploader } from 'uploader'
+import { UploadDropzone } from 'react-uploader'
+import 'react-image-upload/dist/index.css'
+
+interface User {
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
+}
+
 export default function Portfolio() {
 	const address = useAddress()
 	const router = useRouter()
@@ -290,6 +317,30 @@ export default function Portfolio() {
 		// }
 	//   }, []);
 
+	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
+	const [chosenPPType, setChosenPPType] = useState<string>('none')
+
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
+
 	return (
 		<>
 			<Head>
@@ -304,11 +355,32 @@ export default function Portfolio() {
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
-						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
+					<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
-								{address && address != '' ? <GenericAvatar walletAddress={address}></GenericAvatar> : <div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>}
+								{address && address != '' ? (
+									<div
+										className="w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
+										style={{
+											backgroundImage:
+												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
+										}}
+									>
+										
+										{connectedUser?.ppType == 'identicon' || chosenPPType == 'identicon' && uploadedPPLink == "none" ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+									</div>
+								) : (
+									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
+								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
+									<h5 className="text-xl text-blackText-500 montrealBold">
+										{connectedUser && connectedUser.main_wallet == address
+											? connectedUser.inst_name != 'x'
+												? connectedUser.inst_name
+												: connectedUser.name != 'x'
+												? connectedUser.name
+												: 'Nex User'
+											: 'Nex User'}
+									</h5>
 									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
 										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">

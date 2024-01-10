@@ -60,6 +60,33 @@ import { GoArrowRight } from 'react-icons/go'
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
+
+// Firebase :
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+import { FaCheck } from 'react-icons/fa6'
+import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
+import ImageViewer from 'react-simple-image-viewer'
+import { Uploader } from 'uploader'
+import { UploadDropzone } from 'react-uploader'
+import 'react-image-upload/dist/index.css'
+
+interface User {
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
+}
 import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 import { nexTokens } from '@/constants/nexIndexTokens'
@@ -157,6 +184,30 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	const dataToshow = assetData.filter((asset) => asset.symbol === assetName)[0]
 	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
 
+	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
+	const [chosenPPType, setChosenPPType] = useState<string>('none')
+
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
+
 	return (
 		<>
 			<Head>
@@ -173,13 +224,56 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 					<section className="w-screen h-fit pt-10">
 						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
-								<Image src={dataToshow ? dataToshow.logo : anfiLogo} alt="anfi" width={150} height={150} className=" rounded-full"></Image>
+								{address && address != '' ? (
+									<div
+										className="w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
+										style={{
+											backgroundImage:
+												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
+										}}
+									>
+										
+										{connectedUser?.ppType == 'identicon' || chosenPPType == 'identicon' && uploadedPPLink == "none" ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+									</div>
+								) : (
+									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
+								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-2xl text-blackText-500 montrealBold">
-										{showPortfolioData && dataToshow ? Number(dataToshow.totalToken?.toFixed(2)).toLocaleString() : '0.00'} {dataToshow ? dataToshow.symbol : 'ANFI'}
+									<h5 className="text-xl text-blackText-500 montrealBold">
+										{connectedUser && connectedUser.main_wallet == address
+											? connectedUser.inst_name != 'x'
+												? connectedUser.inst_name
+												: connectedUser.name != 'x'
+												? connectedUser.name
+												: 'Nex User'
+											: 'Nex User'}
 									</h5>
 									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
-										<h5 className="text-xl text-gray-500 interMedium">${showPortfolioData && dataToshow ? Number(dataToshow.totalTokenUsd?.toFixed(2)).toLocaleString() : '0.00'}</h5>
+										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
+										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
+											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
+												<CopyToClipboard text={address as string} onCopy={handleCopy}>
+													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+												</CopyToClipboard>
+											</div>
+											<div
+												className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full cursor-pointer"
+												onClick={() => {
+													if (address) setQRModalVisible(true)
+													else
+														GenericToast({
+															type: 'error',
+															message: `Please connect your wallet!`,
+														})
+												}}
+											>
+												<PiQrCodeDuotone color="#000000" size={15} className="scale-150 xl:scale-100" />
+											</div>
+										</div>
+									</div>
+									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
+										<BsCalendar4 color="#FFFFFF" size={15} />
+										<h5 className="text-base text-whiteText-500 montrealBold">Joined 45 days ago</h5>
 									</div>
 								</div>
 							</div>
@@ -187,126 +281,14 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 							<Chart data={complexData} />
 						</div> */}
 							<div className="lg:flex w-2/5 "></div>
-							<div className="lg:flex flex-col w-2/5 items-end gap-2 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
-								<div className="w-full h-fit flex flex-row items-center justify-end gap-3">
-									<h5 className="interBold text-base text-blackText-500 ">Total Traded Balance</h5>
-									<h5 className="interBold text-base text-[#646464] ">${showPortfolioData && portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance[assetName.toLowerCase()].toFixed(2)).toLocaleString() : '0.00'}</h5>
-								</div>
-								<div className="w-full h-fit flex flex-row items-center justify-end gap-3">
-									<h5 className="interBold text-base text-blackText-500 ">24h Change</h5>
-									<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
-										<h5
-											className={`interExtraBold text-base ${
-												showPortfolioData && dataToshow && dataToshow.indexDayChange
-													? dataToshow.indexDayChange > 0
-														? 'text-nexLightGreen-500'
-														: dataToshow.indexDayChange < 0
-														? 'text-nexLightRed-500'
-														: 'text-[#646464]'
-													: 'text-[#646464]'
-											}`}
-											title={dataToshow && dataToshow.indexDayChange ? FormatToViewNumber({ value: dataToshow.indexDayChange, returnType: 'string' }).toString() : '0.00'}
-										>
-											$
-											{showPortfolioData && dataToshow && dataToshow.indexDayChange
-												? dataToshow.indexDayChange < 0.01
-													? '≈ 0.00 '
-													: FormatToViewNumber({ value: dataToshow.indexDayChange, returnType: 'string' })
-												: '0.00'}
-										</h5>
-										<div
-											className={`w-fit h-fit rounded-lg ${
-												showPortfolioData && dataToshow && dataToshow.indexDayChange
-													? dataToshow.indexDayChange > 0
-														? 'bg-nexLightGreen-500'
-														: dataToshow.indexDayChange < 0
-														? 'bg-nexLightRed-500'
-														: ''
-													: ''
-											} p-1`}
-										>
-											{showPortfolioData && dataToshow && dataToshow.indexDayChange ? (
-												dataToshow.indexDayChange > 0 ? (
-													<IoMdArrowUp color="#FFFFFF" size={10} />
-												) : dataToshow.indexDayChange < 0 ? (
-													'bg-nexLightRed-500'
-												) : (
-													<IoMdArrowDown color="#FFFFFF" size={10} />
-												)
-											) : (
-												''
-											)}
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
-							<div className="w-full h-fit flex flex-row items-center justify-start pb-4 px-2 border-b-[2px] border-b-[#E4E4E4] ">
-								<button
-									className="py-1 px-3 shadow shadow-[#5E869B] cursor-pointer rounded-full border-[2px] border-[#5E869B] text-[#5E869B] interMedium text-lg"
-									onClick={() => {
-										router.push(`/ownedAsset?asset=${dataToshow.symbol}`)
-									}}
-								>
-									Overview
-								</button>
-								<button
-									className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg"
-									onClick={() => {
-										router.push(`/assetActivity?asset=${dataToshow.symbol}`)
-									}}
-								>
-									Activity
-								</button>
-							</div>
-						</div>
-						<div className="w-full px-20 h-fit">
-							<div className="w-full my-6 h-fit bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 rounded-2xl flex flex-row items-stretch justify-start">
-								<div className="h-fit w-9/12 border-r border-r-whiteBackground-500 p-10">
-									<h5 className="interBold mb-3 text-lg xl:text-2xl lg:text-2xl text-white titleShadow">Anti Inflation Index</h5>
-									<h5 className="interMedium hidden xl:block w-full text-lg leading-normal text-white titleShadow">
-										The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.
-										<br />
-										Gold has traditionally been a reliable investment. Nevertheless, it{"'"}s worth considering that Bitcoin, often referred to as {"'"}digital gold,{"'"} has the potential
-										to assume a prominent role in everyday life in the future.
-									</h5>
-								</div>
-								<div className="flex-grow w-3/12 border-r border-r-whiteBackground-500">
-									<div className="h-1/2 w-full border-b border-b-whiteText-500 flex flex-col items-start justify-center px-4 gap-1">
-										<h5 className="interMedium text-base text-white titleShadow">Market Cap</h5>
-										<h5 className="interExtraBold text-2xl text-white titleShadow">$1,248,217.81</h5>
-									</div>
-									<div className="h-1/2 w-full flex flex-col items-start justify-center px-4 gap-1">
-										<h5 className="interMedium text-base text-white titleShadow">24h Change</h5>
-										<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
-											<h5
-												className="interExtraBold text-2xl text-whiteText-500 titleShadow"
-												title={dataToshow && dataToshow.indexDayChange ? FormatToViewNumber({ value: dataToshow.indexDayChange, returnType: 'string' }).toString() : '0.00'}
-											>
-												$
-												{showPortfolioData && dataToshow && dataToshow.indexDayChange
-													? dataToshow.indexDayChange < 0.01
-														? '≈ 0.00 '
-														: FormatToViewNumber({ value: dataToshow.indexDayChange, returnType: 'string' })
-													: '0.00'}
-											</h5>
-											<div className="w-fit h-fit rounded-md bg-whiteText-500 p-1">
-												{showPortfolioData && dataToshow && dataToshow.indexDayChange ? (
-													dataToshow.indexDayChange > 0 ? (
-														<IoMdArrowUp color="#089981" size={14} />
-													) : dataToshow.indexDayChange < 0 ? (
-														'bg-nexLightRed-500'
-													) : (
-														<IoMdArrowDown color="#F23645" size={14} />
-													)
-												) : (
-													''
-												)}
-											</div>
-										</div>
-									</div>
-								</div>
+							<div className="lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
+								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
+									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
+								</div> */}
+								<PNLChart
+									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
+									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
+								/>
 							</div>
 						</div>
 					</section>

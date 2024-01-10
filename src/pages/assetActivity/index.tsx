@@ -32,6 +32,33 @@ import { GoArrowRight } from 'react-icons/go'
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
+
+// Firebase :
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+import { FaCheck } from 'react-icons/fa6'
+import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
+import ImageViewer from 'react-simple-image-viewer'
+import { Uploader } from 'uploader'
+import { UploadDropzone } from 'react-uploader'
+import 'react-image-upload/dist/index.css'
+
+interface User {
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
+}
 import usePortfolioPageStore from '@/store/portfolioStore'
 import { useEffect, useState } from 'react'
 import { nexTokenDataType } from '@/types/nexTokenData'
@@ -131,6 +158,30 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 
 	const dataToshow = assetData.filter((asset) => asset.symbol === assetName)[0]
 	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
+
+	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
+	const [chosenPPType, setChosenPPType] = useState<string>('none')
+
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
 
 	return (
 		<>
