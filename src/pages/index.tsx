@@ -41,7 +41,7 @@ const Dashboard: NextPage = () => {
 								<p className="interMedium text-whiteText-500 text-base w-full xl:w-1/2 mb-3">
 								Explore our Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors aiming to mitigate market volatility and enhance portfolio growth. This calculator enables a disciplined investment approach by automating the DCA strategy, which involves regular, fixed-amount investments.
 								</p>
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'}>
+								<Link href={'/dcaCalculator'}>
 									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
 										<span>Learn More </span>
 										<GoArrowRight color="#5E869B" size={30} />
