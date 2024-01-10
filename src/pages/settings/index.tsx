@@ -682,19 +682,19 @@ export default function Settings() {
 
 						<div className="flex flex-row items-center justify-start gap-1">
 							<Switch onChange={() => setOption2(!option2)} checked={option2} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about new features of Nex Labs</h5>
+							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about different Nex Labs products</h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-1">
 							<Switch onChange={() => setOption3(!option3)} checked={option3} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about new features of Nex Labs</h5>
+							<h5 className="text-base interMedium text-[#646464] w-full">Receive weekly recap about events, market news ... </h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-1">
 							<Switch onChange={() => setOption4(!option4)} checked={option4} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about new features of Nex Labs</h5>
+							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about activities of your account</h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-1">
 							<Switch onChange={() => setOption5(!option5)} checked={option5} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about new features of Nex Labs</h5>
+							<h5 className="text-base interMedium text-[#646464] w-full">Receive monthly reports of your accont</h5>
 						</div>
 						{option1 || option2 || option3 || option4 || option5 ? (
 							<div className="w-fit h-fit flex flex-row items-center justify-start">
