@@ -4,15 +4,19 @@ import React, { useEffect, useRef } from 'react'
 import { Chart } from 'react-google-charts'
 import { FaGalacticSenate } from 'react-icons/fa'
 
-const GenericTreemapChart3D = () => {
+interface TreeMapChartProps {
+	percentage:{anfi: number, cr5: number}
+}
+
+const GenericTreemapChart3D : React.FC<TreeMapChartProps> = ({ percentage }) => {
 	const data = [
 		['Asset', 'Category', 'Amount', 'Color'],
 		['Global', null, 0, 0],
-		['ANFI', 'Global', 20, 20],
-		['CRYPTO 5', 'Global', 15, 30],
-		['Ethereum', 'Global', 15, 40],
-		['MATIC', 'Global', 30, 50],
-		['BTC', 'Global', 20, 60],
+		['ANFI', 'Global', percentage.anfi, 10],
+		['CRYPTO 5', 'Global', percentage.cr5, 30]
+		// ['Ethereum', 'Global', 15, 40],
+		// ['MATIC', 'Global', 30, 50],
+		// ['BTC', 'Global', 20, 60],
 	]
 
 	const options = {

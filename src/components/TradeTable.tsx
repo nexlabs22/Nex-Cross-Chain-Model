@@ -70,7 +70,7 @@ function HistoryTable() {
 			tokens.map(async (token) => {
 				if (token.symbol !== 'CRYPTO5' && ethPriceInUsd > 0) {
 					const obj = usdPrices
-					obj[token.address] = await convertToUSD(token.address, ethPriceInUsd, false) // false as for testnet tokens
+					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false) || 0) // false as for testnet tokens
 					if (Object.keys(usdPrices).length === tokens.length - 1) {
 						setUsdPrices(obj)
 					}

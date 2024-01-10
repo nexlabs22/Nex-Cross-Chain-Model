@@ -152,7 +152,7 @@ export default function DCACalculator() {
 		totalInvested: 'Total Invested',
 		totalGain: 'Total Gain',
 		total: 'Total',
-		time: '', // don't want to include 'tokenAmt'
+		time: '', // don't want to include 'time'
 		tokenAmt: '', // don't want to include 'tokenAmt'
 		initialAmount: 'Initial Investment',
 		monthlyInvestment: 'Monthly Investment',

@@ -3,6 +3,7 @@ import { tokens } from '@/constants/goerliTokens'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
+import usePortfolioPageStore from '@/store/portfolioStore'
 import useTradePageStore from '@/store/tradeStore'
 import { Positions } from '@/types/tradeTableTypes'
 import convertToUSD from '@/utils/convertToUsd'
@@ -25,13 +26,18 @@ function NewHistoryTable() {
 		setEthPriceInUsd,
 		ethPriceInUsd,
 	} = useTradePageStore()
+	const { ownedAssetInActivity, setPortfolioData } = usePortfolioPageStore()
 	const positionHistory = GetPositionsHistory2()
 
 	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
+	const searchQuery = typeof window !== 'undefined' ? window.location.search: '/'
+	const assetName = searchQuery.split('=')[1]
+
 	useEffect(() => {
 		setEthPriceInUsd()
-	}, [])
+		setPortfolioData(positionHistory.data)
+	}, [setEthPriceInUsd,setPortfolioData, positionHistory.data])
 
 	useEffect(() => {
 		const allowedSymbols = ['ANFI', 'CRYPTO5']
@@ -41,10 +47,16 @@ function NewHistoryTable() {
 				return activeTicker.includes(data.indexName)
 			})
 			setPositionHistoryData(data)
-		} else if (path === '/portfolio') {
+		} else if (path === '/portfolio' || path === '/history') {
 			setPositionHistoryData(positionHistory.data)
+		} else if (path === '/assetActivity' ) {
+			const data = positionHistory.data.filter((data) => {
+				return (assetName.toUpperCase() === data.indexName)
+			})
+
+			setPositionHistoryData(data)
 		}
-	}, [path, positionHistory.data, swapFromCur.Symbol, swapToCur.Symbol])
+	}, [path, positionHistory.data, assetName,swapFromCur.Symbol, swapToCur.Symbol,ownedAssetInActivity])
 
 	useEffect(() => {
 		if (tradeTableReload) {
@@ -70,7 +82,7 @@ function NewHistoryTable() {
 			tokens.map(async (token) => {
 				if (token.symbol !== 'CRYPTO5' && ethPriceInUsd > 0) {
 					const obj = usdPrices
-					obj[token.address] = await convertToUSD(token.address, ethPriceInUsd, false) // false as for testnet tokens
+					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)||0) // false as for testnet tokens
 					if (Object.keys(usdPrices).length === tokens.length - 1) {
 						setUsdPrices(obj)
 					}
@@ -79,7 +91,8 @@ function NewHistoryTable() {
 		}
 
 		getUsdPrices()
-	}, [ethPriceInUsd])
+	}, [ethPriceInUsd,usdPrices])
+
 	
 	const dataToShow: { timestamp: number; tokenAddress: string; indexName: string; side: string; inputAmount: number; outputAmount: number }[] = Array.from(
 		{ length: Math.max(5, positionHistoryData.length) },
@@ -108,10 +121,6 @@ function NewHistoryTable() {
 							<th className="px-4 py-3 text-left">Output Amount</th>
 						</tr>
 					</thead>
-					{/* </table>
-			</div>
-			<div className="max-h-64 overflow-y-auto">
-				<table className="w-full"> */}
 					<tbody className="overflow-y-scroll overflow-x-hidden">
 						{dataToShow.map(
 							(
@@ -149,19 +158,19 @@ function NewHistoryTable() {
 											// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
 											className=" interMedium text-base border-b border-b-[#E4E4E4]"
 										>
-											<td className={`px-4 text-left interExtraBold text-blackText-500 text-md py-3 ${position.timestamp?'':'text-[#E5E7EB]'}`}>{position.timestamp ? convertTime(position.timestamp) : '-'}</td>
+											<td className={`px-4 text-left interExtraBold text-md py-3 ${position.timestamp?'text-blackText-500':'text-[#F2F2F2]'}`}>{position.timestamp ? convertTime(position.timestamp) : '-'}</td>
 
 											{/* <td>{swapToCur.Symbol}</td> */}
-											<td className={`px-4 text-left interExtraBold text-blackText-500 text-md py-3 ${position.indexName?'':'text-[#E5E7EB]'}`}>{position.indexName ? position.indexName : '-'}</td>
+											<td className={`px-4 text-left interExtraBold text-md py-3 ${position.indexName?'text-blackText-500':'text-[#F2F2F2]'}`}>{position.indexName ? position.indexName : '-'}</td>
 											<td className="px-4 text-left py-3">
 												<div
-													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side? 'interBold titleShadow' : 'text-[#E5E7EB]'}  
+													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side? 'interBold titleShadow text-blackText-500' : 'text-[#F2F2F2]'}  
 													${ position.side === 'Mint Request' ? 'bg-nexLightGreen-500 text-whiteText-500' :position.side === 'Burn Request' ? 'bg-nexLightRed-500 text-whiteText-500':'bg-transparent'} flex flex-row items-center justify-center`}
 												>
 													{position.side ? position.side.toString().split(" ")[0] : '-'} 
 												</div>
 											</td>
-											<td className={`px-4 text-left interExtraBold text-blackText-500 text-lg py-3 ${position.inputAmount && position.tokenAddress ? '':'text-[#E5E7EB]'}`}>
+											<td className={`px-4 text-left interExtraBold text-lg py-3 ${position.inputAmount && position.tokenAddress ? 'text-blackText-500':'text-[#F2F2F2]'}`}>
 												{position.inputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
@@ -172,7 +181,7 @@ function NewHistoryTable() {
 													'-'
 												)}
 											</td>
-											<td className={`px-4 text-left interExtraBold text-blackText-500 text-lg py-3 ${position.outputAmount && position.tokenAddress ?'':'text-[#E5E7EB]' }`}>
+											<td className={`px-4 text-left interExtraBold text-lg py-3 ${position.outputAmount && position.tokenAddress ?'text-blackText-500':'text-[#F2F2F2]' }`}>
 												{position.outputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}

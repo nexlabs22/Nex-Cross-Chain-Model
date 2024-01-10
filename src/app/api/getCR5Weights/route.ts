@@ -40,7 +40,7 @@ export async function GET() {
             sumOfMarketCap += Number(pair.split(':')[1]);
         });
 
-        const symbolDetails = await axios.get("https://api.bitfinex.com/v1/symbols_details").then(res => res.data).catch((err) => { console.log(err) })
+        const symbolDetails:{pair:string,minimum_order_size:number}[] = await axios.get("https://api.bitfinex.com/v1/symbols_details").then(res => res.data).catch((err) => { console.log(err) })
 
         cryptoArray.forEach((pair: string) => {
             const [cryptoName, marketCap] = pair.split(':');

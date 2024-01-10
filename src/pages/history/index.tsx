@@ -46,13 +46,14 @@ import { reduceAddress } from '@/utils/general'
 import { GoArrowRight } from 'react-icons/go'
 import { CiExport } from 'react-icons/ci'
 
-import { IoMdArrowUp } from 'react-icons/io'
+import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
+import usePortfolioPageStore from '@/store/portfolioStore'
 
 function History() {
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
-	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
+	const { portfolioData } = usePortfolioPageStore()
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
@@ -231,6 +232,8 @@ function History() {
 		{ time: '2018-04-04', value: 0 },
 	]
 
+	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
+
 	return (
 		<>
 			<Head>
@@ -296,18 +299,30 @@ function History() {
 						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
 							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 ">Total Portfolio Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">$96,495,102.4</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] ">
+									${showPortfolioData && chartArr && chartArr[chartArr.length - 1] ? FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' }) : '0.00'}
+								</h5>
 							</div>
 							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 ">Total Traded Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">$1,248,217.81</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] ">${showPortfolioData && portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString() : '0.00'}</h5>
 							</div>
 							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 ">24h Change</h5>
 								<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
-									<h5 className="interExtraBold text-2xl text-nexLightGreen-500 ">$261.3</h5>
-									<div className="w-fit h-fit rounded-lg bg-nexLightGreen-500 p-1">
-										<IoMdArrowUp color="#FFFFFF" size={15} />
+									<h5
+										className={`interExtraBold text-2xl ${
+											showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
+										} `}
+									>
+										${showPortfolioData && chartArr && chartArr[chartArr.length - 1] ? (chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2) : '0.00'}
+									</h5>
+									<div
+										className={`w-fit h-fit rounded-lg ${
+											showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
+										} p-1`}
+									>
+										{showPortfolioData ? portfolio24hChange > 0 ? <IoMdArrowUp color="#FFFFFF" size={15} /> : portfolio24hChange < 0 ? <IoMdArrowDown color="#FFFFFF" size={15} /> : '' : ''}
 									</div>
 								</div>
 							</div>

@@ -55,7 +55,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({lightVersion}) => {
 					<Link href={'/convert'}>
 						<h5 className={`interMedium font-base mr-8 ${lightVersion ? ' text-whiteText-500' : 'text-blackText-500'}`}>Convert</h5>
 					</Link>
-					<HoverMenuWithTransition key={1} menuItem="item" lightV={lightVersion}/>
+					<HoverMenuWithTransition key={0} menuItem="item" lightV={lightVersion}/>
 					
 				</div>
 				{/* <div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div> */}
