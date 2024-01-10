@@ -16,7 +16,7 @@ import "../libraries/OracleLibrary.sol";
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
-contract IndexFactory is
+contract CrosschainVault is
     ChainlinkClient,
     ContextUpgradeable,
     ProposableOwnableUpgradeable,
@@ -221,81 +221,7 @@ contract IndexFactory is
     urlParams = _afterAddress;
     }
     
-    function requestAssetsData(
-    )
-        public
-        returns(bytes32)
-    {
-        
-        string memory url = concatenation(baseUrl, urlParams);
-        Chainlink.Request memory req = buildChainlinkRequest(externalJobId, address(this), this.fulfillAssetsData.selector);
-        req.add("get", url);
-        req.add("path1", "results,tokens");
-        req.add("path2", "results,marketShares");
-        req.add("path3", "results,swapVersions");
-        req.add("path4", "results,chainSelector");
-        // sendOperatorRequest(req, oraclePayment);
-        return sendChainlinkRequestTo(chainlinkOracleAddress(), req, oraclePayment);
-    }
-
-  function fulfillAssetsData(bytes32 requestId, address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions, uint64[] memory _chainSelectors)
-    public
-    recordChainlinkFulfillment(requestId)
-  {
     
-    address[] memory tokens0 = _tokens;
-    uint[] memory marketShares0 = _marketShares;
-    uint[] memory swapVersions0 = _swapVersions;
-    uint64[] memory chainSelectors0 = _chainSelectors;
-
-    // //save mappings
-    for(uint i =0; i < tokens0.length; i++){
-        oracleList[i] = tokens0[i];
-        tokenOracleListIndex[tokens0[i]] = i;
-        tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
-        tokenSwapVersion[tokens0[i]] = swapVersions0[i];
-        tokenChainSelector[tokens0[i]] = chainSelectors0[i];
-        if(totalCurrentList == 0){
-            currentList[i] = tokens0[i];
-            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
-            tokenCurrentListIndex[tokens0[i]] = i;
-        }
-    }
-    totalOracleList = tokens0.length;
-    if(totalCurrentList == 0){
-        totalCurrentList  = tokens0.length;
-    }
-    lastUpdateTime = block.timestamp;
-    }
-
-
-    function mockFillAssetsList(address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions)
-    public
-    onlyOwner
-  {
-    
-    address[] memory tokens0 = _tokens;
-    uint[] memory marketShares0 = _marketShares;
-    uint[] memory swapVersions0 = _swapVersions;
-
-    // //save mappings
-    for(uint i =0; i < tokens0.length; i++){
-        oracleList[i] = tokens0[i];
-        tokenOracleListIndex[tokens0[i]] = i;
-        tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
-        tokenSwapVersion[tokens0[i]] = swapVersions0[i];
-        if(totalCurrentList == 0){
-            currentList[i] = tokens0[i];
-            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
-            tokenCurrentListIndex[tokens0[i]] = i;
-        }
-    }
-    totalOracleList = tokens0.length;
-    if(totalCurrentList == 0){
-        totalCurrentList  = tokens0.length;
-    }
-    lastUpdateTime = block.timestamp;
-    }
 
 
     
@@ -361,86 +287,7 @@ contract IndexFactory is
     }
 
 
-    function issuanceIndexTokensWithEth(uint _inputAmount) public payable {
-        uint feeAmount = (_inputAmount*feeRate)/10000;
-        uint finalAmount = _inputAmount + feeAmount;
-        require(msg.value >= finalAmount, "lower than required amount");
-        //transfer fee to the owner
-        (bool _success,) = owner().call{value: fee}("");
-        require(_success, "transfer eth fee to the owner failed");
-        issuanceNonce ++;
-        weth.deposit{value: _inputAmount}();
-        weth.transfer(address(indexToken), _inputAmount);
-        uint firstPortfolioValue = getPortfolioBalance();
-        uint wethAmount = _inputAmount;
-        //swap
-        for(uint i = 0; i < totalCurrentList; i++) {
-          uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
-          if(tokenChainSelector == currentChainSelector){
-            issuanceTokenOldAndNewValues[isssuanceNonce][currentList[i]].tokenOldValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
-            _swapSingle(address(weth), currentList[i], wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18, address(indexToken), tokenSwapVersion[currentList[i]]);
-            issuanceTokenOldAndNewValues[isssuanceNonce][currentList[i]].tokenNewValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
-            issuanceCompletedTokensCount[nonce] += 1;
-          }else{
-              uint destinationChainSelector = tokenChainSelector[currentList[i]];
-              sendToken(tokenChainSelector, receiver, tokensToSendDetails, payFeesIn);
-          }
-        }
-       //mint index tokens
-       
-       
-    }
-
-    function completeIssuanceRequest() public {
-        uint amountToMint;
-       if(indexToken.totalSupply() > 0){
-        amountToMint = (indexToken.totalSupply()*wethAmount)/firstPortfolioValue;
-       }else{
-        uint price = priceInWei();
-        amountToMint = (wethAmount*price)/1e16;
-       }
-        indexToken.mint(msg.sender, amountToMint);
-        emit Issuanced(msg.sender, address(weth), _inputAmount, amountToMint, block.timestamp);
-    }
-
-
-    function redemption(uint amountIn, address _tokenOut, uint _tokenOutSwapVersion) public returns(uint) {
-        // uint firstPortfolioValue = getPortfolioBalance();
-        uint burnPercent = amountIn*1e18/indexToken.totalSupply();
-        // uint burnPercent = 1e18;
-
-        indexToken.burn(msg.sender, amountIn);
-
-        uint outputAmount;
-        //swap
-        for(uint i = 0; i < totalCurrentList; i++) {
-        uint swapAmount = (burnPercent*IERC20(currentList[i]).balanceOf(address(indexToken)))/1e18;
-        uint swapAmountOut = _swapSingle(currentList[i], address(weth), swapAmount, address(this), tokenSwapVersion[currentList[i]]);
-        outputAmount += swapAmountOut;
-        }
-        
-        // uint outputAmount = weth.balanceOf(address(this));
-        uint fee = outputAmount*feeRate/10000;
-        if(_tokenOut == address(weth)){
-            // weth.transfer(msg.sender, outputAmount - fee);
-            weth.withdraw(outputAmount);
-            (bool _ownerSuccess,) = owner().call{value: fee}("");
-            require(_ownerSuccess, "transfer eth fee to the owner failed");
-            (bool _userSuccess,) = payable(msg.sender).call{value: outputAmount - fee}("");
-            require(_userSuccess, "transfer eth fee to the user failed");
-            emit Redemption(msg.sender, _tokenOut, amountIn, outputAmount - fee, block.timestamp);
-            return outputAmount - fee;
-        }else{
-            weth.withdraw(fee);
-            (bool _success,) = owner().call{value: fee}("");
-            require(_success, "transfer eth fee to the owner failed");
-            uint reallOut = swap(address(weth), _tokenOut, outputAmount - fee, msg.sender, _tokenOutSwapVersion);
-            emit Redemption(msg.sender, _tokenOut, amountIn, reallOut, block.timestamp);
-            return reallOut;
-        }
-
-
-    }
+    
 
     function getAmountOut(address tokenIn, address tokenOut, uint amountIn, uint _swapVersion) public view returns(uint finalAmountOut) {
         uint finalAmountOut;
@@ -587,19 +434,6 @@ contract IndexFactory is
     }
 
 
-    function reIndexAndReweight() public onlyOwner {
-        for(uint i; i < totalCurrentList; i++) {
-            _swapSingle(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), address(indexToken), tokenSwapVersion[currentList[i]]);
-        }
-        uint wethBalance = weth.balanceOf(address(indexToken));
-        for(uint i; i < totalOracleList; i++) {
-            _swapSingle(address(weth), oracleList[i], wethBalance*tokenOracleMarketShare[oracleList[i]]/100e18, address(indexToken), tokenSwapVersion[oracleList[i]]);
-            //update current list
-            currentList[i] = oracleList[i];
-            tokenCurrentMarketShare[oracleList[i]] = tokenOracleMarketShare[oracleList[i]];
-            tokenCurrentListIndex[oracleList[i]] = tokenOracleListIndex[oracleList[i]];
-        }
-        totalCurrentList = totalOracleList;
-    }
+    
     
 }

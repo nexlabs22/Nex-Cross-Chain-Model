@@ -43,7 +43,7 @@ contract MockApiOracle is ChainlinkRequestInterface, LinkTokenReceiver {
    * @dev Sets the LinkToken address for the imported LinkTokenInterface
    * @param _link The address of the LINK token
    */
-  constructor(address _link) public {
+  constructor(address _link) {
     LinkToken = LinkTokenInterface(_link); // external but already deployed and unalterable
   }
 
@@ -93,7 +93,7 @@ contract MockApiOracle is ChainlinkRequestInterface, LinkTokenReceiver {
   }
 
   
-  function fulfillOracleFundingRateRequest(bytes32 _requestId, address[] memory _tokens, uint256[] memory _marketCapShares, uint256[] memory _swapVersions)
+  function fulfillOracleFundingRateRequest(bytes32 _requestId, address[] memory _tokens, uint256[] memory _marketCapShares, uint256[] memory _swapVersions, uint64[] memory _chainSelectors)
     external
     isValidRequest(_requestId)
     returns (bool)
@@ -113,7 +113,7 @@ contract MockApiOracle is ChainlinkRequestInterface, LinkTokenReceiver {
     (bool success, ) = req.callbackAddr.call(
       // abi.encodeWithSelector(req.callbackFunctionId, _requestId, _data1, _data2, _data3, _data4, _data5)
       // abi.encodeWithSelector(req.callbackFunctionId, _requestId, convertUintToBytes32(price), convertIntToBytes32Array(fundingRate), convertStringToBytes32Array(strings))
-      abi.encodeWithSelector(req.callbackFunctionId, _requestId, _tokens, _marketCapShares, _swapVersions)
+      abi.encodeWithSelector(req.callbackFunctionId, _requestId, _tokens, _marketCapShares, _swapVersions, _chainSelectors)
     ); // solhint-disable-line avoid-low-level-calls
     return success;
   }

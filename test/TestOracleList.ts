@@ -92,6 +92,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
       indexFactory = await IndexFactory.deploy()
 
       await indexFactory.initialize(
+            "1",
             indexToken.address,
             linkToken.address,
             oracle.address,
@@ -152,18 +153,19 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
     }
 
     async function updateOracleList(){
-      const assetList = [
+    const assetList = [
         token0.address,
         token1.address
     ]
     const percentages = ["70000000000000000000", "30000000000000000000"]
     const swapVersions = ["3", "3"]
+    const chainSelectors = ["1", "2"]
     //update oracle list
     await linkToken.transfer(indexFactory.address, 1e17.toString());
     const transaction: ContractTransaction = await indexFactory.requestAssetsData();
     const transactionReceipt:any = await transaction.wait(1);
     const requestId: string = transactionReceipt?.events[0]?.topics[1];
-    await oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions);
+    await oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);
     }
   
     describe("Deployment", function () {
@@ -175,6 +177,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
         //check oracle list
         expect(await indexFactory.oracleList("0")).to.be.equal(token0.address)
         expect(ethers.utils.formatEther(await indexFactory.tokenOracleMarketShare(token0.address))).to.be.equal("70.0")
+        expect((await indexFactory.tokenChainSelector(token0.address))).to.be.equal("1")
       });
 
       it("Test manual swap", async function () {
