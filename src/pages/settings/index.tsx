@@ -65,6 +65,29 @@ import NewHistoryTable from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
 import Switch from 'react-switch'
 
+// Firebase :
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+import { FaCheck } from 'react-icons/fa6'
+import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
+import ImageViewer from 'react-simple-image-viewer';
+
+interface User {
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+}
+
 export default function Settings() {
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
@@ -249,11 +272,70 @@ export default function Settings() {
 
 	const router = useRouter()
 
+	const [imageViwerOpened, setImageViwerOpened] = useState<boolean>(false)
+
 	const [option1, setOption1] = useState<boolean>(false)
 	const [option2, setOption2] = useState<boolean>(false)
 	const [option3, setOption3] = useState<boolean>(false)
 	const [option4, setOption4] = useState<boolean>(false)
 	const [option5, setOption5] = useState<boolean>(false)
+
+	const [editable1, setEditable1] = useState<boolean>(false)
+	const [editable2, setEditable2] = useState<boolean>(false)
+	const [editable3, setEditable3] = useState<boolean>(false)
+	const [editable4, setEditable4] = useState<boolean>(false)
+	const [editable5, setEditable5] = useState<boolean>(false)
+
+	const [name, setName] = useState<string>('')
+	const [instName, setInstName] = useState<string>('')
+	const [email, setEmail] = useState<string>('')
+	const [adr, setAdr] = useState<string>('')
+	const [vatin, setVatin] = useState<string>('')
+
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+						setOption1(potentialUser.p1)
+						setOption1(potentialUser.p2)
+						setOption1(potentialUser.p3)
+						setOption1(potentialUser.p4)
+						setOption1(potentialUser.p5)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
+
+	function saveSettings() {
+		update(ref(database, 'users/' + connectedUserId), {
+			name: name,
+			email: email,
+			address: adr,
+			vatin: vatin,
+			inst_name: instName,
+			p1: option1,
+			p2: option2,
+			p3: option3,
+			p4: option4,
+			p5: option5,
+		})
+		GenericToast({
+			type: 'success',
+			message: 'Info & settings updated !',
+		})
+	}
 
 	return (
 		<>
@@ -271,9 +353,30 @@ export default function Settings() {
 					<section className="w-screen h-fit pt-10">
 						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
-								{address && address != '' ? <GenericAvatar walletAddress={address}></GenericAvatar> : <div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>}
+								{address && address != '' ? (
+									<div className="w-40 aspect-square flex rounded-full relative">
+										<div className="absolute w-full h-full rounded-full z-50 bg-blackText-500 opacity-0 hover:opacity-90 flex flex-row items-center justify-center gap-2">
+											{
+												connectedUser?.ppType != "identicon" ? <MdOutlineRemoveRedEye color="#FFFFFF" size={26} className=" cursor-pointer" /> : ""
+											}
+											
+											<MdOutlineEdit color="#FFFFFF" size={26} className=" cursor-pointer"/>
+										</div>
+										<GenericAvatar walletAddress={address}></GenericAvatar>
+									</div>
+								) : (
+									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
+								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
+									<h5 className="text-xl text-blackText-500 montrealBold">
+										{connectedUser && connectedUser.main_wallet == address
+											? connectedUser.inst_name != 'x'
+												? connectedUser.inst_name
+												: connectedUser.name != 'x'
+												? connectedUser.name
+												: 'Nex User'
+											: 'Nex User'}
+									</h5>
 									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
 										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
@@ -319,9 +422,100 @@ export default function Settings() {
 						</div>
 					</section>
 				</section>
-				<div className=" w-full h-fit px-16 py-5 flex flex-col xl:flex-row items-center justify-center ">
+				<div className=" w-full h-fit px-16 pb-5 flex flex-col xl:flex-row items-center justify-center ">
 					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 px-2 border-b-[2px] border-b-[#E4E4E4] ">
 						<div className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">General Information</div>
+					</div>
+				</div>
+				<div className=" w-full h-fit px-20 py-1 flex flex-col items-center justify-center ">
+					<h5 className="text-base interMedium text-[#181818] w-full">
+						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
+					</h5>
+					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 my-6">
+						<div className="w-4/12 h-fit">
+							<div className="w-full h-fit flex flex-row items-center justify-between">
+								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Name</h5>
+								{!editable1 ? (
+									<CiEdit
+										size={20}
+										color={editable1 ? '#089981' : '#6B6B6B'}
+										className=" cursor-pointer"
+										onClick={() => {
+											setEditable1(!editable1)
+										}}
+									/>
+								) : (
+									<FaCheck
+										size={20}
+										color={editable1 ? '#089981' : '#089981'}
+										className="cursor-pointer"
+										onClick={() => {
+											setEditable1(!editable1)
+										}}
+									/>
+								)}
+							</div>
+							<input
+								type="text"
+								placeholder={connectedUser && connectedUser.name != '' ? connectedUser.name : 'Name'}
+								disabled={!editable1}
+								className={`px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border ${
+									editable1 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : 'border-black/50'
+								} w-full bg-transparent`}
+								onChange={(e) => {
+									setName(e.target.value.toString())
+								}}
+							/>
+						</div>
+						<div className="w-4/12 h-fit">
+							<div className="w-full h-fit flex flex-row items-center justify-between">
+								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Email</h5>
+								{!editable2 ? (
+									<CiEdit
+										size={20}
+										color={editable2 ? '#089981' : '#6B6B6B'}
+										className=" cursor-pointer"
+										onClick={() => {
+											setEditable2(!editable2)
+										}}
+									/>
+								) : (
+									<FaCheck
+										size={20}
+										color={editable2 ? '#089981' : '#089981'}
+										className="cursor-pointer"
+										onClick={() => {
+											setEditable2(!editable2)
+										}}
+									/>
+								)}
+							</div>
+							<input
+								type="email"
+								placeholder={connectedUser && connectedUser.email != '' ? connectedUser.email : 'xyz@email.com'}
+								disabled={!editable2}
+								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								onChange={(e) => {
+									setEmail(e.target.value.toString())
+								}}
+							/>
+						</div>
+						<div className="w-4/12 h-fit">
+							<div className="w-full h-fit flex flex-row items-center justify-between">
+								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Main Wallet</h5>
+							</div>
+							<input
+								type="text"
+								placeholder={address ? address : 'Address'}
+								disabled
+								className="px-2 py-4 cursor-not-allowed h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+							/>
+						</div>
+					</div>
+				</div>
+				<div className=" w-full h-fit px-16 py-5 flex flex-col xl:flex-row items-center justify-center ">
+					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 px-2 border-b-[2px] border-b-[#E4E4E4] ">
+						<div className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">Legal Information</div>
 					</div>
 				</div>
 				<div className=" w-full h-fit px-20 py-1 flex flex-col items-center justify-center mb-4 ">
@@ -329,29 +523,106 @@ export default function Settings() {
 						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
 					</h5>
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 my-6">
-						<div className="w-4/12 h-fit">
+						<div className="w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Display Name</h5>
-								<CiEdit size={20} color="#6B6B6B" />
-							</div>
-							<input type="text" placeholder="Name" className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent" />
-						</div>
-						<div className="w-4/12 h-fit">
-							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Email</h5>
-								<CiEdit size={20} color="#6B6B6B" />
-							</div>
-							<input type="email" placeholder="youraddress@xyz.com" className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent" />
-						</div>
-						<div className="w-4/12 h-fit">
-							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Main Wallet</h5>
-								<CiEdit size={20} color="#6B6B6B" />
+								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Institutional Name</h5>
+								{!editable3 ? (
+									<CiEdit
+										size={20}
+										color={editable3 ? '#089981' : '#6B6B6B'}
+										className=" cursor-pointer"
+										onClick={() => {
+											setEditable3(!editable3)
+										}}
+									/>
+								) : (
+									<FaCheck
+										size={20}
+										color={editable3 ? '#089981' : '#089981'}
+										className="cursor-pointer"
+										onClick={() => {
+											setEditable3(!editable3)
+										}}
+									/>
+								)}
 							</div>
 							<input
 								type="text"
-								placeholder={address ? address : 'Address'}
+								disabled={!editable3}
+								placeholder={connectedUser && connectedUser.inst_name != '' ? connectedUser.inst_name : 'Institutional Name'}
 								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								onChange={(e) => {
+									setInstName(e.target.value.toString())
+								}}
+							/>
+						</div>
+
+						<div className="w-6/12 h-fit">
+							<div className="w-full h-fit flex flex-row items-center justify-between">
+								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Address</h5>
+								{!editable4 ? (
+									<CiEdit
+										size={20}
+										color={editable4 ? '#089981' : '#6B6B6B'}
+										className=" cursor-pointer"
+										onClick={() => {
+											setEditable4(!editable4)
+										}}
+									/>
+								) : (
+									<FaCheck
+										size={20}
+										color={editable4 ? '#089981' : '#089981'}
+										className="cursor-pointer"
+										onClick={() => {
+											setEditable4(!editable4)
+										}}
+									/>
+								)}
+							</div>
+							<input
+								type="text"
+								disabled={!editable4}
+								placeholder={connectedUser && connectedUser.address != '' ? connectedUser.address : 'Professional Address'}
+								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								onChange={(e) => {
+									setAdr(e.target.value.toString())
+								}}
+							/>
+						</div>
+					</div>
+					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 mb-6">
+						<div className="w-full h-fit">
+							<div className="w-full h-fit flex flex-row items-center justify-between">
+								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">VATIN (VAT registration number)</h5>
+								{!editable5 ? (
+									<CiEdit
+										size={20}
+										color={editable5 ? '#089981' : '#6B6B6B'}
+										className=" cursor-pointer"
+										onClick={() => {
+											setEditable5(!editable5)
+										}}
+									/>
+								) : (
+									<FaCheck
+										size={20}
+										color={editable5 ? '#089981' : '#089981'}
+										className="cursor-pointer"
+										onClick={() => {
+											setEditable5(!editable5)
+										}}
+									/>
+								)}
+							</div>
+							<input
+								type="text"
+								disabled={!editable5}
+								placeholder={connectedUser && connectedUser.vatin != '' ? connectedUser.vatin : 'VAT Registration Number'}
+								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								onChange={(e) => {
+									setVatin(e.target.value.toString())
+								}}
 							/>
 						</div>
 					</div>
@@ -399,9 +670,13 @@ export default function Settings() {
 						)}
 					</div>
 				</div>
-				<div className='w-full h-fit px-20 py-1 mb-4'>
+				<div className="w-full h-fit px-20 py-1 mb-4">
 					<button
-						className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md hover:bg-colorTwo-500/30`}
+						onClick={() => {
+							saveSettings()
+						}}
+						disabled={name == "" && email == "" && adr == "" && instName == "" && vatin == "" ? true : false}
+						className={`text-xl text-white titleShadow interBold ${name == "" && email == "" && adr == "" && instName == "" && vatin == "" ? "grayscale" : ""} bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md hover:bg-colorTwo-500/30`}
 					>
 						Save Settings
 					</button>
@@ -427,6 +702,7 @@ export default function Settings() {
 						{address ? <h5 className="InterMedium text-blackText-500 text-xl text-center w-full my-10">{address}</h5> : ''}
 					</div>
 				</GenericModal>
+
 			</main>
 		</>
 	)
