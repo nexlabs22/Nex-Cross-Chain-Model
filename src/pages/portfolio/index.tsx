@@ -406,7 +406,7 @@ export default function Portfolio() {
 									</div>
 									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
 										<BsCalendar4 color="#FFFFFF" size={15} />
-										<h5 className="text-base text-whiteText-500 montrealBold">Joined 45 days ago</h5>
+										<h5 className="text-base text-whiteText-500 montrealBold">Joined 1 day ago</h5>
 									</div>
 								</div>
 							</div>
