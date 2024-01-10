@@ -69,7 +69,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 	})
 	const [connectedUserId, setConnectedUserId] = useState<String>('')
 
-	useEffect(() => {
+	/*useEffect(() => {
 		function getUser() {
 			const usersRef = ref(database, 'users/')
 			onValue(usersRef, (snapshot) => {
@@ -89,7 +89,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 		if(address) {
 			getUser()
 			if (connectedUser.main_wallet == 'null') {
-				alert('not found in db')
+				
 				const newUserKey = push(child(ref(database), 'users')).key
 				set(ref(database, 'users/' + newUserKey), {
 					name: 'Nex User',
@@ -123,13 +123,12 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 					p5: false,
 					creationDate: 'null',
 				})
-			}else{
-				alert("found in fddb")
 			}
 		}
 		
 		
-	}, [address])
+	}, [address])*/
+	
 
 	return (
 		<section className="flex h-fit w-screen flex-row items-center justify-between px-4 py-4 md:px-10 md:py-6 relative z-50">
