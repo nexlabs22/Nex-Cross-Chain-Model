@@ -32,7 +32,7 @@ const Dashboard: NextPage = () => {
 										backgroundImage: `url('${bg2.src}')`,
 										backgroundSize: "45%",
 										backgroundPositionX: "80%",
-										backgroundPositionY: "40%"
+										backgroundPositionY: "35%"
 									}}
 								></div>
 							</div>
