@@ -40,15 +40,15 @@ export async function GET() {
             sumOfMarketCap += Number(pair.split(':')[1]);
         });
 
-        const symbolDetails:{pair:string,minimum_order_size:number}[] = await axios.get("https://api.bitfinex.com/v1/symbols_details").then(res => res.data).catch((err) => { console.log(err) })
-        const allocations:{name:string, weight: number, minTradeValueBitfinex:number|string, selectedExchange:string}[] = [];
+        const symbolDetails: { pair: string, minimum_order_size: number }[] = await axios.get("https://api.bitfinex.com/v1/symbols_details").then(res => res.data).catch((err) => { console.log(err) })
+        const allocations: { name: string, weight: number, minTradeValueBitfinex: number | string, selectedExchange: string }[] = [];
         cryptoArray.forEach((pair: string) => {
             const [cryptoName, marketCap] = pair.split(':');
             const detail = symbolDetails.filter((data: { pair: string }) => { return cryptoNametoSymbol[cryptoName] === data.pair })[0]
             const obj = {
                 name: cryptoName,
                 weight: Number(marketCap) / sumOfMarketCap,
-                minTradeValueBitfinex: cryptoNametoSymbol[cryptoName] ? (detail && detail.minimum_order_size ? Number(detail.minimum_order_size) : 'N/A'): 'Pair does not exist',
+                minTradeValueBitfinex: cryptoNametoSymbol[cryptoName] ? (detail && detail.minimum_order_size ? Number(detail.minimum_order_size) : 'N/A') : 'Pair does not exist',
                 selectedExchange: 'bitfinex'
             }
             allocations.push(obj)
