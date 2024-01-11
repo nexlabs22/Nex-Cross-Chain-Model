@@ -109,9 +109,9 @@ const SwapV2 = () => {
 	const address = useAddress()
 	const signer = useSigner()
 
-	useEffect(()=>{
-		setEthPriceInUsd();
-	},[])
+	// useEffect(()=>{
+	// 	setEthPriceInUsd();
+	// },[])
 
 	//integration hooks
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)

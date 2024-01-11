@@ -99,9 +99,11 @@ export default function Portfolio() {
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex, setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
 	const { portfolioData, setDayChange } = usePortfolioPageStore()
 
-	useEffect(() => {
-		setEthPriceInUsd()
-	}, [setEthPriceInUsd])
+
+	// console.log("ethPriceInUsd--->",ethPriceInUsd)
+	// useEffect(() => {
+	// 	setEthPriceInUsd()
+	// }, [setEthPriceInUsd])
 	
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
@@ -137,7 +139,6 @@ export default function Portfolio() {
 		const ANFIData = dataAnfi.poolDayDatas
 		const CR5Data = dataCR5.poolDayDatas
 		for (let i = 0; i <= ANFIData.length - 1; i++) {
-			console.log(num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price))
 			const chartObj: { time: number; value: number } = { time: 0, value: 0 }
 			const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i].token0Price)
 			chartObj.time = ANFIData[i].date
@@ -329,7 +330,7 @@ export default function Portfolio() {
 			onValue(usersRef, (snapshot) => {
 				const users = snapshot.val()
 				for (const key in users) {
-					console.log(users[key])
+					// console.log(users[key])
 					const potentialUser: User = users[key]
 					if (address && potentialUser.main_wallet == address) {
 						setConnectedUser(potentialUser)

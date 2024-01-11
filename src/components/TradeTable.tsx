@@ -29,9 +29,9 @@ function HistoryTable() {
 
 	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
-	useEffect(() => {
-		setEthPriceInUsd()
-	}, [])
+	// useEffect(() => {
+	// 	setEthPriceInUsd()
+	// }, [])
 
 	useEffect(() => {
 		const allowedSymbols = ['ANFI', 'CRYPTO5']

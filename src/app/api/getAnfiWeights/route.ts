@@ -25,20 +25,19 @@ export async function GET(request: NextRequest, response: NextResponse) {
 
         const dataToReturn = {
             timestamp: anfiWeights[0],
-            allocations:[
-            {   
-                name: 'bitcoin',
-                weight: anfiWeights[1][0].weightBtc,
-                minTradeValueBitfinex: Number(minimumOrderSizes[0]) || 'N/A',
-                selectedExchange: 'bitfinex'
-            },
-            {
-                name: 'gold',
-                weight: anfiWeights[1][0].weightGold,
-                minTradeValueBitfinex: Number(minimumOrderSizes[1]) || 'N/A',
-                selectedExchange: 'bitfinex'
-            }
-        ]
+            allocations: [
+                {
+                    name: 'bitcoin',
+                    weight: anfiWeights[1][0].weightBtc,
+                    minTradeValueBitfinex: Number(minimumOrderSizes[0]) || 'N/A',
+                    selectedExchange: 'bitfinex'
+                },
+                {
+                    name: 'gold',
+                    weight: anfiWeights[1][0].weightGold,
+                    minTradeValueBitfinex: Number(minimumOrderSizes[1]) || 'N/A',
+                    selectedExchange: 'bitfinex'
+                }]
         }
 
         return NextResponse.json({ data: dataToReturn }, { status: 200 })

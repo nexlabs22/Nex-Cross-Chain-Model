@@ -102,7 +102,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	const positionHistory = GetPositionsHistory2()
 
 	useEffect(() => {
-		setEthPriceInUsd()
+		// setEthPriceInUsd()
 		setPortfolioData(positionHistory.data)
 	}, [setEthPriceInUsd,positionHistory.data,setPortfolioData])
 
