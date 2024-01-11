@@ -12,17 +12,40 @@ import "../chainlink/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../libraries/OracleLibrary.sol";
+import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
+import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
+
+// import {Withdraw} from "./utils/Withdraw.sol";
+
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
-contract CrosschainVault is
+contract CrossChainIndexFactory is
     ChainlinkClient,
     ContextUpgradeable,
     ProposableOwnableUpgradeable,
     PausableUpgradeable
 {
+    enum PayFeesIn {
+        Native,
+        LINK
+    }
     using Chainlink for Chainlink.Request;
+
+    struct Message {
+        uint64 sourceChainSelector; // The chain selector of the source chain.
+        address sender; // The address of the sender.
+        string message; // The content of the message.
+        address token; // received token.
+        uint256 amount; // received amount.
+    }
+
+    address public i_router;
+    address public i_link;
+    uint16 public i_maxTokensLength;
+    bytes32[] public receivedMessages; // Array to keep track of the IDs of received messages.
+    mapping(bytes32 => Message) public messageDetail; // Mapping from message ID to Message struct, storing details of each received message.
 
     IndexToken public indexToken;
 
@@ -112,7 +135,16 @@ contract CrosschainVault is
 
     event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time);
     event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time);
+    event MessageSent(bytes32 messageId);
 
+    // Event emitted when a message is received from another chain.
+    event MessageReceived(
+        bytes32 indexed messageId, // The unique ID of the message.
+        uint64 indexed sourceChainSelector, // The chain selector of the source chain.
+        address sender, // The address of the sender from the source chain.
+        string message, // The message that was received.
+        Client.EVMTokenAmount tokenAmount // The token amount that was received.
+    );
     modifier onlyMethodologist() {
         require(msg.sender == methodologist, "IndexToken: caller is not the methodologist");
         _;
@@ -131,6 +163,9 @@ contract CrosschainVault is
         address _oracleAddress, 
         bytes32 _externalJobId,
         address _toUsdPriceFeed,
+        //ccip
+        address _router, 
+        address _link,
         //addresses
         address _weth,
         address _quoter,
@@ -152,7 +187,12 @@ contract CrosschainVault is
         // externalJobId = "81027ac9198848d79a8d14235bf30e16";
         oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
-        //set addresses
+        //set ccip addresses
+         i_router = _router;
+        i_link = _link;
+        i_maxTokensLength = 5;
+        LinkTokenInterface(i_link).approve(i_router, type(uint256).max);
+
         //set addresses
         weth = IWETH(_weth);
         quoter = IQuoter(_quoter);
@@ -221,7 +261,81 @@ contract CrosschainVault is
     urlParams = _afterAddress;
     }
     
+    function requestAssetsData(
+    )
+        public
+        returns(bytes32)
+    {
+        
+        string memory url = concatenation(baseUrl, urlParams);
+        Chainlink.Request memory req = buildChainlinkRequest(externalJobId, address(this), this.fulfillAssetsData.selector);
+        req.add("get", url);
+        req.add("path1", "results,tokens");
+        req.add("path2", "results,marketShares");
+        req.add("path3", "results,swapVersions");
+        req.add("path4", "results,chainSelector");
+        // sendOperatorRequest(req, oraclePayment);
+        return sendChainlinkRequestTo(chainlinkOracleAddress(), req, oraclePayment);
+    }
+
+  function fulfillAssetsData(bytes32 requestId, address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions, uint64[] memory _chainSelectors)
+    public
+    recordChainlinkFulfillment(requestId)
+  {
     
+    address[] memory tokens0 = _tokens;
+    uint[] memory marketShares0 = _marketShares;
+    uint[] memory swapVersions0 = _swapVersions;
+    uint64[] memory chainSelectors0 = _chainSelectors;
+
+    // //save mappings
+    for(uint i =0; i < tokens0.length; i++){
+        oracleList[i] = tokens0[i];
+        tokenOracleListIndex[tokens0[i]] = i;
+        tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
+        tokenSwapVersion[tokens0[i]] = swapVersions0[i];
+        tokenChainSelector[tokens0[i]] = chainSelectors0[i];
+        if(totalCurrentList == 0){
+            currentList[i] = tokens0[i];
+            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
+            tokenCurrentListIndex[tokens0[i]] = i;
+        }
+    }
+    totalOracleList = tokens0.length;
+    if(totalCurrentList == 0){
+        totalCurrentList  = tokens0.length;
+    }
+    lastUpdateTime = block.timestamp;
+    }
+
+
+    function mockFillAssetsList(address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions)
+    public
+    onlyOwner
+  {
+    
+    address[] memory tokens0 = _tokens;
+    uint[] memory marketShares0 = _marketShares;
+    uint[] memory swapVersions0 = _swapVersions;
+
+    // //save mappings
+    for(uint i =0; i < tokens0.length; i++){
+        oracleList[i] = tokens0[i];
+        tokenOracleListIndex[tokens0[i]] = i;
+        tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
+        tokenSwapVersion[tokens0[i]] = swapVersions0[i];
+        if(totalCurrentList == 0){
+            currentList[i] = tokens0[i];
+            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
+            tokenCurrentListIndex[tokens0[i]] = i;
+        }
+    }
+    totalOracleList = tokens0.length;
+    if(totalCurrentList == 0){
+        totalCurrentList  = tokens0.length;
+    }
+    lastUpdateTime = block.timestamp;
+    }
 
 
     
@@ -287,7 +401,86 @@ contract CrosschainVault is
     }
 
 
-    
+    function issuanceIndexTokensWithEth(uint _inputAmount) public payable {
+        uint feeAmount = (_inputAmount*feeRate)/10000;
+        uint finalAmount = _inputAmount + feeAmount;
+        require(msg.value >= finalAmount, "lower than required amount");
+        //transfer fee to the owner
+        (bool _success,) = owner().call{value: fee}("");
+        require(_success, "transfer eth fee to the owner failed");
+        issuanceNonce ++;
+        weth.deposit{value: _inputAmount}();
+        weth.transfer(address(indexToken), _inputAmount);
+        uint firstPortfolioValue = getPortfolioBalance();
+        uint wethAmount = _inputAmount;
+        //swap
+        for(uint i = 0; i < totalCurrentList; i++) {
+          uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
+          if(tokenChainSelector == currentChainSelector){
+            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].oldTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+            _swapSingle(address(weth), currentList[i], wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18, address(indexToken), tokenSwapVersion[currentList[i]]);
+            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].newTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+            issuanceCompletedTokensCount[issuanceNonce] += 1;
+          }else{
+            //   uint64 destinationChainSelector = tokenChainSelector[currentList[i]];
+            //   sendToken(tokenChainSelector, receiver, tokensToSendDetails, payFeesIn);
+          }
+        }
+       //mint index tokens
+       
+       
+    }
+
+    // function completeIssuanceRequest() public {
+    //     uint amountToMint;
+    //    if(indexToken.totalSupply() > 0){
+    //     amountToMint = (indexToken.totalSupply()*wethAmount)/firstPortfolioValue;
+    //    }else{
+    //     uint price = priceInWei();
+    //     amountToMint = (wethAmount*price)/1e16;
+    //    }
+    //     indexToken.mint(msg.sender, amountToMint);
+    //     emit Issuanced(msg.sender, address(weth), _inputAmount, amountToMint, block.timestamp);
+    // }
+
+
+    function redemption(uint amountIn, address _tokenOut, uint _tokenOutSwapVersion) public returns(uint) {
+        // uint firstPortfolioValue = getPortfolioBalance();
+        uint burnPercent = amountIn*1e18/indexToken.totalSupply();
+        // uint burnPercent = 1e18;
+
+        indexToken.burn(msg.sender, amountIn);
+
+        uint outputAmount;
+        //swap
+        for(uint i = 0; i < totalCurrentList; i++) {
+        uint swapAmount = (burnPercent*IERC20(currentList[i]).balanceOf(address(indexToken)))/1e18;
+        uint swapAmountOut = _swapSingle(currentList[i], address(weth), swapAmount, address(this), tokenSwapVersion[currentList[i]]);
+        outputAmount += swapAmountOut;
+        }
+        
+        // uint outputAmount = weth.balanceOf(address(this));
+        uint fee = outputAmount*feeRate/10000;
+        if(_tokenOut == address(weth)){
+            // weth.transfer(msg.sender, outputAmount - fee);
+            weth.withdraw(outputAmount);
+            (bool _ownerSuccess,) = owner().call{value: fee}("");
+            require(_ownerSuccess, "transfer eth fee to the owner failed");
+            (bool _userSuccess,) = payable(msg.sender).call{value: outputAmount - fee}("");
+            require(_userSuccess, "transfer eth fee to the user failed");
+            emit Redemption(msg.sender, _tokenOut, amountIn, outputAmount - fee, block.timestamp);
+            return outputAmount - fee;
+        }else{
+            weth.withdraw(fee);
+            (bool _success,) = owner().call{value: fee}("");
+            require(_success, "transfer eth fee to the owner failed");
+            uint reallOut = swap(address(weth), _tokenOut, outputAmount - fee, msg.sender, _tokenOutSwapVersion);
+            emit Redemption(msg.sender, _tokenOut, amountIn, reallOut, block.timestamp);
+            return reallOut;
+        }
+
+
+    }
 
     function getAmountOut(address tokenIn, address tokenOut, uint amountIn, uint _swapVersion) public view returns(uint finalAmountOut) {
         uint finalAmountOut;
@@ -405,7 +598,7 @@ contract CrosschainVault is
     // /// handle a received message
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
-    ) internal override {
+    ) internal {
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
@@ -434,6 +627,19 @@ contract CrosschainVault is
     }
 
 
-    
+    function reIndexAndReweight() public onlyOwner {
+        for(uint i; i < totalCurrentList; i++) {
+            _swapSingle(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), address(indexToken), tokenSwapVersion[currentList[i]]);
+        }
+        uint wethBalance = weth.balanceOf(address(indexToken));
+        for(uint i; i < totalOracleList; i++) {
+            _swapSingle(address(weth), oracleList[i], wethBalance*tokenOracleMarketShare[oracleList[i]]/100e18, address(indexToken), tokenSwapVersion[oracleList[i]]);
+            //update current list
+            currentList[i] = oracleList[i];
+            tokenCurrentMarketShare[oracleList[i]] = tokenOracleMarketShare[oracleList[i]];
+            tokenCurrentListIndex[oracleList[i]] = tokenOracleListIndex[oracleList[i]];
+        }
+        totalCurrentList = totalOracleList;
+    }
     
 }

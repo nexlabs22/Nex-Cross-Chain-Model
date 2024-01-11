@@ -12,6 +12,11 @@ import "../chainlink/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../libraries/OracleLibrary.sol";
+import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
+import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
+
+// import {Withdraw} from "./utils/Withdraw.sol";
+
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
@@ -22,7 +27,25 @@ contract IndexFactory is
     ProposableOwnableUpgradeable,
     PausableUpgradeable
 {
+    enum PayFeesIn {
+        Native,
+        LINK
+    }
     using Chainlink for Chainlink.Request;
+
+    struct Message {
+        uint64 sourceChainSelector; // The chain selector of the source chain.
+        address sender; // The address of the sender.
+        string message; // The content of the message.
+        address token; // received token.
+        uint256 amount; // received amount.
+    }
+
+    address public i_router;
+    address public i_link;
+    uint16 public i_maxTokensLength;
+    bytes32[] public receivedMessages; // Array to keep track of the IDs of received messages.
+    mapping(bytes32 => Message) public messageDetail; // Mapping from message ID to Message struct, storing details of each received message.
 
     IndexToken public indexToken;
 
@@ -112,7 +135,16 @@ contract IndexFactory is
 
     event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time);
     event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time);
+    event MessageSent(bytes32 messageId);
 
+    // Event emitted when a message is received from another chain.
+    event MessageReceived(
+        bytes32 indexed messageId, // The unique ID of the message.
+        uint64 indexed sourceChainSelector, // The chain selector of the source chain.
+        address sender, // The address of the sender from the source chain.
+        string message, // The message that was received.
+        Client.EVMTokenAmount tokenAmount // The token amount that was received.
+    );
     modifier onlyMethodologist() {
         require(msg.sender == methodologist, "IndexToken: caller is not the methodologist");
         _;
@@ -131,6 +163,9 @@ contract IndexFactory is
         address _oracleAddress, 
         bytes32 _externalJobId,
         address _toUsdPriceFeed,
+        //ccip
+        address _router, 
+        address _link,
         //addresses
         address _weth,
         address _quoter,
@@ -152,14 +187,19 @@ contract IndexFactory is
         // externalJobId = "81027ac9198848d79a8d14235bf30e16";
         oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
+        //set ccip addresses
+        // i_router = _router;
+        // i_link = _link;
+        // i_maxTokensLength = 5;
+        // LinkTokenInterface(i_link).approve(i_router, type(uint256).max);
+
         //set addresses
-        //set addresses
-        weth = IWETH(_weth);
-        quoter = IQuoter(_quoter);
-        swapRouterV3 = ISwapRouter(_swapRouterV3);
-        factoryV3 = IUniswapV3Factory(_factoryV3);
-        swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
-        factoryV2 = IUniswapV2Factory(_factoryV2);
+        // weth = IWETH(_weth);
+        // quoter = IQuoter(_quoter);
+        // swapRouterV3 = ISwapRouter(_swapRouterV3);
+        // factoryV3 = IUniswapV3Factory(_factoryV3);
+        // swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
+        // factoryV2 = IUniswapV2Factory(_factoryV2);
         //fee
         feeRate = 10;
         latestFeeUpdate = block.timestamp;
@@ -377,13 +417,13 @@ contract IndexFactory is
         for(uint i = 0; i < totalCurrentList; i++) {
           uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
           if(tokenChainSelector == currentChainSelector){
-            issuanceTokenOldAndNewValues[isssuanceNonce][currentList[i]].tokenOldValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].oldTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
             _swapSingle(address(weth), currentList[i], wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18, address(indexToken), tokenSwapVersion[currentList[i]]);
-            issuanceTokenOldAndNewValues[isssuanceNonce][currentList[i]].tokenNewValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
-            issuanceCompletedTokensCount[nonce] += 1;
+            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].newTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+            issuanceCompletedTokensCount[issuanceNonce] += 1;
           }else{
-              uint destinationChainSelector = tokenChainSelector[currentList[i]];
-              sendToken(tokenChainSelector, receiver, tokensToSendDetails, payFeesIn);
+            //   uint64 destinationChainSelector = tokenChainSelector[currentList[i]];
+            //   sendToken(tokenChainSelector, receiver, tokensToSendDetails, payFeesIn);
           }
         }
        //mint index tokens
@@ -391,17 +431,17 @@ contract IndexFactory is
        
     }
 
-    function completeIssuanceRequest() public {
-        uint amountToMint;
-       if(indexToken.totalSupply() > 0){
-        amountToMint = (indexToken.totalSupply()*wethAmount)/firstPortfolioValue;
-       }else{
-        uint price = priceInWei();
-        amountToMint = (wethAmount*price)/1e16;
-       }
-        indexToken.mint(msg.sender, amountToMint);
-        emit Issuanced(msg.sender, address(weth), _inputAmount, amountToMint, block.timestamp);
-    }
+    // function completeIssuanceRequest() public {
+    //     uint amountToMint;
+    //    if(indexToken.totalSupply() > 0){
+    //     amountToMint = (indexToken.totalSupply()*wethAmount)/firstPortfolioValue;
+    //    }else{
+    //     uint price = priceInWei();
+    //     amountToMint = (wethAmount*price)/1e16;
+    //    }
+    //     indexToken.mint(msg.sender, amountToMint);
+    //     emit Issuanced(msg.sender, address(weth), _inputAmount, amountToMint, block.timestamp);
+    // }
 
 
     function redemption(uint amountIn, address _tokenOut, uint _tokenOutSwapVersion) public returns(uint) {
@@ -558,7 +598,7 @@ contract IndexFactory is
     // /// handle a received message
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
-    ) internal override {
+    ) internal {
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
