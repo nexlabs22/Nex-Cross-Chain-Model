@@ -165,10 +165,9 @@ contract IndexFactory is
         address _toUsdPriceFeed,
         //ccip
         address _router, 
-        address _link,
         //addresses
         address _weth,
-        address _quoter,
+        // address _quoter,
         address _swapRouterV3,
         address _factoryV3,
         address _swapRouterV2,
@@ -188,18 +187,18 @@ contract IndexFactory is
         oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
         //set ccip addresses
-        // i_router = _router;
-        // i_link = _link;
-        // i_maxTokensLength = 5;
-        // LinkTokenInterface(i_link).approve(i_router, type(uint256).max);
+        i_router = _router;
+        i_link = _chainlinkToken;
+        i_maxTokensLength = 5;
+        LinkTokenInterface(_chainlinkToken).approve(i_router, type(uint256).max);
 
         //set addresses
-        // weth = IWETH(_weth);
+        weth = IWETH(_weth);
         // quoter = IQuoter(_quoter);
-        // swapRouterV3 = ISwapRouter(_swapRouterV3);
-        // factoryV3 = IUniswapV3Factory(_factoryV3);
-        // swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
-        // factoryV2 = IUniswapV2Factory(_factoryV2);
+        swapRouterV3 = ISwapRouter(_swapRouterV3);
+        factoryV3 = IUniswapV3Factory(_factoryV3);
+        swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
+        factoryV2 = IUniswapV2Factory(_factoryV2);
         //fee
         feeRate = 10;
         latestFeeUpdate = block.timestamp;
@@ -401,6 +400,7 @@ contract IndexFactory is
     }
 
 
+    
     function issuanceIndexTokensWithEth(uint _inputAmount) public payable {
         uint feeAmount = (_inputAmount*feeRate)/10000;
         uint finalAmount = _inputAmount + feeAmount;
@@ -419,16 +419,19 @@ contract IndexFactory is
           if(tokenChainSelector == currentChainSelector){
             issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].oldTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
             _swapSingle(address(weth), currentList[i], wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18, address(indexToken), tokenSwapVersion[currentList[i]]);
-            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].newTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].newTokenValue = issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].oldTokenValue + wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18;
             issuanceCompletedTokensCount[issuanceNonce] += 1;
           }else{
             //   uint64 destinationChainSelector = tokenChainSelector[currentList[i]];
-            //   sendToken(tokenChainSelector, receiver, tokensToSendDetails, payFeesIn);
+              Client.EVMTokenAmount[] memory tokensToSendArray;
+              Client.EVMTokenAmount memory tokensToSendDetails = Client.EVMTokenAmount(
+                currentList[i],
+                100
+              );
+              tokensToSendArray[0] = tokensToSendDetails;
+              sendToken(tokenChainSelector, address(this), tokensToSendArray, PayFeesIn.LINK);
           }
         }
-       //mint index tokens
-       
-       
     }
 
     // function completeIssuanceRequest() public {
@@ -539,7 +542,7 @@ contract IndexFactory is
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         PayFeesIn payFeesIn
-    ) external {
+    ) internal {
         uint256 length = tokensToSendDetails.length;
         require(
             length <= i_maxTokensLength,

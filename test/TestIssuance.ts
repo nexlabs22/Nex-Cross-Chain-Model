@@ -87,7 +87,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
       
       const jobId = ethers.utils.toUtf8Bytes("29fa9aa13bf1468788b7cc4a500a45b8"); //test job id
       const fee = "100000000000000000" // fee = 0.1 linkToken
-
+        
       const IndexFactory = await ethers.getContractFactory("IndexFactory");
       indexFactory = await IndexFactory.deploy()
 
@@ -98,9 +98,11 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
             oracle.address,
             jobId,
             ethPriceOracle.address,
+            //ccip
+            mockRouter.address,
             //swap addresses
             weth9.address,
-            v3Router.address, //quoter
+            // v3Router.address, //quoter
             v3Router.address,
             v3Factory.address,
             v3Router.address, //v2
@@ -162,7 +164,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
     ]
     const percentages = ["70000000000000000000", "30000000000000000000"]
     const swapVersions = ["3", "3"]
-    const chainSelectors = ["1", "2"]
+    const chainSelectors = ["1", "1"]
     //update oracle list
     await linkToken.transfer(indexFactory.address, 1e17.toString());
     const transaction: ContractTransaction = await indexFactory.requestAssetsData();
@@ -188,7 +190,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
         await addLiquidityEth(token0, "1", "1000")
         await addLiquidityEth(token1, "1", "1000")
         
-        const ownerAddress = owner.address
+        
         
         await indexFactory.issuanceIndexTokensWithEth(ethers.utils.parseEther("0.1"), {value: ethers.utils.parseEther("0.1001")})
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))

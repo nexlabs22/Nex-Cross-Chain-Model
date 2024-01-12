@@ -21,7 +21,7 @@ import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
-contract CrossChainIndexFactory is
+contract IndexFactory is
     ChainlinkClient,
     ContextUpgradeable,
     ProposableOwnableUpgradeable,
@@ -165,10 +165,9 @@ contract CrossChainIndexFactory is
         address _toUsdPriceFeed,
         //ccip
         address _router, 
-        address _link,
         //addresses
         address _weth,
-        address _quoter,
+        // address _quoter,
         address _swapRouterV3,
         address _factoryV3,
         address _swapRouterV2,
@@ -188,14 +187,14 @@ contract CrossChainIndexFactory is
         oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
         //set ccip addresses
-         i_router = _router;
-        i_link = _link;
+        i_router = _router;
+        i_link = _chainlinkToken;
         i_maxTokensLength = 5;
-        LinkTokenInterface(i_link).approve(i_router, type(uint256).max);
+        LinkTokenInterface(_chainlinkToken).approve(i_router, type(uint256).max);
 
         //set addresses
         weth = IWETH(_weth);
-        quoter = IQuoter(_quoter);
+        // quoter = IQuoter(_quoter);
         swapRouterV3 = ISwapRouter(_swapRouterV3);
         factoryV3 = IUniswapV3Factory(_factoryV3);
         swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
@@ -401,86 +400,8 @@ contract CrossChainIndexFactory is
     }
 
 
-    function issuanceIndexTokensWithEth(uint _inputAmount) public payable {
-        uint feeAmount = (_inputAmount*feeRate)/10000;
-        uint finalAmount = _inputAmount + feeAmount;
-        require(msg.value >= finalAmount, "lower than required amount");
-        //transfer fee to the owner
-        (bool _success,) = owner().call{value: fee}("");
-        require(_success, "transfer eth fee to the owner failed");
-        issuanceNonce ++;
-        weth.deposit{value: _inputAmount}();
-        weth.transfer(address(indexToken), _inputAmount);
-        uint firstPortfolioValue = getPortfolioBalance();
-        uint wethAmount = _inputAmount;
-        //swap
-        for(uint i = 0; i < totalCurrentList; i++) {
-          uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
-          if(tokenChainSelector == currentChainSelector){
-            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].oldTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
-            _swapSingle(address(weth), currentList[i], wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18, address(indexToken), tokenSwapVersion[currentList[i]]);
-            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].newTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
-            issuanceCompletedTokensCount[issuanceNonce] += 1;
-          }else{
-            //   uint64 destinationChainSelector = tokenChainSelector[currentList[i]];
-            //   sendToken(tokenChainSelector, receiver, tokensToSendDetails, payFeesIn);
-          }
-        }
-       //mint index tokens
-       
-       
-    }
-
-    // function completeIssuanceRequest() public {
-    //     uint amountToMint;
-    //    if(indexToken.totalSupply() > 0){
-    //     amountToMint = (indexToken.totalSupply()*wethAmount)/firstPortfolioValue;
-    //    }else{
-    //     uint price = priceInWei();
-    //     amountToMint = (wethAmount*price)/1e16;
-    //    }
-    //     indexToken.mint(msg.sender, amountToMint);
-    //     emit Issuanced(msg.sender, address(weth), _inputAmount, amountToMint, block.timestamp);
-    // }
-
-
-    function redemption(uint amountIn, address _tokenOut, uint _tokenOutSwapVersion) public returns(uint) {
-        // uint firstPortfolioValue = getPortfolioBalance();
-        uint burnPercent = amountIn*1e18/indexToken.totalSupply();
-        // uint burnPercent = 1e18;
-
-        indexToken.burn(msg.sender, amountIn);
-
-        uint outputAmount;
-        //swap
-        for(uint i = 0; i < totalCurrentList; i++) {
-        uint swapAmount = (burnPercent*IERC20(currentList[i]).balanceOf(address(indexToken)))/1e18;
-        uint swapAmountOut = _swapSingle(currentList[i], address(weth), swapAmount, address(this), tokenSwapVersion[currentList[i]]);
-        outputAmount += swapAmountOut;
-        }
-        
-        // uint outputAmount = weth.balanceOf(address(this));
-        uint fee = outputAmount*feeRate/10000;
-        if(_tokenOut == address(weth)){
-            // weth.transfer(msg.sender, outputAmount - fee);
-            weth.withdraw(outputAmount);
-            (bool _ownerSuccess,) = owner().call{value: fee}("");
-            require(_ownerSuccess, "transfer eth fee to the owner failed");
-            (bool _userSuccess,) = payable(msg.sender).call{value: outputAmount - fee}("");
-            require(_userSuccess, "transfer eth fee to the user failed");
-            emit Redemption(msg.sender, _tokenOut, amountIn, outputAmount - fee, block.timestamp);
-            return outputAmount - fee;
-        }else{
-            weth.withdraw(fee);
-            (bool _success,) = owner().call{value: fee}("");
-            require(_success, "transfer eth fee to the owner failed");
-            uint reallOut = swap(address(weth), _tokenOut, outputAmount - fee, msg.sender, _tokenOutSwapVersion);
-            emit Redemption(msg.sender, _tokenOut, amountIn, reallOut, block.timestamp);
-            return reallOut;
-        }
-
-
-    }
+    
+    
 
     function getAmountOut(address tokenIn, address tokenOut, uint amountIn, uint _swapVersion) public view returns(uint finalAmountOut) {
         uint finalAmountOut;
@@ -539,7 +460,7 @@ contract CrossChainIndexFactory is
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         PayFeesIn payFeesIn
-    ) external {
+    ) internal {
         uint256 length = tokensToSendDetails.length;
         require(
             length <= i_maxTokensLength,
