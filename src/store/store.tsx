@@ -5,6 +5,9 @@ import axios from 'axios'
 import { isSameDay } from '@/utils/conversionFunctions'
 import { dayChangeInitial } from './storeInitialValues'
 import get24hDayChangePer from '@utils/get24hDayChangePer'
+import { comparisonIndicesType } from '@/types/chartTypes'
+import { comparisonIndices } from '@/constants/comparisionIndices'
+import isEqual from 'lodash/isEqual';
 
 type LandingPageStore = {
 	//Select slide index
@@ -46,6 +49,9 @@ interface chartDataStoreType {
 	clearChartData: () => void
 	setANFIWeightage: () => void
 	setDayChangePer: () => void
+
+	comparisionIndices: comparisonIndicesType[],
+	setComparisonIndices: (data: comparisonIndicesType) => void
 }
 
 const useChartDataStore = create<chartDataStoreType>()((set) => ({
@@ -142,6 +148,25 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 		)
 		const data = await response.json()
 		set({ dayChange: data.changes })
+	},
+
+	comparisionIndices: comparisonIndices,
+	setComparisonIndices(data) {
+		set((state) => {
+			const indexToUpdate = state.comparisionIndices.findIndex((d) => data.name === d.name);
+	
+			if (indexToUpdate !== -1) {
+				const updatedArray = [...state.comparisionIndices];
+				const updatedObject = { ...updatedArray[indexToUpdate],  };
+	
+				if (!isEqual(updatedObject, data)) {
+					updatedArray[indexToUpdate] = { ...updatedObject, ...data };
+					return { comparisionIndices: updatedArray };
+				}
+			}
+
+			return state;
+		});
 	},
 }))
 

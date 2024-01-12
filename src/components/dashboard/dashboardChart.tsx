@@ -13,7 +13,7 @@ import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import { useChartDataStore, useLandingPageStore } from '@/store/store';
 import { chartDataType, lineChartDataType } from '@/store/storeTypes';
-import { comparisonIndices } from '@/constants/comparisionIndices';
+// import { comparisonIndices } from '@/constants/comparisionIndices';
 import getTooltipDate, { convertTo13DigitsTimestamp, dateToEpoch } from '@/utils/conversionFunctions';
 import useTradePageStore from '@/store/tradeStore';
 import { useRouter } from 'next/router';
@@ -28,7 +28,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const router = useRouter();
 	const { index: selectedTradingProduct} = router.query;
 	const { defaultIndex } = useLandingPageStore()
-	const { selectedDuration } = useChartDataStore()
+	const { selectedDuration, comparisionIndices } = useChartDataStore()
 	const { selectedIndex } = useToolPageStore()
 	const location = window.location.pathname
 	const ourIndexName = location === '/tradeIndex' ? selectedTradingProduct : location === '/dcaCalculator' ? selectedIndex : defaultIndex;
@@ -138,7 +138,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			};
 
 			const selectedCompIndexes = location === '/tradeIndex' ?[]: Object.keys(chartData).filter((i) => {
-				const res = comparisonIndices.find((item) => item.columnName === i)
+				const res = comparisionIndices.find((item) => item.columnName === i)
 				if (res) return true;
 			})
 			if (selectedCompIndexes.length > 0) {
@@ -161,7 +161,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			if (selectedCompIndexes.length > 0) {
 				selectedCompIndexes.map((index) => {
-					const indexDetails = comparisonIndices.find((item) => item.columnName === index);
+					const indexDetails = comparisionIndices.find((item) => item.columnName === index);
 					if (indexDetails) {
 
 						toolTipContentStatic += `<div style="font-size: 14px;z-index:100; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
@@ -205,7 +205,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 					if (selectedCompIndexes.length > 0) {
 						selectedCompIndexes.map((index) => {
-							const indexDetails = comparisonIndices.find((item) => item.columnName === index);
+							const indexDetails = comparisionIndices.find((item) => item.columnName === index);
 							toolTipContent += `<div style="font-size: 14px;z-index:100; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
 							toolTipContent += `<Image
 													src=${indexDetails?.logo}
@@ -244,7 +244,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 							const mapEntries = Array.from((param.seriesData as Map<string, any>).entries());
 							for (const [index, [, value]] of mapEntries.entries()) {
 								if (index - 1 >= 0) {
-									const indexDetails = comparisonIndices.find((item) => item.columnName === selectedCompIndexes[index - 1]);
+									const indexDetails = comparisionIndices.find((item) => item.columnName === selectedCompIndexes[index - 1]);
 									toolTipContent += `<div style="font-size: 14px; z-index: 100; margin: 4px 0px; display: flex; flex-direction: row; color: ${indexDetails?.selectionColor}">`
 									toolTipContent += 
 									`<Image
@@ -269,7 +269,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			if(location !== '/tradeIndex') {
 				Object.entries(chartData).forEach(([key, value]) => {
-					const indexDetails = comparisonIndices.find((item) => item.columnName === key);
+					const indexDetails = comparisionIndices.find((item) => item.columnName === key);
 					if (indexDetails) {
 
 						const areaSeries = chartRef.current.addLineSeries({
@@ -320,7 +320,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				chartRef.current.remove()
 			}
 		}
-	}, [chartData, data, maxValue, minValue, num, defaultIndex, selectedDuration,location, ourIndexName])
+	}, [chartData, data, maxValue, minValue, num, defaultIndex, selectedDuration,location, ourIndexName,comparisionIndices])
 
 
 	return (
