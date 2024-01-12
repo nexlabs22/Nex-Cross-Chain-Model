@@ -68,6 +68,90 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 		creationDate: 'null',
 	})
 	const [connectedUserId, setConnectedUserId] = useState<String>('')
+	const [userFound, setUserFound] = useState<boolean>(false)
+
+	useEffect(() => {
+		async function findUser(): Promise<boolean> {
+			var userFound: boolean = false
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				if (address) {
+					for (const key in users) {
+						const potentialUser: User = users[key]
+						if (potentialUser.main_wallet === address) {
+							userFound = true
+							setUserFound(true)
+						}
+					}
+				}
+			})
+			return userFound
+		}
+
+		async function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				if (address) {
+					for (const key in users) {
+						console.log(users[key])
+						const potentialUser: User = users[key]
+						if (potentialUser.main_wallet == address) {
+							setConnectedUser(potentialUser)
+							setConnectedUserId(key)
+							localStorage.setItem("connectedUserKey", key)
+						}
+					}
+				}
+			})
+		}
+
+		async function createNewUser(){
+			const todayDate = new Date()
+			let day = todayDate.getDate();
+			let month = todayDate.getMonth() + 1;
+			let year = todayDate.getFullYear();
+			let creationDate = `${day}-${month}-${year}`;
+			const newUserKey = push(child(ref(database), 'users')).key
+			set(ref(database, 'users/' + newUserKey), {
+				name: 'Nex User',
+				isRetailer: false,
+				email: '',
+				address: '',
+				inst_name: 'Nex User',
+				main_wallet: address?.toString(),
+				vatin: '',
+				ppLink: '',
+				ppType: 'identicon',
+				p1: false,
+				p2: false,
+				p3: false,
+				p4: false,
+				p5: false,
+				creationDate: creationDate,
+			})
+		}
+
+		async function userLogic(){
+			let isUserFound = await findUser().then(async ()=>{
+				if(userFound){
+					getUser()
+					alert("user found and data is gained")
+				}else{
+					alert("user not found. Creating user.")
+					await createNewUser().then(()=>{
+						getUser()
+					})
+				}
+			})
+			
+			
+		}
+
+		if(address) userLogic()
+		
+	}, [address, userFound])
 
 	/*useEffect(() => {
 		function getUser() {
@@ -127,7 +211,6 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 		
 		
 	}, [address])*/
-	
 
 	return (
 		<section className="flex h-fit w-screen flex-row items-center justify-between px-4 py-4 md:px-10 md:py-6 relative z-50">
