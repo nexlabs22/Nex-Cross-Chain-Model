@@ -98,6 +98,7 @@
 	"devDependencies": {
 		"@types/identicon.js": "^2.3.3",
 		"@types/jspdf": "^2.0.0",
+		"@types/lodash": "^4.14.202",
 		"@types/node": "latest",
 		"@types/node-fetch": "^2.6.10",
 		"@types/pg": "^8.10.3",
