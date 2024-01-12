@@ -77,6 +77,7 @@ import 'react-image-upload/dist/index.css'
 
 interface User {
 	email: string
+	isRetailer: boolean
 	inst_name: string
 	main_wallet: string
 	name: string
@@ -279,6 +280,8 @@ export default function Settings() {
 	const [imageViwerOpened, setImageViwerOpened] = useState<boolean>(false)
 	const [imageUploaderOpened, setImageUploaderOpened] = useState<boolean>(false)
 
+	const [isRetailerAccount, setIsRetailerAccount] = useState<boolean>(false)
+
 	const [option1, setOption1] = useState<boolean>(false)
 	const [option2, setOption2] = useState<boolean>(false)
 	const [option3, setOption3] = useState<boolean>(false)
@@ -317,6 +320,7 @@ export default function Settings() {
 					const potentialUser: User = users[key]
 					if (address && potentialUser.main_wallet == address) {
 						setConnectedUser(potentialUser)
+						setIsRetailerAccount(potentialUser.isRetailer)
 						setConnectedUserId(key)
 						setOption1(potentialUser.p1)
 						setOption2(potentialUser.p2)
@@ -332,6 +336,7 @@ export default function Settings() {
 
 	function saveSettings() {
 		update(ref(database, 'users/' + connectedUserId), {
+			isRetailer: isRetailerAccount != connectedUser?.isRetailer ? isRetailerAccount : connectedUser.isRetailer,
 			name: name != connectedUser?.name && name != '' ? name : connectedUser?.name,
 			email: email != connectedUser?.email && email != '' ? email : connectedUser?.email,
 			address: adr != connectedUser?.address && adr != '' ? adr : connectedUser?.address,
@@ -399,7 +404,7 @@ export default function Settings() {
 												}}
 											/>
 										</div>
-										{connectedUser?.ppType == 'identicon' || chosenPPType == 'identicon' && uploadedPPLink == "none" ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+										{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
 									</div>
 								) : (
 									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
@@ -437,9 +442,9 @@ export default function Settings() {
 											</div>
 										</div>
 									</div>
-									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
+									<div className=" bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
 										<BsCalendar4 color="#FFFFFF" size={15} />
-										<h5 className="text-base text-whiteText-500 montrealBold">Joined 1 day ago</h5>
+										<h5 className="text-base text-whiteText-500 interBold titleShadow">Joined 1 day ago</h5>
 									</div>
 								</div>
 							</div>
@@ -468,6 +473,28 @@ export default function Settings() {
 					<h5 className="text-base interMedium text-[#181818] w-full">
 						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
 					</h5>
+					<div className="w-full h-fit">
+						<h5 className="text-sm interMedium text-[#6B6B6B] w-full mt-6 mb-4">Account Type</h5>
+					</div>
+					<div className="flex flex-row w-full h-fit items-center justify-start gap-2 mb-3">
+						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${!isRetailerAccount ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`}>
+							Retailer
+						</h5>
+						<Switch
+							onChange={() => setIsRetailerAccount(!isRetailerAccount)}
+							checked={isRetailerAccount}
+							height={14}
+							width={35}
+							handleDiameter={20}
+							checkedIcon={false}
+							uncheckedIcon={false}
+							onColor="#5E869B"
+							offColor="#5E869B"
+						/>
+						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${isRetailerAccount ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`}>
+							Institutional Investor
+						</h5>
+					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 my-6">
 						<div className="w-4/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
@@ -550,12 +577,12 @@ export default function Settings() {
 						</div>
 					</div>
 				</div>
-				<div className=" w-full h-fit px-16 py-5 flex flex-col xl:flex-row items-center justify-center ">
+				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-16 py-5 flex flex-col xl:flex-row items-center justify-center `}>
 					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 px-2 border-b-[2px] border-b-[#E4E4E4] ">
 						<div className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">Legal Information</div>
 					</div>
 				</div>
-				<div className=" w-full h-fit px-20 py-1 flex flex-col items-center justify-center mb-4 ">
+				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-20 py-1 flex flex-col items-center justify-center mb-4 `}>
 					<h5 className="text-base interMedium text-[#181818] w-full">
 						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
 					</h5>
@@ -712,9 +739,37 @@ export default function Settings() {
 						onClick={() => {
 							saveSettings()
 						}}
-						disabled={name == '' && email == '' && adr == '' && instName == '' && vatin == '' && uploadedPPLink == 'none' && chosenPPType == connectedUser?.ppType && option1 == connectedUser.p1 && option2 == connectedUser.p2 && option3 == connectedUser.p3 && option4 == connectedUser.p4 && option5 == connectedUser.p5 ? true : false}
+						disabled={
+							name == '' &&
+							email == '' &&
+							adr == '' &&
+							instName == '' &&
+							vatin == '' &&
+							uploadedPPLink == 'none' &&
+							chosenPPType == connectedUser?.ppType &&
+							option1 == connectedUser.p1 &&
+							option2 == connectedUser.p2 &&
+							option3 == connectedUser.p3 &&
+							option4 == connectedUser.p4 &&
+							option5 == connectedUser.p5
+								? true
+								: false
+						}
 						className={`text-xl text-white titleShadow interBold ${
-							name == '' && email == '' && adr == '' && instName == '' && vatin == '' && uploadedPPLink == 'none' && chosenPPType == connectedUser?.ppType && option1 == connectedUser.p1 && option2 == connectedUser.p2 && option3 == connectedUser.p3 && option4 == connectedUser.p4 && option5 == connectedUser.p5 ? 'grayscale' : ''
+							name == '' &&
+							email == '' &&
+							adr == '' &&
+							instName == '' &&
+							vatin == '' &&
+							uploadedPPLink == 'none' &&
+							chosenPPType == connectedUser?.ppType &&
+							option1 == connectedUser.p1 &&
+							option2 == connectedUser.p2 &&
+							option3 == connectedUser.p3 &&
+							option4 == connectedUser.p4 &&
+							option5 == connectedUser.p5
+								? 'grayscale'
+								: ''
 						} bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md hover:bg-colorTwo-500/30`}
 					>
 						Save Settings
@@ -758,7 +813,7 @@ export default function Settings() {
 								setImageUploaderOpened(false)
 								GenericToast({
 									type: 'success',
-									message: 'Image uploaded succesfully, don\'t foget to save the chages!',
+									message: "Image uploaded succesfully, don't foget to save the chages!",
 								})
 							}}
 							width="600px"
@@ -771,7 +826,7 @@ export default function Settings() {
 								setImageUploaderOpened(false)
 								GenericToast({
 									type: 'success',
-									message: 'Switched to auto generated Image, don\'t foget to save the chages!',
+									message: "Switched to auto generated Image, don't foget to save the chages!",
 								})
 							}}
 							className={`text-xl mb-6 w-11/12 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 px-6 py-3 rounded-md hover:bg-colorTwo-500/30`}
