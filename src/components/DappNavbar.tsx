@@ -6,6 +6,7 @@ import { Menu as NavMenu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import HoverMenuWithTransition from './popper'
+import usePortfolioPageStore from '@/store/portfolioStore'
 
 import { BiMenuAltRight } from 'react-icons/bi'
 import { CiMenuFries } from 'react-icons/ci'
@@ -39,13 +40,16 @@ interface User {
 	p5: boolean
 	ppType: string
 	creationDate: string
+	showTradePopUp: boolean
 }
 
 interface DappNavbarProps {
 	lightVersion?: boolean
 }
 
+
 const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
+	const { globalConnectedUser, setGlobalConnectedUser } = usePortfolioPageStore()
 	const { openMobileMenu, setOpenMobileMenu } = useTradePageStore()
 
 	const connectionStatus = useConnectionStatus()
@@ -66,27 +70,32 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 		p4: false,
 		p5: false,
 		creationDate: 'null',
+		showTradePopUp: true
 	})
 	const [connectedUserId, setConnectedUserId] = useState<String>('')
 	const [userFound, setUserFound] = useState<boolean>(false)
 
 	useEffect(() => {
 		async function findUser(): Promise<boolean> {
-			var userFound: boolean = false
+			var found: boolean = false
 			const usersRef = ref(database, 'users/')
 			onValue(usersRef, (snapshot) => {
 				const users = snapshot.val()
 				if (address) {
 					for (const key in users) {
 						const potentialUser: User = users[key]
-						if (potentialUser.main_wallet === address) {
-							userFound = true
+						if (potentialUser.main_wallet == address) {
+							found = true
 							setUserFound(true)
+							setConnectedUser(potentialUser)
+							setGlobalConnectedUser(potentialUser)
+							setConnectedUserId(key)
+							localStorage.setItem("connectedUserKey", key)
 						}
 					}
 				}
 			})
-			return userFound
+			return found
 		}
 
 		async function getUser() {
@@ -99,6 +108,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 						const potentialUser: User = users[key]
 						if (potentialUser.main_wallet == address) {
 							setConnectedUser(potentialUser)
+							setGlobalConnectedUser(potentialUser)
 							setConnectedUserId(key)
 							localStorage.setItem("connectedUserKey", key)
 						}
@@ -130,16 +140,16 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 				p4: false,
 				p5: false,
 				creationDate: creationDate,
+				showTradePopUp: true
 			})
 		}
 
 		async function userLogic(){
 			let isUserFound = await findUser().then(async ()=>{
-				if(userFound){
+				if(localStorage.getItem("connectedUserKey")){
 					getUser()
-					alert("user found and data is gained")
 				}else{
-					alert("user not found. Creating user.")
+					alert("user not found")
 					await createNewUser().then(()=>{
 						getUser()
 					})
@@ -151,7 +161,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 
 		if(address) userLogic()
 		
-	}, [address, userFound])
+	}, [])
 
 	/*useEffect(() => {
 		function getUser() {

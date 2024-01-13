@@ -91,6 +91,7 @@ interface User {
 	p5: boolean
 	ppType: string
 	creationDate: string
+	showTradePopUp: boolean
 }
 
 export default function Settings() {
