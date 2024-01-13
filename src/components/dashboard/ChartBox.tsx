@@ -31,6 +31,26 @@ import paypal from '@assets/images/paypal.png'
 import asml from '@assets/images/asml.png'
 import copper from '@assets/images/copper.png'
 import lithium from '@assets/images/lithium.png'
+import apple from '@assets/images/apple.png'
+import alphabet from '@assets/images/alphabet.png'
+import amazon from '@assets/images/amazon.png'
+import berkshirehathway from '@assets/images/berkshirehathway.png'
+import chevron from '@assets/images/chevron.png'
+import exxon_mobile from '@assets/images/exxon_mobile.png'
+import jnj from '@assets/images/jnj.png'
+import jpmorgan from '@assets/images/jpmorgan.png'
+import lvmh from '@assets/images/lvmh.png'
+import mastercard from '@assets/images/mastercard.png'
+import meta from '@assets/images/meta.png'
+import nvidia from '@assets/images/nvidia.png'
+import silver from '@assets/images/silver.png'
+import spy from '@assets/images/spy.png'
+import tencent from '@assets/images/tencent.png'
+import tesla from '@assets/images/tesla.png'
+import tsmc from '@assets/images/tsmc.png'
+import unitedhealth from '@assets/images/unitedhealth.png'
+import visa from '@assets/images/visa.png'
+import walmart from '@assets/images/walmart.png'
 
 import { BsPlus } from 'react-icons/bs'
 import { BsChevronCompactRight, BsChevronCompactLeft } from 'react-icons/bs'
@@ -39,14 +59,15 @@ import { GoTriangleDown } from 'react-icons/go'
 const DashboardChartBox = () => {
 	const { defaultIndex } = useLandingPageStore()
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
-	const { fetchIndexData, removeIndex, clearChartData, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data, chartData } = useChartDataStore()
+	const { fetchIndexData, removeIndex, clearChartData, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data, chartData, comparisionIndices, setComparisonIndices } =
+		useChartDataStore()
 	const [classesModalOpen, setClassesModalOpen] = useState<boolean>(false)
 	const [classesCategory, setClassesCategory] = useState<string>('indices')
 
 	useEffect(() => {
-		clearChartData();
+		clearChartData()
 		setSelectedIndices([])
-	}, [defaultIndex,clearChartData])
+	}, [defaultIndex, clearChartData])
 
 	const openClassesModal = () => {
 		setClassesModalOpen(true)
@@ -154,81 +175,201 @@ const DashboardChartBox = () => {
 		},
 	]
 
-	const allClasses = [
-		{
-			name: 'BTC',
-			colName: 'bitcoin',
-			logo: btc.src,
-			category: 'cryptocurrencies',
-		},
-		{
-			name: 'gold',
-			colName: 'gold',
-			logo: gold.src,
-			category: 'commodities',
-		},
-		{
-			name: 'oil',
-			colName: 'oil',
-			logo: oil.src,
-			category: 'commodities',
-		},
+	// const allClasses = [
+	// 	{
+	// 		name: 'BTC',
+	// 		colName: 'bitcoin',
+	// 		logo: btc.src,
+	// 		category: 'cryptocurrencies',
+	// 	},
+	// 	{
+	// 		name: 'gold',
+	// 		colName: 'gold',
+	// 		logo: gold.src,
+	// 		category: 'commodities',
+	// 	},
+	// 	{
+	// 		name: 'oil',
+	// 		colName: 'oil',
+	// 		logo: oil.src,
+	// 		category: 'commodities',
+	// 	},
 
-		{
-			name: 'GSPC',
-			colName: 'sandp',
-			logo: sandp.src,
-			category: 'indices',
-		},
-		{
-			name: 'DJI',
-			colName: 'dow',
-			logo: dow.src,
-			category: 'indices',
-		},
-		{
-			name: 'IXIC',
-			colName: 'nasdaq',
-			logo: nasdaq.src,
-			category: 'indices',
-		},
-		{
-			name: 'NYA',
-			colName: 'nyse',
-			logo: nyse.src,
-			category: 'indices',
-		},
-		{
-			name: 'MSFT',
-			colName: 'microsoft',
-			logo: microsoft.src,
-			category: 'stocks',
-		},
-		{
-			name: 'PYPL',
-			colName: 'paypal',
-			logo: paypal.src,
-			category: 'stocks',
-		},
-		{
-			name: 'ASML',
-			colName: 'asml',
-			logo: asml.src,
-			category: 'stocks',
-		},
-		{
-			name: 'Copper',
-			colName: 'copper',
-			logo: copper.src,
-			category: 'commodities',
-		},
-		{
-			name: 'Lithium',
-			colName: 'lithium',
-			logo: lithium.src,
-			category: 'commodities',
-		},
-	]
+	// 	{
+	// 		name: 'GSPC',
+	// 		colName: 'sandp',
+	// 		logo: sandp.src,
+	// 		category: 'indices',
+	// 	},
+	// 	{
+	// 		name: 'DJI',
+	// 		colName: 'dow',
+	// 		logo: dow.src,
+	// 		category: 'indices',
+	// 	},
+	// 	{
+	// 		name: 'IXIC',
+	// 		colName: 'nasdaq',
+	// 		logo: nasdaq.src,
+	// 		category: 'indices',
+	// 	},
+	// 	{
+	// 		name: 'NYA',
+	// 		colName: 'nyse',
+	// 		logo: nyse.src,
+	// 		category: 'indices',
+	// 	},
+	// 	{
+	// 		name: 'MSFT',
+	// 		colName: 'microsoft',
+	// 		logo: microsoft.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'PYPL',
+	// 		colName: 'paypal',
+	// 		logo: paypal.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'ASML',
+	// 		colName: 'asml',
+	// 		logo: asml.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'Copper',
+	// 		colName: 'copper',
+	// 		logo: copper.src,
+	// 		category: 'commodities',
+	// 	},
+	// 	{
+	// 		name: 'Lithium',
+	// 		colName: 'lithium',
+	// 		logo: lithium.src,
+	// 		category: 'commodities',
+	// 	},
+	// 	{
+	// 		name: 'AAPL',
+	// 		colName: 'apple',
+	// 		logo: apple.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'GOOGL',
+	// 		colName: 'alphabet',
+	// 		logo: alphabet.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'AMZN',
+	// 		colName: 'amazon',
+	// 		logo: amazon.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'TCEHY',
+	// 		colName: 'tencent',
+	// 		logo: tencent.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'Silver',
+	// 		colName: 'silver',
+	// 		logo: silver.src,
+	// 		category: 'commodities',
+	// 	},
+	// 	{
+	// 		name: 'V',
+	// 		colName: 'visa',
+	// 		logo: visa.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'TSM',
+	// 		colName: 'tsmc',
+	// 		logo: tsmc.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'XOM',
+	// 		colName: 'exxon_mobile',
+	// 		logo: exxon_mobile.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'UNH',
+	// 		colName: 'unitedhealth_group',
+	// 		logo: unitedhealth.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'JNJ',
+	// 		colName: 'johnson_n_johnson',
+	// 		logo: jnj.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'NVDA',
+	// 		colName: 'nvidia',
+	// 		logo: nvidia.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'LVMHF',
+	// 		colName: 'LVMHF',
+	// 		logo: lvmh.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'TSLA',
+	// 		colName: 'tesla',
+	// 		logo: tesla.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'JPM',
+	// 		colName: 'jpmorgan',
+	// 		logo: jpmorgan.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'WMT',
+	// 		colName: 'walmart',
+	// 		logo: walmart.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'META',
+	// 		colName: 'meta',
+	// 		logo: meta.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'SPY',
+	// 		colName: 'spdr',
+	// 		logo: spy.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'MA',
+	// 		colName: 'mastercard',
+	// 		logo: mastercard.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'CVX',
+	// 		colName: 'chevron_corp',
+	// 		logo: chevron.src,
+	// 		category: 'stocks',
+	// 	},
+	// 	{
+	// 		name: 'BRK-A',
+	// 		colName: 'BRK-A',
+	// 		logo: berkshirehathway.src,
+	// 		category: 'stocks',
+	// 	},
+	// ]
 
 	return (
 		<>
@@ -262,8 +403,9 @@ const DashboardChartBox = () => {
 										>
 											<div className="flex flex-row items-center justify-start gap-2">
 												<div
-													className={`w-10 p-3 ${selectedIndices.includes(assetClass.colName) ? 'border-2 border-white p-3' : ''
-														} aspect-square rounded-full bg-contain bg-center bg-no-repeat cursor-pointer`}
+													className={`w-10 p-3 ${
+														selectedIndices.includes(assetClass.colName) ? 'border-2 border-white p-3' : ''
+													} aspect-square rounded-full bg-contain bg-center bg-no-repeat cursor-pointer`}
 													style={{
 														backgroundImage: `url('${assetClass.logo}')`,
 													}}
@@ -278,8 +420,9 @@ const DashboardChartBox = () => {
 												</h5>
 											</div>
 											<h5
-												className={`pangramCompact ${selectedIndices.includes(assetClass.colName) ? ' bg-whiteText-500 p-1 rounded-full border border-gray-400' : ''} text-sm ${Number(dayChange[assetClass.colName]) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'
-													}`}
+												className={`pangramCompact ${selectedIndices.includes(assetClass.colName) ? ' bg-whiteText-500 p-1 rounded-full border border-gray-400' : ''} text-sm ${
+													Number(dayChange[assetClass.colName]) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'
+												}`}
 											>{`${Number(dayChange[assetClass.colName]) > 0 ? '+' + dayChange[assetClass.colName] : dayChange[assetClass.colName]}`}</h5>
 										</div>
 									)
@@ -321,8 +464,9 @@ const DashboardChartBox = () => {
 											>
 												<div className="flex flex-row w-full items-center justify-between pr-2">
 													<div
-														className={`w-10 p-3 ${selectedIndices.includes(assetClass.colName) ? 'border-2 border-white p-3' : ''
-															} aspect-square rounded-full bg-contain bg-center bg-no-repeat cursor-pointer`}
+														className={`w-10 p-3 ${
+															selectedIndices.includes(assetClass.colName) ? 'border-2 border-white p-3' : ''
+														} aspect-square rounded-full bg-contain bg-center bg-no-repeat cursor-pointer`}
 														style={{
 															backgroundImage: `url('${assetClass.logo}')`,
 														}}
@@ -336,11 +480,9 @@ const DashboardChartBox = () => {
 														{assetClass.name}
 													</h5>
 												</div>
-
 											</div>
 										)
 									}
-
 								})
 							}
 						})}
@@ -361,18 +503,18 @@ const DashboardChartBox = () => {
 										{selectedDuration == 30
 											? '1M'
 											: selectedDuration == 60
-												? '2M'
-												: selectedDuration == 180
-													? '6M'
-													: selectedDuration == -1
-														? 'YTD'
-														: selectedDuration == 360
-															? '1Y'
-															: selectedDuration == 1080
-																? '3Y'
-																: selectedDuration == 1800
-																	? '5Y'
-																	: ''}
+											? '2M'
+											: selectedDuration == 180
+											? '6M'
+											: selectedDuration == -1
+											? 'YTD'
+											: selectedDuration == 360
+											? '1Y'
+											: selectedDuration == 1080
+											? '3Y'
+											: selectedDuration == 1800
+											? '5Y'
+											: ''}
 									</h5>
 									<GoTriangleDown color="#F2F2F2" size={12}></GoTriangleDown>
 								</div>
@@ -483,11 +625,13 @@ const DashboardChartBox = () => {
 				</div>
 			</section>
 			<GenericModal isOpen={classesModalOpen} onRequestClose={closeClassesModal} modalWidth={40}>
-				<div className="w-full h-fit px-2 flex flex-row items-center justify-start">
-					<div className="h-fit w-2/5 border-r border-r-blackText-500/30 px-2 pt-3 pb-10 flex flex-col items-start justify-start gap-10">
+				<div className="w-full h-max-[10px] px-2 flex flex-row items-center justify-start">
+					{/* <div className="h-fit w-2/5 border-r border-r-blackText-500/30 px-2 pt-3 pb-10 flex flex-col items-start justify-start gap-10"> */}
+					<div className="h-max-[10px] w-2/5 border-r border-r-blackText-500/30 px-2 pt-3 pb-10 flex flex-col items-start justify-start gap-10">
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'indices' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
-								}`}
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
+								classesCategory == 'indices' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+							}`}
 							onClick={() => {
 								setClassesCategory('indices')
 							}}
@@ -495,8 +639,9 @@ const DashboardChartBox = () => {
 							Indices
 						</h5>
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'commodities' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
-								}`}
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
+								classesCategory == 'commodities' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+							}`}
 							onClick={() => {
 								setClassesCategory('commodities')
 							}}
@@ -504,8 +649,9 @@ const DashboardChartBox = () => {
 							Commodities
 						</h5>
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'cryptocurrencies' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
-								}`}
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
+								classesCategory == 'cryptocurrencies' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+							}`}
 							onClick={() => {
 								setClassesCategory('cryptocurrencies')
 							}}
@@ -513,8 +659,9 @@ const DashboardChartBox = () => {
 							Cryptocurrencies
 						</h5>
 						<h5
-							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${classesCategory == 'stocks' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
-								}`}
+							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
+								classesCategory == 'stocks' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+							}`}
 							onClick={() => {
 								setClassesCategory('stocks')
 							}}
@@ -522,36 +669,88 @@ const DashboardChartBox = () => {
 							Stocks
 						</h5>
 					</div>
-					<div className="h-full w-3/5 grid grid-cols-3 auto-rows-max justify-start items-start gap-y-5 px-3">
-						{allClasses.map((cls, key) => {
+					{/* <div className="h-full w-3/5 grid grid-cols-3 auto-rows-max justify-start items-start gap-y-5 px-3"> */}
+					<div className="max-h-[300px] overflow-y-scroll w-3/5 flex flex-col justify-start items-start gap-y-5 px-3">
+						{comparisionIndices.map((cls, key) => {
 							if (cls.category == classesCategory) {
 								return (
 									<div
 										key={key}
-										onClick={() => {
-											closeClassesModal()
-											if (!selectedIndices.includes(cls.colName)) {
-												fetchIndexData({ tableName: 'histcomp', index: cls.colName })
-												setSelectedIndices((prevState) => [...prevState, cls.colName])
-											} else {
-												removeIndex(cls.colName)
-												setSelectedIndices((prevState) =>
-													prevState.filter((i) => {
-														return i != cls.colName
-													})
-												)
-											}
-										}}
-										className={`flex flex-col items-center justify-center rounded-xl cursor-pointer w-full p-3 hover:bg-gray-200/50 ${selectedIndices.includes(cls.colName) ? 'bg-gray-200/50' : ''
-											}`}
+										// onClick={() => {
+										// 	if (!selectedIndices.includes(cls.columnName)) {
+										// 		fetchIndexData({ tableName: 'histcomp', index: cls.columnName })
+										// 		setSelectedIndices((prevState) => [...prevState, cls.columnName])
+										// 	} else {
+										// 		removeIndex(cls.columnName)
+										// 		setSelectedIndices((prevState) =>
+										// 			prevState.filter((i) => {
+										// 				return i != cls.columnName
+										// 			})
+										// 		)
+										// 	}
+										// }}
+										className={`flex flex-row items-center justify-center rounded-xl cursor-pointer w-full p-3 hover:bg-gray-200/50 ${
+											selectedIndices.includes(cls.columnName) ? 'bg-gray-200/50' : ''
+										}`}
 									>
-										<div
-											className=" bg-center bg-contain bg-no-repeat w-2/5 border border-gray-100 shadow-md shadow-gray-200 aspect-square rounded-full"
-											style={{
-												backgroundImage: `url(${cls.logo})`,
+										<div className="w-1/3 ">
+											<div
+												className=" bg-center bg-contain w-2/5 bg-no-repeat border border-gray-100 shadow-md shadow-gray-200 aspect-square rounded-full"
+												style={{
+													backgroundImage: `url(${cls.logo})`,
+												}}
+												// onClick={() => closeClassesModal()}
+												onClick={() => {
+													closeClassesModal()
+													if (!selectedIndices.includes(cls.columnName)) {
+														fetchIndexData({ tableName: 'histcomp', index: cls.columnName })
+														setSelectedIndices((prevState) => [...prevState, cls.columnName])
+													} else {
+														removeIndex(cls.columnName)
+														setSelectedIndices((prevState) =>
+															prevState.filter((i) => {
+																return i != cls.columnName
+															})
+														)
+													}
+												}}
+											></div>
+										</div>
+										<h5
+											className="montrealBold w-1/3 flex items-center justify-center text-base text-blackText-500 uppercase"
+											onClick={() => {
+												closeClassesModal()
+												if (!selectedIndices.includes(cls.columnName)) {
+													fetchIndexData({ tableName: 'histcomp', index: cls.columnName })
+													setSelectedIndices((prevState) => [...prevState, cls.columnName])
+												} else {
+													removeIndex(cls.columnName)
+													setSelectedIndices((prevState) =>
+														prevState.filter((i) => {
+															return i != cls.columnName
+														})
+													)
+												}
 											}}
-										></div>
-										<h5 className="montrealBold text-base text-blackText-500 uppercase">{cls.name}</h5>
+										>
+											{cls.shortName}
+										</h5>
+
+										<div className="w-1/3 flex items-center justify-end">
+											<input
+												type="color"
+												name="comparisionChart"
+												className="h-6 w-5 rounded-full border-none"
+												value={cls.selectionColor}
+												onChange={(event) => {
+													const newColor = event.target.value
+													const newObj = { ...cls }
+													newObj.selectionColor = newColor
+													setComparisonIndices(newObj)
+													// closeClassesModal()
+												}}
+											/>
+										</div>
 									</div>
 								)
 							}
