@@ -37,6 +37,7 @@
 		"bignumber.js": "^9.1.2",
 		"burger-menu": "^2.0.0",
 		"canvas": "^2.11.2",
+		"cors": "^2.8.5",
 		"date-fns": "^2.30.0",
 		"ethers": "^5.7.2",
 		"firebase": "^10.7.1",
@@ -88,6 +89,7 @@
 		"reaviz": "^15.5.0",
 		"sharp": "^0.32.6",
 		"slick-carousel": "^1.8.1",
+		"socket.io-client": "^4.7.4",
 		"three": "^0.158.0",
 		"tls": "^0.0.1",
 		"use-query-params": "^2.2.1",
@@ -96,6 +98,7 @@
 		"zustand": "^4.4.2"
 	},
 	"devDependencies": {
+		"@types/cors": "^2.8.17",
 		"@types/identicon.js": "^2.3.3",
 		"@types/jspdf": "^2.0.0",
 		"@types/lodash": "^4.14.202",

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import DashboardChartBox from './ChartBox'
 import { Accordion, AccordionItem } from '@szhsin/react-accordion'
 import GenericAddressTooltip from '../GenericAddressTooltip'
+import TradingViewChart from "@/components/TradingViewChart";
 
 // Store
 import { useChartDataStore, useLandingPageStore } from '@/store/store'
@@ -401,7 +402,8 @@ const TopIndexData = () => {
 				</div>
 
 				<div className="h-fit w-full">
-					<DashboardChartBox />
+					{/* <DashboardChartBox /> */}
+					<TradingViewChart />
 				</div>
 			</div>
 		</section>

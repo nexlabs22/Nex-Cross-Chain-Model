@@ -374,7 +374,7 @@ export default function DCACalculator() {
 						</div>
 						<div className="w-9/12 flex-grow flex flex-col gap-y-5 pr-5">
 							<div className="h-full w-full ">
-								<DCACalculatorChart data={filteredIndexData} />
+								<DCACalculatorChart data={filteredIndexData} />								
 							</div>
 						</div>
 					</section>
