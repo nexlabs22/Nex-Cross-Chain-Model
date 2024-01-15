@@ -41,7 +41,8 @@ export async function GET(request: NextRequest, response: NextResponse) {
             }
         };
         const symbolDetails_bitfinex = await fetch("https://api.bitfinex.com/v1/symbols_details", options).then(response => response.json()).catch(error => console.log(error));
-        const symbolDetails_bybit: { name: string, minTradeQty: string }[] = await axios.get("https://api.bybit.com/spot/v3/public/symbols").then(res => res.data.result.list).catch((err) => { console.log(err) })
+        const symbolDetails_bybit = await fetch("https://api.bybit.com/spot/v3/public/symbols", options).then(response => response.json()).then(res=> res.result.list).catch(error => console.error(error));
+        // const symbolDetails_bybit: { name: string, minTradeQty: string }[] = await axios.get("https://api.bybit.com/spot/v3/public/symbols").then(res => res.data.result.list).catch((err) => { console.log(err) })
 
         
         const allocations: { name: string, weight: number|string, minTradeValueBitfinex: number | string, minTradeValueBybit: number | string, selectedExchange: string }[] = [];
