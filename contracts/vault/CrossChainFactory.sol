@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.7;
 
-import "../token/IndexToken.sol";
+// import "../token/IndexToken.sol";
 import "../proposable/ProposableOwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
@@ -14,14 +14,17 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../libraries/OracleLibrary.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
-
+// import "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
+import "../ccip/CCIPReceiver.sol";
+import "./CrossChainVault.sol";
 // import {Withdraw} from "./utils/Withdraw.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
-contract IndexFactory is
+contract CrossChainIndexFactory is
+    CCIPReceiver,
     ChainlinkClient,
     ContextUpgradeable,
     ProposableOwnableUpgradeable,
@@ -41,13 +44,14 @@ contract IndexFactory is
         uint256 amount; // received amount.
     }
 
-    address public i_router;
+    // address public i_router;
     address public i_link;
     uint16 public i_maxTokensLength;
     bytes32[] public receivedMessages; // Array to keep track of the IDs of received messages.
     mapping(bytes32 => Message) public messageDetail; // Mapping from message ID to Message struct, storing details of each received message.
 
-    IndexToken public indexToken;
+    // IndexToken public indexToken;
+    CrossChainVault public crossChainVault;
 
     uint256 public fee;
     uint8 public feeRate; // 10/10000 = 0.1%
@@ -115,6 +119,7 @@ contract IndexFactory is
     IWETH public weth;
     IQuoter public quoter;
 
+    address public crossChainToken;
     //nonce
     struct TokenOldAndNewValues{
         uint oldTokenValue;
@@ -158,7 +163,7 @@ contract IndexFactory is
     
     function initialize(
         uint64 _currentChainSelector,
-        address payable _token,
+        address payable _crossChainVault,
         address _chainlinkToken, 
         address _oracleAddress, 
         bytes32 _externalJobId,
@@ -172,13 +177,15 @@ contract IndexFactory is
         address _factoryV3,
         address _swapRouterV2,
         address _factoryV2
-    ) external initializer {
-
+    ) external initializer{
+        // __ccipReceiver_init(_router);
+        CCIPReceiver(_router);
         __Ownable_init();
         __Pausable_init();
         //set chain selector
         currentChainSelector = _currentChainSelector;
-        indexToken = IndexToken(_token);
+        // indexToken = IndexToken(_token);
+        crossChainVault = CrossChainVault(_crossChainVault);
         //set oracle data
         setChainlinkToken(_chainlinkToken);
         setChainlinkOracle(_oracleAddress);
@@ -206,6 +213,14 @@ contract IndexFactory is
         baseUrl = "https://app.nexlabs.io/api/allFundingRates";
         urlParams = "?multiplyFunc=18&timesNegFund=true&arrays=true";
         // s_requestCount = 1;
+    }
+
+    function setCrossChainToken(address _crossChainToken) public onlyOwner {
+        crossChainToken = _crossChainToken;
+    }
+
+    function setCrossChainVault(address payable _crossChainVault) public onlyOwner {
+        crossChainVault = CrossChainVault(_crossChainVault);
     }
 
   /**
@@ -352,7 +367,7 @@ contract IndexFactory is
         uint amountOut = getAmountOut(tokenIn, tokenOut, amountIn, _swapVersion);
         uint swapAmountOut;
         if(amountOut > 0){
-           swapAmountOut = indexToken.swapSingle(tokenIn, tokenOut, amountIn, _recipient, _swapVersion);
+           swapAmountOut = crossChainVault.swapSingle(tokenIn, tokenOut, amountIn, _recipient, _swapVersion);
         }
         if(_swapVersion == 3){
             return swapAmountOut;
@@ -423,7 +438,7 @@ contract IndexFactory is
     function getPortfolioBalance() public view returns(uint){
         uint totalValue;
         for(uint i = 0; i < totalCurrentList; i++) {
-            uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+            uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(crossChainVault)), tokenSwapVersion[currentList[i]]);
             totalValue += value;
         }
         return totalValue;
@@ -519,7 +534,7 @@ contract IndexFactory is
     // /// handle a received message
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
-    ) internal {
+    ) internal override {
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
@@ -527,34 +542,82 @@ contract IndexFactory is
             .destTokenAmounts;
         address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
         uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
-        string memory message = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent string message
-        receivedMessages.push(messageId);
-        Message memory detail = Message(
-            sourceChainSelector,
-            sender,
-            message,
-            token,
-            amount
-        );
-        messageDetail[messageId] = detail;
 
-        emit MessageReceived(
-            messageId,
-            sourceChainSelector,
-            sender,
-            message,
-            tokenAmounts[0]
+        (address targetAddress, uint issuanceNonce) = abi.decode(any2EvmMessage.data, (address, uint)); // abi-decoding of the sent string message
+        // IERC20(crossChainToken).approve(v3Router, amount);
+        uint oldTokenValue = getAmountOut(targetAddress, address(weth), IERC20(targetAddress).balanceOf(address(crossChainVault)), 3);
+        uint wethAmount = swap(crossChainToken, address(weth), amount, address(crossChainVault), 3);
+        // swap(address(weth), targetAddress, wethAmount, address(this), 3);
+        _swapSingle(address(weth), targetAddress, wethAmount, address(crossChainVault), 3);
+        uint newTokenValue = oldTokenValue + wethAmount;
+
+        bytes memory data = abi.encode(targetAddress, issuanceNonce, oldTokenValue, newTokenValue);
+        sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
+        // string memory message = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent string message
+        // receivedMessages.push(messageId);
+        // Message memory detail = Message(
+        //     sourceChainSelector,
+        //     sender,
+        //     message,
+        //     token,
+        //     amount
+        // );
+        // messageDetail[messageId] = detail;
+
+        // emit MessageReceived(
+        //     messageId,
+        //     sourceChainSelector,
+        //     sender,
+        //     message,
+        //     tokenAmounts[0]
+        // );
+    }
+
+    function sendMessage(
+        uint64 destinationChainSelector,
+        address receiver,
+        bytes memory _data,
+        PayFeesIn payFeesIn
+    ) public {
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(receiver),
+            data: _data,
+            tokenAmounts: new Client.EVMTokenAmount[](0),
+            extraArgs: "",
+            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+        });
+
+        uint256 fee = IRouterClient(i_router).getFee(
+            destinationChainSelector,
+            message
         );
+
+        bytes32 messageId;
+
+        if (payFeesIn == PayFeesIn.LINK) {
+            // LinkTokenInterface(i_link).approve(i_router, fee);
+            messageId = IRouterClient(i_router).ccipSend(
+                destinationChainSelector,
+                message
+            );
+        } else {
+            messageId = IRouterClient(i_router).ccipSend{value: fee}(
+                destinationChainSelector,
+                message
+            );
+        }
+
+        emit MessageSent(messageId);
     }
 
 
     function reIndexAndReweight() public onlyOwner {
         for(uint i; i < totalCurrentList; i++) {
-            _swapSingle(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), address(indexToken), tokenSwapVersion[currentList[i]]);
+            _swapSingle(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(crossChainVault)), address(crossChainVault), tokenSwapVersion[currentList[i]]);
         }
-        uint wethBalance = weth.balanceOf(address(indexToken));
+        uint wethBalance = weth.balanceOf(address(crossChainVault));
         for(uint i; i < totalOracleList; i++) {
-            _swapSingle(address(weth), oracleList[i], wethBalance*tokenOracleMarketShare[oracleList[i]]/100e18, address(indexToken), tokenSwapVersion[oracleList[i]]);
+            _swapSingle(address(weth), oracleList[i], wethBalance*tokenOracleMarketShare[oracleList[i]]/100e18, address(crossChainVault), tokenSwapVersion[oracleList[i]]);
             //update current list
             currentList[i] = oracleList[i];
             tokenCurrentMarketShare[oracleList[i]] = tokenOracleMarketShare[oracleList[i]];

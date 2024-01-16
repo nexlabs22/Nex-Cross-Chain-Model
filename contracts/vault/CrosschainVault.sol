@@ -18,8 +18,7 @@ import "../interfaces/IUniswapV2Factory.sol";
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
-contract CrosschainVault is
-    ContextUpgradeable,
+contract CrossChainVault is
     ProposableOwnableUpgradeable,
     PausableUpgradeable
 {
@@ -85,11 +84,6 @@ contract CrosschainVault is
     }
 
 
-
-    
-
-    
-    
 
     
 

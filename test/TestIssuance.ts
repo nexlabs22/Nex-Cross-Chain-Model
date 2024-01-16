@@ -1,13 +1,14 @@
 
 import { ContractReceipt, ContractTransaction, Signer, constants } from "ethers";
 import { ethers, network } from "hardhat";
-import { BasicMessageReceiver, BasicTokenSender, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
+import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
 import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { expect } from 'chai';
 import { BasicMessageSender } from "../typechain-types/contracts/ccip";
 import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
 import { getMaxTick, getMinTick } from "./uniswap/utils/ticks";
 import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
+import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/CrossChainVault";
   
   describe("Lock", function () {
     // We define a fixture to reuse the same setup in every test.
@@ -22,12 +23,15 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
     let otherAccount : any
     let token0 : Token
     let token1 : Token
+    let crossChainToken : Token
     let weth9: IWETH
     let v3Factory: IUniswapV3Factory
     let v3Router: ISwapRouter
     let nft: INonfungiblePositionManager
     let indexToken : IndexToken
     let indexFactory : IndexFactory
+    let crossChainVault : CrossChainVault
+    let crossChainIndexFactory : CrossChainIndexFactory
     let oracle : MockApiOracle
     let ethPriceOracle: MockV3Aggregator
 
@@ -44,6 +48,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
       const Token = await ethers.getContractFactory("Token");
       token0 = await Token.deploy(ethers.utils.parseEther("1000000"));
       token1 = await Token.deploy(ethers.utils.parseEther("100000"));
+      crossChainToken = await Token.deploy(ethers.utils.parseEther("100000"));
 
       const BasicMessageSender = await ethers.getContractFactory("BasicMessageSender");
       basicMessageSender = await BasicMessageSender.deploy(mockRouter.address, linkToken.address);
@@ -85,12 +90,48 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
             v3Factory.address //factory v2
       )
       
+      const CrossChainVault = await ethers.getContractFactory("CrossChainVault");
+      crossChainVault = await CrossChainVault.deploy()
+      await crossChainVault.initialize(
+            ethers.constants.AddressZero,
+            //swap addresses
+            weth9.address,
+            v3Router.address,//quoter
+            v3Router.address,
+            v3Factory.address,
+            v3Router.address, //router v2
+            v3Factory.address //factory v2
+      )
+
       const jobId = ethers.utils.toUtf8Bytes("29fa9aa13bf1468788b7cc4a500a45b8"); //test job id
       const fee = "100000000000000000" // fee = 0.1 linkToken
-        
+      
+
+      const CrossChainIndexFactory = await ethers.getContractFactory("CrossChainIndexFactory");
+      crossChainIndexFactory = await CrossChainIndexFactory.deploy()
+
+      await crossChainIndexFactory.initialize(
+            "1",
+            crossChainVault.address,
+            linkToken.address,
+            oracle.address,
+            jobId,
+            ethPriceOracle.address,
+            //ccip
+            mockRouter.address,
+            //swap addresses
+            weth9.address,
+            // v3Router.address, //quoter
+            v3Router.address,
+            v3Factory.address,
+            v3Router.address, //v2
+            v3Factory.address //v2
+      )
+      
+
       const IndexFactory = await ethers.getContractFactory("IndexFactory");
       indexFactory = await IndexFactory.deploy()
-
+      // return;
       await indexFactory.initialize(
             "1",
             indexToken.address,
@@ -108,9 +149,14 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
             v3Router.address, //v2
             v3Factory.address //v2
       )
-
+      
+      
       //set minter
       await indexToken.setMinter(indexFactory.address)
+      await indexFactory.setCrossChainToken(crossChainToken.address)
+      await crossChainIndexFactory.setCrossChainToken(crossChainToken.address)
+      await indexFactory.setCrossChainFactory(crossChainIndexFactory.address, "2");
+      await crossChainVault.setFactory(crossChainIndexFactory.address);
     })
     
     async function addLiquidityEth(token: Token, ethAmount: string, tokenAmount: string){
@@ -164,7 +210,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
     ]
     const percentages = ["70000000000000000000", "30000000000000000000"]
     const swapVersions = ["3", "3"]
-    const chainSelectors = ["1", "1"]
+    const chainSelectors = ["1", "2"]
     //update oracle list
     await linkToken.transfer(indexFactory.address, 1e17.toString());
     const transaction: ContractTransaction = await indexFactory.requestAssetsData();
@@ -189,10 +235,16 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
 
         await addLiquidityEth(token0, "1", "1000")
         await addLiquidityEth(token1, "1", "1000")
+        await addLiquidityEth(crossChainToken, "1", "2000")
         
         
         
+        console.log("ccVault balance before swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
+        console.log("index token balance before swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
         await indexFactory.issuanceIndexTokensWithEth(ethers.utils.parseEther("0.1"), {value: ethers.utils.parseEther("0.1001")})
+        console.log("==>");
+        console.log("ccVault balance after swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
+        console.log("index token balance after swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
         console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
         await network.provider.send("evm_mine");
