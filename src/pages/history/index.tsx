@@ -299,7 +299,7 @@ function History() {
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
-						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
+						<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? (
 									<div
@@ -309,14 +309,13 @@ function History() {
 												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
 										}}
 									>
-										
-										{connectedUser?.ppType == 'identicon' || chosenPPType == 'identicon' && uploadedPPLink == "none" ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+										{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
 									</div>
 								) : (
 									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
 								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold">
+									<h5 className="text-xl text-blackText-500 montrealBold text-center lg:text-left">
 										{connectedUser && connectedUser.main_wallet == address
 											? connectedUser.inst_name != 'x'
 												? connectedUser.inst_name
@@ -358,28 +357,27 @@ function History() {
 							<Chart data={complexData} />
 						</div> */}
 							<div className="lg:flex w-2/5 "></div>
-							<div className="lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
+							<div className="hidden lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
 								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-								<PNLChart
-									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
-									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
-								/>
+								<PNLChart data={showPortfolioData ? chartArr : emptyData} change={showPortfolioData ? portfolio24hChange : 0} />
 							</div>
 						</div>
-						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">Total Portfolio Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">
+						<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
+							<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+								<h5 className="interBold text-xl text-blackText-500 text-center lg:text-left ">Total Portfolio Balance</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] text-center lg:text-left ">
 									${showPortfolioData && chartArr && chartArr[chartArr.length - 1] ? FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' }) : '0.00'}
 								</h5>
 							</div>
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">Total Traded Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">${showPortfolioData && portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString() : '0.00'}</h5>
+							<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+								<h5 className="interBold text-xl text-blackText-500 text-center lg:text-left ">Total Traded Balance</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] text-center lg:text-left ">
+									${portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString() : '0.00'}
+								</h5>
 							</div>
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
+							<div className="w-1/2 mt-8 lg:mt-0 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 ">24h Change</h5>
 								<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
 									<h5
@@ -387,7 +385,10 @@ function History() {
 											showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
 										} `}
 									>
-										${showPortfolioData && chartArr && chartArr[chartArr.length - 1] ? (chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2) : '0.00'}
+										$
+										{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
+											? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
+											: '0.00'}
 									</h5>
 									<div
 										className={`w-fit h-fit rounded-lg ${
@@ -401,23 +402,16 @@ function History() {
 						</div>
 					</section>
 				</section>
-				<section className="w-full h-fit mb-10 px-20">
+				<section className="w-full h-fit mb-10 px-4 xl:px-20">
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-3">
 						<h5 className="text-blackText-500 text-2xl interBold ">Transactions History</h5>
-						<button className="hidden xl:flex flex-row items-center justify-center gap-1 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 py-2 px-6 rounded-full">
+						<button className="flex flex-row items-center justify-center gap-1 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 py-2 px-6 rounded-full">
 							<h5 className="text-lg interMedium text-whiteText-500">Export</h5>
-							<CiExport size={17} color="#FFFFFF" strokeWidth={1.5} />
+							<CiExport size={17} color="#FFFFFF" strokeWidth={1.5} /> 
 						</button>
 					</div>
 
-					{address ? (
-						<NewHistoryTable />
-					) : (
-						<div className="w-full h-fit bg-gray-300 border border-gray-200 rounded-2xl py-20 flex flex-row items-center justify-center gap-1">
-							<MdOutlineDangerous color="#F23645" size={30} />
-							<h5 className="interMedium text-base text-gray-500">No connected wallet</h5>
-						</div>
-					)}
+					{address ? <NewHistoryTable /> : ''}
 				</section>
 
 				<div className="w-fit h-fit xl:pt-16">

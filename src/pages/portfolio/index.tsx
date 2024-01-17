@@ -102,7 +102,6 @@ export default function Portfolio() {
 	useEffect(() => {
 		setEthPriceInUsd()
 	}, [setEthPriceInUsd])
-	
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
@@ -285,8 +284,8 @@ export default function Portfolio() {
 			const data = await Promise.all(
 				nexTokens.map(async (item: nexTokenDataType) => {
 					const calculatedUsdValue = !['CRYPTO5'].includes(item.symbol) ? (await convertToUSD(item.address, ethPriceInUsd, false)) || 0 : 0
-					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0: item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0: 0
-					const totalTokenUsd = (calculatedUsdValue * totalToken) || 0
+					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
+					const totalTokenUsd = calculatedUsdValue * totalToken || 0
 					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
 
 					return {
@@ -309,12 +308,12 @@ export default function Portfolio() {
 	// const totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
 
 	// useEffect(() => {
-		// let totalTradedBalance = 0
-		// if (typeof window !== 'undefined') {
-		//   	const storedData = localStorage.getItem('totalTradedBalance');
-		// 	const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
-		// 	totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
-		// }
+	// let totalTradedBalance = 0
+	// if (typeof window !== 'undefined') {
+	//   	const storedData = localStorage.getItem('totalTradedBalance');
+	// 	const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
+	// 	totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
+	// }
 	//   }, []);
 
 	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
@@ -355,7 +354,7 @@ export default function Portfolio() {
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
-					<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
+						<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? (
 									<div
@@ -365,14 +364,13 @@ export default function Portfolio() {
 												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
 										}}
 									>
-										
-										{connectedUser?.ppType == 'identicon' || chosenPPType == 'identicon' && uploadedPPLink == "none" ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+										{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
 									</div>
 								) : (
 									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
 								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold">
+									<h5 className="text-xl text-blackText-500 montrealBold text-center lg:text-left">
 										{connectedUser && connectedUser.main_wallet == address
 											? connectedUser.inst_name != 'x'
 												? connectedUser.inst_name
@@ -414,25 +412,27 @@ export default function Portfolio() {
 							<Chart data={complexData} />
 						</div> */}
 							<div className="lg:flex w-2/5 "></div>
-							<div className="lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
+							<div className="hidden lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
 								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
 								<PNLChart data={showPortfolioData ? chartArr : emptyData} change={showPortfolioData ? portfolio24hChange : 0} />
 							</div>
 						</div>
-						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">Total Portfolio Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">
+						<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
+							<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+								<h5 className="interBold text-xl text-blackText-500 text-center lg:text-left ">Total Portfolio Balance</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] text-center lg:text-left ">
 									${showPortfolioData && chartArr && chartArr[chartArr.length - 1] ? FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' }) : '0.00'}
 								</h5>
 							</div>
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
-								<h5 className="interBold text-xl text-blackText-500 ">Total Traded Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] ">${portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString(): '0.00'}</h5>
+							<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+								<h5 className="interBold text-xl text-blackText-500 text-center lg:text-left ">Total Traded Balance</h5>
+								<h5 className="interExtraBold text-2xl text-[#646464] text-center lg:text-left ">
+									${portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString() : '0.00'}
+								</h5>
 							</div>
-							<div className="w-1/3 h-fit flex flex-col items-center justify-center gap-2">
+							<div className="w-1/2 mt-8 lg:mt-0 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 ">24h Change</h5>
 								<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
 									<h5
@@ -455,11 +455,11 @@ export default function Portfolio() {
 								</div>
 							</div>
 						</div>
-						<div className="w-full h-fit px-20 pt-5 flex flex-col items-start justify-start mb-10">
+						<div className="w-full h-fit px-4 xl:px-20 pt-5 flex flex-col items-start justify-start mb-10">
 							<h5 className=" text-blackText-500 text-2xl interBold mb-6">Asset Balances</h5>
-							<div className="w-full h-fit border border-gray-300 rounded-xl pt-6 shadow">
-								<div className="w-full h-fit pb-6 flex flex-row items-center justify-start px-3 border-b border-b-[#E4E4E4] ">
-									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
+							<div className="w-full h-fit border border-gray-300 rounded-xl  pt-6 shadow overflow-scroll xl:overflow-auto">
+								<div className="w-full h-fit pb-6 flex flex-row items-center gap-16 xl:gap-0 justify-start px-3 border-b border-b-[#E4E4E4] ">
+									<div className="w-[30vw] xl:w-1/4 mr-14 xl:mr-0 h-fit pr-8 xl:px-1">
 										<h5 className="interExtraBold text-[#646464] text-base whitespace-nowrap">Asset</h5>
 									</div>
 									<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
@@ -475,8 +475,11 @@ export default function Portfolio() {
 								<div>
 									{assetData.map((asset) => (
 										<>
-											<div key={asset.symbol} className="w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b border-b-[#E4E4E4]">
-												<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
+											<div
+												key={asset.symbol}
+												className="w-fit xl:w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50 border-b gap-16 xl:gap-0 border-b-[#E4E4E4]"
+											>
+												<div className="w-[30vw] xl:w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
 													<Image
 														src={asset.logo}
 														alt="anfi"
@@ -492,24 +495,24 @@ export default function Portfolio() {
 														<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">{asset.shortName}</h5>
 													</div>
 												</div>
-												<div className="w-1/4 h-fit px-1">
-													<h5 className="interExtraBold text-blackText-500 text-lg cursor-pointer">
+												<div className="w-fit xl:w-1/4 h-fit px-1">
+													<h5 className="interExtraBold text-blackText-500 whitespace-nowrap text-lg cursor-pointer">
 														{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol}
 													</h5>
-													<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}</h5>
+													<h5 className="interExtraBold whitespace-nowrap text-[#646464] text-base cursor-pointer">${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}</h5>
 												</div>
-												<div className="w-1/4 h-fit px-1">
+												<div className="w-fit xl:w-1/4 h-fit px-1">
 													<ProgressBar
 														completed={showPortfolioData ? Number(asset.percentage) : 0}
 														height="10px"
 														isLabelVisible={false}
-														className="w-8/12 mb-3"
+														className="w-[30vw] xl:w-8/12 mb-3"
 														bgColor="#5E869B"
 														baseBgColor="#A9A9A9"
 													/>
 													<h5 className="interExtraBold text-[#646464] text-base cursor-pointer">{showPortfolioData ? asset.percentage?.toFixed(2) : '0.00'}%</h5>
 												</div>
-												<div className="w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
+												<div className="w-fit xl:w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
 													<button className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 ">
 														Trade
 													</button>
@@ -529,7 +532,7 @@ export default function Portfolio() {
 								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-10 xl:mb-20">
 									<TreemapChart percentage={indexPercent} />
 								</div>
-								<div className="w-11/12 xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
+								<div className="w-full xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
 									<h5 className="interBold text-xl text-blackText-500">
 										Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
 									</h5>
@@ -567,16 +570,9 @@ export default function Portfolio() {
 						</div>
 					</section>
 				</section>
-				<section className="w-full h-fit mb-10 px-20">
+				<section className="w-full h-fit mb-10 px-4 xl:px-20">
 					<h5 className="text-blackText-500 text-2xl interBold mb-6">Transactions History</h5>
-					{address ? (
-						<NewHistoryTable />
-					) : (
-						<div className="w-full h-fit bg-gray-300 border border-gray-200 rounded-2xl py-20 flex flex-row items-center justify-center gap-1">
-							<MdOutlineDangerous color="#F23645" size={30} />
-							<h5 className="interMedium text-base text-gray-500">No connected wallet</h5>
-						</div>
-					)}
+					{address ? <NewHistoryTable /> : ''}
 				</section>
 
 				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-20">

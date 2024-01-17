@@ -7,6 +7,8 @@ import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import HoverMenuWithTransition from './popper'
 import usePortfolioPageStore from '@/store/portfolioStore'
+import { BiChevronRight, BiChevronDown } from "react-icons/bi";
+
 
 import { BiMenuAltRight } from 'react-icons/bi'
 import { CiMenuFries } from 'react-icons/ci'
@@ -47,10 +49,10 @@ interface DappNavbarProps {
 	lightVersion?: boolean
 }
 
-
 const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 	const { globalConnectedUser, setGlobalConnectedUser } = usePortfolioPageStore()
 	const { openMobileMenu, setOpenMobileMenu } = useTradePageStore()
+	const [subMenuOpen, setSubMenuOpen] = useState<boolean>(false)
 
 	const connectionStatus = useConnectionStatus()
 	const address = useAddress()
@@ -70,7 +72,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 		p4: false,
 		p5: false,
 		creationDate: 'null',
-		showTradePopUp: true
+		showTradePopUp: true,
 	})
 	const [connectedUserId, setConnectedUserId] = useState<String>('')
 	const [userFound, setUserFound] = useState<boolean>(false)
@@ -90,7 +92,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 							setConnectedUser(potentialUser)
 							setGlobalConnectedUser(potentialUser)
 							setConnectedUserId(key)
-							localStorage.setItem("connectedUserKey", key)
+							localStorage.setItem('connectedUserKey', key)
 						}
 					}
 				}
@@ -110,19 +112,19 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 							setConnectedUser(potentialUser)
 							setGlobalConnectedUser(potentialUser)
 							setConnectedUserId(key)
-							localStorage.setItem("connectedUserKey", key)
+							localStorage.setItem('connectedUserKey', key)
 						}
 					}
 				}
 			})
 		}
 
-		async function createNewUser(){
+		async function createNewUser() {
 			const todayDate = new Date()
-			let day = todayDate.getDate();
-			let month = todayDate.getMonth() + 1;
-			let year = todayDate.getFullYear();
-			let creationDate = `${day}-${month}-${year}`;
+			let day = todayDate.getDate()
+			let month = todayDate.getMonth() + 1
+			let year = todayDate.getFullYear()
+			let creationDate = `${day}-${month}-${year}`
 			const newUserKey = push(child(ref(database), 'users')).key
 			set(ref(database, 'users/' + newUserKey), {
 				name: 'Nex User',
@@ -140,28 +142,25 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 				p4: false,
 				p5: false,
 				creationDate: creationDate,
-				showTradePopUp: true
+				showTradePopUp: true,
 			})
 		}
 
-		async function userLogic(){
-			let isUserFound = await findUser().then(async ()=>{
-				if(localStorage.getItem("connectedUserKey")){
+		async function userLogic() {
+			let isUserFound = await findUser().then(async () => {
+				if (localStorage.getItem('connectedUserKey')) {
 					getUser()
-				}else{
-					alert("user not found")
-					await createNewUser().then(()=>{
+				} else {
+					alert('user not found')
+					await createNewUser().then(() => {
 						getUser()
 					})
 				}
 			})
-			
-			
 		}
 
-		if(address) userLogic()
-		
-	}, [])
+		if (address) userLogic()
+	}, [address, setGlobalConnectedUser])
 
 	/*useEffect(() => {
 		function getUser() {
@@ -295,12 +294,49 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 							</Link>
 							<Link
 								href={'/portfolio'}
-								onClick={() => {
-									setOpenMobileMenu(false)
+								onClick={(e) => {
+									e.preventDefault()
+									setSubMenuOpen(!subMenuOpen)
 								}}
 							>
-								<h5 className="interBold text-3xl text-blackText-500">Portfolio</h5>
+								<div className="w-fit h-fit flex flex-row items-center justify-start gap-1">
+									<h5 className="interBold text-3xl text-blackText-500">Portfolio</h5>
+									{
+										subMenuOpen ? (<BiChevronDown size={25} color="#252525" />) : (<BiChevronRight size={25} color="#252525" />)
+									}
+									
+								</div>
 							</Link>
+							{subMenuOpen ? (
+								<div className=" w-full h-fit flex flex-col items-center justify-start gap-8 -mt-4">
+									<Link
+										href={'/portfolio'}
+										onClick={() => {
+											setOpenMobileMenu(false)
+										}}
+									>
+										<h5 className="interBold text-2xl text-blackText-500">Overview</h5>
+									</Link>
+									<Link
+										href={'/history'}
+										onClick={() => {
+											setOpenMobileMenu(false)
+										}}
+									>
+										<h5 className="interBold text-2xl text-blackText-500">Transactions</h5>
+									</Link>
+									<Link
+										href={'/settings'}
+										onClick={() => {
+											setOpenMobileMenu(false)
+										}}
+									>
+										<h5 className="interBold text-2xl text-blackText-500">Settings</h5>
+									</Link>
+								</div>
+							) : (
+								''
+							)}
 						</div>
 						<div className="pt-10">
 							<ConnectButton />
