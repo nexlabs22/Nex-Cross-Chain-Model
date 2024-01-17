@@ -55,7 +55,7 @@ import bg2 from '@assets/images/bg-2.png'
 import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
 import { reduceAddress } from '@/utils/general'
-import { GoArrowRight } from 'react-icons/go'
+import { GoArrowRight, GoChevronDown } from 'react-icons/go'
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
 import NewHistoryTable from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
@@ -74,6 +74,9 @@ import ImageViewer from 'react-simple-image-viewer'
 import { Uploader } from 'uploader'
 import { UploadDropzone } from 'react-uploader'
 import 'react-image-upload/dist/index.css'
+import { Menu, MenuButton } from '@szhsin/react-menu'
+import '@szhsin/react-menu/dist/index.css'
+import '@szhsin/react-menu/dist/transitions/slide.css'
 
 interface User {
 	email: string
@@ -98,13 +101,12 @@ export default function Portfolio() {
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex, setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
 	const { portfolioData, setDayChange } = usePortfolioPageStore()
-
+	const [chartType, setChartType] = useState<string>('pie')
 
 	// console.log("ethPriceInUsd--->",ethPriceInUsd)
 	// useEffect(() => {
 	// 	setEthPriceInUsd()
 	// }, [setEthPriceInUsd])
-	
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
@@ -530,11 +532,55 @@ export default function Portfolio() {
 						</div>
 						<div className="w-full h-fit px-5 lg:px-20 mt-10">
 							<h5 className="interBold text-2xl text-blackText-500">Assets Distribution</h5>
-							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
-								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-10 xl:mb-20">
-									<TreemapChart percentage={indexPercent} />
+							<Menu
+								menuButton={
+									<MenuButton>
+										<div className="w-full xl:w-[14vw] h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer mt-6">
+											<div className="flex flex-row items-center justify-start gap-2">
+												<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{chartType == 'pie' ? 'Pie Chart' : 'Treemap Chart'}</h5>
+											</div>
+											<GoChevronDown color="#F2F2F2" size={20} />
+										</div>
+									</MenuButton>
+								}
+								transition
+								direction="bottom"
+								align="start"
+								className="subCatgoriesMenu"
+							>
+								<div
+									key={0}
+									className="w-full h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50"
+									onClick={() => {
+										setChartType('pie')
+									}}
+								>
+									<div className="flex flex-row items-center justify-start gap-2">
+										<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">Pie Chart</h5>
+									</div>
+									<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
 								</div>
-								<div className="w-full xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
+								<div
+									key={0}
+									className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50"
+									onClick={() => {
+										setChartType('treemap')
+									}}
+								>
+									<div className="flex flex-row items-center justify-start gap-2">
+										<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">Treemap Chart</h5>
+									</div>
+									<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
+								</div>
+							</Menu>
+							<div className="w-full h-full flex flex-col xl:flex-row items-start xl:items-center justify-center xl:justify-around">
+								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-10 xl:mb-20">
+								{
+									chartType == "pie" ? <GenericPieChart data={PieChartdata} /> : <TreemapChart percentage={indexPercent} />
+								}
+									
+								</div>
+								<div className="w-full xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-2">
 									<h5 className="interBold text-xl text-blackText-500">
 										Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
 									</h5>

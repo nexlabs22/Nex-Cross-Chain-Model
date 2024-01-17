@@ -2,6 +2,7 @@
 
 import DappNavbar from '@/components/DappNavbar'
 import Footer from '@/components/Footer'
+import Image from 'next/image'
 import { useChartDataStore } from '@/store/store'
 import Head from 'next/head'
 import { useEffect, useState, useRef } from 'react'
@@ -18,11 +19,58 @@ import { Document, Page, pdfjs } from 'react-pdf'
 import PDFUtils from '@/utils/pdfConfig'
 import { GenericToast } from '@/components/GenericToast'
 import { toast } from 'react-toastify'
+import logo from '@assets/images/xlogo_s.png'
+
+// Firebase :
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+
+interface User {
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
+}
+
+import usePortfolioPageStore from '@/store/portfolioStore'
+import { useAddress } from '@thirdweb-dev/react'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
 
 export default function DCACalculator() {
 	// const pdfContainer = useRef<HTMLDivElement | null>(null)
+
+	const address = useAddress()
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
 
 	const { ANFIData, CR5Data, fetchIndexData, loading } = useChartDataStore()
 	const { selectedIndex, selectIndex } = useToolPageStore()
@@ -181,6 +229,7 @@ export default function DCACalculator() {
 				totalInvested: data.totalInvested ? '$' + Number(data.totalInvested?.toFixed(2)).toLocaleString() : '0.00',
 				totalGain: data.totalGain ? Number(data.totalGain?.toFixed(2)).toLocaleString() : '0.00',
 				total: data.total ? '$' + Number(data.total?.toFixed(2)).toLocaleString() : '0.00',
+				name: 'hahaha',
 				initialAmount: '$' + initialAmount,
 				monthlyInvestment: '$' + monthlyInvestment,
 				selectedStartMonth,
@@ -439,6 +488,26 @@ export default function DCACalculator() {
 						</div>
 					</section>
 				</section>
+
+				<div className="w-full mx-auto h-0 px-2 flex flex-col items-start overflow-hidden justify-between">
+					<div className='w-full h-fit' id="pdfHeader">
+					<div className="w-11/12 mx-auto h-fit py-10  flex flex-row items-center overflow-hidden justify-between">
+						<Image src={logo} alt="logo" className="h-20 w-20"></Image>
+						<h5 className="interBold text-2xl text-blackText-500">DCA Report</h5>
+					</div>
+					<div className="w-11/12 mx-auto h-fit py-10 flex flex-col items-start overflow-hidden justify-between">
+						<h5 className="interBold text-2xl text-blackText-500">
+							User : &nbsp;
+							{connectedUser ? connectedUser?.inst_name : ''}
+						</h5>
+						<h5 className="interBold text-2xl text-blackText-500">
+							Date : &nbsp;
+							{new Date().getDate().toString() + "/" + (new Date().getMonth()+1).toString() + "/" + new Date().getFullYear().toString()}
+						</h5>
+					</div>
+					</div>
+					
+				</div>
 
 				<div className="w-fit h-fit pt-0 lg:pt-16">
 					<Footer />
