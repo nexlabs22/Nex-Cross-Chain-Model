@@ -21,8 +21,15 @@ import { Theme, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { ApolloProvider } from '@apollo/client'
 import apolloClient from '@/utils/apollo-client'
+import { useEffect } from 'react'
+import useTradePageStore from '@/store/tradeStore'
 
 export default function App({ Component, pageProps }: AppProps) {
+	const {setEthPriceInUsd} = useTradePageStore()
+
+	useEffect(() => {
+		setEthPriceInUsd()
+	}, [setEthPriceInUsd])
 	return (
 		<>
 			<ToastContainer position="bottom-right" autoClose={5000} hideProgressBar={false} newestOnTop={true} closeOnClick theme={'light'} rtl={false} pauseOnFocusLoss draggable pauseOnHover />

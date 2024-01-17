@@ -10,6 +10,7 @@ export default async function convertToUSD(tokenAddress: string, ethPrice: numbe
 		const tokenDetails = tokens.find((d) => d.address === tokenAddress) as { address: string, decimals: number, symbol: string }
 
 		if (tokenDetails.symbol === 'ETH') return ethPrice;
+		if (tokenDetails.symbol === 'CRYPTO5') return 0;
 
 		const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
 		let isRevPool = false
@@ -38,6 +39,7 @@ export default async function convertToUSD(tokenAddress: string, ethPrice: numbe
 
 		return priceInUSD;
 	} catch (err) {
+		console.log(tokenAddress,ethPrice,isMainnet)
 		console.log("Error in getting USD Price", err)
 	}
 

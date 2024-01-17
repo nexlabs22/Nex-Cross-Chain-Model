@@ -35,7 +35,7 @@ function NewHistoryTable() {
 	const assetName = searchQuery.split('=')[1]
 
 	useEffect(() => {
-		setEthPriceInUsd()
+		// setEthPriceInUsd()
 		setPortfolioData(positionHistory.data)
 	}, [setEthPriceInUsd, setPortfolioData, positionHistory.data])
 

@@ -10,14 +10,8 @@ import TipsBox2 from '@/components/TipsBox'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 // import { useRouter } from 'next/navigation'
-import { useRouter } from 'next/router';
-import {
-	goerliCrypto5IndexToken,
-	zeroAddress,
-	goerliAnfiV2IndexToken,
-	goerlianfiPoolAddress,
-	goerliLinkWethPoolAddress,
-} from '@/constants/contractAddresses'
+import { useRouter } from 'next/router'
+import { goerliCrypto5IndexToken, zeroAddress, goerliAnfiV2IndexToken, goerlianfiPoolAddress, goerliLinkWethPoolAddress } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import GenericModal from '@/components/GenericModal'
@@ -25,7 +19,6 @@ import QRCode from 'react-qr-code'
 
 import Link from 'next/link'
 import Head from 'next/head'
-
 
 import bg2 from '@assets/images/bg-2.png'
 import { GoArrowRight } from 'react-icons/go'
@@ -75,12 +68,12 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	const address = useAddress()
 	const { setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
 	const positionHistory = GetPositionsHistory2()
-	const { portfolioData,setPortfolioData } = usePortfolioPageStore()
+	const { portfolioData, setPortfolioData } = usePortfolioPageStore()
 
 	useEffect(() => {
-		setEthPriceInUsd()
+		// setEthPriceInUsd()
 		setPortfolioData(positionHistory.data)
-	}, [setEthPriceInUsd,setPortfolioData ,positionHistory.data])
+	}, [setEthPriceInUsd, setPortfolioData, positionHistory.data])
 
 	const {
 		loading: loadingAnfi,
@@ -98,9 +91,9 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
-	const [dayChange, setDayChange] = useState<{anfi:number|null, cr5:number|null}>({anfi:null,cr5:null})
+	const [dayChange, setDayChange] = useState<{ anfi: number | null; cr5: number | null }>({ anfi: null, cr5: null })
 
-	if ((!loadingCR5 && !loadingAnfi) && (!errorCR5 && !errorAnfi) && (dayChange.anfi === null && dayChange.cr5 === null)) {
+	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && dayChange.anfi === null && dayChange.cr5 === null) {
 		const ANFIData = dataAnfi.poolDayDatas
 		const CR5Data = dataCR5.poolDayDatas
 
@@ -113,7 +106,6 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		setDayChange({ anfi: todayANFIPrice - yesterdayANFIPrice, cr5: todayCR5Price - yesterdayCR5Price })
 	}
 
-
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
@@ -125,7 +117,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 
-	const router = useRouter();
+	const router = useRouter()
 	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
 	const assetObj = router.query.asset || 'ANFI'
 	const assetName = (Array.isArray(assetObj) ? assetObj[0] : (assetObj as string)).toUpperCase()
@@ -136,7 +128,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 				nexTokens.map(async (item: nexTokenDataType) => {
 					const calculatedUsdValue = !['CRYPTO5'].includes(item.symbol) ? (await convertToUSD(item.address, ethPriceInUsd, false)) || 0 : 0
 					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) : 0
-					const indexDayChange = Math.abs(item.symbol === 'ANFI' ? (dayChange.anfi || 0) : item.symbol === 'ANFI' ? (dayChange.cr5 || 0) : 0)
+					const indexDayChange = Math.abs(item.symbol === 'ANFI' ? dayChange.anfi || 0 : item.symbol === 'ANFI' ? dayChange.cr5 || 0 : 0)
 					const totalTokenUsd = calculatedUsdValue * totalToken
 					const percentage = item.symbol === 'ANFI' ? anfiPercent : crypto5Percent
 
@@ -154,7 +146,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		}
 
 		getTokenDetails()
-	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent,dayChange.anfi,dayChange.cr5])
+	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent, dayChange.anfi, dayChange.cr5])
 
 	const dataToshow = assetData.filter((asset) => asset.symbol === assetName)[0]
 	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
@@ -197,7 +189,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
-					<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
+						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								<Image src={dataToshow ? dataToshow.logo : anfiLogo} alt="anfi" width={150} height={150} className=" rounded-full"></Image>
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
@@ -216,7 +208,9 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 							<div className="lg:flex flex-col w-2/5 items-end gap-2 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
 								<div className="w-full h-fit flex flex-row items-center justify-end gap-3">
 									<h5 className="interBold text-base text-blackText-500 ">Total Traded Balance</h5>
-									<h5 className="interBold text-base text-[#646464] ">${showPortfolioData && portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance[assetName.toLowerCase()].toFixed(2)).toLocaleString() : '0.00'}</h5>
+									<h5 className="interBold text-base text-[#646464] ">
+										${showPortfolioData && portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance[assetName.toLowerCase()].toFixed(2)).toLocaleString() : '0.00'}
+									</h5>
 								</div>
 								<div className="w-full h-fit flex flex-row items-center justify-end gap-3">
 									<h5 className="interBold text-base text-blackText-500 ">24h Change</h5>
@@ -269,13 +263,22 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 						</div>
 						<div className=" w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-center mb-10 ">
 							<div className="w-full h-fit flex flex-row items-center justify-start pb-4 px-2 border-b-[2px] border-b-[#E4E4E4] ">
-                            <button className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg" onClick={() => {
-													router.push(`/ownedAsset?asset=anfi`)
-												}}>Overview</button>
-                                <button className="py-1 px-3 shadow shadow-[#5E869B] cursor-pointer rounded-full border-[2px] border-[#5E869B] text-[#5E869B] interMedium text-lg" onClick={() => {
-													router.push(`/assetActivity?asset=anfi`)
-												}} >Activity</button>
-								
+								<button
+									className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg"
+									onClick={() => {
+										router.push(`/ownedAsset?asset=anfi`)
+									}}
+								>
+									Overview
+								</button>
+								<button
+									className="py-1 px-3 shadow shadow-[#5E869B] cursor-pointer rounded-full border-[2px] border-[#5E869B] text-[#5E869B] interMedium text-lg"
+									onClick={() => {
+										router.push(`/assetActivity?asset=anfi`)
+									}}
+								>
+									Activity
+								</button>
 							</div>
 						</div>
 						<div className="w-full px-20 h-fit">
