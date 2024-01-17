@@ -217,8 +217,8 @@ export default function DCACalculator() {
 			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
-					<section className="w-screen h-fit flex flex-row items-stretch justify-start px-4 pt-10 pb-12">
-						<div className="w-3/12 h-fit flex flex-col gap-2 pl-5">
+					<section className="w-screen h-fit flex flex-col xl:flex-row items-stretch justify-start px-4 pt-10 pb-12">
+						<div className="w-full xl:w-3/12 h-fit flex flex-col gap-2 pl-5">
 							<Menu
 								menuButton={
 									<MenuButton>
@@ -372,14 +372,14 @@ export default function DCACalculator() {
 								Calculate
 							</button>
 						</div>
-						<div className="w-9/12 flex-grow flex flex-col gap-y-5 pr-5">
+						<div className="w-full xl:w-9/12 flex-grow flex flex-col gap-y-5 pr-5">
 							<div className="h-full w-full ">
 								<DCACalculatorChart data={filteredIndexData} />
 							</div>
 						</div>
 					</section>
-					<section className="w-full h-fit px-10 flex flex-col items-center justify-start gap-3">
-						<div className="flex flex-row ml-auto z-10">
+					<section className="w-full h-fit px-4 overflow-hidden lg:px-10 flex flex-col items-center justify-start gap-3">
+						<div className="flex flex-row ml-auto z-10 w-full">
 							<CSVLink
 								data={csvData}
 								className={`text-sm mr-2 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
@@ -397,9 +397,9 @@ export default function DCACalculator() {
 							</button>
 						</div>
 
-						<div className="w-full bg-transparent rounded-xl overflow-hidden">
-							<div className="max-h-[500px] overflow-y-scroll">
-								<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] w-full shadow-sm shadow-black md:min-w-[700px]">
+						<div className="w-full h-full overflow-hidden">
+							<div className="h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[500px]">
+								<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
 									<thead className="sticky top-0 rounded-t-xl">
 										<tr className="text-md interBold bg-colorSeven-500 text-whiteText-500">
 											<th className="px-4 py-2 text-left">Time</th>
@@ -411,7 +411,7 @@ export default function DCACalculator() {
 											<th className="px-4 py-2 text-right">Total</th>
 										</tr>
 									</thead>
-									<tbody className="overflow-x-hidden bg-gray-200">
+									<tbody className="overflow-x-hidden overflow-y-auto bg-gray-200 ">
 										{filteredIndexData.map((data: dcaDataType, i: React.Key | null | undefined) => (
 											<tr key={i} className="text-gray-700 interMedium text-base border-b  border-blackText-500">
 												<td className={`px-4 text-left py-3 `}>{data.date}</td>
@@ -432,6 +432,10 @@ export default function DCACalculator() {
 									</tbody>
 								</table>
 							</div>
+						</div>
+
+						<div className="w-full bg-transparent rounded-xl overscroll-x-auto">
+							<div className="max-h-[500px] overflow-y-scroll w-full"></div>
 						</div>
 					</section>
 				</section>

@@ -356,11 +356,11 @@ export default function Portfolio() {
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
-						<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
-							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
+						<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col lg:flex-row items-center justify-between mb-10">
+							<div className="w-full lg:w-2/5  h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? (
 									<div
-										className="w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
+										className="w-40 lg:h-44 lg:w-auto xl:w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
 										style={{
 											backgroundImage:
 												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
@@ -372,7 +372,7 @@ export default function Portfolio() {
 									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
 								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold text-center lg:text-left">
+									<h5 className="text-xl text-blackText-500 montrealBold text-center lg:whitespace-nowrap lg:text-left">
 										{connectedUser && connectedUser.main_wallet == address
 											? connectedUser.inst_name != 'x'
 												? connectedUser.inst_name
@@ -381,7 +381,7 @@ export default function Portfolio() {
 												: 'Nex User'
 											: 'Nex User'}
 									</h5>
-									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
+									<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
 										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
 											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
