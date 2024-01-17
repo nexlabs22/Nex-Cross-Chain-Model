@@ -109,7 +109,7 @@ function NewHistoryTable() {
 	return (
 		<div className="w-full h-full overflow-x-auto"> {/* Added overflow-x-auto for X-axis scrolling */}
 		<div className="h-full border w-full border-gray-300 rounded-2xl overflow-hidden overflow-x-scroll">
-		  <table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse rounded-xl border shadow-xl dark:border-[#161C10] md:min-w-[700px]">
+		  <table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
 					<thead className="sticky top-0">
 						<tr className="text-lg interExtraBold text-[#646464] border-b border-b-[#E4E4E4]">
 							<th className="px-4 py-3 text-left whitespace-nowrap">Time</th>
