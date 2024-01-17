@@ -2,6 +2,7 @@
 
 import DappNavbar from '@/components/DappNavbar'
 import Footer from '@/components/Footer'
+import Image from 'next/image'
 import { useChartDataStore } from '@/store/store'
 import Head from 'next/head'
 import { useEffect, useState, useRef } from 'react'
@@ -18,11 +19,58 @@ import { Document, Page, pdfjs } from 'react-pdf'
 import PDFUtils from '@/utils/pdfConfig'
 import { GenericToast } from '@/components/GenericToast'
 import { toast } from 'react-toastify'
+import logo from '@assets/images/xlogo_s.png'
+
+// Firebase :
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+
+interface User {
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
+}
+
+import usePortfolioPageStore from '@/store/portfolioStore'
+import { useAddress } from '@thirdweb-dev/react'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
 
 export default function DCACalculator() {
 	// const pdfContainer = useRef<HTMLDivElement | null>(null)
+
+	const address = useAddress()
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
 
 	const { ANFIData, CR5Data, fetchIndexData, loading } = useChartDataStore()
 	const { selectedIndex, selectIndex } = useToolPageStore()
@@ -181,6 +229,7 @@ export default function DCACalculator() {
 				totalInvested: data.totalInvested ? '$' + Number(data.totalInvested?.toFixed(2)).toLocaleString() : '0.00',
 				totalGain: data.totalGain ? Number(data.totalGain?.toFixed(2)).toLocaleString() : '0.00',
 				total: data.total ? '$' + Number(data.total?.toFixed(2)).toLocaleString() : '0.00',
+				name: 'hahaha',
 				initialAmount: '$' + initialAmount,
 				monthlyInvestment: '$' + monthlyInvestment,
 				selectedStartMonth,
@@ -217,8 +266,8 @@ export default function DCACalculator() {
 			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
-					<section className="w-screen h-fit flex flex-row items-stretch justify-start px-4 pt-10 pb-12">
-						<div className="w-3/12 h-fit flex flex-col gap-2 pl-5">
+					<section className="w-screen h-fit flex flex-col xl:flex-row items-stretch justify-start px-4 pt-10 pb-12">
+						<div className="w-full xl:w-3/12 h-fit flex flex-col gap-2 pl-5">
 							<Menu
 								menuButton={
 									<MenuButton>
@@ -372,14 +421,14 @@ export default function DCACalculator() {
 								Calculate
 							</button>
 						</div>
-						<div className="w-9/12 flex-grow flex flex-col gap-y-5 pr-5">
+						<div className="w-full xl:w-9/12 flex-grow flex flex-col gap-y-5 pr-5">
 							<div className="h-full w-full ">
 								<DCACalculatorChart data={filteredIndexData} />
 							</div>
 						</div>
 					</section>
-					<section className="w-full h-fit px-10 flex flex-col items-center justify-start gap-3">
-						<div className="flex flex-row ml-auto z-10">
+					<section className="w-full h-fit px-4 overflow-hidden lg:px-10 flex flex-col items-center justify-start gap-3">
+						<div className="flex flex-row ml-auto z-10 w-full">
 							<CSVLink
 								data={csvData}
 								className={`text-sm mr-2 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
@@ -397,9 +446,9 @@ export default function DCACalculator() {
 							</button>
 						</div>
 
-						<div className="w-full bg-transparent rounded-xl overflow-hidden">
-							<div className="max-h-[500px] overflow-y-scroll">
-								<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] w-full shadow-sm shadow-black md:min-w-[700px]">
+						<div className="w-full h-full overflow-hidden">
+							<div className="h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[500px]">
+								<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
 									<thead className="sticky top-0 rounded-t-xl">
 										<tr className="text-md interBold bg-colorSeven-500 text-whiteText-500">
 											<th className="px-4 py-2 text-left">Time</th>
@@ -411,7 +460,7 @@ export default function DCACalculator() {
 											<th className="px-4 py-2 text-right">Total</th>
 										</tr>
 									</thead>
-									<tbody className="overflow-x-hidden bg-gray-200">
+									<tbody className="overflow-x-hidden overflow-y-auto bg-gray-200 ">
 										{filteredIndexData.map((data: dcaDataType, i: React.Key | null | undefined) => (
 											<tr key={i} className="text-gray-700 interMedium text-base border-b  border-blackText-500">
 												<td className={`px-4 text-left py-3 `}>{data.date}</td>
@@ -433,8 +482,32 @@ export default function DCACalculator() {
 								</table>
 							</div>
 						</div>
+
+						<div className="w-full bg-transparent rounded-xl overscroll-x-auto">
+							<div className="max-h-[500px] overflow-y-scroll w-full"></div>
+						</div>
 					</section>
 				</section>
+
+				<div className="w-full mx-auto h-0 px-2 flex flex-col items-start overflow-hidden justify-between">
+					<div className='w-full h-fit' id="pdfHeader">
+					<div className="w-11/12 mx-auto h-fit py-10  flex flex-row items-center overflow-hidden justify-between">
+						<Image src={logo} alt="logo" className="h-20 w-20"></Image>
+						<h5 className="interBold text-2xl text-blackText-500">DCA Report</h5>
+					</div>
+					<div className="w-11/12 mx-auto h-fit py-10 flex flex-col items-start overflow-hidden justify-between">
+						<h5 className="interBold text-2xl text-blackText-500">
+							User : &nbsp;
+							{connectedUser ? connectedUser?.inst_name : ''}
+						</h5>
+						<h5 className="interBold text-2xl text-blackText-500">
+							Date : &nbsp;
+							{new Date().getDate().toString() + "/" + (new Date().getMonth()+1).toString() + "/" + new Date().getFullYear().toString()}
+						</h5>
+					</div>
+					</div>
+					
+				</div>
 
 				<div className="w-fit h-fit pt-0 lg:pt-16">
 					<Footer />

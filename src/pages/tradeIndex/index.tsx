@@ -138,7 +138,7 @@ export default function Trade() {
 		}else{
 			setIsTradePopUpOpen(true)
 		}
-	}, [])
+	}, [address, setGlobalConnectedUser])
 
 	return (
 		<>

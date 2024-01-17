@@ -372,46 +372,23 @@ export default function Settings() {
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
-						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
-							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
+						<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col lg:flex-row items-center justify-between mb-10">
+						<div className="w-full lg:w-2/5  h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? (
 									<div
-										className="w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
+										className="w-40 lg:h-44 lg:w-auto xl:w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
 										style={{
 											backgroundImage:
 												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
 										}}
 									>
-										<div className="absolute w-full h-full rounded-full z-50 bg-blackText-500 opacity-0 hover:opacity-90 flex flex-row items-center justify-center gap-2">
-											{connectedUser?.ppType != 'identicon' ? (
-												<MdOutlineRemoveRedEye
-													color="#FFFFFF"
-													size={26}
-													className=" cursor-pointer"
-													onClick={() => {
-														setImageViwerOpened(true)
-													}}
-												/>
-											) : (
-												''
-											)}
-
-											<MdOutlineEdit
-												color="#FFFFFF"
-												size={26}
-												className=" cursor-pointer"
-												onClick={() => {
-													setImageUploaderOpened(true)
-												}}
-											/>
-										</div>
 										{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
 									</div>
 								) : (
 									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
 								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold">
+									<h5 className="text-xl text-blackText-500 montrealBold text-center lg:whitespace-nowrap lg:text-left">
 										{connectedUser && connectedUser.main_wallet == address
 											? connectedUser.inst_name != 'x'
 												? connectedUser.inst_name
@@ -420,7 +397,7 @@ export default function Settings() {
 												: 'Nex User'
 											: 'Nex User'}
 									</h5>
-									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
+									<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
 										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
 											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
@@ -443,9 +420,9 @@ export default function Settings() {
 											</div>
 										</div>
 									</div>
-									<div className=" bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
+									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
 										<BsCalendar4 color="#FFFFFF" size={15} />
-										<h5 className="text-base text-whiteText-500 interBold titleShadow">Joined 1 day ago</h5>
+										<h5 className="text-base text-whiteText-500 montrealBold">Joined 1 day ago</h5>
 									</div>
 								</div>
 							</div>
@@ -453,24 +430,15 @@ export default function Settings() {
 							<Chart data={complexData} />
 						</div> */}
 							<div className="lg:flex w-2/5 "></div>
-							<div className="lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
-								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
-									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
-								</div> */}
-								<PNLChart
-									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
-									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
-								/>
-							</div>
 						</div>
 					</section>
 				</section>
-				<div className=" w-full h-fit px-16 pb-5 flex flex-col xl:flex-row items-center justify-center ">
-					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 px-2 border-b-[2px] border-b-[#E4E4E4] ">
-						<div className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">General Information</div>
+				<div className=" w-full h-fit px-4 xl:px-16 pb-5 flex flex-col xl:flex-row items-center justify-center ">
+					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 xl:px-2 border-b-[2px] border-b-[#E4E4E4] ">
+						<div className="py-1 xl:px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">General Information</div>
 					</div>
 				</div>
-				<div className=" w-full h-fit px-20 py-1 flex flex-col items-center justify-center ">
+				<div className=" w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-center justify-center ">
 					<h5 className="text-base interMedium text-[#181818] w-full">
 						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
 					</h5>
@@ -496,8 +464,8 @@ export default function Settings() {
 							Institutional Investor
 						</h5>
 					</div>
-					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 my-6">
-						<div className="w-4/12 h-fit">
+					<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between gap-3 my-6">
+						<div className="w-full xl:w-4/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
 								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Name</h5>
 								{!editable1 ? (
@@ -532,7 +500,7 @@ export default function Settings() {
 								}}
 							/>
 						</div>
-						<div className="w-4/12 h-fit">
+						<div className="w-full xl:w-4/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
 								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Email</h5>
 								{!editable2 ? (
@@ -565,7 +533,7 @@ export default function Settings() {
 								}}
 							/>
 						</div>
-						<div className="w-4/12 h-fit">
+						<div className="w-full xl:w-4/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
 								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Main Wallet</h5>
 							</div>
@@ -578,17 +546,17 @@ export default function Settings() {
 						</div>
 					</div>
 				</div>
-				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-16 py-5 flex flex-col xl:flex-row items-center justify-center `}>
-					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 px-2 border-b-[2px] border-b-[#E4E4E4] ">
-						<div className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">Legal Information</div>
+				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-4 xl:px-16 py-5 flex flex-col xl:flex-row items-center justify-center `}>
+					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 xl:px-2 border-b-[2px] border-b-[#E4E4E4] ">
+						<div className="py-1 xl:px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">Legal Information</div>
 					</div>
 				</div>
-				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-20 py-1 flex flex-col items-center justify-center mb-4 `}>
+				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-center justify-center mb-4 `}>
 					<h5 className="text-base interMedium text-[#181818] w-full">
 						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
 					</h5>
-					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 my-6">
-						<div className="w-6/12 h-fit">
+					<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between gap-3 my-6">
+						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
 								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Institutional Name</h5>
 								{!editable3 ? (
@@ -622,7 +590,7 @@ export default function Settings() {
 							/>
 						</div>
 
-						<div className="w-6/12 h-fit">
+						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
 								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Address</h5>
 								{!editable4 ? (
@@ -692,41 +660,41 @@ export default function Settings() {
 						</div>
 					</div>
 				</div>
-				<div className=" w-full h-fit px-16 pb-5 flex flex-col xl:flex-row items-center justify-center ">
-					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 px-2 border-b-[2px] border-b-[#E4E4E4] ">
-						<div className="py-1 px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">Notifications & Insights</div>
+				<div className=" w-full h-fit px-4 xl:px-16 pb-5 flex flex-col xl:flex-row items-center justify-center ">
+					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 xl:px-2 border-b-[2px] border-b-[#E4E4E4] ">
+						<div className="py-1 xl:px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">Notifications & Insights</div>
 					</div>
 				</div>
-				<div className=" w-full h-fit px-20 py-1 flex flex-col items-center justify-center mb-4 ">
+				<div className=" w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-center justify-center mb-4 ">
 					<h5 className="text-base interMedium text-[#181818] w-full">
 						You can chose which notifications you would like to receive by email. At Nex Labs, we are committed to communication with users, keeping them updated with the last market news,
 						investing insights and much more.
 					</h5>
 					<div className="w-full h-fit flex flex-col items-start justify-start gap-3 my-6">
-						<div className="flex flex-row items-center justify-start gap-1">
+						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption1(!option1)} checked={option1} height={14} width={35} handleDiameter={20} />
 							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about new features of Nex Labs</h5>
 						</div>
 
-						<div className="flex flex-row items-center justify-start gap-1">
+						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption2(!option2)} checked={option2} height={14} width={35} handleDiameter={20} />
 							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about different Nex Labs products</h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-1">
+						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption3(!option3)} checked={option3} height={14} width={35} handleDiameter={20} />
 							<h5 className="text-base interMedium text-[#646464] w-full">Receive weekly recap about events, market news ... </h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-1">
+						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption4(!option4)} checked={option4} height={14} width={35} handleDiameter={20} />
 							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about activities of your account</h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-1">
+						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption5(!option5)} checked={option5} height={14} width={35} handleDiameter={20} />
 							<h5 className="text-base interMedium text-[#646464] w-full">Receive monthly reports of your accont</h5>
 						</div>
 						{option1 || option2 || option3 || option4 || option5 ? (
 							<div className="w-fit h-fit flex flex-row items-center justify-start">
-								<h5 className="interMedium text-xs text-[#181818] opacity-80 mt-4">
+								<h5 className="interMedium text-sm xl:text-xs text-[#181818] opacity-80 mt-4">
 									** We will not sell your data to third parties or use your data for anything else rather than the sole purpose of the subscription or something slightly funny
 								</h5>
 							</div>
@@ -735,7 +703,7 @@ export default function Settings() {
 						)}
 					</div>
 				</div>
-				<div className="w-full h-fit px-20 py-1 mb-4">
+				<div className="w-full h-fit px-4 xl:px-20 py-1 mb-4">
 					<button
 						onClick={() => {
 							saveSettings()
