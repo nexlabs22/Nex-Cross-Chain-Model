@@ -472,6 +472,7 @@ contract CrossChainIndexFactory is
 
     function sendToken(
         uint64 destinationChainSelector,
+        bytes memory _data,
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         PayFeesIn payFeesIn
@@ -483,11 +484,11 @@ contract CrossChainIndexFactory is
         );
 
         for (uint256 i = 0; i < length; ) {
-            IERC20(tokensToSendDetails[i].token).transferFrom(
-                msg.sender,
-                address(this),
-                tokensToSendDetails[i].amount
-            );
+            // IERC20(tokensToSendDetails[i].token).transferFrom(
+            //     msg.sender,
+            //     address(this),
+            //     tokensToSendDetails[i].amount
+            // );
             IERC20(tokensToSendDetails[i].token).approve(
                 i_router,
                 tokensToSendDetails[i].amount
@@ -500,7 +501,7 @@ contract CrossChainIndexFactory is
 
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
-            data: "",
+            data: _data,
             tokenAmounts: tokensToSendDetails,
             extraArgs: "",
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
@@ -538,12 +539,18 @@ contract CrossChainIndexFactory is
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
+        // Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
+        //     .destTokenAmounts;
+        // address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
+        // uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
+
+        (uint actionType, address targetAddress, uint nonce, uint percentage) = abi.decode(any2EvmMessage.data, (uint, address, uint, uint)); // abi-decoding of the sent string message
+        if(actionType == 0){
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
             .destTokenAmounts;
         address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
         uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
 
-        (address targetAddress, uint issuanceNonce) = abi.decode(any2EvmMessage.data, (address, uint)); // abi-decoding of the sent string message
         // IERC20(crossChainToken).approve(v3Router, amount);
         uint oldTokenValue = getAmountOut(targetAddress, address(weth), IERC20(targetAddress).balanceOf(address(crossChainVault)), 3);
         uint wethAmount = swap(crossChainToken, address(weth), amount, address(crossChainVault), 3);
@@ -551,8 +558,20 @@ contract CrossChainIndexFactory is
         _swapSingle(address(weth), targetAddress, wethAmount, address(crossChainVault), 3);
         uint newTokenValue = oldTokenValue + wethAmount;
 
-        bytes memory data = abi.encode(targetAddress, issuanceNonce, oldTokenValue, newTokenValue);
+        bytes memory data = abi.encode(0, targetAddress, nonce, oldTokenValue, newTokenValue);
         sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
+        }else if( actionType == 1){
+          uint swapAmount = (percentage*IERC20(targetAddress).balanceOf(address(crossChainVault)))/1e18;
+          uint wethSwapAmountOut = _swapSingle(targetAddress, address(weth), swapAmount, address(this), 3);
+          uint crossChainTokenAmount = swap(address(weth), crossChainToken, wethSwapAmountOut, address(this), 3);
+          
+          Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+          tokensToSendArray[0].token = crossChainToken;
+          tokensToSendArray[0].amount = crossChainTokenAmount;
+          bytes memory data = abi.encode(1, targetAddress, nonce, 0, 0);
+            // address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
+          sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
+        }
         // string memory message = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent string message
         // receivedMessages.push(messageId);
         // Message memory detail = Message(
