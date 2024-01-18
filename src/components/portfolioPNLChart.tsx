@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react'
 import { createChart, DeepPartial, LayoutOptions, LineStyle, LineWidth, PriceScaleMode, PriceScaleOptions, TimeScaleOptions } from 'lightweight-charts'
-import { useAddress } from '@thirdweb-dev/react';
-import { FormatToViewNumber, formatNumber } from '@/hooks/math';
+import { useAddress } from '@thirdweb-dev/react'
+import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 
 interface GradientAreaChartProps {
-	data: { time: string | number | Date; value: number }[],
+	data: { time: string | number | Date; value: number }[]
 	change: number
 }
 
@@ -53,11 +53,11 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) =
 			})
 
 			const areaSeries = chartRef.current.addAreaSeries({
-				topColor: address && change  < 0 ? "#F23645":address && change > 0 ? '#089981': '#F2F2F2', // Set the top color for the gradient
+				topColor: address && change < 0 ? '#F23645' : address && change > 0 ? '#089981' : '#F2F2F2', // Set the top color for the gradient
 				bottomColor: '#F2F2F2', // Set the bottom color for the gradient as transparent
 				lineStyle: LineStyle.Solid, // Use smooth line style
 				base: minValue, // Set the base to maxValue
-				lineColor: address && change < 0 ? "#F23645":address && change > 0? '#089981': '#000000', // Set the line color as transparent
+				lineColor: address && change < 0 ? '#F23645' : address && change > 0 ? '#089981' : '#000000', // Set the line color as transparent
 				lineWidth: 1,
 				priceLineVisible: false,
 			})
@@ -92,29 +92,36 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) =
 				chartRef.current.remove()
 			}
 		}
-	}, [data,maxValue, minValue, address, change])
+	}, [data, maxValue, minValue, address, change])
 
 	return (
-		<div className='relative w-full h-[15vh]'>
-		<div className="absolute top-0 left-0 w-full h-full z-50">
-		  {/* Content with text goes here */}
-		  <div className="py-4 px-[10%] flex flex-col items-end justify-start h-full w-full">
-			<h1 className='text-2xl text-blackText-500 titleShadow interBold'>${data[data.length-1]?.value ? FormatToViewNumber({value: data[data.length-1]?.value ,returnType: 'string'}): '0.00' }</h1>
-			<h1 className={`text-lg ${address && change>0?'text-nexLightGreen-500':address && change<0?'text-nexLightRed-500':'text-black'} titleShadow interMedium`}>{address?change>0?'+'+change.toFixed(2):change.toFixed(2):'0.00'}%</h1>
-			{/* Add any other text or components as needed */}
-		  </div>
+		<div className="relative w-full h-[15vh]">
+			<div className="absolute top-0 left-0 w-full h-full z-50">
+				{/* Content with text goes here */}
+				<div className="py-4 px-[10%] flex flex-col items-end justify-start h-full w-full">
+					<h1
+						className="text-2xl text-blackText-500 titleShadow interBold"
+						title={data[data.length - 1]?.value && data[data.length - 1]?.value < 0.01 ? formatNumber(data[data.length - 1]?.value).toString() : ''}
+					>
+						${data[data.length - 1]?.value ? (data[data.length - 1]?.value < 0.01 ? '≈ 0.00 ' : FormatToViewNumber({ value: data[data.length - 1]?.value, returnType: 'string' })) : '0.00'}
+					</h1>
+					<h1 className={`text-lg ${address && change > 0 ? 'text-nexLightGreen-500' : address && change < 0 ? 'text-nexLightRed-500' : 'text-black'} titleShadow interMedium`}>
+						{address ? (change > 0 ? '+' + change.toFixed(2) : change.toFixed(2)) : '0.00'}%
+					</h1>
+					{/* Add any other text or components as needed */}
+				</div>
+			</div>
+
+			<div
+				ref={chartContainerRef}
+				className="absolute top-0 left-0 w-full h-full z-0"
+				style={{
+					width: '100%',
+					height: '100%',
+					overflow: 'hidden', // Hide scrollbars
+				}}
+			/>
 		</div>
-  
-		<div
-		  ref={chartContainerRef}
-		  className="absolute top-0 left-0 w-full h-full z-0"
-		  style={{
-			width: '100%',
-			height: '100%',
-			overflow: 'hidden', // Hide scrollbars
-		  }}
-		/>
-	  </div>
 	)
 }
 

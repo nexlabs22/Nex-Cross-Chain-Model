@@ -192,12 +192,12 @@ export default function Portfolio() {
 	const PieChartdata = [
 		{
 			label: 'ANFI',
-			percentage: !!anfiPercent ? anfiPercent + '%' : '0%',
+			percentage: !!anfiPercent ? FormatToViewNumber({ value: anfiPercent, returnType: 'string' }) + '%' : '0%',
 			color: '#133140',
 		},
 		{
 			label: 'CRYPTO 5',
-			percentage: !!crypto5Percent ? crypto5Percent + '%' : '0%',
+			percentage: !!crypto5Percent ? FormatToViewNumber({ value: crypto5Percent, returnType: 'string' }) + '%' : '0%',
 			color: '#b5e7ff',
 		},
 	]
@@ -426,8 +426,20 @@ export default function Portfolio() {
 						<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
 							<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
 								<h5 className="interBold text-xl text-blackText-500 text-center lg:text-left ">Total Portfolio Balance</h5>
-								<h5 className="interExtraBold text-2xl text-[#646464] text-center lg:text-left ">
-									${showPortfolioData && chartArr && chartArr[chartArr.length - 1] ? FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' }) : '0.00'}
+								<h5
+									className="interExtraBold text-2xl text-[#646464] text-center lg:text-left "
+									title={
+										showPortfolioData && chartArr && chartArr[chartArr.length - 1] && chartArr[chartArr.length - 1].value < 0.01
+											? formatNumber(chartArr[chartArr.length - 1].value).toString()
+											: '0.00'
+									}
+								>
+									$
+									{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
+										? chartArr[chartArr.length - 1].value < 0.01
+											? '≈ 0.00 '
+											: FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' })
+										: '0.00'}
 								</h5>
 							</div>
 							<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
@@ -575,10 +587,7 @@ export default function Portfolio() {
 							</Menu>
 							<div className="w-full h-full flex flex-col xl:flex-row items-start xl:items-center justify-center xl:justify-around">
 								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-10 xl:mb-20">
-								{
-									chartType == "pie" ? <GenericPieChart data={PieChartdata} /> : <TreemapChart percentage={indexPercent} />
-								}
-									
+									{chartType == 'pie' ? <GenericPieChart data={PieChartdata} /> : <TreemapChart percentage={indexPercent} />}
 								</div>
 								<div className="w-full xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-2">
 									<h5 className="interBold text-xl text-blackText-500">
