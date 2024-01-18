@@ -126,6 +126,8 @@ contract IndexFactory is
     }
     uint issuanceNonce;
     uint redemptionNonce;
+    uint updatePortfolioNonce;
+
     mapping(uint => mapping(address => TokenOldAndNewValues)) public issuanceTokenOldAndNewValues;
     mapping(uint => uint) public issuanceCompletedTokensCount;
     mapping(uint => address) public issuanceNonceRequester;
@@ -135,6 +137,8 @@ contract IndexFactory is
     mapping(uint => uint) public redemptionCompletedTokensCount;
     mapping(uint => address) public redemptionNonceRequester;
 
+    mapping(uint => uint) public portfolioTotalValueByNonce;
+    mapping(uint => uint) public updatedTokensValueCount;
     // event FeeReceiverSet(address indexed feeReceiver);
     // event FeeRateSet(uint256 indexed feeRatePerDayScaled);
     // event MethodologistSet(address indexed methodologist);
@@ -715,11 +719,26 @@ contract IndexFactory is
         if(redemptionCompletedTokensCount[redemptionNonce] == totalCurrentList){
             completeRedemptionRequest(redemptionNonce);
         }
+        }else if(actionType == 2){
+            portfolioTotalValueByNonce[nonce] += value1;
+            updatedTokensValueCount[nonce] += 1;
         }
-        
-
     }
 
+    function askValues(){
+        updatePortfolioNonce += 1;
+        for(uint i = 0; i < totalCurrentList; i++) {
+        uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
+        if(tokenChainSelector == currentChainSelector){
+        uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+        portfolioTotalValueByNonce[updatePortfolioNonce] += value;
+        updatedTokensValueCount[updatePortfolioNonce] += 1;
+        }else{
+            address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
+            bytes memory data = abi.encode(2, currentList[i], updatePortfolioNonce, 0);
+            sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
+        }
+    }
 
     function reIndexAndReweight() public onlyOwner {
         for(uint i; i < totalCurrentList; i++) {
@@ -728,6 +747,8 @@ contract IndexFactory is
             uint swapAmount = (burnPercent*IERC20(currentList[i]).balanceOf(address(indexToken)))/1e18;
             _swapSingle(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), address(indexToken), tokenSwapVersion[currentList[i]]);
             }else{
+            address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
+            bytes memory data = abi.encode(1, currentList[i], redemptionNonce, burnPercent);
             address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
             bytes memory data = abi.encode(1, currentList[i], redemptionNonce, burnPercent);
             sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
