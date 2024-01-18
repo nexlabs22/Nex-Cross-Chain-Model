@@ -1,6 +1,7 @@
 import connectToSpotDb from '@/utils/connectToSpotDb'
 import { NextResponse, NextRequest } from 'next/server'
 import axios from 'axios'
+export const preferredRegion = ['fra1']
 
 const cryptoNametoSymbol_bitfinex: { [key: string]: string } = {
     'bitcoin': 'btcusd',
@@ -63,12 +64,12 @@ export async function GET() {
             sumOfMarketCap += Number(pair.split(':')[1]);
         });
 
-        let ip=''
-        // let err = ''
-        await fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => ip = data.ip)
-        .catch(error => console.log(error))
+        // let ip=''
+        // // let err = ''
+        // await fetch('https://api.ipify.org?format=json')
+        // .then(response => response.json())
+        // .then(data => ip = data.ip)
+        // .catch(error => console.log(error))
 
         // const symbolDetails_bitfinex: { pair: string, minimum_order_size: number }[] = await axios.get("https://api.bitfinex.com/v1/symbols_details").then(res => res.data).catch((err) => { console.log(err) })
         // const symbolDetails_bybit: { name: string, minTradeQty: string }[] = await axios.get("https://api.bybit.com/spot/v3/public/symbols").then(res => res.data.result.list).catch((err) => { console.log(err) }) 
@@ -106,7 +107,7 @@ export async function GET() {
         dataToReturn.allocations = allocations
 
         // return NextResponse.json({ data: dataToReturn, ip, err}, { status: 200 })
-        return NextResponse.json({ data: dataToReturn, ip }, { status: 200 })
+        return NextResponse.json({ data: dataToReturn}, { status: 200 })
     } catch (error) {
         return NextResponse.json({ error }, { status: 400 })
     } finally {
