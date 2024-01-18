@@ -63,6 +63,13 @@ export async function GET() {
             sumOfMarketCap += Number(pair.split(':')[1]);
         });
 
+        let ip=''
+        let err = ''
+        await fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => ip = data.ip)
+        .catch(error => console.log(error))
+
         // const symbolDetails_bitfinex: { pair: string, minimum_order_size: number }[] = await axios.get("https://api.bitfinex.com/v1/symbols_details").then(res => res.data).catch((err) => { console.log(err) })
         // const symbolDetails_bybit: { name: string, minTradeQty: string }[] = await axios.get("https://api.bybit.com/spot/v3/public/symbols").then(res => res.data.result.list).catch((err) => { console.log(err) }) 
         const options = {
@@ -75,7 +82,7 @@ export async function GET() {
             }
         };
         const symbolDetails_bitfinex = await fetch("https://api.bitfinex.com/v1/symbols_details", options).then(response => response.json()).catch(error => console.error(error));
-        const symbolDetails_bybit = await fetch("https://api.bybit.com/spot/v3/public/symbols", options).then(response => response.json()).then(res=> res.result.list).catch(error => console.log(error));
+        const symbolDetails_bybit = await fetch("https://api.bybit.com/spot/v3/public/symbols", options).then(response => response.json()).then(res=> res.result.list).catch(error => err=error);
         const allocations: { name: string, weight: number, minTradeValue:{bitfinex: number | string, bybit: number | string}, selectedExchange: string }[] = [];
         cryptoArray.forEach((pair: string) => {
             const [cryptoName, marketCap] = pair.split(':');
@@ -97,7 +104,7 @@ export async function GET() {
         });
         dataToReturn.allocations = allocations
 
-        return NextResponse.json({ data: dataToReturn}, { status: 200 })
+        return NextResponse.json({ data: dataToReturn, ip, err}, { status: 200 })
     } catch (error) {
         return NextResponse.json({ error }, { status: 400 })
     } finally {
