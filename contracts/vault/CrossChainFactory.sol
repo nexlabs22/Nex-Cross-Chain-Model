@@ -575,6 +575,12 @@ contract CrossChainIndexFactory is
             uint tokenValue = getAmountOut(targetAddress, address(weth), IERC20(targetAddress).balanceOf(address(crossChainVault)), 3);
             bytes memory data = abi.encode(2, targetAddress, nonce, tokenValue, 0);
             sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
+        }else if( actionType == 3){
+            uint portfolioValue = percentage;
+            uint tokenValue = getAmountOut(targetAddress, address(weth), IERC20(targetAddress).balanceOf(address(crossChainVault)), 3);
+            uint sellPercent = tokenValue*100e18/portfolioValue - tokenOracleMarketShare[currentList[i]];
+            bytes memory data = abi.encode(2, targetAddress, nonce, tokenValue, 0);
+            sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }
         // string memory message = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent string message
         // receivedMessages.push(messageId);
