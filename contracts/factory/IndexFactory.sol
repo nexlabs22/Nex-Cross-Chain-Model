@@ -4,17 +4,18 @@ pragma solidity 0.8.7;
 import "../token/IndexToken.sol";
 import "../proposable/ProposableOwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
-import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
-import "../chainlink/ChainlinkClient.sol";
+// import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+// import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
+// import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+// import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
+// import "../chainlink/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../libraries/OracleLibrary.sol";
+// import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+// import "../libraries/OracleLibrary.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import "../ccip/CCIPReceiver.sol";
+import "./IndexFactoryStorage.sol";
 
 // import {Withdraw} from "./utils/Withdraw.sol";
 
@@ -24,7 +25,7 @@ import "../ccip/CCIPReceiver.sol";
 /// @dev This contract uses an upgradeable pattern
 contract IndexFactory is
     CCIPReceiver,
-    ChainlinkClient,
+    // ChainlinkClient,
     // ContextUpgradeable,
     ProposableOwnableUpgradeable
     // PausableUpgradeable
@@ -33,16 +34,17 @@ contract IndexFactory is
         Native,
         LINK
     }
-    using Chainlink for Chainlink.Request;
+    // using Chainlink for Chainlink.Request;
 
-    struct Message {
-        uint64 sourceChainSelector; // The chain selector of the source chain.
-        address sender; // The address of the sender.
-        string message; // The content of the message.
-        address token; // received token.
-        uint256 amount; // received amount.
-    }
+    // struct Message {
+    //     uint64 sourceChainSelector; // The chain selector of the source chain.
+    //     address sender; // The address of the sender.
+    //     string message; // The content of the message.
+    //     address token; // received token.
+    //     uint256 amount; // received amount.
+    // }
 
+    IndexFactoryStorage public indexFactoryStorage;
     // address public i_router;
     address public i_link;
     uint16 public i_maxTokensLength;
@@ -57,67 +59,43 @@ contract IndexFactory is
     uint64 public currentChainSelector;
     // uint256 internal constant SCALAR = 1e20;
 
-    // Inflation rate (per day) on total supply, to be accrued to the feeReceiver.
-    // uint256 public feeRatePerDayScaled;
-
-    // Most recent timestamp when fee was accured.
-    // uint256 public feeTimestamp;
-
-    // Address that can claim fees accrued.
-    // address public feeReceiver;
-
-    // Address that can publish a new methodology.
-    // address public methodologist;
-
-    // Address that has privilege to mint and burn. It will be Controller and Admin to begin.
-    // address public minter;
-
-    // string public methodology;
-
-    // uint256 public supplyCeiling;
-
-    // mapping(address => bool) public isRestricted;
-
-    // enum DexStatus {
-    //     UNISWAP_V2,
-    //     UNISWAP_V3
-    // }
+    
 
     
     
-    string baseUrl;
-    string urlParams;
+    // string baseUrl;
+    // string urlParams;
 
-    bytes32 public externalJobId;
-    uint256 public oraclePayment;
-    AggregatorV3Interface public toUsdPriceFeed;
-    uint public lastUpdateTime;
+    // bytes32 public externalJobId;
+    // uint256 public oraclePayment;
+    // AggregatorV3Interface public toUsdPriceFeed;
+    // uint public lastUpdateTime;
     // address[] public oracleList;
     // address[] public currentList;
 
-    uint public totalOracleList;
-    uint public totalCurrentList;
+    // uint public totalOracleList;
+    // uint public totalCurrentList;
 
-    mapping(uint => address) public oracleList;
-    mapping(uint => address) public currentList;
+    // mapping(uint => address) public oracleList;
+    // mapping(uint => address) public currentList;
 
-    mapping(address => uint) public tokenOracleListIndex;
-    mapping(address => uint) public tokenCurrentListIndex;
+    // mapping(address => uint) public tokenOracleListIndex;
+    // mapping(address => uint) public tokenCurrentListIndex;
 
-    mapping(address => uint) public tokenCurrentMarketShare;
-    mapping(address => uint) public tokenOracleMarketShare;
-    mapping(address => uint) public tokenSwapVersion;
-    mapping(address => uint64) public tokenChainSelector;
+    // mapping(address => uint) public tokenCurrentMarketShare;
+    // mapping(address => uint) public tokenOracleMarketShare;
+    // mapping(address => uint) public tokenSwapVersion;
+    // mapping(address => uint64) public tokenChainSelector;
 
     mapping(uint64 => address) public crossChainFactoryBySelector;
 
     
-    ISwapRouter public swapRouterV3;
-    IUniswapV3Factory public factoryV3;
-    IUniswapV2Router02 public swapRouterV2;
-    IUniswapV2Factory public factoryV2;
+    // ISwapRouter public swapRouterV3;
+    // IUniswapV3Factory public factoryV3;
+    // IUniswapV2Router02 public swapRouterV2;
+    // IUniswapV2Factory public factoryV2;
     IWETH public weth;
-    IQuoter public quoter;
+    // IQuoter public quoter;
 
     //nonce
     struct TokenOldAndNewValues{
@@ -144,31 +122,12 @@ contract IndexFactory is
     mapping(uint => uint) public reweightWethValueByNonce;
     mapping(uint => uint) public reweightTokensCount;
 
-    // event FeeReceiverSet(address indexed feeReceiver);
-    // event FeeRateSet(uint256 indexed feeRatePerDayScaled);
-    // event MethodologistSet(address indexed methodologist);
-    // event MethodologySet(string methodology);
-    // event MinterSet(address indexed minter);
-    // event SupplyCeilingSet(uint256 supplyCeiling);
-    // event MintFeeToReceiver(address feeReceiver, uint256 timestamp, uint256 totalSupply, uint256 amount);
-    // event ToggledRestricted(address indexed account, bool isRestricted);
-
+    
     event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time);
     event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time);
     event MessageSent(bytes32 messageId);
 
-    // Event emitted when a message is received from another chain.
-    // event MessageReceived(
-    //     bytes32 indexed messageId, // The unique ID of the message.
-    //     uint64 indexed sourceChainSelector, // The chain selector of the source chain.
-    //     address sender, // The address of the sender from the source chain.
-    //     string message, // The message that was received.
-    //     Client.EVMTokenAmount tokenAmount // The token amount that was received.
-    // );
-    // modifier onlyMethodologist() {
-    //     require(msg.sender == methodologist, "IndexToken: caller is not the methodologist");
-    //     _;
-    // }
+    
 
     // modifier onlyMinter() {
     //     require(msg.sender == minter, "IndexToken: caller is not the minter");
@@ -180,56 +139,32 @@ contract IndexFactory is
         uint64 _currentChainSelector,
         address payable _token,
         address _chainlinkToken, 
-        address _oracleAddress, 
-        bytes32 _externalJobId,
-        address _toUsdPriceFeed,
         //ccip
         address _router,
         //addresses
-        address _weth,
-        // address _quoter,
-        address _swapRouterV3,
-        address _factoryV3,
-        address _swapRouterV2,
-        address _factoryV2
+        address _weth
     ) external initializer {
         __ccipReceiver_init(_router);
-        // CCIPReceiver(_router);
         __Ownable_init();
-        // __Pausable_init();
         //set chain selector
         currentChainSelector = _currentChainSelector;
         indexToken = IndexToken(_token);
-        //set oracle data
-        setChainlinkToken(_chainlinkToken);
-        setChainlinkOracle(_oracleAddress);
-        externalJobId = _externalJobId;
-        // externalJobId = "81027ac9198848d79a8d14235bf30e16";
-        oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
-        toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
         //set ccip addresses
         i_link = _chainlinkToken;
         i_maxTokensLength = 5;
-        // i_router = _router;
         LinkTokenInterface(_chainlinkToken).approve(i_router, type(uint256).max);
-
         //set addresses
         weth = IWETH(_weth);
-        // quoter = IQuoter(_quoter);
-        swapRouterV3 = ISwapRouter(_swapRouterV3);
-        factoryV3 = IUniswapV3Factory(_factoryV3);
-        swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
-        factoryV2 = IUniswapV2Factory(_factoryV2);
         //fee
         feeRate = 10;
         latestFeeUpdate = block.timestamp;
-
-        baseUrl = "https://app.nexlabs.io/api/allFundingRates";
-        urlParams = "?multiplyFunc=18&timesNegFund=true&arrays=true";
-        // s_requestCount = 1;
     }
 
     
+    function setIndexFactoryStorage(address _indexFactoryStorage) public onlyOwner {
+        indexFactoryStorage = IndexFactoryStorage(_indexFactoryStorage);
+    }
+
     function setCrossChainToken(address _crossChainToken) public onlyOwner {
         crossChainToken = _crossChainToken;
     }
@@ -239,28 +174,43 @@ contract IndexFactory is
         crossChainFactoryBySelector[_chainSelector] = _crossChainFactoryAddress;
     }
 
-  /**
-    * @dev Sets the price feed address of the native coin to USD from the Chainlink oracle.
-    * @param _toUsdPricefeed The address of native coin to USD price feed.
-    */    
-    function setPriceFeed(address _toUsdPricefeed) external onlyOwner {
-        require(_toUsdPricefeed != address(0), "ICO: Price feed address cannot be zero address");
-        toUsdPriceFeed = AggregatorV3Interface(_toUsdPricefeed);        
+  
+    
+
+    function totalOracleList() public view returns(uint) {
+        return indexFactoryStorage.totalOracleList();
+    }
+    function totalCurrentList() public view returns(uint) {
+        return indexFactoryStorage.totalCurrentList();
+    } 
+    function oracleList(uint _index) public view returns(address) {
+        return indexFactoryStorage.oracleList(_index);
+    } 
+    function currentList(uint _index) public view returns(address) {
+        return indexFactoryStorage.currentList(_index);
+    }
+    function tokenOracleListIndex(address _address) public view returns(uint) {
+        return indexFactoryStorage.tokenOracleListIndex(_address);
+    }
+    function tokenCurrentListIndex(address _address) public view returns(uint) {
+        return indexFactoryStorage.tokenCurrentListIndex(_address);
+    }
+    function tokenCurrentMarketShare(address _address) public view returns(uint) {
+        return indexFactoryStorage.tokenCurrentMarketShare(_address);
+    }
+    function tokenOracleMarketShare(address _address) public view returns(uint) {
+        return indexFactoryStorage.tokenOracleMarketShare(_address);
+    }
+    function tokenSwapVersion(address _address) public view returns(uint) {
+        return indexFactoryStorage.tokenSwapVersion(_address);
+    }
+    function tokenChainSelector(address _address) public view returns(uint64) {
+        return indexFactoryStorage.tokenChainSelector(_address);
     }
 
-    
-    function _toWei(int256 _amount, uint8 _amountDecimals, uint8 _chainDecimals) private pure returns (int256) {        
-        if (_chainDecimals > _amountDecimals)
-            return _amount * int256(10 **(_chainDecimals - _amountDecimals));
-        else
-            return _amount * int256(10 **(_amountDecimals - _chainDecimals));
-    }
 
     function priceInWei() public view returns (uint256) {
-        (,int price,,,) = toUsdPriceFeed.latestRoundData();
-        uint8 priceFeedDecimals = toUsdPriceFeed.decimals();
-        price = _toWei(price, priceFeedDecimals, 18);
-        return uint256(price);
+        return indexFactoryStorage.priceInWei();
     }
     
 
@@ -274,106 +224,14 @@ contract IndexFactory is
     latestFeeUpdate = block.timestamp;
   }
 
-   /**
-    * @dev The contract's fallback function that does not allow direct payments to the contract.
-    * @notice Prevents users from sending ether directly to the contract by reverting the transaction.
-    */
+   
     receive() external payable {
         // revert DoNotSendFundsDirectlyToTheContract();
     }
 
-    function concatenation(string memory a, string memory b) public pure returns (string memory) {
-        return string(bytes.concat(bytes(a), bytes(b)));
-    }
-
-    function setUrl(string memory _beforeAddress, string memory _afterAddress) public onlyOwner{
-    baseUrl = _beforeAddress;
-    urlParams = _afterAddress;
-    }
-    
-    function requestAssetsData(
-    )
-        public
-        returns(bytes32)
-    {
-        
-        string memory url = concatenation(baseUrl, urlParams);
-        Chainlink.Request memory req = buildChainlinkRequest(externalJobId, address(this), this.fulfillAssetsData.selector);
-        req.add("get", url);
-        req.add("path1", "results,tokens");
-        req.add("path2", "results,marketShares");
-        req.add("path3", "results,swapVersions");
-        req.add("path4", "results,chainSelector");
-        // sendOperatorRequest(req, oraclePayment);
-        return sendChainlinkRequestTo(chainlinkOracleAddress(), req, oraclePayment);
-    }
-
-  function fulfillAssetsData(bytes32 requestId, address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions, uint64[] memory _chainSelectors)
-    public
-    recordChainlinkFulfillment(requestId)
-  {
-    
-    address[] memory tokens0 = _tokens;
-    uint[] memory marketShares0 = _marketShares;
-    uint[] memory swapVersions0 = _swapVersions;
-    uint64[] memory chainSelectors0 = _chainSelectors;
-
-    // //save mappings
-    for(uint i =0; i < tokens0.length; i++){
-        oracleList[i] = tokens0[i];
-        tokenOracleListIndex[tokens0[i]] = i;
-        tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
-        tokenSwapVersion[tokens0[i]] = swapVersions0[i];
-        tokenChainSelector[tokens0[i]] = chainSelectors0[i];
-        if(totalCurrentList == 0){
-            currentList[i] = tokens0[i];
-            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
-            tokenCurrentListIndex[tokens0[i]] = i;
-        }
-    }
-    totalOracleList = tokens0.length;
-    if(totalCurrentList == 0){
-        totalCurrentList  = tokens0.length;
-    }
-    lastUpdateTime = block.timestamp;
-    }
-
-
-//     function mockFillAssetsList(address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions)
-//     public
-//     onlyOwner
-//   {
-    
-//     address[] memory tokens0 = _tokens;
-//     uint[] memory marketShares0 = _marketShares;
-//     uint[] memory swapVersions0 = _swapVersions;
-
-//     // //save mappings
-//     for(uint i =0; i < tokens0.length; i++){
-//         oracleList[i] = tokens0[i];
-//         tokenOracleListIndex[tokens0[i]] = i;
-//         tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
-//         tokenSwapVersion[tokens0[i]] = swapVersions0[i];
-//         if(totalCurrentList == 0){
-//             currentList[i] = tokens0[i];
-//             tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
-//             tokenCurrentListIndex[tokens0[i]] = i;
-//         }
-//     }
-//     totalOracleList = tokens0.length;
-//     if(totalCurrentList == 0){
-//         totalCurrentList  = tokens0.length;
-//     }
-//     lastUpdateTime = block.timestamp;
-//     }
-
-
-
-
-
 
     function _swapSingle(address tokenIn, address tokenOut, uint amountIn, address _recipient, uint _swapVersion) internal returns(uint){
-        uint amountOut = getAmountOut(tokenIn, tokenOut, amountIn, _swapVersion);
+        uint amountOut = indexFactoryStorage.getAmountOut(tokenIn, tokenOut, amountIn, _swapVersion);
         uint swapAmountOut;
         if(amountOut > 0){
            swapAmountOut = indexToken.swapSingle(tokenIn, tokenOut, amountIn, _recipient, _swapVersion);
@@ -387,40 +245,10 @@ contract IndexFactory is
 
 
     function swap(address tokenIn, address tokenOut, uint amountIn, address _recipient, uint _swapVersion) public returns(uint){
-            if(_swapVersion == 3){
-                IERC20(tokenIn).approve(address(swapRouterV3), amountIn);
-                ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
-                .ExactInputSingleParams({
-                    tokenIn: tokenIn,
-                    tokenOut: tokenOut,
-                    // pool fee 0.3%
-                    fee: 3000,
-                    recipient: _recipient,
-                    deadline: block.timestamp,
-                    amountIn: amountIn,
-                    amountOutMinimum: 0,
-                    // NOTE: In production, this value can be used to set the limit
-                    // for the price the swap will push the pool to,
-                    // which can help protect against price impact
-                    sqrtPriceLimitX96: 0
-                });
-                uint finalAmountOut = swapRouterV3.exactInputSingle(params);
-                return finalAmountOut;
-            } else{
-                address[] memory path = new address[](2);
-                path[0] = tokenIn;
-                path[1] = tokenOut;
-
-                IERC20(tokenIn).approve(address(swapRouterV2), amountIn);
-                swapRouterV2.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-                    amountIn, //amountIn
-                    0, //amountOutMin
-                    path, //path
-                    _recipient, //to
-                    block.timestamp //deadline
-                );
-                return 0;
-            }
+            IERC20(tokenIn).transfer(address(indexFactoryStorage), amountIn);
+            uint amountOut = indexFactoryStorage.swap(tokenIn,tokenOut,amountIn,_recipient,_swapVersion);
+            return amountOut;
+            
     }
 
    
@@ -438,19 +266,19 @@ contract IndexFactory is
         uint firstPortfolioValue = getPortfolioBalance();
         uint wethAmount = _inputAmount;
         //swap
-        for(uint i = 0; i < totalCurrentList; i++) {
-          uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
+        for(uint i = 0; i < totalCurrentList(); i++) {
+          uint64 tokenChainSelector = tokenChainSelector(currentList(i));
           if(tokenChainSelector == currentChainSelector){
-            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].oldTokenValue = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
-            _swapSingle(address(weth), currentList[i], wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18, address(indexToken), tokenSwapVersion[currentList[i]]);
-            issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].newTokenValue = issuanceTokenOldAndNewValues[issuanceNonce][currentList[i]].oldTokenValue + wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18;
+            issuanceTokenOldAndNewValues[issuanceNonce][currentList(i)].oldTokenValue = getAmountOut(currentList(i), address(weth), IERC20(currentList(i)).balanceOf(address(indexToken)), tokenSwapVersion(currentList(i)));
+            _swapSingle(address(weth), currentList(i), wethAmount*tokenCurrentMarketShare(currentList(i))/100e18, address(indexToken), tokenSwapVersion(currentList(i)));
+            issuanceTokenOldAndNewValues[issuanceNonce][currentList(i)].newTokenValue = issuanceTokenOldAndNewValues[issuanceNonce][currentList(i)].oldTokenValue + wethAmount*tokenCurrentMarketShare(currentList(i))/100e18;
             issuanceCompletedTokensCount[issuanceNonce] += 1;
           }else{
-            uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, wethAmount*tokenCurrentMarketShare[currentList[i]]/100e18, address(this), 3);
+            uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, wethAmount*tokenCurrentMarketShare(currentList(i))/100e18, address(this), 3);
             Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
             tokensToSendArray[0].token = crossChainToken;
             tokensToSendArray[0].amount = crossChainTokenAmount;
-            bytes memory data = abi.encode(0, currentList[i], issuanceNonce, 0, 0);
+            bytes memory data = abi.encode(0, currentList(i), issuanceNonce, 0, 0);
             address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
             sendToken(tokenChainSelector, data, crossChainIndexFactory, tokensToSendArray, PayFeesIn.LINK);
           }
@@ -460,9 +288,9 @@ contract IndexFactory is
     function completeIssuanceRequest(uint _issuanceNonce) internal {
         uint totalOldVaules;
         uint totalNewVaules;
-        for(uint i = 0; i < totalCurrentList; i++){
-            totalOldVaules += issuanceTokenOldAndNewValues[_issuanceNonce][currentList[i]].oldTokenValue;
-            totalNewVaules += issuanceTokenOldAndNewValues[_issuanceNonce][currentList[i]].newTokenValue;
+        for(uint i = 0; i < totalCurrentList(); i++){
+            totalOldVaules += issuanceTokenOldAndNewValues[_issuanceNonce][currentList(i)].oldTokenValue;
+            totalNewVaules += issuanceTokenOldAndNewValues[_issuanceNonce][currentList(i)].newTokenValue;
         }
     
         uint amountToMint;
@@ -487,17 +315,17 @@ contract IndexFactory is
 
         // uint outputAmount;
         //swap
-        for(uint i = 0; i < totalCurrentList; i++) {
-        uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
+        for(uint i = 0; i < totalCurrentList(); i++) {
+        uint64 tokenChainSelector = tokenChainSelector(currentList(i));
         if(tokenChainSelector == currentChainSelector){
-        uint swapAmount = (burnPercent*IERC20(currentList[i]).balanceOf(address(indexToken)))/1e18;
-        uint swapAmountOut = _swapSingle(currentList[i], address(weth), swapAmount, address(this), tokenSwapVersion[currentList[i]]);
+        uint swapAmount = (burnPercent*IERC20(currentList(i)).balanceOf(address(indexToken)))/1e18;
+        uint swapAmountOut = _swapSingle(currentList(i), address(weth), swapAmount, address(this), tokenSwapVersion(currentList(i)));
         redemptionNonceTotalValue[redemptionNonce] += swapAmountOut;
         redemptionCompletedTokensCount[redemptionNonce] += 1;
         // outputAmount += swapAmountOut;
         }else{
             address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
-            bytes memory data = abi.encode(1, currentList[i], redemptionNonce, burnPercent, 0);
+            bytes memory data = abi.encode(1, currentList(i), redemptionNonce, burnPercent, 0);
             sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
         }
         }
@@ -515,52 +343,22 @@ contract IndexFactory is
             (bool _ownerSuccess,) = owner().call{value: fee}("");
             require(_ownerSuccess, "transfer eth fee to the owner failed");
 
-            /**
-            uint fee = outputAmount*feeRate/10000;
-            if(_tokenOut == address(weth)){
-                // weth.transfer(msg.sender, outputAmount - fee);
-                weth.withdraw(outputAmount);
-                (bool _ownerSuccess,) = owner().call{value: fee}("");
-                require(_ownerSuccess, "transfer eth fee to the owner failed");
-                (bool _userSuccess,) = payable(msg.sender).call{value: outputAmount - fee}("");
-                require(_userSuccess, "transfer eth fee to the user failed");
-                emit Redemption(msg.sender, _tokenOut, amountIn, outputAmount - fee, block.timestamp);
-                return outputAmount - fee;
-            }else{
-                weth.withdraw(fee);
-                (bool _success,) = owner().call{value: fee}("");
-                require(_success, "transfer eth fee to the owner failed");
-                uint reallOut = swap(address(weth), _tokenOut, outputAmount - fee, msg.sender, _tokenOutSwapVersion);
-                emit Redemption(msg.sender, _tokenOut, amountIn, reallOut, block.timestamp);
-                return reallOut;
-            }
-            */
         }
 
 
     // }
 
     function getAmountOut(address tokenIn, address tokenOut, uint amountIn, uint _swapVersion) public view returns(uint finalAmountOut) {
-        uint finalAmountOut;
-        if(amountIn > 0){
-        if(_swapVersion == 3){
-           finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn), 1);
-        }else {
-            address[] memory path = new address[](2);
-            path[0] = tokenIn;
-            path[1] = tokenOut;
-            uint[] memory v2amountOut = swapRouterV2.getAmountsOut(amountIn, path);
-            finalAmountOut = v2amountOut[1];
-        }
-        }
+        uint finalAmountOut = indexFactoryStorage.getAmountOut(tokenIn, tokenOut, amountIn, _swapVersion);
         return finalAmountOut;
+
     }
 
 
     function getPortfolioBalance() public view returns(uint){
         uint totalValue;
-        for(uint i = 0; i < totalCurrentList; i++) {
-            uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+        for(uint i = 0; i < totalCurrentList(); i++) {
+            uint value = indexFactoryStorage.getAmountOut(currentList(i), address(weth), IERC20(currentList(i)).balanceOf(address(indexToken)), tokenSwapVersion(currentList(i)));
             totalValue += value;
         }
         return totalValue;
@@ -575,23 +373,15 @@ contract IndexFactory is
         uint128 amountIn,
         uint32 secondsAgo
     ) public view returns (uint amountOut) {
-        
-        address _pool = factoryV3.getPool(
+        amountOut = indexFactoryStorage.estimateAmountOut(
             tokenIn,
             tokenOut,
-            3000
-        );
-
-        (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
-        amountOut = OracleLibrary.getQuoteAtTick(
-            tick,
             amountIn,
-            tokenIn,
-            tokenOut
+            secondsAgo
         );
     }
 
-
+    
     function sendToken(
         uint64 destinationChainSelector,
         bytes memory _data,
@@ -697,10 +487,7 @@ contract IndexFactory is
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
-        // Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
-        //     .destTokenAmounts;
-        // address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
-        // uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
+       
         (uint actionType, address tokenAddress, uint nonce, uint value1, uint value2) = abi.decode(any2EvmMessage.data, (uint, address, uint, uint, uint)); // abi-decoding of the sent string message
         if(actionType == 0){
         uint issuanceNonce = nonce;
@@ -709,7 +496,7 @@ contract IndexFactory is
         issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress].oldTokenValue = oldTokenValue;
         issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress].newTokenValue = newTokenValue;
         issuanceCompletedTokensCount[issuanceNonce] += 1;
-        if(issuanceCompletedTokensCount[issuanceNonce] == totalCurrentList){
+        if(issuanceCompletedTokensCount[issuanceNonce] == totalCurrentList()){
             completeIssuanceRequest(issuanceNonce);
         }
         }else if(actionType == 1){
@@ -721,7 +508,7 @@ contract IndexFactory is
         uint wethAmount = swap(token, address(weth), amount, address(this), 3);
         redemptionNonceTotalValue[redemptionNonce] += wethAmount;
         redemptionCompletedTokensCount[redemptionNonce] += 1;
-        if(redemptionCompletedTokensCount[redemptionNonce] == totalCurrentList){
+        if(redemptionCompletedTokensCount[redemptionNonce] == totalCurrentList()){
             completeRedemptionRequest(redemptionNonce);
         }
         }else if(actionType == 2){
@@ -740,16 +527,16 @@ contract IndexFactory is
 
     function askValues() public onlyOwner {
         updatePortfolioNonce += 1;
-        for(uint i = 0; i < totalCurrentList; i++) {
-        uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
+        for(uint i = 0; i < totalCurrentList(); i++) {
+        uint64 tokenChainSelector = tokenChainSelector(currentList(i));
         if(tokenChainSelector == currentChainSelector){
-        uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapVersion[currentList[i]]);
+        uint value = getAmountOut(currentList(i), address(weth), IERC20(currentList(i)).balanceOf(address(indexToken)), tokenSwapVersion(currentList(i)));
         portfolioTotalValueByNonce[updatePortfolioNonce] += value;
-        tokenValueByNonce[updatePortfolioNonce][currentList[i]] += value;
+        tokenValueByNonce[updatePortfolioNonce][currentList(i)] += value;
         updatedTokensValueCount[updatePortfolioNonce] += 1;
         }else{
             address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
-            bytes memory data = abi.encode(2, currentList[i], updatePortfolioNonce, 0, 0);
+            bytes memory data = abi.encode(2, currentList(i), updatePortfolioNonce, 0, 0);
             sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
         }
     }
@@ -758,18 +545,18 @@ contract IndexFactory is
     function FirstReweightAction() public onlyOwner {
             uint nonce = updatePortfolioNonce;
             uint portfolioValue = portfolioTotalValueByNonce[nonce];
-        for(uint i; i < totalCurrentList; i++) {
-            uint tokenValue = tokenValueByNonce[nonce][currentList[i]];
-            if(tokenValue*100e18/portfolioValue > tokenOracleMarketShare[currentList[i]]){
-                uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
+        for(uint i; i < totalCurrentList(); i++) {
+            uint tokenValue = tokenValueByNonce[nonce][currentList(i)];
+            if(tokenValue*100e18/portfolioValue > tokenOracleMarketShare(currentList(i))){
+                uint64 tokenChainSelector = tokenChainSelector(currentList(i));
                 if(tokenChainSelector == currentChainSelector){
-                uint sellPercent = tokenValue*100e18/portfolioValue - tokenOracleMarketShare[currentList[i]];
-                uint swapAmount = (sellPercent*IERC20(currentList[i]).balanceOf(address(indexToken)))/100e18;
-                uint wethAmount = _swapSingle(currentList[i], address(weth), swapAmount, address(indexToken), tokenSwapVersion[currentList[i]]);
+                uint sellPercent = tokenValue*100e18/portfolioValue - tokenOracleMarketShare(currentList(i));
+                uint swapAmount = (sellPercent*IERC20(currentList(i)).balanceOf(address(indexToken)))/100e18;
+                uint wethAmount = _swapSingle(currentList(i), address(weth), swapAmount, address(indexToken), tokenSwapVersion(currentList(i)));
                 reweightWethValueByNonce[nonce] += wethAmount;
                 }else{
                     address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
-                    bytes memory data = abi.encode(3, currentList[i], nonce, portfolioValue, tokenOracleMarketShare[currentList[i]]);
+                    bytes memory data = abi.encode(3, currentList(i), nonce, portfolioValue, tokenOracleMarketShare(currentList(i)));
                     sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
                 }
             }
@@ -779,32 +566,34 @@ contract IndexFactory is
     function secondReweightAction() public onlyOwner {
         uint nonce = updatePortfolioNonce;
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
-        for(uint i; i < totalCurrentList; i++) {
-            uint tokenValue = tokenValueByNonce[nonce][currentList[i]];
-            if(tokenValue*100e18/portfolioValue < tokenOracleMarketShare[currentList[i]]){
-                uint64 tokenChainSelector = tokenChainSelector[currentList[i]];
+        for(uint i; i < totalCurrentList(); i++) {
+            uint tokenValue = tokenValueByNonce[nonce][currentList(i)];
+            if(tokenValue*100e18/portfolioValue < tokenOracleMarketShare(currentList(i))){
+                uint64 tokenChainSelector = tokenChainSelector(currentList(i));
                 if(tokenChainSelector == currentChainSelector){
-                uint buyPercent = tokenOracleMarketShare[currentList[i]] - tokenValue*100e18/portfolioValue;
+                uint buyPercent = tokenOracleMarketShare(currentList(i)) - tokenValue*100e18/portfolioValue;
                 uint swapAmount = (buyPercent*tokenValue)/100e18;
-                uint wethAmount = swap(address(weth), currentList[i], swapAmount, address(indexToken), 3);
+                uint wethAmount = swap(address(weth), currentList(i), swapAmount, address(indexToken), 3);
                 }else{
                     /**
                     address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
-                    bytes memory data = abi.encode(3, currentList[i], nonce, portfolioValue, tokenOracleMarketShare[currentList[i]]);
+                    bytes memory data = abi.encode(3, currentList(i), nonce, portfolioValue, tokenOracleMarketShare(currentList(i)));
                     sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
                     */
-                    uint buyPercent = tokenOracleMarketShare[currentList[i]] - tokenValue*100e18/portfolioValue;
+                    uint buyPercent = tokenOracleMarketShare(currentList(i)) - tokenValue*100e18/portfolioValue;
                     uint swapAmount = (buyPercent*tokenValue)/100e18;
                     uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, swapAmount, address(this), 3);
                     Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
                     tokensToSendArray[0].token = crossChainToken;
                     tokensToSendArray[0].amount = crossChainTokenAmount;
-                    bytes memory data = abi.encode(5, currentList[i], nonce, 0, 0);
+                    bytes memory data = abi.encode(5, currentList(i), nonce, 0, 0);
                     address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
                     sendToken(tokenChainSelector, data, crossChainIndexFactory, tokensToSendArray, PayFeesIn.LINK);
                 }
             }
         }
+
+        indexFactoryStorage.updateCurrentList();
     }
 
     

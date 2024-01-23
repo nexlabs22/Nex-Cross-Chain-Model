@@ -1,7 +1,7 @@
 
 import { ContractReceipt, ContractTransaction, Signer, constants } from "ethers";
 import { ethers, network } from "hardhat";
-import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
+import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexFactoryStorage, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
 import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { expect } from 'chai';
 import { BasicMessageSender } from "../typechain-types/contracts/ccip";
@@ -29,6 +29,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let v3Router: ISwapRouter
     let nft: INonfungiblePositionManager
     let indexToken : IndexToken
+    let indexFactoryStorage : IndexFactoryStorage
     let indexFactory : IndexFactory
     let crossChainVault : CrossChainVault
     let crossChainIndexFactory : CrossChainIndexFactory
@@ -129,6 +130,26 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       )
       
 
+      const IndexFactoryStorage = await ethers.getContractFactory("IndexFactoryStorage");
+      indexFactoryStorage = await IndexFactoryStorage.deploy()
+      // return;
+      await indexFactoryStorage.initialize(
+        "1",
+        indexToken.address,
+        linkToken.address,
+        oracle.address,
+        jobId,
+        ethPriceOracle.address,
+        //swap addresses
+        weth9.address,
+        // v3Router.address, //quoter
+        v3Router.address,
+        v3Factory.address,
+        v3Router.address, //v2
+        v3Factory.address //v2
+      )
+
+
       const IndexFactory = await ethers.getContractFactory("IndexFactory");
       indexFactory = await IndexFactory.deploy()
       // return;
@@ -136,24 +157,17 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             "1",
             indexToken.address,
             linkToken.address,
-            oracle.address,
-            jobId,
-            ethPriceOracle.address,
             //ccip
             mockRouter.address,
             //swap addresses
-            weth9.address,
-            // v3Router.address, //quoter
-            v3Router.address,
-            v3Factory.address,
-            v3Router.address, //v2
-            v3Factory.address //v2
+            weth9.address
       )
       
       
       //set minter
       await indexToken.setMinter(indexFactory.address)
       await indexFactory.setCrossChainToken(crossChainToken.address)
+      await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address)
       await crossChainIndexFactory.setCrossChainToken(crossChainToken.address)
       await indexFactory.setCrossChainFactory(crossChainIndexFactory.address, "2");
       await crossChainVault.setFactory(crossChainIndexFactory.address);
@@ -212,8 +226,8 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     const swapVersions = ["3", "3"]
     const chainSelectors = ["1", "2"]
     //update oracle list
-    await linkToken.transfer(indexFactory.address, 1e17.toString());
-    const transaction: ContractTransaction = await indexFactory.requestAssetsData();
+    await linkToken.transfer(indexFactoryStorage.address, 1e17.toString());
+    const transaction: ContractTransaction = await indexFactoryStorage.requestAssetsData();
     const transactionReceipt:any = await transaction.wait(1);
     const requestId: string = transactionReceipt?.events[0]?.topics[1];
     await oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);

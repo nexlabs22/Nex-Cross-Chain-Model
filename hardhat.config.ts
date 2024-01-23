@@ -2,7 +2,9 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import * as dotenvenc from '@chainlink/env-enc'
 dotenvenc.config();
-import './tasks';
+// import './tasks';
+// require("hardhat-contract-sizer");
+import "hardhat-contract-sizer"
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ETHEREUM_SEPOLIA_RPC_URL = process.env.ETHEREUM_SEPOLIA_RPC_URL;
@@ -78,6 +80,13 @@ const config: HardhatUserConfig = {
   typechain: {
     externalArtifacts: ['./abi/*.json']
   },
+  contractSizer: {
+    // alphaSort: true,
+    // disambiguatePaths: false,
+    runOnCompile: false,
+    // strict: true,
+    // only: [':ERC20$'],
+  }
   // paths: {
   //   sources: './contracts',
   //   tests: './test',
