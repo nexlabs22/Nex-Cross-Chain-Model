@@ -13,8 +13,8 @@ import MobileFooterSection from './mobileFooter'
 
 const Footer = () => {
 	return (
-		<section className="">
-			<div className="hidden xl:flex h-fit w-screen flex-col items-center justify-end rounded-tl-[30px] rounded-tr-[30px] bg-gradient-to-br from-colorSeven-500 to-colorFour-500 xl:h-fit">
+		<section className="w-screen">
+			<div className="hidden xl:flex h-fit w-full flex-col items-center justify-end rounded-tl-[30px] rounded-tr-[30px] bg-gradient-to-br from-colorSeven-500 to-colorFour-500 xl:h-fit">
 				<div className="flex h-fit w-full flex-col items-start justify-center gap-3 pb-6 pt-6 xl:flex-row xl:justify-start xl:pb-10 xl:pt-10">
 					<div className="flex h-full w-full flex-col items-start justify-start px-10 xl:w-1/3 xl:items-start">
 						<div className="flex w-fit flex-row items-center justify-between">

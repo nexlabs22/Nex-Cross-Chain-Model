@@ -1,4 +1,3 @@
-
 import dynamic from 'next/dynamic'
 const Chart = dynamic(() => import('@/components/dashboard/dashboardChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 import { dcaDataType } from '@/types/toolTypes'
@@ -14,28 +13,41 @@ const DCACalculatorChart: React.FC<DCAChartProps> = ({ data }) => {
 	return (
 		<>
 			<section className="h-full w-full">
-				<div id='chartId' className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-white shadow-sm shadow-gray-300">
-					<div className="flex flex-row items-start justify-between px-2 mt-2 mb-6">
-						<div className="flex flex-col">
-							<h5 className='interMedium text-blackText-500'>Total Amount Invested</h5>
-							<strong className="text-2xl interBlack text-blackText-500">${finalStandings && finalStandings.totalInvested ? Number(finalStandings.totalInvested?.toFixed(2)).toLocaleString() : '0.00'}</strong>
-						</div>
-						<div className="flex flex-col">
-							<h5 className='interMedium text-blackText-500'>Percent Gain</h5>
-							<strong className={`text-2xl interBlack ${finalStandings && finalStandings.percentageGain && finalStandings.percentageGain < 0 ? 'text-nexLightRed-500' : 'text-nexLightGreen-500'}`}>
-								{finalStandings && finalStandings.percentageGain ? finalStandings.percentageGain > 0 ? '+' + finalStandings.percentageGain?.toFixed(2): finalStandings.percentageGain?.toFixed(2): '0.00'}%
+				<div id="chartId" className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-white shadow-sm shadow-gray-300">
+					<div className="flex flex-row items-start flex-wrap lg:flex-nowrap justify-between px-2 mt-2 mb-6">
+						<div className="flex flex-col w-1/2 lg:w-auto">
+							<h5 className="interMedium text-blackText-500">Invested Amount</h5>
+							<strong className="text-2xl interBlack text-blackText-500">
+								${finalStandings && finalStandings.totalInvested ? Number(finalStandings.totalInvested?.toFixed(2)).toLocaleString() : '0.00'}
 							</strong>
 						</div>
-						<div className="flex flex-col">
-							<h5 className='interMedium text-blackText-500'>Total Gain</h5>
-							<strong className="text-2xl interBlack text-blackText-500">${finalStandings && finalStandings.totalGain ? Number(finalStandings.totalGain?.toFixed(2)).toLocaleString(): '0.00'}</strong>
+						<div className="flex flex-col w-1/2 lg:w-auto">
+							<h5 className="interMedium text-blackText-500">Percent Gain</h5>
+							<strong
+								className={`text-2xl interBlack ${finalStandings && finalStandings.percentageGain && finalStandings.percentageGain < 0 ? 'text-nexLightRed-500' : 'text-nexLightGreen-500'}`}
+							>
+								{finalStandings && finalStandings.percentageGain
+									? finalStandings.percentageGain > 0
+										? '+' + finalStandings.percentageGain?.toFixed(2)
+										: finalStandings.percentageGain?.toFixed(2)
+									: '0.00'}
+								%
+							</strong>
 						</div>
-						<div className="flex flex-col">
-							<h5 className='interMedium text-blackText-500'>Final Portfolio Value</h5>
-							<strong className="text-2xl interBlack text-blackText-500">${finalStandings && finalStandings.total ? Number(finalStandings.total?.toFixed(2)).toLocaleString(): '0.00'}</strong>
+						<div className="flex flex-col w-1/2 lg:w-auto">
+							<h5 className="interMedium text-blackText-500">Total Gain</h5>
+							<strong className="text-2xl interBlack text-blackText-500">
+								${finalStandings && finalStandings.totalGain ? Number(finalStandings.totalGain?.toFixed(2)).toLocaleString() : '0.00'}
+							</strong>
+						</div>
+						<div className="flex flex-col w-1/2 lg:w-auto">
+							<h5 className="interMedium text-blackText-500">Final Portfolio Value</h5>
+							<strong className="text-2xl interBlack text-blackText-500">${finalStandings && finalStandings.total ? Number(finalStandings.total?.toFixed(2)).toLocaleString() : '0.00'}</strong>
 						</div>
 					</div>
-					<Chart data={dcaChartData} />
+					<div className="w-full h-[60vh]">
+						<Chart data={dcaChartData} />
+					</div>
 				</div>
 			</section>
 		</>

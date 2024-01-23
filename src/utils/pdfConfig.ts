@@ -1,6 +1,7 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import logo from '@assets/images/xlogo_s.png'
 
 class PDFUtils<T> {
     private pdf: jsPDF;
@@ -15,7 +16,9 @@ class PDFUtils<T> {
     }
 
     async exportToPDF(data: T[], columns: (keyof T)[], columnMapping: Record<keyof T, string>, fileName: string, chartComponentId: string) {
-        this.createSettingTable(data, columns, columnMapping);
+        await this.addHeader('pdfHeader')
+        //this.createSettingTable(data, columns, columnMapping);
+        
         await this.addChartImage(chartComponentId);
         await this.createTable(data, columns, columnMapping);
         this.pdf.save(`${fileName}.pdf`);
@@ -37,8 +40,8 @@ class PDFUtils<T> {
 
         const columnsToAlignRight: string[] = ['percentageGain', 'totalGain', 'total', 'totalInvested'];
 
-        const startX = 15;
-        const startY = (this.pdf as any).autoTable.previous.finalY + 120;
+        const startX = 1;
+        const startY = 155;
 
         (this.pdf as any).autoTable({
             head: [header],
@@ -101,9 +104,20 @@ class PDFUtils<T> {
         if (chartComponent) {
             const canvas = await html2canvas(chartComponent);
             const imgData = canvas.toDataURL('image/png');
-            this.pdf.addImage(imgData, 'PNG', 14, (this.pdf as any).autoTable.previous.finalY + 10, 185, 100); // Adjust the coordinates and dimensions as needed
+            this.pdf.addImage(imgData, 'PNG', 5, 48, 200, 100); // Adjust the coordinates and dimensions as needed
         }
     }
+
+    private async addHeader(headerComponentId: string) {
+        const headerComponent = document.getElementById(headerComponentId);
+        if (headerComponent) {
+            const canvas = await html2canvas(headerComponent);
+            const imgData = canvas.toDataURL('image/png');
+            this.pdf.addImage(imgData, 'PNG', 1, 1, 210, 45); // Adjust the coordinates and dimensions as needed
+        }
+    }
+
+
 
 }
 
