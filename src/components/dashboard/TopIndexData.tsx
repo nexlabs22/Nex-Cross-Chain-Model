@@ -402,8 +402,8 @@ const TopIndexData = () => {
 				</div>
 
 				<div className="h-fit w-full">
-					{/* <DashboardChartBox /> */}
-					<TradingViewChart />
+					<DashboardChartBox />
+					{/* <TradingViewChart index={defaultIndex}/> */}
 				</div>
 			</div>
 		</section>

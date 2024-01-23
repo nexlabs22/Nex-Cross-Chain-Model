@@ -10,6 +10,8 @@ import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import GenericModal from '../GenericModal'
+import TradingViewChart from '@/components/TradingViewChart'
+import { TVChartContainer } from '@/components/TVChartContainer'
 const Chart = dynamic(() => import('@/components/dashboard/dashboardChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 
 // Data :
@@ -495,7 +497,10 @@ const DashboardChartBox = () => {
 					</div>
 				</div>
 				<div className="h-[80vh] w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
-					<div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
+					{/* <TradingViewChart index={defaultIndex} /> */}
+					<TVChartContainer selectedIndices={selectedIndices} index={defaultIndex} />
+					{/* <div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
+
 						<Menu
 							menuButton={
 								<div className="w-fit h-fit px-3 py-2 ml-2 hidden lg:flex flex-row items-center justify-center gap-1 rounded-md bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500">
@@ -583,7 +588,7 @@ const DashboardChartBox = () => {
 								</h5>
 							</div>
 						</Menu>
-					</div>
+					</div> */}
 					{/* <div className="flex flex-row items-start justify-start px-2">
 				<button
 					type="button"
@@ -612,16 +617,7 @@ const DashboardChartBox = () => {
 					<p className="circularMedium text-base text-black">6M</p>
 				</button>
 			</div> */}
-					{
-						// loading ? (
-						// 	<div className="flex items-center justify-center h-full">
-						// 		<p>Loading...</p>
-						// 	</div>
-						// ) : (
-						defaultIndex === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />
-
-						// )
-					}
+					{/* {defaultIndex === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />} */}
 				</div>
 			</section>
 			<GenericModal isOpen={classesModalOpen} onRequestClose={closeClassesModal} modalWidth={40}>

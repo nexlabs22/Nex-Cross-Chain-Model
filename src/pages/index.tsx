@@ -10,25 +10,7 @@ import { useEffect } from 'react'
 import axios from 'axios'
 
 const Dashboard: NextPage = () => {
-	useEffect(()=>{
-		async function test(){
-			const options = {
-				method: 'GET',
-				headers: {
-					accept: 'application/json',
-					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-					'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-				}
-			};
-			const symbolDetails_bitfinex = await fetch("https://api.bitfinex.com/v1/symbols_details", options).then(response => response.json()).catch(error => console.error(error));
-			const symbolDetails_bybit = await fetch("https://api.bybit.com/spot/v3/public/symbols", options).then(response => response.json()).then(res=> res.result.list).catch(error => console.error(error));
-			console.log("symbolDetails_bitfinex",{symbolDetails_bitfinex, symbolDetails_bybit})
-		}
-
-		test()
-		
-	},[])
+	
 	return (
 		<>
 			<Head>

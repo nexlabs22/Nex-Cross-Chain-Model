@@ -1,7 +1,7 @@
 import { makeApiRequest, generateSymbol, parseFullSymbol } from "./helpers.js";
 import { subscribeOnStream, unsubscribeFromStream } from "./streaming.js";
 
-// import getChartData from "@constants/getChartDat"
+import getChartData from "@constants/getChartData"
 
 
 const lastBarsCache = new Map();
@@ -24,6 +24,11 @@ const configurationData = {
       // full exchange name displayed in the filter popup
       desc: "Kraken bitcoin exchange",
     },
+    {
+      value: "NexLabs",
+      name: "NexLabs",
+      desc: "Nex Labs",
+    },
   ],
   symbols_types: [
     {
@@ -38,6 +43,38 @@ const configurationData = {
 
 async function getAllSymbols() {
   const data = await makeApiRequest("data/v3/all/exchanges");
+  const nexLabsData = {
+    isActive: true,
+    isTopTier: true,
+    pairs:{ANFI:['USD'], CRYPTO5:['USD'], V:['USD'], 
+    GSPC:['USD'],
+    IXIC:['USD'],
+    DJI :['USD'],
+    NYA :['USD'],
+    ASML:['USD'],
+    PYPL :['USD'],
+    MSFT :['USD'],
+    AAPL :['USD'],
+    GOOGL :['USD'],
+    AMZN:['USD'],
+    TCEHY:['USD'],
+    TSM:['USD'],
+    XOM:['USD'],
+    NVDA:['USD'],
+    UNH:['USD'],
+    JNJ:['USD'],
+    LVMHF:['USD'],
+    TSLA:['USD'],
+    JPM:['USD'],
+    WMT:['USD'],
+    META:['USD'],
+    SPY:['USD'],
+    MA:['USD'],
+    CVX:['USD'],
+    BRKA:['USD']
+    }
+  }
+  data.Data.NexLabs = nexLabsData;
   let allSymbols = [];
 
   for (const exchange of configurationData.exchanges) {
@@ -132,7 +169,7 @@ const dataFeed = {
     onErrorCallback
   ) => {
     const { from, to, firstDataRequest } = periodParams;
-    console.log("[getBars]: Method call", symbolInfo, resolution, from, to);
+    console.log("[getBars]: Method call", symbolInfo, resolution, from, to,periodParams);
     const parsedSymbol = parseFullSymbol(symbolInfo.full_name);
     const urlParameters = {
       e: parsedSymbol.exchange,
@@ -145,20 +182,22 @@ const dataFeed = {
       .map((name) => `${name}=${encodeURIComponent(urlParameters[name])}`)
       .join("&");
     try {
-      const data = await makeApiRequest(`data/histoday?${query}`);
-      console.log(data);
-      if (
-        (data.Response && data.Response === "Error") ||
-        data.Data.length === 0
-      ) {
-        // "noData" should be set if there is no data in the requested period.
-        onHistoryCallback([], {
-          noData: true,
-        });
-        return;
-      }
+      const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
+      const data2 = await makeApiRequest(`data/histoday?${query}`);
+      const data = data2.Response === 'Error' ? data1[urlParameters.fsym] : data2.Data
+      // if (
+      //   (data.Response && data.Response === "Error") ||
+      //   data.Data.length === 0
+      // ) {
+      //   // "noData" should be set if there is no data in the requested period.
+      //   onHistoryCallback([], {
+      //     noData: true,
+      //   });
+      //   return;
+      // }
       let bars = [];
-      data.Data.forEach((bar) => {
+      // data.Data.forEach((bar) => {
+        data.forEach((bar) => {
         if (bar.time >= from && bar.time < to) {
           bars = [
             ...bars,
