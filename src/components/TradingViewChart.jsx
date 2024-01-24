@@ -14,15 +14,11 @@ const colNameToSymbol = {
   nasdaq: 'IXIC',
   dow: 'DJI',
   nyse: 'NYA',
-  // "GC=F": "gold",
-  // "CL=F": "oil",
   asml: 'ASML',
   paypal: 'PYPL',
-  // "HG=F": "copper",
   microsoft: 'MSFT',
   apple: 'AAPL',
   alphabet: 'GOOGL',
-  // "SI=F": "silver",
   amazon: 'AMZN',
   tencent: 'TCEHY',
   visa: 'V',
@@ -40,6 +36,10 @@ const colNameToSymbol = {
   mastercard: 'MA',
   chevron_corp: 'CVX',
   berkshire_hathaway: 'BRKA',
+  // "GC=F": "gold",
+  // "CL=F": "oil",
+  // "HG=F": "copper",
+  // "SI=F": "silver",
 }
 
 const TradingViewChart = ({ index, selectedIndices }) => {
