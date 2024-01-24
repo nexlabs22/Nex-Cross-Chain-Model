@@ -268,6 +268,10 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         // await indexFactory.redemption(ethers.utils.parseEther("10"), weth9.address, 3);
         await indexFactory.redemption(indexTokenBalance, weth9.address, 3);
         console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
+        console.log("Asking values..");
+        await indexFactory.askValues();
+        console.log("token values count:", Number(await indexFactory.updatedTokensValueCount(1)))
+        console.log("portfolio values count:", Number(await indexFactory.portfolioTotalValueByNonce(1)))
       });
       
     });

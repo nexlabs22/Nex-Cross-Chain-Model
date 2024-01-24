@@ -1,7 +1,7 @@
 
 import { ContractReceipt, ContractTransaction, Signer, constants } from "ethers";
 import { ethers, network } from "hardhat";
-import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
+import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexFactoryStorage, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
 import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { expect } from 'chai';
 import { BasicMessageSender } from "../typechain-types/contracts/ccip";
@@ -29,6 +29,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let v3Router: ISwapRouter
     let nft: INonfungiblePositionManager
     let indexToken : IndexToken
+    let indexFactoryStorage : IndexFactoryStorage
     let indexFactory : IndexFactory
     let crossChainVault : CrossChainVault
     let crossChainIndexFactory : CrossChainIndexFactory
@@ -129,6 +130,26 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       )
       
 
+      const IndexFactoryStorage = await ethers.getContractFactory("IndexFactoryStorage");
+      indexFactoryStorage = await IndexFactoryStorage.deploy()
+      // return;
+      await indexFactoryStorage.initialize(
+        "1",
+        indexToken.address,
+        linkToken.address,
+        oracle.address,
+        jobId,
+        ethPriceOracle.address,
+        //swap addresses
+        weth9.address,
+        // v3Router.address, //quoter
+        v3Router.address,
+        v3Factory.address,
+        v3Router.address, //v2
+        v3Factory.address //v2
+      )
+
+
       const IndexFactory = await ethers.getContractFactory("IndexFactory");
       indexFactory = await IndexFactory.deploy()
       // return;
@@ -136,24 +157,18 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             "1",
             indexToken.address,
             linkToken.address,
-            oracle.address,
-            jobId,
-            ethPriceOracle.address,
             //ccip
             mockRouter.address,
             //swap addresses
-            weth9.address,
-            // v3Router.address, //quoter
-            v3Router.address,
-            v3Factory.address,
-            v3Router.address, //v2
-            v3Factory.address //v2
+            weth9.address
       )
       
       
       //set minter
       await indexToken.setMinter(indexFactory.address)
       await indexFactory.setCrossChainToken(crossChainToken.address)
+      await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address)
+      await indexFactoryStorage.setIndexFactory(indexFactory.address)
       await crossChainIndexFactory.setCrossChainToken(crossChainToken.address)
       await indexFactory.setCrossChainFactory(crossChainIndexFactory.address, "2");
       await crossChainVault.setFactory(crossChainIndexFactory.address);
@@ -203,17 +218,18 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
 
     }
 
-    async function updateOracleList(){
+    async function updateOracleList(_percentages: string[]){
       const assetList = [
         token0.address,
         token1.address
     ]
-    const percentages = ["70000000000000000000", "30000000000000000000"]
+    // const percentages = ["70000000000000000000", "30000000000000000000"]
+    const percentages = _percentages
     const swapVersions = ["3", "3"]
     const chainSelectors = ["1", "2"]
     //update oracle list
-    await linkToken.transfer(indexFactory.address, 1e17.toString());
-    const transaction: ContractTransaction = await indexFactory.requestAssetsData();
+    await linkToken.transfer(indexFactoryStorage.address, 1e17.toString());
+    const transaction: ContractTransaction = await indexFactoryStorage.requestAssetsData();
     const transactionReceipt:any = await transaction.wait(1);
     const requestId: string = transactionReceipt?.events[0]?.topics[1];
     await oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);
@@ -228,7 +244,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
 
       it("Test factory single swap", async function () {
         //update oracle list
-        await updateOracleList()
+        await updateOracleList(["70000000000000000000", "30000000000000000000"])
         //adding liquidity
         const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
         const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
@@ -248,12 +264,29 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
         console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
         await network.provider.send("evm_mine");
-        console.log("portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
-        console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
-        const indexTokenBalance = await indexToken.balanceOf(owner.address);
+        console.log("chain 1 portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
+        console.log("chain 2 portfolio after swap:", ethers.utils.formatEther(await crossChainIndexFactory.getPortfolioBalance()))
+        // console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
+        // const indexTokenBalance = await indexToken.balanceOf(owner.address);
         // await indexFactory.redemption(ethers.utils.parseEther("10"), weth9.address, 3);
-        await indexFactory.redemption(indexTokenBalance, weth9.address, 3);
-        console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
+        // await indexFactory.redemption(indexTokenBalance, weth9.address, 3);
+        // console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
+        console.log("Asking values..");
+        await indexFactory.askValues();
+        console.log("token values count:", Number(await indexFactory.updatedTokensValueCount(1)))
+        console.log("portfolio values count:", ethers.utils.formatEther(await indexFactory.portfolioTotalValueByNonce(1)))
+        console.log("first token1 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(1, token0.address)))
+        console.log("first token2 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(1, token1.address)))
+        //
+         await updateOracleList(["60000000000000000000", "40000000000000000000"])
+        //
+        await indexFactory.firstReweightAction()
+        console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactory.reweightWethValueByNonce(1)))
+        await indexFactory.secondReweightAction()
+        // console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactory.reweightWethValueByNonce(1)))
+        await indexFactory.askValues();
+        console.log("second token1 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(2, token0.address)))
+        console.log("second token2 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(2, token1.address)))
       });
       
     });

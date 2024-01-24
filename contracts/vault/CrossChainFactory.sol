@@ -580,7 +580,9 @@ contract CrossChainIndexFactory is
             uint marketShare = extraValue;
             uint tokenValue = getAmountOut(targetAddress, address(weth), IERC20(targetAddress).balanceOf(address(crossChainVault)), 3);
             uint sellPercent = tokenValue*100e18/portfolioValue - marketShare;
-            uint swapAmount = (sellPercent*IERC20(targetAddress).balanceOf(address(crossChainVault)))/100e18;
+            // uint swapAmount = (sellPercent*IERC20(targetAddress).balanceOf(address(crossChainVault)))/100e18;
+            uint sellValue = tokenValue - (marketShare*portfolioValue)/100e18;
+            uint swapAmount = (sellValue*IERC20(targetAddress).balanceOf(address(crossChainVault)))/tokenValue;
             uint wethSwapAmountOut = _swapSingle(targetAddress, address(weth), swapAmount, address(this), 3);
             uint crossChainTokenAmount = swap(address(weth), crossChainToken, wethSwapAmountOut, address(this), 3);
             Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);

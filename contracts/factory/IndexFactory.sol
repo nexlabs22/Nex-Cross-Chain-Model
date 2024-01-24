@@ -542,7 +542,7 @@ contract IndexFactory is
     }
     }
 
-    function FirstReweightAction() public onlyOwner {
+    function firstReweightAction() public onlyOwner {
             uint nonce = updatePortfolioNonce;
             uint portfolioValue = portfolioTotalValueByNonce[nonce];
         for(uint i; i < totalCurrentList(); i++) {
@@ -551,7 +551,9 @@ contract IndexFactory is
                 uint64 tokenChainSelector = tokenChainSelector(currentList(i));
                 if(tokenChainSelector == currentChainSelector){
                 uint sellPercent = tokenValue*100e18/portfolioValue - tokenOracleMarketShare(currentList(i));
-                uint swapAmount = (sellPercent*IERC20(currentList(i)).balanceOf(address(indexToken)))/100e18;
+                uint sellValue = tokenValue - (tokenOracleMarketShare(currentList(i))*portfolioValue)/100e18;
+                // uint swapAmount = (sellPercent*IERC20(currentList(i)).balanceOf(address(indexToken)))/100e18;
+                uint swapAmount = (sellValue*IERC20(currentList(i)).balanceOf(address(indexToken)))/tokenValue;
                 uint wethAmount = _swapSingle(currentList(i), address(weth), swapAmount, address(indexToken), tokenSwapVersion(currentList(i)));
                 reweightWethValueByNonce[nonce] += wethAmount;
                 }else{
@@ -571,22 +573,25 @@ contract IndexFactory is
             if(tokenValue*100e18/portfolioValue < tokenOracleMarketShare(currentList(i))){
                 uint64 tokenChainSelector = tokenChainSelector(currentList(i));
                 if(tokenChainSelector == currentChainSelector){
-                uint buyPercent = tokenOracleMarketShare(currentList(i)) - tokenValue*100e18/portfolioValue;
-                uint swapAmount = (buyPercent*tokenValue)/100e18;
-                uint wethAmount = swap(address(weth), currentList(i), swapAmount, address(indexToken), 3);
+                // uint buyPercent = tokenOracleMarketShare(currentList(i)) - tokenValue*100e18/portfolioValue;
+                uint buyValue = (tokenOracleMarketShare(currentList(i))*portfolioValue)/100e18 - tokenValue;
+                // uint swapAmount = (buyPercent*tokenValue)/100e18;
+                uint wethAmount = swap(address(weth), currentList(i), buyValue, address(indexToken), 3);
                 }else{
                     /**
                     address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
                     bytes memory data = abi.encode(3, currentList(i), nonce, portfolioValue, tokenOracleMarketShare(currentList(i)));
                     sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
                     */
-                    uint buyPercent = tokenOracleMarketShare(currentList(i)) - tokenValue*100e18/portfolioValue;
-                    uint swapAmount = (buyPercent*tokenValue)/100e18;
-                    uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, swapAmount, address(this), 3);
+                    // uint buyPercent = tokenOracleMarketShare(currentList(i)) - tokenValue*100e18/portfolioValue;
+                    // uint swapAmount = (buyPercent*tokenValue)/100e18;
+                    uint buyValue = (tokenOracleMarketShare(currentList(i))*portfolioValue)/100e18 - tokenValue;
+                    // uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, buyValue - 1*buyValue/100, address(this), 3);
+                    uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, buyValue - 10*buyValue/100, address(this), 3);
                     Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
                     tokensToSendArray[0].token = crossChainToken;
                     tokensToSendArray[0].amount = crossChainTokenAmount;
-                    bytes memory data = abi.encode(5, currentList(i), nonce, 0, 0);
+                    bytes memory data = abi.encode(4, currentList(i), nonce, 0, 0);
                     address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
                     sendToken(tokenChainSelector, data, crossChainIndexFactory, tokensToSendArray, PayFeesIn.LINK);
                 }
