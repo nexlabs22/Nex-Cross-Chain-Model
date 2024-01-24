@@ -625,7 +625,7 @@ export default function Settings() {
 						</div>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 mb-6">
-						<div className="w-full h-fit">
+						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
 								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">VATIN (VAT registration number)</h5>
 								{!editable5 ? (
@@ -656,6 +656,37 @@ export default function Settings() {
 								onChange={(e) => {
 									setVatin(e.target.value.toString())
 								}}
+							/>
+						</div>
+						<div className="w-full xl:w-6/12 h-fit">
+							<div className="w-full h-fit flex flex-row items-center justify-between">
+								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Number of Commerce Chambre</h5>
+								{!editable5 ? (
+									<CiEdit
+										size={20}
+										color={editable5 ? '#089981' : '#6B6B6B'}
+										className=" cursor-pointer"
+										onClick={() => {
+											setEditable5(!editable5)
+										}}
+									/>
+								) : (
+									<FaCheck
+										size={20}
+										color={editable5 ? '#089981' : '#089981'}
+										className="cursor-pointer"
+										onClick={() => {
+											setEditable5(!editable5)
+										}}
+									/>
+								)}
+							</div>
+							<input
+								type="text"
+								disabled={!editable5}
+								placeholder={connectedUser && connectedUser.vatin != '' ? connectedUser.vatin : 'Number of Commerce Chambre'}
+								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								
 							/>
 						</div>
 					</div>

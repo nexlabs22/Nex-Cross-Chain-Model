@@ -419,6 +419,7 @@ body {
 
 .overlay{
   z-index: 9999 !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
 /*
@@ -441,7 +442,7 @@ body {
 
 .menu-wrap{
   width: 100vw !important;
-  background-color: #F2F2F2 !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
   z-index: 9999 !important;
 }
 
@@ -451,7 +452,7 @@ body {
 }
 
 .menu-wrap .menu{
-  background-color: #F2F2F2 !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
   height: 100vh !important;
 }
 

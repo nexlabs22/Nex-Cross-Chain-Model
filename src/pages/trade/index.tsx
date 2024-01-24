@@ -10,6 +10,8 @@ import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import useTradePageStore from '@/store/tradeStore'
 import { useRouter } from 'next/navigation'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
 
 // assets :
 import cr5Logo from '@assets/images/cr5.png'
@@ -24,6 +26,7 @@ import bg2 from '@assets/images/bg-2.png'
 
 import Head from 'next/head'
 import UseAnimations from 'react-useanimations'
+import { useLandingPageStore } from '@/store/store'
 
 interface Subcategory {
 	name: string
@@ -42,6 +45,7 @@ interface Product {
 }
 
 export default function Explore() {
+	const { mode } = useLandingPageStore()
 	const router = useRouter()
 	const [selectedCategory, setSelectedCategory] = useState<String>('defi')
 	const { changeDefaultIndex, selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct } = useTradePageStore()
@@ -165,25 +169,32 @@ export default function Explore() {
 				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
+			<main className={`min-h-screen overflow-x-hidden h-fit w-screen  ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'}`}>
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-4 xl:px-10 pt-10 pb-4">
-						<h5 className="text-xl text-slate-700 interMedium text-center">Explore products and assets on Nex Labs</h5>
+						<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-slate-700'}  interMedium text-center`}>Explore products and assets on Nex Labs</h5>
 						<div className=" mt-10 mb-2 w-full h-fit mx-auto flex flex-col xl:flex-row items-center justify-center gap-2">
 							<div
 								className={`w-full xl:w-1/2 h-fit overflow-hidden flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${
-									selectedTradingCategory == 'cefi' ? ' shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500' : ' bg-zinc-200/30'
+									selectedTradingCategory == 'cefi'
+										? `${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'} `
+										: ` ${mode == 'dark' ? ' bg-transparent' : 'bg-zinc-200/30'} `
 								} p-5 cursor-pointer gap-2`}
 								onClick={() => {
 									setSelectedTradingCategory('cefi')
 									setSelectedsubCategory(subCategories[0])
 								}}
+								style={{
+									boxShadow: mode == 'dark' && selectedTradingCategory == 'cefi' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+									backgroundImage: mode == 'dark' && selectedTradingCategory == 'cefi' ? `url('${mesh1.src}')` : '',
+									backgroundSize: mode == 'dark' && selectedTradingCategory == 'cefi' ? '120%' : '',
+								}}
 							>
 								<div className={`h-24 w-28 rounded-lg flex flex-row items-center justify-center ${selectedTradingCategory == "cefi ? 'opacity-100' : ' opacity-40' "}`}>
 									<div
 										className={`w-full h-full scale-[1.6] -translate-x-6 ${
-											selectedTradingCategory == 'cefi' ? '' : ' grayscale brightness-75 opacity-40'
+											selectedTradingCategory == 'cefi' ? '' : ` ${mode == 'dark' ? '' : 'grayscale'} brightness-75 opacity-40`
 										} aspect-square bg-center bg-contain bg-no-repeat`}
 										style={{
 											backgroundImage: `url('${cefi.src}')`,
@@ -191,25 +202,38 @@ export default function Explore() {
 									></div>
 								</div>
 								<div className="w-fit h-fit flex flex-col items-start justify-between">
-									<h5 className={`interBold text-2xl ${selectedTradingCategory == 'cefi' ? ' text-whiteText-500 titleShadow' : 'text-colorSeven-500/30'}`}>CeFi</h5>
-									<h5 className={`interBold text-base ${selectedTradingCategory == 'cefi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
+									<h5
+										className={`interBold text-2xl ${
+											selectedTradingCategory == 'cefi' ? ' text-whiteText-500 titleShadow' : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `
+										}`}
+									>
+										CeFi
+									</h5>
+									<h5 className={`interBold text-base ${selectedTradingCategory == 'cefi' ? ' text-whiteText-500' : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `}`}>
 										CeFi involves traditional centralized financial systems, like banks and institutions.
 									</h5>
 								</div>
 							</div>
 							<div
 								className={`w-full xl:w-1/2 h-fit flex flex-row items-center overflow-hidden justify-between border border-slate-400 rounded-xl shadow ${
-									selectedTradingCategory == 'defi' ? 'shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500' : 'bg-zinc-200/30'
+									selectedTradingCategory == 'defi'
+										? `${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'} `
+										: ` ${mode == 'dark' ? ' bg-transparent' : 'bg-zinc-200/30'} `
 								} p-5 cursor-pointer gap-2`}
 								onClick={() => {
 									setSelectedTradingCategory('defi')
 									setSelectedsubCategory(subCategories[0])
 								}}
+								style={{
+									boxShadow: mode == 'dark' && selectedTradingCategory == 'defi' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+									backgroundImage: mode == 'dark' && selectedTradingCategory == 'defi' ? `url('${mesh1.src}')` : '',
+									backgroundSize: mode == 'dark' && selectedTradingCategory == 'defi' ? '120%' : '',
+								}}
 							>
 								<div className={`h-24 w-24  rounded-lg flex flex-row items-center justify-center  ${selectedTradingCategory == "defi ? 'opacity-100' : ' opacity-40' "}`}>
 									<div
 										className={`w-full h-full scale-[1.6] -translate-x-6 ${
-											selectedTradingCategory == 'defi' ? '' : ' grayscale brightness-75 opacity-40'
+											selectedTradingCategory == 'defi' ? '' : ` ${mode == 'dark' ? '' : 'grayscale'} brightness-75 opacity-40`
 										} aspect-square bg-center bg-contain bg-no-repeat`}
 										style={{
 											backgroundImage: `url('${defi.src}')`,
@@ -217,20 +241,41 @@ export default function Explore() {
 									></div>
 								</div>
 								<div className="w-fit h-fit flex flex-col items-start justify-between">
-									<h5 className={`interBold text-2xl ${selectedTradingCategory == 'defi' ? ' text-whiteText-500 titleShadow' : ' text-colorSeven-500/30'}`}>DeFi</h5>
-									<h5 className={`interBold text-base ${selectedTradingCategory == 'defi' ? ' text-whiteText-500' : 'text-colorSeven-500/30'}`}>
+									<h5
+										className={`interBold text-2xl ${
+											selectedTradingCategory == 'defi' ? ' text-whiteText-500 titleShadow' : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `
+										}`}
+									>
+										DeFi
+									</h5>
+									<h5 className={`interBold text-base ${selectedTradingCategory == 'defi' ? ' text-whiteText-500' : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `}`}>
 										DeFi uses decentralized tech, sidestepping traditional financial middlemen.
 									</h5>
 								</div>
 							</div>
 						</div>
-						<div className=" w-full h-fit border border-slate-400 rounded-xl shadow bg-zinc-200/20 px-3 py-6 xl:p-12">
+						<div
+							className={`w-full h-fit rounded-xl mt-2 shadow ${mode == 'dark' ? ' bg-[#070707] ' : 'bg-zinc-200/20 border border-slate-400'}  px-3 py-6 xl:p-12`}
+							style={{
+								boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+							}}
+						>
 							<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between mb-6 gap-3 xl:gap-0">
 								<ReactSearchAutocomplete className="w-[75vw] xl:w-1/3" items={products} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
 								<Menu
 									menuButton={
 										<MenuButton>
-											<div className="w-[74vw] xl:w-[14vw] h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
+											<div
+												className={`w-[74vw] xl:w-[14vw] h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${
+													mode == 'dark'
+														? ' bg-cover border-transparent bg-center bg-no-repeat'
+														: 'bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500'
+												} gap-8 cursor-pointer`}
+												style={{
+													boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+													backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+												}}
+											>
 												<div className="flex flex-row items-center justify-start gap-2">
 													<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}></Image>
 													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
@@ -266,16 +311,16 @@ export default function Explore() {
 							<div className="w-full h-fit border overflow-scroll border-gray-300 rounded-xl px-3 py-6 shadow hidden xl:block">
 								<div className="w-full h-fit pb-6 flex flex-row items-center justify-start xl:justify-center">
 									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1">
-										<h5 className="interMedium text-gray-500 text-base whitespace-nowrap">Product / Asset</h5>
+										<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-gray-500"} text-base whitespace-nowrap`}>Product / Asset</h5>
 									</div>
 									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1">
-										<h5 className="interMedium text-gray-500 text-base whitespace-nowrap">Symbol</h5>
+										<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-gray-500"} text-base whitespace-nowrap`}>Symbol</h5>
 									</div>
 									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1">
-										<h5 className="interMedium text-gray-500 text-base whitespace-nowrap">Total Supply</h5>
+										<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-gray-500"} text-base whitespace-nowrap`}>Total Supply</h5>
 									</div>
 									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1">
-										<h5 className="interMedium text-gray-500 text-base whitespace-nowrap">Address</h5>
+										<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-gray-500"} text-base whitespace-nowrap`}>Address</h5>
 									</div>
 									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1"></div>
 								</div>
@@ -284,7 +329,7 @@ export default function Explore() {
 										return (
 											<div key={index}>
 												<div className="w-full h-[1px] bg-blackText-500/50"></div>
-												<div className="w-full h-fit py-4 flex -flex-row items-center justify-start xl:justify-center hover:bg-gray-200/50">
+												<div className={`w-full h-fit py-4 flex -flex-row items-center justify-start xl:justify-center ${mode == "dark" ? " hover:bg-black/20" : "hover:bg-gray-200/50"} `}>
 													<div className="w-1/5 h-fit px-1 flex flex-row items-center justify-start gap-2">
 														<Image
 															src={product.logo}
@@ -299,7 +344,7 @@ export default function Explore() {
 														></Image>
 
 														<h5
-															className="interBold text-colorSeven-500 text-base cursor-pointer"
+															className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"}  text-base cursor-pointer`}
 															onClick={() => {
 																changeDefaultIndex(product.symbol)
 																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
@@ -309,13 +354,13 @@ export default function Explore() {
 														</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
-														<h5 className="interMedium text-blackText-500 text-base italic">{product.symbol}</h5>
+														<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-base italic`}>{product.symbol}</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
-														<h5 className="interMedium text-blackText-500 text-base">${product.totalSupply}</h5>
+														<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-base`}>${product.totalSupply}</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
-														<h5 className="interMedium text-blackText-500 text-base">{product.address}</h5>
+														<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-base`}>{product.address}</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
 														<button
@@ -323,7 +368,12 @@ export default function Explore() {
 																changeDefaultIndex(product.symbol)
 																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
 															}}
-															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
+															className={`h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 shadow-sm shadow-blackText-500"} active:translate-y-[1px] active:shadow-black `}
+															style={{
+																boxShadow:
+																  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+																backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+															  }}
 														>
 															Trade
 														</button>
@@ -389,7 +439,11 @@ export default function Explore() {
 						</div>
 					</section>
 					<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10">
-						<div className=" relative w-full overflow-hidden h-fit bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
+						<div className={`relative w-full overflow-hidden h-fit ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-bl from-colorFive-500 to-colorSeven-500"}  rounded-xl px-6 py-6`} style={{
+                boxShadow:
+                  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+                backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+              }}>
 							<div className="absolute overflow-hidden w-full h-full -right-10 xl:top-0 xl:right-0 z-10 flex flex-row items-center justify-normal">
 								<div className="hidden xl:block w-1/2 h-full"></div>
 								<div

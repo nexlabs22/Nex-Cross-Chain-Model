@@ -55,9 +55,12 @@ import walmart from '@assets/images/walmart.png'
 import { BsPlus } from 'react-icons/bs'
 import { BsChevronCompactRight, BsChevronCompactLeft } from 'react-icons/bs'
 import { GoTriangleDown } from 'react-icons/go'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
 
 const DashboardChartBox = () => {
-	const { defaultIndex } = useLandingPageStore()
+	const { defaultIndex, mode } = useLandingPageStore()
+
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
 	const { fetchIndexData, removeIndex, clearChartData, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data, chartData, comparisionIndices, setComparisonIndices } =
 		useChartDataStore()
@@ -375,7 +378,7 @@ const DashboardChartBox = () => {
 		<>
 			<section className="h-fit w-full">
 				<div className="w-full h-fit py-2 px-1 mb-2">
-					<h5 className="montrealBold text-lg text-blackText-500 mb-1">Featured comparisons</h5>
+					<h5 className={`interBold text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  mb-1`}>Featured comparisons</h5>
 					<div className="w-full hidden md:flex h-fit flex-row items-center justify-start gap-2">
 						{priorityAssetClasses.map((item, id) => {
 							if (item.index == defaultIndex) {
@@ -396,9 +399,12 @@ const DashboardChartBox = () => {
 													)
 												}
 											}}
-											className="w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
+											className={`w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 ${
+												mode == 'dark' ? 'border border-whiteText-500/50 shadow-sm shadow-whiteText-500/50' : 'border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 '
+											}  cursor-pointer hover:bg-gray-200`}
 											style={{
 												backgroundColor: selectedIndices.includes(assetClass.colName) ? assetClass.selectionColor : 'transparent',
+												boxShadow: mode == 'dark' && selectedIndices.includes(assetClass.colName) ? `0px 0px 6px 1px ${assetClass.selectionColor}` : '',
 											}}
 										>
 											<div className="flex flex-row items-center justify-start gap-2">
@@ -411,9 +417,11 @@ const DashboardChartBox = () => {
 													}}
 												></div>
 												<h5
-													className={`montrealBold text-lg uppercase ${selectedIndices.includes(assetClass.colName) ? 'titleShadow' : ''}`}
+													className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-lg uppercase ${
+														selectedIndices.includes(assetClass.colName) ? 'titleShadow' : ''
+													}`}
 													style={{
-														color: selectedIndices.includes(assetClass.colName) ? '#FFFFFF' : '#2A2A2A',
+														color: selectedIndices.includes(assetClass.colName) ? '#FFFFFF' : mode == 'dark' ? '#FFFFFF' : '#2A2A2A',
 													}}
 												>
 													{assetClass.name}
@@ -430,10 +438,12 @@ const DashboardChartBox = () => {
 							}
 						})}
 						<div
-							className="h-14 aspect-square rounded-full flex flex-row items-center justify-center border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
+							className={`h-14 aspect-square rounded-full flex flex-row items-center justify-center border ${
+								mode == 'dark' ? ' border-whiteText-500/50 shadow shadow-whiteText-500/50' : 'border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 '
+							} cursor-pointer hover:bg-gray-200`}
 							onClick={openClassesModal}
 						>
-							<BsPlus color="#2A2A2A" size={30} />
+							{mode == 'dark' ? <BsPlus color="#FFFFFF" size={30} /> : <BsPlus color="#2A2A2A" size={30} />}
 						</div>
 					</div>
 					<div className="w-full flex md:hidden h-fit flex-row items-center justify-start gap-2">
@@ -494,7 +504,12 @@ const DashboardChartBox = () => {
 						</div>
 					</div>
 				</div>
-				<div className="h-[80vh] w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
+				<div
+					className={`h-[80vh] md:h-[40vh] xl:h-[80vh] w-full p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
+					style={{
+						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+					}}
+				>
 					<div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
 						<Menu
 							menuButton={

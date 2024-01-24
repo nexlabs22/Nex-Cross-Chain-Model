@@ -10,17 +10,23 @@ import logo2 from '@assets/images/logo2.png'
 
 import xlogo from '@assets/images/xlogo_s.png'
 import MobileFooterSection from './mobileFooter'
+import { useLandingPageStore } from '@/store/store'
 
 const Footer = () => {
+
+	const { mode } = useLandingPageStore()
+
 	return (
 		<section className="w-screen">
-			<div className="hidden xl:flex h-fit w-full flex-col items-center justify-end rounded-tl-[30px] rounded-tr-[30px] bg-gradient-to-br from-colorSeven-500 to-colorFour-500 xl:h-fit">
+			<div className={`hidden xl:flex h-fit w-full flex-col items-center justify-end rounded-tl-[30px] rounded-tr-[30px] ${ mode == "dark" ? 'bg-[#070707]' : 'bg-gradient-to-br from-colorSeven-500 to-colorFour-500'} xl:h-fit`} style={{
+      boxShadow: mode == "dark" ? `0px -2px 6px 1px rgba(91,166,153,0.68)` : ''
+    }}>
 				<div className="flex h-fit w-full flex-col items-start justify-center gap-3 pb-6 pt-6 xl:flex-row xl:justify-start xl:pb-10 xl:pt-10">
 					<div className="flex h-full w-full flex-col items-start justify-start px-10 xl:w-1/3 xl:items-start">
 						<div className="flex w-fit flex-row items-center justify-between">
 							<div className=" mr-2 h-fit w-fit">
 								<Link href={'https://www.nexlabs.io/'}>
-									<Image src={xlogo} alt="nex labs logo" className="w-14 brightness-0 invert"></Image>
+									<Image src={xlogo} alt="nex labs logo" className="w-14 h-auto brightness-0 invert"></Image>
 								</Link>
 							</div>
 						</div>

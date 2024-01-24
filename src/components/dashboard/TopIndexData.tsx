@@ -31,10 +31,13 @@ import GenericTooltip from '../GenericTooltip'
 import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken } from '@/constants/contractAddresses'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
 import { indexTokenV2Abi } from '@/constants/abi'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
 
 import { GoArrowRight } from 'react-icons/go'
 
 const TopIndexData = () => {
+	const { mode } = useLandingPageStore()
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
 	const { setANFIWeightage, fetchIndexData, setDayChangePer } = useChartDataStore()
 
@@ -149,7 +152,12 @@ const TopIndexData = () => {
 	return (
 		<section className="px-2 h-fit lg:px-10 py-6 xl:py-16">
 			<div className="flex h-fit xl:h-fit flex-row items-stretch justify-between gap-1 xl:gap-4 mb-6">
-				<div className="w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50">
+				<div className={`w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50"} `} style={{
+                boxShadow:
+                  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+                backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+                
+              }}>
 					<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 						<div className="flex flex-row items-center justify-start">
 							<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
@@ -163,8 +171,11 @@ const TopIndexData = () => {
 								return (
 									<div
 										key={i}
-										className="aspect-square w-fit rounded-lg bg-gradient-to-tl from-colorFour-500 to-colorSeven-500  p-[4px] shadow-sm shadow-slate-500"
-										style={{ zIndex: `'${zindex}'`, marginLeft: '-2%' }}
+										className={`aspect-square w-fit rounded-lg ${mode == "dark" ? "bg-cover  border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500"}  p-[4px] `}
+										style={{ zIndex: `'${zindex}'`, marginLeft: '-2%',boxShadow:
+										mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+									  backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+									   }}
 									>
 										{asset.logo}
 									</div>
@@ -177,7 +188,7 @@ const TopIndexData = () => {
 					<h5 className="interMedium hidden xl:block px-6 w-full text-lg text-white titleShadow">{defaultIndexObject?.description}</h5>
 				</div>
 				<div
-					className="w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] border-gray-300 cursor-pointer hover:shadow-md hover:shadow-gray-200 shadow-md shadow-blackText-500/50"
+					className={`w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == "dark" ? " border-gray-400/50 hover:shadow-gray-400/50" : "border-gray-300 hover:shadow-gray-200"} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
 					onClick={() => {
 						if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
 							changeDefaultIndex('ANFI')
@@ -189,9 +200,14 @@ const TopIndexData = () => {
 					<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 						<div className="flex flex-row items-center justify-start">
 							<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-							<h5 className="interBlack mr-3 text-lg xl:text-2xl lg:text-4xl text-blackText-500">{othertIndexObject?.name} </h5>
+							<h5 className={`interBlack mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{othertIndexObject?.name} </h5>
 						</div>
-						<div className="hidden xl:flex flex-row items-center justify-center gap-1 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 py-2 px-4 rounded-full">
+						<div className={`hidden xl:flex flex-row items-center justify-center gap-1 ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500"} active:translate-y-[1px] active:shadow-black  py-2 px-4 rounded-full`} style={{
+                boxShadow:
+                  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+                backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+                backgroundSize: mode == "dark" ? "120%" : "",
+              }}>
 							<h5 className="text-sm interMedium text-whiteText-500">See {othertIndexObject?.name}</h5>
 						</div>
 					</div>
@@ -202,28 +218,31 @@ const TopIndexData = () => {
 								return (
 									<div
 										key={i}
-										className="aspect-square w-fit rounded-lg bg-gradient-to-tl from-colorFour-500 to-colorSeven-500  p-[4px] shadow-sm shadow-slate-500"
-										style={{ zIndex: `'${zindex}'`, marginLeft: '-2%' }}
+										className={`aspect-square w-fit rounded-lg ${mode == "dark" ? "bg-cover  border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500"}  p-[4px] `}
+										style={{ zIndex: `'${zindex}'`, marginLeft: '-2%',boxShadow:
+										mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+									  backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+									   }}
 									>
 										{asset.logo}
 									</div>
 								)
 							})}
 						</div>
-						<h5 className="interMedium flex items-center justify-center text-xs text-blackText-500">+{othertIndexObject?.underlyingAssets.length} Assets</h5>
+						<h5 className={`interMedium flex items-center justify-center text-xs ${mode == "dark" ? " text-whiteText-500 ml-2" : "text-blackText-500"} `}>+{othertIndexObject?.underlyingAssets.length} Assets</h5>
 					</div>
 					<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
-					<h5 className="interMedium hidden xl:block px-6 w-full text-lg text-blackText-500">{othertIndexObject?.description}</h5>
+					<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{othertIndexObject?.description}</h5>
 				</div>
 			</div>
 			<div className="flex w-full flex-row items-center justify-center">
-				<div className="h-[1px] w-full bg-blackText-500/20"></div>
+				<div className={`h-[1px] w-full ${mode == "dark" ? " bg-whiteBackground-500/80" : "bg-blackText-500/20"} `}></div>
 			</div>
 			<div className="hidden my-2 lg:flex flex-row items-center justify-between gap-24">
 				<div className="flex w-2/6 flex-row items-center justify-between">
 					<div>
 						<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
-							<h5 className="interExtraBold text-base text-gray-400">Market Cap</h5>
+							<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>Market Cap</h5>
 							<span>
 								<GenericTooltip
 									color="#5E869B"
@@ -242,11 +261,11 @@ const TopIndexData = () => {
 							</span>
 						</div>
 
-						<h5 className="interMedium text-base text-colorSeven-500">${defaultIndexObject?.mktCap}</h5>
+						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>${defaultIndexObject?.mktCap}</h5>
 					</div>
 					<div>
 						<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
-							<h5 className="interExtraBold text-base text-gray-400">Market Price</h5>
+							<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>Market Price</h5>
 							<span>
 								<GenericTooltip
 									color="#5E869B"
@@ -261,11 +280,11 @@ const TopIndexData = () => {
 								</GenericTooltip>
 							</span>
 						</div>
-						<h5 className="interMedium text-base text-colorSeven-500">${defaultIndexObject?.mktPrice}</h5>
+						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>${defaultIndexObject?.mktPrice}</h5>
 					</div>
 					<div>
 						<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
-							<h5 className="interExtraBold text-base text-gray-400">24h Change</h5>
+							<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>24h Change</h5>
 							<span>
 								<GenericTooltip
 									color="#5E869B"
@@ -282,7 +301,7 @@ const TopIndexData = () => {
 								</GenericTooltip>
 							</span>
 						</div>
-						<h5 className="interMedium text-base text-colorSeven-500">+${defaultIndexObject?.chg24h}</h5>
+						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>+${defaultIndexObject?.chg24h}</h5>
 					</div>
 				</div>
 				<div className="w-4/6 flex flex-row items-center justify-between">
@@ -290,10 +309,10 @@ const TopIndexData = () => {
 						<div className="mb-5 flex w-full flex-row items-center justify-start gap-1">
 							<div className="mr-5 flex flex-row items-center justify-between">
 								<CiGlobe color="#9CAAC6" size={20} />
-								<h5 className="interExtraBold ml-2 text-base text-gray-400">Token address</h5>
+								<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>Token address</h5>
 							</div>
 							<div className="flex flex-row items-center justify-between">
-								<h5 className="interMedium mr-2 text-base text-colorSeven-500">null</h5>
+								<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>null</h5>
 								<GenericAddressTooltip color="#5E869B" address="0x18C41549ee05F893B5eA6ede6f8dccC1a9C16f44">
 									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
 								</GenericAddressTooltip>
@@ -302,10 +321,10 @@ const TopIndexData = () => {
 						<div className="flex w-full flex-row items-center justify-start">
 							<div className="mr-5 flex flex-row items-center justify-between">
 								<CiStreamOn color="#9CAAC6" size={20} />
-								<h5 className="interExtraBold ml-2 text-base text-gray-400">Managment fee</h5>
+								<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>Managment fee</h5>
 							</div>
 							<div className="flex flex-row items-center justify-between gap-1">
-								<h5 className="interMedium text-base text-blackText-500">{defaultIndexObject?.managementFee}%</h5>
+								<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{defaultIndexObject?.managementFee}%</h5>
 								<GenericTooltip
 									color="#5E869B"
 									content={
@@ -323,7 +342,11 @@ const TopIndexData = () => {
 						</div>
 					</div>
 					<div className="flex-grow p-2 flex flex-row items-center justify-end">
-						<div className="w-2/3 relative overflow-hidden h-28 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 rounded-2xl">
+						<div className={`w-2/3 relative overflow-hidden h-28 ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"} rounded-2xl`} style={{
+                boxShadow:
+                  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+                backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+              }}>
 							<Image src={managment} alt="managment section" className="absolute z-10 -right-32 -bottom-32 scale-50"></Image>
 							<div className="absolute h-full top-0 left-0 w-4/5 z-50 flex flex-col items-start justify-start p-4">
 								<h5 className="interBold text-whiteText-500 titleShadow text-2xl mb-3">Nexlabs Fees</h5>
@@ -385,16 +408,24 @@ const TopIndexData = () => {
 			</div>
 
 			<div className="flex w-full flex-row items-center justify-center">
-				<div className="h-[1px] w-full bg-blackText-500/20"></div>
+				<div className={`h-[1px] w-full ${mode == "dark" ? " bg-whiteBackground-500/80" : "bg-blackText-500/20"} `}></div>
 			</div>
 
 			<div>
 				<div className="w-full h-fit flex flex-row items-center justify-between">
 					<div className="mt-6 xl:mt-10 mb-5 flex flex-row items-center justify-center lg:justify-start">
-						<h5 className="interBlack  text-xl lg:text-2xl text-blackText-500">{defaultIndexObject?.symbol}</h5>
-						<CgArrowsExchange color="#5E869B" size={35} className="mx-2" />
-						<h5 className="interBlack text-xl lg:text-2xl text-blackText-500">World{"'"}s best assets</h5>
-						<div className="w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500">
+						<h5 className={`interBlack  text-xl lg:text-2xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{defaultIndexObject?.symbol}</h5>
+						{
+							mode == "dark" ? <CgArrowsExchange color="#FFFFFF" size={35} className="mx-2" /> : <CgArrowsExchange color="#5E869B" size={35} className="mx-2" />
+						}
+						 
+						<h5 className={`interBlack  text-xl lg:text-2xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>World{"'"}s best assets</h5>
+						<div className={`w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl ${mode == "dark" ? "bg-cover  border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500"} `} style={{
+                boxShadow:
+                  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+                backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+                
+              }}>
 							<h5 className="text-sm interExtraBold text-whiteText-500">{defaultIndexObject?.name}</h5>
 						</div>
 					</div>
