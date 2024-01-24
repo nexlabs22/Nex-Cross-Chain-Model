@@ -11,7 +11,7 @@ import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import GenericModal from '../GenericModal'
 import TradingViewChart from '@/components/TradingViewChart'
-import { TVChartContainer } from '@/components/TVChartContainer'
+// import { TVChartContainer } from '@/components/TVChartContainer'
 const Chart = dynamic(() => import('@/components/dashboard/dashboardChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 
 // Data :
@@ -496,9 +496,9 @@ const DashboardChartBox = () => {
 						</div>
 					</div>
 				</div>
-				<div className="h-[80vh] w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
-					{/* <TradingViewChart index={defaultIndex} /> */}
-					<TVChartContainer selectedIndices={selectedIndices} index={defaultIndex} />
+				<div className="h-fit w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
+					<TradingViewChart selectedIndices={selectedIndices} index={defaultIndex} />
+					{/* <TVChartContainer selectedIndices={selectedIndices} index={defaultIndex} /> */}
 					{/* <div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
 
 						<Menu
