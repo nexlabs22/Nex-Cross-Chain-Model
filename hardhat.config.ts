@@ -5,6 +5,7 @@ dotenvenc.config();
 // import './tasks';
 // require("hardhat-contract-sizer");
 import "hardhat-contract-sizer"
+import "@nomicfoundation/hardhat-foundry";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ETHEREUM_SEPOLIA_RPC_URL = process.env.ETHEREUM_SEPOLIA_RPC_URL;

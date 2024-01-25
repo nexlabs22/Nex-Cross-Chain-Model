@@ -2,10 +2,12 @@
 pragma solidity ^0.8.7;
 
 import "forge-std/Test.sol";
+
 import "../../contracts/token/IndexToken.sol";
-import "../../contracts/test/MockV3Aggregator.sol";
-import "../../contracts/test/MockApiOracle.sol";
-import "../../contracts/test/LinkToken.sol";
+// import "../../";
+// import "../../contracts/test/MockV3Aggregator.sol";
+// import "../../contracts/test/MockApiOracle.sol";
+// import "../../contracts/test/LinkToken.sol";
 
 contract CounterTest is Test {
 
@@ -15,8 +17,8 @@ contract CounterTest is Test {
 
     IndexToken public indexToken;
     // MockV3Aggregator public oracle;
-    MockApiOracle public oracle;
-    LinkToken link;
+    // MockApiOracle public oracle;
+    // LinkToken link;
 
     address public constant WETH9 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address public constant QUOTER = 0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6;
@@ -50,8 +52,8 @@ contract CounterTest is Test {
         //     18, //decimals
         //     1   //initial data
         // );
-        LinkToken link = new LinkToken();
-        oracle = new MockApiOracle(address(link));
+        // LinkToken link = new LinkToken();
+        // oracle = new MockApiOracle(address(link));
 
         indexToken = new IndexToken();
         indexToken.initialize(
