@@ -31,10 +31,11 @@ function QueryforIndex(tableName: string, columnNames: string) {
         ${columnNames}
     FROM ${tableName}
     WHERE to_timestamp(stampsec) > (CURRENT_TIMESTAMP - INTERVAL '7 year')
-    AND (
-        LENGTH(REGEXP_REPLACE(dow, '[^0-9.]', '', 'g')) > 0
-        OR LENGTH(dow) > 0 
-    );`
+    ;`
+    // AND (
+        // LENGTH(REGEXP_REPLACE(dow, '[^0-9.]', '', 'g')) > 0
+        // OR LENGTH(dow) > 0 
+    // )
 }
 
 export default QueryCommaSplit;

@@ -36,10 +36,11 @@ const colNameToSymbol = {
   mastercard: 'MA',
   chevron_corp: 'CVX',
   berkshire_hathaway: 'BRKA',
-  // "GC=F": "gold",
-  // "CL=F": "oil",
-  // "HG=F": "copper",
-  // "SI=F": "silver",
+  gold: "GOLD",
+  oil: "CRUDEOIL",
+  copper: "COPPER",
+  silver: "SILVER",
+  bitcoin: "BTC",
 }
 
 const TradingViewChart = ({ index, selectedIndices }) => {
@@ -53,15 +54,18 @@ const TradingViewChart = ({ index, selectedIndices }) => {
     script.src = "public/charting_library/charting_library.js";
     document.head.appendChild(script);
     const widget = window.tvWidget = new TradingView.widget({
-      symbol: `NexLabs:CRYPTO5/USD`,
+      symbol: `Nexlabs:CRYPTO5/USD`,
       interval: "1D",
       style: "2",
       fullscreen: true,
-      // container: "tv_chart_container",
+      // theme: 'dark',
       container: chartContainerRef.current,
       allow_symbol_change: false,
       datafeed: Datafeed,
       autosize: true,
+      overrides: {
+        'mainSeriesProperties.style': 2,
+      },
       library_path: "/charting_library/",
     });
 
@@ -74,9 +78,7 @@ const TradingViewChart = ({ index, selectedIndices }) => {
 
   useEffect(() => {
     if (wid && wid.setSymbol) {
-      wid.setSymbol(`NexLabs:${index}/USD`, 'D', () => {
-        // Your callback function
-      });
+      wid.setSymbol(`Nexlabs:${index}/USD`, 'D');
     }
   }, [index, wid])
 
@@ -88,7 +90,7 @@ const TradingViewChart = ({ index, selectedIndices }) => {
       const { addedStrings, removedStrings } = compareArrays(oldSelectedIndices, newSelectedIndices)
 
       addedStrings.map((index) => {
-        const indName = index && colNameToSymbol[index] ? `NexLabs:${colNameToSymbol[index]}/USD` : ''
+        const indName = index && colNameToSymbol[index] ? `Nexlabs:${colNameToSymbol[index]}/USD` : ''
         wid.activeChart()
           .createStudy('Compare', false, false, { source: 'open', symbol: `${indName}` })
           .then((id) => {
@@ -114,7 +116,7 @@ const TradingViewChart = ({ index, selectedIndices }) => {
     className="w-screen"
     style={{
       width: '100%',
-      height: '100%',
+      height: '85%',
       overflow: 'hidden',
       zIndex: 1,
     }}

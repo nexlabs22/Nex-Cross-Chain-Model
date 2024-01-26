@@ -1,37 +1,42 @@
 import { NextResponse, NextRequest } from 'next/server'
 import connectToSpotDb from '@/utils/connectToSpotDb';
 
-const colNameToSymbol:{[key:string]: string} = {
+const colNameToSymbol: { [key: string]: string } = {
     "sandp": "GSPC",
     "nasdaq": "IXIC",
-    "dow":  "DJI",
+    "dow": "DJI",
     "nyse": "NYA",
-    // "GC=F": "gold",
-    // "CL=F": "oil",
     "asml": "ASML",
     "paypal": "PYPL",
-    // "HG=F": "copper",
     "microsoft": "MSFT",
-    "apple": "AAPL" ,
+    "apple": "AAPL",
     "alphabet": "GOOGL",
-    // "SI=F": "silver",
-    "amazon": "AMZN" ,
-    "tencent": "TCEHY" ,
-    "visa": "V" ,
+    "amazon": "AMZN",
+    "tencent": "TCEHY",
+    "visa": "V",
     "tsmc": "TSM",
     "exxon_mob": "XOM",
     "unitedhealth_group": "UNH",
-    "nvidia": "NVDA" ,
+    "nvidia": "NVDA",
     "johnson_n_johnson": "JNJ",
     "lvmh": "LVMHF",
     "tesla": "TSLA",
-    "jpmorgan": "JPM" ,
+    "jpmorgan": "JPM",
     "walmart": "WMT",
     "meta": "META",
     "spdr": "SPY",
     "mastercard": "MA",
     "chevron_corp": "CVX",
-    "berkshire_hathaway": "BRKA"
+    "berkshire_hathaway": "BRKA",
+
+    "gold": "GOLD",
+    "oil": "CRUDEOIL",
+    "copper": "COPPER",
+    "lithium": "LITHIUM",
+    "silver": "silver",
+
+
+    "bitcoin": "BTC"
 
 };
 
@@ -57,12 +62,12 @@ export async function GET() {
         const indexDataHistcomp = await client.query(queryHistcomp)
         const inputArray = indexDataNexlabs.rows
         const inputArrayHistcomp = indexDataHistcomp.rows
-      
 
-        if (inputArray) {   
 
-            const CRYPTO5:OHLC[] = [];
-            const ANFI:OHLC[] = [];
+        if (inputArray) {
+
+            const CRYPTO5: OHLC[] = [];
+            const ANFI: OHLC[] = [];
 
             inputArray.forEach(item => {
                 const time = parseInt(item.stampsec, 10);
@@ -72,7 +77,7 @@ export async function GET() {
                     open: parseFloat(item.crypto5),
                     high: parseFloat(item.crypto5),
                     low: parseFloat(item.crypto5),
-                    close: parseFloat(item.crypto5)                
+                    close: parseFloat(item.crypto5)
                 });
 
                 if (item.anfi !== null) {
@@ -81,32 +86,32 @@ export async function GET() {
                         open: parseFloat(item.anfi),
                         high: parseFloat(item.anfi),
                         low: parseFloat(item.anfi),
-                        close: parseFloat(item.anfi),  
+                        close: parseFloat(item.anfi),
                     });
                 }
             });
-            
+
             const data: ProcessedData = {};
-            
+
             inputArrayHistcomp.forEach(item => {
                 for (const [colName, symbol] of Object.entries(colNameToSymbol)) {
                     if (item[colName]) {
                         const values = item[colName].split(',').map(parseFloat);
-            
+
                         let open, high, low, close;
-            
+
                         if (values.length === 1) {
                             open = high = low = close = values[0];
                         } else if (values.length === 4) {
                             [open, high, low, close] = values;
                         }
-            
+
                         if (!isNaN(open) && !isNaN(high) && !isNaN(low) && !isNaN(close)) {
                             if (!data[symbol]) {
                                 data[symbol] = [];
                             }
-            
-                            data[symbol].push({time:item.stampsec, open, high, low, close });
+
+                            data[symbol].push({ time: item.stampsec, open, high, low, close });
                         }
                     }
                 }
@@ -115,7 +120,7 @@ export async function GET() {
             data.CRYPTO5 = CRYPTO5
             data.ANFI = ANFI
 
-            return NextResponse.json( data , { status: 200 })
+            return NextResponse.json(data, { status: 200 })
         }
 
     } catch (err) {

@@ -1,3 +1,5 @@
+import { stockDetails } from "@/utils/stocksDetails";
+
 // Make requests to CryptoCompare API
 export async function makeApiRequest(path) {
   try {
@@ -14,6 +16,15 @@ export function generateSymbol(exchange, fromSymbol, toSymbol) {
   return {
     short,
     full: `${exchange}:${short}`,
+  };
+}
+
+export function generateNexSymbol(exchange, fromSymbol, toSymbol) {
+  const short = `${fromSymbol}/${toSymbol}`;
+  return {
+    short,
+    full: `${exchange}:${short}`,
+    desc: stockDetails[fromSymbol][1]
   };
 }
 

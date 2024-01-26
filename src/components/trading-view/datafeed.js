@@ -1,4 +1,4 @@
-import { makeApiRequest, generateSymbol, parseFullSymbol } from "./helpers.js";
+import { makeApiRequest, generateSymbol, parseFullSymbol, generateNexSymbol } from "./helpers.js";
 import { subscribeOnStream, unsubscribeFromStream } from "./streaming.js";
 
 import getChartData from "@constants/getChartData"
@@ -9,6 +9,11 @@ const lastBarsCache = new Map();
 const configurationData = {
   supported_resolutions: ["1D", "1W", "1M"],
   exchanges: [
+    {
+      value: "Nexlabs",
+      name: "Nex Labs",
+      desc: "Nex Labs",
+    },
     {
       value: "Bitfinex",
       name: "Bitfinex",
@@ -24,19 +29,31 @@ const configurationData = {
       // full exchange name displayed in the filter popup
       desc: "Kraken bitcoin exchange",
     },
-    {
-      value: "NexLabs",
-      name: "NexLabs",
-      desc: "Nex Labs",
-    },
+
   ],
   symbols_types: [
     {
-      name: "crypto",
+      name: 'All',
+      value: 'all'
+    },
+    {
+      name: "Crypto",
 
       // `symbolType` argument for the `searchSymbols` method, if a user selects this symbol type
       value: "crypto",
     },
+    {
+      name: "Index",
+      value: 'index'
+    },
+    {
+      name: 'Stocks',
+      value: 'stocks'
+    },
+    {
+      name: 'Commoditties',
+      value: 'commodities'
+    }
     // ...
   ],
 };
@@ -46,56 +63,91 @@ async function getAllSymbols() {
   const nexLabsData = {
     isActive: true,
     isTopTier: true,
-    pairs:{ANFI:['USD'], CRYPTO5:['USD'], V:['USD'], 
-    GSPC:['USD'],
-    IXIC:['USD'],
-    DJI :['USD'],
-    NYA :['USD'],
-    ASML:['USD'],
-    PYPL :['USD'],
-    MSFT :['USD'],
-    AAPL :['USD'],
-    GOOGL :['USD'],
-    AMZN:['USD'],
-    TCEHY:['USD'],
-    TSM:['USD'],
-    XOM:['USD'],
-    NVDA:['USD'],
-    UNH:['USD'],
-    JNJ:['USD'],
-    LVMHF:['USD'],
-    TSLA:['USD'],
-    JPM:['USD'],
-    WMT:['USD'],
-    META:['USD'],
-    SPY:['USD'],
-    MA:['USD'],
-    CVX:['USD'],
-    BRKA:['USD']
+    pairs: {
+      ANFI: ['USD'], CRYPTO5: ['USD'],
+      GSPC: ['USD'],
+      IXIC: ['USD'],
+      DJI: ['USD'],
+      NYA: ['USD'],
+      ASML: ['USD'],
+      PYPL: ['USD'],
+      MSFT: ['USD'],
+      AAPL: ['USD'],
+      GOOGL: ['USD'],
+      AMZN: ['USD'],
+      V: ['USD'],
+      TCEHY: ['USD'],
+      TSM: ['USD'],
+      XOM: ['USD'],
+      NVDA: ['USD'],
+      UNH: ['USD'],
+      JNJ: ['USD'],
+      LVMHF: ['USD'],
+      TSLA: ['USD'],
+      JPM: ['USD'],
+      WMT: ['USD'],
+      META: ['USD'],
+      SPY: ['USD'],
+      MA: ['USD'],
+      CVX: ['USD'],
+      BRKA: ['USD'],
+      GOLD: ['USD'],
+      COPPER: ['USD'],
+      LITHIUM: ['USD'],
+      CRUDEOIL: ['USD'],
+      SILVER: ['USD'],
+      BTC: ['USD'],
+
     }
   }
-  data.Data.NexLabs = nexLabsData;
+  const indexes = ['ANFI', 'CRYPTO5', 'GSPC', 'IXIC', 'DJI', 'NYA']
+  const stocks = ['V', 'ASML', 'PYPL', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', 'TCEHY', 'TSM', 'XOM', 'NVDA', 'UNH', 'JNJ', 'LVMHF', 'TSLA', 'JPM', 'WMT', 'META', 'SPY', 'MA', 'CVX', 'BRKA']
+  const commodities = ['GOLD', 'COPPER', 'LITHIUM', 'CRUDEOIL', 'SILVER']
+  const crypto = ['BTC']
+  data.Data.Nexlabs = nexLabsData;
   let allSymbols = [];
 
   for (const exchange of configurationData.exchanges) {
     const pairs = data.Data[exchange.value].pairs;
-
-    for (const leftPairPart of Object.keys(pairs)) {
-      const symbols = pairs[leftPairPart].map((rightPairPart) => {
-        const symbol = generateSymbol(
-          exchange.value,
-          leftPairPart,
-          rightPairPart
-        );
-        return {
-          symbol: symbol.short,
-          full_name: symbol.full,
-          description: symbol.short,
-          exchange: exchange.value,
-          type: "crypto",
-        };
-      });
-      allSymbols = [...allSymbols, ...symbols];
+    if (exchange.value === 'Nexlabs') {
+      for (const leftPairPart of Object.keys(pairs)) {
+        const symbols = pairs[leftPairPart].map((rightPairPart) => {
+          const symbol = generateNexSymbol(
+            exchange.value,
+            leftPairPart,
+            rightPairPart
+          );
+          return {
+            symbol: symbol.short,
+            full_name: symbol.full,
+            description: symbol.desc,
+            exchange: exchange.value,
+            type: indexes.includes(symbol.short.split('/')[0]) ? "index" :
+              stocks.includes(symbol.short.split('/')[0]) ? "stocks" :
+                commodities.includes(symbol.short.split('/')[0]) ? "commodities" :
+                  "crypto"
+          };
+        });
+        allSymbols = [...allSymbols, ...symbols];
+      }
+    } else {
+      for (const leftPairPart of Object.keys(pairs)) {
+        const symbols = pairs[leftPairPart].map((rightPairPart) => {
+          const symbol = generateSymbol(
+            exchange.value,
+            leftPairPart,
+            rightPairPart
+          );
+          return {
+            symbol: symbol.short,
+            full_name: symbol.full,
+            description: symbol.short,
+            exchange: exchange.value,
+            type: 'crypto'
+          };
+        });
+        allSymbols = [...allSymbols, ...symbols];
+      }
     }
   }
   return allSymbols;
@@ -119,7 +171,12 @@ const dataFeed = {
       const isExchangeValid = exchange === "" || symbol.exchange === exchange;
       const isFullSymbolContainsInput =
         symbol.full_name.toLowerCase().indexOf(userInput.toLowerCase()) !== -1;
-      return isExchangeValid && isFullSymbolContainsInput;
+      if (symbolType !== 'all') {
+        const isTypeValid = symbol.type === symbolType;
+        return isExchangeValid && isFullSymbolContainsInput && isTypeValid;
+      } else {
+        return isExchangeValid && isFullSymbolContainsInput;
+      }
     });
     onResultReadyCallback(newSymbols);
   },
@@ -169,7 +226,7 @@ const dataFeed = {
     onErrorCallback
   ) => {
     const { from, to, firstDataRequest } = periodParams;
-    console.log("[getBars]: Method call", symbolInfo, resolution, from, to,periodParams);
+    console.log("[getBars]: Method call", symbolInfo, resolution, from, to, periodParams);
     const parsedSymbol = parseFullSymbol(symbolInfo.full_name);
     const urlParameters = {
       e: parsedSymbol.exchange,
@@ -183,6 +240,7 @@ const dataFeed = {
       .join("&");
     try {
       const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
+      console.log(data1)
       const data2 = await makeApiRequest(`data/histoday?${query}`);
       const data = data2.Response === 'Error' ? data1[urlParameters.fsym] : data2.Data
       // if (
@@ -197,7 +255,7 @@ const dataFeed = {
       // }
       let bars = [];
       // data.Data.forEach((bar) => {
-        data.forEach((bar) => {
+      data.forEach((bar) => {
         if (bar.time >= from && bar.time < to) {
           bars = [
             ...bars,

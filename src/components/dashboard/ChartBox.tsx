@@ -398,10 +398,10 @@ const DashboardChartBox = () => {
 													)
 												}
 											}}
-											className="w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
-											style={{
-												backgroundColor: selectedIndices.includes(assetClass.colName) ? assetClass.selectionColor : 'transparent',
-											}}
+											className={`w-fit h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around gap-10 border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200 ${selectedIndices.includes(assetClass.colName)? 'bg-gray-400':''}`}
+											// style={{
+											// 	backgroundColor: selectedIndices.includes(assetClass.colName) ? assetClass.selectionColor : 'transparent',
+											// }}
 										>
 											<div className="flex flex-row items-center justify-start gap-2">
 												<div
@@ -431,12 +431,12 @@ const DashboardChartBox = () => {
 								})
 							}
 						})}
-						<div
+						{/* <div
 							className="h-14 aspect-square rounded-full flex flex-row items-center justify-center border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
 							onClick={openClassesModal}
 						>
 							<BsPlus color="#2A2A2A" size={30} />
-						</div>
+						</div> */}
 					</div>
 					<div className="w-full flex md:hidden h-fit flex-row items-center justify-start gap-2">
 						{priorityAssetClasses.map((item, id) => {
