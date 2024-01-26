@@ -34,22 +34,13 @@ contract IndexFactory is
         Native,
         LINK
     }
-    // using Chainlink for Chainlink.Request;
-
-    // struct Message {
-    //     uint64 sourceChainSelector; // The chain selector of the source chain.
-    //     address sender; // The address of the sender.
-    //     string message; // The content of the message.
-    //     address token; // received token.
-    //     uint256 amount; // received amount.
-    // }
+    
 
     IndexFactoryStorage public indexFactoryStorage;
     // address public i_router;
     address public i_link;
     uint16 public i_maxTokensLength;
-    // bytes32[] public receivedMessages; // Array to keep track of the IDs of received messages.
-    // mapping(bytes32 => Message) public messageDetail; // Mapping from message ID to Message struct, storing details of each received message.
+    
     address public crossChainToken;
     IndexToken public indexToken;
 
@@ -57,45 +48,17 @@ contract IndexFactory is
     uint8 public feeRate; // 10/10000 = 0.1%
     uint256 public latestFeeUpdate;
     uint64 public currentChainSelector;
-    // uint256 internal constant SCALAR = 1e20;
 
     
 
     
     
-    // string baseUrl;
-    // string urlParams;
-
-    // bytes32 public externalJobId;
-    // uint256 public oraclePayment;
-    // AggregatorV3Interface public toUsdPriceFeed;
-    // uint public lastUpdateTime;
-    // address[] public oracleList;
-    // address[] public currentList;
-
-    // uint public totalOracleList;
-    // uint public totalCurrentList;
-
-    // mapping(uint => address) public oracleList;
-    // mapping(uint => address) public currentList;
-
-    // mapping(address => uint) public tokenOracleListIndex;
-    // mapping(address => uint) public tokenCurrentListIndex;
-
-    // mapping(address => uint) public tokenCurrentMarketShare;
-    // mapping(address => uint) public tokenOracleMarketShare;
-    // mapping(address => uint) public tokenSwapVersion;
-    // mapping(address => uint64) public tokenChainSelector;
 
     mapping(uint64 => address) public crossChainFactoryBySelector;
 
     
-    // ISwapRouter public swapRouterV3;
-    // IUniswapV3Factory public factoryV3;
-    // IUniswapV2Router02 public swapRouterV2;
-    // IUniswapV2Factory public factoryV2;
+    
     IWETH public weth;
-    // IQuoter public quoter;
 
     //nonce
     struct TokenOldAndNewValues{
@@ -129,10 +92,7 @@ contract IndexFactory is
 
     
 
-    // modifier onlyMinter() {
-    //     require(msg.sender == minter, "IndexToken: caller is not the minter");
-    //     _;
-    // }
+    
 
     
     function initialize(
@@ -170,7 +130,6 @@ contract IndexFactory is
     }
 
     function setCrossChainFactory(address _crossChainFactoryAddress, uint64 _chainSelector) public onlyOwner {
-        // crossChainToken = _crossChainToken;;
         crossChainFactoryBySelector[_chainSelector] = _crossChainFactoryAddress;
     }
 
@@ -226,7 +185,6 @@ contract IndexFactory is
 
    
     receive() external payable {
-        // revert DoNotSendFundsDirectlyToTheContract();
     }
 
 
@@ -252,17 +210,21 @@ contract IndexFactory is
     }
 
    
-    function issuanceIndexTokensWithEth(uint _inputAmount) public payable {
+    function issuanceIndexTokensWithEth(uint _inputAmount, uint _crossChainFee) public payable {
         uint feeAmount = (_inputAmount*feeRate)/10000;
-        uint finalAmount = _inputAmount + feeAmount;
+        uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
         require(msg.value >= finalAmount, "lower than required amount");
         //transfer fee to the owner
         (bool _success,) = owner().call{value: feeAmount}("");
         require(_success, "transfer eth fee to the owner failed");
         issuanceNonce ++;
         issuanceNonceRequester[issuanceNonce] = msg.sender;
-        weth.deposit{value: _inputAmount}();
+        weth.deposit{value: _inputAmount + _crossChainFee}();
         weth.transfer(address(indexToken), _inputAmount);
+        if(_crossChainFee > 0){
+        //swap ccip fee from eth to link
+        uint ccipLinkFee = swap(address(weth), i_link, _crossChainFee, address(this), 3);
+        }
         uint firstPortfolioValue = getPortfolioBalance();
         uint wethAmount = _inputAmount;
         //swap
@@ -274,12 +236,25 @@ contract IndexFactory is
             issuanceTokenOldAndNewValues[issuanceNonce][currentList(i)].newTokenValue = issuanceTokenOldAndNewValues[issuanceNonce][currentList(i)].oldTokenValue + wethAmount*tokenCurrentMarketShare(currentList(i))/100e18;
             issuanceCompletedTokensCount[issuanceNonce] += 1;
           }else{
+            address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
+            //fee
+            bytes memory simulatedData = abi.encode(0, address(this), issuanceNonce, firstPortfolioValue, firstPortfolioValue);
+            Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(crossChainIndexFactory),
+            data: simulatedData,
+            tokenAmounts: new Client.EVMTokenAmount[](0),
+            extraArgs: "",
+            feeToken: i_link
+            });
+            uint256 fees = IRouterClient(i_router).getFee(tokenChainSelector, message);
+
             uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, wethAmount*tokenCurrentMarketShare(currentList(i))/100e18, address(this), 3);
-            Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+            Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](2);
             tokensToSendArray[0].token = crossChainToken;
             tokensToSendArray[0].amount = crossChainTokenAmount;
+            tokensToSendArray[1].token = i_link;
+            tokensToSendArray[1].amount = fees;
             bytes memory data = abi.encode(0, currentList(i), issuanceNonce, 0, 0);
-            address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
             sendToken(tokenChainSelector, data, crossChainIndexFactory, tokensToSendArray, PayFeesIn.LINK);
           }
         }
@@ -306,13 +281,20 @@ contract IndexFactory is
     }
 
 
-    function redemption(uint amountIn, address _tokenOut, uint _tokenOutSwapVersion) public returns(uint) {
+    function redemption(uint amountIn, uint _crossChainFee, address _tokenOut, uint _tokenOutSwapVersion) public payable returns(uint) {
+        require(msg.value >= _crossChainFee, "lower than required amount");
         uint burnPercent = amountIn*1e18/indexToken.totalSupply();
         redemptionNonce +=1;
         redemptionNonceRequester[redemptionNonce] = msg.sender;
 
         indexToken.burn(msg.sender, amountIn);
 
+        
+        if(_crossChainFee > 0){
+        weth.deposit{value: _crossChainFee}();
+        //swap ccip fee from eth to link
+        uint ccipLinkFee = swap(address(weth), i_link, _crossChainFee, address(this), 3);
+        }
         // uint outputAmount;
         //swap
         for(uint i = 0; i < totalCurrentList(); i++) {
@@ -322,11 +304,29 @@ contract IndexFactory is
         uint swapAmountOut = _swapSingle(currentList(i), address(weth), swapAmount, address(this), tokenSwapVersion(currentList(i)));
         redemptionNonceTotalValue[redemptionNonce] += swapAmountOut;
         redemptionCompletedTokensCount[redemptionNonce] += 1;
-        // outputAmount += swapAmountOut;
         }else{
             address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
+            //fee
+            Client.EVMTokenAmount[] memory simulatedTokensToSendArray = new Client.EVMTokenAmount[](2);
+            simulatedTokensToSendArray[0].token = crossChainToken;
+            simulatedTokensToSendArray[0].amount = IERC20(currentList(i)).balanceOf(address(indexToken));
+            bytes memory simulatedData = abi.encode(0, address(this), redemptionNonce, 0, 0);
+            Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(crossChainIndexFactory),
+            data: simulatedData,
+            // tokenAmounts: new Client.EVMTokenAmount[](0),
+            tokenAmounts: simulatedTokensToSendArray,
+            extraArgs: "",
+            feeToken: i_link
+            });
+            uint256 fees = IRouterClient(i_router).getFee(tokenChainSelector, message);
+
+            Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+            tokensToSendArray[0].token = i_link;
+            tokensToSendArray[0].amount = fees;
+
             bytes memory data = abi.encode(1, currentList(i), redemptionNonce, burnPercent, 0);
-            sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
+            sendToken(tokenChainSelector, data, crossChainIndexFactory, tokensToSendArray, PayFeesIn.LINK);
         }
         }
         
@@ -396,19 +396,17 @@ contract IndexFactory is
         );
 
         for (uint256 i = 0; i < length; ) {
-            // IERC20(tokensToSendDetails[i].token).transferFrom(
-            //     msg.sender,
-            //     address(this),
-            //     tokensToSendDetails[i].amount
-            // );
+            
+            if(tokensToSendDetails[i].token != i_link){
             IERC20(tokensToSendDetails[i].token).approve(
                 i_router,
                 tokensToSendDetails[i].amount
             );
-
+            }
             unchecked {
                 ++i;
             }
+            
         }
 
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
@@ -427,7 +425,6 @@ contract IndexFactory is
         bytes32 messageId;
 
         if (payFeesIn == PayFeesIn.LINK) {
-            // LinkTokenInterface(i_link).approve(i_router, fee);
             messageId = IRouterClient(i_router).ccipSend(
                 destinationChainSelector,
                 message
@@ -573,21 +570,15 @@ contract IndexFactory is
             if(tokenValue*100e18/portfolioValue < tokenOracleMarketShare(currentList(i))){
                 uint64 tokenChainSelector = tokenChainSelector(currentList(i));
                 if(tokenChainSelector == currentChainSelector){
-                // uint buyPercent = tokenOracleMarketShare(currentList(i)) - tokenValue*100e18/portfolioValue;
                 uint buyValue = (tokenOracleMarketShare(currentList(i))*portfolioValue)/100e18 - tokenValue;
-                // uint swapAmount = (buyPercent*tokenValue)/100e18;
                 uint wethAmount = swap(address(weth), currentList(i), buyValue, address(indexToken), 3);
                 }else{
-                    /**
-                    address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
-                    bytes memory data = abi.encode(3, currentList(i), nonce, portfolioValue, tokenOracleMarketShare(currentList(i)));
-                    sendMessage(tokenChainSelector, crossChainIndexFactory, data, PayFeesIn.LINK);
-                    */
-                    // uint buyPercent = tokenOracleMarketShare(currentList(i)) - tokenValue*100e18/portfolioValue;
-                    // uint swapAmount = (buyPercent*tokenValue)/100e18;
+                    
                     uint buyValue = (tokenOracleMarketShare(currentList(i))*portfolioValue)/100e18 - tokenValue;
-                    // uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, buyValue - 1*buyValue/100, address(this), 3);
-                    uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, buyValue - 10*buyValue/100, address(this), 3);
+                    if(buyValue > weth.balanceOf(address(indexToken))) {
+                        buyValue = weth.balanceOf(address(indexToken));
+                    }
+                    uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, buyValue, address(this), 3);
                     Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
                     tokensToSendArray[0].token = crossChainToken;
                     tokensToSendArray[0].amount = crossChainTokenAmount;

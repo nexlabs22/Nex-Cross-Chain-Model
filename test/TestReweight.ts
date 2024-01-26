@@ -257,7 +257,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         
         console.log("ccVault balance before swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance before swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
-        await indexFactory.issuanceIndexTokensWithEth(ethers.utils.parseEther("0.1"), {value: ethers.utils.parseEther("0.1001")})
+        await indexFactory.issuanceIndexTokensWithEth(ethers.utils.parseEther("0.1"), "0", {value: ethers.utils.parseEther("0.1001")})
         console.log("==>");
         console.log("ccVault balance after swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance after swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))

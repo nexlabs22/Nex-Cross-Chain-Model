@@ -10,6 +10,12 @@ contract MockRouter {
 //   error UnsupportedDestinationChain(uint64 destChainSelector);
 //   error InsufficientFeeTokenAmount();
 //   error InvalidMsgValue();
+  uint testFee = 1e17;
+  address linkAddress;
+
+  constructor(address _linkAddress){
+    linkAddress = _linkAddress;
+  }
 
   /// @notice Checks if the given chain ID is supported for sending/receiving.
   /// @param chainSelector The chain to check.
@@ -37,7 +43,8 @@ contract MockRouter {
     uint64 destinationChainSelector,
     Client.EVM2AnyMessage memory message
   ) external view returns (uint256 fee){
-    return 0;
+    // return 0;
+    fee = testFee;
   }
 
   /// @notice Request a message to be sent to the destination chain
@@ -52,6 +59,8 @@ contract MockRouter {
   ) external payable returns (bytes32){
     address targetAddress =bytesToAddress(message.receiver);
 
+    IERC20(linkAddress).transferFrom(msg.sender, address(this), testFee);
+    
     if(message.tokenAmounts.length > 0){
         for(uint i = 0; i < message.tokenAmounts.length; i++){
             IERC20(message.tokenAmounts[i].token).transferFrom(msg.sender, targetAddress, message.tokenAmounts[i].amount);

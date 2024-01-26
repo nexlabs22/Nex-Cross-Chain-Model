@@ -489,11 +489,12 @@ contract CrossChainIndexFactory is
             //     address(this),
             //     tokensToSendDetails[i].amount
             // );
+            if(tokensToSendDetails[i].token != i_link){
             IERC20(tokensToSendDetails[i].token).approve(
                 i_router,
                 tokensToSendDetails[i].amount
             );
-
+            }
             unchecked {
                 ++i;
             }

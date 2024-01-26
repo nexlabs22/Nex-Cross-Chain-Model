@@ -6,6 +6,7 @@ dotenvenc.config();
 // require("hardhat-contract-sizer");
 import "hardhat-contract-sizer"
 import "@nomicfoundation/hardhat-foundry";
+import "hardhat-gas-reporter"
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ETHEREUM_SEPOLIA_RPC_URL = process.env.ETHEREUM_SEPOLIA_RPC_URL;
@@ -30,6 +31,15 @@ const config: HardhatUserConfig = {
       },
       {
         version: "0.8.19",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
+        version: "0.8.1",
         settings: {
           optimizer: {
             enabled: true,
@@ -87,6 +97,9 @@ const config: HardhatUserConfig = {
     runOnCompile: false,
     // strict: true,
     // only: [':ERC20$'],
+  },
+  gasReporter:{
+    enabled: true
   }
   // paths: {
   //   sources: './contracts',
