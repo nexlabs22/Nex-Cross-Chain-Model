@@ -248,22 +248,14 @@ contract CounterTest is Test {
         assertEq(factory.tokenOracleMarketShare(assetList[2]), tokenShares[2]);
         assertEq(factory.tokenOracleMarketShare(assetList[3]), tokenShares[3]);
         assertEq(factory.tokenOracleMarketShare(assetList[4]), tokenShares[4]);
-        // assertEq(factory.tokenMarketShare(assetList[5]), tokenShares[5]);
-        // assertEq(factory.tokenMarketShare(assetList[6]), tokenShares[6]);
-        // assertEq(factory.tokenMarketShare(assetList[7]), tokenShares[7]);
-        // assertEq(factory.tokenMarketShare(assetList[8]), tokenShares[8]);
-        // assertEq(factory.tokenMarketShare(assetList[9]), tokenShares[9]);
+        
         // token shares
         assertEq(factory.tokenSwapVersion(assetList[0]), swapVersions[0]);
         assertEq(factory.tokenSwapVersion(assetList[1]), swapVersions[1]);
         assertEq(factory.tokenSwapVersion(assetList[2]), swapVersions[2]);
         assertEq(factory.tokenSwapVersion(assetList[3]), swapVersions[3]);
         assertEq(factory.tokenSwapVersion(assetList[4]), swapVersions[4]);
-        // assertEq(factory.tokenSwapVersion(assetList[5]), swapVersions[5]);
-        // assertEq(factory.tokenSwapVersion(assetList[6]), swapVersions[6]);
-        // assertEq(factory.tokenSwapVersion(assetList[7]), swapVersions[7]);
-        // assertEq(factory.tokenSwapVersion(assetList[8]), swapVersions[8]);
-        // assertEq(factory.tokenSwapVersion(assetList[9]), swapVersions[9]);
+        
     }
 
     
@@ -392,8 +384,7 @@ contract CounterTest is Test {
             .sig("totalSupply()")
             // .with_key(address(this))
             .checked_write(10e18);
-        // console.log("balanceOf user index token", indexToken.balanceOf(address(this)));
-        // console.log("total supply index token", indexToken.totalSupply());
+        
         // return;
         for(uint i; i < assetList.length; i++){
         stdstore
