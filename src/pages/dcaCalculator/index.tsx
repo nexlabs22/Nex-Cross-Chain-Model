@@ -19,6 +19,9 @@ import { Document, Page, pdfjs } from 'react-pdf'
 import PDFUtils from '@/utils/pdfConfig'
 import { GenericToast } from '@/components/GenericToast'
 import { toast } from 'react-toastify'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
+import { useLandingPageStore } from '@/store/store'
 import logo from '@assets/images/xlogo_s.png'
 
 // Firebase :
@@ -48,6 +51,7 @@ import { useAddress } from '@thirdweb-dev/react'
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
 
 export default function DCACalculator() {
+	const { mode } = useLandingPageStore()
 	// const pdfContainer = useRef<HTMLDivElement | null>(null)
 
 	const address = useAddress()
@@ -263,15 +267,20 @@ export default function DCACalculator() {
 				<meta name="description" content="" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
+			<main className={`m-0 min-h-screen h-fit w-screen ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'} p-0 overflow-x-hidden`}>
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit flex flex-col xl:flex-row items-stretch justify-start px-4 pt-10 pb-12">
-						<div className="w-full xl:w-3/12 h-fit flex flex-col gap-2 pl-5">
+						<div className="w-full xl:w-3/12 flex-grow flex flex-col justify-between gap-2 pl-5">
 							<Menu
 								menuButton={
 									<MenuButton>
-										<div className="w-11/12 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
+										<div className={`w-11/12 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500"}  shadow-sm shadow-blackText-500 gap-8 cursor-pointer`}
+										style={{
+											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+										}}
+										>
 											<div className="flex flex-row items-center justify-start gap-2">
 												<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedIndex}</h5>
 											</div>
@@ -302,7 +311,7 @@ export default function DCACalculator() {
 								})}
 							</Menu>
 							<div className="flex flex-col items-start justify-start gap-1 w-full">
-								<label className="interBold text-blackText-500">Initial Investment</label>
+								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>Initial Investment</label>
 								<input
 									type="number"
 									placeholder="0.00"
@@ -312,7 +321,7 @@ export default function DCACalculator() {
 								/>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1">
-								<label className="interBold text-blackText-500">Monthly Investment</label>
+								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>Monthly Investment</label>
 								<input
 									type="number"
 									placeholder="0.00"
@@ -322,7 +331,7 @@ export default function DCACalculator() {
 								/>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1 w-full h-fit">
-								<label className="interBold text-blackText-500">Start Month</label>
+								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>Start Month</label>
 								<Menu
 									menuButton={
 										<MenuButton className="w-full">
@@ -358,7 +367,7 @@ export default function DCACalculator() {
 								</Menu>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1">
-								<label className="interMedium text-blackText-500">Start Year</label>
+								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>Start Year</label>
 								<input
 									type="number"
 									placeholder="0.00"
@@ -368,7 +377,7 @@ export default function DCACalculator() {
 								/>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1">
-								<label className="interBold text-blackText-500">End Month</label>
+								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>End Month</label>
 								<Menu
 									menuButton={
 										<MenuButton className="w-full">
@@ -404,7 +413,7 @@ export default function DCACalculator() {
 								</Menu>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1">
-								<label className="interBold text-blackText-500">End Year</label>
+								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>End Year</label>
 								<input
 									type="number"
 									placeholder="0.00"
@@ -415,8 +424,12 @@ export default function DCACalculator() {
 							</div>
 							<button
 								onClick={handleSubmit}
-								className={`text-lg my-4 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-11/12 px-2 py-3 rounded-lg
-										cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+								className={`text-lg my-4 text-white titleShadow interBold ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90"} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-11/12 px-2 py-3 rounded-lg
+										cursor-pointer `}
+										style={{
+											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+										}}
 							>
 								Calculate
 							</button>
@@ -431,8 +444,12 @@ export default function DCACalculator() {
 						<div className="flex flex-row ml-auto z-10 w-full">
 							<CSVLink
 								data={csvData}
-								className={`text-sm mr-2 text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
-										cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+								className={`text-sm mr-2 text-white titleShadow interBold ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90"} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
+										cursor-pointer `}
+										style={{
+											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+										}}
 								filename={`${fileName}.csv`}
 								onClick={exportCSV}
 							>
@@ -440,8 +457,12 @@ export default function DCACalculator() {
 							</CSVLink>
 							<button
 								onClick={exportPdf}
-								className={`text-sm text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg cursor-pointer hover:from-colorFour-500 hover:to-colorSeven-500/90`}
-							>
+								className={`text-sm mr-2 text-white titleShadow interBold ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90"} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
+								cursor-pointer `}
+								style={{
+									boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+								}}							>
 								Download PDF
 							</button>
 						</div>
@@ -450,7 +471,7 @@ export default function DCACalculator() {
 							<div className="h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[500px]">
 								<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
 									<thead className="sticky top-0 rounded-t-xl">
-										<tr className="text-md interBold bg-colorSeven-500 text-whiteText-500">
+										<tr className={`text-md interBold ${mode == "dark" ? " bg-transparent border-b border-b-white" : "bg-colorSeven-500"} text-whiteText-500`}>
 											<th className="px-4 py-2 text-left">Time</th>
 											<th className="px-4 py-2 text-right">Price</th>
 											<th className="px-4 py-2 text-right">Percentage Gain</th>
@@ -460,9 +481,9 @@ export default function DCACalculator() {
 											<th className="px-4 py-2 text-right">Total</th>
 										</tr>
 									</thead>
-									<tbody className="overflow-x-hidden overflow-y-auto bg-gray-200 ">
+									<tbody className={`overflow-x-hidden overflow-y-auto ${mode == "dark" ? " bg-transparent" : " bg-gray-200"} `}>
 										{filteredIndexData.map((data: dcaDataType, i: React.Key | null | undefined) => (
-											<tr key={i} className="text-gray-700 interMedium text-base border-b  border-blackText-500">
+											<tr key={i} className={` ${mode == "dark" ? " text-whiteText-500" : " text-gray-700"} interMedium text-base border-b  border-blackText-500`}>
 												<td className={`px-4 text-left py-3 `}>{data.date}</td>
 												<td className={`px-4 text-right py-3 `}>${FormatToViewNumber({ value: data.value, returnType: 'string' })}</td>
 												<td

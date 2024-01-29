@@ -24,6 +24,9 @@ const TreemapChart = dynamic(() => import('@/components/GenericTreemapChart'), {
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
+import { useLandingPageStore } from '@/store/store'
 import {
 	goerliAnfiIndexToken,
 	goerliCrypto5IndexToken,
@@ -95,6 +98,7 @@ interface User {
 }
 
 export default function Settings() {
+	const { mode } = useLandingPageStore()
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
@@ -294,6 +298,7 @@ export default function Settings() {
 	const [editable3, setEditable3] = useState<boolean>(false)
 	const [editable4, setEditable4] = useState<boolean>(false)
 	const [editable5, setEditable5] = useState<boolean>(false)
+	const [editable6, setEditable6] = useState<boolean>(false)
 
 	const [name, setName] = useState<string>('')
 	const [instName, setInstName] = useState<string>('')
@@ -368,7 +373,7 @@ export default function Settings() {
 				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
+			<main className={`min-h-screen overflow-x-hidden h-fit w-screen ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'}`}>
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
@@ -388,7 +393,7 @@ export default function Settings() {
 									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
 								)}
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold text-center lg:whitespace-nowrap lg:text-left">
+									<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold text-center lg:whitespace-nowrap lg:text-left`}>
 										{connectedUser && connectedUser.main_wallet == address
 											? connectedUser.inst_name != 'x'
 												? connectedUser.inst_name
@@ -398,15 +403,16 @@ export default function Settings() {
 											: 'Nex User'}
 									</h5>
 									<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
-										<h5 className="text-base text-gray-500 interMedium">{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
+										<h5 className={`text-base${mode == "dark" ? " text-whiteText-500/70" : "text-gray-500"}  interMedium`}>{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
 										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
-											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
+											<div className={` ${mode == "dark" ? " bg-whiteText-500" : "bg-colorSeven-500/50"} w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full`}>
 												<CopyToClipboard text={address as string} onCopy={handleCopy}>
+
 													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
 												</CopyToClipboard>
 											</div>
 											<div
-												className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full cursor-pointer"
+												className={` ${mode == "dark" ? " bg-whiteText-500" : "bg-colorSeven-500/50"} w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full`}
 												onClick={() => {
 													if (address) setQRModalVisible(true)
 													else
@@ -420,9 +426,12 @@ export default function Settings() {
 											</div>
 										</div>
 									</div>
-									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
-										<BsCalendar4 color="#FFFFFF" size={15} />
-										<h5 className="text-base text-whiteText-500 montrealBold">Joined 1 day ago</h5>
+									<div className={` ${mode == "dark" ? " bg-whiteBackground-500" : "bg-colorSeven-500"} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}>
+										{
+											mode == "dark" ? <BsCalendar4 color="#000000" size={15} /> : <BsCalendar4 color="#FFFFFF" size={15} />
+										}
+
+										<h5 className={`text-base ${mode != "dark" ? " text-whiteText-500" : "text-blackText-500"}  interBold`}>Joined 1 day ago</h5>
 									</div>
 								</div>
 							</div>
@@ -435,18 +444,23 @@ export default function Settings() {
 				</section>
 				<div className=" w-full h-fit px-4 xl:px-16 pb-5 flex flex-col xl:flex-row items-center justify-center ">
 					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 xl:px-2 border-b-[2px] border-b-[#E4E4E4] ">
-						<div className="py-1 xl:px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">General Information</div>
+						<div className={`py-1 xl:px-3 rounded-full ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} cursor-pointer interMedium text-lg`}>General Information</div>
 					</div>
 				</div>
 				<div className=" w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-center justify-center ">
-					<h5 className="text-base interMedium text-[#181818] w-full">
+					<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#181818]"} w-full`}>
 						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
 					</h5>
 					<div className="w-full h-fit">
-						<h5 className="text-sm interMedium text-[#6B6B6B] w-full mt-6 mb-4">Account Type</h5>
+						<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full mt-6 mb-4`}>Account Type</h5>
 					</div>
 					<div className="flex flex-row w-full h-fit items-center justify-start gap-2 mb-3">
-						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${!isRetailerAccount ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`}>
+						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${!isRetailerAccount ? mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`} style={{
+														boxShadow:
+															mode == "dark" && !isRetailerAccount ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+														backgroundImage: mode == "dark" && !isRetailerAccount ? `url('${mesh1.src}')` : "",
+
+													}}>
 							Retailer
 						</h5>
 						<Switch
@@ -460,18 +474,23 @@ export default function Settings() {
 							onColor="#5E869B"
 							offColor="#5E869B"
 						/>
-						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${isRetailerAccount ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`}>
+						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${isRetailerAccount ? mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`} style={{
+														boxShadow:
+															mode == "dark" && isRetailerAccount ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+														backgroundImage: mode == "dark" && isRetailerAccount ? `url('${mesh1.src}')` : "",
+
+													}}>
 							Institutional Investor
 						</h5>
 					</div>
 					<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between gap-3 my-6">
 						<div className="w-full xl:w-4/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Name</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Name</h5>
 								{!editable1 ? (
 									<CiEdit
 										size={20}
-										color={editable1 ? '#089981' : '#6B6B6B'}
+										color={editable1 ? '#089981' : mode == "dark" ? "#FFFFFF" : '#6B6B6B'}
 										className=" cursor-pointer"
 										onClick={() => {
 											setEditable1(!editable1)
@@ -492,8 +511,8 @@ export default function Settings() {
 								type="text"
 								placeholder={connectedUser && connectedUser.name != '' ? connectedUser.name : 'Name'}
 								disabled={!editable1}
-								className={`px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border ${
-									editable1 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : 'border-black/50'
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
+									editable1 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
 								} w-full bg-transparent`}
 								onChange={(e) => {
 									setName(e.target.value.toString())
@@ -502,11 +521,11 @@ export default function Settings() {
 						</div>
 						<div className="w-full xl:w-4/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Email</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Email</h5>
 								{!editable2 ? (
 									<CiEdit
 										size={20}
-										color={editable2 ? '#089981' : '#6B6B6B'}
+										color={editable2 ? '#089981' : mode == "dark" ? "#FFFFFF" :'#6B6B6B'}
 										className=" cursor-pointer"
 										onClick={() => {
 											setEditable2(!editable2)
@@ -526,8 +545,10 @@ export default function Settings() {
 							<input
 								type="email"
 								placeholder={connectedUser && connectedUser.email != '' ? connectedUser.email : 'xyz@email.com'}
-								disabled={!editable2}
-								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								disabled={!editable2} 
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
+									editable2 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+								} w-full bg-transparent`}
 								onChange={(e) => {
 									setEmail(e.target.value.toString())
 								}}
@@ -535,7 +556,7 @@ export default function Settings() {
 						</div>
 						<div className="w-full xl:w-4/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Main Wallet</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Main Wallet</h5>
 							</div>
 							<input
 								type="text"
@@ -548,7 +569,7 @@ export default function Settings() {
 				</div>
 				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-4 xl:px-16 py-5 flex flex-col xl:flex-row items-center justify-center `}>
 					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 xl:px-2 border-b-[2px] border-b-[#E4E4E4] ">
-						<div className="py-1 xl:px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">Legal Information</div>
+						<div className={`py-1 xl:px-3 rounded-full ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} cursor-pointer interMedium text-lg`}>Legal Information</div>
 					</div>
 				</div>
 				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-center justify-center mb-4 `}>
@@ -558,11 +579,11 @@ export default function Settings() {
 					<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between gap-3 my-6">
 						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Institutional Name</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Institutional Name</h5>
 								{!editable3 ? (
 									<CiEdit
 										size={20}
-										color={editable3 ? '#089981' : '#6B6B6B'}
+										color={editable3 ? '#089981' : mode == "dark" ? "#FFFFFF" : '#6B6B6B'}
 										className=" cursor-pointer"
 										onClick={() => {
 											setEditable3(!editable3)
@@ -583,7 +604,9 @@ export default function Settings() {
 								type="text"
 								disabled={!editable3}
 								placeholder={connectedUser && connectedUser.inst_name != '' ? connectedUser.inst_name : 'Institutional Name'}
-								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
+									editable3 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+								} w-full bg-transparent`}
 								onChange={(e) => {
 									setInstName(e.target.value.toString())
 								}}
@@ -592,11 +615,11 @@ export default function Settings() {
 
 						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Address</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Address</h5>
 								{!editable4 ? (
 									<CiEdit
 										size={20}
-										color={editable4 ? '#089981' : '#6B6B6B'}
+										color={editable4 ? '#089981' : mode == "dark" ? "#FFFFFF" : '#6B6B6B'}
 										className=" cursor-pointer"
 										onClick={() => {
 											setEditable4(!editable4)
@@ -617,7 +640,9 @@ export default function Settings() {
 								type="text"
 								disabled={!editable4}
 								placeholder={connectedUser && connectedUser.address != '' ? connectedUser.address : 'Professional Address'}
-								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
+									editable4 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+								} w-full bg-transparent`}
 								onChange={(e) => {
 									setAdr(e.target.value.toString())
 								}}
@@ -627,11 +652,11 @@ export default function Settings() {
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 mb-6">
 						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">VATIN (VAT registration number)</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>VATIN (VAT registration number)</h5>
 								{!editable5 ? (
 									<CiEdit
 										size={20}
-										color={editable5 ? '#089981' : '#6B6B6B'}
+										color={editable5 ? '#089981' : mode == "dark" ? "#FFFFFF" : '#6B6B6B'}
 										className=" cursor-pointer"
 										onClick={() => {
 											setEditable5(!editable5)
@@ -652,7 +677,10 @@ export default function Settings() {
 								type="text"
 								disabled={!editable5}
 								placeholder={connectedUser && connectedUser.vatin != '' ? connectedUser.vatin : 'VAT Registration Number'}
-								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
+									editable5 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+								} w-full bg-transparent`}
+							
 								onChange={(e) => {
 									setVatin(e.target.value.toString())
 								}}
@@ -660,32 +688,34 @@ export default function Settings() {
 						</div>
 						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className="text-sm interMedium text-[#6B6B6B] w-full">Number of Commerce Chambre</h5>
-								{!editable5 ? (
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Number of Commerce Chambre</h5>
+								{!editable6 ? (
 									<CiEdit
 										size={20}
-										color={editable5 ? '#089981' : '#6B6B6B'}
+										color={editable6 ? '#089981' : mode == "dark" ? "#FFFFFF" : '#6B6B6B'}
 										className=" cursor-pointer"
 										onClick={() => {
-											setEditable5(!editable5)
+											setEditable6(!editable6)
 										}}
 									/>
 								) : (
 									<FaCheck
 										size={20}
-										color={editable5 ? '#089981' : '#089981'}
+										color={editable6 ? '#089981' : '#089981'}
 										className="cursor-pointer"
 										onClick={() => {
-											setEditable5(!editable5)
+											setEditable6(!editable6)
 										}}
 									/>
 								)}
 							</div>
 							<input
 								type="text"
-								disabled={!editable5}
+								disabled={!editable6}
 								placeholder={connectedUser && connectedUser.vatin != '' ? connectedUser.vatin : 'Number of Commerce Chambre'}
-								className="px-2 py-4 h-10 my-2 interMedium text-blackText-500 rounded-md border border-black/50 w-full bg-transparent"
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
+									editable6 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+								} w-full bg-transparent`}
 								
 							/>
 						</div>
@@ -693,39 +723,39 @@ export default function Settings() {
 				</div>
 				<div className=" w-full h-fit px-4 xl:px-16 pb-5 flex flex-col xl:flex-row items-center justify-center ">
 					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 xl:px-2 border-b-[2px] border-b-[#E4E4E4] ">
-						<div className="py-1 xl:px-3 rounded-full text-[#646464] cursor-pointer interMedium text-lg">Notifications & Insights</div>
+						<div className={`py-1 xl:px-3 rounded-full ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} cursor-pointer interMedium text-lg`}>Notifications & Insights</div>
 					</div>
 				</div>
 				<div className=" w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-center justify-center mb-4 ">
-					<h5 className="text-base interMedium text-[#181818] w-full">
+					<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#181818]"} w-full`}>
 						You can chose which notifications you would like to receive by email. At Nex Labs, we are committed to communication with users, keeping them updated with the last market news,
 						investing insights and much more.
 					</h5>
 					<div className="w-full h-fit flex flex-col items-start justify-start gap-3 my-6">
 						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption1(!option1)} checked={option1} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about new features of Nex Labs</h5>
+							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about new features of Nex Labs</h5>
 						</div>
 
 						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption2(!option2)} checked={option2} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about different Nex Labs products</h5>
+							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about different Nex Labs products</h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption3(!option3)} checked={option3} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive weekly recap about events, market news ... </h5>
+							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive weekly recap about events, market news ... </h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption4(!option4)} checked={option4} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive emails about activities of your account</h5>
+							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about activities of your account</h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
 							<Switch onChange={() => setOption5(!option5)} checked={option5} height={14} width={35} handleDiameter={20} />
-							<h5 className="text-base interMedium text-[#646464] w-full">Receive monthly reports of your accont</h5>
+							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive monthly reports of your accont</h5>
 						</div>
 						{option1 || option2 || option3 || option4 || option5 ? (
 							<div className="w-fit h-fit flex flex-row items-center justify-start">
-								<h5 className="interMedium text-sm xl:text-xs text-[#181818] opacity-80 mt-4">
+								<h5 className={`interMedium text-sm xl:text-xs ${mode == "dark" ? " text-whiteText-500" : "text-[#181818]"} opacity-80 mt-4`}>
 									** We will not sell your data to third parties or use your data for anything else rather than the sole purpose of the subscription or something slightly funny
 								</h5>
 							</div>
@@ -770,7 +800,13 @@ export default function Settings() {
 							option5 == connectedUser.p5
 								? 'grayscale'
 								: ''
-						} bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md hover:bg-colorTwo-500/30`}
+						} ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:bg-colorTwo-500/30"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md `}
+						style={{
+							boxShadow:
+								mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+							backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+
+						}}
 					>
 						Save Settings
 					</button>

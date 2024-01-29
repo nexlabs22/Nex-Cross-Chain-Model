@@ -238,14 +238,36 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 					</div>
 				</div>
 			</Link>
-			<div className="h-fit w-fit lg:hidden">
-				<CiMenuFries
+			
+			<div className="h-fit w-fit flex flex-row items-center justify-end gap-2 lg:hidden">
+			<button
+					className={`h-fit w-fit rounded-xl bg-gradient-to-tl ml-2 ${
+						mode == 'dark' ? ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
+					} p-2 shadow-sm  active:translate-y-[1px]`}
+					onClick={toggleMode}
+					style={{
+						backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+					}}
+				>
+					{mode == 'light' ? <IoSunnyOutline color="#F2F2F2" size={22} /> : <IoMoonOutline color="#F2F2F2" size={22} />}
+				</button>
+				{
+					mode == "dark" ? <CiMenuFries
+					color="#FFFFFF"
+					size="30"
+					onClick={() => {
+						setOpenMobileMenu(true)
+					}}
+				/> : <CiMenuFries
 					color="#2A2A2A"
 					size="30"
 					onClick={() => {
 						setOpenMobileMenu(true)
 					}}
 				/>
+				}
+				
 			</div>
 			<div className="hidden flex-row items-center justify-start lg:visible lg:flex">
 				<div className="flex flex-row items-center justify-evenly">

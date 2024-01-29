@@ -482,9 +482,11 @@ const DashboardChartBox = () => {
 														}}
 													></div>
 													<h5
-														className={`montrealBold text-base uppercase ${selectedIndices.includes(assetClass.colName) ? 'titleShadow' : ''}`}
+														className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-lg uppercase ${
+															selectedIndices.includes(assetClass.colName) ? 'titleShadow' : ''
+														}`}
 														style={{
-															color: selectedIndices.includes(assetClass.colName) ? '#FFFFFF' : '#2A2A2A',
+															color: selectedIndices.includes(assetClass.colName) ? '#FFFFFF' : mode == 'dark' ? '#FFFFFF' : '#2A2A2A',
 														}}
 													>
 														{assetClass.name}
@@ -497,10 +499,12 @@ const DashboardChartBox = () => {
 							}
 						})}
 						<div
-							className="h-14 aspect-square rounded-full flex flex-row items-center justify-center border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
+						className={`h-14 aspect-square rounded-full flex flex-row items-center justify-center border ${
+							mode == 'dark' ? ' border-whiteText-500/50 shadow shadow-whiteText-500/50' : 'border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 '
+						} cursor-pointer hover:bg-gray-200`}
 							onClick={openClassesModal}
 						>
-							<BsPlus color="#2A2A2A" size={30} />
+							{mode == 'dark' ? <BsPlus color="#FFFFFF" size={30} /> : <BsPlus color="#2A2A2A" size={30} />}
 						</div>
 					</div>
 				</div>
@@ -642,11 +646,17 @@ const DashboardChartBox = () => {
 			<GenericModal isOpen={classesModalOpen} onRequestClose={closeClassesModal} modalWidth={40}>
 				<div className="w-full h-max-[10px] px-2 flex flex-row items-center justify-start">
 					{/* <div className="h-fit w-2/5 border-r border-r-blackText-500/30 px-2 pt-3 pb-10 flex flex-col items-start justify-start gap-10"> */}
-					<div className="h-max-[10px] w-2/5 border-r border-r-blackText-500/30 px-2 pt-3 pb-10 flex flex-col items-start justify-start gap-10">
+					<div className={`h-max-[10px] w-2/5 border-r ${mode == "dark" ? " border-r-whiteBackground-500/50" : "border-r-blackText-500/30"} px-2 pt-3 pb-10 flex flex-col items-start justify-start gap-10`}>
 						<h5
 							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
-								classesCategory == 'indices' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								classesCategory == 'indices' ? mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : ' text-whiteText-500 bg-colorSeven-500' :  mode == "dark" ? " text-whiteText-500" : 'text-blackText-500 bg-transparent'
 							}`}
+							style={{
+								boxShadow:
+									mode == "dark" && classesCategory == 'indices' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" && classesCategory == 'indices' ? `url('${mesh1.src}')` : "",
+
+							}}
 							onClick={() => {
 								setClassesCategory('indices')
 							}}
@@ -655,8 +665,14 @@ const DashboardChartBox = () => {
 						</h5>
 						<h5
 							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
-								classesCategory == 'commodities' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								classesCategory == 'commodities' ? mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : ' text-whiteText-500 bg-colorSeven-500' :  mode == "dark" ? " text-whiteText-500" : 'text-blackText-500 bg-transparent'
 							}`}
+							style={{
+								boxShadow:
+									mode == "dark" && classesCategory == 'commodities' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" && classesCategory == 'commodities' ? `url('${mesh1.src}')` : "",
+
+							}}
 							onClick={() => {
 								setClassesCategory('commodities')
 							}}
@@ -665,8 +681,14 @@ const DashboardChartBox = () => {
 						</h5>
 						<h5
 							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
-								classesCategory == 'cryptocurrencies' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								classesCategory == 'cryptocurrencies' ? mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : ' text-whiteText-500 bg-colorSeven-500' :  mode == "dark" ? " text-whiteText-500" : 'text-blackText-500 bg-transparent'
 							}`}
+							style={{
+								boxShadow:
+									mode == "dark" && classesCategory == 'cryptocurrencies' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" && classesCategory == 'cryptocurrencies' ? `url('${mesh1.src}')` : "",
+
+							}}
 							onClick={() => {
 								setClassesCategory('cryptocurrencies')
 							}}
@@ -675,8 +697,14 @@ const DashboardChartBox = () => {
 						</h5>
 						<h5
 							className={`montrealBold text-base py-2 px-3 w-11/12 rounded-full cursor-pointer ${
-								classesCategory == 'stocks' ? ' text-whiteText-500 bg-colorOne-500' : 'text-blackText-500 bg-transparent'
+								classesCategory == 'stocks' ? mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : ' text-whiteText-500 bg-colorSeven-500' :  mode == "dark" ? " text-whiteText-500" : 'text-blackText-500 bg-transparent'
 							}`}
+							style={{
+								boxShadow:
+									mode == "dark" && classesCategory == 'stocks' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" && classesCategory == 'stocks' ? `url('${mesh1.src}')` : "",
+
+							}}
 							onClick={() => {
 								setClassesCategory('stocks')
 							}}
@@ -710,7 +738,7 @@ const DashboardChartBox = () => {
 									>
 										<div className="w-1/3 ">
 											<div
-												className=" bg-center bg-contain w-2/5 bg-no-repeat border border-gray-100 shadow-md shadow-gray-200 aspect-square rounded-full"
+												className=" bg-center bg-contain w-2/5 bg-no-repeat bg-white border border-gray-100 shadow-md shadow-gray-200 aspect-square rounded-full"
 												style={{
 													backgroundImage: `url(${cls.logo})`,
 												}}
@@ -732,7 +760,7 @@ const DashboardChartBox = () => {
 											></div>
 										</div>
 										<h5
-											className="montrealBold w-1/3 flex items-center justify-center text-base text-blackText-500 uppercase"
+											className={`interBold w-1/3 flex items-center justify-center text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} uppercase`}
 											onClick={() => {
 												closeClassesModal()
 												if (!selectedIndices.includes(cls.columnName)) {
@@ -755,7 +783,7 @@ const DashboardChartBox = () => {
 											<input
 												type="color"
 												name="comparisionChart"
-												className="h-6 w-5 rounded-full border-none"
+												className="h-6 w-5 rounded-full border-none bg-transparent"
 												value={cls.selectionColor}
 												onChange={(event) => {
 													const newColor = event.target.value
