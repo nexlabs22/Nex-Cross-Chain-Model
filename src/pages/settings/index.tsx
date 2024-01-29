@@ -9,6 +9,7 @@ import 'react-tabs/style/react-tabs.css'
 import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
 import { useEffect, useState } from 'react'
+import NeonSwitch from '@/components/NeonSwitch'
 import useTradePageStore from '@/store/tradeStore'
 import TipsBox2 from '@/components/TipsBox'
 import ProgressBar from '@ramonak/react-progress-bar'
@@ -378,7 +379,7 @@ export default function Settings() {
 					<DappNavbar />
 					<section className="w-screen h-fit pt-10">
 						<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col lg:flex-row items-center justify-between mb-10">
-						<div className="w-full lg:w-2/5  h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
+							<div className="w-full lg:w-2/5  h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? (
 									<div
 										className="w-40 lg:h-44 lg:w-auto xl:w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
@@ -398,8 +399,8 @@ export default function Settings() {
 											? connectedUser.inst_name != 'x'
 												? connectedUser.inst_name
 												: connectedUser.name != 'x'
-												? connectedUser.name
-												: 'Nex User'
+													? connectedUser.name
+													: 'Nex User'
 											: 'Nex User'}
 									</h5>
 									<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
@@ -447,39 +448,32 @@ export default function Settings() {
 						<div className={`py-1 xl:px-3 rounded-full ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} cursor-pointer interMedium text-lg`}>General Information</div>
 					</div>
 				</div>
-				<div className=" w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-center justify-center ">
+				<div className=" w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-start justify-center ">
 					<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#181818]"} w-full`}>
 						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
 					</h5>
 					<div className="w-full h-fit">
 						<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full mt-6 mb-4`}>Account Type</h5>
 					</div>
-					<div className="flex flex-row w-full h-fit items-center justify-start gap-2 mb-3">
+					<div className="flex flex-row w-fit h-fit items-center justify-start gap-2 mb-3">
 						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${!isRetailerAccount ? mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`} style={{
-														boxShadow:
-															mode == "dark" && !isRetailerAccount ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-														backgroundImage: mode == "dark" && !isRetailerAccount ? `url('${mesh1.src}')` : "",
+							boxShadow:
+								mode == "dark" && !isRetailerAccount ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+							backgroundImage: mode == "dark" && !isRetailerAccount ? `url('${mesh1.src}')` : "",
 
-													}}>
+						}}>
 							Retailer
 						</h5>
-						<Switch
-							onChange={() => setIsRetailerAccount(!isRetailerAccount)}
-							checked={isRetailerAccount}
-							height={14}
-							width={35}
-							handleDiameter={20}
-							checkedIcon={false}
-							uncheckedIcon={false}
-							onColor="#5E869B"
-							offColor="#5E869B"
-						/>
-						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${isRetailerAccount ? mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`} style={{
-														boxShadow:
-															mode == "dark" && isRetailerAccount ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-														backgroundImage: mode == "dark" && isRetailerAccount ? `url('${mesh1.src}')` : "",
+						<NeonSwitch isChecked={isRetailerAccount} changeFunction={() => {setIsRetailerAccount(!isRetailerAccount)}}></NeonSwitch>
+						
 
-													}}>
+						
+						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${isRetailerAccount ? mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`} style={{
+							boxShadow:
+								mode == "dark" && isRetailerAccount ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+							backgroundImage: mode == "dark" && isRetailerAccount ? `url('${mesh1.src}')` : "",
+
+						}}>
 							Institutional Investor
 						</h5>
 					</div>
@@ -511,9 +505,8 @@ export default function Settings() {
 								type="text"
 								placeholder={connectedUser && connectedUser.name != '' ? connectedUser.name : 'Name'}
 								disabled={!editable1}
-								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
-									editable1 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
-								} w-full bg-transparent`}
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${editable1 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+									} w-full bg-transparent`}
 								onChange={(e) => {
 									setName(e.target.value.toString())
 								}}
@@ -525,7 +518,7 @@ export default function Settings() {
 								{!editable2 ? (
 									<CiEdit
 										size={20}
-										color={editable2 ? '#089981' : mode == "dark" ? "#FFFFFF" :'#6B6B6B'}
+										color={editable2 ? '#089981' : mode == "dark" ? "#FFFFFF" : '#6B6B6B'}
 										className=" cursor-pointer"
 										onClick={() => {
 											setEditable2(!editable2)
@@ -545,10 +538,9 @@ export default function Settings() {
 							<input
 								type="email"
 								placeholder={connectedUser && connectedUser.email != '' ? connectedUser.email : 'xyz@email.com'}
-								disabled={!editable2} 
-								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
-									editable2 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
-								} w-full bg-transparent`}
+								disabled={!editable2}
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${editable2 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+									} w-full bg-transparent`}
 								onChange={(e) => {
 									setEmail(e.target.value.toString())
 								}}
@@ -604,9 +596,8 @@ export default function Settings() {
 								type="text"
 								disabled={!editable3}
 								placeholder={connectedUser && connectedUser.inst_name != '' ? connectedUser.inst_name : 'Institutional Name'}
-								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
-									editable3 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
-								} w-full bg-transparent`}
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${editable3 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+									} w-full bg-transparent`}
 								onChange={(e) => {
 									setInstName(e.target.value.toString())
 								}}
@@ -640,9 +631,8 @@ export default function Settings() {
 								type="text"
 								disabled={!editable4}
 								placeholder={connectedUser && connectedUser.address != '' ? connectedUser.address : 'Professional Address'}
-								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
-									editable4 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
-								} w-full bg-transparent`}
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${editable4 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+									} w-full bg-transparent`}
 								onChange={(e) => {
 									setAdr(e.target.value.toString())
 								}}
@@ -677,10 +667,9 @@ export default function Settings() {
 								type="text"
 								disabled={!editable5}
 								placeholder={connectedUser && connectedUser.vatin != '' ? connectedUser.vatin : 'VAT Registration Number'}
-								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
-									editable5 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
-								} w-full bg-transparent`}
-							
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${editable5 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+									} w-full bg-transparent`}
+
 								onChange={(e) => {
 									setVatin(e.target.value.toString())
 								}}
@@ -713,10 +702,9 @@ export default function Settings() {
 								type="text"
 								disabled={!editable6}
 								placeholder={connectedUser && connectedUser.vatin != '' ? connectedUser.vatin : 'Number of Commerce Chambre'}
-								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${
-									editable6 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
-								} w-full bg-transparent`}
-								
+								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${editable6 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
+									} w-full bg-transparent`}
+
 							/>
 						</div>
 					</div>
@@ -732,26 +720,23 @@ export default function Settings() {
 						investing insights and much more.
 					</h5>
 					<div className="w-full h-fit flex flex-col items-start justify-start gap-3 my-6">
-						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
-							<Switch onChange={() => setOption1(!option1)} checked={option1} height={14} width={35} handleDiameter={20} />
-							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about new features of Nex Labs</h5>
+						<div className="flex flex-row items-center w-screen justify-start gap-3 xl:gap-3">
+						<NeonSwitch isChecked={option1} changeFunction={() => {setOption1(!option1)}}></NeonSwitch>
+														<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about new features of Nex Labs</h5>
 						</div>
 
-						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
-							<Switch onChange={() => setOption2(!option2)} checked={option2} height={14} width={35} handleDiameter={20} />
-							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about different Nex Labs products</h5>
+						<div className="flex flex-row items-center  w-screen justify-start gap-3 xl:gap-3">
+						<NeonSwitch isChecked={option2} changeFunction={() => {setOption2(!option2)}}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about different Nex Labs products</h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
-							<Switch onChange={() => setOption3(!option3)} checked={option3} height={14} width={35} handleDiameter={20} />
-							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive weekly recap about events, market news ... </h5>
+						<div className="flex flex-row w-screen items-center justify-start gap-3 xl:gap-3">
+						<NeonSwitch isChecked={option3} changeFunction={() => {setOption3(!option3)}}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive weekly recap about events, market news ... </h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
-							<Switch onChange={() => setOption4(!option4)} checked={option4} height={14} width={35} handleDiameter={20} />
+						<div className="flex flex-row w-fit items-center justify-start gap-3 xl:gap-3">
+						<NeonSwitch isChecked={option4} changeFunction={() => {setOption4(!option4)}}></NeonSwitch>
 							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about activities of your account</h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-3 xl:gap-1">
-							<Switch onChange={() => setOption5(!option5)} checked={option5} height={14} width={35} handleDiameter={20} />
-							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive monthly reports of your accont</h5>
+						<div className="flex flex-row w-screen items-center justify-start gap-3 xl:gap-3">
+						<NeonSwitch isChecked={option5} changeFunction={() => {setOption5(!option5)}}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive monthly reports of your accont</h5>
 						</div>
 						{option1 || option2 || option3 || option4 || option5 ? (
 							<div className="w-fit h-fit flex flex-row items-center justify-start">
@@ -771,22 +756,21 @@ export default function Settings() {
 						}}
 						disabled={
 							name == '' &&
-							email == '' &&
-							adr == '' &&
-							instName == '' &&
-							vatin == '' &&
-							uploadedPPLink == 'none' &&
-							chosenPPType == connectedUser?.ppType &&
-							option1 == connectedUser.p1 &&
-							option2 == connectedUser.p2 &&
-							option3 == connectedUser.p3 &&
-							option4 == connectedUser.p4 &&
-							option5 == connectedUser.p5
+								email == '' &&
+								adr == '' &&
+								instName == '' &&
+								vatin == '' &&
+								uploadedPPLink == 'none' &&
+								chosenPPType == connectedUser?.ppType &&
+								option1 == connectedUser.p1 &&
+								option2 == connectedUser.p2 &&
+								option3 == connectedUser.p3 &&
+								option4 == connectedUser.p4 &&
+								option5 == connectedUser.p5
 								? true
 								: false
 						}
-						className={`text-xl text-white titleShadow interBold ${
-							name == '' &&
+						className={`text-xl text-white titleShadow interBold ${name == '' &&
 							email == '' &&
 							adr == '' &&
 							instName == '' &&
@@ -798,9 +782,9 @@ export default function Settings() {
 							option3 == connectedUser.p3 &&
 							option4 == connectedUser.p4 &&
 							option5 == connectedUser.p5
-								? 'grayscale'
-								: ''
-						} ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:bg-colorTwo-500/30"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md `}
+							? 'grayscale'
+							: ''
+							} ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:bg-colorTwo-500/30"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md `}
 						style={{
 							boxShadow:
 								mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
