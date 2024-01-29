@@ -8,8 +8,12 @@ import useTradePageStore from '@/store/tradeStore'
 import { Positions } from '@/types/tradeTableTypes'
 import convertToUSD from '@/utils/convertToUsd'
 import React, { useEffect, useState } from 'react'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
+import { useLandingPageStore } from '@/store/store'
 
 function NewHistoryTable() {
+	const { mode } = useLandingPageStore()
 	const {
 		isFromCurrencyModalOpen,
 		isToCurrencyModalOpen,
@@ -111,7 +115,7 @@ function NewHistoryTable() {
 		<div className="h-full border w-full border-gray-300 rounded-2xl overflow-hidden overflow-x-scroll">
 		  <table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
 					<thead className="sticky top-0">
-						<tr className="text-lg interExtraBold text-[#646464] border-b border-b-[#E4E4E4]">
+						<tr className={`text-lg interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} border-b border-b-[#E4E4E4]`}>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Time</th>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Pair</th>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Request Side</th>
@@ -156,17 +160,17 @@ function NewHistoryTable() {
 											// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
 											className=" interMedium text-base border-b border-b-[#E4E4E4]"
 										>
-											<td className={`px-4 text-left interExtraBold text-md py-3 ${position.timestamp ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
+											<td className={`px-4 text-left interExtraBold text-md py-3 ${position.timestamp && mode !="dark" ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
 												{position.timestamp ? convertTime(position.timestamp) : '-'}
 											</td>
 
 											{/* <td>{swapToCur.Symbol}</td> */}
-											<td className={`px-4 text-left interExtraBold text-md py-3 ${position.indexName ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
+											<td className={`px-4 text-left interExtraBold text-md py-3 ${position.indexName && mode !="dark" ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
 												{position.indexName ? position.indexName : '-'}
 											</td>
 											<td className="px-4 text-left py-3">
 												<div
-													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow text-blackText-500' : 'text-[#F2F2F2]'}  
+													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side && mode !="dark" ? 'interBold titleShadow text-blackText-500' : 'text-[#F2F2F2]'}  
 													${
 														position.side === 'Mint Request'
 															? 'bg-nexLightGreen-500 text-whiteText-500'
@@ -178,18 +182,18 @@ function NewHistoryTable() {
 													{position.side ? position.side.toString().split(' ')[0] : '-'}
 												</div>
 											</td>
-											<td className={`px-4 text-left interExtraBold text-lg py-3 ${position.inputAmount && position.tokenAddress ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
+											<td className={`px-4 text-left interExtraBold text-lg py-3 ${position.inputAmount && position.tokenAddress && mode !="dark" ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
 												{position.inputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
 														{position.side === 'Mint Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <br />
-														<em className="interExtraBold text-[#646464] text-base">(${usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]) : 0}) </em>{' '}
+														<em className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} text-base`}>(${usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]) : 0}) </em>{' '}
 													</>
 												) : (
 													'-'
 												)}
 											</td>
-											<td className={`px-4 text-left interExtraBold text-lg py-3 ${position.outputAmount && position.tokenAddress ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
+											<td className={`px-4 text-left interExtraBold text-lg py-3 ${position.outputAmount && position.tokenAddress && mode !="dark" ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
 												{position.outputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}

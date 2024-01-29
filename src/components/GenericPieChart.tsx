@@ -20,6 +20,7 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
       const canvas = canvasRef.current;
       const legend = legendRef.current;
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 1000);
 
@@ -39,7 +40,7 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
         // If both categories have 0% values, create a default gray slice
         const defaultShape = new THREE.Shape();
         defaultShape.moveTo(0, 0);
-        defaultShape.absarc(0, 0, radius, 0, Math.PI * 2, false);
+        defaultShape.absarc(0, 0, radius, 0, Math.PI * 100, false);
 
         const defaultExtrudeSettings = {
           depth: height,
@@ -50,13 +51,15 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
         const defaultMaterial = new THREE.MeshPhongMaterial({
           color: new THREE.Color('#FFFFFF'), // Use a gray color or any other color you prefer
           emissive: new THREE.Color('#999999'),
-          flatShading: true,
+          flatShading: false,
           side: THREE.DoubleSide,
           transparent: true,
           opacity: 0.9,
           shininess: 0,
-          specular: new THREE.Color(0x000000),
+          specular: new THREE.Color(0x111111),
         });
+
+        defaultMaterial.precision = "highp"
 
         const defaultSlice = new THREE.Mesh(defaultGeometry, defaultMaterial);
         scene.add(defaultSlice);

@@ -5,6 +5,9 @@ import { Carousel } from 'react-responsive-carousel'
 
 // Assets : 
 import xLogo from "@assets/images/bg-2.png"
+import { useLandingPageStore } from '@/store/store'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
 
 const TipsBox = () => {
 	const tips = [
@@ -18,8 +21,14 @@ const TipsBox = () => {
 
 	const [selectedIndex, setSelectedIndex] = useState<number>(0)
 
+	const { mode, changeMode } = useLandingPageStore()
+	
 	return (
-		<div className="w-full relative h-full overflow-hidden bg-colorSeven-500 rounded-xl">
+		<div className={`w-full relative h-full overflow-hidden ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-colorSeven-500 "} rounded-xl`} style={{
+			boxShadow:
+			  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+			backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+		  }}>
             <div className='absolute h-full w-2/3 -right-10 -bottom-10 bg-center bg-contain bg-no-repeat rounded-xl opacity-20' style={{
                 backgroundImage: `url('${xLogo.src}')`
             }}></div>
