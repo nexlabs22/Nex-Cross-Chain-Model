@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Datafeed from "./trading-view/datafeed";
 import TradingView from "../charting_library/charting_library.standalone";
+import { useLandingPageStore } from '@/store/store'
 
 function compareArrays(oldArray, newArray) {
   const addedStrings = newArray.filter((item) => !oldArray.includes(item))
@@ -47,18 +48,21 @@ const TradingViewChart = ({ index, selectedIndices }) => {
 
   const [wid, setWid] = useState()
   const chartContainerRef = useRef()
+  const {mode } = useLandingPageStore()
 
   useEffect(() => {
     const script = document.createElement("script");
     script.type = "text/jsx";
     script.src = "public/charting_library/charting_library.js";
     document.head.appendChild(script);
+    const ind = index ? index : 'CRYPTO5'
     const widget = window.tvWidget = new TradingView.widget({
-      symbol: `Nexlabs:CRYPTO5/USD`,
+      symbol: `Nexlabs:${ind}/USD`,
       interval: "1D",
+      // timeframe: '1Y',
       style: "2",
       fullscreen: true,
-      // theme: 'dark',
+      theme: mode,
       container: chartContainerRef.current,
       allow_symbol_change: false,
       datafeed: Datafeed,
@@ -67,6 +71,15 @@ const TradingViewChart = ({ index, selectedIndices }) => {
         'mainSeriesProperties.style': 2,
       },
       library_path: "/charting_library/",
+      time_frames: [
+        { text: '1M', resolution: '1D', description: '1 month', title: '1M' },
+        { text: '3M', resolution: '1D', description: '2 month', title: '3M' },
+        { text: '6m', resolution: '1D', description: '6 month', title: '6M' },
+        { text: '1y', resolution: '1D', description: '1 year', title: '1Y' },
+        { text: '3y', resolution: '1D', description: '3 year', title: '3Y' },
+        { text: '5y', resolution: '1D', description: '5 year', title: '5Y' },
+        { text: "100y", resolution: '1D', description: "All", title: 'All' },
+      ],
     });
 
     widget.onChartReady(() => {
@@ -81,6 +94,12 @@ const TradingViewChart = ({ index, selectedIndices }) => {
       wid.setSymbol(`Nexlabs:${index}/USD`, 'D');
     }
   }, [index, wid])
+
+  useEffect(() => {
+    if (wid && wid.changeTheme) {
+      wid.changeTheme(mode);
+    }
+  }, [mode, wid])
 
   const [oldSelectedIndices, setOldSelectedIndices] = useState([])
   const [ids, setIds] = useState({})
@@ -116,7 +135,7 @@ const TradingViewChart = ({ index, selectedIndices }) => {
     className="w-screen"
     style={{
       width: '100%',
-      height: '85%',
+      height: '100%',
       overflow: 'hidden',
       zIndex: 1,
     }}

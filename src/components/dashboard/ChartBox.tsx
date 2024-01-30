@@ -439,14 +439,14 @@ const DashboardChartBox = () => {
 								})
 							}
 						})}
-						<div
+						{/* <div
 							className={`h-14 aspect-square rounded-full flex flex-row items-center justify-center border ${
 								mode == 'dark' ? ' border-whiteText-500/50 shadow shadow-whiteText-500/50' : 'border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 '
 							} cursor-pointer hover:bg-gray-200`}
 							onClick={openClassesModal}
 						>
 							{mode == 'dark' ? <BsPlus color="#FFFFFF" size={30} /> : <BsPlus color="#2A2A2A" size={30} />}
-						</div>
+						</div> */}
 					</div>
 					<div className="w-full flex md:hidden h-fit flex-row items-center justify-start gap-2">
 						{priorityAssetClasses.map((item, id) => {
@@ -470,9 +470,9 @@ const DashboardChartBox = () => {
 													}
 												}}
 												className="w-5/12 h-fit py-2 px-2 rounded-full flex flex-row items-center justify-around border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 cursor-pointer hover:bg-gray-200"
-												style={{
-													backgroundColor: selectedIndices.includes(assetClass.colName) ? assetClass.selectionColor : 'transparent',
-												}}
+												// style={{
+												// 	backgroundColor: selectedIndices.includes(assetClass.colName) ? assetClass.selectionColor : 'transparent',
+												// }}
 											>
 												<div className="flex flex-row w-full items-center justify-between pr-2">
 													<div
@@ -500,23 +500,26 @@ const DashboardChartBox = () => {
 								})
 							}
 						})}
-						<div
+						{/* <div
 						className={`h-14 aspect-square rounded-full flex flex-row items-center justify-center border ${
 							mode == 'dark' ? ' border-whiteText-500/50 shadow shadow-whiteText-500/50' : 'border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 '
 						} cursor-pointer hover:bg-gray-200`}
 							onClick={openClassesModal}
 						>
 							{mode == 'dark' ? <BsPlus color="#FFFFFF" size={30} /> : <BsPlus color="#2A2A2A" size={30} />}
-						</div>
+						</div> */}
 					</div>
 				</div>
+				
 				<div
-					className={`h-[80vh] md:h-[40vh] xl:h-[80vh] w-full p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
+					// className={`h-[50px] md:h-[40vh] xl:h-[50px] w-[600px] p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
+					// className={`h-[80vh] md:h-[40vh] xl:h-[80vh] w-full p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
+					className={`h-full md:h-[40vh] xl:h-fit w-full p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
 					style={{
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 					}}
 				>
-					<div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
+					{/* <div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
 						<Menu
 							menuButton={
 								<div className="w-fit h-fit px-3 py-2 ml-2 hidden lg:flex flex-row items-center justify-center gap-1 rounded-md bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500">
@@ -604,7 +607,7 @@ const DashboardChartBox = () => {
 								</h5>
 							</div>
 						</Menu>
-					</div> 
+					</div>  */}
 					{/* <div className="flex flex-row items-start justify-start px-2">
 				<button
 					type="button"
@@ -634,7 +637,10 @@ const DashboardChartBox = () => {
 				</button>
 			</div> */}
 					{/* {defaultIndex === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />} */}
-				</div>
+					<TradingViewChart selectedIndices={selectedIndices} index={defaultIndex}/>
+				</div> 
+				{/* <div className='h-1'> */}
+				{/* </div> */}
 			</section>
 			<GenericModal isOpen={classesModalOpen} onRequestClose={closeClassesModal} modalWidth={40}>
 				<div className="w-full h-max-[10px] px-2 flex flex-row items-center justify-start">
