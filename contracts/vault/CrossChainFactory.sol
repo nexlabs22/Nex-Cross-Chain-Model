@@ -540,26 +540,25 @@ contract CrossChainIndexFactory is
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
-        // Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
-        //     .destTokenAmounts;
-        // address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
-        // uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
-
-        (uint actionType, address targetAddress, uint nonce, uint percentage, uint extraValue) = abi.decode(any2EvmMessage.data, (uint, address, uint, uint, uint)); // abi-decoding of the sent string message
+        
+        (uint actionType, address[] memory targetAddresses, uint nonce, uint[] percentages, uint extraValue) = abi.decode(any2EvmMessage.data, (uint, address[], uint, uint[], uint)); // abi-decoding of the sent string message
         if(actionType == 0){
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
             .destTokenAmounts;
         address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
         uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
-
-        // IERC20(crossChainToken).approve(v3Router, amount);
-        uint oldTokenValue = getAmountOut(targetAddress, address(weth), IERC20(targetAddress).balanceOf(address(crossChainVault)), 3);
         uint wethAmount = swap(crossChainToken, address(weth), amount, address(crossChainVault), 3);
-        // swap(address(weth), targetAddress, wethAmount, address(this), 3);
-        _swapSingle(address(weth), targetAddress, wethAmount, address(crossChainVault), 3);
+        address[] memory oldTokenValues;
+        address[] memory newTokenValues;
+        for(int i = 0; i < targetAddresses.length; i++){
+        uint wethToSwap = wethAmount*percentages[i]/extraValue;
+        uint oldTokenValue = getAmountOut(targetAddresses[i], address(weth), IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)), 3);
+        _swapSingle(address(weth), targetAddresses[i], wethToSwap, address(crossChainVault), 3);
         uint newTokenValue = oldTokenValue + wethAmount;
-
-        bytes memory data = abi.encode(0, targetAddress, nonce, oldTokenValue, newTokenValue);
+        oldTokenValues[i] = oldTokenValue;
+        newTokenValues[i] = newTokenValue;
+        }
+        bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
         sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }else if( actionType == 1){
           uint swapAmount = (percentage*IERC20(targetAddress).balanceOf(address(crossChainVault)))/1e18;

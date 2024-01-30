@@ -23,6 +23,9 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let otherAccount : any
     let token0 : Token
     let token1 : Token
+    let token2 : Token
+    let token3 : Token
+    let token4 : Token
     let crossChainToken : Token
     let weth9: IWETH
     let v3Factory: IUniswapV3Factory
@@ -39,8 +42,6 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     beforeEach(async function () {
       [owner, otherAccount] = await ethers.getSigners();
   
-      
-      
 
       const LinkToken = await ethers.getContractFactory("LinkToken");
       linkToken = await LinkToken.deploy();
@@ -51,6 +52,9 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       const Token = await ethers.getContractFactory("Token");
       token0 = await Token.deploy(ethers.utils.parseEther("1000000"));
       token1 = await Token.deploy(ethers.utils.parseEther("100000"));
+      token2 = await Token.deploy(ethers.utils.parseEther("100000"));
+      token3 = await Token.deploy(ethers.utils.parseEther("100000"));
+      token4 = await Token.deploy(ethers.utils.parseEther("100000"));
       crossChainToken = await Token.deploy(ethers.utils.parseEther("100000"));
 
       const BasicMessageSender = await ethers.getContractFactory("BasicMessageSender");
@@ -79,8 +83,8 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       
       indexToken = await IndexToken.deploy()
       await indexToken.initialize(
-            "Anti Inflation",
-            "ANFI",
+            "Crypto5",
+            "CR5",
             (1e18).toString(),
             owner.address,
             ethers.utils.parseEther("1000000").toString(),
@@ -170,13 +174,12 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       await indexToken.setMinter(indexFactory.address)
       await indexFactory.setCrossChainToken(crossChainToken.address)
       await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address)
-      await indexFactoryStorage.setIndexFactory(indexFactory.address)
       await crossChainIndexFactory.setCrossChainToken(crossChainToken.address)
       await indexFactory.setCrossChainFactory(crossChainIndexFactory.address, "2");
       await crossChainVault.setFactory(crossChainIndexFactory.address);
     })
     
-    async function addLiquidityEth(token: Token, ethAmount: string, tokenAmount: string){
+    async function addLiquidityEth(token: Token | LinkToken, ethAmount: string, tokenAmount: string){
       let tokens = [];
       tokens[0] = token.address < weth9.address ? token.address : weth9.address
       tokens[1] = token.address > weth9.address ? token.address : weth9.address
@@ -220,15 +223,23 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
 
     }
 
-    async function updateOracleList(_percentages: string[]){
+    async function updateOracleList(){
       const assetList = [
         token0.address,
-        token1.address
+        token1.address,
+        token2.address,
+        token3.address,
+        token4.address
     ]
-    // const percentages = ["70000000000000000000", "30000000000000000000"]
-    const percentages = _percentages
-    const swapVersions = ["3", "3"]
-    const chainSelectors = ["1", "2"]
+    const percentages = [
+        "30000000000000000000", 
+        "20000000000000000000",
+        "10000000000000000000",
+        "10000000000000000000",
+        "30000000000000000000",
+    ]
+    const swapVersions = ["3", "3", "3", "3", "3"]
+    const chainSelectors = ["1", "1", "1", "1", "2"]
     //update oracle list
     await linkToken.transfer(indexFactoryStorage.address, 1e17.toString());
     const transaction: ContractTransaction = await indexFactoryStorage.requestAssetsData();
@@ -246,49 +257,42 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
 
       it("Test factory single swap", async function () {
         //update oracle list
-        await updateOracleList(["70000000000000000000", "30000000000000000000"])
+        await updateOracleList()
         //adding liquidity
         const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
         const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
 
         await addLiquidityEth(token0, "1", "1000")
         await addLiquidityEth(token1, "1", "1000")
+        await addLiquidityEth(token2, "1", "1000")
+        await addLiquidityEth(token3, "1", "1000")
+        await addLiquidityEth(token4, "1", "1000")
         await addLiquidityEth(crossChainToken, "1", "2000")
         await addLiquidityEth(linkToken, "10", "10000")
+        
+        console.log("weth address", weth9.address)
+        console.log("link address", linkToken.address)
         
         
         console.log("ccVault balance before swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance before swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
+        console.log("link token balance before swap:", ethers.utils.formatEther(await linkToken.balanceOf(indexFactory.address)))
+        console.log("link decimals:", Number(await linkToken.decimals()))
         await indexFactory.issuanceIndexTokensWithEth(ethers.utils.parseEther("0.1"), ethers.utils.parseEther("1"), {value: ethers.utils.parseEther("1.1001")})
+        console.log("link token balance before swap:", ethers.utils.formatEther(await linkToken.balanceOf(indexFactory.address)))
         console.log("==>");
         console.log("ccVault balance after swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance after swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
         console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
+        console.log("token2 after swap:", ethers.utils.formatEther(await token2.balanceOf(indexToken.address)))
+        console.log("token3 after swap:", ethers.utils.formatEther(await token3.balanceOf(indexToken.address)))
         await network.provider.send("evm_mine");
-        console.log("chain 1 portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
-        console.log("chain 2 portfolio after swap:", ethers.utils.formatEther(await crossChainIndexFactory.getPortfolioBalance()))
-        // console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
-        // const indexTokenBalance = await indexToken.balanceOf(owner.address);
-        // await indexFactory.redemption(ethers.utils.parseEther("10"), weth9.address, 3);
-        // await indexFactory.redemption(indexTokenBalance, weth9.address, 3);
-        // console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
-        console.log("Asking values..");
-        await indexFactory.askValues();
-        console.log("token values count:", Number(await indexFactory.updatedTokensValueCount(1)))
-        console.log("portfolio values count:", ethers.utils.formatEther(await indexFactory.portfolioTotalValueByNonce(1)))
-        console.log("first token1 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(1, token0.address)))
-        console.log("first token2 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(1, token1.address)))
-        //
-         await updateOracleList(["60000000000000000000", "40000000000000000000"])
-        //
-        await indexFactory.firstReweightAction()
-        console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactory.reweightWethValueByNonce(1)))
-        await indexFactory.secondReweightAction()
-        // console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactory.reweightWethValueByNonce(1)))
-        await indexFactory.askValues();
-        console.log("second token1 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(2, token0.address)))
-        console.log("second token2 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(2, token1.address)))
+        console.log("portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
+        console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
+        const indexTokenBalance = await indexToken.balanceOf(owner.address);
+        await indexFactory.redemption(indexTokenBalance, ethers.utils.parseEther("1"), weth9.address, 3, {value: ethers.utils.parseEther("1")});
+        console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
       });
       
     });

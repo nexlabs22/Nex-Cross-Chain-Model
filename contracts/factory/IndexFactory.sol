@@ -73,6 +73,11 @@ contract IndexFactory is
     mapping(uint => uint) public issuanceCompletedTokensCount;
     mapping(uint => address) public issuanceNonceRequester;
 
+    mapping(uint => mapping(uint64 => address[])) public issuanceChainSelectorTokensByNonce;
+    mapping(uint => mapping(uint64 => uint[])) public issuanceChainSelectorSharesByNonce;
+    mapping(uint => mapping(uint64 => uint)) public issuanceChainSelectorTotalSharesByNonce;
+    mapping(uint => uint64[]) public issuanceChainSelectors;
+    mapping(uint => mapping(uint64 => bool)) public issuanceChainSelectorFilled;
 
     mapping(uint => uint) public redemptionNonceTotalValue;
     mapping(uint => uint) public redemptionCompletedTokensCount;
@@ -227,6 +232,8 @@ contract IndexFactory is
         }
         uint firstPortfolioValue = getPortfolioBalance();
         uint wethAmount = _inputAmount;
+        uint crossChainWethAmount;
+        uint totalCrossChainShares;
         //swap
         for(uint i = 0; i < totalCurrentList(); i++) {
           uint64 tokenChainSelector = tokenChainSelector(currentList(i));
@@ -247,7 +254,32 @@ contract IndexFactory is
             feeToken: i_link
             });
             uint256 fees = IRouterClient(i_router).getFee(tokenChainSelector, message);
-
+            crossChainWethAmount += wethAmount*tokenCurrentMarketShare(currentList(i))/100e18;
+            issuanceChainSelectorTokensByNonce[issuanceNonce][tokenChainSelector].push(currentList(i));
+            issuanceChainSelectorSharesByNonce[issuanceNonce][tokenChainSelector].push(tokenCurrentMarketShare(currentList(i)));
+            issuanceChainSelectorTotalSharesByNonce[issuanceNonce][tokenChainSelector] += tokenCurrentMarketShare(currentList(i));
+            totalCrossChainShares += tokenCurrentMarketShare(currentList(i));
+            if(!issuanceChainSelectorFilled[issuanceNonce][tokenChainSelector]){
+            issuanceChainSelectors[issuanceNonce].push(tokenChainSelector);
+            issuanceChainSelectorFilled[issuanceNonce][tokenChainSelector] = true;
+            }
+            //send tokens and data
+            uint64[] memory allchainSelectors = issuanceChainSelectors[issuanceNonce];
+            uint totalCrossChainTokenAmount = _swapSingle(address(weth), crossChainToken, crossChainWethAmount, address(this), 3);
+            for(uint i = 0; i < allchainSelectors.length; i++) {
+                uint totalShares = issuanceChainSelectorTotalSharesByNonce[issuanceNonce][tokenChainSelector];
+                uint crossChainTokenAmount = totalCrossChainTokenAmount*totalShares/totalCrossChainShares;
+                address[] memory tokenAddresses = issuanceChainSelectorTokensByNonce[issuanceNonce][tokenChainSelector];
+                uint[] memory tokenShares = issuanceChainSelectorSharesByNonce[issuanceNonce][tokenChainSelector];
+                Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](2);
+                tokensToSendArray[0].token = crossChainToken;
+                tokensToSendArray[0].amount = crossChainTokenAmount;
+                tokensToSendArray[1].token = i_link;
+                tokensToSendArray[1].amount = fees;
+                bytes memory data = abi.encode(0, tokenAddresses, issuanceNonce, tokenShares, 0);
+                sendToken(tokenChainSelector, data, crossChainIndexFactory, tokensToSendArray, PayFeesIn.LINK);
+            }
+            /**
             uint crossChainTokenAmount = _swapSingle(address(weth), crossChainToken, wethAmount*tokenCurrentMarketShare(currentList(i))/100e18, address(this), 3);
             Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](2);
             tokensToSendArray[0].token = crossChainToken;
@@ -256,6 +288,7 @@ contract IndexFactory is
             tokensToSendArray[1].amount = fees;
             bytes memory data = abi.encode(0, currentList(i), issuanceNonce, 0, 0);
             sendToken(tokenChainSelector, data, crossChainIndexFactory, tokensToSendArray, PayFeesIn.LINK);
+            */
           }
         }
     }
@@ -485,14 +518,16 @@ contract IndexFactory is
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
        
-        (uint actionType, address tokenAddress, uint nonce, uint value1, uint value2) = abi.decode(any2EvmMessage.data, (uint, address, uint, uint, uint)); // abi-decoding of the sent string message
+        (uint actionType, address[] memory tokenAddresses, uint nonce, uint[] value1, uint[] value2) = abi.decode(any2EvmMessage.data, (uint, address[], uint, uint[], uint[])); // abi-decoding of the sent string message
         if(actionType == 0){
         uint issuanceNonce = nonce;
+        for(uint i; i < tokenAddresses.length; i++){
         uint oldTokenValue = value1;
         uint newTokenValue = value2;
-        issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress].oldTokenValue = oldTokenValue;
-        issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress].newTokenValue = newTokenValue;
+        issuanceTokenOldAndNewValues[issuanceNonce][tokenAddresses[i]].oldTokenValue = oldTokenValue;
+        issuanceTokenOldAndNewValues[issuanceNonce][tokenAddresses[i]].newTokenValue = newTokenValue;
         issuanceCompletedTokensCount[issuanceNonce] += 1;
+        }
         if(issuanceCompletedTokensCount[issuanceNonce] == totalCurrentList()){
             completeIssuanceRequest(issuanceNonce);
         }

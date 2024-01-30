@@ -99,7 +99,7 @@ const config: HardhatUserConfig = {
     // only: [':ERC20$'],
   },
   gasReporter:{
-    enabled: true
+    enabled: false
   }
   // paths: {
   //   sources: './contracts',
