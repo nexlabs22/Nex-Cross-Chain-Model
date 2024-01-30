@@ -8,6 +8,7 @@ import get24hDayChangePer from '@utils/get24hDayChangePer'
 import { comparisonIndicesType } from '@/types/chartTypes'
 import { comparisonIndices } from '@/constants/comparisionIndices'
 import isEqual from 'lodash/isEqual';
+import { Mode } from '@anatoliygatt/dark-mode-toggle';
 
 type LandingPageStore = {
 	//Select slide index
@@ -17,10 +18,17 @@ type LandingPageStore = {
 	//dashboard default index
 	defaultIndex: string
 	changeDefaultIndex: (index: string) => void
+
+	mode: Mode
+	changeMode: (index: Mode) => void
 }
 
 const useLandingPageStore = create<LandingPageStore>()((set) => ({
 	//Select slide index
+
+	mode: "light",
+	changeMode: (mode: Mode) => set((state) => ({ mode: mode })),
+	
 	selectedSlideIndex: 0,
 	changeSelectedSlideIndex: (index: number) => set((state) => ({ selectedSlideIndex: index })),
 

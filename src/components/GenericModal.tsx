@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 
 // Icons : 
 import { IoMdClose } from 'react-icons/io'
+import { useLandingPageStore } from '@/store/store';
 
 interface ModalProps {
   isOpen: boolean;
@@ -13,6 +14,8 @@ interface ModalProps {
 
 const GenericModal: React.FC<ModalProps> = ({ isOpen, onRequestClose, children, modalWidth }) => {
 
+  const { mode, changeMode } = useLandingPageStore()
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -21,10 +24,13 @@ const GenericModal: React.FC<ModalProps> = ({ isOpen, onRequestClose, children, 
       ariaHideApp={false} 
       className="w-full focus:outline-none h-fit flex flex-row items-center justify-center min-w-screen lg:min-w-[50vw]"// Disables a11y warnings
     >
-      <div className={`flex flex-col items-start justify-start w-[90%] lg:w-[40%] min-h-20 h-fit rounded-2xl bg-white border border-blackText-500/30 shadow shadow-blackText-500 px-1 pb-2`}>
+      <div className={`flex flex-col items-start justify-start w-[90%] lg:w-[40%] min-h-20 h-fit rounded-2xl ${mode == "dark" ? "bg-gradient-to-tl from-[#050505] to-[#050505]" : "bg-white"} border border-blackText-500/30 shadow shadow-blackText-500 px-1 pb-2`} >
         <div className='w-full py-2 px-1 flex flex-row items-center justify-end'>
           <div className='w-fit h-fit p-1 rounded-full bg-transparent hover:bg-gray-300 cursor-pointer' onClick={onRequestClose}>
-          <IoMdClose color="#2F2F2F" size={20} />
+          {
+            mode == "dark" ? <IoMdClose color="#FFFFFF" size={20} /> : <IoMdClose color="#2F2F2F" size={20} />
+          }
+          
           </div>
         </div>
         

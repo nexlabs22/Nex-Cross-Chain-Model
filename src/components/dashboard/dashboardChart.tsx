@@ -10,6 +10,7 @@ import {
 	TimeScaleOptions,
 } from 'lightweight-charts'
 import anfiLogo from '@assets/images/anfi.png'
+
 import cr5Logo from '@assets/images/cr5.png'
 import { useChartDataStore, useLandingPageStore } from '@/store/store';
 import { chartDataType, lineChartDataType } from '@/store/storeTypes';
@@ -25,6 +26,7 @@ interface GradientAreaChartProps {
 }
 
 const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
+	const { mode } = useLandingPageStore()
 	const router = useRouter();
 	const { index: selectedTradingProduct} = router.query;
 	const { defaultIndex } = useLandingPageStore()
@@ -63,7 +65,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				handleScale: false,
 				handleScroll: true,
 				layout: {
-					background: { color: location === '/dcaCalculator' ? '#FFFFFF' :'#F3F3F3' }
+					background: { color: location === '/dcaCalculator'  ? '#FFFFFF' :'#F3F3F3' }
 					// backgroundColor: 'red', // Set the background color to transparent
 				} as DeepPartial<LayoutOptions>, // Use type assertion to specify the type
 			})

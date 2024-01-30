@@ -7,8 +7,12 @@ import useTradePageStore from '@/store/tradeStore'
 import { Positions } from '@/types/tradeTableTypes'
 import convertToUSD from '@/utils/convertToUsd'
 import React, { useEffect, useState } from 'react'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
+import { useLandingPageStore } from '@/store/store'
 
 function HistoryTable() {
+	const { mode } = useLandingPageStore()
 	const {
 		isFromCurrencyModalOpen,
 		isToCurrencyModalOpen,
@@ -98,7 +102,10 @@ function HistoryTable() {
 			<div className="h-full">
 				<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] w-full table-fixed border-collapse overflow-hidden rounded-xl border shadow-xl dark:border-[#161C10] md:min-w-[700px]">
 					<thead className="sticky top-0">
-						<tr className="text-md interBold bg-colorSeven-500 text-whiteText-500">
+						<tr className={`text-md interBold ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : "bg-colorSeven-500 text-whiteText-500"}`} style={{
+               
+                backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+              }}>
 							<th className="px-4 py-2 text-left" >
 								Time
 							</th>
@@ -112,7 +119,7 @@ function HistoryTable() {
 			</div>
 			<div className="max-h-64 overflow-y-auto">
 				<table className="w-full"> */}
-					<tbody className="overflow-y-scroll overflow-x-hidden bg-gray-200">
+					<tbody className={`"overflow-y-scroll overflow-x-hidden ${mode == "dark" ? " bg-[#101010] " : "bg-gray-200"} `}>
 						{dataToShow.map(
 							(
 								position: {

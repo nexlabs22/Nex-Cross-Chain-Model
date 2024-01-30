@@ -4,6 +4,7 @@ import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import { BsCaretDownFill } from 'react-icons/bs'
+import { useLandingPageStore } from '@/store/store'
 
 interface MenuItem {
 	id: string
@@ -21,14 +22,15 @@ const HoverMenuWithTransition: React.FC<HoverMenuWithTransitionProps> = ({ menuI
 	const ref = useRef(null)
 	const [menuState, toggle] = useMenuState({ transition: true })
 	const { anchorProps, hoverProps } = useHover(menuState.state, toggle)
+	const { mode, changeMode } = useLandingPageStore()
 
 	// console.log(menuItem);
 
 	return (
 		<>
 			<div className="flex h-fit w-fit flex-row items-center justify-start gap-1" ref={ref} {...anchorProps}>
-				<h5 className={`interMedium cursor-pointer font-base mr-3 ${lightV ? ' text-whiteText-500' : 'text-blackText-500'}`}>Portfolio</h5>
-				{lightV ? <BsCaretDownFill size={9} color="#FFFFFF" className="mr-5" /> : <BsCaretDownFill size={9} color="#252525" className="mr-5" />}
+				<h5 className={`interMedium cursor-pointer font-base mr-3 ${mode == "dark" ? ' text-whiteText-500' : 'text-blackText-500' }`}>Portfolio</h5>
+				{mode == "dark" ? <BsCaretDownFill size={9} color="#FFFFFF" className="mr-5" /> : <BsCaretDownFill size={9} color="#252525" className="mr-5" />}
 			</div>
 
 			<ControlledMenu {...hoverProps} {...menuState} anchorRef={ref} onClose={() => toggle(false)} direction="bottom" align="end" menuClassName="navSubMenu">

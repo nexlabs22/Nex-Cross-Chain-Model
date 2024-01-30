@@ -21,6 +21,9 @@ import usePortfolioPageStore from '@/store/portfolioStore'
 // Firebase :
 import { getDatabase, ref, onValue, set, update, push, child } from 'firebase/database'
 import { database } from '@/utils/firebase'
+import { useLandingPageStore } from '@/store/store'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
 
 interface User {
 	email: string
@@ -42,6 +45,7 @@ interface User {
 
 export default function Trade() {
 	const { selectedTradingCategory } = useTradePageStore()
+	const { mode } = useLandingPageStore()
 
 	const address = useAddress()
 	const [connectedUser, setConnectedUser] = useState<User>({
@@ -150,7 +154,7 @@ export default function Trade() {
 				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="flex min-h-screen h-fit w-screen bg-whiteBackground-500 flex-col items-center justify-start">
+			<main className={`flex min-h-screen h-fit w-screen  ${mode == "dark" ? "bg-gradient-to-tl from-[#050505] to-[#050505]" : "bg-whiteBackground-500"} flex-col items-center justify-start`}>
 				<DappNavbar />
 				<section className="w-full h-full flex flex-col lg:flex-row items-stretch justify-start gap-2 p-5">
 					<div className="w-full lg:w-9/12 flex-grow">
@@ -174,8 +178,8 @@ export default function Trade() {
 			</main>
 			<GenericModal isOpen={isTradePopUpOpen} onRequestClose={closeTradePopUp}>
 				<div className="w-full h-fit px-3">
-					<h5 className="text-xl text-blackText-500 interBold mb-4">Terms & Conditions</h5>
-					<p className="text-sm text-blackText-500 interMedium mb-4">
+					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Terms & Conditions</h5>
+					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
 						Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto
 						beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi
 						nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam
@@ -192,7 +196,7 @@ export default function Trade() {
 								setShowAgain(!showAgain)
 							}}
 						/>
-						<p className="text-xs text-blackText-500 interMedium">Don{"'"}t show again</p>
+						<p className={`text-xs${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium`}>Don{"'"}t show again</p>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-2 mb-2 mt-4">
 						<button
@@ -208,7 +212,12 @@ export default function Trade() {
 								closeTradePopUp()
 								if(showAgain) dontShowAgain()
 							}}
-							className="text-base cursor-pointer text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-4 py-2 rounded-lg hover:from-colorFour-500 hover:to-colorSeven-500/90"
+							className={`text-base cursor-pointer text-white titleShadow interBold ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500 hover:from-colorFour-500 hover:to-colorSeven-500/90"} active:translate-y-[1px] active:shadow-black w-fit px-4 py-2 rounded-lg `}
+							style={{
+								boxShadow:
+								  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+							  }}
 						>
 							Accept
 						</button>
