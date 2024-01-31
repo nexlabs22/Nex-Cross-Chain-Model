@@ -19,7 +19,7 @@ const New3DPieChart = () => {
         colors: ["#91AC9A", "#B7D1D3", "#5E869B", "#A6C3CE", "#86afbf"],
     };
     return (
-        <div className="w-full h-fit min-h-[400px] p-0 flx flex-row items-center justify-center" id="3DPieChartBox">
+        <div className="w-full h-fit min-h-[400px] p-0 flx xl:-mt-16 xl:-mb-16 flex-row items-center justify-center" id="3DPieChartBox">
             <Chart
                 chartType="PieChart"
                 className="flex flex-row items-center justify-center p-0 h-fit"

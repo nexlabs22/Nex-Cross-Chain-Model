@@ -78,7 +78,7 @@ type Coin = {
 	decimals: number
 }
 
-const SwapV2 = () => {
+const SwapV2Defi = () => {
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
 	const [isChecked, setChecked] = useState(false)
 	const [isMainnet, setIsmainnet] = useState(false)
@@ -1131,4 +1131,4 @@ const SwapV2 = () => {
 	)
 }
 
-export default SwapV2
+export default SwapV2Defi

@@ -151,7 +151,7 @@ const TopIndexData = () => {
 	if (defaultIndexObject) defaultIndexObject.managementFee = feeRate.toFixed(2)
 
 	return (
-		<section className="px-2 h-fit lg:px-10 py-6 xl:py-16">
+		<section className="px-2 h-fit lg:px-10 py-6 xl:pt-16">
 			<div className="flex h-fit xl:h-fit flex-row items-stretch justify-between gap-1 xl:gap-4 mb-6">
 				<div className={`w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50"} `} style={{
 					boxShadow:
@@ -264,7 +264,7 @@ const TopIndexData = () => {
 							</span>
 						</div>
 
-						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>${defaultIndexObject?.mktCap}</h5>
+						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
 					</div>
 					<div>
 						<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
@@ -283,7 +283,7 @@ const TopIndexData = () => {
 								</GenericTooltip>
 							</span>
 						</div>
-						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>${defaultIndexObject?.mktPrice}</h5>
+						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>N/A{/*defaultIndexObject?.mktPrice*/}</h5>
 					</div>
 					<div>
 						<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
@@ -304,7 +304,7 @@ const TopIndexData = () => {
 								</GenericTooltip>
 							</span>
 						</div>
-						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>+${defaultIndexObject?.chg24h}</h5>
+						<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>N/A{/*defaultIndexObject?.chg24h*/}</h5>
 					</div>
 				</div>
 				<div className="w-4/6 flex flex-row items-center justify-between">
@@ -315,7 +315,7 @@ const TopIndexData = () => {
 								<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>Token address</h5>
 							</div>
 							<div className="flex flex-row items-center justify-between">
-								<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>null</h5>
+								<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>N/A</h5>
 								<GenericAddressTooltip color="#5E869B" address="0x18C41549ee05F893B5eA6ede6f8dccC1a9C16f44">
 									<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
 								</GenericAddressTooltip>
@@ -327,7 +327,7 @@ const TopIndexData = () => {
 								<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>Managment fee</h5>
 							</div>
 							<div className="flex flex-row items-center justify-between gap-1">
-								<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{defaultIndexObject?.managementFee}%</h5>
+								<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{/*defaultIndexObject?.managementFee*/}N/A</h5>
 								<GenericTooltip
 									color="#5E869B"
 									content={
@@ -354,7 +354,7 @@ const TopIndexData = () => {
 							<div className="absolute h-full top-0 left-0 w-4/5 z-50 flex flex-col items-start justify-start p-4">
 								<h5 className="interBold text-whiteText-500 titleShadow text-2xl mb-3">Nexlabs Fees</h5>
 
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/fee-structure'}>
+								<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/fees'}>
 									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
 										<span>Learn More</span>
 										<GoArrowRight color="#5E869B" size={30} />
@@ -383,19 +383,19 @@ const TopIndexData = () => {
 						<div className="grid grid-cols-2 grid-rows-2 grid-col gap-y-5 lg:hidden px-2 py-5">
 							<div className="flex flex-col items-center justify-center">
 								<h5 className={`interExtraBold mb-5 text-xl ${mode == "dark" ? " text-whiteText-500" : "text-gray-400"}`}>Market Cap</h5>
-								<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>${defaultIndexObject?.mktCap}</h5>
+								<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
 							</div>
 							<div className="flex flex-col items-center justify-center">
 								<h5 className={`interExtraBold mb-5 text-xl ${mode == "dark" ? " text-whiteText-500" : "text-gray-400"}`}>Market Price</h5>
-								<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>${defaultIndexObject?.mktCap}</h5>
+								<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
 							</div>
 							<div className="flex flex-col items-center justify-center">
 								<h5 className={`interExtraBold mb-5 text-xl ${mode == "dark" ? " text-whiteText-500" : "text-gray-400"}`}>24h Change</h5>
-								<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>${defaultIndexObject?.mktCap}</h5>
+								<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
 							</div>
 							<div className="flex flex-col items-center justify-center">
 								<h5 className={`interExtraBold mb-5 text-xl ${mode == "dark" ? " text-whiteText-500" : "text-gray-400"}`}>Managment Fees</h5>
-								<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>${defaultIndexObject?.mktCap}</h5>
+								<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
 							</div>
 						</div>
 						<div className="flex flex-row items-center justify-center gap-1 lg:hidden px-2">
@@ -403,7 +403,7 @@ const TopIndexData = () => {
 							<h5 className={`interExtraBold mb-5 text-xl ${mode == "dark" ? " text-whiteText-500" : "text-gray-400"}`}>Token address</h5>
 						</div>
 						<div className="flex flex-row items-center justify-center gap-2 lg:hidden px-2 py-2">
-							<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>null</h5>
+							<h5 className={`interMedium text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>N/A</h5>
 
 							<BsInfoCircle color="#5E869B" size={25} />
 						</div>

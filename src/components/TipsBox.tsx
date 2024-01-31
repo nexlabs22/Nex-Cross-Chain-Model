@@ -55,13 +55,13 @@ const TipsBox = () => {
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
 							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-sm w-11/12">{tips[0]}</h5>
+							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[0]}</h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-4">
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
 							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-sm w-11/12">{tips[1]}</h5>
+							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[1]}</h5>
 						</div>
 					</div>
 					<div key={2} className="p-2 w-full h-fit flex flex-col items-center justify-center gap-3">
@@ -69,13 +69,13 @@ const TipsBox = () => {
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
 							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-sm w-11/12">{tips[2]}</h5>
+							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[2]}</h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-4">
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
 							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-sm w-11/12">{tips[3]}</h5>
+							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[3]}</h5>
 						</div>
 					</div>
 					<div key={3} className="p-2 w-full h-fit flex flex-col items-center justify-center gap-3">
@@ -83,13 +83,13 @@ const TipsBox = () => {
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
 							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-sm w-11/12">{tips[4]}</h5>
+							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[4]}</h5>
 						</div>
 						<div className="flex flex-row items-center justify-start gap-4">
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
 							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-sm w-11/12">{tips[5]}</h5>
+							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[5]}</h5>
 						</div>
 					</div>
 				</Carousel>

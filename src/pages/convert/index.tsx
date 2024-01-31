@@ -7,6 +7,9 @@ import dynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
 
 import convert from '@assets/images/convert.png'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
+import { useLandingPageStore } from '@/store/store'
 
 import Head from 'next/head'
 
@@ -20,6 +23,7 @@ export const LiFiWidgetNext = dynamic(() => import('@/components/LifiWidget').th
 })
 
 export default function Convert() {
+	const {mode} = useLandingPageStore()
 	return (
 		<>
 			<Head>

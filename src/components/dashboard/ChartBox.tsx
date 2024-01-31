@@ -59,6 +59,7 @@ import { BsChevronCompactRight, BsChevronCompactLeft } from 'react-icons/bs'
 import { GoTriangleDown } from 'react-icons/go'
 import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
+import { CiCircleCheck } from 'react-icons/ci'
 
 const DashboardChartBox = () => {
 	const { defaultIndex, mode } = useLandingPageStore()
@@ -732,7 +733,7 @@ const DashboardChartBox = () => {
 										// 	}
 										// }}
 										className={`flex flex-row items-center justify-center rounded-xl cursor-pointer w-full p-3 hover:bg-gray-200/50 ${
-											selectedIndices.includes(cls.columnName) ? 'bg-gray-200/50' : ''
+											selectedIndices.includes(cls.columnName) ? ' bg-gray-800' : ''
 										}`}
 									>
 										<div className="w-1/3 ">
@@ -776,9 +777,10 @@ const DashboardChartBox = () => {
 											}}
 										>
 											{cls.shortName}
+											
 										</h5>
 
-										<div className="w-1/3 flex items-center justify-end">
+										<div className="w-1/3 flex flex-row gap-1 items-center justify-end">
 											<input
 												type="color"
 												name="comparisionChart"
@@ -792,6 +794,10 @@ const DashboardChartBox = () => {
 													// closeClassesModal()
 												}}
 											/>
+											{
+												selectedIndices.includes(cls.columnName) ? <CiCircleCheck size={25} strokeWidth={1.5} color="#089981" />
+												: ""
+											}
 										</div>
 									</div>
 								)

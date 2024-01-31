@@ -2,6 +2,10 @@ import React, { useEffect, useRef } from 'react'
 import { createChart, DeepPartial, LayoutOptions, LineStyle, LineWidth, PriceScaleMode, PriceScaleOptions, TimeScaleOptions } from 'lightweight-charts'
 import { useAddress } from '@thirdweb-dev/react'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
+import { useLandingPageStore } from '@/store/store'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
+
 
 interface GradientAreaChartProps {
 	data: { time: string | number | Date; value: number }[]
@@ -9,6 +13,7 @@ interface GradientAreaChartProps {
 }
 
 const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) => {
+	const { mode } = useLandingPageStore()
 	const address = useAddress()
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
@@ -100,7 +105,7 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) =
 				{/* Content with text goes here */}
 				<div className="py-4 px-[10%] flex flex-col items-end justify-start h-full w-full">
 					<h1
-						className="text-2xl text-blackText-500 titleShadow interBold"
+						className={`text-2xl ${mode == "dark" ? " text-whiteText-500 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]" : "text-blackText-500"} titleShadow interBold`}
 						title={data[data.length - 1]?.value && data[data.length - 1]?.value < 0.01 ? formatNumber(data[data.length - 1]?.value).toString() : ''}
 					>
 						${data[data.length - 1]?.value ? (data[data.length - 1]?.value < 0.01 ? '≈ 0.00 ' : FormatToViewNumber({ value: data[data.length - 1]?.value, returnType: 'string' })) : '0.00'}
