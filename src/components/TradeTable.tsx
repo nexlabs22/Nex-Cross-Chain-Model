@@ -74,7 +74,7 @@ function HistoryTable() {
 			tokens.map(async (token) => {
 				if (token.symbol !== 'CRYPTO5' && ethPriceInUsd > 0) {
 					const obj = usdPrices
-					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false) || 0) // false as for testnet tokens
+					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(usdPrices).length === tokens.length - 1) {
 						setUsdPrices(obj)
 					}
@@ -84,31 +84,32 @@ function HistoryTable() {
 
 		getUsdPrices()
 	}, [ethPriceInUsd])
-	
+
 	const dataToShow: { timestamp: number; tokenAddress: string; indexName: string; side: string; inputAmount: number; outputAmount: number }[] = Array.from(
 		{ length: Math.max(5, positionHistoryData.length) },
-		(_, index) => positionHistoryData[index] || {
-			timestamp: 0,
-			indexName: '',
-			inputAmount: 0,
-			outputAmount: 0,
-			tokenAddress: '',
-			side: ''
-		}
-		);
+		(_, index) =>
+			positionHistoryData[index] || {
+				timestamp: 0,
+				indexName: '',
+				inputAmount: 0,
+				outputAmount: 0,
+				tokenAddress: '',
+				side: '',
+			}
+	)
 
 	return (
 		<div className="w-full h-full ">
 			<div className="h-full">
 				<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] w-full table-fixed border-collapse overflow-hidden rounded-xl border shadow-xl dark:border-[#161C10] md:min-w-[700px]">
 					<thead className="sticky top-0">
-						<tr className={`text-md interBold ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : "bg-colorSeven-500 text-whiteText-500"}`} style={{
-               
-                backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
-              }}>
-							<th className="px-4 py-2 text-left" >
-								Time
-							</th>
+						<tr
+							className={`text-md interBold ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500' : 'bg-colorSeven-500 text-whiteText-500'}`}
+							style={{
+								backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+							}}
+						>
+							<th className="px-4 py-2 text-left">Time</th>
 							<th className="px-4 py-2 text-left">Pair</th>
 							<th className="px-4 py-2 text-left">Request Side</th>
 							<th className="px-4 py-2 text-left">Input Amount</th>
@@ -119,7 +120,7 @@ function HistoryTable() {
 			</div>
 			<div className="max-h-64 overflow-y-auto">
 				<table className="w-full"> */}
-					<tbody className={`"overflow-y-scroll overflow-x-hidden ${mode == "dark" ? " bg-[#101010] " : "bg-gray-200"} `}>
+					<tbody className={`"overflow-y-scroll overflow-x-hidden ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-200'} `}>
 						{dataToShow.map(
 							(
 								position: {
@@ -156,19 +157,25 @@ function HistoryTable() {
 											// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
 											className="text-gray-700 interMedium text-base border-b border-blackText-500"
 										>
-											<td className={`px-4 text-left py-3 ${position.timestamp?'':'text-[#E5E7EB]'}`}>{position.timestamp ? convertTime(position.timestamp) : '-'}</td>
+											<td className={`px-4 text-left py-3 ${position.timestamp ? '' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}`}>{position.timestamp ? convertTime(position.timestamp) : '-'}</td>
 
 											{/* <td>{swapToCur.Symbol}</td> */}
-											<td className={`px-4 text-left py-3 ${position.indexName?'':'text-[#E5E7EB]'}`}>{position.indexName ? position.indexName : '-'}</td>
+											<td className={`px-4 text-left py-3 ${position.indexName ? '' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}`}>{position.indexName ? position.indexName : '-'}</td>
 											<td className="px-4 text-left py-3">
 												<div
-													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side? 'interBold titleShadow' : 'text-[#E5E7EB]'}  
-													${ position.side === 'Mint Request' ? 'bg-nexLightGreen-500 text-whiteText-500' :position.side === 'Burn Request' ? 'bg-nexLightRed-500 text-whiteText-500':'bg-transparent'} flex flex-row items-center justify-center`}
+													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}  
+													${
+														position.side === 'Mint Request'
+															? 'bg-nexLightGreen-500 text-whiteText-500'
+															: position.side === 'Burn Request'
+															? 'bg-nexLightRed-500 text-whiteText-500'
+															: 'bg-transparent'
+													} flex flex-row items-center justify-center`}
 												>
-													{position.side ? position.side.toString().split(" ")[0] : '-'}
+													{position.side ? position.side.toString().split(' ')[0] : '-'}
 												</div>
 											</td>
-											<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '':'text-[#E5E7EB]'}`}>
+											<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}`}>
 												{position.inputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
@@ -179,7 +186,7 @@ function HistoryTable() {
 													'-'
 												)}
 											</td>
-											<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress ?'':'text-[#E5E7EB]' }`}>
+											<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress ? '' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}`}>
 												{position.outputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}

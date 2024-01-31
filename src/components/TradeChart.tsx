@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
 // Components :
 import { Menu } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
+import TradingViewChart from '@/components/TradingViewChart'
 const Chart = dynamic(() => import('@/components/dashboard/dashboardChart'), { loading: () => <p>Loading ...</p>, ssr: false })
-
 
 // Store
 import { useChartDataStore, useLandingPageStore } from '@/store/store'
@@ -18,16 +18,16 @@ import useTradePageStore from '@/store/tradeStore'
 import { GoTriangleDown } from 'react-icons/go'
 
 const TradeChartBox = () => {
-	const router = useRouter();
-	const { index: selectedTradingProduct } = router.query;
-	// const {  defaultIndex } = useTradePageStore()
+	const router = useRouter()
+	const { index: selectedTradingProduct } = router.query
+	const { mode } = useLandingPageStore()
 	const { fetchIndexData, removeIndex, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data } = useChartDataStore()
 
 	useEffect(() => {
 		fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
 	}, [fetchIndexData])
 
-	const chartData = selectedTradingProduct === 'ANFI' ? ANFIData  : CR5Data;
+	const chartData = selectedTradingProduct === 'ANFI' ? ANFIData : CR5Data
 	const todayPrice = chartData[chartData.length - 1]?.value
 	const yesterdayPrice = chartData[chartData.length - 2]?.value
 	const chart24hchange = ((todayPrice - yesterdayPrice) / yesterdayPrice) * 100
@@ -35,19 +35,16 @@ const TradeChartBox = () => {
 	return (
 		<>
 			<section className="h-full w-full">
-				<div className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
-					<div className="flex flex-row items-start justify-between px-2 mt-2 mb-6">
-						<div className='flex flex-col items-start justify-start'>
-							<h5 className='interBlack text-lg text-blackText-500'>
-								{
-									selectedTradingProduct
-								}
+				{/* <div className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300"> */}
+				<div className={`h-full w-full p-3 rounded-2xl border border-gray-300/50 ${mode=== 'dark' ? 'bg-[#131722]': 'bg-[#FFFFFF]'} shadow-md shadow-gray-300`}>
+					{/* <div className="flex flex-row items-start justify-between px-2 mt-2 mb-6"> */}
+						{/* <div className="flex flex-col items-start justify-start">
+							<h5 className="interBlack text-lg text-blackText-500">{selectedTradingProduct}</h5>
+							<h5 className={`interMedium text-sm ${chart24hchange > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'}`}>
+								{chart24hchange ? (chart24hchange > 0 ? '+ ' + chart24hchange.toFixed(2) : chart24hchange.toFixed(2)) : '0.00'}%
 							</h5>
-							<h5 className={`interMedium text-sm ${chart24hchange > 0 ? 'text-nexLightGreen-500': 'text-nexLightRed-500'}`}>
-							{chart24hchange ? chart24hchange > 0 ?  '+ ' + chart24hchange.toFixed(2) :chart24hchange.toFixed(2) : '0.00' }%
-							</h5>
-						</div>
-						<Menu
+						</div> */}
+						{/* <Menu
 							menuButton={
 								<div className="w-fit h-fit px-3 py-2 ml-2 hidden lg:flex flex-row items-center justify-center gap-1 rounded-md bg-colorSeven-500 shadow-sm shadow-blackText-500">
 									<h5 className="text-sm interExtraBold titleShadow text-whiteText-500">
@@ -119,17 +116,19 @@ const TradeChartBox = () => {
 									5 Years
 								</h5>
 							</div>
-						</Menu>
+						</Menu> */}
+					{/* </div> */}
+					{/* <Chart data={chartData} /> */}
+					<div className='h-fit w-full'>
+						<TradingViewChart selectedIndices={[]} index={selectedTradingProduct} />
 					</div>
-					<Chart data={chartData} />
 					{/* {
 						defaultIndex === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />
 					} */}
 				</div>
 			</section>
-			
 		</>
 	)
 }
 
-export default TradeChartBox;
+export default TradeChartBox

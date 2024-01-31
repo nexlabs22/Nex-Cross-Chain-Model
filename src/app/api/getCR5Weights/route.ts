@@ -101,7 +101,7 @@ export async function GET() {
                 name: cryptoName,
                 weight: Number(marketCap) / sumOfMarketCap,
                 minTradeValue,
-                selectedExchange: typeof minTradeValue.bitfinex === 'number' ? 'bitfinex' : typeof minTradeValue.binance === 'number' ? 'binance' : typeof minTradeValue.bybit === 'number' ? 'bybit' : 'none'
+                selectedExchange: typeof minTradeValue.binance === 'number' ? 'binance':typeof minTradeValue.bybit === 'number' ? 'bybit' : typeof minTradeValue.bitfinex === 'number' ? 'bitfinex' : 'none'
             }
             allocations.push(obj)
         });

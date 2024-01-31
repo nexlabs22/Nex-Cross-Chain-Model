@@ -9,9 +9,12 @@ import bg2 from '@assets/images/dca3.png'
 import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
 import { useLandingPageStore } from '@/store/store'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 const Dashboard: NextPage = () => {
 	const { mode } = useLandingPageStore()
+	
 	return (
 		<>
 			<Head>
