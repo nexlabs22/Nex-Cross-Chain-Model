@@ -81,7 +81,7 @@ type Coin = {
 	decimals: number
 }
 
-const SwapV2 = () => {
+const SwapV2Cefi = () => {
 	const { mode } = useLandingPageStore()
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
 	const [isChecked, setChecked] = useState(false)
@@ -820,7 +820,7 @@ const SwapV2 = () => {
 					boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 				}}
 			>
-				<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack mb-3 text-center w-full`}>Swap</h5>
+				<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack mb-3 text-center w-full`}>Buy/Sell</h5>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  w-1/3`}>You pay</p>
@@ -1019,7 +1019,7 @@ const SwapV2 = () => {
 											backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
 										  }}
 									>
-										Mint
+										Compose
 									</button>
 								)}
 							</>
@@ -1031,7 +1031,7 @@ const SwapV2 = () => {
 									isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 								} hover:bg-colorTwo-500/30`}
 							>
-								Burn
+								Decompose
 							</button>
 						)}
 						{/* <p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
@@ -1206,4 +1206,4 @@ const SwapV2 = () => {
 	)
 }
 
-export default SwapV2
+export default SwapV2Cefi

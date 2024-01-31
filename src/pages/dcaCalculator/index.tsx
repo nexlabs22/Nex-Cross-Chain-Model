@@ -315,7 +315,7 @@ export default function DCACalculator() {
 								<input
 									type="number"
 									placeholder="0.00"
-									className="w-11/12 border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white shadow-sm shadow-black rounded-lg active:border-none outline-none focus:border-none p-2"
+									className={`w-11/12 text-sm ${mode == "dark" ? " bg-transparent border border-whiteText-500 text-whiteText-500 placeholder:text-whiteText-500" : " text-blackText-500 bg-whiteBackground-50 placeholder:text-blackText-500"} interMedium placeholder:text-2xl shadow-sm shadow-black rounded-lg p-2`}
 									onChange={changeInitialAmount}
 									value={initialAmount}
 								/>
@@ -325,8 +325,7 @@ export default function DCACalculator() {
 								<input
 									type="number"
 									placeholder="0.00"
-									className="w-11/12 shadow-sm shadow-black rounded-lg border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
-									onChange={changeMonthlyInvestment}
+									className={`w-11/12 text-sm ${mode == "dark" ? " bg-transparent border border-whiteText-500 text-whiteText-500 placeholder:text-whiteText-500" : " text-blackText-500 bg-whiteBackground-50 placeholder:text-blackText-500"} interMedium placeholder:text-2xl shadow-sm shadow-black rounded-lg p-2`}									onChange={changeMonthlyInvestment}
 									value={monthlyInvestment}
 								/>
 							</div>
@@ -335,9 +334,9 @@ export default function DCACalculator() {
 								<Menu
 									menuButton={
 										<MenuButton className="w-full">
-											<div className="w-11/12 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-lg shadow-sm shadow-black bg-white text-black gap-8 cursor-pointer">
+											<div className={`w-11/12 shadow-sm shadow-black h-fit px-2 py-2 flex flex-row items-center justify-between rounded-lg ${mode == "dark" ? " bg-transparent border border-whiteText-500 text-whiteText-500" : "bg-white text-blackText-500"} gap-8 cursor-pointer`}>
 												<div className="flex flex-row items-center justify-start gap-2">
-													<h5 className="text-sm text-blackText-500 interMedium uppercase">{selectedStartMonth}</h5>
+													<h5 className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium uppercase`}>{selectedStartMonth}</h5>
 												</div>
 												<GoChevronDown color="#F2F2F2" size={20} />
 											</div>
@@ -371,8 +370,7 @@ export default function DCACalculator() {
 								<input
 									type="number"
 									placeholder="0.00"
-									className="w-11/12 shadow-sm shadow-black rounded-lg border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
-									onChange={changeStartYear}
+									className={`w-11/12 text-sm ${mode == "dark" ? " bg-transparent border border-whiteText-500 text-whiteText-500 placeholder:text-whiteText-500" : " text-blackText-500 bg-whiteBackground-50 placeholder:text-blackText-500"} interMedium placeholder:text-2xl shadow-sm shadow-black rounded-lg p-2`}									onChange={changeStartYear}
 									value={selectedStartYear}
 								/>
 							</div>
@@ -381,9 +379,9 @@ export default function DCACalculator() {
 								<Menu
 									menuButton={
 										<MenuButton className="w-full">
-											<div className="w-11/12 shadow-sm shadow-black h-fit px-2 py-2 flex flex-row items-center justify-between rounded-lg bg-white text-black gap-8 cursor-pointer">
+											<div className={`w-11/12 shadow-sm shadow-black h-fit px-2 py-2 flex flex-row items-center justify-between rounded-lg ${mode == "dark" ? " bg-transparent border border-whiteText-500 text-whiteText-500" : "bg-white text-blackText-500"} gap-8 cursor-pointer`}>
 												<div className="flex flex-row items-center justify-start gap-2">
-													<h5 className="text-sm text-blackText-500 interMedium uppercase">{selectedEndMonth}</h5>
+													<h5 className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium uppercase`}>{selectedEndMonth}</h5>
 												</div>
 												<GoChevronDown color="#F2F2F2" size={20} />
 											</div>
@@ -417,8 +415,7 @@ export default function DCACalculator() {
 								<input
 									type="number"
 									placeholder="0.00"
-									className="w-11/12 shadow-sm shadow-black rounded-lg border-none text-sm text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-white active:border-none outline-none focus:border-none p-2"
-									onChange={changeEndYear}
+									className={`w-11/12 text-sm ${mode == "dark" ? " bg-transparent border border-whiteText-500 text-whiteText-500 placeholder:text-whiteText-500" : " text-blackText-500 bg-whiteBackground-50 placeholder:text-blackText-500"} interMedium placeholder:text-2xl shadow-sm shadow-black rounded-lg p-2`}									onChange={changeEndYear}
 									value={selectedEndYear}
 								/>
 							</div>

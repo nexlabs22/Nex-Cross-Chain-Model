@@ -77,6 +77,8 @@
 		"react-qr-code": "^2.0.12",
 		"react-responsive-carousel": "^3.2.23",
 		"react-search-autocomplete": "^8.5.2",
+		"react-shimmer": "^3.2.0",
+		"react-shimmer-effects": "^1.0.3",
 		"react-simple-image-viewer": "^1.2.2",
 		"react-slick": "^0.29.0",
 		"react-spring": "^9.7.3",

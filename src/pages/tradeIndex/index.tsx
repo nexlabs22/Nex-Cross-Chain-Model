@@ -16,7 +16,8 @@ import { toPng, toSvg } from 'html-to-image'
 import captureHtmlAsImage from '@/components/capture'
 import GenericModal from '@/components/GenericModal'
 import Head from 'next/head'
-import SwapV2 from '@/components/SwapV2Cefi'
+import SwapV2Cefi from '@/components/SwapV2Cefi'
+import SwapV2Defi from '@/components/SwapV2Defi'
 import usePortfolioPageStore from '@/store/portfolioStore'
 // Firebase :
 import { getDatabase, ref, onValue, set, update, push, child } from 'firebase/database'
@@ -107,7 +108,7 @@ export default function Trade() {
 
 	async function dontShowAgain() {
 		console.log(connectedUser)
-		if(address){
+		if (address) {
 			update(ref(database, 'users/' + connectedUserId), {
 				showTradePopUp: false
 			})
@@ -139,7 +140,7 @@ export default function Trade() {
 
 		if (address) {
 			getUser()
-		}else{
+		} else {
 			setIsTradePopUpOpen(true)
 		}
 	}, [address, setGlobalConnectedUser])
@@ -163,16 +164,19 @@ export default function Trade() {
 					<div className="w-full lg:w-3/12 h-full flex flex-col items-center justify-start gap-2">
 						<div className="w-full h-full ">
 							{/* <Swap /> */}
-							<SwapV2 />
+							{
+								selectedTradingCategory == "cefi" ? <SwapV2Cefi /> : <SwapV2Defi />
+							}
+							
 						</div>
 					</div>
 				</section>
-				<section className="w-full h-full flex flex-col lg:flex-row items-stretch justify-start gap-2 px-5 pb-5">
-					<div className="w-full lg:w-9/12 flex-grow">
+				<section className="w-full h-fit flex flex-col lg:flex-row items-stretch justify-start gap-2 px-5 pb-5">
+					<div className="w-full lg:w-9/12 flex-grow ">
 						<HistoryTable />
 					</div>
-					<div className="w-full lg:w-3/12 flex flex-col items-center justify-start gap-2">
-						<div className="w-full">{selectedTradingCategory == 'cefi' ? <NFTReceiptBox /> : <TipsBox />}</div>
+					<div className="w-full flex-grow lg:w-3/12 flex flex-col items-center justify-start gap-2">
+						{selectedTradingCategory == 'cefi' ? <TipsBox /> : <TipsBox />}
 					</div>
 				</section>
 			</main>
@@ -200,29 +204,29 @@ export default function Trade() {
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-2 mb-2 mt-4">
 						<button
-						onClick={()=>{
-							router.push('/')
-						}}
+							onClick={() => {
+								router.push('/')
+							}}
 							className="text-base text-blackText-500/50 interBold bg-gray-300 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-4 py-2 rounded-lg"
 						>
 							Decline
 						</button>
 						<button
-							onClick={()=>{
+							onClick={() => {
 								closeTradePopUp()
-								if(showAgain) dontShowAgain()
+								if (showAgain) dontShowAgain()
 							}}
 							className={`text-base cursor-pointer text-white titleShadow interBold ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500 hover:from-colorFour-500 hover:to-colorSeven-500/90"} active:translate-y-[1px] active:shadow-black w-fit px-4 py-2 rounded-lg `}
 							style={{
 								boxShadow:
-								  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+									mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
 								backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
-							  }}
+							}}
 						>
 							Accept
 						</button>
 					</div>
-					
+
 				</div>
 			</GenericModal>
 		</>

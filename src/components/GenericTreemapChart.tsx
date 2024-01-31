@@ -40,7 +40,7 @@ const GenericTreemapChart3D : React.FC<TreeMapChartProps> = ({ percentage }) => 
 	}
 
 	return (
-		<div className="interMedium text-2xl p-0 overflow-hidden h-fit w-fit">
+		<div className="interMedium text-2xl px-0 py-12 overflow-hidden h-fit w-fit">
 			<Chart chartType="TreeMap" width="400px" height="400px" data={data} options={options} className=" interMedium text-3xl" />
 		</div>
 	)
