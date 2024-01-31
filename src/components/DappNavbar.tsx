@@ -234,7 +234,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 			<Link href={'https://www.nexlabs.io/'}>
 				<div className="flex flex-row items-center justify-between">
 					<div className=" mr-2 h-fit w-fit">
-						<Image src={xlogo} alt="nex labs logo" className={`w-12 brightness-[0.65] ${mode == "dark" ? 'brightness-[0] invert' : ''} drop-shadow-sm`}></Image>
+						<Image src={xlogo} alt="nex labs logo" className={`w-12 brightness-[0.65] ${mode == "dark"|| lightVersion ? 'brightness-[0] invert' : ''} drop-shadow-sm`}></Image>
 					</div>
 				</div>
 			</Link>
@@ -272,13 +272,13 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 			<div className="hidden flex-row items-center justify-start lg:visible lg:flex">
 				<div className="flex flex-row items-center justify-evenly">
 					<Link href={'/'}>
-						<h5 className={`interMedium font-base mr-8 ${mode == "dark" ? ' text-whiteText-500' : 'text-blackText-500' }`}>Dashboard</h5>
+						<h5 className={`interMedium font-base mr-8 ${mode == "dark" || lightVersion ? ' text-whiteText-500' : 'text-blackText-500' }`}>Dashboard</h5>
 					</Link>
 					<Link href={'/trade'}>
-						<h5 className={`interMedium font-base mr-8 ${mode == "dark" ? ' text-whiteText-500' : 'text-blackText-500' }`}>Trade</h5>
+						<h5 className={`interMedium font-base mr-8 ${mode == "dark" || lightVersion ? ' text-whiteText-500' : 'text-blackText-500' }`}>Trade</h5>
 					</Link>
 					<Link href={'/convert'}>
-						<h5 className={`interMedium font-base mr-8 ${mode == "dark" ? ' text-whiteText-500' : 'text-blackText-500' }`}>Convert</h5>
+						<h5 className={`interMedium font-base mr-8 ${mode == "dark" || lightVersion ? ' text-whiteText-500' : 'text-blackText-500' }`}>Convert</h5>
 					</Link>
 					<HoverMenuWithTransition key={0} menuItem="item" lightV={lightVersion} />
 				</div>
@@ -297,14 +297,14 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 					{mode == 'light' ? <IoSunnyOutline color="#F2F2F2" size={25} /> : <IoMoonOutline color="#F2F2F2" size={25} />}
 				</button>
 			</div>
-			<Menu isOpen={openMobileMenu} className="">
+			<Menu isOpen={openMobileMenu} className={`${mode == "dark" ? "dark-menu-wrap" : ""}`}>
 				<div className="w-full h-full">
 					<div className="flex flex-row items-center justify-end p-3">
 						<AiOutlineClose
 							color="#2A2A2A"
 							size={30}
 							onClick={() => {
-								setOpenMobileMenu(false)
+								setOpenMobileMenu(false) 
 							}}
 						></AiOutlineClose>
 					</div>
@@ -316,7 +316,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 									setOpenMobileMenu(false)
 								}}
 							>
-								<h5 className="interBold text-3xl text-blackText-500">Dashboard</h5>
+								<h5 className={`interBold text-3xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Dashboard</h5>
 							</Link>
 							<Link
 								href={'/trade'}
@@ -324,7 +324,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 									setOpenMobileMenu(false)
 								}}
 							>
-								<h5 className="interBold text-3xl text-blackText-500">Trade</h5>
+								<h5 className={`interBold text-3xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Trade</h5>
 							</Link>
 							<Link
 								href={'/convert'}
@@ -332,7 +332,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 									setOpenMobileMenu(false)
 								}}
 							>
-								<h5 className="interBold text-3xl text-blackText-500">Convert</h5>
+								<h5 className={`interBold text-3xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Convert</h5>
 							</Link>
 							<Link
 								href={'/portfolio'}
@@ -342,7 +342,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 								}}
 							>
 								<div className="w-fit h-fit flex flex-row items-center justify-start gap-1">
-									<h5 className="interBold text-3xl text-blackText-500">Portfolio</h5>
+									<h5 className={`interBold text-3xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Portfolio</h5>
 									{subMenuOpen ? <BiChevronDown size={25} color="#252525" /> : <BiChevronRight size={25} color="#252525" />}
 								</div>
 							</Link>
@@ -354,7 +354,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 											setOpenMobileMenu(false)
 										}}
 									>
-										<h5 className="interBold text-2xl text-blackText-500">Overview</h5>
+										<h5 className={`interBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Overview</h5>
 									</Link>
 									<Link
 										href={'/history'}
@@ -362,7 +362,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 											setOpenMobileMenu(false)
 										}}
 									>
-										<h5 className="interBold text-2xl text-blackText-500">Transactions</h5>
+										<h5 className={`interBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Transactions</h5>
 									</Link>
 									<Link
 										href={'/settings'}
@@ -370,7 +370,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 											setOpenMobileMenu(false)
 										}}
 									>
-										<h5 className="interBold text-2xl text-blackText-500">Settings</h5>
+										<h5 className={`interBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Settings</h5>
 									</Link>
 								</div>
 							) : (

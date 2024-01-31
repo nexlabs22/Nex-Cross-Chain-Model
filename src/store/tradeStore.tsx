@@ -109,7 +109,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	swapToCur: {
 		id: 1,
-		logo: cr5Logo.src,
+		logo: anfiLogo.src,
 		name: 'ANFI',
 		Symbol: 'ANFI',
 		// address: goerliAnfiIndexToken,

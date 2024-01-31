@@ -2,17 +2,17 @@ import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
 import { useLandingPageStore } from '@/store/store'
 
-interface NeonSwitchProps {
+interface LightNeonSwitchProps {
     changeFunction: () => void;
     isChecked: boolean;
   }
 
-const NeonSwitch: React.FC<NeonSwitchProps> = ({ changeFunction, isChecked }) => {
+const LightNeonSwitch: React.FC<LightNeonSwitchProps> = ({ changeFunction, isChecked }) => {
 
     const { mode } = useLandingPageStore()
 
     return (
-        <label className="neonSwitch w-fit scale-[.8]">
+        <label className="neonSwitch invert-[0.1] drop-shadow-[2px 4px 6px black] w-fit scale-[.8]">
             <input className="switch__input" type="checkbox" role="switch" onChange={changeFunction}
                 checked={isChecked} />
             <span className="switch__base-outer"></span>
@@ -51,4 +51,4 @@ const NeonSwitch: React.FC<NeonSwitchProps> = ({ changeFunction, isChecked }) =>
     )
 }
 
-export default NeonSwitch
+export default LightNeonSwitch

@@ -372,6 +372,24 @@ body {
 }
 
 
+.darkScrollBar::-webkit-scrollbar-track {
+  background: #3f3f3f !important;
+}
+
+.darkScrollBar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.darkScrollBar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.darkScrollBar::-webkit-scrollbar-track {
+  background: #3f3f3f;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -448,9 +466,16 @@ body {
 }
 */
 
+
 .menu-wrap{
   width: 100vw !important;
   background-color: rgba(255, 255, 255, 0.5) !important;
+  z-index: 9999 !important;
+}
+
+.dark-menu-wrap.menu-wrap{
+  width: 100vw !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
   z-index: 9999 !important;
 }
 
@@ -462,6 +487,15 @@ body {
 .menu-wrap .menu{
   background-color: rgba(255, 255, 255, 0.5) !important;
   height: 100vh !important;
+}
+
+.dark-menu-wrap.menu-wrap .menu{
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  height: 100vh !important;
+}
+
+.dark-menu-wrap.menu-wrap svg{
+  filter: invert(1) !important;
 }
 
 .med_test_class{
@@ -577,10 +611,20 @@ body {
 
 .navSubMenu{
   position: relative !important;
-   z-index: 999 !important;
+   z-index: 9999 !important;
    padding: 0px !important;
    border-radius: 4px !important;
    overflow: hidden !important;
+}
+
+.darkNavSubMenu{
+  position: relative !important;
+   z-index: 9999 !important;
+   padding: 0px !important;
+   border-radius: 8px !important;
+   overflow: hidden !important;
+   background-color: #050505 !important;
+   border: solid .2px #F2F2F2 !important; 
 }
 
 #ReactSimpleImageViewer{
@@ -680,6 +724,21 @@ body {
 	height: 2em;
 	transition: transform var(--trans-dur) var(--trans-timing);
 }
+ 
+.light_switch__knob {
+	background-color: hsl(var(--hue),10%,15%);
+	background-image:
+		radial-gradient(88% 88% at 50% 50%,hsl(var(--hue),10%,20%) 47%,hsla(var(--hue),10%,20%,0) 50%),
+		radial-gradient(88% 88% at 47% 47%,hsl(var(--hue),10%,85%) 45%,hsla(var(--hue),10%,85%,0) 50%),
+		radial-gradient(65% 70% at 40% 60%,hsl(var(--hue),10%,20%) 46%,hsla(var(--hue),10%,20%,0) 50%);
+	box-shadow:
+		-0.0625em -0.0625em 0.0625em hsl(var(--hue),10%,15%) inset,
+		-0.125em -0.125em 0.0625em hsl(var(--hue),10%,5%) inset,
+		0.75em 0.25em 0.125em hsla(0,0%,0%,0.8);
+	width: 2em;
+	height: 2em;
+	transition: transform var(--trans-dur) var(--trans-timing);
+}
 .switch__knob-container {
 	overflow: hidden;
 	top: 0.5em;
@@ -701,7 +760,7 @@ body {
 }
 .switch__knob-shadow {
 	border-radius: 50%;
-	box-shadow: 0.125em 0.125em 0.125em hsla(0,0%,0%,0.9);
+	box-shadow: 0.125em 0.125em 0.125em hsla(0, 0%, 0%, 0.9);
 	display: block;
 	position: absolute;
 	top: 0.5em;
@@ -735,4 +794,19 @@ body {
 	opacity: 1;
 	stroke-dasharray: 45.16 0 45.16 54.19;
 	transition-timing-function: steps(1,start), var(--trans-timing);
+}
+
+.darkAutoComplete .wrapper{
+  background-color: transparent !important;
+  border-color: #FFFFFF !important;
+}
+
+.darkAutoComplete input{
+  background-color: transparent !important;
+  color: #FFFFFF !important;
+}
+
+.darkAutoComplete .sc-gEvEer{
+  background-color: #050505 !important;
+  border-color: #FFFFFF !important;
 }

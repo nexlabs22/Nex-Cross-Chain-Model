@@ -2,8 +2,12 @@
 
 import { LiFiWidget, WidgetConfig } from '@lifi/widget'
 import { use, useMemo } from 'react'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
+import { useLandingPageStore } from '@/store/store'
 
 export const LifiWidget = () => {
+	const {mode} = useLandingPageStore()
 	// https://docs.li.fi/integrate-li.fi-widget/configure-widget
 	const widgetConfig: WidgetConfig = useMemo(
 		() => ({
@@ -24,6 +28,7 @@ export const LifiWidget = () => {
 				boxShadow: '0px 0px 3px 1px rgba(16,16,16,0.4)',
 				borderRadius: '30px',
 			},
+			
 			// I used colors from:
 			// https://github.com/nexlabs22/landingPage/blob/main/tailwind.config.cjs
 			theme: {
@@ -39,6 +44,10 @@ export const LifiWidget = () => {
 						800: '#000000', // border dark theme
 					},
 				},
+				typography: {
+					fontFamily: 'Inter',
+					color: mode == "dark" ? "#FFFFFF" : "#000000"
+				  },
 				
 			},
 			

@@ -82,7 +82,7 @@ const Footer = () => {
 					</div>
 				</div>
 				<div className="flex h-fit w-full flex-col items-center justify-center px-20 py-3 xl:flex-row">
-					<h5 className="interMedium my-0 text-center text-xs text-whiteText-500 xl:text-left">© Copyright Nex Labs B.V. 2023 - All rights reserved</h5>
+					<h5 className="interMedium my-0 text-center text-xs text-whiteText-500 xl:text-left">© Copyright Nex Labs B.V. 2024 - All rights reserved</h5>
 				</div>
 			</div>
 			<div className="block xl:hidden">

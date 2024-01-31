@@ -78,6 +78,9 @@ import ImageViewer from 'react-simple-image-viewer'
 import { Uploader } from 'uploader'
 import { UploadDropzone } from 'react-uploader'
 import 'react-image-upload/dist/index.css'
+import { Shimmer } from 'react-shimmer'
+import ConnectButton from '@/components/ConnectButton'
+import LightNeonSwitch from '@/components/LightNeonSwitch'
 
 interface User {
 	email: string
@@ -377,7 +380,8 @@ export default function Settings() {
 			<main className={`min-h-screen overflow-x-hidden h-fit w-screen ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'}`}>
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
-					<section className="w-screen h-fit pt-10">
+					{
+						address ? (<section className="w-screen h-fit pt-10">
 						<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col lg:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5  h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
 								{address && address != '' ? (
@@ -441,7 +445,52 @@ export default function Settings() {
 						</div> */}
 							<div className="lg:flex w-2/5 "></div>
 						</div>
-					</section>
+					</section>) : (<section className='w-full h-fit xl:px-20 relative z-[1] py-5 mb-10'>
+								<div className='w-full h-fit relative hidden xl:block'>
+									<div className=' absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center'>
+										<div className={`w-4/12 h-fit ${mode == "dark" ? " bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50" : "bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50"} border shadow-sm px-4 py-12 rounded-lg`}>
+											<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
+											<p className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
+											<div className='w-fit h-fit scale-150 mx-auto mt-12'>
+												<ConnectButton />
+											</div>
+
+										</div>
+									</div>
+									<div className='w-full h-fit hidden xl:flex flex-col items-start justify-start relative z-30'>
+										<div className='w-full lg:w-2/5 h-fit flex flex-col xl:flex-col items-start justify-start gap-8'>
+											<Shimmer width={300} height={300} className={`rounded-full ${mode == "dark" ? "invert" : ""}`} />
+
+										</div>
+										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
+										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} /> 
+									</div>
+								</div>
+
+								<div className='w-full h-fit relative block xl:hidden'>
+									<div className=' absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center'>
+										<div className={`w-11/12 h-fit ${mode == "dark" ? "bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50" : "bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50"} shadow-sm border px-4 py-12 rounded-lg`}>
+										<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
+											<p className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
+											<div className='w-fit h-fit mx-auto mt-12'>
+												<ConnectButton />
+											</div>
+
+										</div>
+									</div>
+									<div className='w-screen px-4 h-fit xl:hidden'>
+										<Shimmer width={150} height={150} className={`rounded-full max-w-[40%] ${mode == "dark" ? "invert" : ""}`} />
+										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
+										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
+									</div>
+								</div>
+
+
+
+
+							</section>)
+					}
+					
 				</section>
 				<div className=" w-full h-fit px-4 xl:px-16 pb-5 flex flex-col xl:flex-row items-center justify-center ">
 					<div className="w-full h-fit flex flex-row items-center justify-start pb-2 xl:px-2 border-b-[2px] border-b-[#E4E4E4] ">
@@ -464,10 +513,13 @@ export default function Settings() {
 						}}>
 							Retailer
 						</h5>
-						<NeonSwitch isChecked={isRetailerAccount} changeFunction={() => {setIsRetailerAccount(!isRetailerAccount)}}></NeonSwitch>
+						{
+							mode == "dark" ? (<NeonSwitch isChecked={isRetailerAccount} changeFunction={() => { setIsRetailerAccount(!isRetailerAccount) }}></NeonSwitch>) : <LightNeonSwitch isChecked={isRetailerAccount} changeFunction={() => { setIsRetailerAccount(!isRetailerAccount) }}></LightNeonSwitch>
+						}
 						
 
-						
+
+
 						<h5 className={`text-base interMedium py-1 px-2 rounded-lg ${isRetailerAccount ? mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500" : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 titleShadow' : 'text-[#646464]'}`} style={{
 							boxShadow:
 								mode == "dark" && isRetailerAccount ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
@@ -571,7 +623,7 @@ export default function Settings() {
 					<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between gap-3 my-6">
 						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Institutional Name</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Legal Entity Name</h5>
 								{!editable3 ? (
 									<CiEdit
 										size={20}
@@ -595,7 +647,7 @@ export default function Settings() {
 							<input
 								type="text"
 								disabled={!editable3}
-								placeholder={connectedUser && connectedUser.inst_name != '' ? connectedUser.inst_name : 'Institutional Name'}
+								placeholder={connectedUser && connectedUser.inst_name != '' ? connectedUser.inst_name : 'Legal Entity Name'}
 								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${editable3 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
 									} w-full bg-transparent`}
 								onChange={(e) => {
@@ -642,7 +694,7 @@ export default function Settings() {
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-3 mb-6">
 						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>VATIN (VAT registration number)</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>VAT (VAT registration number)</h5>
 								{!editable5 ? (
 									<CiEdit
 										size={20}
@@ -677,7 +729,7 @@ export default function Settings() {
 						</div>
 						<div className="w-full xl:w-6/12 h-fit">
 							<div className="w-full h-fit flex flex-row items-center justify-between">
-								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Number of Commerce Chambre</h5>
+								<h5 className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#6B6B6B]"} w-full`}>Number of Commerce Chamber</h5>
 								{!editable6 ? (
 									<CiEdit
 										size={20}
@@ -701,7 +753,7 @@ export default function Settings() {
 							<input
 								type="text"
 								disabled={!editable6}
-								placeholder={connectedUser && connectedUser.vatin != '' ? connectedUser.vatin : 'Number of Commerce Chambre'}
+								placeholder={connectedUser && connectedUser.vatin != '' ? connectedUser.vatin : 'Number of Commerce Chamber'}
 								className={`px-2 py-4 h-10 my-2 interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 rounded-md border ${editable6 ? ' border-nexLightGreen-500 shadow-sm shadow-nexLightGreen-500' : mode == "dark" ? " border-white" : 'border-black/50'
 									} w-full bg-transparent`}
 
@@ -721,22 +773,22 @@ export default function Settings() {
 					</h5>
 					<div className="w-full h-fit flex flex-col items-start justify-start gap-3 my-6">
 						<div className="flex flex-row items-center w-screen justify-start gap-3 xl:gap-3">
-						<NeonSwitch isChecked={option1} changeFunction={() => {setOption1(!option1)}}></NeonSwitch>
-														<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about new features of Nex Labs</h5>
+							<NeonSwitch isChecked={option1} changeFunction={() => { setOption1(!option1) }}></NeonSwitch>
+							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about new features of Nex Labs</h5>
 						</div>
 
 						<div className="flex flex-row items-center  w-screen justify-start gap-3 xl:gap-3">
-						<NeonSwitch isChecked={option2} changeFunction={() => {setOption2(!option2)}}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about different Nex Labs products</h5>
+							<NeonSwitch isChecked={option2} changeFunction={() => { setOption2(!option2) }}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about different Nex Labs products</h5>
 						</div>
 						<div className="flex flex-row w-screen items-center justify-start gap-3 xl:gap-3">
-						<NeonSwitch isChecked={option3} changeFunction={() => {setOption3(!option3)}}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive weekly recap about events, market news ... </h5>
+							<NeonSwitch isChecked={option3} changeFunction={() => { setOption3(!option3) }}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive weekly recap about events, market news ... </h5>
 						</div>
 						<div className="flex flex-row w-fit items-center justify-start gap-3 xl:gap-3">
-						<NeonSwitch isChecked={option4} changeFunction={() => {setOption4(!option4)}}></NeonSwitch>
+							<NeonSwitch isChecked={option4} changeFunction={() => { setOption4(!option4) }}></NeonSwitch>
 							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive emails about activities of your account</h5>
 						</div>
 						<div className="flex flex-row w-screen items-center justify-start gap-3 xl:gap-3">
-						<NeonSwitch isChecked={option5} changeFunction={() => {setOption5(!option5)}}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive monthly reports of your accont</h5>
+							<NeonSwitch isChecked={option5} changeFunction={() => { setOption5(!option5) }}></NeonSwitch>							<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} w-full`}>Receive monthly reports of your accont</h5>
 						</div>
 						{option1 || option2 || option3 || option4 || option5 ? (
 							<div className="w-fit h-fit flex flex-row items-center justify-start">
