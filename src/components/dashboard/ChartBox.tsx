@@ -406,8 +406,10 @@ const DashboardChartBox = () => {
 												mode == 'dark' ? 'border border-whiteText-500/50 shadow-sm shadow-whiteText-500/50' : 'border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300 '
 											}  cursor-pointer hover:bg-gray-200`}
 											style={{
-												backgroundColor: selectedIndices.includes(assetClass.colName) ? assetClass.selectionColor : 'transparent',
-												boxShadow: mode == 'dark' && selectedIndices.includes(assetClass.colName) ? `0px 0px 6px 1px ${assetClass.selectionColor}` : '',
+												backgroundColor: selectedIndices.includes(assetClass.colName) ? '#2962FF99' : 'transparent',
+												boxShadow: mode == 'dark' && selectedIndices.includes(assetClass.colName) ? `0px 0px 6px 1px #2962FF` : '',
+												// backgroundColor: selectedIndices.includes(assetClass.colName) ? selectedIndices.includes(assetClass.colName) : 'transparent',
+												// boxShadow: mode == 'dark' && selectedIndices.includes(assetClass.colName) ? `0px 0px 6px 1px ${assetClass.selectionColor}` : '',
 											}}
 										>
 											<div className="flex flex-row items-center justify-start gap-2">

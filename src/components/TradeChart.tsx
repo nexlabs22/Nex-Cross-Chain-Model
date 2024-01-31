@@ -20,7 +20,7 @@ import { GoTriangleDown } from 'react-icons/go'
 const TradeChartBox = () => {
 	const router = useRouter()
 	const { index: selectedTradingProduct } = router.query
-	// const {  defaultIndex } = useTradePageStore()
+	const { mode } = useLandingPageStore()
 	const { fetchIndexData, removeIndex, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data } = useChartDataStore()
 
 	useEffect(() => {
@@ -35,7 +35,8 @@ const TradeChartBox = () => {
 	return (
 		<>
 			<section className="h-full w-full">
-				<div className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300">
+				{/* <div className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300"> */}
+				<div className={`h-full w-full p-3 rounded-2xl border border-gray-300/50 ${mode=== 'dark' ? 'bg-[#131722]': 'bg-[#FFFFFF]'} shadow-md shadow-gray-300`}>
 					{/* <div className="flex flex-row items-start justify-between px-2 mt-2 mb-6"> */}
 						{/* <div className="flex flex-col items-start justify-start">
 							<h5 className="interBlack text-lg text-blackText-500">{selectedTradingProduct}</h5>
