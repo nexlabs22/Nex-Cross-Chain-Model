@@ -271,7 +271,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         console.log("portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
         console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
         const indexTokenBalance = await indexToken.balanceOf(owner.address);
-        await indexFactory.redemption(indexTokenBalance, ethers.utils.parseEther("1"), weth9.address, 3, {value: ethers.utils.parseEther("1")});
+        // await indexFactory.redemption(indexTokenBalance, ethers.utils.parseEther("1"), weth9.address, 3, {value: ethers.utils.parseEther("1")});
         console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
       });
       

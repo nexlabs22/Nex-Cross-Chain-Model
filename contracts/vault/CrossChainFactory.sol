@@ -80,36 +80,36 @@ contract CrossChainIndexFactory is
 
     mapping(address => bool) public isRestricted;
 
-    enum DexStatus {
-        UNISWAP_V2,
-        UNISWAP_V3
-    }
+    // enum DexStatus {
+    //     UNISWAP_V2,
+    //     UNISWAP_V3
+    // }
 
     
     
-    string baseUrl;
-    string urlParams;
+    // string baseUrl;
+    // string urlParams;
 
-    bytes32 public externalJobId;
+    // bytes32 public externalJobId;
     uint256 public oraclePayment;
-    AggregatorV3Interface public toUsdPriceFeed;
-    uint public lastUpdateTime;
+    // AggregatorV3Interface public toUsdPriceFeed;
+    // uint public lastUpdateTime;
     // address[] public oracleList;
     // address[] public currentList;
 
-    uint public totalOracleList;
-    uint public totalCurrentList;
+    // uint public totalOracleList;
+    // uint public totalCurrentList;
 
-    mapping(uint => address) public oracleList;
-    mapping(uint => address) public currentList;
+    // mapping(uint => address) public oracleList;
+    // mapping(uint => address) public currentList;
 
-    mapping(address => uint) public tokenOracleListIndex;
-    mapping(address => uint) public tokenCurrentListIndex;
+    // mapping(address => uint) public tokenOracleListIndex;
+    // mapping(address => uint) public tokenCurrentListIndex;
 
-    mapping(address => uint) public tokenCurrentMarketShare;
-    mapping(address => uint) public tokenOracleMarketShare;
-    mapping(address => uint) public tokenSwapVersion;
-    mapping(address => uint64) public tokenChainSelector;
+    // mapping(address => uint) public tokenCurrentMarketShare;
+    // mapping(address => uint) public tokenOracleMarketShare;
+    // mapping(address => uint) public tokenSwapVersion;
+    // mapping(address => uint64) public tokenChainSelector;
 
     
     ISwapRouter public swapRouterV3;
@@ -126,39 +126,16 @@ contract CrossChainIndexFactory is
         uint newTokenValue;
     }
     uint issuanceNonce;
-    mapping(uint => mapping(address => TokenOldAndNewValues)) public issuanceTokenOldAndNewValues;
-    mapping(uint => uint) public issuanceCompletedTokensCount;
+    // mapping(uint => mapping(address => TokenOldAndNewValues)) public issuanceTokenOldAndNewValues;
+    // mapping(uint => uint) public issuanceCompletedTokensCount;
 
-    event FeeReceiverSet(address indexed feeReceiver);
-    event FeeRateSet(uint256 indexed feeRatePerDayScaled);
-    event MethodologistSet(address indexed methodologist);
-    event MethodologySet(string methodology);
-    event MinterSet(address indexed minter);
-    event SupplyCeilingSet(uint256 supplyCeiling);
-    event MintFeeToReceiver(address feeReceiver, uint256 timestamp, uint256 totalSupply, uint256 amount);
-    event ToggledRestricted(address indexed account, bool isRestricted);
-
+    
     event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time);
     event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time);
     event MessageSent(bytes32 messageId);
 
-    // Event emitted when a message is received from another chain.
-    event MessageReceived(
-        bytes32 indexed messageId, // The unique ID of the message.
-        uint64 indexed sourceChainSelector, // The chain selector of the source chain.
-        address sender, // The address of the sender from the source chain.
-        string message, // The message that was received.
-        Client.EVMTokenAmount tokenAmount // The token amount that was received.
-    );
-    modifier onlyMethodologist() {
-        require(msg.sender == methodologist, "IndexToken: caller is not the methodologist");
-        _;
-    }
-
-    modifier onlyMinter() {
-        require(msg.sender == minter, "IndexToken: caller is not the minter");
-        _;
-    }
+    
+    
 
     
     function initialize(
@@ -189,10 +166,10 @@ contract CrossChainIndexFactory is
         //set oracle data
         setChainlinkToken(_chainlinkToken);
         setChainlinkOracle(_oracleAddress);
-        externalJobId = _externalJobId;
+        // externalJobId = _externalJobId;
         // externalJobId = "81027ac9198848d79a8d14235bf30e16";
-        oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
-        toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
+        // oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
+        // toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
         //set ccip addresses
         i_router = _router;
         i_link = _chainlinkToken;
@@ -207,11 +184,11 @@ contract CrossChainIndexFactory is
         swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
         factoryV2 = IUniswapV2Factory(_factoryV2);
         //fee
-        feeRate = 10;
-        latestFeeUpdate = block.timestamp;
+        // feeRate = 10;
+        // latestFeeUpdate = block.timestamp;
 
-        baseUrl = "https://app.nexlabs.io/api/allFundingRates";
-        urlParams = "?multiplyFunc=18&timesNegFund=true&arrays=true";
+        // baseUrl = "https://app.nexlabs.io/api/allFundingRates";
+        // urlParams = "?multiplyFunc=18&timesNegFund=true&arrays=true";
         // s_requestCount = 1;
     }
 
@@ -223,40 +200,7 @@ contract CrossChainIndexFactory is
         crossChainVault = CrossChainVault(_crossChainVault);
     }
 
-  /**
-    * @dev Sets the price feed address of the native coin to USD from the Chainlink oracle.
-    * @param _toUsdPricefeed The address of native coin to USD price feed.
-    */    
-    function setPriceFeed(address _toUsdPricefeed) external onlyOwner {
-        require(_toUsdPricefeed != address(0), "ICO: Price feed address cannot be zero address");
-        toUsdPriceFeed = AggregatorV3Interface(_toUsdPricefeed);        
-    }
-
-    
-    function _toWei(int256 _amount, uint8 _amountDecimals, uint8 _chainDecimals) private pure returns (int256) {        
-        if (_chainDecimals > _amountDecimals)
-            return _amount * int256(10 **(_chainDecimals - _amountDecimals));
-        else
-            return _amount * int256(10 **(_amountDecimals - _chainDecimals));
-    }
-
-    function priceInWei() public view returns (uint256) {
-        (,int price,,,) = toUsdPriceFeed.latestRoundData();
-        uint8 priceFeedDecimals = toUsdPriceFeed.decimals();
-        price = _toWei(price, priceFeedDecimals, 18);
-        return uint256(price);
-    }
-    
-
-
-    //Notice: newFee should be between 1 to 100 (0.01% - 1%)
-  function setFeeRate(uint8 _newFee) public onlyOwner {
-    uint256 distance = block.timestamp - latestFeeUpdate;
-    require(distance / 60 / 60 > 12, "You should wait at least 12 hours after the latest update");
-    require(_newFee <= 100 && _newFee >= 1, "The newFee should be between 1 and 100 (0.01% - 1%)");
-    feeRate = _newFee;
-    latestFeeUpdate = block.timestamp;
-  }
+  
 
    /**
     * @dev The contract's fallback function that does not allow direct payments to the contract.
@@ -266,90 +210,7 @@ contract CrossChainIndexFactory is
         // revert DoNotSendFundsDirectlyToTheContract();
     }
 
-    function concatenation(string memory a, string memory b) public pure returns (string memory) {
-        return string(bytes.concat(bytes(a), bytes(b)));
-    }
-
-    function setUrl(string memory _beforeAddress, string memory _afterAddress) public onlyOwner{
-    baseUrl = _beforeAddress;
-    urlParams = _afterAddress;
-    }
     
-    function requestAssetsData(
-    )
-        public
-        returns(bytes32)
-    {
-        
-        string memory url = concatenation(baseUrl, urlParams);
-        Chainlink.Request memory req = buildChainlinkRequest(externalJobId, address(this), this.fulfillAssetsData.selector);
-        req.add("get", url);
-        req.add("path1", "results,tokens");
-        req.add("path2", "results,marketShares");
-        req.add("path3", "results,swapVersions");
-        req.add("path4", "results,chainSelector");
-        // sendOperatorRequest(req, oraclePayment);
-        return sendChainlinkRequestTo(chainlinkOracleAddress(), req, oraclePayment);
-    }
-
-  function fulfillAssetsData(bytes32 requestId, address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions, uint64[] memory _chainSelectors)
-    public
-    recordChainlinkFulfillment(requestId)
-  {
-    
-    address[] memory tokens0 = _tokens;
-    uint[] memory marketShares0 = _marketShares;
-    uint[] memory swapVersions0 = _swapVersions;
-    uint64[] memory chainSelectors0 = _chainSelectors;
-
-    // //save mappings
-    for(uint i =0; i < tokens0.length; i++){
-        oracleList[i] = tokens0[i];
-        tokenOracleListIndex[tokens0[i]] = i;
-        tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
-        tokenSwapVersion[tokens0[i]] = swapVersions0[i];
-        tokenChainSelector[tokens0[i]] = chainSelectors0[i];
-        if(totalCurrentList == 0){
-            currentList[i] = tokens0[i];
-            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
-            tokenCurrentListIndex[tokens0[i]] = i;
-        }
-    }
-    totalOracleList = tokens0.length;
-    if(totalCurrentList == 0){
-        totalCurrentList  = tokens0.length;
-    }
-    lastUpdateTime = block.timestamp;
-    }
-
-
-    function mockFillAssetsList(address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions)
-    public
-    onlyOwner
-  {
-    
-    address[] memory tokens0 = _tokens;
-    uint[] memory marketShares0 = _marketShares;
-    uint[] memory swapVersions0 = _swapVersions;
-
-    // //save mappings
-    for(uint i =0; i < tokens0.length; i++){
-        oracleList[i] = tokens0[i];
-        tokenOracleListIndex[tokens0[i]] = i;
-        tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
-        tokenSwapVersion[tokens0[i]] = swapVersions0[i];
-        if(totalCurrentList == 0){
-            currentList[i] = tokens0[i];
-            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
-            tokenCurrentListIndex[tokens0[i]] = i;
-        }
-    }
-    totalOracleList = tokens0.length;
-    if(totalCurrentList == 0){
-        totalCurrentList  = tokens0.length;
-    }
-    lastUpdateTime = block.timestamp;
-    }
 
 
     
@@ -435,14 +296,14 @@ contract CrossChainIndexFactory is
     }
 
 
-    function getPortfolioBalance() public view returns(uint){
-        uint totalValue;
-        for(uint i = 0; i < totalCurrentList; i++) {
-            uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(crossChainVault)), tokenSwapVersion[currentList[i]]);
-            totalValue += value;
-        }
-        return totalValue;
-    }
+    // function getPortfolioBalance() public view returns(uint){
+    //     uint totalValue;
+    //     for(uint i = 0; i < totalCurrentList; i++) {
+    //         uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(crossChainVault)), tokenSwapVersion[currentList[i]]);
+    //         totalValue += value;
+    //     }
+    //     return totalValue;
+    // }
 
 
 
@@ -541,17 +402,17 @@ contract CrossChainIndexFactory is
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
         
-        (uint actionType, address[] memory targetAddresses, uint nonce, uint[] percentages, uint extraValue) = abi.decode(any2EvmMessage.data, (uint, address[], uint, uint[], uint)); // abi-decoding of the sent string message
+        (uint actionType, address[] memory targetAddresses, uint nonce, uint[] memory percentages, uint[] memory extraValues) = abi.decode(any2EvmMessage.data, (uint, address[], uint, uint[], uint[])); // abi-decoding of the sent string message
         if(actionType == 0){
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
             .destTokenAmounts;
         address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
         uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
         uint wethAmount = swap(crossChainToken, address(weth), amount, address(crossChainVault), 3);
-        address[] memory oldTokenValues;
-        address[] memory newTokenValues;
-        for(int i = 0; i < targetAddresses.length; i++){
-        uint wethToSwap = wethAmount*percentages[i]/extraValue;
+        uint[] memory oldTokenValues;
+        uint[] memory newTokenValues;
+        for(uint i = 0; i < targetAddresses.length; i++){
+        uint wethToSwap = wethAmount*percentages[i]/extraValues[0];
         uint oldTokenValue = getAmountOut(targetAddresses[i], address(weth), IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)), 3);
         _swapSingle(address(weth), targetAddresses[i], wethToSwap, address(crossChainVault), 3);
         uint newTokenValue = oldTokenValue + wethAmount;
@@ -561,34 +422,37 @@ contract CrossChainIndexFactory is
         bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
         sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }else if( actionType == 1){
-          uint swapAmount = (percentage*IERC20(targetAddress).balanceOf(address(crossChainVault)))/1e18;
-          uint wethSwapAmountOut = _swapSingle(targetAddress, address(weth), swapAmount, address(this), 3);
+          uint wethSwapAmountOut;
+          for(uint i = 0; i < targetAddresses.length; i++){
+          uint swapAmount = (percentages[i]*IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)))/extraValues[0];
+          wethSwapAmountOut += _swapSingle(targetAddresses[i], address(weth), swapAmount, address(this), 3);
+          }
           uint crossChainTokenAmount = swap(address(weth), crossChainToken, wethSwapAmountOut, address(this), 3);
-          
           Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
           tokensToSendArray[0].token = crossChainToken;
           tokensToSendArray[0].amount = crossChainTokenAmount;
-          bytes memory data = abi.encode(1, targetAddress, nonce, 0, 0);
+          uint[] memory zeroArr;
+          bytes memory data = abi.encode(1, targetAddresses, nonce, zeroArr, zeroArr);
             // address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
           sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
         }else if( actionType == 2){
-            uint tokenValue = getAmountOut(targetAddress, address(weth), IERC20(targetAddress).balanceOf(address(crossChainVault)), 3);
-            bytes memory data = abi.encode(2, targetAddress, nonce, tokenValue, 0);
+            uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
+            bytes memory data = abi.encode(2, targetAddresses[0], nonce, tokenValue, 0);
             sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }else if( actionType == 3){
-            uint portfolioValue = percentage;
-            uint marketShare = extraValue;
-            uint tokenValue = getAmountOut(targetAddress, address(weth), IERC20(targetAddress).balanceOf(address(crossChainVault)), 3);
+            uint portfolioValue = percentages[0];
+            uint marketShare = extraValues[0];
+            uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
             uint sellPercent = tokenValue*100e18/portfolioValue - marketShare;
             // uint swapAmount = (sellPercent*IERC20(targetAddress).balanceOf(address(crossChainVault)))/100e18;
             uint sellValue = tokenValue - (marketShare*portfolioValue)/100e18;
-            uint swapAmount = (sellValue*IERC20(targetAddress).balanceOf(address(crossChainVault)))/tokenValue;
-            uint wethSwapAmountOut = _swapSingle(targetAddress, address(weth), swapAmount, address(this), 3);
+            uint swapAmount = (sellValue*IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)))/tokenValue;
+            uint wethSwapAmountOut = _swapSingle(targetAddresses[0], address(weth), swapAmount, address(this), 3);
             uint crossChainTokenAmount = swap(address(weth), crossChainToken, wethSwapAmountOut, address(this), 3);
             Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
             tokensToSendArray[0].token = crossChainToken;
             tokensToSendArray[0].amount = crossChainTokenAmount;
-            bytes memory data = abi.encode(3, targetAddress, nonce, 0, 0);
+            bytes memory data = abi.encode(3, targetAddresses[0], nonce, 0, 0);
         }else if( actionType == 4){
             Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
             .destTokenAmounts;
@@ -596,7 +460,7 @@ contract CrossChainIndexFactory is
             uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
 
             uint wethAmount = swap(crossChainToken, address(weth), amount, address(crossChainVault), 3);
-            _swapSingle(address(weth), targetAddress, wethAmount, address(crossChainVault), 3);
+            _swapSingle(address(weth), targetAddresses[0], wethAmount, address(crossChainVault), 3);
         }
     }
 
@@ -638,19 +502,6 @@ contract CrossChainIndexFactory is
     }
 
 
-    function reIndexAndReweight() public onlyOwner {
-        for(uint i; i < totalCurrentList; i++) {
-            _swapSingle(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(crossChainVault)), address(crossChainVault), tokenSwapVersion[currentList[i]]);
-        }
-        uint wethBalance = weth.balanceOf(address(crossChainVault));
-        for(uint i; i < totalOracleList; i++) {
-            _swapSingle(address(weth), oracleList[i], wethBalance*tokenOracleMarketShare[oracleList[i]]/100e18, address(crossChainVault), tokenSwapVersion[oracleList[i]]);
-            //update current list
-            currentList[i] = oracleList[i];
-            tokenCurrentMarketShare[oracleList[i]] = tokenOracleMarketShare[oracleList[i]];
-            tokenCurrentListIndex[oracleList[i]] = tokenOracleListIndex[oracleList[i]];
-        }
-        totalCurrentList = totalOracleList;
-    }
+    
     
 }
