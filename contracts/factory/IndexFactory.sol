@@ -358,6 +358,7 @@ contract IndexFactory is
                     ] = true;
                 }
                 }
+                }
                 //send tokens and data
                 uint64[] memory allchainSelectors = issuanceChainSelectors[
                     issuanceNonce
@@ -375,21 +376,21 @@ contract IndexFactory is
                     ];
                     // uint totalShares = issuanceChainSelectorTotalSharesByNonce[
                     //     issuanceNonce
-                    // ][tokenChainSelector];
-                    uint[1] memory totalSharesArr;
+                    // ][allchainSelectors[i]];
+                    uint[] memory totalSharesArr = new uint[](1);
                     totalSharesArr[0] = issuanceChainSelectorTotalSharesByNonce[
                         issuanceNonce
-                    ][tokenChainSelector];
+                    ][allchainSelectors[i]];
                     uint crossChainTokenAmount = (totalCrossChainTokenAmount *
                         totalSharesArr[0]) / totalCrossChainShares;
                     address[]
                         memory tokenAddresses = issuanceChainSelectorTokensByNonce[
                             issuanceNonce
-                        ][tokenChainSelector];
+                        ][allchainSelectors[i]];
                     uint[]
                         memory tokenShares = issuanceChainSelectorSharesByNonce[
                             issuanceNonce
-                        ][tokenChainSelector];
+                        ][allchainSelectors[i]];
 
                     //fee
                     bytes memory simulatedData = abi.encode(
@@ -407,7 +408,7 @@ contract IndexFactory is
                         feeToken: i_link
                     });
                     uint256 fees = IRouterClient(i_router).getFee(
-                        tokenChainSelector,
+                        allchainSelectors[i],
                         message
                     );
                     Client.EVMTokenAmount[]
@@ -427,7 +428,7 @@ contract IndexFactory is
                         totalSharesArr
                     );
                     sendToken(
-                        tokenChainSelector,
+                        allchainSelectors[i],
                         data,
                         crossChainIndexFactory,
                         tokensToSendArray,
@@ -435,7 +436,7 @@ contract IndexFactory is
                     );
                 }
                
-        }
+        // }
     }
 
     function completeIssuanceRequest(uint _issuanceNonce) internal {
@@ -534,13 +535,13 @@ contract IndexFactory is
                 }
 
                 }
-
+                }
                 //send tokens and data
-                _sendRedemptionMessages(redemptionNonce, totalCrossChainShares);
-        }
+                _sendRedemptionMessages(redemptionNonce, burnPercent);
+        // }
     }
 
-    function _sendRedemptionMessages(uint _redemptionNonce, uint _totalCrossChainShares) internal {
+    function _sendRedemptionMessages(uint _redemptionNonce, uint _burnPercent) internal {
         uint64[] memory allchainSelectors = redemptionChainSelectors[
                     _redemptionNonce
                 ];
@@ -549,6 +550,10 @@ contract IndexFactory is
                 address crossChainIndexFactory = crossChainFactoryBySelector[
                 allchainSelectors[i]
                 ];
+                // uint[] memory totalCrossChainShares = new uint[](1);
+                // totalCrossChainShares[0] = _totalCrossChainShares;
+                uint[] memory burnPercentages = new uint[](1);
+                burnPercentages[0] = _burnPercent;
                 // uint totalShares = redemptionChainSelectorTotalSharesByNonce[
                 //     _redemptionNonce
                 // ][allchainSelectors[i]];
@@ -577,7 +582,7 @@ contract IndexFactory is
                     tokenAddresses,
                     _redemptionNonce,
                     tokenShares,
-                    _totalCrossChainShares
+                    burnPercentages
                 );
                 Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
                     receiver: abi.encode(crossChainIndexFactory),
@@ -603,7 +608,7 @@ contract IndexFactory is
                     tokenAddresses,
                     _redemptionNonce,
                     tokenShares,
-                    _totalCrossChainShares
+                    burnPercentages
                 );
                 sendToken(
                     allchainSelectors[i],

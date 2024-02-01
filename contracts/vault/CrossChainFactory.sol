@@ -409,8 +409,8 @@ contract CrossChainIndexFactory is
         address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
         uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
         uint wethAmount = swap(crossChainToken, address(weth), amount, address(crossChainVault), 3);
-        uint[] memory oldTokenValues;
-        uint[] memory newTokenValues;
+        uint[] memory oldTokenValues = new uint[](targetAddresses.length);
+        uint[] memory newTokenValues = new uint[](targetAddresses.length);
         for(uint i = 0; i < targetAddresses.length; i++){
         uint wethToSwap = wethAmount*percentages[i]/extraValues[0];
         uint oldTokenValue = getAmountOut(targetAddresses[i], address(weth), IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)), 3);
@@ -424,7 +424,7 @@ contract CrossChainIndexFactory is
         }else if( actionType == 1){
           uint wethSwapAmountOut;
           for(uint i = 0; i < targetAddresses.length; i++){
-          uint swapAmount = (percentages[i]*IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)))/extraValues[0];
+          uint swapAmount = (extraValues[0]*IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)))/1e18;
           wethSwapAmountOut += _swapSingle(targetAddresses[i], address(weth), swapAmount, address(this), 3);
           }
           uint crossChainTokenAmount = swap(address(weth), crossChainToken, wethSwapAmountOut, address(this), 3);
@@ -433,7 +433,6 @@ contract CrossChainIndexFactory is
           tokensToSendArray[0].amount = crossChainTokenAmount;
           uint[] memory zeroArr;
           bytes memory data = abi.encode(1, targetAddresses, nonce, zeroArr, zeroArr);
-            // address crossChainIndexFactory = crossChainFactoryBySelector[tokenChainSelector];
           sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
         }else if( actionType == 2){
             uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);

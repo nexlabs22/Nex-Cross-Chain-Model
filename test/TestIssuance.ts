@@ -261,8 +261,10 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         console.log("link token balance before swap:", ethers.utils.formatEther(await linkToken.balanceOf(indexFactory.address)))
         console.log("link decimals:", Number(await linkToken.decimals()))
         await indexFactory.issuanceIndexTokensWithEth(ethers.utils.parseEther("0.1"), ethers.utils.parseEther("1"), {value: ethers.utils.parseEther("1.1001")})
-        console.log("link token balance before swap:", ethers.utils.formatEther(await linkToken.balanceOf(indexFactory.address)))
         console.log("==>");
+        console.log("index total shares:", Number(await indexFactory.issuanceChainSelectorTotalSharesByNonce("1", "2")))
+        console.log("index total shares:", (await indexFactory.issuanceChainSelectorSharesByNonce("1", "2", "0")))
+        console.log("link token balance after swap:", ethers.utils.formatEther(await linkToken.balanceOf(indexFactory.address)))
         console.log("ccVault balance after swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance after swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
@@ -271,7 +273,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         console.log("portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
         console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
         const indexTokenBalance = await indexToken.balanceOf(owner.address);
-        // await indexFactory.redemption(indexTokenBalance, ethers.utils.parseEther("1"), weth9.address, 3, {value: ethers.utils.parseEther("1")});
+        await indexFactory.redemption(indexTokenBalance, ethers.utils.parseEther("1"), weth9.address, 3, {value: ethers.utils.parseEther("1")});
         console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
       });
       
