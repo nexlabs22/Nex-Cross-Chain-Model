@@ -148,7 +148,7 @@ export default function Trade() {
 	return (
 		<>
 			<Head>
-				<title>Trade</title>
+				<title>NexLabs - Trade</title>
 				<meta
 					name="description"
 					content="Nex Labs is reinventing trading with the cutting-edge trade page. Seamlessly swap, trade and invest in innovative indices, and access unique products - all integrated with your wallet for smooth trading."

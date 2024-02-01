@@ -354,7 +354,7 @@ export default function Portfolio() {
 	return (
 		<>
 			<Head>
-				<title>Portfolio</title>
+				<title>NexLabs - Portfolio</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."

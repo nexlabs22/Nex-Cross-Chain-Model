@@ -310,7 +310,7 @@ export default function DCACalculator() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Nexlabs - DCA Calculator</title>
 				<meta name="description" content="" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
