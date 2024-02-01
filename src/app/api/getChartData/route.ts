@@ -33,7 +33,7 @@ const colNameToSymbol: { [key: string]: string } = {
     "oil": "CRUDEOIL",
     "copper": "COPPER",
     "lithium": "LITHIUM",
-    "silver": "silver",
+    "silver": "SILVER",
 
 
     "bitcoin": "BTC"
