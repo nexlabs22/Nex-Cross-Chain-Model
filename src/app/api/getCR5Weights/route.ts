@@ -3,6 +3,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import axios from 'axios'
 export const preferredRegion = ['fra1']
 
+
 const cryptoNametoSymbol_bitfinex: { [key: string]: string } = {
     'bitcoin': 'btcusd',
     'ethereum': 'ethusd',
