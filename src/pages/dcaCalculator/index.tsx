@@ -102,7 +102,17 @@ export default function DCACalculator() {
 	}
 	const indices = ['ANFI', 'CRYPTO5']
 	const data = selectedIndex === 'ANFI' ? filterFirstOfMonth(ANFIData) : filterFirstOfMonth(CR5Data)
+	const validationDates = {
+		minMonth: data && data[0] && data[0].date ? new Date(data[0].date).getMonth() : -1,
+		minYear: data && data[0] && data[0] ? Number(data[0].date?.split(' ')[3]) : -1,
+		maxMonth: data && data[0] && data[data.length - 1]?.date ? new Date(data[data.length - 1].date as string).getMonth() : -1,
+		maxYear: data && data[0] && data[data.length - 1] ? Number(data[data.length - 1].date?.split(' ')[3]) : -1,
+	}
+	console.log(validationDates)
 	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+	const [startMonths, setStartMonths] = useState<string[]>(months)
+	const [endMonths, setEndMonths] = useState<string[]>(months)
 
 	const [initialAmount, setInitialAmount] = useState(1000)
 	const [monthlyInvestment, setMonthlyInvestment] = useState(100)
@@ -111,6 +121,39 @@ export default function DCACalculator() {
 	const [selectedStartYear, selectStartYear] = useState(2023)
 	const [selectedEndYear, selectEndYear] = useState(2023)
 	const [filteredIndexData, setFilteredIndexData] = useState<dcaDataType[]>([])
+
+	useEffect(() => {
+		const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+		if (selectedStartYear === validationDates.minYear) {
+			setStartMonths(months.slice(validationDates.minMonth))
+		} else if (selectedStartYear < validationDates.minYear) {
+			setStartMonths(['No option'])
+			selectStartMonth('No option')
+		} else {
+			setStartMonths(months)
+		}
+		if (selectedEndYear === validationDates.maxYear) {
+			setEndMonths(months.slice(0, validationDates.maxMonth + 1))
+		} else if (selectedEndYear > validationDates.maxYear) {
+			setEndMonths(['No option'])
+			selectEndMonth('No option')
+		} else {
+			setEndMonths(months)
+		}
+	}, [selectedStartYear, selectedEndYear, validationDates.minYear, validationDates.minMonth, validationDates.maxYear, validationDates.maxMonth])
+
+	// useEffect(()=>{
+	// 	if(selectedStartYear < validationDates.minYear){
+	// 		set
+	// 	}
+	// },[selectedStartYear])
+
+	// useEffect(()=>{
+	// 	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+	// 	if(selectedStartYear >= validationDates.minYear ){
+	// 		setStartMonths(months.slice(validationDates.minMonth))
+	// 	}
+	// },[selectedStartYear,validationDates.minYear,validationDates.minMonth ])
 
 	const changeInitialAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInitialAmount(Number(e?.target?.value))
@@ -139,28 +182,32 @@ export default function DCACalculator() {
 
 	function handleSubmit() {
 		if (data.length > 0) {
-			function filterDataByDateRange(data: dcaDataType[], startMonth: string, startYear: number, endMonth: string, endYear: number): dcaDataType[] {
-				const startTimestamp = findClosestTimestamp(data, startMonth, startYear)
-				const endTimestamp = findClosestTimestamp(data, endMonth, endYear)
+			if (selectedStartMonth !== 'No option' && selectedEndMonth !== 'No option') {
+				function filterDataByDateRange(data: dcaDataType[], startMonth: string, startYear: number, endMonth: string, endYear: number): dcaDataType[] {
+					const startTimestamp = findClosestTimestamp(data, startMonth, startYear)
+					const endTimestamp = findClosestTimestamp(data, endMonth, endYear)
 
-				const filteredData = data.filter((item) => item.time >= startTimestamp && item.time <= endTimestamp)
+					const filteredData = data.filter((item) => item.time >= startTimestamp && item.time <= endTimestamp)
 
-				let totalInvested = initialAmount
-				const percentageGainData: dcaDataType[] = filteredData.map((item, index) => {
-					totalInvested += monthlyInvestment
-					const tokenAmt = totalInvested / item.value
-					const prevTokenAmt = index === 0 ? 0 : (totalInvested - monthlyInvestment) / filteredData[index - 1].value
-					const total = index === 0 ? tokenAmt * item.value : prevTokenAmt * item.value + monthlyInvestment
-					const percentageGain = ((total - totalInvested) / totalInvested) * 100
-					const totalGain = total - totalInvested
-					return { ...item, percentageGain, totalInvested, totalGain, total, tokenAmt }
-				})
-				return percentageGainData
+					let totalInvested = initialAmount
+					const percentageGainData: dcaDataType[] = filteredData.map((item, index) => {
+						totalInvested += monthlyInvestment
+						const tokenAmt = totalInvested / item.value
+						const prevTokenAmt = index === 0 ? 0 : (totalInvested - monthlyInvestment) / filteredData[index - 1].value
+						const total = index === 0 ? tokenAmt * item.value : prevTokenAmt * item.value + monthlyInvestment
+						const percentageGain = ((total - totalInvested) / totalInvested) * 100
+						const totalGain = total - totalInvested
+						return { ...item, percentageGain, totalInvested, totalGain, total, tokenAmt }
+					})
+					return percentageGainData
+				}
+
+				const filteredData = filterDataByDateRange(data, selectedStartMonth, selectedStartYear, selectedEndMonth, selectedEndYear)
+
+				setFilteredIndexData(filteredData)
+			}else{
+				GenericToast({ type: 'error', message: 'Please choose start or end month'})
 			}
-
-			const filteredData = filterDataByDateRange(data, selectedStartMonth, selectedStartYear, selectedEndMonth, selectedEndYear)
-
-			setFilteredIndexData(filteredData)
 		}
 	}
 
@@ -275,11 +322,14 @@ export default function DCACalculator() {
 							<Menu
 								menuButton={
 									<MenuButton>
-										<div className={`w-11/12 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500"}  shadow-sm shadow-blackText-500 gap-8 cursor-pointer`}
-										style={{
-											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-										}}
+										<div
+											className={`w-11/12 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${
+												mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500'
+											}  shadow-sm shadow-blackText-500 gap-8 cursor-pointer`}
+											style={{
+												boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+											}}
 										>
 											<div className="flex flex-row items-center justify-start gap-2">
 												<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedIndex}</h5>
@@ -311,7 +361,7 @@ export default function DCACalculator() {
 								})}
 							</Menu>
 							<div className="flex flex-col items-start justify-start gap-1 w-full">
-								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>Initial Investment</label>
+								<label className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>Initial Investment</label>
 								<input
 									type="number"
 									placeholder="0.00"
@@ -321,7 +371,7 @@ export default function DCACalculator() {
 								/>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1">
-								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>Monthly Investment</label>
+								<label className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>Monthly Investment</label>
 								<input
 									type="number"
 									placeholder="0.00"
@@ -330,7 +380,7 @@ export default function DCACalculator() {
 								/>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1 w-full h-fit">
-								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>Start Month</label>
+								<label className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>Start Month</label>
 								<Menu
 									menuButton={
 										<MenuButton className="w-full">
@@ -338,7 +388,7 @@ export default function DCACalculator() {
 												<div className="flex flex-row items-center justify-start gap-2">
 													<h5 className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium uppercase`}>{selectedStartMonth}</h5>
 												</div>
-												<GoChevronDown color="#F2F2F2" size={20} />
+												<GoChevronDown color="#2A2A2A" size={20} />
 											</div>
 										</MenuButton>
 									}
@@ -347,26 +397,27 @@ export default function DCACalculator() {
 									align="end"
 									className="subCatgoriesMenu w-full"
 								>
-									{months.map((sub, id) => {
+									{startMonths.map((sub, id) => {
 										return (
 											<div
 												key={id}
 												className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer "
 												onClick={() => {
-													selectStartMonth(sub)
+													if (sub !== 'No option') {
+														selectStartMonth(sub)
+													}
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-2">
 													<h5 className="text-sm text-black interMedium uppercase whitespace-nowrap">{sub}</h5>
 												</div>
-												<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
 											</div>
 										)
 									})}
 								</Menu>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1">
-								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>Start Year</label>
+								<label className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>Start Year</label>
 								<input
 									type="number"
 									placeholder="0.00"
@@ -375,7 +426,7 @@ export default function DCACalculator() {
 								/>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1">
-								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>End Month</label>
+								<label className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>End Month</label>
 								<Menu
 									menuButton={
 										<MenuButton className="w-full">
@@ -383,7 +434,7 @@ export default function DCACalculator() {
 												<div className="flex flex-row items-center justify-start gap-2">
 													<h5 className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium uppercase`}>{selectedEndMonth}</h5>
 												</div>
-												<GoChevronDown color="#F2F2F2" size={20} />
+												<GoChevronDown color="#2A2A2A" size={20} />
 											</div>
 										</MenuButton>
 									}
@@ -392,13 +443,15 @@ export default function DCACalculator() {
 									align="end"
 									className="subCatgoriesMenu w-full"
 								>
-									{months.map((sub, id) => {
+									{endMonths.map((sub, id) => {
 										return (
 											<div
 												key={id}
 												className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer "
 												onClick={() => {
-													selectEndMonth(sub)
+													if (sub !== 'No option') {
+														selectEndMonth(sub)
+													}
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-2">
@@ -411,7 +464,7 @@ export default function DCACalculator() {
 								</Menu>
 							</div>
 							<div className="flex flex-col items-start justify-start gap-1">
-								<label className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>End Year</label>
+								<label className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>End Year</label>
 								<input
 									type="number"
 									placeholder="0.00"
@@ -421,12 +474,16 @@ export default function DCACalculator() {
 							</div>
 							<button
 								onClick={handleSubmit}
-								className={`text-lg mt-4 text-white titleShadow interBold ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90"} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-11/12 px-2 py-3 rounded-lg
+								className={`text-lg mt-4 text-white titleShadow interBold ${
+									mode == 'dark'
+										? 'bg-cover border-transparent bg-center bg-no-repeat'
+										: 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90'
+								} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-11/12 px-2 py-3 rounded-lg
 										cursor-pointer `}
-										style={{
-											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-										}}
+								style={{
+									boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+								}}
 							>
 								Calculate
 							</button>
@@ -441,12 +498,16 @@ export default function DCACalculator() {
 						<div className="flex flex-row ml-auto z-10 w-full">
 							<CSVLink
 								data={csvData}
-								className={`text-sm mr-2 text-white titleShadow interBold ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90"} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
+								className={`text-sm mr-2 text-white titleShadow interBold ${
+									mode == 'dark'
+										? 'bg-cover border-transparent bg-center bg-no-repeat'
+										: 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90'
+								} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
 										cursor-pointer `}
-										style={{
-											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-										}}
+								style={{
+									boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+								}}
 								filename={`${fileName}.csv`}
 								onClick={exportCSV}
 							>
@@ -454,21 +515,26 @@ export default function DCACalculator() {
 							</CSVLink>
 							<button
 								onClick={exportPdf}
-								className={`text-sm mr-2 text-white titleShadow interBold ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90"} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
+								className={`text-sm mr-2 text-white titleShadow interBold ${
+									mode == 'dark'
+										? 'bg-cover border-transparent bg-center bg-no-repeat'
+										: 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90'
+								} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-1/10 px-2 py-3 rounded-lg
 								cursor-pointer `}
 								style={{
 									boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-								}}							>
+								}}
+							>
 								Download PDF
 							</button>
 						</div>
 
 						<div className="w-full h-full overflow-hidden">
-							<div className="h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[500px]">
+							<div className="h-full border w-full border-gray-300 rounded-2xl overflow-x-hidden overflow-y-auto max-h-[500px]">
 								<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
-									<thead className="sticky top-0 rounded-t-xl">
-										<tr className={`text-md interBold ${mode == "dark" ? " bg-transparent border-b border-b-white" : "bg-colorSeven-500"} text-whiteText-500`}>
+									<thead className="sticky top-0 rounded-t-xl border-b border-b-white ">
+										<tr className={`text-md interBold ${mode == 'dark' ? ' bg-[#000000] border-b border-b-white' : 'bg-colorSeven-500'} text-whiteText-500`}>
 											<th className="px-4 py-2 text-left">Time</th>
 											<th className="px-4 py-2 text-right">Price</th>
 											<th className="px-4 py-2 text-right">Percentage Gain</th>
@@ -478,14 +544,20 @@ export default function DCACalculator() {
 											<th className="px-4 py-2 text-right">Total</th>
 										</tr>
 									</thead>
-									<tbody className={`overflow-x-hidden overflow-y-auto ${mode == "dark" ? " bg-transparent" : " bg-gray-200"} `}>
+									<tbody className={`overflow-x-hidden overflow-y-auto ${mode == 'dark' ? ' bg-transparent' : ' bg-gray-200'} `}>
 										{filteredIndexData.map((data: dcaDataType, i: React.Key | null | undefined) => (
-											<tr key={i} className={` ${mode == "dark" ? " text-whiteText-500" : " text-gray-700"} interMedium text-base border-b  border-blackText-500`}>
+											<tr key={i} className={` ${mode == 'dark' ? ' text-whiteText-500' : ' text-gray-700'} interMedium text-base border-b  border-blackText-500`}>
 												<td className={`px-4 text-left py-3 `}>{data.date}</td>
 												<td className={`px-4 text-right py-3 `}>${FormatToViewNumber({ value: data.value, returnType: 'string' })}</td>
 												<td
 													className={`px-4 text-right py-3  ${
-														data.percentageGain ? (i != 0 ? (data.percentageGain > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500') : 'text-gray-500') : 'text-black'
+														i != 0
+															? data.percentageGain && data.percentageGain > 0
+																? 'text-nexLightGreen-500'
+																: 'text-nexLightRed-500'
+															: mode === 'dark'
+															? 'text-gray-50'
+															: 'text-gray-500'
 													}`}
 												>
 													{data.percentageGain && data.percentageGain > 0 ? '+' + data.percentageGain?.toFixed(2) : data.percentageGain?.toFixed(2)}%
@@ -508,23 +580,22 @@ export default function DCACalculator() {
 				</section>
 
 				<div className="w-full mx-auto h-0 px-2 flex flex-col items-start overflow-hidden justify-between">
-					<div className='w-full h-fit' id="pdfHeader">
-					<div className="w-11/12 mx-auto h-fit py-10  flex flex-row items-center overflow-hidden justify-between">
-						<Image src={logo} alt="logo" className="h-20 w-20"></Image>
-						<h5 className="interBold text-2xl text-blackText-500">DCA Report</h5>
+					<div className="w-full h-fit" id="pdfHeader">
+						<div className="w-11/12 mx-auto h-fit py-10  flex flex-row items-center overflow-hidden justify-between">
+							<Image src={logo} alt="logo" className="h-20 w-20"></Image>
+							<h5 className="interBold text-2xl text-blackText-500">DCA Report</h5>
+						</div>
+						<div className="w-11/12 mx-auto h-fit py-10 flex flex-col items-start overflow-hidden justify-between">
+							<h5 className="interBold text-2xl text-blackText-500">
+								User : &nbsp;
+								{connectedUser ? connectedUser?.inst_name : ''}
+							</h5>
+							<h5 className="interBold text-2xl text-blackText-500">
+								Date : &nbsp;
+								{new Date().getDate().toString() + '/' + (new Date().getMonth() + 1).toString() + '/' + new Date().getFullYear().toString()}
+							</h5>
+						</div>
 					</div>
-					<div className="w-11/12 mx-auto h-fit py-10 flex flex-col items-start overflow-hidden justify-between">
-						<h5 className="interBold text-2xl text-blackText-500">
-							User : &nbsp;
-							{connectedUser ? connectedUser?.inst_name : ''}
-						</h5>
-						<h5 className="interBold text-2xl text-blackText-500">
-							Date : &nbsp;
-							{new Date().getDate().toString() + "/" + (new Date().getMonth()+1).toString() + "/" + new Date().getFullYear().toString()}
-						</h5>
-					</div>
-					</div>
-					
 				</div>
 
 				<div className="w-fit h-fit pt-0 lg:pt-16">
