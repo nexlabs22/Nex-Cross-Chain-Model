@@ -18,7 +18,7 @@ const Dashboard: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Dashboard</title>
+				<title>Nex Labs - Dashboard</title>
 				<meta
 					name="description"
 					content="NexLabs decentralized trading platform allows seamless crypto swapping, trading, and index tracking. Learn how this innovative platform is making decentralized finance more accessible and transparent."

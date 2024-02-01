@@ -178,7 +178,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	return (
 		<>
 			<Head>
-				<title>Nexlabs - Asset Activity</title>
+				<title>Nex Labs - Asset Activity</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."

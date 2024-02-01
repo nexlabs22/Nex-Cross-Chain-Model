@@ -294,7 +294,7 @@ function History() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs - History</title>
+				<title>Nex Labs - History</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."

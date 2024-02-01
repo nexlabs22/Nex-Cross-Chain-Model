@@ -27,7 +27,7 @@ export default function Convert() {
 	return (
 		<>
 			<Head>
-				<title>NexLabs - Swap and bridge</title>
+				<title>Nex Labs - Swap and bridge</title>
 				<meta name="description" content="Nex Labs' convert page features a lifi widget enabling one-stop bridging, swapping, and native gas delivery making complex trades simple." />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>

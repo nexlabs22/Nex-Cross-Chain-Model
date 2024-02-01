@@ -156,7 +156,7 @@ export default function Explore() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Nex Labs - Explore Our Products</title>
 				<meta
 					name="description"
 					content="Traders love the Nex Labs platform for its wide selection of CeFi and DeFi products. Explore margin trading, derivatives, staking, and more - this blog covers all the offerings so you can optimize your crypto portfolio."

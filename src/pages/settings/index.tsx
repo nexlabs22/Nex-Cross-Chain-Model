@@ -370,7 +370,7 @@ export default function Settings() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs - Settings</title>
+				<title>Nex Labs - Settings</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."
