@@ -324,10 +324,11 @@ const TopIndexData = () => {
 						<div className="flex w-full flex-row items-center justify-start">
 							<div className="mr-5 flex flex-row items-center justify-between">
 								<CiStreamOn color="#9CAAC6" size={20} />
-								<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>Managment fee</h5>
+								<h5 className={`interExtraBold text-base ${mode == "dark" ? " text-gray-100" : "text-gray-400"} `}>Management Fees
+								</h5>
 							</div>
 							<div className="flex flex-row items-center justify-between gap-1">
-								<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{/*defaultIndexObject?.managementFee*/}N/A</h5>
+								<h5 className={`interMedium text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{defaultIndexObject?.managementFee} %</h5>
 								<GenericTooltip
 									color="#5E869B"
 									content={
