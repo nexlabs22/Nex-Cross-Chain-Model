@@ -7,6 +7,8 @@ dotenvenc.config();
 import "hardhat-contract-sizer"
 import "@nomicfoundation/hardhat-foundry";
 import "hardhat-gas-reporter"
+require("@openzeppelin/hardhat-upgrades");
+require("dotenv").config()
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ETHEREUM_SEPOLIA_RPC_URL = process.env.ETHEREUM_SEPOLIA_RPC_URL;
@@ -91,6 +93,12 @@ const config: HardhatUserConfig = {
   typechain: {
     externalArtifacts: ['./abi/*.json']
   },
+  etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://etherscan.io/
+    apiKey: process.env.ETHERSCAN_API_KEY
+    // apiKey: process.env.POLYGONSCAN_API_KEY,
+  },
   contractSizer: {
     // alphaSort: true,
     // disambiguatePaths: false,
@@ -99,7 +107,7 @@ const config: HardhatUserConfig = {
     // only: [':ERC20$'],
   },
   gasReporter:{
-    enabled: false
+    enabled: true
   }
   // paths: {
   //   sources: './contracts',

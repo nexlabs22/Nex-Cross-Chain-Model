@@ -10,7 +10,7 @@ import { getMaxTick, getMinTick } from "./uniswap/utils/ticks";
 import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
 import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/CrossChainVault";
   
-  describe("Lock", function () {
+  describe("TEST REWEIGHT", function () {
     // We define a fixture to reuse the same setup in every test.
     // We use loadFixture to run this setup once, snapshot that state,
     // and reset Hardhat Network to that snapshot in every test.
@@ -176,7 +176,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       await crossChainVault.setFactory(crossChainIndexFactory.address);
     })
     
-    async function addLiquidityEth(token: Token, ethAmount: string, tokenAmount: string){
+    async function addLiquidityEth(token: Token | LinkToken, ethAmount: string, tokenAmount: string){
       let tokens = [];
       tokens[0] = token.address < weth9.address ? token.address : weth9.address
       tokens[1] = token.address > weth9.address ? token.address : weth9.address
@@ -267,7 +267,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
         await network.provider.send("evm_mine");
         console.log("chain 1 portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
-        console.log("chain 2 portfolio after swap:", ethers.utils.formatEther(await crossChainIndexFactory.getPortfolioBalance()))
+        // console.log("chain 2 portfolio after swap:", ethers.utils.formatEther(await crossChainIndexFactory.getPortfolioBalance()))
         // console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
         // const indexTokenBalance = await indexToken.balanceOf(owner.address);
         // await indexFactory.redemption(ethers.utils.parseEther("10"), weth9.address, 3);

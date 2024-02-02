@@ -7,7 +7,7 @@
 import { constants } from "ethers";
 import { ethers } from "hardhat";
   
-  describe("Lock", function () {
+  describe("CCIP TEST", function () {
     // We define a fixture to reuse the same setup in every test.
     // We use loadFixture to run this setup once, snapshot that state,
     // and reset Hardhat Network to that snapshot in every test.
@@ -38,7 +38,7 @@ import { ethers } from "hardhat";
       return {mockRouter, linkToken, basicMessageSender, basicTokenSender, basicMessageReceiver , owner, otherAccount, token0 };
     }
   
-    describe("Deployment", function () {
+    describe("CCIP", function () {
       it("Test transfer message", async function () {
         // const { mockRouter } = await loadFixture(deployOneYearLockFixture);
         const deployObject = await deployOneYearLockFixture();

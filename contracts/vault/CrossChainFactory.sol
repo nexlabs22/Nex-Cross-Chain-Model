@@ -142,9 +142,9 @@ contract CrossChainIndexFactory is
         uint64 _currentChainSelector,
         address payable _crossChainVault,
         address _chainlinkToken, 
-        address _oracleAddress, 
-        bytes32 _externalJobId,
-        address _toUsdPriceFeed,
+        // address _oracleAddress, 
+        // bytes32 _externalJobId,
+        // address _toUsdPriceFeed,
         //ccip
         address _router, 
         //addresses
@@ -165,7 +165,7 @@ contract CrossChainIndexFactory is
         crossChainVault = CrossChainVault(_crossChainVault);
         //set oracle data
         setChainlinkToken(_chainlinkToken);
-        setChainlinkOracle(_oracleAddress);
+        // setChainlinkOracle(_oracleAddress);
         // externalJobId = _externalJobId;
         // externalJobId = "81027ac9198848d79a8d14235bf30e16";
         // oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18

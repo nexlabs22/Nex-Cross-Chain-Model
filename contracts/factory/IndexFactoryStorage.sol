@@ -223,14 +223,14 @@ contract IndexFactoryStorage is
     }
 
 
-    function mockFillAssetsList(address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions)
+    function mockFillAssetsList(address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions, uint64[] memory _chainSelectors)
     public
     onlyOwner
   {
-    
     address[] memory tokens0 = _tokens;
     uint[] memory marketShares0 = _marketShares;
     uint[] memory swapVersions0 = _swapVersions;
+    uint64[] memory chainSelectors0 = _chainSelectors;
 
     // //save mappings
     for(uint i =0; i < tokens0.length; i++){
@@ -238,6 +238,7 @@ contract IndexFactoryStorage is
         tokenOracleListIndex[tokens0[i]] = i;
         tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
         tokenSwapVersion[tokens0[i]] = swapVersions0[i];
+        tokenChainSelector[tokens0[i]] = chainSelectors0[i];
         if(totalCurrentList == 0){
             currentList[i] = tokens0[i];
             tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
