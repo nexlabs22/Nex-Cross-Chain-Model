@@ -33,23 +33,24 @@ export const LifiWidget = () => {
 			// https://github.com/nexlabs22/landingPage/blob/main/tailwind.config.cjs
 			theme: {
 				palette: {
-					primary: { main: '#B7D1D3' }, //ColorThree
-					secondary: { main: '#8FB8CA' }, //ColorFour
-					background: {
-						paper: '#86afbfe6', // ColorOne
-						default: '#5E869B', // ColorTwo
-					},
+					primary: { main: '#2A2A2A' },
+					secondary: { main: '#2A2A2A' },
+					background: { 
+					  paper: '#B7D1D3', // bg color for cards
+					  default: '#5E869B', // bg color container
+					  },
 					grey: {
-						300: '#000000', // border light theme
-						800: '#000000', // border dark theme
-					},
-				},
+					  300: '#CEDFDF', // border light theme 
+					  800: '#000000', // border dark theme
+					  },
+				  },
 				typography: {
 					fontFamily: 'Inter',
-					color: mode == "dark" ? "#FFFFFF" : "#000000"
+					color: "#2A2A2A"
 				  },
 				
 			},
+			appearance: "light",
 			
 			integrator: 'nexlabs.io',
 			toToken: '0x7f5c764cbc14f9669b88837ca1490cca17c31607',
