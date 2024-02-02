@@ -12,6 +12,7 @@ import { AiOutlineSwap } from 'react-icons/ai'
 
 // Store
 import useTradePageStore from '@/store/tradeStore'
+import { useLandingPageStore } from '@/store/store'
 
 // Components:
 import GenericModal from './GenericModal'
@@ -19,6 +20,8 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
 // Assets:
 import circle from '@assets/images/circle.png'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
 import { it } from 'node:test'
 import { UseContractResult, toWei, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
 import {
@@ -138,6 +141,8 @@ const SwapV2Defi = () => {
 	const curr = OurIndexCoins.includes(swapFromCur.Symbol) ? swapFromCur : swapToCur
 	const IndexContract : UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
 	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data /10000;
+
+	const {mode} = useLandingPageStore()
 
 	useEffect(() => {
 		async function getIssuanceOutput() {

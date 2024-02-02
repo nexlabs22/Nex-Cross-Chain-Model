@@ -23,7 +23,7 @@ import { IoCopyOutline, IoClose } from 'react-icons/io5'
 import { IoIosArrowDown } from 'react-icons/io'
 import { CgArrowsExchange } from 'react-icons/cg'
 import { TbCurrencySolana } from 'react-icons/tb'
-import { useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import etherscanLogo from '@assets/images/etherscan.png'
@@ -34,8 +34,19 @@ import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/r
 import { indexTokenV2Abi } from '@/constants/abi'
 import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
+import getANFIWeights from '@/utils/anfiWeights'
 
 import { GoArrowRight } from 'react-icons/go'
+import { stringify } from 'querystring'
+
+import axios from 'axios';
+
+type underlyingAsset = {
+	name: string
+	percentage: number
+	symbol: string
+	logo: ReactElement
+}
 
 const TopIndexData = () => {
 	const { mode } = useLandingPageStore()
@@ -68,7 +79,7 @@ const TopIndexData = () => {
 			underlyingAssets: [
 				{
 					symbol: 'XAUT',
-					name: 'Tokenized Gold',
+					name: 'gold',
 					percentage: 70,
 					bgColor: '#A9C3B6',
 					hoverColor: '#D4B460',
@@ -76,7 +87,7 @@ const TopIndexData = () => {
 				},
 				{
 					symbol: 'BTC',
-					name: 'Bitcoin',
+					name: 'bitcoin',
 					percentage: 30,
 					bgColor: '#BBC8C2',
 					hoverColor: '#F7931A',
@@ -100,7 +111,7 @@ const TopIndexData = () => {
 			underlyingAssets: [
 				{
 					symbol: 'BTC',
-					name: 'Bitcoin',
+					name: 'bitcoin',
 					percentage: 50,
 					bgColor: '#A9C3B6',
 					hoverColor: '#F7931A',
@@ -108,7 +119,7 @@ const TopIndexData = () => {
 				},
 				{
 					symbol: 'ETH',
-					name: 'Ethereum',
+					name: 'ethereum',
 					percentage: 25,
 					bgColor: '#BBC8C2',
 					hoverColor: '#627EEA',
@@ -116,7 +127,7 @@ const TopIndexData = () => {
 				},
 				{
 					symbol: 'BNB',
-					name: 'Binance coin',
+					name: 'binancecoin',
 					percentage: 8,
 					bgColor: '#C7CECA',
 					hoverColor: '#FCD535',
@@ -124,7 +135,7 @@ const TopIndexData = () => {
 				},
 				{
 					symbol: 'XRP',
-					name: 'Riplle XRP',
+					name: 'riplle',
 					percentage: 12,
 					bgColor: '#C7CECA',
 					hoverColor: '#009393',
@@ -133,7 +144,7 @@ const TopIndexData = () => {
 
 				{
 					symbol: 'SOL',
-					name: 'SOLANA',
+					name: 'solana',
 					percentage: 5,
 					bgColor: '#C7CECA',
 					hoverColor: '#2775CA',
@@ -149,6 +160,132 @@ const TopIndexData = () => {
 	const IndexContract: UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
 	const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
 	if (defaultIndexObject) defaultIndexObject.managementFee = feeRate.toFixed(2)
+
+	const [CR5UnderLyingAssets, setCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
+	const [ANFIUnderLyingAssets, setANFIUnderLyingAssets] = useState<underlyingAsset[]>([])
+
+	const [SmallCR5UnderLyingAssets, setSmallCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
+	const [SmallANFIUnderLyingAssets, setSmallANFIUnderLyingAssets] = useState<underlyingAsset[]>([])
+
+	async function getANFIWeights() {
+		try {
+			const response = await axios.get(`https://app.nexlabs.io/api/getAnfiWeights`);
+			const RawANFIUnderlyingAssets = response.data.data.allocations;
+
+			// Big logos for POR section : 
+
+			setANFIUnderLyingAssets([]);
+
+			const assets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any; }) => {
+				const Asset: underlyingAsset = {
+					name: underLyingAssetData.name === "bitcoin" ? "Bitcoin" : "Gold",
+					logo: underLyingAssetData.name === "bitcoin" ? <GrBitcoin color="#FFFFFF" size={20} /> : <SiTether color="#FFFFFF" size={20} />,
+					symbol: underLyingAssetData.name === "bitcoin" ? "BTC" : "XAUT",
+					percentage: underLyingAssetData.weight,
+				};
+				return Asset;
+			});
+
+			setANFIUnderLyingAssets(assets);
+
+			// Small Logos for chart box card :
+			setSmallANFIUnderLyingAssets([]);
+			const Smallassets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any; }) => {
+				const SmallAsset: underlyingAsset = {
+					name: underLyingAssetData.name === "bitcoin" ? "Bitcoin" : "Gold",
+					logo: underLyingAssetData.name === "bitcoin" ? <GrBitcoin color="#FFFFFF" size={22} /> : <SiTether color="#FFFFFF" size={22} />,
+					symbol: underLyingAssetData.name === "bitcoin" ? "BTC" : "XAUT",
+					percentage: underLyingAssetData.weight,
+				};
+				return SmallAsset;
+			});
+
+			setSmallANFIUnderLyingAssets(Smallassets);
+
+		} catch (error) {
+			console.error('Error fetching ANFI weights:', error);
+		}
+	}
+	async function getCR5Weights() {
+		try {
+			const response = await axios.get(`https://app.nexlabs.io/api/getCR5Weights`);
+			const RawCR5UnderlyingAssets = response.data.data.allocations;
+
+			//Big logos for POR section : 
+			setCR5UnderLyingAssets([]);
+
+			const assets = RawCR5UnderlyingAssets.map((underLyingAssetData: { name: string; weight: any; }) => {
+				const Asset: underlyingAsset = {
+					name: underLyingAssetData.name === "bitcoin" ? "Bitcoin" :
+						underLyingAssetData.name === "ethereum" ? "Ethereum" :
+							underLyingAssetData.name === "binancecoin" ? "Binance Coin" :
+								underLyingAssetData.name === "ripple" ? "Ripple XRP" : "Solana",
+					logo: underLyingAssetData.name === "bitcoin" ? <GrBitcoin color="#FFFFFF" size={20} /> :
+						underLyingAssetData.name === "ethereum" ? <FaEthereum color="#FFFFFF" size={20} /> :
+							underLyingAssetData.name === "binancecoin" ? <SiBinance color="#FFFFFF" size={20} /> :
+								underLyingAssetData.name === "ripple" ? <SiRipple color="#FFFFFF" size={20} /> :
+									<TbCurrencySolana color="#FFFFFF" size={20} />,
+					symbol: underLyingAssetData.name === "bitcoin" ? "BTC" :
+						underLyingAssetData.name === "ethereum" ? "ETH" :
+							underLyingAssetData.name === "binancecoin" ? "BNB" :
+								underLyingAssetData.name === "ripple" ? "XRP" : "SOL",
+					percentage: underLyingAssetData.weight,
+				};
+				return Asset;
+			});
+
+			setCR5UnderLyingAssets(assets);
+
+			// SMall logos for chart box card : 
+			setSmallCR5UnderLyingAssets([]);
+			const Smallassets = RawCR5UnderlyingAssets.map((underLyingAssetData: { name: string; weight: any; }) => {
+				const SmallAsset: underlyingAsset = {
+					name: underLyingAssetData.name === "bitcoin" ? "Bitcoin" :
+						underLyingAssetData.name === "ethereum" ? "Ethereum" :
+							underLyingAssetData.name === "binancecoin" ? "Binance Coin" :
+								underLyingAssetData.name === "ripple" ? "Ripple XRP" : "Solana",
+					logo: underLyingAssetData.name === "bitcoin" ? <GrBitcoin color="#FFFFFF" size={22} /> :
+						underLyingAssetData.name === "ethereum" ? <FaEthereum color="#FFFFFF" size={22} /> :
+							underLyingAssetData.name === "binancecoin" ? <SiBinance color="#FFFFFF" size={22} /> :
+								underLyingAssetData.name === "ripple" ? <SiRipple color="#FFFFFF" size={22} /> :
+									<TbCurrencySolana color="#FFFFFF" size={22} />,
+					symbol: underLyingAssetData.name === "bitcoin" ? "BTC" :
+						underLyingAssetData.name === "ethereum" ? "ETH" :
+							underLyingAssetData.name === "binancecoin" ? "BNB" :
+								underLyingAssetData.name === "ripple" ? "XRP" : "SOL",
+					percentage: underLyingAssetData.weight,
+				};
+				return SmallAsset;
+			});
+
+			setSmallCR5UnderLyingAssets(Smallassets);
+
+		} catch (error) {
+			console.error('Error fetching CR5 weights:', error);
+		}
+	}
+
+	useEffect(() => {
+		getANFIWeights();
+		getCR5Weights();
+	}, []);
+
+	useEffect(() => {
+		console.log("CR5 : ", CR5UnderLyingAssets);
+	}, [CR5UnderLyingAssets]);
+
+	useEffect(() => {
+		console.log("CR5 : ", SmallCR5UnderLyingAssets);
+	}, [SmallCR5UnderLyingAssets]);
+
+	useEffect(() => {
+		console.log("ANFI :", ANFIUnderLyingAssets);
+	}, [ANFIUnderLyingAssets]);
+
+	useEffect(() => {
+		console.log("ANFI :", SmallANFIUnderLyingAssets);
+	}, [SmallANFIUnderLyingAssets]);
+
 
 	return (
 		<section className="px-2 h-fit lg:px-10 py-6 xl:pt-16">
@@ -166,8 +303,10 @@ const TopIndexData = () => {
 						</div>
 					</div>
 					<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-						<div className="flex flex-row items-center justify-start">
-							{defaultIndexObject?.underlyingAssets.map((asset, i) => {
+						{
+							defaultIndexObject?.symbol == "ANFI" ? (
+								<div className="flex flex-row items-center justify-start">
+							{[...ANFIUnderLyingAssets].sort((a, b) => b.percentage - a.percentage).map((asset, i) => {
 								const zindex = i * 10
 								return (
 									<div
@@ -184,7 +323,29 @@ const TopIndexData = () => {
 								)
 							})}
 						</div>
-						<h5 className="interMedium flex items-center justify-center text-sm text-white">+{defaultIndexObject?.underlyingAssets.length} Assets</h5>
+							) : (
+								<div className="flex flex-row items-center justify-start">
+							{[...CR5UnderLyingAssets].sort((a, b) => b.percentage - a.percentage).map((asset, i) => {
+								const zindex = i * 10
+								return (
+									<div
+										key={i}
+										className={`aspect-square w-fit rounded-lg ${mode == "dark" ? "bg-cover  border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500"}  p-[4px] `}
+										style={{
+											zIndex: `'${zindex}'`, marginLeft: '-2%', boxShadow:
+												mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+											backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+										}}
+									>
+										{asset.logo}
+									</div>
+								)
+							})}
+						</div>
+							)
+						}
+						
+						<h5 className="interMedium flex items-center justify-center text-sm text-white">+{defaultIndexObject?.symbol == "ANFI" ? ANFIUnderLyingAssets.length : CR5UnderLyingAssets.length} Assets</h5>
 					</div>
 					<div className="hidden xl:block w-full h-[1px] bg-gray-300 my-4"></div>
 					<h5 className="interMedium hidden xl:block px-6 w-full text-lg text-white titleShadow">{defaultIndexObject?.description}</h5>
@@ -214,8 +375,10 @@ const TopIndexData = () => {
 						</div>
 					</div>
 					<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-						<div className="flex flex-row items-center justify-start">
-							{othertIndexObject?.underlyingAssets.map((asset, i) => {
+						{
+							othertIndexObject?.symbol == "ANFI" ? (
+								<div className="flex flex-row items-center justify-start">
+							{[...ANFIUnderLyingAssets].sort((a, b) => b.percentage - a.percentage).map((asset, i) => {
 								const zindex = i * 10
 								return (
 									<div
@@ -232,7 +395,28 @@ const TopIndexData = () => {
 								)
 							})}
 						</div>
-						<h5 className={`interMedium flex items-center justify-center text-xs ${mode == "dark" ? " text-whiteText-500 ml-2" : "text-blackText-500"} `}>+{othertIndexObject?.underlyingAssets.length} Assets</h5>
+							) : (
+								<div className="flex flex-row items-center justify-start">
+							{[...CR5UnderLyingAssets].sort((a, b) => b.percentage - a.percentage).map((asset, i) => {
+								const zindex = i * 10
+								return (
+									<div
+										key={i}
+										className={`aspect-square w-fit rounded-lg ${mode == "dark" ? "bg-cover  border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500"}  p-[4px] `}
+										style={{
+											zIndex: `'${zindex}'`, marginLeft: '-2%', boxShadow:
+												mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+											backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+										}}
+									>
+										{asset.logo}
+									</div>
+								)
+							})}
+						</div>
+							) 
+						}
+						<h5 className={`interMedium flex items-center justify-center text-xs ${mode == "dark" ? " text-whiteText-500 ml-2" : "text-blackText-500"} `}>+{othertIndexObject?.symbol == "ANFI" ? ANFIUnderLyingAssets.length : CR5UnderLyingAssets.length} Assets</h5>
 					</div>
 					<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
 					<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>{othertIndexObject?.description}</h5>
@@ -374,7 +558,7 @@ const TopIndexData = () => {
 							<div className="w-full h-fit flex flex-row items-center justify-between px-2">
 								<h5 className={`${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-xl interBlack`}>{'More About ' + defaultIndexObject?.name.toString()}</h5>
 								{mode == "dark" ? <AiOutlinePlus color="#FFFFFF" size={25}></AiOutlinePlus> : <AiOutlinePlus color="#000000" size={25}></AiOutlinePlus>}
-								
+
 							</div>
 						}
 					>

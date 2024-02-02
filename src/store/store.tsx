@@ -87,7 +87,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 				if (index === 'OurIndex') {
 					const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
 					const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
-					console.log({cr5IndexPrices, anfiIndexPrices})
+					//console.log({cr5IndexPrices, anfiIndexPrices})
 					return {
 						ANFIData: anfiIndexPrices,
 						CR5Data: cr5IndexPrices,
