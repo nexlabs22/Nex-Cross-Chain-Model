@@ -8,7 +8,7 @@ import {
     bytecode as Factory_BYTECODE,
   } from '../artifacts/contracts/factory/IndexFactory.sol/IndexFactory.json'
 import { IndexFactory } from "../typechain-types";
-import { mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory, testSepoliaCR5IndexFactoryStorage } from "../network";
+import { mumbaiCR5CrossChainFactory, mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaCrossChainTokenAddress, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory, testSepoliaCR5IndexFactoryStorage } from "../network";
 // import { goerliAnfiFactoryAddress } from "../contractAddresses";
 require("dotenv").config()
 
@@ -25,19 +25,29 @@ async function main() {
         provider
     )
     // await wallet.connect(provider);
-    console.log("sending data...")
-    const result = await cotract.connect(deployer).issuanceIndexTokensWithEth(
-        ethers.utils.parseEther("0.001"),
-        "0",
-        {value: ethers.utils.parseEther("0.0011"), gasLimit: 2000000}
+    // console.log("sending data...")
+
+    console.log("setting index factory storage...")
+    const result1 = await cotract.connect(deployer).setIndexFactoryStorage(
+        sepoliaCR5IndexFactoryStorage
     )
-    console.log("waiting for results...")
-    const receipt = await result.wait();
-    if(receipt.status ==1 ){
-        console.log("success =>", receipt)
-    }else{
-        console.log("failed =>", receipt)
-    }
+    const receipt1 = await result1.wait();
+
+    console.log("setting cross chain index factory...")
+    const result2 = await cotract.connect(deployer).setCrossChainFactory(
+        mumbaiCR5CrossChainFactory,
+        mumbaiChainSelector
+    )
+    const receipt2 = await result2.wait();
+
+    console.log("setting cross chain token...")
+    const result3 = await cotract.connect(deployer).setCrossChainToken(
+        sepoliaCrossChainTokenAddress
+    )
+    const receipt3 = await result3.wait();
+
+    console.log('Ended')
+    
 }
 
 main()

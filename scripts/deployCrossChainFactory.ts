@@ -1,5 +1,5 @@
 import { ethers, upgrades } from "hardhat";
-import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress, mumbaiCR5CrossChainVault, mumbaiChainSelector, mumbaiLinkTokenAddress, mumbaiRouterAddress, mumbaiWmaticAddress } from "../network";
+import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress, mumbaiCR5CrossChainVault, mumbaiChainSelector, mumbaiFactoryV3Address, mumbaiLinkTokenAddress, mumbaiRouterAddress, mumbaiRouterV3Address, mumbaiWmaticAddress } from "../network";
 // import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress } from "../contractAddresses";
 // const { ethers, upgrades, network, hre } = require('hardhat');
 
@@ -16,8 +16,8 @@ async function deployIndexToken() {
       mumbaiLinkTokenAddress,
       mumbaiRouterAddress,
       mumbaiWmaticAddress,
-      goerliRouterV3Address,
-      goerliFactoryV3Address,
+      mumbaiRouterV3Address,
+      mumbaiFactoryV3Address,
       goerliRouterV2Address,
       goerliFactoryV2Address
       /**

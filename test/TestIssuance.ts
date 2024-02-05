@@ -10,6 +10,7 @@ import { getMaxTick, getMinTick } from "./uniswap/utils/ticks";
 import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
 import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/CrossChainVault";
 import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
+import {V3_CORE_FACTORY_ADDRESSES, SWAP_ROUTER_02_ADDRESSES, CHAIN_TO_ADDRESSES_MAP, V2_ROUTER_ADDRESSES, MULTICALL_ADDRESSES} from "@uniswap/sdk-core"
   
   describe("TEST ISSUANCE", function () {
     // We define a fixture to reuse the same setup in every test.
@@ -41,7 +42,8 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
     let ethPriceOracle: MockV3Aggregator
 
     beforeEach(async function () {
-      
+      console.log("router address", SWAP_ROUTER_02_ADDRESSES(421613))
+      // console.log("router address", MULTICALL_ADDRESSES[11155111])
       const deploymentObject = await deployment();
 
       mockRouter = deploymentObject.mockRouter,

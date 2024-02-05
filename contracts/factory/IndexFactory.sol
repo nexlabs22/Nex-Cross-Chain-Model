@@ -299,7 +299,7 @@ contract IndexFactory is
         uint wethAmount = _inputAmount;
         uint crossChainWethAmount;
         uint totalCrossChainShares;
-        //swap
+        //swap to underlying assets on current chain
         for (uint i = 0; i < totalCurrentList(); i++) {
             uint64 tokenChainSelector = tokenChainSelector(currentList(i));
             if (tokenChainSelector == currentChainSelector) {
@@ -370,13 +370,11 @@ contract IndexFactory is
                     address(this),
                     3
                 );
+                // seding token and data for each chain
                 for (uint i = 0; i < allchainSelectors.length; i++) {
                     address crossChainIndexFactory = crossChainFactoryBySelector[
                     allchainSelectors[i]
                     ];
-                    // uint totalShares = issuanceChainSelectorTotalSharesByNonce[
-                    //     issuanceNonce
-                    // ][allchainSelectors[i]];
                     uint[] memory totalSharesArr = new uint[](1);
                     totalSharesArr[0] = issuanceChainSelectorTotalSharesByNonce[
                         issuanceNonce
@@ -413,12 +411,12 @@ contract IndexFactory is
                     );
                     Client.EVMTokenAmount[]
                         memory tokensToSendArray = new Client.EVMTokenAmount[](
-                            2
+                            1
                         );
                     tokensToSendArray[0].token = crossChainToken;
                     tokensToSendArray[0].amount = crossChainTokenAmount;
-                    tokensToSendArray[1].token = i_link;
-                    tokensToSendArray[1].amount = fees;
+                    // tokensToSendArray[1].token = i_link;
+                    // tokensToSendArray[1].amount = fees;
                     
                     bytes memory data = abi.encode(
                         0,
@@ -427,6 +425,7 @@ contract IndexFactory is
                         tokenShares,
                         totalSharesArr
                     );
+                
                     sendToken(
                         allchainSelectors[i],
                         data,
@@ -434,9 +433,28 @@ contract IndexFactory is
                         tokensToSendArray,
                         PayFeesIn.LINK
                     );
+                
                 }
-               
         // }
+    }
+
+
+    function issuanceIndexTokensWithEth2(
+        uint _inputAmount,
+        uint _crossChainFee
+    ) public payable {
+        weth.deposit{value: _inputAmount + _crossChainFee}();
+        weth.transfer(address(indexToken), _inputAmount);
+        uint firstPortfolioValue = getPortfolioBalance();
+        uint wethAmount = _inputAmount;
+        _swapSingle(
+                    address(weth),
+                    currentList(0),
+                    (wethAmount * tokenCurrentMarketShare(currentList(0))) /
+                        100e18,
+                    address(indexToken),
+                    tokenSwapVersion(currentList(0))
+        );
     }
 
     function completeIssuanceRequest(uint _issuanceNonce) internal {
@@ -651,6 +669,8 @@ contract IndexFactory is
     function getPortfolioBalance() public view returns (uint) {
         uint totalValue;
         for (uint i = 0; i < totalCurrentList(); i++) {
+            uint64 tokenChainSelector = tokenChainSelector(currentList(i));
+            if (tokenChainSelector == currentChainSelector) {
             uint value = indexFactoryStorage.getAmountOut(
                 currentList(i),
                 address(weth),
@@ -658,6 +678,7 @@ contract IndexFactory is
                 tokenSwapVersion(currentList(i))
             );
             totalValue += value;
+            }
         }
         return totalValue;
     }

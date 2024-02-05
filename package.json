@@ -16,6 +16,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.9.3",
     "@openzeppelin/hardhat-upgrades": "^1.28.0",
     "@thirdweb-dev/contracts": "^3.11.0",
+    "@uniswap/sdk-core": "^4.0.10",
     "@uniswap/v3-periphery": "^1.4.4",
     "bignumber.js": "^9.1.2",
     "dotenv": "^16.4.1"
