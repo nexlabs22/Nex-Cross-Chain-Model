@@ -33,7 +33,7 @@ const TipsBox = () => {
                 backgroundImage: `url('${xLogo.src}')`
             }}></div>
 			<div className=" relative z-50 w-full h-full rounded-xl shadow shadow-blackText-500 flex flex-col items-start justify-start px-4 pb-3 pt-5">
-				<h5 className="interBlack text-whiteText-500 text-xl mb-3 titleShadow">Nex Tips</h5>
+				<h5 className={`interBlack  ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-xl mb-3 titleShadow`}>Nex Tips</h5>
 				<Carousel
 					className="m-0 h-full w-full p-0"
 					infiniteLoop={true}
@@ -50,7 +50,7 @@ const TipsBox = () => {
 						setSelectedIndex(item)
 					}}
 				>
-					<div key={1} className="p-2 w-full h-fit flex flex-col items-center justify-center gap-3 cursor-pointer z-50">
+					<div key={1} className={`p-2 w-full h-fit flex flex-col ${mode == "dark" ? "" : "invert"} items-center justify-center gap-3 cursor-pointer z-50`}>
 						<div className="flex flex-row items-center justify-start gap-4">
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
@@ -64,7 +64,7 @@ const TipsBox = () => {
 							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[1]}</h5>
 						</div>
 					</div>
-					<div key={2} className="p-2 w-full h-fit flex flex-col items-center justify-center gap-3">
+					<div key={2} className={`p-2 w-full h-fit flex flex-col items-center ${mode == "dark" ? "" : "invert"} justify-center gap-3`}>
 						<div className="flex flex-row items-center justify-start gap-4">
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
@@ -78,7 +78,7 @@ const TipsBox = () => {
 							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[3]}</h5>
 						</div>
 					</div>
-					<div key={3} className="p-2 w-full h-fit flex flex-col items-center justify-center gap-3">
+					<div key={3} className={`p-2 w-full h-fit flex ${mode == "dark" ? "" : "invert"} flex-col items-center justify-center gap-3`}>
 						<div className="flex flex-row items-center justify-start gap-4">
 							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
 								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>

@@ -970,8 +970,8 @@ const SwapV2Cefi = () => {
 									color="#5E869B"
 									content={
 										<div>
-											<p className=" text-whiteText-500 text-sm interBold mb-2">No cryptocurrencies in your wallet? No problem!</p>
-											<p className=" text-whiteText-500 text-sm interMedium">
+											<p className={`${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} text-sm interBold mb-2`}>No cryptocurrencies in your wallet? No problem!</p>
+											<p className={`${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} text-sm interMedium`}>
 												Revolutionize your trading experience with Nex Labs – introducing fiat payments for the first time, providing you seamless and convenient transactions in
 												traditional currencies.
 											</p>
@@ -992,8 +992,8 @@ const SwapV2Cefi = () => {
 									<button
 										onClick={approve}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold ${
-											mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+										className={`text-xl titleShadow interBold ${
+											mode == 'dark' ? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat' : ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
 										} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${
 											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 										} hover:bg-colorTwo-500/30`}
@@ -1008,8 +1008,8 @@ const SwapV2Cefi = () => {
 									<button
 										onClick={mintRequest}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold ${
-											mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+										className={`text-xl titleShadow interBold ${
+											mode == 'dark' ? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat' : ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
 										}  active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded-lg ${
 											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 										} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
@@ -1019,7 +1019,7 @@ const SwapV2Cefi = () => {
 											backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
 										  }}
 									>
-										Compose
+										Mint
 									</button>
 								)}
 							</>
@@ -1031,7 +1031,7 @@ const SwapV2Cefi = () => {
 									isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 								} hover:bg-colorTwo-500/30`}
 							>
-								Decompose
+								Burn
 							</button>
 						)}
 						{/* <p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
@@ -1048,10 +1048,10 @@ const SwapV2Cefi = () => {
 								{FormatToViewNumber({ value: Number(firstInputValue) * feeRate, returnType: 'string' })} {swapFromCur.Symbol} ({feeRate * 100} %)
 							</p>
 							<GenericTooltip
-								color="#5E869B"
+								color="#5E869B" 
 								content={
 									<div>
-										<p className=" text-whiteText-500 text-sm interMedium">
+										<p className={`${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-sm interMedium`}>
 											Platform fees support ongoing development and security, ensuring a sustainable and innovative decentralized financial ecosystem.
 										</p>
 									</div>

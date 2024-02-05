@@ -822,7 +822,7 @@ export default function Settings() {
 								? true
 								: false
 						}
-						className={`text-xl text-white titleShadow interBold ${name == '' &&
+						className={`text-xl titleShadow interBold ${name == '' &&
 							email == '' &&
 							adr == '' &&
 							instName == '' &&
@@ -836,7 +836,7 @@ export default function Settings() {
 							option5 == connectedUser.p5
 							? 'grayscale'
 							: ''
-							} ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:bg-colorTwo-500/30"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md `}
+							} ${mode == "dark" ? " text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat" : " text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:bg-colorTwo-500/30"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-fit px-6 py-3 rounded-md `}
 						style={{
 							boxShadow:
 								mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",

@@ -417,10 +417,10 @@ export default function Portfolio() {
 										</div>
 										<div className={` ${mode == "dark" ? " bg-whiteBackground-500" : "bg-colorSeven-500"} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}>
 											{
-												mode == "dark" ? <BsCalendar4 color="#000000" size={15} /> : <BsCalendar4 color="#FFFFFF" size={15} />
+												mode == "dark" ? <BsCalendar4 color="#000000" size={15} /> : <BsCalendar4 color="#000000" size={15} />
 											}
 
-											<h5 className={`text-base ${mode != "dark" ? " text-whiteText-500" : "text-blackText-500"}  interBold`}>Joined N/A day ago</h5>
+											<h5 className={`text-base ${mode != "dark" ? " text-blackText-500" : "text-blackText-500"}  interBold`}>Joined N/A day ago</h5>
 										</div>
 									</div>
 								</div>
@@ -439,24 +439,24 @@ export default function Portfolio() {
 								<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
 									<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500/80" : "text-blackText-500"}  text-center lg:text-left`}>Total Portfolio Balance</h5>
 									<h5
-										className={`interExtraBold text-2xl ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"}  text-center lg:text-left`}
+										className={`interExtraBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}  text-center lg:text-left`}
 										title={
 											showPortfolioData && chartArr && chartArr[chartArr.length - 1] && chartArr[chartArr.length - 1].value < 0.01
 												? formatNumber(chartArr[chartArr.length - 1].value).toString()
 												: '0.00'
 										}
 									>
-										$
+										≈$
 										{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
 											? chartArr[chartArr.length - 1].value < 0.01
-												? '≈ 0.00 '
+												? ' 0.00 '
 												: FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' })
 											: '0.00'}
 									</h5>
 								</div>
 								<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
 									<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500/80" : "text-blackText-500"}  text-center lg:text-left`}>Total Traded Balance</h5>
-									<h5 className={`interExtraBold text-2xl ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"}  text-center lg:text-left`}>
+									<h5 className={`interExtraBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}  text-center lg:text-left`}>
 										${portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString() : '0.00'}
 									</h5>
 								</div>
@@ -486,16 +486,16 @@ export default function Portfolio() {
 								<div className="w-full h-fit border border-gray-300 rounded-xl  pt-6 shadow overflow-scroll xl:overflow-auto">
 									<div className="w-full h-fit pb-6 flex flex-row items-center gap-16 xl:gap-0 justify-start px-3 border-b border-b-[#E4E4E4] ">
 										<div className="w-[30vw] xl:w-1/4 mr-14 xl:mr-0 h-fit pr-8 xl:px-1">
-											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} text-base whitespace-nowrap`}>Asset</h5>
+											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base whitespace-nowrap`}>Asset</h5>
 										</div>
 										<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} text-base whitespace-nowrap`}>Total Balance</h5>
+											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base whitespace-nowrap`}>Total Balance</h5>
 										</div>
 										<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} text-base whitespace-nowrap`}>Portfolio %</h5>
+											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base whitespace-nowrap`}>Portfolio %</h5>
 										</div>
 										<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
-											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} text-base whitespace-nowrap`}>Action</h5>
+											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base whitespace-nowrap`}>Action</h5>
 										</div>
 									</div>
 									<div>
@@ -518,14 +518,14 @@ export default function Portfolio() {
 														></Image>
 														<div>
 															<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-lg cursor-pointer`}>{asset.symbol}</h5>
-															<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500/80" : "text-[#646464]"} italic text-base cursor-pointer`}>{asset.shortName}</h5>
+															<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500/80" : " text-blackText-500"} italic text-base cursor-pointer`}>{asset.shortName}</h5>
 														</div>
 													</div>
 													<div className="w-fit xl:w-1/4 h-fit px-1">
 														<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 whitespace-nowrap text-lg cursor-pointer`}>
 															{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol}
 														</h5>
-														<h5 className={`interExtraBold whitespace-nowrap ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"}  text-base cursor-pointer`}>${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}</h5>
+														<h5 className={`interBold whitespace-nowrap ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}  text-base cursor-pointer`}>≈${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}</h5>
 													</div>
 													<div className="w-fit xl:w-1/4 h-fit px-1">
 														{
@@ -546,10 +546,10 @@ export default function Portfolio() {
 															/>
 														}
 
-														<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} text-base cursor-pointer`}>{showPortfolioData ? asset.percentage?.toFixed(2) : '0.00'}%</h5>
+														<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base cursor-pointer`}>{showPortfolioData ? asset.percentage?.toFixed(2) : '0.00'}%</h5>
 													</div>
 													<div className="w-fit xl:w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
-														<button className={`h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat " : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`} style={{
+														<button className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} rounded-xl ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat " : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`} style={{
 															boxShadow:
 																mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
 															backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
@@ -557,7 +557,7 @@ export default function Portfolio() {
 														}}>
 															Trade
 														</button>
-														<button className={`h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat " : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`} style={{
+														<button className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} rounded-xl ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat " : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`} style={{
 															boxShadow:
 																mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
 															backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
@@ -577,16 +577,19 @@ export default function Portfolio() {
 								<Menu
 									menuButton={
 										<MenuButton>
-											<div className={`w-full xl:w-[14vw] relative z-10 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500"} shadow-sm shadow-blackText-500 gap-8 cursor-pointer mt-6`} style={{
+											<div className={`w-full xl:w-[14vw] ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} relative z-10 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500"} shadow-sm shadow-blackText-500 gap-8 cursor-pointer mt-6`} style={{
 												boxShadow:
 													mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
 												backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
 
 											}}>
 												<div className="flex flex-row items-center justify-start gap-2">
-													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{chartType == 'pie' ? 'Pie Chart' : 'Treemap Chart'}</h5>
+													<h5 className="text-sm  titleShadow interBold uppercase">{chartType == 'pie' ? 'Pie Chart' : 'Treemap Chart'}</h5>
 												</div>
-												<GoChevronDown color="#F2F2F2" size={20} />
+												{
+													mode == "dark" ? <GoChevronDown color="#F2F2F2" size={20} /> : <GoChevronDown color="#252525" size={20} />
+												}
+												
 											</div>
 										</MenuButton>
 									}
@@ -731,22 +734,35 @@ export default function Portfolio() {
 									></div>
 								</div>
 								<div className="relative top-0 left-0 z-40 bg-transparent">
-									<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Automatic Rebalancing Mechanism</h5>
-									<p className="interMedium text-whiteText-500 text-base w-full xl:w-3/5 mb-3">
+									<h5 className={`interBold ${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} titleShadow text-4xl mb-6`}>Automatic Rebalancing Mechanism</h5>
+									<p className={`interMedium ${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} text-base w-full xl:w-3/5 mb-3`}>
 										Our automatic rebalancing system ensures the proper distribution of assets in the index by regularly monitoring market capitalizations, triggering adjustments as needed
 										to align with the desired weights, and executing trades accordingly.
 									</p>
 									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
-										<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-											<span>Learn More</span>
-											<GoArrowRight color="#5E869B" size={30} />
-										</button>
+									<button
+									className={`interBold mt-8 mb-4 flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl ${mode == "dark"
+										? "titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500"
+										: "bg-gradient-to-br from-colorFour-500 to-colorSeven-500 text-blackText-500"
+										}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
+									style={{
+										backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+										boxShadow:
+											mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+									}}
+								>
+									<span>Learn More</span>
+									{
+										mode == "dark" ? <GoArrowRight color="#FFFFFF" size={30} /> : <GoArrowRight color="#252525" size={30} />
+									}
+
+								</button>
 									</Link>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div id="d2" className="w-full xl:w-3/12 flex flex-row items-center justify-center flex-grow-0 max-h-full">
+					<div id="d2" className="w-full xl:w-3/12 flex flex-row items-center justify-center flex-grow max-h-full">
 						<TipsBox2></TipsBox2>
 					</div>
 				</section>
