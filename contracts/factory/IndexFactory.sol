@@ -57,9 +57,9 @@ contract IndexFactory is
         uint oldTokenValue;
         uint newTokenValue;
     }
-    uint issuanceNonce;
-    uint redemptionNonce;
-    uint updatePortfolioNonce;
+    uint public issuanceNonce;
+    uint public redemptionNonce;
+    uint public updatePortfolioNonce;
 
     mapping(uint => mapping(address => TokenOldAndNewValues))
         public issuanceTokenOldAndNewValues;
@@ -435,27 +435,10 @@ contract IndexFactory is
                     );
                 
                 }
-        // }
     }
 
 
-    function issuanceIndexTokensWithEth2(
-        uint _inputAmount,
-        uint _crossChainFee
-    ) public payable {
-        weth.deposit{value: _inputAmount + _crossChainFee}();
-        weth.transfer(address(indexToken), _inputAmount);
-        uint firstPortfolioValue = getPortfolioBalance();
-        uint wethAmount = _inputAmount;
-        _swapSingle(
-                    address(weth),
-                    currentList(0),
-                    (wethAmount * tokenCurrentMarketShare(currentList(0))) /
-                        100e18,
-                    address(indexToken),
-                    tokenSwapVersion(currentList(0))
-        );
-    }
+    
 
     function completeIssuanceRequest(uint _issuanceNonce) internal {
         uint totalOldVaules;
@@ -556,7 +539,7 @@ contract IndexFactory is
                 }
                 //send tokens and data
                 _sendRedemptionMessages(redemptionNonce, burnPercent);
-        // }
+        
     }
 
     function _sendRedemptionMessages(uint _redemptionNonce, uint _burnPercent) internal {

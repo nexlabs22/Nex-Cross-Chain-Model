@@ -80,36 +80,9 @@ contract CrossChainIndexFactory is
 
     mapping(address => bool) public isRestricted;
 
-    // enum DexStatus {
-    //     UNISWAP_V2,
-    //     UNISWAP_V3
-    // }
-
     
-    
-    // string baseUrl;
-    // string urlParams;
-
-    // bytes32 public externalJobId;
     uint256 public oraclePayment;
-    // AggregatorV3Interface public toUsdPriceFeed;
-    // uint public lastUpdateTime;
-    // address[] public oracleList;
-    // address[] public currentList;
-
-    // uint public totalOracleList;
-    // uint public totalCurrentList;
-
-    // mapping(uint => address) public oracleList;
-    // mapping(uint => address) public currentList;
-
-    // mapping(address => uint) public tokenOracleListIndex;
-    // mapping(address => uint) public tokenCurrentListIndex;
-
-    // mapping(address => uint) public tokenCurrentMarketShare;
-    // mapping(address => uint) public tokenOracleMarketShare;
-    // mapping(address => uint) public tokenSwapVersion;
-    // mapping(address => uint64) public tokenChainSelector;
+    
 
     
     ISwapRouter public swapRouterV3;
@@ -142,9 +115,6 @@ contract CrossChainIndexFactory is
         uint64 _currentChainSelector,
         address payable _crossChainVault,
         address _chainlinkToken, 
-        // address _oracleAddress, 
-        // bytes32 _externalJobId,
-        // address _toUsdPriceFeed,
         //ccip
         address _router, 
         //addresses
@@ -155,21 +125,15 @@ contract CrossChainIndexFactory is
         address _swapRouterV2,
         address _factoryV2
     ) external initializer{
-        // __ccipReceiver_init(_router);
         CCIPReceiver(_router);
         __Ownable_init();
         __Pausable_init();
         //set chain selector
         currentChainSelector = _currentChainSelector;
-        // indexToken = IndexToken(_token);
         crossChainVault = CrossChainVault(_crossChainVault);
         //set oracle data
         setChainlinkToken(_chainlinkToken);
-        // setChainlinkOracle(_oracleAddress);
-        // externalJobId = _externalJobId;
-        // externalJobId = "81027ac9198848d79a8d14235bf30e16";
-        // oraclePayment = ((1 * LINK_DIVISIBILITY) / 10); // n * 10**18
-        // toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
+        
         //set ccip addresses
         i_router = _router;
         i_link = _chainlinkToken;
@@ -183,13 +147,7 @@ contract CrossChainIndexFactory is
         factoryV3 = IUniswapV3Factory(_factoryV3);
         swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
         factoryV2 = IUniswapV2Factory(_factoryV2);
-        //fee
-        // feeRate = 10;
-        // latestFeeUpdate = block.timestamp;
-
-        // baseUrl = "https://app.nexlabs.io/api/allFundingRates";
-        // urlParams = "?multiplyFunc=18&timesNegFund=true&arrays=true";
-        // s_requestCount = 1;
+       
     }
 
     function setCrossChainToken(address _crossChainToken) public onlyOwner {
@@ -296,14 +254,7 @@ contract CrossChainIndexFactory is
     }
 
 
-    // function getPortfolioBalance() public view returns(uint){
-    //     uint totalValue;
-    //     for(uint i = 0; i < totalCurrentList; i++) {
-    //         uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(crossChainVault)), tokenSwapVersion[currentList[i]]);
-    //         totalValue += value;
-    //     }
-    //     return totalValue;
-    // }
+    
 
 
 
@@ -393,6 +344,7 @@ contract CrossChainIndexFactory is
     }
 
 
+    address public targetAddressF;
 
     // /// handle a received message
     function _ccipReceive(
@@ -411,16 +363,26 @@ contract CrossChainIndexFactory is
         uint wethAmount = swap(crossChainToken, address(weth), amount, address(crossChainVault), 3);
         uint[] memory oldTokenValues = new uint[](targetAddresses.length);
         uint[] memory newTokenValues = new uint[](targetAddresses.length);
+
+        // uint wethToSwap = wethAmount*percentages[0]/extraValues[0];
+        // uint oldTokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
+        // _swapSingle(address(weth), 0xdcD77a498720D6F3Fbd241046a477062Cd1E7670, wethToSwap, address(crossChainVault), 3);
+        // uint newTokenValue = oldTokenValue + wethAmount;
+        // oldTokenValues[0] = oldTokenValue;
+        // newTokenValues[0] = newTokenValue;
+        // targetAddressF = targetAddresses[0];
         for(uint i = 0; i < targetAddresses.length; i++){
         uint wethToSwap = wethAmount*percentages[i]/extraValues[0];
         uint oldTokenValue = getAmountOut(targetAddresses[i], address(weth), IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)), 3);
-        _swapSingle(address(weth), targetAddresses[i], wethToSwap, address(crossChainVault), 3);
+        _swapSingle(address(weth), address(targetAddresses[i]), wethToSwap, address(crossChainVault), 3);
+        // _swapSingle(address(weth), 0xdcD77a498720D6F3Fbd241046a477062Cd1E7670, wethToSwap, address(crossChainVault), 3);
         uint newTokenValue = oldTokenValue + wethAmount;
         oldTokenValues[i] = oldTokenValue;
         newTokenValues[i] = newTokenValue;
         }
         bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
-        sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
+        sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
+        // sendMessage(sourceChainSelector, address(sender), abi.encode(""), PayFeesIn.LINK);
         }else if( actionType == 1){
           uint wethSwapAmountOut;
           for(uint i = 0; i < targetAddresses.length; i++){
@@ -461,6 +423,10 @@ contract CrossChainIndexFactory is
             uint wethAmount = swap(crossChainToken, address(weth), amount, address(crossChainVault), 3);
             _swapSingle(address(weth), targetAddresses[0], wethAmount, address(crossChainVault), 3);
         }
+    }
+
+    function testSend() public {
+        sendMessage(16015286601757825753, 0x9E67a9705E52830946213526337454B34e50E554, abi.encode("HHH"), PayFeesIn.LINK);
     }
 
     function sendMessage(
