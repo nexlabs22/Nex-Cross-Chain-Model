@@ -62,6 +62,13 @@ const cryptos: string[] = ['bitcoin', 'ethereum', 'ripple', 'solana','litecoin',
 
 export async function GET() {
     try {
+
+        let ip = ''
+        let err = ''
+        await fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => ip = data.ip)
+            .catch(error => console.log(error))
         
         function getRandomCryptosWithWeights(cryptos: string[]): Crypto[] {
             const selectedCryptos: Crypto[] = [];
@@ -102,7 +109,7 @@ export async function GET() {
             }
         };
         const symbolDetails_bitfinex = await fetch("https://api.bitfinex.com/v1/symbols_details", options).then(response => response.json()).catch(error => console.error(error));
-        const symbolDetails_bybit = await fetch("https://api.bybit.com/spot/v3/public/symbols", options).then(response => response.json()).then(res => res.result.list).catch(error => console.log(error));
+        const symbolDetails_bybit = await fetch("https://api.bybit.com/spot/v3/public/symbols", options).then(response => response.json()).then(res => res.result.list).catch(error => err = error);
         const symbolDetails_binance = await fetch("https://api.binance.us/api/v3/exchangeInfo?symbol=BNBUSDT", options).then(response => response.json()).then(res => res.symbols[0].filters[0].minPrice).catch(error => console.log(error));
         const allocations: { name: string, weight: number, minTradeValue: { bitfinex: number | string, bybit: number | string }, selectedExchange: string }[] = [];
         randomCryptosWithWeights.forEach((pair: Crypto) => {
@@ -124,7 +131,7 @@ export async function GET() {
         });
         data.allocations = allocations
 
-        return NextResponse.json(data, { status: 200 })
+        return NextResponse.json(err ? { err, ip } : { data }, { status: 200 })
     } catch (err) {
         console.log(err)
         return NextResponse.json({ err }, { status: 400 })
