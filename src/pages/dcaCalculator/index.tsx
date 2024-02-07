@@ -124,14 +124,6 @@ export default function DCACalculator() {
 
 	useEffect(() => {
 		const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-		// if (selectedStartYear === validationDates.minYear) {
-		// 	setStartMonths(months.slice(validationDates.minMonth))
-		// } else if (selectedStartYear < validationDates.minYear) {
-		// 	setStartMonths(['No option'])
-		// 	selectStartMonth('No option')
-		// } else {
-		// 	setStartMonths(months)
-		// }
 
 		if (selectedStartYear < validationDates.minYear) {
 			setStartMonths(['No option']);
@@ -141,7 +133,8 @@ export default function DCACalculator() {
 			setStartMonths(months.slice(start));
 		  }
 
-		if (selectedEndYear > validationDates.maxYear) {
+		if ( validationDates.maxYear !== -1 && selectedEndYear > validationDates.maxYear) {
+			console.log(selectedEndYear,validationDates.maxYear )
 			setEndMonths(['No option'])
 			selectEndMonth('No option')
 		  } else {
@@ -149,28 +142,7 @@ export default function DCACalculator() {
 			setEndMonths(months.slice(0, end));
 		  }
 
-		// if (selectedEndYear === validationDates.maxYear) {
-		// 	setEndMonths(months.slice(0, validationDates.maxMonth + 1))
-		// } else if (selectedEndYear > validationDates.maxYear) {
-		// 	setEndMonths(['No option'])
-		// 	selectEndMonth('No option')
-		// } else {
-		// 	setEndMonths(months)
-		// }
 	}, [selectedStartYear, selectedEndYear, validationDates.minYear, validationDates.minMonth, validationDates.maxYear, validationDates.maxMonth])
-
-	// useEffect(()=>{
-	// 	if(selectedStartYear < validationDates.minYear){
-	// 		set
-	// 	}
-	// },[selectedStartYear])
-
-	// useEffect(()=>{
-	// 	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-	// 	if(selectedStartYear >= validationDates.minYear ){
-	// 		setStartMonths(months.slice(validationDates.minMonth))
-	// 	}
-	// },[selectedStartYear,validationDates.minYear,validationDates.minMonth ])
 
 	const changeInitialAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInitialAmount(Number(e?.target?.value))

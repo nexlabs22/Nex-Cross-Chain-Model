@@ -131,7 +131,7 @@ export async function GET() {
         });
         data.allocations = allocations
 
-        return NextResponse.json(err ? { err, ip } : { data }, { status: 200 })
+        return NextResponse.json(err ? { err, ip } :  data, { status: 200 })
     } catch (err) {
         console.log(err)
         return NextResponse.json({ err }, { status: 400 })
