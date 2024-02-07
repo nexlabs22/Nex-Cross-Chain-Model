@@ -821,7 +821,7 @@ const SwapV2Defi = () => {
 		<>
 			<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
 			<div
-				className={`h-full w-full rounded-xl ${mode == 'dark' ? '' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 py-3`}
+				className={`h-fit w-full rounded-xl ${mode == 'dark' ? '' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 py-3`}
 				style={{
 					boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 				}}
