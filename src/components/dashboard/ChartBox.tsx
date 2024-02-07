@@ -517,7 +517,7 @@ const DashboardChartBox = () => {
 				<div
 					// className={`h-[50px] md:h-[40vh] xl:h-[50px] w-[600px] p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
 					// className={`h-[80vh] md:h-[40vh] xl:h-[80vh] w-full p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
-					className={`h-full md:h-[40vh] xl:h-fit w-full p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
+					className={`h-full xl:h-fit w-full p-3 rounded-2xl border border-gray-300/50 ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-100/20 shadow-md shadow-gray-300'} `}
 					style={{
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 					}}

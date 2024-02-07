@@ -69,7 +69,9 @@ const TradingViewChart = ({ index, selectedIndices }) => {
       autosize: true,
       overrides: {
         'mainSeriesProperties.style': 2,
+        "paneProperties.background": "#020024",
       },
+      custom_css_url: 'css/style.css',
       library_path: "/charting_library/",
       time_frames: [
         { text: '1M', resolution: '1D', description: '1 month', title: '1M' },
@@ -132,7 +134,7 @@ const TradingViewChart = ({ index, selectedIndices }) => {
   return <div
     // id="tv_chart_container"
     ref={chartContainerRef}
-    className="w-screen"
+    className="w-screen h-fit"
     style={{
       width: '100%',
       height: '100%',
