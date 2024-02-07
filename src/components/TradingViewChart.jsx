@@ -134,7 +134,7 @@ const TradingViewChart = ({ index, selectedIndices }) => {
   return <div
     // id="tv_chart_container"
     ref={chartContainerRef}
-    className="w-screen h-fit"
+    className="w-screen h-fit rounded-xl"
     style={{
       width: '100%',
       height: '100%',
