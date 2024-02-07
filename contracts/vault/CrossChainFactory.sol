@@ -242,7 +242,7 @@ contract CrossChainIndexFactory is
         if(amountIn > 0){
         if(_swapVersion == 3){
            finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn), 1);
-        }else {
+        } else {
             address[] memory path = new address[](2);
             path[0] = tokenIn;
             path[1] = tokenOut;
@@ -364,13 +364,6 @@ contract CrossChainIndexFactory is
         uint[] memory oldTokenValues = new uint[](targetAddresses.length);
         uint[] memory newTokenValues = new uint[](targetAddresses.length);
 
-        // uint wethToSwap = wethAmount*percentages[0]/extraValues[0];
-        // uint oldTokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
-        // _swapSingle(address(weth), 0xdcD77a498720D6F3Fbd241046a477062Cd1E7670, wethToSwap, address(crossChainVault), 3);
-        // uint newTokenValue = oldTokenValue + wethAmount;
-        // oldTokenValues[0] = oldTokenValue;
-        // newTokenValues[0] = newTokenValue;
-        // targetAddressF = targetAddresses[0];
         for(uint i = 0; i < targetAddresses.length; i++){
         uint wethToSwap = wethAmount*percentages[i]/extraValues[0];
         uint oldTokenValue = getAmountOut(targetAddresses[i], address(weth), IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)), 3);
@@ -380,8 +373,8 @@ contract CrossChainIndexFactory is
         oldTokenValues[i] = oldTokenValue;
         newTokenValues[i] = newTokenValue;
         }
-        bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
-        sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
+        // bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
+        // sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
         // sendMessage(sourceChainSelector, address(sender), abi.encode(""), PayFeesIn.LINK);
         }else if( actionType == 1){
           uint wethSwapAmountOut;

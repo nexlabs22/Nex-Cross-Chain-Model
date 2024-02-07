@@ -35,6 +35,7 @@ export const sepoliaRouterAddress = "0xd0daae2231e9cb96b94c8512223533293c3693bf"
 export const mumbaiRouterAddress = "0x70499c328e1e2a3c41108bd3730f6670a44595d1"
 export const sepoliaCrossChainTokenAddress = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05"
 export const mumbaiCrossChainTokenAddress = "0xf1E3A5842EeEF51F2967b3F05D45DD4f4205FF40"
+
 //tokens        
 export const sepoliaBitcoinAddress = "0x6Ea5aD162d5b74Bc9e4C3e4eEB18AE6861407221"
 export const sepoliaTestEthereumAddress = "0x0C3711069cf889Fc47B3Da3700fFFDc2e16A4DaD"
@@ -47,6 +48,10 @@ export const sepoliaCR5IndexFactoryStorage = "0xc97EA0C219CD117C2035707Cb4dD3e81
 export const sepoliaCR5IndexFactory = "0x9E67a9705E52830946213526337454B34e50E554"
 export const mumbaiCR5CrossChainVault = "0x53B8876a23C057630c487D5a7B394EF45e64f2fA"
 export const mumbaiCR5CrossChainFactory = "0x76b82cDBe05837C971E2dcaBAb679a70De633DeB"
+export const sepoliaBasicMessageSender = "0xd090590b7f3f1e01c33ae567ec346d8e51ec6cd8"
+export const sepoliaBasicMessageReceiver = "0x97e30e590237cc1accb09c2bf60872bb74ca63b1"
+export const mumbaiBasicMessageSender = "0x5029915571788fd27e98874b2c901990a1fadaa6"
+export const mumbaiBasicMessageReceiver = "0x49b480bd8D8af565bb902bAefC2e26423416342e"
 
 export const testSepoliaCR5IndexFactory = "0x389A9BA2a80421473468077FeDC1Ce58D2E1d228"
 

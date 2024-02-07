@@ -709,7 +709,10 @@ contract IndexFactory is
             receiver: abi.encode(receiver),
             data: _data,
             tokenAmounts: tokensToSendDetails,
-            extraArgs: "",
+            // extraArgs: "",
+            extraArgs: Client._argsToBytes(
+                Client.EVMExtraArgsV1({gasLimit: 900_000, strict: false}) // Additional arguments, setting gas limit and non-strict sequency mode
+            ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 
@@ -745,7 +748,10 @@ contract IndexFactory is
             receiver: abi.encode(receiver),
             data: _data,
             tokenAmounts: new Client.EVMTokenAmount[](0),
-            extraArgs: "",
+            // extraArgs: "",
+            extraArgs: Client._argsToBytes(
+                Client.EVMExtraArgsV1({gasLimit: 900_000, strict: false}) // Additional arguments, setting gas limit and non-strict sequency mode
+            ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 
