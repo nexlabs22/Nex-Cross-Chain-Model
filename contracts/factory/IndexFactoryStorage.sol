@@ -358,8 +358,9 @@ contract IndexFactoryStorage is
             tokenOut,
             3000
         );
-
-        (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
+        // uint32 lastUpdateSecond = OracleLibrary.getOldestObservationSecondsAgo(_pool);
+        (int24 tick ) = OracleLibrary.getLatestTick(_pool);
+        // (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
         amountOut = OracleLibrary.getQuoteAtTick(
             tick,
             amountIn,

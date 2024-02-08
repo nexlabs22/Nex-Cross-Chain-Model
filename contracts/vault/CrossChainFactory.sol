@@ -373,9 +373,8 @@ contract CrossChainIndexFactory is
         oldTokenValues[i] = oldTokenValue;
         newTokenValues[i] = newTokenValue;
         }
-        // bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
-        // sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
-        // sendMessage(sourceChainSelector, address(sender), abi.encode(""), PayFeesIn.LINK);
+        bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
+        sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
         }else if( actionType == 1){
           uint wethSwapAmountOut;
           for(uint i = 0; i < targetAddresses.length; i++){

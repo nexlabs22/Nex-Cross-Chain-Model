@@ -10,6 +10,7 @@ import "hardhat-gas-reporter"
 require("@openzeppelin/hardhat-upgrades");
 require("dotenv").config()
 
+
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ETHEREUM_SEPOLIA_RPC_URL = process.env.ETHEREUM_SEPOLIA_RPC_URL;
 const POLYGON_MUMBAI_RPC_URL = process.env.POLYGON_MUMBAI_RPC_URL;
@@ -107,7 +108,7 @@ const config: HardhatUserConfig = {
     // only: [':ERC20$'],
   },
   gasReporter:{
-    enabled: true
+    enabled: false
   }
   // paths: {
   //   sources: './contracts',

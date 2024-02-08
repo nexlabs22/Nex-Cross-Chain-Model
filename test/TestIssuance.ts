@@ -109,15 +109,14 @@ import {V3_CORE_FACTORY_ADDRESSES, SWAP_ROUTER_02_ADDRESSES, CHAIN_TO_ADDRESSES_
         //adding liquidity
         const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
         const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
-
+        
         await addLiquidityEth(owner, weth9, nft, token0, "1", "1000")
         await addLiquidityEth(owner, weth9, nft, token1, "1", "1000")
         await addLiquidityEth(owner, weth9, nft, crossChainToken, "1", "2000")
         await addLiquidityEth(owner, weth9, nft, linkToken, "10", "10000")
-        
+        await linkToken.transfer(crossChainIndexFactory.address, ethers.utils.parseEther("10"))
         console.log("weth address", weth9.address)
         console.log("link address", linkToken.address)
-        
         
         console.log("ccVault balance before swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance before swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
@@ -132,7 +131,7 @@ import {V3_CORE_FACTORY_ADDRESSES, SWAP_ROUTER_02_ADDRESSES, CHAIN_TO_ADDRESSES_
         console.log("index token balance after swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
         console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
-        await network.provider.send("evm_mine");
+        // await network.provider.send("evm_mine");
         console.log("portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
         console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
         const indexTokenBalance = await indexToken.balanceOf(owner.address);

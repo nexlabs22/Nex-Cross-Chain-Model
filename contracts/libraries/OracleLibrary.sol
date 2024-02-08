@@ -184,4 +184,13 @@ library OracleLibrary {
             tokens[i - 1] < tokens[i] ? syntheticTick += ticks[i - 1] : syntheticTick -= ticks[i - 1];
         }
     }
+
+    function getLatestTick(address _pool)
+    internal
+    view
+    returns (int24)
+    {
+     (, int24 tick , , , , , ) = IUniswapV3Pool(_pool).slot0();
+     return tick;
+    } 
 }
