@@ -207,7 +207,7 @@ export default function DCACalculator() {
 	}, [selectedIndex, data.length])
 
 	const csvData: any[][] = [
-		['Date', 'Price', 'Percentage Gain', 'Invested Amount', 'Total Gain', 'Total'],
+		['Date', 'Price', 'Percentage Change', 'Invested Amount', 'Total Change', 'Total'],
 		...filteredIndexData.map((item) => [
 			item.date || '', // Using empty string if date is undefined
 			item.value || '',
@@ -236,9 +236,9 @@ export default function DCACalculator() {
 	const columnMapping: Record<keyof exportdcaDataType, string> = {
 		date: 'Date',
 		value: 'Price',
-		percentageGain: 'Percentage Gain',
+		percentageGain: 'Percentage Change',
 		totalInvested: 'Total Invested',
-		totalGain: 'Total Gain',
+		totalGain: 'Total Change',
 		total: 'Total',
 		time: '', // don't want to include 'time'
 		tokenAmt: '', // don't want to include 'tokenAmt'
@@ -526,10 +526,10 @@ export default function DCACalculator() {
 										<tr className={`text-md interBold ${mode == 'dark' ? ' bg-[#000000] border-b border-b-white' : 'bg-colorSeven-500'} text-whiteText-500`}>
 											<th className="px-4 py-2 text-left">Time</th>
 											<th className="px-4 py-2 text-right">Price</th>
-											<th className="px-4 py-2 text-right">Percentage Gain</th>
+											<th className="px-4 py-2 text-right">Percentage Change</th>
 											{/* <th className="px-4 py-2 text-right">Token AMT</th> */}
 											<th className="px-4 py-2 text-right">Invested Amount</th>
-											<th className="px-4 py-2 text-right">Total Gain</th>
+											<th className="px-4 py-2 text-right">Total Change</th>
 											<th className="px-4 py-2 text-right">Total</th>
 										</tr>
 									</thead>
