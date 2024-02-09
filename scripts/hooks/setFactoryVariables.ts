@@ -6,9 +6,9 @@ import { ethers } from "hardhat";
 import {
     abi as Factory_ABI,
     bytecode as Factory_BYTECODE,
-  } from '../artifacts/contracts/factory/IndexFactory.sol/IndexFactory.json'
-import { IndexFactory } from "../typechain-types";
-import { mumbaiCR5CrossChainFactory, mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaCrossChainTokenAddress, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory, testSepoliaCR5IndexFactoryStorage } from "../network";
+  } from '../../artifacts/contracts/factory/IndexFactory.sol/IndexFactory.json'
+import { IndexFactory } from "../../typechain-types";
+import { mumbaiCR5CrossChainFactory, mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaCrossChainTokenAddress, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory } from "../../network";
 // import { goerliAnfiFactoryAddress } from "../contractAddresses";
 require("dotenv").config()
 

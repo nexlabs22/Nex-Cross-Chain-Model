@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { mumbaiLinkTokenAddress, mumbaiRouterAddress, sepoliaLinkTokenAddress, sepoliaRouterAddress } from "../network";
+import { arbitrumSepoliaLinkTokenAddress, arbitrumSepoliaRouterAddress, mumbaiLinkTokenAddress, mumbaiRouterAddress, sepoliaLinkTokenAddress, sepoliaRouterAddress } from "../network";
 
 async function main() {
 //   const currentTimestampInSeconds = Math.round(Date.now() / 1000);
@@ -9,16 +9,18 @@ async function main() {
   const BasicMessageSender = await ethers.getContractFactory("BasicMessageSender");
   console.log('Deploying IndexToken...');
   const basicMessageSender = await BasicMessageSender.deploy(
-    // mumbaiRouterAddress, 
-    // mumbaiLinkTokenAddress
-    sepoliaRouterAddress, 
-    sepoliaLinkTokenAddress
+    mumbaiRouterAddress, 
+    mumbaiLinkTokenAddress
+    // sepoliaRouterAddress, 
+    // sepoliaLinkTokenAddress
+    // arbitrumSepoliaRouterAddress, 
+    // arbitrumSepoliaLinkTokenAddress
     )
   await basicMessageSender.deployed()
 
 
   console.log(
-    `basicMessageSender deployed to ${basicMessageSender}`
+    `basicMessageSender deployed to ${basicMessageSender.address}`
   );
 }
 

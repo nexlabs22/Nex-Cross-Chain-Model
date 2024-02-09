@@ -150,6 +150,10 @@ contract CrossChainIndexFactory is
        
     }
 
+    function setCcipRouter(address _router) public onlyOwner {
+        i_router = _router;
+    }
+
     function setCrossChainToken(address _crossChainToken) public onlyOwner {
         crossChainToken = _crossChainToken;
     }
@@ -316,7 +320,10 @@ contract CrossChainIndexFactory is
             receiver: abi.encode(receiver),
             data: _data,
             tokenAmounts: tokensToSendDetails,
-            extraArgs: "",
+            // extraArgs: "",
+            extraArgs: Client._argsToBytes(
+                Client.EVMExtraArgsV1({gasLimit: 900_000, strict: false}) // Additional arguments, setting gas limit and non-strict sequency mode
+            ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 
@@ -350,6 +357,7 @@ contract CrossChainIndexFactory is
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
+        
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
@@ -368,13 +376,13 @@ contract CrossChainIndexFactory is
         uint wethToSwap = wethAmount*percentages[i]/extraValues[0];
         uint oldTokenValue = getAmountOut(targetAddresses[i], address(weth), IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)), 3);
         _swapSingle(address(weth), address(targetAddresses[i]), wethToSwap, address(crossChainVault), 3);
-        // _swapSingle(address(weth), 0xdcD77a498720D6F3Fbd241046a477062Cd1E7670, wethToSwap, address(crossChainVault), 3);
         uint newTokenValue = oldTokenValue + wethAmount;
         oldTokenValues[i] = oldTokenValue;
         newTokenValues[i] = newTokenValue;
         }
-        bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
-        sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
+        // bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
+        // sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
+        // sendMessage(sourceChainSelector, address(sender), abi.encode("HHH"), PayFeesIn.LINK);
         }else if( actionType == 1){
           uint wethSwapAmountOut;
           for(uint i = 0; i < targetAddresses.length; i++){
@@ -417,8 +425,9 @@ contract CrossChainIndexFactory is
         }
     }
 
-    function testSend() public {
-        sendMessage(16015286601757825753, 0x9E67a9705E52830946213526337454B34e50E554, abi.encode("HHH"), PayFeesIn.LINK);
+    function testSend(uint64 destinationChainSelector, address receiver) public {
+        // sendMessage(16015286601757825753, 0x97e30e590237cc1accb09c2bf60872bb74ca63b1, abi.encode("HHH"), PayFeesIn.LINK);
+        sendMessage(destinationChainSelector, receiver, abi.encode("HHH"), PayFeesIn.LINK);
     }
 
     function sendMessage(
@@ -431,7 +440,10 @@ contract CrossChainIndexFactory is
             receiver: abi.encode(receiver),
             data: _data,
             tokenAmounts: new Client.EVMTokenAmount[](0),
-            extraArgs: "",
+            // extraArgs: "",
+            extraArgs: Client._argsToBytes(
+                Client.EVMExtraArgsV1({gasLimit: 900_000, strict: false}) // Additional arguments, setting gas limit and non-strict sequency mode
+            ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 

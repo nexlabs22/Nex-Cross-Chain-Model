@@ -8,10 +8,12 @@ import {
     bytecode as Factory_BYTECODE,
   } from '../../artifacts/contracts/vault/CrossChainFactory.sol/CrossChainIndexFactory.json'
 import { IndexFactory } from "../../typechain-types";
-import { mumbaiCR5CrossChainFactory, mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory, testSepoliaCR5IndexFactoryStorage } from "../../network";
+import { mumbaiCR5CrossChainFactory, mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBasicMessageReceiver, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory } from "../../network";
+import { PayFeesIn } from "../../tasks/constants";
 // import { goerliAnfiFactoryAddress } from "../contractAddresses";
 require("dotenv").config()
 
+const text = "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000548656c6c6f000000000000000000000000000000000000000000000000000000"
 async function main() {
     // const signer = new ethers.Wallet(process.env.PRIVATE_KEY as string)
     const [deployer] = await ethers.getSigners();
@@ -30,8 +32,17 @@ async function main() {
     const result = await cotract.connect(deployer).testSend(
         // ethers.utils.parseEther("0.001"),
         // "0",
-        // {value: ethers.utils.parseEther("0.0011"), gasLimit: 2000000}
+        sepoliaChainSelector,
+        sepoliaBasicMessageReceiver,
+        {gasLimit: 2000000}
     )
+    // const result = await cotract.connect(deployer).sendMessage(
+    //     sepoliaChainSelector,
+    //     sepoliaBasicMessageReceiver,
+    //     text,
+    //     PayFeesIn.LINK,
+    //     {gasLimit: 2000000}
+    // )
     console.log("waiting for results...")
     const receipt = await result.wait();
     if(receipt.status ==1 ){
