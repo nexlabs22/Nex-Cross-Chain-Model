@@ -380,22 +380,23 @@ contract CrossChainIndexFactory is
         oldTokenValues[i] = oldTokenValue;
         newTokenValues[i] = newTokenValue;
         }
-        // bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
-        // sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
+        bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
+        sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
         // sendMessage(sourceChainSelector, address(sender), abi.encode("HHH"), PayFeesIn.LINK);
         }else if( actionType == 1){
           uint wethSwapAmountOut;
           for(uint i = 0; i < targetAddresses.length; i++){
-          uint swapAmount = (extraValues[0]*IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)))/1e18;
-          wethSwapAmountOut += _swapSingle(targetAddresses[i], address(weth), swapAmount, address(this), 3);
+          uint swapAmount = (extraValues[0]*IERC20(address(targetAddresses[i])).balanceOf(address(crossChainVault)))/1e18;
+          wethSwapAmountOut += _swapSingle(address(targetAddresses[i]), address(weth), swapAmount, address(this), 3);
           }
           uint crossChainTokenAmount = swap(address(weth), crossChainToken, wethSwapAmountOut, address(this), 3);
           Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
           tokensToSendArray[0].token = crossChainToken;
           tokensToSendArray[0].amount = crossChainTokenAmount;
-          uint[] memory zeroArr;
+          uint[] memory zeroArr = new uint[](0);
           bytes memory data = abi.encode(1, targetAddresses, nonce, zeroArr, zeroArr);
           sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
+        //   sendToken(sourceChainSelector, abi.encode(""), sender, tokensToSendArray, PayFeesIn.LINK);
         }else if( actionType == 2){
             uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
             bytes memory data = abi.encode(2, targetAddresses[0], nonce, tokenValue, 0);

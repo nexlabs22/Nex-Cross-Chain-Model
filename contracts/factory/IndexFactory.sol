@@ -571,39 +571,39 @@ contract IndexFactory is
                     
             
                 //fee
-                Client.EVMTokenAmount[]
-                    memory simulatedTokensToSendArray = new Client.EVMTokenAmount[](
-                        1
-                    );
-                simulatedTokensToSendArray[0].token = i_link;
-                simulatedTokensToSendArray[0].amount = IERC20(currentList(i))
-                    .balanceOf(address(indexToken));
-                bytes memory simulatedData = abi.encode(
-                    1,
-                    tokenAddresses,
-                    _redemptionNonce,
-                    tokenShares,
-                    burnPercentages
-                );
-                Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
-                    receiver: abi.encode(crossChainIndexFactory),
-                    data: simulatedData,
-                    // tokenAmounts: new Client.EVMTokenAmount[](0),
-                    tokenAmounts: simulatedTokensToSendArray,
-                    extraArgs: "",
-                    feeToken: i_link
-                });
-                uint256 fees = IRouterClient(i_router).getFee(
-                    allchainSelectors[i],
-                    message
-                );
+                // Client.EVMTokenAmount[]
+                //     memory simulatedTokensToSendArray = new Client.EVMTokenAmount[](
+                //         1
+                //     );
+                // simulatedTokensToSendArray[0].token = i_link;
+                // simulatedTokensToSendArray[0].amount = IERC20(currentList(i))
+                //     .balanceOf(address(indexToken));
+                // bytes memory simulatedData = abi.encode(
+                //     1,
+                //     tokenAddresses,
+                //     _redemptionNonce,
+                //     tokenShares,
+                //     burnPercentages
+                // );
+                // Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+                //     receiver: abi.encode(crossChainIndexFactory),
+                //     data: simulatedData,
+                //     // tokenAmounts: new Client.EVMTokenAmount[](0),
+                //     tokenAmounts: simulatedTokensToSendArray,
+                //     extraArgs: "",
+                //     feeToken: i_link
+                // });
+                // uint256 fees = IRouterClient(i_router).getFee(
+                //     allchainSelectors[i],
+                //     message
+                // );
                 
-                Client.EVMTokenAmount[]
-                    memory tokensToSendArray = new Client.EVMTokenAmount[](
-                        1
-                    );
-                tokensToSendArray[0].token = i_link;
-                tokensToSendArray[0].amount = fees;
+                // Client.EVMTokenAmount[]
+                //     memory tokensToSendArray = new Client.EVMTokenAmount[](
+                //         1
+                //     );
+                // tokensToSendArray[0].token = i_link;
+                // tokensToSendArray[0].amount = fees;
                 bytes memory data = abi.encode(
                     1,
                     tokenAddresses,
@@ -611,13 +611,19 @@ contract IndexFactory is
                     tokenShares,
                     burnPercentages
                 );
-                sendToken(
+                sendMessage(
                     allchainSelectors[i],
-                    data,
                     crossChainIndexFactory,
-                    tokensToSendArray,
+                    data,
                     PayFeesIn.LINK
                 );
+                // sendToken(
+                //     allchainSelectors[i],
+                //     data,
+                //     crossChainIndexFactory,
+                //     tokensToSendArray,
+                //     PayFeesIn.LINK
+                // );
                 }
     }
 
