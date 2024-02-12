@@ -50,17 +50,20 @@ interface User {
 
 interface DappNavbarProps {
 	lightVersion?: boolean
+	tradeNavbar?: boolean
 }
 
-const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
+const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) => {
+
 	const { mode, changeMode } = useLandingPageStore()
+	
 	function toggleMode() {
 		if (mode == 'dark') changeMode('light')
 		if (mode == 'light') changeMode('dark')
 	}
 
 	const { globalConnectedUser, setGlobalConnectedUser } = usePortfolioPageStore()
-	const { openMobileMenu, setOpenMobileMenu } = useTradePageStore()
+	const { openMobileMenu, setOpenMobileMenu, selectedTradingCategory } = useTradePageStore()
 	const [subMenuOpen, setSubMenuOpen] = useState<boolean>(false)
 
 	const connectionStatus = useConnectionStatus()
@@ -242,12 +245,12 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 			<div className="h-fit w-fit flex flex-row items-center justify-end gap-2 lg:hidden">
 			<button
 					className={`h-fit w-fit rounded-xl bg-gradient-to-tl ml-2 ${
-						mode == 'dark' ? ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
+						mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" :  ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
 					} p-2 shadow-sm  active:translate-y-[1px]`}
 					onClick={toggleMode}
 					style={{
-						backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+						backgroundImage: mode == 'dark' && selectedTradingCategory != "cefi" ? `url('${mesh1.src}')` : '',
+						boxShadow: mode == 'dark' && !tradeNavbar && selectedTradingCategory != "cefi" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 					}}
 				>
 					{mode == 'light' ? <IoSunnyOutline color="#F2F2F2" size={22} /> : <IoMoonOutline color="#F2F2F2" size={22} />}
@@ -283,14 +286,14 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion }) => {
 					<HoverMenuWithTransition key={0} menuItem="item" lightV={lightVersion} />
 				</div>
 				{/* <div className=" montrealBold rounded-xl bg-colorOne-500 px-4 pb-3 pt-4 text-lg text-whiteText-500">Connect wallet</div> */}
-				<ConnectButton />
+				<ConnectButton tradeNavbarButton={tradeNavbar} />
 				<button
 					className={`h-fit w-fit rounded-xl bg-gradient-to-tl ml-2 ${
-						mode == 'dark' ? ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
+						mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
 					} p-3 shadow-sm  active:translate-y-[1px]`}
 					onClick={toggleMode}
 					style={{
-						backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+						backgroundImage: mode == 'dark' && selectedTradingCategory != "cefi" ? `url('${mesh1.src}')` : '',
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 					}}
 				>

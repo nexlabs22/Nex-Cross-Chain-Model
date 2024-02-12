@@ -205,7 +205,7 @@ export default function Explore() {
 			</Head>
 			<main className={`min-h-screen overflow-x-hidden h-fit w-screen  ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'}`}>
 				<section className="h-full w-fit overflow-x-hidde">
-					<DappNavbar />
+					<DappNavbar tradeNavbar={true} />
 					<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-4 xl:px-10 pt-10 pb-4">
 						<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  interMedium text-center`}>Explore our Index Products</h5>
 						<div className=" mt-10 mb-2 w-full h-fit mx-auto flex flex-col xl:flex-row items-center justify-center gap-2">
@@ -525,7 +525,7 @@ export default function Explore() {
 				</section>
 
 				<div className="w-fit h-fit pt-0 lg:pt-16">
-					<Footer />
+					<Footer tradeFooter />
 				</div>
 			</main>
 		</>

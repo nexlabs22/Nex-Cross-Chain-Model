@@ -818,3 +818,12 @@ body {
 .MuiIconButton-root{
   border-color: #2A2A2A !important;
 }
+
+.cefiButton{
+  background: linear-gradient(160deg, #7335CA 0%, #B790E2 100%) !important; 
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important; 
+}
+
+.defiButton{
+  background-color: #5E869B !important;
+}
