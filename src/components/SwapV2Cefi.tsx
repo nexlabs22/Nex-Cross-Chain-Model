@@ -821,7 +821,7 @@ const SwapV2Cefi = () => {
 		<>
 			<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
 			<div
-				className={`h-fit w-full rounded-xl ${mode == 'dark' ? 'shadow shadow-[#7335CA]' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 py-3`}
+				className={`h-fit w-full rounded-xl ${mode == 'dark' ? 'shadow shadow-[#7335CA] border border-[#7335CA]/50' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 py-3`}
 				
 			>
 				<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack mb-3 text-center w-full`}>Buy/Sell <small className='text-base italic'> (CeFi)</small></h5>
