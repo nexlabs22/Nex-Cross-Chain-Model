@@ -653,7 +653,7 @@ export default function Portfolio() {
 											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>
 												Txn history :{' '}
 												<span className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>
-													<Link href="">See More</Link>
+													<Link href={`https://goerli.etherscan.io/txs?a=${address}`}>See More</Link>
 												</span>
 											</h5>
 										</div>
