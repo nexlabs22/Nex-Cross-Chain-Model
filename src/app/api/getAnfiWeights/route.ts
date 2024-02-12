@@ -28,6 +28,11 @@ export async function GET(request: NextRequest, response: NextResponse) {
             // ** Unavailable cryptos
             // 'gold': '',
         }
+
+        const cryptoSymbol: { [key: string]: string } = {
+            'bitcoin': 'BTC',
+            'gold': 'XAUT',
+        }
         
         const dataToReturn: { [key: string]: number | {} } = { timestamp: Number(anfiWeights[0]) };
 
@@ -45,7 +50,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
         // const symbolDetails_bybit: { name: string, minTradeQty: string }[] = await axios.get("https://api.bybit.com/spot/v3/public/symbols").then(res => res.data.result.list).catch((err) => { console.log(err) })
 
         
-        const allocations: { name: string, weight: number|string, minTradeValue:{bitfinex: number | string, bybit: number | string}, selectedExchange: string }[] = [];
+        const allocations: { name: string,symbol:string, weight: number|string, minTradeValue:{bitfinex: number | string, bybit: number | string}, selectedExchange: string }[] = [];
         underlyingAssetsArray.forEach((cryptoName: string) => {
             const detail_bitfinex = symbolDetails_bitfinex ? symbolDetails_bitfinex.filter((data: { pair: string }) => { return cryptoNametoSymbol_bitfinex[cryptoName] === data.pair })[0]: 'N/A'
             const detail_bybit = symbolDetails_bybit ? symbolDetails_bybit.filter((data: { name: string }) => { return cryptoNametoSymbol_bybit[cryptoName] === data.name })[0]: 'N/A'
@@ -57,6 +62,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
             // const minTradeValueBybit = cryptoNametoSymbol_bybit[cryptoName] ? (detail_bybit  && typeof detail_bybit !== 'string' && detail_bybit.minTradeQty ? Number(detail_bybit.minTradeQty) : 'N/A') : 'Pair does not exist'
             const obj = {
                 name: cryptoName,
+                symbol: cryptoSymbol[cryptoName],
                 weight: cryptoName === 'bitcoin'? anfiWeights[1][0].weightBtc: cryptoName === 'gold'? anfiWeights[1][0].weightGold: 'N/A',
                 minTradeValue,
                 selectedExchange: typeof minTradeValue.bitfinex === 'number' ? 'bitfinex' : typeof minTradeValue.bybit === 'number' ? 'bybit': 'none'

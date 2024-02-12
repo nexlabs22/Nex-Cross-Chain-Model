@@ -51,6 +51,27 @@ const cryptoNametoSymbol_bybit: { [key: string]: string } = {
     // 'bitcoincashsv:'
 }
 
+const cryptoSymbol: { [key: string]: string } = {
+    'bitcoin': 'BTC',
+    'ethereum': 'ETH',
+    'solana': 'SOL',
+    'litecoin': 'LTC',
+    'binancecoin': 'BNB',
+    'polkadot': 'DOT',
+    'cardano': 'ADA',
+    'eos': 'EOS',
+    'chainlink': 'LINK',
+    'dogecoin': 'DOGE',
+    'bitcoincash': 'BCH',
+    'ethereumclassic': 'ETC',
+    'ripple': 'XRP',
+    'steth': 'STETH',
+    'xaut': 'GOLD',
+    'monero': 'XMR',
+    'okb': 'OKB',
+    'bitcoincashsv':'BSV'
+}
+
 function shuffleArray(array: any[]): void {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -111,7 +132,7 @@ export async function GET() {
         const symbolDetails_bitfinex = await fetch("https://api.bitfinex.com/v1/symbols_details", options).then(response => response.json()).catch(error => console.error(error));
         const symbolDetails_bybit = await fetch("https://api.bybit.com/spot/v3/public/symbols", options).then(response => response.json()).then(res => res.result.list).catch(error => err = error);
         const symbolDetails_binance = await fetch("https://api.binance.us/api/v3/exchangeInfo?symbol=BNBUSDT", options).then(response => response.json()).then(res => res.symbols[0].filters[0].minPrice).catch(error => console.log(error));
-        const allocations: { name: string, weight: number, minTradeValue: { bitfinex: { value: number | string, referenced_to: string }, bybit: { value: number | string, referenced_to: string }, binance: { value: number | string, referenced_to: string } }, selectedExchange: string }[] = [];
+        const allocations: { name: string,symbol: string, weight: number, minTradeValue: { bitfinex: { value: number | string, referenced_to: string }, bybit: { value: number | string, referenced_to: string }, binance: { value: number | string, referenced_to: string } }, selectedExchange: string }[] = [];
         randomCryptosWithWeights.forEach((pair: Crypto) => {
             const {name:cryptoName, weight} = pair;
             const detail_bitfinex = symbolDetails_bitfinex ? symbolDetails_bitfinex.filter((data: { pair: string }) => { return cryptoNametoSymbol_bitfinex[cryptoName] === data.pair })[0] : 'N/A'
@@ -132,6 +153,7 @@ export async function GET() {
             }
             const obj = {
                 name: cryptoName,
+                symbol: cryptoSymbol[cryptoName],
                 weight: weight,
                 minTradeValue,
                 selectedExchange: typeof minTradeValue.binance.value === 'number' ? 'binance':typeof minTradeValue.bybit.value === 'number' ? 'bybit' : typeof minTradeValue.bitfinex.value === 'number' ? 'bitfinex' : 'none'
