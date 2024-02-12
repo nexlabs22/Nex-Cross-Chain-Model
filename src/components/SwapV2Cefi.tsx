@@ -480,6 +480,7 @@ const SwapV2Cefi = () => {
 
 	const [loadingTokens, setLoadingTokens] = useState<boolean>(true)
 	const [currentArrayId, setCurrentArrayId] = useState<number>(0)
+	const [buyAndSell, setBuyAndSell] = useState<string>("buy")
 
 	const fetchAllLiFiTokens = async () => {
 		const options = {
@@ -821,13 +822,19 @@ const SwapV2Cefi = () => {
 		<>
 			<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
 			<div
-				className={`h-fit w-full rounded-xl ${mode == 'dark' ? 'shadow shadow-[#7335CA] border border-[#7335CA]/50' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 py-3`}
+				className={`h-fit w-full rounded-xl ${mode == 'dark' ? 'shadow shadow-[#7335CA] border border-[#7335CA]/50' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 pt-2`}
 				
 			>
 				<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack mb-3 text-center w-full`}>Buy/Sell <small className='text-base italic'> (CeFi)</small></h5>
+				<div className='w-full h-fit flex flex-row items-center justify-between gap-1 pt-1 pb-3'>
+							<button onClick={()=>{setBuyAndSell("buy")}} className={`w-1/2 p-2 rounded-lg interBold ${buyAndSell == "buy" ? mode == "dark" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] text-whiteText-500" : " text-blackText-500 shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : " bg-gray-300 text-gray-400"}`}>Buy</button>
+							<button onClick={()=>{setBuyAndSell("sell")}} className={`w-1/2 p-2 rounded-lg interBold ${buyAndSell == "sell" ? mode == "dark" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] text-whiteText-500" : " text-blackText-500 shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : " bg-gray-300 text-gray-400"}`}>Sell</button>
+
+						</div>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  w-1/3`}>You pay</p>
+						
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
 							<p
 								onClick={() => {
@@ -836,7 +843,7 @@ const SwapV2Cefi = () => {
 									} else setFirstInputValue('1')
 								}}
 								className={`text-base lg:text-xs  interBold ${mode == 'dark'
-										? ' shadow-sm shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] text-whiteText-500'
+										? ' shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] text-whiteText-500'
 										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
 									} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
 								
@@ -847,7 +854,7 @@ const SwapV2Cefi = () => {
 								// onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2e18).toString())}
 								onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())}
 								className={`text-base lg:text-xs  interBold ${mode == 'dark'
-										? ' shadow-sm shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] text-whiteText-500'
+										? ' shadow-sm shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] text-whiteText-500'
 										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
 									} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
 								
@@ -857,7 +864,7 @@ const SwapV2Cefi = () => {
 							<p
 								onClick={() => setFirstInputValue(Number(getPrimaryBalance()).toString())}
 								className={`text-base lg:text-xs  interBold ${mode == 'dark'
-										? ' shadow-sm shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] text-whiteText-500'
+										? ' shadow-sm shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] text-whiteText-500'
 										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
 									} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
 								
@@ -901,7 +908,7 @@ const SwapV2Cefi = () => {
 						</div>
 					</div>
 				</div>
-				<div className={`w-full h-fit flex flex-col items-start justify-between gap-2 shadow-sm shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] rounded-lg mt-6 p-2 ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+				<div className={`w-full h-fit flex flex-col items-start justify-between gap-2 shadow-sm shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] rounded-lg mt-6 p-2 ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
 					<div className='w-full h-fit flex flex-row items-center justify-between'>
 						<h5 className='text-sm interBold'>Value 1</h5>
 						<h5 className='text-sm interMedium italic'>N/A</h5>
@@ -923,12 +930,14 @@ const SwapV2Cefi = () => {
 				<button
 					onClick={approve}
 					disabled={isButtonDisabled}
-					className={`text-xl titleShadow interBold ${mode == 'dark' ? ' text-whiteText-500 shadow-sm shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] bg-cover border-transparent bg-center bg-no-repeat' : ' text-blackText-500 shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] shadow-sm '
+					className={`text-xl titleShadow interBold ${mode == 'dark' ? ' text-whiteText-500 shadow-sm shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] bg-cover border-transparent bg-center bg-no-repeat' : ' text-blackText-500 shadow-sm shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] '
 						} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 						} hover:bg-colorTwo-500/30`}
 					
 				>
-					Buy
+					{
+						buyAndSell == "sell" ? "Sell" : "Buy"
+					}
 				</button>
 				
 
