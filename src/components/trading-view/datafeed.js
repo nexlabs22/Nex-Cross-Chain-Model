@@ -1,9 +1,6 @@
 import { makeApiRequest, generateSymbol, parseFullSymbol, generateNexSymbol } from "./helpers.js";
 import { subscribeOnStream, unsubscribeFromStream } from "./streaming.js";
 
-import getChartData from "@constants/getChartData"
-
-
 const lastBarsCache = new Map();
 
 const configurationData = {
@@ -20,13 +17,8 @@ const configurationData = {
       desc: "Bitfinex",
     },
     {
-      // `exchange` argument for the `searchSymbols` method, if a user selects this exchange
       value: "Kraken",
-
-      // filter name
       name: "Kraken",
-
-      // full exchange name displayed in the filter popup
       desc: "Kraken bitcoin exchange",
     },
 
@@ -38,8 +30,6 @@ const configurationData = {
     },
     {
       name: "Crypto",
-
-      // `symbolType` argument for the `searchSymbols` method, if a user selects this symbol type
       value: "crypto",
     },
     {
@@ -51,10 +41,9 @@ const configurationData = {
       value: 'stocks'
     },
     {
-      name: 'Commoditties',
+      name: 'Commodities',
       value: 'commodities'
     }
-    // ...
   ],
 };
 
@@ -103,7 +92,6 @@ async function getAllSymbols() {
   const indexes = ['ANFI', 'CRYPTO5', 'GSPC', 'IXIC', 'DJI', 'NYA']
   const stocks = ['V', 'ASML', 'PYPL', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', 'TCEHY', 'TSM', 'XOM', 'NVDA', 'UNH', 'JNJ', 'LVMHF', 'TSLA', 'JPM', 'WMT', 'META', 'SPY', 'MA', 'CVX', 'BRKA']
   const commodities = ['GOLD', 'COPPER', 'LITHIUM', 'CRUDEOIL', 'SILVER']
-  const crypto = ['BTC']
   data.Data.Nexlabs = nexLabsData;
   let allSymbols = [];
 
@@ -155,7 +143,7 @@ async function getAllSymbols() {
 
 const dataFeed = {
   onReady: (callback) => {
-    console.log("[onReady]: Method call");
+    // console.log("[onReady]: Method call");
     setTimeout(() => callback(configurationData));
   },
 
@@ -165,7 +153,7 @@ const dataFeed = {
     symbolType,
     onResultReadyCallback
   ) => {
-    console.log("[searchSymbols]: Method call");
+    // console.log("[searchSymbols]: Method call");
     const symbols = await getAllSymbols();
     const newSymbols = symbols.filter((symbol) => {
       const isExchangeValid = exchange === "" || symbol.exchange === exchange;
@@ -186,13 +174,13 @@ const dataFeed = {
     onSymbolResolvedCallback,
     onResolveErrorCallback
   ) => {
-    console.log("[resolveSymbol]: Method call", symbolName);
+    // console.log("[resolveSymbol]: Method call", symbolName);
     const symbols = await getAllSymbols();
     const symbolItem = symbols.find(
       ({ full_name }) => full_name === symbolName
     );
     if (!symbolItem) {
-      console.log("[resolveSymbol]: Cannot resolve symbol", symbolName);
+      // console.log("[resolveSymbol]: Cannot resolve symbol", symbolName);
       onResolveErrorCallback("cannot resolve symbol");
       return;
     }
@@ -214,7 +202,7 @@ const dataFeed = {
       data_status: "streaming",
     };
 
-    console.log("[resolveSymbol]: Symbol resolved", symbolName);
+    // console.log("[resolveSymbol]: Symbol resolved", symbolName);
     onSymbolResolvedCallback(symbolInfo);
   },
 
@@ -226,7 +214,7 @@ const dataFeed = {
     onErrorCallback
   ) => {
     const { from, to, firstDataRequest } = periodParams;
-    console.log("[getBars]: Method call", symbolInfo, resolution, from, to, periodParams);
+    // console.log("[getBars]: Method call", symbolInfo, resolution, from, to, periodParams);
     const parsedSymbol = parseFullSymbol(symbolInfo.full_name);
     const urlParameters = {
       e: parsedSymbol.exchange,
@@ -240,7 +228,6 @@ const dataFeed = {
       .join("&");
     try {
       const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
-      console.log(data1)
       const data2 = await makeApiRequest(`data/histoday?${query}`);
       const data = data2.Response === 'Error' ? data1[urlParameters.fsym] : data2.Data
       // if (
@@ -274,13 +261,13 @@ const dataFeed = {
           ...bars[bars.length - 1],
         });
       }
-      console.log(`[getBars]: returned ${bars.length} bar(s)`);
+      // console.log(`[getBars]: returned ${bars.length} bar(s)`);
       onHistoryCallback(bars, {
         noData: false,
       });
       return;
     } catch (error) {
-      console.log("[getBars]: Get error", error);
+      // console.log("[getBars]: Get error", error);
       onErrorCallback(error);
     }
   },
@@ -292,10 +279,10 @@ const dataFeed = {
     subscribeUID,
     onResetCacheNeededCallback
   ) => {
-    console.log(
-      "[subscribeBars]: Method call with subscribeUID:",
-      subscribeUID
-    );
+    // console.log(
+    //   "[subscribeBars]: Method call with subscribeUID:",
+    //   subscribeUID
+    // );
     subscribeOnStream(
       symbolInfo,
       resolution,
@@ -307,10 +294,10 @@ const dataFeed = {
   },
 
   unsubscribeBars: (subscriberUID) => {
-    console.log(
-      "[unsubscribeBars]: Method call with subscriberUID:",
-      subscriberUID
-    );
+    // console.log(
+    //   "[unsubscribeBars]: Method call with subscriberUID:",
+    //   subscriberUID
+    // );
     unsubscribeFromStream(subscriberUID);
   },
 };

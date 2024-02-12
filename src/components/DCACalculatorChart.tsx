@@ -51,7 +51,7 @@ const DCACalculatorChart: React.FC<DCAChartProps> = ({ data }) => {
 							<strong className={`${strongTagStyle}`}>${finalStandings && finalStandings.total ? Number(finalStandings.total?.toFixed(2)).toLocaleString() : '0.00'}</strong>
 						</div>
 					</div>
-					<div className="w-full h-[60vh]">
+					<div className="w-full h-[60vh] mt-8 ">
 						<Chart data={dcaChartData} />
 					</div>
 				</div>

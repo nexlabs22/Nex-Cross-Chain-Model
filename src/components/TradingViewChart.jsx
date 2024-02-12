@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useRef, useState } from "react";
 import Datafeed from "./trading-view/datafeed";
 import TradingView from "../charting_library/charting_library.standalone";
@@ -48,7 +50,7 @@ const TradingViewChart = ({ index, selectedIndices }) => {
 
   const [wid, setWid] = useState()
   const chartContainerRef = useRef()
-  const {mode } = useLandingPageStore()
+  const { mode } = useLandingPageStore()
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -59,9 +61,10 @@ const TradingViewChart = ({ index, selectedIndices }) => {
     const widget = window.tvWidget = new TradingView.widget({
       symbol: `Nexlabs:${ind}/USD`,
       interval: "1D",
-      // timeframe: '1Y',
+      height: chartContainerRef.current.clientHeight - 10,
+      width: chartContainerRef.current.clientWidth,
       style: "2",
-      fullscreen: true,
+      fullscreen: false,
       theme: mode,
       container: chartContainerRef.current,
       allow_symbol_change: false,
@@ -105,6 +108,8 @@ const TradingViewChart = ({ index, selectedIndices }) => {
 
   const [oldSelectedIndices, setOldSelectedIndices] = useState([])
   const [ids, setIds] = useState({})
+  const width = chartContainerRef?.current?.clientWidth || 0
+  const height = chartContainerRef?.current?.clientHeight || 0
   useEffect(() => {
     if (wid && wid.activeChart) {
       const newSelectedIndices = selectedIndices
@@ -128,73 +133,33 @@ const TradingViewChart = ({ index, selectedIndices }) => {
     }
   }, [selectedIndices, wid])
 
+  // useEffect(() => {
+  //   if (wid) {
+  //     // const val = wid.chart.barSpacingChanged()
+  //     const timeScaleApi = wid.activeChart().getTimeScale();
+      
+  //     const scale = timeScaleApi.barSpacing()
 
-  // <div 
-  // id="tv_chart_container"></div>;
-  return <div
-    // id="tv_chart_container"
+  //     const time = wid.activeChart().getTimeScale().barSpacingChanged()
+
+  //     // Subscribe to changes in bar spacing
+  //     timeScaleApi.barSpacingChanged().subscribe(function (newBarSpacing) {
+  //       console.log("New bar spacing:", newBarSpacing);
+  //       // Do something with the new bar spacing, if needed
+  //     });
+  //     console.log("time--->", time)
+  //     console.log("scale--->", scale)
+  //   }
+  // }, [wid, width, height])
+
+  return (<div
     ref={chartContainerRef}
-    className="w-screen max-h-full h-full rounded-xl"
     style={{
       width: '100%',
-      overflow: 'hidden',
+      height: '100%',
       zIndex: 1,
     }}
-  // className={ 'TVChartContainer' }
-  />;
+  />);
 };
 
 export default TradingViewChart;
-
-// import React, { useEffect } from "react";
-// import Datafeed from "./trading-view/datafeed";
-// import TradingView from "../charting_library/charting_library.standalone";
-
-// const TradingViewChart = ({ index }) => {
-//   useEffect(() => {
-//     const script = document.createElement("script");
-//     script.type = "text/jsx";
-//     script.src = "public/charting_library/charting_library.js";
-//     document.head.appendChild(script);
-
-//     let tvWidget;
-
-//     const initializeChart = () => {
-//       tvWidget = new TradingView.widget({
-//         symbol: `NexLabs:${index}/USD`,
-//         interval: "1D",
-//         style: "2",
-//         fullscreen: true,
-//         container: "tv_chart_container",
-//         allow_symbol_change: false,
-//         datafeed: Datafeed,
-//         library_path: "/charting_library/",
-//       });
-
-//       // Add a comparison symbol after initializing the main chart
-//       addComparisonCrypto("NexLabs:ANFI/USD");
-//     };
-
-//     const addComparisonCrypto = (newSymbol) => {
-//       if (tvWidget) {
-//         console.log(tvWidget)
-//         // Access the chart directly from the tvWidget instance
-//         // const chart = tvWidget.chart();
-//         // chart.addSymbol(newSymbol, "compare");
-//       }
-//     };
-
-//     initializeChart();
-
-//     return () => {
-//       if (tvWidget) {
-//         tvWidget.remove();
-//       }
-//       script.remove();
-//     };
-//   }, [index]);
-
-//   return <div id="tv_chart_container"></div>;
-// };
-
-// export default TradingViewChart;
