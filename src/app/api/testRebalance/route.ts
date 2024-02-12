@@ -111,21 +111,30 @@ export async function GET() {
         const symbolDetails_bitfinex = await fetch("https://api.bitfinex.com/v1/symbols_details", options).then(response => response.json()).catch(error => console.error(error));
         const symbolDetails_bybit = await fetch("https://api.bybit.com/spot/v3/public/symbols", options).then(response => response.json()).then(res => res.result.list).catch(error => err = error);
         const symbolDetails_binance = await fetch("https://api.binance.us/api/v3/exchangeInfo?symbol=BNBUSDT", options).then(response => response.json()).then(res => res.symbols[0].filters[0].minPrice).catch(error => console.log(error));
-        const allocations: { name: string, weight: number, minTradeValue: { bitfinex: number | string, bybit: number | string }, selectedExchange: string }[] = [];
+        const allocations: { name: string, weight: number, minTradeValue: { bitfinex: { value: number | string, referenced_to: string }, bybit: { value: number | string, referenced_to: string }, binance: { value: number | string, referenced_to: string } }, selectedExchange: string }[] = [];
         randomCryptosWithWeights.forEach((pair: Crypto) => {
             const {name:cryptoName, weight} = pair;
             const detail_bitfinex = symbolDetails_bitfinex ? symbolDetails_bitfinex.filter((data: { pair: string }) => { return cryptoNametoSymbol_bitfinex[cryptoName] === data.pair })[0] : 'N/A'
             const detail_bybit = symbolDetails_bybit ? symbolDetails_bybit.filter((data: { name: string }) => { return cryptoNametoSymbol_bybit[cryptoName] === data.name })[0] : 'N/A'
             const minTradeValue = {
-                bitfinex: cryptoNametoSymbol_bitfinex[cryptoName] ? (detail_bitfinex && typeof detail_bitfinex !== 'string' && detail_bitfinex.minimum_order_size ? Number(detail_bitfinex.minimum_order_size) : 'N/A') : 'Pair does not exist',
-                bybit: cryptoNametoSymbol_bybit[cryptoName] ? (detail_bybit && typeof detail_bybit !== 'string' && detail_bybit.minTradeQty ? Number(detail_bybit.minTradeQty) : 'N/A') : 'Pair does not exist',
-                binance: cryptoName === 'binancecoin' ? (symbolDetails_binance && typeof detail_bybit !== 'string' && symbolDetails_binance ? Number(symbolDetails_binance) : 'N/A') : 'Pair does not exist',
+                bitfinex: {
+                    value: cryptoNametoSymbol_bitfinex[cryptoName] ? (detail_bitfinex && typeof detail_bitfinex !== 'string' && detail_bitfinex.minimum_order_size ? Number(detail_bitfinex.minimum_order_size) : 'N/A') : 'Pair does not exist',
+                    referenced_to: 'USD'
+                },
+                bybit: {
+                    value: cryptoNametoSymbol_bybit[cryptoName] ? (detail_bybit && typeof detail_bybit !== 'string' && detail_bybit.minTradeQty ? Number(detail_bybit.minTradeQty) : 'N/A') : 'Pair does not exist',
+                    referenced_to: 'USDT'
+                },
+                binance: {
+                    value: cryptoName === 'binancecoin' ? (symbolDetails_binance && typeof detail_bybit !== 'string' && symbolDetails_binance ? Number(symbolDetails_binance) : 'N/A') : 'Pair does not exist',
+                    referenced_to: 'USDT'
+                },
             }
             const obj = {
                 name: cryptoName,
                 weight: weight,
                 minTradeValue,
-                selectedExchange: typeof minTradeValue.binance === 'number' ? 'binance':typeof minTradeValue.bybit === 'number' ? 'bybit' : typeof minTradeValue.bitfinex === 'number' ? 'bitfinex' : 'none'
+                selectedExchange: typeof minTradeValue.binance.value === 'number' ? 'binance':typeof minTradeValue.bybit.value === 'number' ? 'bybit' : typeof minTradeValue.bitfinex.value === 'number' ? 'bitfinex' : 'none'
             }
             allocations.push(obj)
         });
