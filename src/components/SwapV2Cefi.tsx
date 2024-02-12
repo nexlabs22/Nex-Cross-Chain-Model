@@ -901,16 +901,20 @@ const SwapV2Cefi = () => {
 						</div>
 					</div>
 				</div>
-				<button
-					onClick={approve}
-					disabled={isButtonDisabled}
-					className={`text-xl mt-8 titleShadow interBold ${mode == 'dark' ? ' text-whiteText-500 shadow-sm shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2]' : ' text-blackText-500 shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] shadow-sm '
-						} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-						} hover:bg-colorTwo-500/30`}
-					
-				>
-					Approve
-				</button>
+				<div className={`w-full h-fit flex flex-col items-start justify-between gap-2 shadow-sm shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] rounded-lg mt-6 p-2 ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+					<div className='w-full h-fit flex flex-row items-center justify-between'>
+						<h5 className='text-sm interBold'>Value 1</h5>
+						<h5 className='text-sm interMedium italic'>N/A</h5>
+					</div>
+					<div className='w-full h-fit flex flex-row items-center justify-between'>
+						<h5 className='text-sm interBold'>Value 1</h5>
+						<h5 className='text-sm interMedium italic'>N/A</h5>
+					</div>
+					<div className='w-full h-fit flex flex-row items-center justify-between'>
+						<h5 className='text-sm interBold'>Value 1</h5>
+						<h5 className='text-sm interMedium italic'>N/A</h5>
+					</div>
+				</div>
 				<div className="w-full my-6 px-2 flex flex-row items-center justify-center">
 					<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
 					
@@ -926,16 +930,7 @@ const SwapV2Cefi = () => {
 				>
 					Buy
 				</button>
-				<button
-					onClick={approve}
-					disabled={isButtonDisabled}
-					className={`text-xl mt-8 titleShadow interBold ${mode == 'dark' ? ' text-whiteText-500 shadow-sm shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2]' : ' text-blackText-500 shadow-[#7335CA] bg-gradient-to-tr from-[#7335CA] to-[#B790E2] shadow-sm '
-						} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-						} hover:bg-colorTwo-500/30`}
-					
-				>
-					Sell
-				</button>
+				
 
 				<div className="pt-8">
 					<div className="flex flex-row items-center gap-2">

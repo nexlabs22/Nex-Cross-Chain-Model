@@ -360,17 +360,21 @@ export default function Explore() {
 															width={30}
 															height={30}
 															className="cursor-pointer"
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 														></Image>
 
 														<h5
 															className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"}  text-base cursor-pointer`}
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 														>
 															{product.name}
@@ -387,9 +391,11 @@ export default function Explore() {
 													</div>
 													<div className="w-1/5 h-fit px-1">
 														<button
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 															className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} rounded-xl ${mode == "dark" ? selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : "bg-cover border-transparent bg-center bg-no-repeat" : selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 shadow-sm shadow-blackText-500"} active:translate-y-[1px] active:shadow-black `}
 															style={{
@@ -420,17 +426,20 @@ export default function Explore() {
 															width={35}
 															height={35}
 															className="cursor-pointer"
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol.toUpperCase())
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 														></Image>
 
 														<h5
 															className="interBold text-colorSeven-500 text-lg cursor-pointer"
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 														>
 															{product.name}
@@ -440,13 +449,15 @@ export default function Explore() {
 														<div>
 															<h5 className="interMedium text-blackText-500 text-base italic">Symbol: {product.symbol}</h5>
 															<h5 className="interMedium text-blackText-500 text-base">
-																Total Supply: <span className=" text-colorSeven-500">${product.totalSupply}</span>
+																Total Supply: <span className=" text-colorSeven-500">${selectedTradingCategory}</span>
 															</h5>
 														</div>
 														<button
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
 														>
