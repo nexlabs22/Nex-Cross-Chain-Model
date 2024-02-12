@@ -245,7 +245,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 			<div className="h-fit w-fit flex flex-row items-center justify-end gap-2 lg:hidden">
 			<button
 					className={`h-fit w-fit rounded-xl bg-gradient-to-tl ml-2 ${
-						mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" :  ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
+						mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" :  ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
 					} p-2 shadow-sm  active:translate-y-[1px]`}
 					onClick={toggleMode}
 					style={{
@@ -289,7 +289,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 				<ConnectButton tradeNavbarButton={tradeNavbar} />
 				<button
 					className={`h-fit w-fit rounded-xl bg-gradient-to-tl ml-2 ${
-						mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
+						mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
 					} p-3 shadow-sm  active:translate-y-[1px]`}
 					onClick={toggleMode}
 					style={{

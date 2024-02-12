@@ -30,8 +30,8 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
   const { openMobileMenu, setOpenMobileMenu, selectedTradingCategory } = useTradePageStore()
 
   return (
-    <section className={`flex h-fit w-screen flex-col items-center justify-end rounded-tl-[30px] rounded-tr-[30px] ${ mode == "dark" ? 'bg-[#070707]' : tradeFooter && selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : 'bg-gradient-to-br from-colorSeven-500 to-colorFour-500'} xl:h-fit`} style={{
-      boxShadow: mode == "dark" && tradeFooter && selectedTradingCategory == "cefi" ? "0px -2px 6px 1px #7335CA" : mode == "dark" && tradeFooter && selectedTradingCategory != "cefi" ? "0px -2px 6px 1px #5E869B" :  ""
+    <section className={`flex h-fit w-screen flex-col items-center justify-end rounded-tl-[30px] rounded-tr-[30px] ${ mode == "dark" ? 'bg-[#070707]' : tradeFooter && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : 'bg-gradient-to-br from-colorSeven-500 to-colorFour-500'} xl:h-fit`} style={{
+      boxShadow: mode == "dark" && tradeFooter && selectedTradingCategory == "cefi" ? "0px -2px 6px 1px rgb(73, 146, 226)" : mode == "dark" && tradeFooter && selectedTradingCategory != "cefi" ? "0px -2px 6px 1px #5E869B" :  ""
     }}>
       <div className="flex h-fit w-full flex-col items-start justify-center gap-3 pb-6 pt-6 xl:flex-row xl:justify-start xl:pb-10 xl:pt-10">
         <div className="flex h-full w-full flex-col items-start justify-start px-10 xl: w-1/3 xl:items-start">
