@@ -39,6 +39,7 @@ async function main() {
 
     console.log("setting cross chain index token in the cross chain factory contract ...")
     const result1 = await factoryCotract.connect(deployer).setCrossChainToken(
+        mumbaiChainSelector,
         mumbaiCrossChainTokenAddress
     )
     const receipt1 = await result1.wait();

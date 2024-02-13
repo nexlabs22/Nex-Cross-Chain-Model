@@ -40,7 +40,9 @@ contract IndexFactory is
     address public i_link;
     uint16 public i_maxTokensLength;
 
-    address public crossChainToken;
+    // address public crossChainToken;
+    mapping(uint64 => address) public crossChainToken;
+
     IndexToken public indexToken;
 
     // uint256 public fee;
@@ -145,8 +147,9 @@ contract IndexFactory is
         indexFactoryStorage = IndexFactoryStorage(_indexFactoryStorage);
     }
 
-    function setCrossChainToken(address _crossChainToken) public onlyOwner {
-        crossChainToken = _crossChainToken;
+    
+    function setCrossChainToken(uint64 _chainSelector, address _crossChainToken) public onlyOwner {
+        crossChainToken[_chainSelector] = _crossChainToken;
     }
 
     function setCrossChainFactory(
@@ -363,24 +366,35 @@ contract IndexFactory is
                 uint64[] memory allchainSelectors = issuanceChainSelectors[
                     issuanceNonce
                 ];
-                uint totalCrossChainTokenAmount = _swapSingle(
-                    address(weth),
-                    crossChainToken,
-                    crossChainWethAmount,
-                    address(this),
-                    3
-                );
+                // uint totalCrossChainTokenAmount = _swapSingle(
+                //     address(weth),
+                //     crossChainToken,
+                //     crossChainWethAmount,
+                //     address(this),
+                //     3
+                // );
                 // seding token and data for each chain
                 for (uint i = 0; i < allchainSelectors.length; i++) {
-                    address crossChainIndexFactory = crossChainFactoryBySelector[
-                    allchainSelectors[i]
-                    ];
                     uint[] memory totalSharesArr = new uint[](1);
                     totalSharesArr[0] = issuanceChainSelectorTotalSharesByNonce[
                         issuanceNonce
                     ][allchainSelectors[i]];
-                    uint crossChainTokenAmount = (totalCrossChainTokenAmount *
-                        totalSharesArr[0]) / totalCrossChainShares;
+                    uint crossChainTokenAmount = _swapSingle(
+                    address(weth),
+                    crossChainToken[allchainSelectors[i]],
+                    (crossChainWethAmount*totalSharesArr[0])/totalCrossChainShares,
+                    address(this),
+                    3
+                    );
+                    address crossChainIndexFactory = crossChainFactoryBySelector[
+                    allchainSelectors[i]
+                    ];
+                    // uint[] memory totalSharesArr = new uint[](1);
+                    // totalSharesArr[0] = issuanceChainSelectorTotalSharesByNonce[
+                    //     issuanceNonce
+                    // ][allchainSelectors[i]];
+                    // uint crossChainTokenAmount = (totalCrossChainTokenAmount *
+                    //     totalSharesArr[0]) / totalCrossChainShares;
                     address[]
                         memory tokenAddresses = issuanceChainSelectorTokensByNonce[
                             issuanceNonce
@@ -413,7 +427,7 @@ contract IndexFactory is
                         memory tokensToSendArray = new Client.EVMTokenAmount[](
                             1
                         );
-                    tokensToSendArray[0].token = crossChainToken;
+                    tokensToSendArray[0].token = crossChainToken[allchainSelectors[i]];
                     tokensToSendArray[0].amount = crossChainTokenAmount;
                     // tokensToSendArray[1].token = i_link;
                     // tokensToSendArray[1].amount = fees;
@@ -981,7 +995,7 @@ contract IndexFactory is
                     }
                     uint crossChainTokenAmount = _swapSingle(
                         address(weth),
-                        crossChainToken,
+                        crossChainToken[tokenChainSelector],
                         buyValue,
                         address(this),
                         3
@@ -990,7 +1004,7 @@ contract IndexFactory is
                         memory tokensToSendArray = new Client.EVMTokenAmount[](
                             1
                         );
-                    tokensToSendArray[0].token = crossChainToken;
+                    tokensToSendArray[0].token = crossChainToken[tokenChainSelector];
                     tokensToSendArray[0].amount = crossChainTokenAmount;
                     bytes memory data = abi.encode(
                         4,

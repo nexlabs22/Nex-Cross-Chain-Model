@@ -13,10 +13,15 @@ contract MockRouter {
   uint testFee = 1e17;
   address linkAddress;
 
+  mapping(address => uint64) public factoryChainSelector;
+
   constructor(address _linkAddress){
     linkAddress = _linkAddress;
   }
 
+  function setFactoryChainSelector(uint64 _chainSelector, address _factory) public{
+    factoryChainSelector[_factory] = _chainSelector;
+  }
   /// @notice Checks if the given chain ID is supported for sending/receiving.
   /// @param chainSelector The chain to check.
   /// @return supported is true if it is supported, false if not.
@@ -71,6 +76,7 @@ contract MockRouter {
     finalMessage.data = message.data; 
     finalMessage.destTokenAmounts = message.tokenAmounts; 
     finalMessage.sender = abi.encode(msg.sender); 
+    finalMessage.sourceChainSelector = factoryChainSelector[msg.sender]; 
 
     (bool success, ) = targetAddress.call(
       abi.encodeWithSelector(this.ccipReceive.selector, finalMessage)

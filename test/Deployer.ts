@@ -174,12 +174,15 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       
       //set minter
       await indexToken.setMinter(indexFactory.address)
-      await indexFactory.setCrossChainToken(crossChainToken.address)
+      await indexFactory.setCrossChainToken("2", crossChainToken.address)
       await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address)
       await indexFactory.setCrossChainFactory(crossChainIndexFactory.address, "2");
-      await crossChainIndexFactory.setCrossChainToken(crossChainToken.address)
+      await crossChainIndexFactory.setCrossChainToken("1", crossChainToken.address)
       await crossChainVault.setFactory(crossChainIndexFactory.address);
-
+      
+      //router mock
+      mockRouter.setFactoryChainSelector("1", indexFactory.address)
+      mockRouter.setFactoryChainSelector("2", crossChainIndexFactory.address)
       //return vaiables
       return {
         mockRouter,

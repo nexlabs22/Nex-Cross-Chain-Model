@@ -115,6 +115,7 @@ import {V3_CORE_FACTORY_ADDRESSES, SWAP_ROUTER_02_ADDRESSES, CHAIN_TO_ADDRESSES_
         await addLiquidityEth(owner, weth9, nft, crossChainToken, "1", "2000")
         await addLiquidityEth(owner, weth9, nft, linkToken, "10", "10000")
         await linkToken.transfer(crossChainIndexFactory.address, ethers.utils.parseEther("10"))
+        await linkToken.transfer(indexFactory.address, ethers.utils.parseEther("10"))
         console.log("weth address", weth9.address)
         console.log("link address", linkToken.address)
         
@@ -135,7 +136,9 @@ import {V3_CORE_FACTORY_ADDRESSES, SWAP_ROUTER_02_ADDRESSES, CHAIN_TO_ADDRESSES_
         console.log("portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
         console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
         const indexTokenBalance = await indexToken.balanceOf(owner.address);
+        console.log("Cross chain token:", await crossChainIndexFactory.crossChainToken("1"), crossChainToken.address)
         await indexFactory.redemption(indexTokenBalance, ethers.utils.parseEther("1"), weth9.address, 3, {value: ethers.utils.parseEther("1")});
+        console.log("sourceChainSelectorF:", await crossChainIndexFactory.sourceChainSelectorF())
         console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
       });
       
