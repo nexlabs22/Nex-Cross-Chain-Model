@@ -167,7 +167,7 @@ export default function Trade() {
 						<div className="w-full h-fit ">
 							{/* <Swap /> */}
 							{
-								selectedTradingCategory == "cefi" ? <SwapV2Cefi /> : <SwapV2Cefi />
+								selectedTradingCategory == "cefi" ? <SwapV2Cefi /> : <SwapV2Defi />
 							}
 							<div className='flex-grow-1'>
 							<NewTradeComponent />
