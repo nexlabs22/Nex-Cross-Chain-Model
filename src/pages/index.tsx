@@ -14,11 +14,11 @@ import axios from 'axios'
 
 const Dashboard: NextPage = () => {
 	const { mode } = useLandingPageStore()
-	
+
 	return (
 		<>
 			<Head>
-				<title>Dashboard</title>
+				<title>Nex Labs - Dashboard</title>
 				<meta
 					name="description"
 					content="NexLabs decentralized trading platform allows seamless crypto swapping, trading, and index tracking. Learn how this innovative platform is making decentralized finance more accessible and transparent."
@@ -31,12 +31,12 @@ const Dashboard: NextPage = () => {
 				<TopIndexData />
 				<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10 md:pb-2 xl:pb-10">
 					<div
-						className={`relative w-full overflow-hidden h-fit ${
-							mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-bl from-colorFive-500 to-colorSeven-500'
-						} rounded-xl px-6 py-6`}
+						className={`relative w-full overflow-hidden h-fit ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-bl from-colorFive-500 to-colorSeven-500'
+							} rounded-xl px-6 py-6`}
 						style={{
 							boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 							backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+							backgroundSize: mode == "dark" ? "100% 100%" : ""
 						}}
 					>
 						<div className="absolute overflow-hidden w-full h-full -right-10 xl:top-0 xl:right-0 z-10 flex flex-row items-center justify-normal">
@@ -61,15 +61,30 @@ const Dashboard: NextPage = () => {
 							></div>
 						</div>
 						<div className="relative top-0 left-0 z-40 xl:bg-transparent ">
-							<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">DCA Calculator</h5>
-							<p className="interMedium text-whiteText-500 text-base w-2/3 md:w-1/2 mb-3">
-								Explore our Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors aiming to mitigate market volatility and enhance portfolio growth. This calculator
-								enables a disciplined investment approach by automating the DCA strategy, which involves regular, fixed-amount investments.
+							<h5 className={`interBold titleShadow mb-12 text-5xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"} `}>
+								CeFi vs DeFi
+							</h5>
+							<p className={`interMedium mb-4 w-1/2 text-2xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"}`}>
+
+								Let{"'"}s explore <span className="interBold">CeFi</span>, where traditional banks and institutions manage your money against <span className="interBold">DeFi</span>, where technology lets people handle their finances without middlemen.
 							</p>
 							<Link href={'/dcaCalculator'}>
-								<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-									<span>Learn More </span>
-									<GoArrowRight color="#5E869B" size={30} />
+								<button
+									className={`interBold mt-8 mb-4 flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl bg-gradient-to-tl ${mode == "dark"
+										? "titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500"
+										: "from-colorFour-500 to-colorSeven-500 text-blackText-500"
+										}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
+									style={{
+										backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+										boxShadow:
+											mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+									}}
+								>
+									<span>Learn More</span>
+									{
+										mode == "dark" ? <GoArrowRight color="#FFFFFF" size={30} /> : <GoArrowRight color="#252525" size={30} />
+									}
+
 								</button>
 							</Link>
 						</div>

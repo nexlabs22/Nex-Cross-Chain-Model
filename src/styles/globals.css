@@ -810,3 +810,20 @@ body {
   background-color: #050505 !important;
   border-color: #FFFFFF !important;
 }
+
+.MuiButton-root{
+  background-color: #86afbfe6 !important;
+}
+
+.MuiIconButton-root{
+  border-color: #2A2A2A !important;
+}
+
+.cefiButton{
+  background: radial-gradient(circle at -3.7% -5%, rgb(113, 213, 225) 0.3%, rgb(73, 146, 226) 90.5%) !important; 
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important; 
+}
+
+.defiButton{
+  background-color: #5E869B !important;
+}

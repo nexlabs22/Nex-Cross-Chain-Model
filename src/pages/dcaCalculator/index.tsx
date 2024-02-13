@@ -299,15 +299,15 @@ export default function DCACalculator() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Nex Labs - DCA Calculator</title>
 				<meta name="description" content="" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className={`m-0 min-h-screen h-fit w-screen ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'} p-0 overflow-x-hidden`}>
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
-					<section className="w-screen h-fit flex flex-col xl:flex-row items-stretch justify-start px-4 pt-10 pb-12">
-						<div className="w-full xl:w-3/12 flex-grow flex flex-col justify-between gap-2 pl-5">
+					<section className="w-screen h-fit flex flex-col xl:flex-row  items-stretch justify-start px-4 pt-10 pb-12">
+						<div className="w-full xl:w-3/12 flex-grow flex flex-col  justify-between">
 							<Menu
 								menuButton={
 									<MenuButton>
@@ -463,7 +463,7 @@ export default function DCACalculator() {
 							</div>
 							<button
 								onClick={handleSubmit}
-								className={`text-lg my-4 text-white titleShadow interBold ${
+								className={`text-lg mt-4 text-white titleShadow interBold ${
 									mode == 'dark'
 										? 'bg-cover border-transparent bg-center bg-no-repeat'
 										: 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90'
@@ -477,7 +477,7 @@ export default function DCACalculator() {
 								Calculate
 							</button>
 						</div>
-						<div className="w-full xl:w-9/12 flex-grow flex flex-col gap-y-5 pr-5">
+						<div className="w-full xl:w-9/12 flex-grow flex flex-col ">
 							<div className="h-full w-full ">
 								<DCACalculatorChart data={filteredIndexData} />
 							</div>

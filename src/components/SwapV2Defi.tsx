@@ -12,6 +12,7 @@ import { AiOutlineSwap } from 'react-icons/ai'
 
 // Store
 import useTradePageStore from '@/store/tradeStore'
+import { useLandingPageStore } from '@/store/store'
 
 // Components:
 import GenericModal from './GenericModal'
@@ -19,6 +20,8 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
 // Assets:
 import circle from '@assets/images/circle.png'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
 import { it } from 'node:test'
 import { UseContractResult, toWei, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
 import {
@@ -138,6 +141,8 @@ const SwapV2Defi = () => {
 	const curr = OurIndexCoins.includes(swapFromCur.Symbol) ? swapFromCur : swapToCur
 	const IndexContract : UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
 	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data /10000;
+
+	const {mode} = useLandingPageStore()
 
 	useEffect(() => {
 		async function getIssuanceOutput() {
@@ -815,11 +820,16 @@ const SwapV2Defi = () => {
 	return (
 		<>
 			<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
-			<div className="h-full w-full rounded-xl shadow shadow-blackText-500 flex flex-col items-start justify-start px-4 py-3">
-				<h5 className="text-xl text-blackText-500 interBlack mb-3 text-center w-full">Swap</h5>
+			<div
+				className={`h-fit w-full rounded-xl ${mode == 'dark' ? '' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 py-3`}
+				style={{
+					boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+				}}
+			>
+				<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack mb-3 text-center w-full`}>Buy/Sell</h5>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className="text-base interMedium text-gray-500 w-1/3">You pay</p>
+						<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  w-1/3`}>You pay</p>
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
 							<p
 								onClick={() => {
@@ -827,20 +837,44 @@ const SwapV2Defi = () => {
 										setFirstInputValue('0.00001')
 									} else setFirstInputValue('1')
 								}}
-								className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm"
+								className={`text-base lg:text-xs  interBold ${
+									mode == 'dark'
+										? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
+										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
+								} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+								style={{
+									boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
+									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+								}}
 							>
 								MIN
 							</p>
 							<p
 								// onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2e18).toString())}
 								onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())}
-								className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm"
+								className={`text-base lg:text-xs  interBold ${
+									mode == 'dark'
+										? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
+										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
+								} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+								style={{
+									boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
+									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+								}}
 							>
 								HALF
 							</p>
 							<p
 								onClick={() => setFirstInputValue(Number(getPrimaryBalance()).toString())}
-								className="text-base lg:text-xs text-blackText-500 interBold bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500 active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm"
+								className={`text-base lg:text-xs  interBold ${
+									mode == 'dark'
+										? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
+										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
+								} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+								style={{
+									boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
+									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+								}}
 							>
 								MAX
 							</p>
@@ -850,7 +884,9 @@ const SwapV2Defi = () => {
 						<input
 							type="text"
 							placeholder="0.00"
-							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
+							className={`w-2/3 border-none text-2xl ${
+								mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
+							}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
 							onChange={changeFirstInputValue}
 							value={firstInputValue ? firstInputValue : ''}
 						/>
@@ -861,17 +897,20 @@ const SwapV2Defi = () => {
 							}}
 						>
 							<div className="flex flex-row items-center justify-start w-fit">
-								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={20} height={20} className="mt-1 mr-1"></Image>
-								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapFromCur.Symbol}</h5>
+								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
+								<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBlack pt-1`}>{swapFromCur.Symbol}</h5>
 							</div>
-							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
+							{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
 						</div>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
-						<span className="text-sm interMedium text-gray-500">≈ ${fromConvertedPrice ? FormatToViewNumber({value:fromConvertedPrice, returnType: 'string'}) : '0.00'}</span>
+						<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
+							≈ ${fromConvertedPrice ? FormatToViewNumber({ value: fromConvertedPrice, returnType: 'string' }) : '0.00'}
+						</span>
 						<div className="flex flex-row items-center justify-end gap-1">
-							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
-							<span className="text-sm interMedium text-gray-500">
+							{mode == 'dark' ? <LiaWalletSolid color="#FFFFFF" size={20} strokeWidth={1.2} /> : <LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />}
+
+							<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
 								{getPrimaryBalance()} {swapFromCur.Symbol}
 							</span>
 						</div>
@@ -879,26 +918,28 @@ const SwapV2Defi = () => {
 				</div>
 
 				<div className="w-full my-2 px-2 flex flex-row items-center justify-center">
-					<div className=" bg-blackText-500 w-2/5 h-[1px]"></div>
+					<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
 					<div
-						className="w-fit h-fit rounded-full mx-3 bg-blackText-500 p-2 cursor-pointer"
+						className={`w-fit h-fit rounded-full mx-3 ${mode == 'dark' ? '  bg-transparent border border-whiteText-500' : 'bg-blackText-500'}  p-2 cursor-pointer`}
 						onClick={() => {
 							Switching()
 						}}
 					>
 						<AiOutlineSwap color="#F2F2F2" size={20} className="rotate-90" />
 					</div>
-					<div className=" bg-blackText-500 w-2/5 h-[1px]"></div>
+					<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
 				</div>
 				<div className="w-full h-fit flex flex-col items-start justify-start">
-					<p className="text-base interMedium text-gray-500 pb-1">You Recieve</p>
+					<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  pb-1`}>You Recieve</p>
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-2">
 						<input
 							type="text"
 							placeholder="0.00"
-							className=" w-2/3 border-none text-2xl text-blackText-500 interMedium placeholder:text-2xl placeholder:text-gray-400 placeholder:pangram bg-transparent active:border-none outline-none focus:border-none p-2"
+							className={`w-2/3 border-none text-2xl ${
+								mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
+							}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
 							onChange={changeSecondInputValue}
-							value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue))  : 0}
+							value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue)) : 0}
 						/>
 						<div
 							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
@@ -907,17 +948,19 @@ const SwapV2Defi = () => {
 							}}
 						>
 							<div className="flex flex-row items-center justify-start ">
-								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={20} height={20} className=" mt-1 mr-1"></Image>
-								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapToCur.Symbol}</h5>
+								<Image src={swapToCur.logo} alt={swapToCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
+								<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack pt-1`}>{swapToCur.Symbol}</h5>
 							</div>
-							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
+							{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
 						</div>
 					</div>
 					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
-						<span className="text-sm interMedium text-gray-500">≈ ${toConvertedPrice ? FormatToViewNumber({ value: toConvertedPrice, returnType: 'string' }) : '0.00'}</span>
+						<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
+							≈ ${toConvertedPrice ? FormatToViewNumber({ value: toConvertedPrice, returnType: 'string' }) : '0.00'}
+						</span>
 						<div className="flex flex-row items-center justify-end gap-1">
-							<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />
-							<span className="text-sm interMedium text-gray-500">
+							{mode == 'dark' ? <LiaWalletSolid color="#FFFFFF" size={20} strokeWidth={1.2} /> : <LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />}
+							<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
 								{getSecondaryBalance()} {swapToCur.Symbol}
 							</span>
 						</div>
@@ -927,14 +970,14 @@ const SwapV2Defi = () => {
 					<div className="flex flex-row items-center gap-2">
 						<Switch onChange={toggleCheckbox} checked={isChecked} height={14} width={35} handleDiameter={20} />
 						<div className="flex flex-row items-center justify-start gap-1">
-							<span className="text-gray-700 interMedium text-sm">Use Fiat payment</span>
+							<span className={` ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-700'} interMedium text-sm`}>Use Fiat payment</span>
 							<span>
 								<GenericTooltip
 									color="#5E869B"
 									content={
 										<div>
-											<p className=" text-whiteText-500 text-sm interBold mb-2">No cryptocurrencies in your wallet? No problem!</p>
-											<p className=" text-whiteText-500 text-sm interMedium">
+											<p className={`${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} text-sm interBold mb-2`}>No cryptocurrencies in your wallet? No problem!</p>
+											<p className={`${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} text-sm interMedium`}>
 												Revolutionize your trading experience with Nex Labs – introducing fiat payments for the first time, providing you seamless and convenient transactions in
 												traditional currencies.
 											</p>
@@ -955,8 +998,15 @@ const SwapV2Defi = () => {
 									<button
 										onClick={approve}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-											} hover:bg-colorTwo-500/30`}
+										className={`text-xl titleShadow interBold ${
+											mode == 'dark' ? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat' : ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+										} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${
+											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+										} hover:bg-colorTwo-500/30`}
+										style={{
+											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+										}}
 									>
 										Approve
 									</button>
@@ -964,8 +1014,16 @@ const SwapV2Defi = () => {
 									<button
 										onClick={mintRequest}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded-lg ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-											} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+										className={`text-xl titleShadow interBold ${
+											mode == 'dark' ? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat' : ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+										}  active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded-lg ${
+											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+										} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+										style={{
+											boxShadow:
+											  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+											backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+										  }}
 									>
 										Mint
 									</button>
@@ -975,8 +1033,9 @@ const SwapV2Defi = () => {
 							<button
 								onClick={burnRequest}
 								disabled={isButtonDisabled}
-								className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-									} hover:bg-colorTwo-500/30`}
+								className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${
+									isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+								} hover:bg-colorTwo-500/30`}
 							>
 								Burn
 							</button>
@@ -989,16 +1048,16 @@ const SwapV2Defi = () => {
 						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH</p>
 					</div> */}
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className="text-sm interMedium text-black/70 pb-2">Platform Fees</p>
+						<p className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-black/70"}  pb-2`}>Platform Fees</p>
 						<div className="flex flex-row items-center justify-start gap-2">
-							<p className="text-sm interMedium text-black/70">
-								{FormatToViewNumber({ value: Number(firstInputValue) * feeRate, returnType: 'string' })} {swapFromCur.Symbol} ({feeRate*100} %)
+							<p className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-black/70"} `}>
+								{FormatToViewNumber({ value: Number(firstInputValue) * feeRate, returnType: 'string' })} {swapFromCur.Symbol} ({feeRate * 100} %)
 							</p>
 							<GenericTooltip
-								color="#5E869B"
+								color="#5E869B" 
 								content={
 									<div>
-										<p className=" text-whiteText-500 text-sm interMedium">
+										<p className={`${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-sm interMedium`}>
 											Platform fees support ongoing development and security, ensuring a sustainable and innovative decentralized financial ecosystem.
 										</p>
 									</div>
@@ -1019,23 +1078,35 @@ const SwapV2Defi = () => {
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
 						<button
 							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
-								} interBold text-xl`}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
+								isMainnet ? ` ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"}  text-white titleShadow` : ` ${mode == "dark" ? " bg-transparent border border-gray-300" : "bg-gradient-to-tl from-gray-200 to-gray-100"}  text-gray-300`
+							} interBold text-xl`}
+							style={{
+								boxShadow:
+								  mode == "dark" && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" && isMainnet ? `url('${mesh1.src}')` : "",
+							  }}
 						>
 							Mainnet
 						</button>
 						<button
 							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${!isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
-								} interBold text-xl`}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
+								!isMainnet ? ` ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"}  text-white titleShadow` : ` ${mode == "dark" ? " bg-transparent border border-gray-300" : "bg-gradient-to-tl from-gray-200 to-gray-100"}  text-gray-300`
+							} interBold text-xl`}
+							style={{
+								boxShadow:
+								  mode == "dark" && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" && !isMainnet ? `url('${mesh1.src}')` : "",
+							  }}
 						>
 							Testnet
 						</button>
 					</div>
 
 					<ReactSearchAutocomplete items={mergedCoinList[0]} formatResult={formatResult} autoFocus className="relative z-50" />
-					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
-						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
+					<div className={`w-full h-fit max-h-[50vh] ${mode == "dark" ? " bg-transparent" : "bg-white"}  overflow-hidden my-4 px-2`}>
+						<div className={`w-full h-fit max-h-[50vh] ${mode == "dark" ? " bg-transparent" : "bg-white"} overflow-y-auto  py-2`} id="coinsList">
 							{mergedCoinList[0].map((item, index) => {
 								return (
 									<div
@@ -1048,9 +1119,9 @@ const SwapV2Defi = () => {
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
 											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className="text-base text-blackText-500 interBold">{item.Symbol}</h5>
+											<h5 className={`text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  interBold`}>{item.Symbol}</h5>
 										</div>
-										<h5 className="text-sm text-gray-300 inter italic">{item.Symbol}</h5>
+										<h5 className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "ext-gray-300"} t inter italic`}>{item.Symbol}</h5>
 									</div>
 								)
 							})}
@@ -1061,24 +1132,36 @@ const SwapV2Defi = () => {
 			<GenericModal isOpen={isToCurrencyModalOpen} onRequestClose={closeToCurrencyModal}>
 				<div className="w-full h-fit px-2">
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
-						<button
+					<button
 							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
-								} interBold text-xl`}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
+								isMainnet ? ` ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"}  text-white titleShadow` : ` ${mode == "dark" ? " bg-transparent border border-gray-300" : "bg-gradient-to-tl from-gray-200 to-gray-100"}  text-gray-300`
+							} interBold text-xl`}
+							style={{
+								boxShadow:
+								  mode == "dark" && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" && isMainnet ? `url('${mesh1.src}')` : "",
+							  }}
 						>
 							Mainnet
 						</button>
 						<button
 							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${!isMainnet ? 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 text-white titleShadow' : 'bg-gradient-to-tl from-gray-200 to-gray-100 text-gray-300'
-								} interBold text-xl`}
+							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
+								!isMainnet ? ` ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"}  text-white titleShadow` : ` ${mode == "dark" ? " bg-transparent border border-gray-300" : "bg-gradient-to-tl from-gray-200 to-gray-100"}  text-gray-300`
+							} interBold text-xl`}
+							style={{
+								boxShadow:
+								  mode == "dark" && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+								backgroundImage: mode == "dark" && !isMainnet ? `url('${mesh1.src}')` : "",
+							  }}
 						>
 							Testnet
 						</button>
 					</div>
 					<ReactSearchAutocomplete items={mergedCoinList[1]} formatResult={formatResult} autoFocus className="relative z-50" />
-					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
-						<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto px-2 py-2" id="coinsList">
+					<div className={`w-full h-fit max-h-[50vh] ${mode == "dark" ? " bg-transparent" : "bg-white"}  overflow-hidden my-4 px-2`}>
+						<div className={`w-full h-fit max-h-[50vh] ${mode == "dark" ? " bg-transparent" : "bg-white"} overflow-y-auto  py-2`} id="coinsList">
 							{mergedCoinList[1].map((item, index) => {
 								return (
 									<div
@@ -1091,9 +1174,9 @@ const SwapV2Defi = () => {
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
 											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className="text-base text-blackText-500 interBold">{item.Symbol}</h5>
+											<h5 className={`text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  interBold`}>{item.Symbol}</h5>
 										</div>
-										<h5 className="text-sm text-gray-300 inter italic">{item.Symbol}</h5>
+										<h5 className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "ext-gray-300"} t inter italic`}>{item.Symbol}</h5>
 									</div>
 								)
 							})}
@@ -1108,8 +1191,7 @@ const SwapV2Defi = () => {
 				}}
 			>
 				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
-					{
-						/*
+					{/*
 						<Lottie
 						animationData={cookingAnimation}
 						loop={true}
@@ -1119,8 +1201,7 @@ const SwapV2Defi = () => {
 							overflow: 'hidden',
 						}}
 					/>
-						*/
-					}
+						*/}
 					<h5 className="InterBold text-blackText-500 text-2xl text-center w-full -mt-6">THE MAGIC IS HAPPENING...</h5>
 					<h5 className="interMedium text-blackText-500 text-lg text-center w-9/12 my-2">
 						Your NFT receipt is being minted. Once it is ready, you can find it the {'"'}Receipts{'"'} section.

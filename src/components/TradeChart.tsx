@@ -122,9 +122,7 @@ const TradeChartBox = () => {
 					<div className='h-[70vh] w-full'>
 						<TradingViewChart selectedIndices={[]} index={selectedTradingProduct}  />
 					</div>
-					{/* {
-						defaultIndex === 'ANFI' ? <Chart data={ANFIData} /> : <Chart data={CR5Data} />
-					} */}
+					
 				</div>
 			</section>
 		</>

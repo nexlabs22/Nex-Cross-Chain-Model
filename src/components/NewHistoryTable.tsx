@@ -115,7 +115,7 @@ function NewHistoryTable() {
 		<div className={`h-full border w-full border-gray-300 rounded-2xl overflow-hidden overflow-x-scroll xl:overflow-x-hidden ${mode == "dark" ? "darkScrollBar" : ""}`}>
 		  <table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
 					<thead className="sticky top-0">
-						<tr className={`text-lg interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} border-b border-b-[#E4E4E4]`}>
+						<tr className={`text-lg interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} border-b border-b-[#E4E4E4]`}>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Time</th>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Pair</th>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Request Side</th>
@@ -187,7 +187,7 @@ function NewHistoryTable() {
 													<>
 														{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
 														{position.side === 'Mint Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <br />
-														<em className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-[#646464]"} text-base`}>(${usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]) : 0}) </em>{' '}
+														<em className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base`}>≈(${usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]) : 0}) </em>{' '}
 													</>
 												) : (
 													'-'
@@ -198,7 +198,7 @@ function NewHistoryTable() {
 													<>
 														{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
 														{position.side === 'Burn Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <br />
-														<em className="interExtraBold text-[#646464] text-base">(${usdPrices ? formatNumber(position.outputAmount * usdPrices[position.tokenAddress]) : 0} ) </em>
+														<em className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base`}>≈(${usdPrices ? formatNumber(position.outputAmount * usdPrices[position.tokenAddress]) : 0} ) </em>
 													</>
 												) : (
 													'-'

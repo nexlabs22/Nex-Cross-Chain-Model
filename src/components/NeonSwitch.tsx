@@ -12,7 +12,7 @@ const NeonSwitch: React.FC<NeonSwitchProps> = ({ changeFunction, isChecked }) =>
     const { mode } = useLandingPageStore()
 
     return (
-        <label className="neonSwitch w-fit scale-[.8]">
+        <label className="neonSwitch w-fit scale-[.7]">
             <input className="switch__input" type="checkbox" role="switch" onChange={changeFunction}
                 checked={isChecked} />
             <span className="switch__base-outer"></span>

@@ -18,6 +18,7 @@ import GenericModal from '@/components/GenericModal'
 import Head from 'next/head'
 import SwapV2Cefi from '@/components/SwapV2Cefi'
 import SwapV2Defi from '@/components/SwapV2Defi'
+import NewTradeComponent from '@/components/newTradeComponent'
 import usePortfolioPageStore from '@/store/portfolioStore'
 // Firebase :
 import { getDatabase, ref, onValue, set, update, push, child } from 'firebase/database'
@@ -116,6 +117,7 @@ export default function Trade() {
 	}
 
 	useEffect(() => {
+		
 
 		async function getUser() {
 			const usersRef = ref(database, 'users/')
@@ -148,7 +150,7 @@ export default function Trade() {
 	return (
 		<>
 			<Head>
-				<title>Trade</title>
+				<title>Nex Labs - Trade</title>
 				<meta
 					name="description"
 					content="Nex Labs is reinventing trading with the cutting-edge trade page. Seamlessly swap, trade and invest in innovative indices, and access unique products - all integrated with your wallet for smooth trading."
@@ -157,16 +159,19 @@ export default function Trade() {
 			</Head>
 			<main className={`flex min-h-screen h-fit w-screen  ${mode == "dark" ? "bg-gradient-to-tl from-[#050505] to-[#050505]" : "bg-whiteBackground-500"} flex-col items-center justify-start`}>
 				<DappNavbar />
-				<section className="w-full h-full flex flex-col lg:flex-row items-stretch justify-start gap-2 p-5">
-					<div className="w-full h-full lg:w-9/12 flex-grow">
+				<section className="w-full h-fit  flex flex-col lg:flex-row items-center lg:items-stretch justify-start gap-2 p-5">
+					<div className="w-full lg:w-9/12  flex-grow">
 						<TradeChartBox />
 					</div>
-					<div className="w-full lg:w-3/12 h-full flex flex-col items-center justify-start gap-2">
-						<div className="w-full h-full ">
+					<div className="w-full lg:w-3/12 flex-grow flex flex-col items-stretch justify-start gap-2">
+						<div className="w-full h-fit ">
 							{/* <Swap /> */}
 							{
 								selectedTradingCategory == "cefi" ? <SwapV2Cefi /> : <SwapV2Defi />
 							}
+							<div className='flex-grow-1'>
+							<NewTradeComponent />
+							</div>
 							
 						</div>
 					</div>

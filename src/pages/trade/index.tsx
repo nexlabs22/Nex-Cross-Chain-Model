@@ -196,7 +196,7 @@ export default function Explore() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io</title>
+				<title>Nex Labs - Explore Our Products</title>
 				<meta
 					name="description"
 					content="Traders love the Nex Labs platform for its wide selection of CeFi and DeFi products. Explore margin trading, derivatives, staking, and more - this blog covers all the offerings so you can optimize your crypto portfolio."
@@ -205,29 +205,25 @@ export default function Explore() {
 			</Head>
 			<main className={`min-h-screen overflow-x-hidden h-fit w-screen  ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'}`}>
 				<section className="h-full w-fit overflow-x-hidde">
-					<DappNavbar />
+					<DappNavbar tradeNavbar={true} />
 					<section className="w-screen h-fit overflow-x-hidden flex flex-col items-center justify-center px-4 xl:px-10 pt-10 pb-4">
-						<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-slate-700'}  interMedium text-center`}>Explore our Index Products</h5>
+						<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  interMedium text-center`}>Explore our Index Products</h5>
 						<div className=" mt-10 mb-2 w-full h-fit mx-auto flex flex-col xl:flex-row items-center justify-center gap-2">
 							<div
 								className={`w-full xl:w-1/2 h-fit overflow-hidden flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${selectedTradingCategory == 'cefi'
-										? `${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'} `
+										? `${mode == 'dark' ? 'shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] ' : 'shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] '} `
 										: ` ${mode == 'dark' ? ' bg-transparent' : 'bg-zinc-200/30'} `
 									} p-5 cursor-pointer gap-2`}
 								onClick={() => {
 									setSelectedTradingCategory('cefi')
 									setSelectedsubCategory(subCategories[0])
 								}}
-								style={{
-									boxShadow: mode == 'dark' && selectedTradingCategory == 'cefi' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-									backgroundImage: mode == 'dark' && selectedTradingCategory == 'cefi' ? `url('${mesh1.src}')` : '',
-									backgroundSize: mode == 'dark' && selectedTradingCategory == 'cefi' ? '120%' : '',
-								}}
+								
 							>
 								<div className={`h-24 w-28 rounded-lg flex flex-row items-center justify-center ${selectedTradingCategory == "cefi ? 'opacity-100' : ' opacity-40' "}`}>
 									<div
 										className={`w-full h-full scale-[1.6] -translate-x-6 ${selectedTradingCategory == 'cefi' ? '' : ` ${mode == 'dark' ? '' : 'grayscale'} brightness-75 opacity-40`
-											} aspect-square bg-center bg-contain bg-no-repeat`}
+											} aspect-square bg-center bg-contain bg-no-repeat  `}
 										style={{
 											backgroundImage: `url('${cefi.src}')`,
 										}}
@@ -235,12 +231,12 @@ export default function Explore() {
 								</div>
 								<div className="w-fit h-fit flex flex-col items-start justify-between">
 									<h5
-										className={`interBold text-2xl ${selectedTradingCategory == 'cefi' ? ' text-whiteText-500 titleShadow' : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `
+										className={`interBold text-2xl ${selectedTradingCategory == 'cefi' ? `${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} titleShadow` : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `
 											}`}
 									>
 										CeFi
 									</h5>
-									<h5 className={`interBold text-base ${selectedTradingCategory == 'cefi' ? ' text-whiteText-500' : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `}`}>
+									<h5 className={`interBold text-base ${selectedTradingCategory == 'cefi' ? `${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}` : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `}`}>
 										CeFi involves traditional centralized financial systems, like banks and institutions.
 									</h5>
 								</div>
@@ -257,7 +253,7 @@ export default function Explore() {
 								style={{
 									boxShadow: mode == 'dark' && selectedTradingCategory == 'defi' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 									backgroundImage: mode == 'dark' && selectedTradingCategory == 'defi' ? `url('${mesh1.src}')` : '',
-									backgroundSize: mode == 'dark' && selectedTradingCategory == 'defi' ? '120%' : '',
+									backgroundSize: mode == 'dark' && selectedTradingCategory == 'defi' ? '100% 100%' : '',
 								}}
 							>
 								<div className={`h-24 w-24  rounded-lg flex flex-row items-center justify-center  ${selectedTradingCategory == "defi ? 'opacity-100' : ' opacity-40' "}`}>
@@ -271,21 +267,21 @@ export default function Explore() {
 								</div>
 								<div className="w-fit h-fit flex flex-col items-start justify-between">
 									<h5
-										className={`interBold text-2xl ${selectedTradingCategory == 'defi' ? ' text-whiteText-500 titleShadow' : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `
+										className={`interBold text-2xl ${selectedTradingCategory == 'defi' ? `${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} titleShadow` : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `
 											}`}
 									>
 										DeFi
 									</h5>
-									<h5 className={`interBold text-base ${selectedTradingCategory == 'defi' ? ' text-whiteText-500' : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `}`}>
+									<h5 className={`interBold text-base ${selectedTradingCategory == 'defi' ? `${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}` : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `}`}>
 										DeFi uses decentralized tech, sidestepping traditional financial middlemen.
 									</h5>
 								</div>
 							</div>
 						</div>
 						<div
-							className={`w-full h-fit rounded-xl mt-2 shadow ${mode == 'dark' ? ' bg-[#070707] ' : 'bg-zinc-200/20 border border-slate-400'}  px-3 py-6 xl:p-12`}
+							className={`w-full h-fit rounded-xl mt-2  ${mode == 'dark' ? ' bg-[#070707] ' : 'bg-zinc-200/20 border border-slate-400'}  px-3 py-6 xl:p-12`}
 							style={{
-								boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+								boxShadow: mode == 'dark' ? selectedTradingCategory == "cefi" ? `0px 0px 6px 1px rgba(73, 146, 226, 0.6)` : "0px 0px 6px 1px rgba(91,166,153,0.68)" : '',
 							}}
 						>
 							<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between mb-6 gap-3 xl:gap-0"> 
@@ -295,17 +291,17 @@ export default function Explore() {
 										<MenuButton>
 											<div
 												className={`w-[74vw] xl:w-[14vw] h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${mode == 'dark'
-														? ' bg-cover border-transparent bg-center bg-no-repeat'
-														: 'bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500'
+														? selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : ' bg-cover border-transparent bg-center bg-no-repeat'
+														: selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : 'bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500'
 													} gap-8 cursor-pointer`}
 												style={{
-													boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-													backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+													boxShadow: mode == 'dark' ? selectedTradingCategory == "cefi" ? `0px 0px 6px 1px rgba(113, 213, 225)` : `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+													backgroundImage: mode == 'dark' && selectedTradingCategory != "cefi" ? `url('${mesh1.src}')` : '',
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-2">
-													<Image src={selectedSubCategory.logo} width={30} height={30} alt={selectedSubCategory.name}></Image>
-													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
+													<Image src={selectedSubCategory.logo} width={30} height={30} alt={selectedSubCategory.name} className={`${selectedTradingCategory == "cefi" ? " " : ""}`}></Image>
+													<h5 className={`text-sm ${mode == "dark" ? "text-whiteBackground-500" : " text-blackText-500"} titleShadow interBold uppercase`}>{selectedSubCategory.name}</h5>
 												</div>
 												<GoChevronDown color="#F2F2F2" size={20} />
 											</div>
@@ -364,17 +360,21 @@ export default function Explore() {
 															width={30}
 															height={30}
 															className="cursor-pointer"
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 														></Image>
 
 														<h5
 															className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"}  text-base cursor-pointer`}
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 														>
 															{product.name}
@@ -391,15 +391,17 @@ export default function Explore() {
 													</div>
 													<div className="w-1/5 h-fit px-1">
 														<button
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
-															className={`h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 shadow-sm shadow-blackText-500"} active:translate-y-[1px] active:shadow-black `}
+															className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} rounded-xl ${mode == "dark" ? selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : "bg-cover border-transparent bg-center bg-no-repeat" : selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 shadow-sm shadow-blackText-500"} active:translate-y-[1px] active:shadow-black `}
 															style={{
 																boxShadow:
-																	mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-																backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+																	mode == "dark" ? selectedTradingCategory == "cefi" ? `0px 0px 6px 1px rgba(73, 146, 226, 1)` : `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+																backgroundImage: mode == "dark" && selectedTradingCategory != "cefi" ? `url('${mesh1.src}')` : "",
 															}}
 														>
 															Trade
@@ -424,17 +426,20 @@ export default function Explore() {
 															width={35}
 															height={35}
 															className="cursor-pointer"
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol.toUpperCase())
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 														></Image>
 
 														<h5
 															className="interBold text-colorSeven-500 text-lg cursor-pointer"
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 														>
 															{product.name}
@@ -444,13 +449,15 @@ export default function Explore() {
 														<div>
 															<h5 className="interMedium text-blackText-500 text-base italic">Symbol: {product.symbol}</h5>
 															<h5 className="interMedium text-blackText-500 text-base">
-																Total Supply: <span className=" text-colorSeven-500">${product.totalSupply}</span>
+																Total Supply: <span className=" text-colorSeven-500">${selectedTradingCategory}</span>
 															</h5>
 														</div>
 														<button
-															onClick={() => {
+															onClick={(e) => {
+																e.preventDefault()
 																changeDefaultIndex(product.symbol)
-																router.push(`/tradeIndex?index=${product.symbol}&category=${product.category}`)
+																
+																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
 															className="h-fit w-fit px-4 py-2 interBold text-base text-whiteText-500 rounded-xl bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 "
 														>
@@ -465,39 +472,71 @@ export default function Explore() {
 							</div>
 						</div>
 					</section>
-					<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10">
-						<div className={`relative w-full overflow-hidden h-fit ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-bl from-colorFive-500 to-colorSeven-500"}  rounded-xl px-6 py-6`} style={{
-							boxShadow:
-								mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-							backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
-						}}>
-							<div className="absolute overflow-hidden w-full h-full -right-10 xl:top-0 xl:right-0 z-10 flex flex-row items-center justify-normal">
-								<div className="hidden xl:block w-1/2 h-full"></div>
-								<div
-									className="w-full xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
-									style={{
-										backgroundImage: `url('${bg2.src}')`,
-									}}
-								></div>
-							</div>
-							<div className="relative top-0 left-0 z-40 xl:bg-transparent ">
-								<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Cefi vs Defi</h5>
-								<p className="interMedium text-whiteText-500 text-base w-full xl:w-1/2 mb-3">
-									Embark on a journey through CeFi and DeFi landscapes, understanding the centralized powerhouses and the decentralized disruptors. Start exploring the two faces of finance!
-								</p>
-								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'}>
-									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-										<span>Learn More </span>
-										<GoArrowRight color="#5E869B" size={30} />
-									</button>
-								</Link>
-							</div>
+					<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10 md:pb-2 xl:pb-10">
+					<div
+						className={`relative w-full overflow-hidden h-fit ${mode == 'dark' ? selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : 'bg-cover border-transparent bg-center bg-no-repeat' : selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : 'bg-gradient-to-bl from-colorFive-500 to-colorSeven-500'
+							} rounded-xl px-6 py-6`}
+						style={{
+							boxShadow: mode == 'dark' && selectedTradingCategory != "cefi" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+							backgroundImage: mode == 'dark' && selectedTradingCategory != "cefi" ? `url('${mesh1.src}')` : '',
+							backgroundSize: mode == "dark" && selectedTradingCategory != "cefi" ? "100% 100%" : ""
+						}}
+					>
+						<div className="absolute overflow-hidden w-full h-full -right-10 xl:top-0 xl:right-0 z-10 flex flex-row items-center justify-normal">
+							<div className="hidden xl:block w-1/2 h-full"></div>
+							<div
+								className="w-full hidden md:block xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
+								style={{
+									backgroundImage: `url('${bg2.src}')`,
+									backgroundSize: '45%',
+									backgroundPositionX: '80%',
+									backgroundPositionY: '35%',
+								}}
+							></div>
+							<div
+								className="w-full block md:hidden xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
+								style={{
+									backgroundImage: `url('${bg2.src}')`,
+									backgroundSize: '55%',
+									backgroundPositionX: '90%',
+									backgroundPositionY: '98%',
+								}}
+							></div>
 						</div>
-					</section>
+						<div className="relative top-0 left-0 z-40 xl:bg-transparent ">
+							<h5 className={`interBold titleShadow mb-12 text-5xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"} `}>
+								CeFi vs DeFi
+							</h5>
+							<p className={`interMedium mb-4 w-1/2 text-2xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"}`}>
+
+								Let{"'"}s explore <span className="interBold">CeFi</span>, where traditional banks and institutions manage your money against <span className="interBold">DeFi</span>, where technology lets people handle their finances without middlemen.
+							</p>
+							<Link href={'/dcaCalculator'}>
+								<button
+									className={`interBold mt-8 mb-4 flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl bg-gradient-to-tl ${mode == "dark"
+										? selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-br from-[#71D5E1] to-[#4992E2] text-whiteText-500" : "titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500"
+										: selectedTradingCategory == "cefi" ? "shadow-[#71D5E1] bg-gradient-to-br from-[#71D5E1] to-[#4992E2] text-blackText-500" : "from-colorFour-500 to-colorSeven-500 text-blackText-500"
+										}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
+									style={{
+										backgroundImage: mode == "dark" && selectedTradingCategory != "cefi" ? `url('${mesh1.src}')` : "",
+										boxShadow:
+											mode == "dark" && selectedTradingCategory != "cefi" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+									}}
+								>
+									<span>Learn More</span>
+									{
+										mode == "dark" ? <GoArrowRight color="#FFFFFF" size={30} /> : <GoArrowRight color="#252525" size={30} />
+									}
+
+								</button>
+							</Link>
+						</div>
+					</div>
+				</section>
 				</section>
 
 				<div className="w-fit h-fit pt-0 lg:pt-16">
-					<Footer />
+					<Footer tradeFooter />
 				</div>
 			</main>
 		</>
