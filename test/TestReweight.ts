@@ -9,6 +9,7 @@ import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
 import { getMaxTick, getMinTick } from "./uniswap/utils/ticks";
 import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
 import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/CrossChainVault";
+import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
   
   describe("TEST REWEIGHT", function () {
     // We define a fixture to reuse the same setup in every test.
@@ -23,6 +24,9 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let otherAccount : any
     let token0 : Token
     let token1 : Token
+    let token2 : Token
+    let token3 : Token
+    let token4 : Token
     let crossChainToken : Token
     let weth9: IWETH
     let v3Factory: IUniswapV3Factory
@@ -39,9 +43,34 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     beforeEach(async function () {
       [owner, otherAccount] = await ethers.getSigners();
   
-      
-      
+      const deploymentObject = await deployment();
 
+      mockRouter = deploymentObject.mockRouter,
+      linkToken = deploymentObject.linkToken,
+      basicMessageSender = deploymentObject.basicMessageSender,
+      basicTokenSender = deploymentObject.basicTokenSender,
+      basicMessageReceiver = deploymentObject.basicMessageReceiver,
+      owner = deploymentObject.owner,
+      otherAccount = deploymentObject.otherAccount,
+      token0 = deploymentObject.token0,
+      token1 = deploymentObject.token1,
+      token2 = deploymentObject.token2,
+      token3 = deploymentObject.token3,
+      token4 = deploymentObject.token4,
+      crossChainToken = deploymentObject.crossChainToken,
+      weth9 = deploymentObject.weth9,
+      v3Factory = deploymentObject.v3Factory,
+      v3Router = deploymentObject.v3Router,
+      nft = deploymentObject.nft,
+      indexToken = deploymentObject.indexToken,
+      indexFactoryStorage = deploymentObject.indexFactoryStorage,
+      indexFactory = deploymentObject.indexFactory,
+      crossChainVault = deploymentObject.crossChainVault,
+      crossChainIndexFactory = deploymentObject.crossChainIndexFactory,
+      oracle = deploymentObject.oracle,
+      ethPriceOracle = deploymentObject.ethPriceOracle
+      
+      /**
       const LinkToken = await ethers.getContractFactory("LinkToken");
       linkToken = await LinkToken.deploy();
 
@@ -174,68 +203,69 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       await crossChainIndexFactory.setCrossChainToken("1", crossChainToken.address)
       await indexFactory.setCrossChainFactory(crossChainIndexFactory.address, "2");
       await crossChainVault.setFactory(crossChainIndexFactory.address);
+      */
     })
     
-    async function addLiquidityEth(token: Token | LinkToken, ethAmount: string, tokenAmount: string){
-      let tokens = [];
-      tokens[0] = token.address < weth9.address ? token.address : weth9.address
-      tokens[1] = token.address > weth9.address ? token.address : weth9.address
-      const amount0 = tokens[0] == weth9.address ? ethers.utils.parseEther(ethAmount) : ethers.utils.parseEther(tokenAmount)
-      const amount1 = tokens[1] == weth9.address ? ethers.utils.parseEther(ethAmount) : ethers.utils.parseEther(tokenAmount)
+    // async function addLiquidityEth(token: Token | LinkToken, ethAmount: string, tokenAmount: string){
+    //   let tokens = [];
+    //   tokens[0] = token.address < weth9.address ? token.address : weth9.address
+    //   tokens[1] = token.address > weth9.address ? token.address : weth9.address
+    //   const amount0 = tokens[0] == weth9.address ? ethers.utils.parseEther(ethAmount) : ethers.utils.parseEther(tokenAmount)
+    //   const amount1 = tokens[1] == weth9.address ? ethers.utils.parseEther(ethAmount) : ethers.utils.parseEther(tokenAmount)
 
-      await nft.createAndInitializePoolIfNecessary(
-        // weth9.address,
-        tokens[0],
-        // token0.address,
-        tokens[1],
-        "3000",
-        encodePriceSqrt(1, 1)
-      )
-      // return
-      await token.approve(nft.address, ethers.utils.parseEther(tokenAmount));
-      await weth9.deposit({value:ethers.utils.parseEther(ethAmount)});
-      await weth9.approve(nft.address, ethers.utils.parseEther(ethAmount));
+    //   await nft.createAndInitializePoolIfNecessary(
+    //     // weth9.address,
+    //     tokens[0],
+    //     // token0.address,
+    //     tokens[1],
+    //     "3000",
+    //     encodePriceSqrt(1, 1)
+    //   )
+    //   // return
+    //   await token.approve(nft.address, ethers.utils.parseEther(tokenAmount));
+    //   await weth9.deposit({value:ethers.utils.parseEther(ethAmount)});
+    //   await weth9.approve(nft.address, ethers.utils.parseEther(ethAmount));
       
-      const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-      const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
-      // return;
-      // const block = new Block()
-      const liquidityParams = {
-      token0: tokens[0],
-      token1: tokens[1],
-      fee: "3000",
-      tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      recipient: owner.address,
-      // amount0Desired: amount0,
-      amount0Desired: amount0,
-      amount1Desired: amount1,
-      amount0Min: 0,
-      amount1Min: 0,
-      deadline: unlockTime,
-      }
+    //   const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+    //   const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
+    //   // return;
+    //   // const block = new Block()
+    //   const liquidityParams = {
+    //   token0: tokens[0],
+    //   token1: tokens[1],
+    //   fee: "3000",
+    //   tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //   tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
+    //   recipient: owner.address,
+    //   // amount0Desired: amount0,
+    //   amount0Desired: amount0,
+    //   amount1Desired: amount1,
+    //   amount0Min: 0,
+    //   amount1Min: 0,
+    //   deadline: unlockTime,
+    //   }
       
-      await nft.mint(liquidityParams)
+    //   await nft.mint(liquidityParams)
 
 
-    }
+    // }
 
-    async function updateOracleList(_percentages: string[]){
-      const assetList = [
-        token0.address,
-        token1.address
-    ]
-    // const percentages = ["70000000000000000000", "30000000000000000000"]
-    const percentages = _percentages
-    const swapVersions = ["3", "3"]
-    const chainSelectors = ["1", "2"]
-    //update oracle list
-    await linkToken.transfer(indexFactoryStorage.address, 1e17.toString());
-    const transaction: ContractTransaction = await indexFactoryStorage.requestAssetsData();
-    const transactionReceipt:any = await transaction.wait(1);
-    const requestId: string = transactionReceipt?.events[0]?.topics[1];
-    await oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);
-    }
+    // async function updateOracleList(_percentages: string[]){
+    //   const assetList = [
+    //     token0.address,
+    //     token1.address
+    // ]
+    // // const percentages = ["70000000000000000000", "30000000000000000000"]
+    // const percentages = _percentages
+    // const swapVersions = ["3", "3"]
+    // const chainSelectors = ["1", "2"]
+    // //update oracle list
+    // await linkToken.transfer(indexFactoryStorage.address, 1e17.toString());
+    // const transaction: ContractTransaction = await indexFactoryStorage.requestAssetsData();
+    // const transactionReceipt:any = await transaction.wait(1);
+    // const requestId: string = transactionReceipt?.events[0]?.topics[1];
+    // await oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);
+    // }
   
     describe("Deployment", function () {
       
@@ -246,16 +276,24 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
 
       it("Test factory single swap", async function () {
         //update oracle list
-        await updateOracleList(["70000000000000000000", "30000000000000000000"])
+        const assetList = [
+          token0.address,
+          token1.address
+        ]
+        const percentages = ["70000000000000000000", "30000000000000000000"]
+        const swapVersions = ["3", "3"]
+        const chainSelectors = ["1", "2"]
+        await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, percentages, swapVersions, chainSelectors)
         //adding liquidity
         const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
         const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
 
-        await addLiquidityEth(token0, "1", "1000")
-        await addLiquidityEth(token1, "1", "1000")
-        await addLiquidityEth(crossChainToken, "1", "2000")
-        await addLiquidityEth(linkToken, "10", "10000")
-        
+        await addLiquidityEth(owner, weth9, nft, token0, "1", "1000")
+        await addLiquidityEth(owner, weth9, nft, token1, "1", "1000")
+        await addLiquidityEth(owner, weth9, nft, crossChainToken, "1", "2000")
+        await addLiquidityEth(owner, weth9, nft, linkToken, "10", "10000")
+        await linkToken.transfer(crossChainIndexFactory.address, ethers.utils.parseEther("10"))
+        await linkToken.transfer(indexFactory.address, ethers.utils.parseEther("10"))
         
         console.log("ccVault balance before swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance before swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
@@ -267,12 +305,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
         await network.provider.send("evm_mine");
         console.log("chain 1 portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
-        // console.log("chain 2 portfolio after swap:", ethers.utils.formatEther(await crossChainIndexFactory.getPortfolioBalance()))
-        // console.log("weth balance befor redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
-        // const indexTokenBalance = await indexToken.balanceOf(owner.address);
-        // await indexFactory.redemption(ethers.utils.parseEther("10"), weth9.address, 3);
-        // await indexFactory.redemption(indexTokenBalance, weth9.address, 3);
-        // console.log("weth balance after redemption", ethers.utils.formatEther(await weth9.balanceOf(owner.address)))
+        
         console.log("Asking values..");
         await indexFactory.askValues();
         console.log("token values count:", Number(await indexFactory.updatedTokensValueCount(1)))
@@ -280,7 +313,8 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         console.log("first token1 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(1, token0.address)))
         console.log("first token2 value:", ethers.utils.formatEther(await indexFactory.tokenValueByNonce(1, token1.address)))
         //
-         await updateOracleList(["60000000000000000000", "40000000000000000000"])
+        const newPercentages = ["60000000000000000000", "40000000000000000000"]
+        await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, newPercentages, swapVersions, chainSelectors)
         //
         await indexFactory.firstReweightAction()
         console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactory.reweightWethValueByNonce(1)))

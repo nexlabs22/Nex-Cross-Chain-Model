@@ -399,8 +399,11 @@ contract CrossChainIndexFactory is
           bytes memory data = abi.encode(1, targetAddresses, nonce, zeroArr, zeroArr);
           sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
         }else if( actionType == 2){
+            uint[] memory zeroArr = new uint[](0);
+            uint[] memory tokenValueArr = new uint[](1);
             uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
-            bytes memory data = abi.encode(2, targetAddresses[0], nonce, tokenValue, 0);
+            tokenValueArr[0] = tokenValue;
+            bytes memory data = abi.encode(2, targetAddresses, nonce, tokenValueArr, zeroArr);
             sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }else if( actionType == 3){
             // uint portfolioValue = percentages[0];

@@ -89,6 +89,8 @@ contract IndexFactory is
     mapping(uint => uint) public redemptionNonceTotalValue;
     mapping(uint => uint) public redemptionCompletedTokensCount;
     mapping(uint => address) public redemptionNonceRequester;
+    mapping(uint => address) public redemptionNonceOutputToken;
+    mapping(uint => uint) public redemptionNonceOutputTokenSwapVersion;
 
     mapping(uint => uint) public portfolioTotalValueByNonce;
     mapping(uint => uint) public updatedTokensValueCount;
@@ -159,9 +161,9 @@ contract IndexFactory is
         crossChainFactoryBySelector[_chainSelector] = _crossChainFactoryAddress;
     }
 
-    function totalOracleList() public view returns (uint) {
-        return indexFactoryStorage.totalOracleList();
-    }
+    // function totalOracleList() public view returns (uint) {
+    //     return indexFactoryStorage.totalOracleList();
+    // }
 
     function totalCurrentList() public view returns (uint) {
         return indexFactoryStorage.totalCurrentList();
@@ -274,6 +276,21 @@ contract IndexFactory is
         return amountOut;
     }
 
+    function issuanceIndexTokens(
+        address _tokenIn,
+        uint _inputAmount,
+        uint _crossChainFee,
+        uint _tokenInSwapVersion
+    ) public payable {
+        uint feeAmount = (_inputAmount * feeRate) / 10000;
+        uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
+        //transfer fee to the owner
+        IERC20(_tokenIn).transferFrom(msg.sender, address(indexToken), _inputAmount);
+        IERC20(_tokenIn).transferFrom(msg.sender, owner(), feeAmount);
+        uint wethAmount = _swapSingle(_tokenIn, address(weth), _inputAmount, address(this), _tokenInSwapVersion);
+        _issuance(wethAmount, _crossChainFee);
+    }
+
     function issuanceIndexTokensWithEth(
         uint _inputAmount,
         uint _crossChainFee
@@ -284,9 +301,24 @@ contract IndexFactory is
         //transfer fee to the owner
         (bool _success, ) = owner().call{value: feeAmount}("");
         require(_success, "transfer eth fee to the owner failed");
+        weth.deposit{value: _inputAmount + _crossChainFee}();
+        _issuance(_inputAmount, _crossChainFee);
+    }
+
+
+    function _issuance(
+        uint _inputAmount,
+        uint _crossChainFee
+    ) internal {
+        // uint feeAmount = (_inputAmount * feeRate) / 10000;
+        // uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
+        // require(msg.value >= finalAmount, "lower than required amount");
+        // //transfer fee to the owner
+        // (bool _success, ) = owner().call{value: feeAmount}("");
+        // require(_success, "transfer eth fee to the owner failed");
         issuanceNonce++;
         issuanceNonceRequester[issuanceNonce] = msg.sender;
-        weth.deposit{value: _inputAmount + _crossChainFee}();
+        // weth.deposit{value: _inputAmount + _crossChainFee}();
         weth.transfer(address(indexToken), _inputAmount);
         if (_crossChainFee > 0) {
             //swap ccip fee from eth to link
@@ -490,6 +522,8 @@ contract IndexFactory is
         uint burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         redemptionNonce += 1;
         redemptionNonceRequester[redemptionNonce] = msg.sender;
+        redemptionNonceOutputToken[redemptionNonce] = _tokenOut;
+        redemptionNonceOutputTokenSwapVersion[redemptionNonce] = _tokenOutSwapVersion;
 
         indexToken.burn(msg.sender, amountIn);
 
@@ -644,12 +678,17 @@ contract IndexFactory is
     function completeRedemptionRequest(uint nonce) internal {
         uint wethAmount = redemptionNonceTotalValue[nonce];
         address requester = redemptionNonceRequester[nonce];
-
+        address outputToken = redemptionNonceOutputToken[nonce];
+        uint outputTokenSwapVersion = redemptionNonceOutputTokenSwapVersion[nonce];
         uint fee = (wethAmount * feeRate) / 10000;
         weth.withdraw(fee);
-        weth.transfer(requester, wethAmount - fee);
         (bool _ownerSuccess, ) = owner().call{value: fee}("");
         require(_ownerSuccess, "transfer eth fee to the owner failed");
+        if(outputToken == address(weth)){
+        weth.transfer(requester, wethAmount - fee);
+        }else{
+        uint reallOut = swap(address(weth), outputToken, wethAmount - fee, requester, outputTokenSwapVersion);
+        }
     }
 
     // }
@@ -894,12 +933,16 @@ contract IndexFactory is
                 address crossChainIndexFactory = crossChainFactoryBySelector[
                     tokenChainSelector
                 ];
+                address[] memory tokens = new address[](1);
+                tokens[0] = currentList(i);
+                uint[] memory zeroArr = new uint[](0);
+
                 bytes memory data = abi.encode(
                     2,
-                    currentList(i),
+                    tokens,
                     updatePortfolioNonce,
-                    0,
-                    0
+                    zeroArr,
+                    zeroArr
                 );
                 sendMessage(
                     tokenChainSelector,
@@ -945,12 +988,18 @@ contract IndexFactory is
                     address crossChainIndexFactory = crossChainFactoryBySelector[
                             tokenChainSelector
                         ];
+                    address[] memory tokens = new address[](1);
+                    tokens[0] = currentList(i);
+                    uint[] memory portfolioValueArr = new uint[](1);
+                    portfolioValueArr[0] = portfolioValue;
+                    uint[] memory tokenOracleMarketShareArr = new uint[](1);
+                    tokenOracleMarketShareArr[0] = tokenOracleMarketShare(currentList(i));
                     bytes memory data = abi.encode(
                         3,
-                        currentList(i),
+                        tokens,
                         nonce,
-                        portfolioValue,
-                        tokenOracleMarketShare(currentList(i))
+                        portfolioValueArr,
+                        tokenOracleMarketShareArr
                     );
                     sendMessage(
                         tokenChainSelector,
@@ -1006,12 +1055,15 @@ contract IndexFactory is
                         );
                     tokensToSendArray[0].token = crossChainToken[tokenChainSelector];
                     tokensToSendArray[0].amount = crossChainTokenAmount;
+                    address[] memory tokens = new address[](1);
+                    tokens[0] = currentList(i);
+                    uint[] memory zeroArr = new uint[](0);
                     bytes memory data = abi.encode(
                         4,
-                        currentList(i),
+                        tokens,
                         nonce,
-                        0,
-                        0
+                        zeroArr,
+                        zeroArr
                     );
                     address crossChainIndexFactory = crossChainFactoryBySelector[
                             tokenChainSelector

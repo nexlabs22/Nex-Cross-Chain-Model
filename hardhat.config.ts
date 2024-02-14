@@ -103,8 +103,8 @@ const config: HardhatUserConfig = {
   etherscan: {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
-    // apiKey: process.env.ETHERSCAN_API_KEY
-    apiKey: process.env.POLYGONSCAN_API_KEY,
+    apiKey: process.env.ETHERSCAN_API_KEY
+    // apiKey: process.env.POLYGONSCAN_API_KEY,
     // apiKey: process.env.ARBITRUMSCAN_API_KEY
   },
   contractSizer: {

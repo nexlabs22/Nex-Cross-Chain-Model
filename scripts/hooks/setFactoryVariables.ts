@@ -42,7 +42,7 @@ async function main() {
 
     console.log("setting cross chain token...")
     const result3 = await cotract.connect(deployer).setCrossChainToken(
-        sepoliaChainSelector,
+        mumbaiChainSelector,
         sepoliaCrossChainTokenAddress
     )
     const receipt3 = await result3.wait();

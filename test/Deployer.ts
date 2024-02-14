@@ -21,6 +21,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let basicMessageReceiver : BasicMessageReceiver
     let owner : any
     let otherAccount : any
+    let usdc : Token
     let token0 : Token
     let token1 : Token
     let token2 : Token
@@ -52,6 +53,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       mockRouter = await MockRouter.deploy(linkToken.address);
 
       const Token = await ethers.getContractFactory("Token");
+      usdc = await Token.deploy(ethers.utils.parseEther("1000000"));
       token0 = await Token.deploy(ethers.utils.parseEther("1000000"));
       token1 = await Token.deploy(ethers.utils.parseEther("100000"));
       token2 = await Token.deploy(ethers.utils.parseEther("100000"));
@@ -181,8 +183,9 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       await crossChainVault.setFactory(crossChainIndexFactory.address);
       
       //router mock
-      mockRouter.setFactoryChainSelector("1", indexFactory.address)
-      mockRouter.setFactoryChainSelector("2", crossChainIndexFactory.address)
+      await mockRouter.setFactoryChainSelector("1", indexFactory.address)
+      await mockRouter.setFactoryChainSelector("2", crossChainIndexFactory.address)
+      await indexFactoryStorage.setIndexFactory(indexFactory.address);
       //return vaiables
       return {
         mockRouter,
@@ -192,6 +195,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         basicMessageReceiver,
         owner,
         otherAccount,
+        usdc,
         token0,
         token1,
         token2,
@@ -210,84 +214,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         oracle,
         ethPriceOracle
         }
-    // }
     
-    // async function addLiquidityEth(_nft: INonfungiblePositionManager, token: Token | LinkToken, ethAmount: string, tokenAmount: string){
-    //   let tokens = [];
-    //   tokens[0] = token.address < weth9.address ? token.address : weth9.address
-    //   tokens[1] = token.address > weth9.address ? token.address : weth9.address
-    //   const amount0 = tokens[0] == weth9.address ? ethers.utils.parseEther(ethAmount) : ethers.utils.parseEther(tokenAmount)
-    //   const amount1 = tokens[1] == weth9.address ? ethers.utils.parseEther(ethAmount) : ethers.utils.parseEther(tokenAmount)
-
-    //   await _nft.createAndInitializePoolIfNecessary(
-    //     // weth9.address,
-    //     tokens[0],
-    //     // token0.address,
-    //     tokens[1],
-    //     "3000",
-    //     encodePriceSqrt(1, 1)
-    //   )
-    //   // return
-    //   await token.approve(_nft.address, ethers.utils.parseEther(tokenAmount));
-    //   await weth9.deposit({value:ethers.utils.parseEther(ethAmount)});
-    //   await weth9.approve(_nft.address, ethers.utils.parseEther(ethAmount));
-      
-    //   const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-    //   const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
-    //   // return;
-    //   // const block = new Block()
-    //   const liquidityParams = {
-    //   token0: tokens[0],
-    //   token1: tokens[1],
-    //   fee: "3000",
-    //   tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-    //   tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-    //   recipient: owner.address,
-    //   // amount0Desired: amount0,
-    //   amount0Desired: amount0,
-    //   amount1Desired: amount1,
-    //   amount0Min: 0,
-    //   amount1Min: 0,
-    //   deadline: unlockTime,
-    //   }
-      
-    //   await _nft.mint(liquidityParams)
-
-
-    // }
-
-    // async function updateOracleList(
-    //     _linkToken: LinkToken,
-    //     _indexFactoryStorage: IndexFactoryStorage,
-    //     _oracle: MockApiOracle,
-    //     assetList: string[], 
-    //     percentages: string[], 
-    //     swapVersions: string[], 
-    //     chainSelectors: string[]
-    //     ){
-    // //   const assetList = [
-    // //     token0.address,
-    // //     token1.address,
-    // //     token2.address,
-    // //     token3.address,
-    // //     token4.address
-    // // ]
-    // // const percentages = [
-    // //     "30000000000000000000", 
-    // //     "20000000000000000000",
-    // //     "10000000000000000000",
-    // //     "10000000000000000000",
-    // //     "30000000000000000000",
-    // // ]
-    // // const swapVersions = ["3", "3", "3", "3", "3"]
-    // // const chainSelectors = ["1", "1", "1", "2", "2"]
-    // //update oracle list
-    // await _linkToken.transfer(_indexFactoryStorage.address, 1e17.toString());
-    // const transaction: ContractTransaction = await _indexFactoryStorage.requestAssetsData();
-    // const transactionReceipt:any = await transaction.wait(1);
-    // const requestId: string = transactionReceipt?.events[0]?.topics[1];
-    // await _oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);
-    // }
   
     
   };
@@ -354,26 +281,11 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     swapVersions: string[], 
     chainSelectors: string[]
     ){
-//   const assetList = [
-//     token0.address,
-//     token1.address,
-//     token2.address,
-//     token3.address,
-//     token4.address
-// ]
-// const percentages = [
-//     "30000000000000000000", 
-//     "20000000000000000000",
-//     "10000000000000000000",
-//     "10000000000000000000",
-//     "30000000000000000000",
-// ]
-// const swapVersions = ["3", "3", "3", "3", "3"]
-// const chainSelectors = ["1", "1", "1", "2", "2"]
-//update oracle list
-await _linkToken.transfer(_indexFactoryStorage.address, 1e17.toString());
-const transaction: ContractTransaction = await _indexFactoryStorage.requestAssetsData();
-const transactionReceipt:any = await transaction.wait(1);
-const requestId: string = transactionReceipt?.events[0]?.topics[1];
-await _oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);
+
+  //update oracle list
+  await _linkToken.transfer(_indexFactoryStorage.address, 1e17.toString());
+  const transaction: ContractTransaction = await _indexFactoryStorage.requestAssetsData();
+  const transactionReceipt:any = await transaction.wait(1);
+  const requestId: string = transactionReceipt?.events[0]?.topics[1];
+  await _oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);
 }
