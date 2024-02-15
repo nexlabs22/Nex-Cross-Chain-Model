@@ -93,7 +93,7 @@ const ConnectButton: React.FC<ConnectWalletButton> = ({ tradeNavbarButton }) => 
         },
       });
     }
-  }, [theme]);
+  }, [tradeNavbarButton, selectedTradingCategory]);
 
   
 
