@@ -6,10 +6,11 @@ export function formatAsString(value: number): string {
 	let result
 	const checkValue = Math.abs(value)
 
-	if (checkValue < 0.0001) result = checkValue.toString()
-	else if (checkValue < 2) result = checkValue.toFixed(4)
+	// if (checkValue < 0.01) result = checkValue.toFixed(Math.max(0, -Math.floor(Math.log10(checkValue)) || 0) )
+	// else if (checkValue < 100) result = checkValue.toFixed(2)
+	if (checkValue < 100) result = checkValue.toFixed(2)
 	else if (checkValue <= 1000) result = checkValue.toFixed(2)
-	else if (checkValue < 10_000) result = checkValue.toLocaleString('en-US')
+	else if (checkValue < 10_000) result = Number(checkValue.toFixed(2)).toLocaleString('en-US')
 	else if (checkValue < 1_000_000) result = (checkValue / 1000).toFixed(2) + 'K'
 	else if (checkValue < 1_000_000_000) result = (checkValue / 1_000_000).toFixed(2) + 'Mil.'
 	else if (checkValue < 1_000_000_000_000) result = (checkValue / 1_000_000_000).toFixed(2) + 'B.'
@@ -53,5 +54,14 @@ export function FormatToViewNumber({
 			return formatAsPercent(value)
 		default:
 			return value
+	}
+}
+
+export function formatNumber(input: number): string {
+	if (input >= 1) {
+		return input.toFixed(2);
+	} else {
+		const decimalCount = Math.max(0, -Math.floor(Math.log10(input)) || 0) + 1;
+		return input.toFixed(!!decimalCount && (decimalCount >1 && decimalCount < 100) ? decimalCount: 0);
 	}
 }

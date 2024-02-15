@@ -11,18 +11,36 @@ import GenericAvatar from '@/components/GenericAvatar'
 import { useEffect, useState } from 'react'
 import useTradePageStore from '@/store/tradeStore'
 import TipsBox2 from '@/components/TipsBox'
+import ProgressBar from '@ramonak/react-progress-bar'
+import New3DPieChart from '@/components/new3DPieChart'
+import mesh1 from '@assets/images/mesh1.png'
+import mesh2 from '@assets/images/mesh2.png'
 
 import bg from '@assets/images/3d hologram.png'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
+import { useRouter } from 'next/navigation'
+import btc from '@assets/images/btc.png'
 import { MdOutlineDangerous } from 'react-icons/md'
-const Chart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
+const PNLChart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
+const TreemapChart = dynamic(() => import('@/components/GenericTreemapChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
 import { BsCalendar4 } from 'react-icons/bs'
-import { goerliAnfiIndexToken, goerliCrypto5IndexToken, crypto5PoolAddress, goerlianfiPoolAddress, zeroAddress, goerliAnfiV2IndexToken, goerliUsdtAddress, goerliLinkAddress, goerliLinkWethPoolAddress } from '@/constants/contractAddresses'
-import { indexTokenAbi,indexTokenV2Abi } from '@/constants/abi'
-import { FormatToViewNumber, num } from '@/hooks/math'
+import { Shimmer } from 'react-shimmer'
+import {
+	goerliAnfiIndexToken,
+	goerliCrypto5IndexToken,
+	crypto5PoolAddress,
+	goerlianfiPoolAddress,
+	zeroAddress,
+	goerliAnfiV2IndexToken,
+	goerliUsdtAddress,
+	goerliLinkAddress,
+	goerliLinkWethPoolAddress,
+} from '@/constants/contractAddresses'
+import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
+import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { GenericToast } from '@/components/GenericToast'
 import AccountRebalancingSection from '@/components/AccountRebalancingSection'
@@ -36,24 +54,72 @@ import Head from 'next/head'
 import { useQuery } from '@apollo/client'
 import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
-import UseAnimations from 'react-useanimations'
-import arrowDown from 'react-useanimations/lib/arrowDown'
+
 import bg2 from '@assets/images/bg-2.png'
 import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
+import { reduceAddress } from '@/utils/general'
+import { GoArrowRight, GoChevronDown } from 'react-icons/go'
+import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
+import NewHistoryTable from '@/components/NewHistoryTable'
+import { useSearchParams } from 'next/navigation'
+import { nexTokens } from '@/constants/nexIndexTokens'
+import { nexTokenDataType } from '@/types/nexTokenData'
+import convertToUSD from '@/utils/convertToUsd'
+import usePortfolioPageStore from '@/store/portfolioStore'
+import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
+
+// Firebase :
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+import { FaCheck } from 'react-icons/fa6'
+import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
+import ImageViewer from 'react-simple-image-viewer'
+import { Uploader } from 'uploader'
+import { UploadDropzone } from 'react-uploader'
+import 'react-image-upload/dist/index.css'
+import { Menu, MenuButton } from '@szhsin/react-menu'
+import '@szhsin/react-menu/dist/index.css'
+import '@szhsin/react-menu/dist/transitions/slide.css'
+import { useLandingPageStore } from '@/store/store'
+import ConnectButton from '@/components/ConnectButton'
+
+interface User {
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
+}
 
 export default function Portfolio() {
 	const address = useAddress()
+	const router = useRouter()
 	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
-	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
+	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex, setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
+	const { portfolioData, setDayChange } = usePortfolioPageStore()
+	const [chartType, setChartType] = useState<string>('pie')
+	const { mode } = useLandingPageStore()
+
+	// console.log("ethPriceInUsd--->",ethPriceInUsd)
+	// useEffect(() => {
+	// 	setEthPriceInUsd()
+	// }, [setEthPriceInUsd])
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
-	// const crypto5TokenContract = useContract(goerliLinkAddress, indexTokenV2Abi)
 
 	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
 	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
-	// const crypto5TokenBalance = 
 
 	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
@@ -74,11 +140,8 @@ export default function Portfolio() {
 		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
-	// let anfiPrice = 0; let cr5Price = 0;
-	// let anfi24hChng = 0; let cr524hChng = 0;
 	const [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
-	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
-	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
+	const indexPercent = { anfi: anfiPercent, cr5: crypto5Percent }
 
 	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
 		const chartData: { time: number; value: number }[] = []
@@ -95,28 +158,25 @@ export default function Portfolio() {
 
 		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price * num(anfiTokenBalance.data)
 		const cr5Price = CR5Data[CR5Data.length - 1].token0Price * num(crypto5TokenBalance.data)
-		setIndexPrices({ anfi: anfiPrice, cr5: cr5Price })
+		// setIndexPrices({ anfi: anfiPrice, cr5: cr5Price })
 
-		const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price
-		const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price
+		const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price || 0
+		const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price || 0
 		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
 
-		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price
-		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price
+		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price || 0
+		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price || 0
 		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
-		setIndex24hChange({ anfi: anfi24hChng, cr5: cr524hChng })
+
+		setDayChange({ anfi: todayANFIPrice - yesterdayANFIPrice, cr5: todayCR5Price - yesterdayCR5Price })
 	}
 
 	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value
 	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value
 	const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
 
-	const [isCopied, setIsCopied] = useState(false)
-
 	const handleCopy = () => {
 		if (address) {
-			setIsCopied(true)
-			setTimeout(() => setIsCopied(false), 2000) // Reset "copied" state after 2 seconds
 			GenericToast({
 				type: 'success',
 				message: 'Copied !',
@@ -139,12 +199,12 @@ export default function Portfolio() {
 	const PieChartdata = [
 		{
 			label: 'ANFI',
-			percentage: !!anfiPercent ? anfiPercent + '%' : '0%',
+			percentage: !!anfiPercent ? FormatToViewNumber({ value: anfiPercent, returnType: 'string' }) + '%' : '0%',
 			color: '#133140',
 		},
 		{
 			label: 'CRYPTO 5',
-			percentage: !!crypto5Percent ? crypto5Percent + '%' : '0%',
+			percentage: !!crypto5Percent ? FormatToViewNumber({ value: crypto5Percent, returnType: 'string' }) + '%' : '0%',
 			color: '#b5e7ff',
 		},
 	]
@@ -226,171 +286,441 @@ export default function Portfolio() {
 		{ time: '2018-04-04', value: 0 },
 	]
 
+	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
+
+	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
+
+	useEffect(() => {
+		async function getTokenDetails() {
+			const data = await Promise.all(
+				nexTokens.map(async (item: nexTokenDataType) => {
+					const calculatedUsdValue = !['CRYPTO5'].includes(item.symbol) ? (await convertToUSD(item.address, ethPriceInUsd, false)) || 0 : 0
+					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
+					const totalTokenUsd = calculatedUsdValue * totalToken || 0
+					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
+
+					return {
+						...item,
+						totalToken,
+						totalTokenUsd,
+						percentage,
+					}
+				})
+			)
+
+			setAssetData(data)
+		}
+
+		getTokenDetails()
+	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent])
+
+	// const storedData = localStorage.getItem('totalTradedBalance')
+	// const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
+	// const totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
+
+	// useEffect(() => {
+	// let totalTradedBalance = 0
+	// if (typeof window !== 'undefined') {
+	//   	const storedData = localStorage.getItem('totalTradedBalance');
+	// 	const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
+	// 	totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
+	// }
+	//   }, []);
+
+	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
+	const [chosenPPType, setChosenPPType] = useState<string>('none')
+
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState<String>('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					// console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
+
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Nex Labs - Portfolio</title>
 				<meta
 					name="description"
 					content="Take a peek at your Nex Labs portfolio and see how you leverage the platform. Check your balance, wallet, transaction history, account destribution and more on the portfolio page. Get the inside view."
 				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="min-h-screen overflow-x-hidden h-fit w-screen bg-whiteBackground-500">
+			<main className={`min-h-screen overflow-x-hidden h-fit w-screen ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'}`}>
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
-					<section className="w-screen h-fit pt-10">
-						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
-							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
-								{address && address != '' ? <GenericAvatar walletAddress={address}></GenericAvatar> : <div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>}
-								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-									<h5 className="text-xl text-blackText-500 montrealBold">ID: 88320</h5>
-									<div className="flex flex-col xl:flex-row items-center justify-start gap-2">
-										<h5 className="text-base text-gray-500 interMedium">
-											{address && address != '' ? address.toString().slice(0, 7) + '...' + address.toString().substring(address.toString().length - 7) : 'Connect your wallet'}
+					{
+						address ? (<section className="w-screen h-fit pt-10">
+							<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col lg:flex-row items-center justify-between mb-10">
+								<div className="w-full lg:w-2/5  h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
+									{address && address != '' ? (
+										<div
+											className="w-40 lg:h-44 lg:w-auto xl:w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
+											style={{
+												backgroundImage:
+													uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
+											}}
+										>
+											{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+										</div>
+									) : (
+										<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
+									)}
+									<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
+										<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold text-center lg:whitespace-nowrap lg:text-left`}>
+											{connectedUser && connectedUser.main_wallet == address
+												? connectedUser.inst_name != 'x'
+													? connectedUser.inst_name
+													: connectedUser.name != 'x'
+														? connectedUser.name
+														: 'Nex User'
+												: 'Nex User'}
 										</h5>
-										<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
-											<div className=" bg-colorSeven-500/50 w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full">
-												<CopyToClipboard text={address as string} onCopy={handleCopy}>
-													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
-												</CopyToClipboard>
-											</div>
-											<div
-												className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full cursor-pointer"
-												onClick={() => {
-													if (address) setQRModalVisible(true)
-													else
-														GenericToast({
-															type: 'error',
-															message: `Please connect your wallet!`,
-														})
-												}}
-											>
-												<PiQrCodeDuotone color="#000000" size={15} className="scale-150 xl:scale-100" />
+										<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
+											<h5 className={`text-base ${mode == "dark" ? " text-whiteText-500/70" : " text-blackText-500"}  interMedium`}>{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
+											<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
+												<div className={` ${mode == "dark" ? " bg-whiteText-500" : "bg-colorSeven-500/50"} w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full`}>
+													<CopyToClipboard text={address as string} onCopy={handleCopy}>
+
+														<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+													</CopyToClipboard>
+												</div>
+												<div
+													className={` ${mode == "dark" ? " bg-whiteText-500" : "bg-colorSeven-500/50"} w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full`}
+													onClick={() => {
+														if (address) setQRModalVisible(true)
+														else
+															GenericToast({
+																type: 'error',
+																message: `Please connect your wallet!`,
+															})
+													}}
+												>
+													<PiQrCodeDuotone color="#000000" size={15} className="scale-150 xl:scale-100" />
+												</div>
 											</div>
 										</div>
-									</div>
-									<div className=" bg-colorSeven-500 w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2">
-										<BsCalendar4 color="#FFFFFF" size={15} />
-										<h5 className="text-base text-whiteText-500 montrealBold">Joined 45 days ago</h5>
+										<div className={` ${mode == "dark" ? " bg-whiteBackground-500" : "bg-colorSeven-500"} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}>
+											{
+												mode == "dark" ? <BsCalendar4 color="#000000" size={15} /> : <BsCalendar4 color="#000000" size={15} />
+											}
+
+											<h5 className={`text-base ${mode != "dark" ? " text-blackText-500" : "text-blackText-500"}  interBold`}>Joined N/A day ago</h5>
+										</div>
 									</div>
 								</div>
-							</div>
-							{/* <div className="lg:flex w-3/5 h-fit justify-end" id="smallChartBox">
+								{/* <div className="lg:flex w-3/5 h-fit justify-end" id="smallChartBox">
 							<Chart data={complexData} />
 						</div> */}
-							<div className="lg:flex w-2/5 "></div>
-							<div className="lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
-								{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
+								<div className="lg:flex w-2/5 "></div>
+								<div className="hidden lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
+									{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-								<Chart
-									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
-									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
-								/>
-							</div>
-						</div>
-						<div className="w-full h-fit px-2 lg:px-20">
-							<Tabs>
-								<TabList>
-									<Tab>
-										<h5 className="montrealBold text-xl">Indices</h5>
-									</Tab>
-								</TabList>
-
-								<TabPanel>
-									<div className="w-full h-fit p-4">
-										<div className="px-4 py-8 grid grid-cols-2 grid-rows-auto xl:grid-cols-8 lg:grid-rows-1 rounded-2xl bg-gradient-to-b from-colorSeven-500 to-lightBlueBackground-500 shadow-sm shadow-blackText-500">
-											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
-												<Image src={anfiLogo} alt="anfi logo" width={80} height={80} className="mb-3"></Image>
-												<h5 className="interBlack text-xl text-white titleShadow">ANFI</h5>
-												<h5 className="interBold text-2xl text-white titleShadow mb-2">
-													{/* $ {anfiTokenBalance.data ? FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) : 0} */}
-													{/* $ {indexPrices.anfi ? FormatToViewNumber({ value: indexPrices.anfi, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.anfi ? indexPrices.anfi.toFixed(4) : 0}
-												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.anfi.toFixed(2) : 0}%
-												</h5>
-											</div>
-											<div className="w-full h-fit px-4 py-2 flex flex-col items-center justify-center">
-												<Image src={cr5Logo} alt="cr5 logo" width={80} height={80} className="mb-3"></Image>
-												<h5 className="interBlack text-xl text-white titleShadow">CRYPTO 5</h5>
-												<h5 className="interBold text-2xl text-white titleShadow mb-2">
-													{/* $ {crypto5TokenBalance.data ? FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) : 0} */}
-													{/* $ {indexPrices.cr5 ? FormatToViewNumber({ value: indexPrices.cr5, returnType: 'string' }) : 0} */}${' '}
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) && indexPrices.cr5 ? indexPrices.cr5.toFixed(2) : 0}
-												</h5>
-												<h5 className="interMedium italic text-base text-white titleShadow">
-													{address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? '0.00' : '0.00'}%
-													{/* {address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? index24hChange.cr5.toFixed(2) : 0}% */}
-												</h5>
-											</div>
-										</div>
-									</div>
-								</TabPanel>
-							</Tabs>
-						</div>
-						<div className="w-full h-fit px-5 lg:px-20 mt-10">
-							<h5 className="interBlack text-3xl text-blackText-500">Assets Distribution</h5>
-							<div className="w-full h-full flex flex-col xl:flex-row items-start justify-center xl:justify-around">
-								<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-start xl:mb-20">
-									<GenericPieChart data={PieChartdata} />
+									<PNLChart data={showPortfolioData ? chartArr : emptyData} change={showPortfolioData ? portfolio24hChange : 0} />
 								</div>
-								<div className="w-11/12 xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-28">
-									<h5 className="interBold text-xl text-blackText-500">
-										Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
+							</div>
+							<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
+								<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+									<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500/80" : "text-blackText-500"}  text-center lg:text-left`}>Total Portfolio Balance</h5>
+									<h5
+										className={`interExtraBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}  text-center lg:text-left`}
+										title={
+											showPortfolioData && chartArr && chartArr[chartArr.length - 1] && chartArr[chartArr.length - 1].value < 0.01
+												? formatNumber(chartArr[chartArr.length - 1].value).toString()
+												: '0.00'
+										}
+									>
+										≈$
+										{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
+											? chartArr[chartArr.length - 1].value < 0.01
+												? ' 0.00 '
+												: FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' })
+											: '0.00'}
 									</h5>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Smart contract : <span className="interMedium">0xJN820...093NEZ</span>
+								</div>
+								<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+									<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500/80" : "text-blackText-500"}  text-center lg:text-left`}>Total Traded Balance</h5>
+									<h5 className={`interExtraBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}  text-center lg:text-left`}>
+										${portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString() : '0.00'}
+									</h5>
+								</div>
+								<div className="w-1/2 mt-8 lg:mt-0 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+									<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500/80" : "text-blackText-500"}  text-center lg:text-left`}>24h Change</h5>
+									<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
+										<h5
+											className={`interExtraBold text-2xl ${showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
+												} `}
+										>
+											$
+											{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
+												? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
+												: '0.00'}
 										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
-											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
+										<div
+											className={`w-fit h-fit rounded-lg ${showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
+												} p-1`}
+										>
+											{showPortfolioData ? portfolio24hChange > 0 ? <IoMdArrowUp color="#FFFFFF" size={15} /> : portfolio24hChange < 0 ? <IoMdArrowDown color="#FFFFFF" size={15} /> : '' : ''}
 										</div>
-									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Last transaction : <span className="interMedium">0xJN820...093NEZ</span>
-										</h5>
-										<div className=" bg-colorSeven-500/50 w-fit h-fit p-4 xl:p-2 rounded-full">
-											<BiCopy color="#000000" size={12} className="scale-150 xl:scale-100" />
-										</div>
-									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Owned amount : <span className="interMedium">283.2</span>
-										</h5>
-									</div>
-									<div className="flex flex-row items-center justify-between gap-2">
-										<h5 className="interBold text-xl text-blackText-500">
-											Txn history :{' '}
-											<span className="interMedium text-colorSeven-500">
-												<Link href="">See More</Link>
-											</span>
-										</h5>
 									</div>
 								</div>
 							</div>
-						</div>
-					</section>
+							<div className="w-full h-fit px-4 xl:px-20 pt-5 flex flex-col items-start justify-start mb-10">
+								<h5 className={` ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-2xl interBold mb-6`}>Asset Balances</h5>
+								<div className="w-full h-fit border border-gray-300 rounded-xl  pt-6 shadow overflow-scroll xl:overflow-auto">
+									<div className="w-full h-fit pb-6 flex flex-row items-center gap-16 xl:gap-0 justify-start px-3 border-b border-b-[#E4E4E4] ">
+										<div className="w-[30vw] xl:w-1/4 mr-14 xl:mr-0 h-fit pr-8 xl:px-1">
+											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base whitespace-nowrap`}>Asset</h5>
+										</div>
+										<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
+											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base whitespace-nowrap`}>Total Balance</h5>
+										</div>
+										<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
+											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base whitespace-nowrap`}>Portfolio %</h5>
+										</div>
+										<div className="w-fit xl:w-1/4 h-fit pr-8 xl:px-1">
+											<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base whitespace-nowrap`}>Action</h5>
+										</div>
+									</div>
+									<div>
+										{assetData.map((asset) => (
+											<>
+												<div
+													key={asset.symbol}
+													className="w-fit xl:w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center border-b gap-16 xl:gap-0 border-b-[#E4E4E4]"
+												>
+													<div className="w-[30vw] xl:w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
+														<Image
+															src={asset.logo}
+															alt="anfi"
+															width={50}
+															height={50}
+															className="cursor-pointer"
+															onClick={() => {
+																router.push(`/ownedAsset?asset=${asset.symbol.toLowerCase()}`)
+															}}
+														></Image>
+														<div>
+															<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-lg cursor-pointer`}>{asset.symbol}</h5>
+															<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500/80" : " text-blackText-500"} italic text-base cursor-pointer`}>{asset.shortName}</h5>
+														</div>
+													</div>
+													<div className="w-fit xl:w-1/4 h-fit px-1">
+														<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-blackText-500 whitespace-nowrap text-lg cursor-pointer`}>
+															{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol}
+														</h5>
+														<h5 className={`interBold whitespace-nowrap ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}  text-base cursor-pointer`}>≈${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}</h5>
+													</div>
+													<div className="w-fit xl:w-1/4 h-fit px-1">
+														{
+															mode == "dark" ? <ProgressBar
+																completed={showPortfolioData ? Number(asset.percentage) : 0}
+																height="10px"
+																isLabelVisible={false}
+																className="w-[30vw] xl:w-8/12 mb-3"
+																bgColor="#089981"
+																baseBgColor="#FFFFFF"
+															/> : <ProgressBar
+																completed={showPortfolioData ? Number(asset.percentage) : 0}
+																height="10px"
+																isLabelVisible={false}
+																className="w-[30vw] xl:w-8/12 mb-3"
+																bgColor="#5E869B"
+																baseBgColor="#A9A9A9"
+															/>
+														}
+
+														<h5 className={`interExtraBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base cursor-pointer`}>{showPortfolioData ? asset.percentage?.toFixed(2) : '0.00'}%</h5>
+													</div>
+													<div className="w-fit xl:w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
+														<button className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} rounded-xl ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat " : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`} style={{
+															boxShadow:
+																mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+															backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+
+														}}>
+															Trade
+														</button>
+														<button className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} rounded-xl ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat " : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500"}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`} style={{
+															boxShadow:
+																mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+															backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+
+														}}>
+															Details
+														</button>
+													</div>
+												</div>
+											</>
+										))}
+									</div>
+								</div>
+							</div>
+							<div className="w-full h-fit px-5 lg:px-20 mt-10">
+								<h5 className={` ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-2xl interBold mb-6`}>Assets Distribution</h5>
+								<Menu
+									menuButton={
+										<MenuButton>
+											<div className={`w-full xl:w-[14vw] ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} relative z-10 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500"} shadow-sm shadow-blackText-500 gap-8 cursor-pointer mt-6`} style={{
+												boxShadow:
+													mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+												backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+
+											}}>
+												<div className="flex flex-row items-center justify-start gap-2">
+													<h5 className="text-sm  titleShadow interBold uppercase">{chartType == 'pie' ? 'Pie Chart' : 'Treemap Chart'}</h5>
+												</div>
+												{
+													mode == "dark" ? <GoChevronDown color="#F2F2F2" size={20} /> : <GoChevronDown color="#252525" size={20} />
+												}
+												
+											</div>
+										</MenuButton>
+									}
+									transition
+									direction="bottom"
+									align="start"
+									className="subCatgoriesMenu"
+								>
+									<div
+										key={0}
+										className="w-full h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50"
+										onClick={() => {
+											setChartType('pie')
+										}}
+									>
+										<div className="flex flex-row items-center justify-start gap-2">
+											<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">Pie Chart</h5>
+										</div>
+										<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
+									</div>
+									<div
+										key={0}
+										className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50"
+										onClick={() => {
+											setChartType('treemap')
+										}}
+									>
+										<div className="flex flex-row items-center justify-start gap-2">
+											<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">Treemap Chart</h5>
+										</div>
+										<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
+									</div>
+								</Menu>
+								<div className="w-full h-full flex flex-col xl:flex-row items-start xl:items-center justify-center xl:justify-around">
+									<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-2">
+										{chartType == 'pie' ? <New3DPieChart></New3DPieChart> : <TreemapChart percentage={indexPercent} />}
+									</div>
+									<div className="w-full xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-2">
+										<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>
+											Index / Asset : <span className="interMedium">{selectedPortfolioChartSliceIndex}</span>
+										</h5>
+										<div className="flex flex-row items-center justify-between gap-2">
+											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>
+												Smart contract : <span className="interMedium">N/A</span>
+											</h5>
+											<div className={` ${mode == "dark" ? " bg-whiteBackground-500" : "bg-colorSeven-500/50"} w-fit h-fit p-4 xl:p-2 rounded-full`}>
+												<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+											</div>
+										</div>
+										<div className="flex flex-row items-center justify-between gap-2">
+											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>
+												Last transaction : <span className="interMedium">N/A</span>
+											</h5>
+											<div className={` ${mode == "dark" ? " bg-whiteBackground-500" : "bg-colorSeven-500/50"} w-fit h-fit p-4 xl:p-2 rounded-full`}>
+												<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+											</div>
+										</div>
+										<div className="flex flex-row items-center justify-between gap-2">
+											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>
+												Owned amount : <span className="interMedium">N/A</span>
+											</h5>
+										</div>
+										<div className="flex flex-row items-center justify-between gap-2">
+											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>
+												Txn history :{' '}
+												<span className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>
+													<Link href={`https://goerli.etherscan.io/txs?a=${address}`}>See More</Link>
+												</span>
+											</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+						</section>) : (
+							<section className='w-full h-fit xl:px-20 relative z-[1] py-5 mb-10'>
+								<div className='w-full h-fit relative hidden xl:block'>
+									<div className=' absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center'>
+										<div className={`w-4/12 h-fit ${mode == "dark" ? " bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50" : "bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50"} border shadow-sm px-4 py-12 rounded-lg`}>
+											<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
+											<p className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
+											<div className='w-fit h-fit scale-150 mx-auto mt-12'>
+												<ConnectButton />
+											</div>
+
+										</div>
+									</div>
+									<div className='w-full h-fit hidden xl:flex flex-col items-start justify-start relative z-30'>
+										<div className='w-full lg:w-2/5 h-fit flex flex-col xl:flex-col items-start justify-start gap-8'>
+											<Shimmer width={300} height={300} className={`rounded-full ${mode == "dark" ? "invert" : ""}`} />
+
+										</div>
+										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
+										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} /> 
+									</div>
+								</div>
+
+								<div className='w-full h-fit relative block xl:hidden'>
+									<div className=' absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center'>
+										<div className={`w-11/12 h-fit ${mode == "dark" ? "bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50" : "bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50"} shadow-sm border px-4 py-12 rounded-lg`}>
+										<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
+											<p className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
+											<div className='w-fit h-fit mx-auto mt-12'>
+												<ConnectButton />
+											</div>
+
+										</div>
+									</div>
+									<div className='w-screen px-4 h-fit xl:hidden'>
+										<Shimmer width={150} height={150} className={`rounded-full max-w-[40%] ${mode == "dark" ? "invert" : ""}`} />
+										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
+										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
+									</div>
+								</div>
+
+
+
+
+							</section>
+						)
+					}
+
 				</section>
-				<section className="w-full h-fit mb-10 px-10">
-					<h5 className="interBlack text-3xl text-blackText-500 mb-4">Transactions History</h5>
-					{address ? (
-						<HistoryTable />
-					) : (
-						<div className="w-full h-fit bg-gray-300 border border-gray-200 rounded-2xl py-20 flex flex-row items-center justify-center gap-1">
-							<MdOutlineDangerous color="#F23645" size={30} />
-							<h5 className="interMedium text-base text-gray-500">No connected wallet</h5>
-						</div>
-					)}
+				<section className="w-full h-fit mb-10 px-4 xl:px-20">
+					{
+						address ? <h5 className={`${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-2xl interBold mb-6`}>Transactions History</h5> : ""
+
+					}
+					{address ? <NewHistoryTable /> : ''}
 				</section>
-				<section className="w-full h-fit mb-10 px-10">
-				<h5 className="interBlack text-3xl text-blackText-500 mb-4">Top Holders</h5>
-					<TopHolders />
-				</section>
-				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-10">
+
+				<section className=" w-screen flex flex-col xl:flex-row items-stretch justify-normal gap-1 px-4 xl:px-20">
 					<div id="d1" className="w-full xl:w-9/12 h-full flex flex-row items-stretch justify-center flex-grow">
 						<div className="w-screen h-full flex flex-col items-center justify-center">
 							<div className=" relative w-full h-full overflow-hidden bg-gradient-to-bl from-colorFive-500 to-colorSeven-500 rounded-xl px-6 py-6">
@@ -404,30 +734,35 @@ export default function Portfolio() {
 									></div>
 								</div>
 								<div className="relative top-0 left-0 z-40 bg-transparent">
-									<h5 className="interBold text-whiteText-500 titleShadow text-4xl mb-6">Automatic Rebalancing Mechanism</h5>
-									<p className="interMedium text-whiteText-500 text-base w-full xl:w-3/5 mb-3">
+									<h5 className={`interBold ${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} titleShadow text-4xl mb-6`}>Automatic Rebalancing Mechanism</h5>
+									<p className={`interMedium ${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} text-base w-full xl:w-3/5 mb-3`}>
 										Our automatic rebalancing system ensures the proper distribution of assets in the index by regularly monitoring market capitalizations, triggering adjustments as needed
 										to align with the desired weights, and executing trades accordingly.
 									</p>
 									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
-										<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
-											<span>Learn More</span>
-											<UseAnimations
-												animation={arrowDown}
-												wrapperStyle={{
-													width: 'fit-content',
-												}}
-												strokeColor="#5E869B"
-												size={40}
-												className=" -rotate-90"
-											/>
-										</button>
+									<button
+									className={`interBold mt-8 mb-4 flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl ${mode == "dark"
+										? "titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500"
+										: "bg-gradient-to-br from-colorFour-500 to-colorSeven-500 text-blackText-500"
+										}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
+									style={{
+										backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
+										boxShadow:
+											mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
+									}}
+								>
+									<span>Learn More</span>
+									{
+										mode == "dark" ? <GoArrowRight color="#FFFFFF" size={30} /> : <GoArrowRight color="#252525" size={30} />
+									}
+
+								</button>
 									</Link>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div id="d2" className="w-full xl:w-3/12 flex flex-row items-center justify-center flex-grow-0 max-h-full">
+					<div id="d2" className="w-full xl:w-3/12 flex flex-row items-center justify-center flex-grow max-h-full">
 						<TipsBox2></TipsBox2>
 					</div>
 				</section>

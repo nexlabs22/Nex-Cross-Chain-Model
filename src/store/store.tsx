@@ -5,6 +5,10 @@ import axios from 'axios'
 import { isSameDay } from '@/utils/conversionFunctions'
 import { dayChangeInitial } from './storeInitialValues'
 import get24hDayChangePer from '@utils/get24hDayChangePer'
+import { comparisonIndicesType } from '@/types/chartTypes'
+import { comparisonIndices } from '@/constants/comparisionIndices'
+import isEqual from 'lodash/isEqual';
+import { Mode } from '@anatoliygatt/dark-mode-toggle';
 
 type LandingPageStore = {
 	//Select slide index
@@ -14,10 +18,17 @@ type LandingPageStore = {
 	//dashboard default index
 	defaultIndex: string
 	changeDefaultIndex: (index: string) => void
+
+	mode: Mode
+	changeMode: (index: Mode) => void
 }
 
 const useLandingPageStore = create<LandingPageStore>()((set) => ({
 	//Select slide index
+
+	mode: "light",
+	changeMode: (mode: Mode) => set((state) => ({ mode: mode })),
+	
 	selectedSlideIndex: 0,
 	changeSelectedSlideIndex: (index: number) => set((state) => ({ selectedSlideIndex: index })),
 
@@ -46,6 +57,9 @@ interface chartDataStoreType {
 	clearChartData: () => void
 	setANFIWeightage: () => void
 	setDayChangePer: () => void
+
+	comparisionIndices: comparisonIndicesType[],
+	setComparisonIndices: (data: comparisonIndicesType) => void
 }
 
 const useChartDataStore = create<chartDataStoreType>()((set) => ({
@@ -73,6 +87,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 				if (index === 'OurIndex') {
 					const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
 					const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
+					//console.log({cr5IndexPrices, anfiIndexPrices})
 					return {
 						ANFIData: anfiIndexPrices,
 						CR5Data: cr5IndexPrices,
@@ -142,6 +157,25 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 		)
 		const data = await response.json()
 		set({ dayChange: data.changes })
+	},
+
+	comparisionIndices: comparisonIndices,
+	setComparisonIndices(data) {
+		set((state) => {
+			const indexToUpdate = state.comparisionIndices.findIndex((d) => data.name === d.name);
+	
+			if (indexToUpdate !== -1) {
+				const updatedArray = [...state.comparisionIndices];
+				const updatedObject = { ...updatedArray[indexToUpdate],  };
+	
+				if (!isEqual(updatedObject, data)) {
+					updatedArray[indexToUpdate] = { ...updatedObject, ...data };
+					return { comparisionIndices: updatedArray };
+				}
+			}
+
+			return state;
+		});
 	},
 }))
 

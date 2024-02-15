@@ -98,6 +98,14 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --hue: 223;
+	--off-hue: 3;
+	--on-hue1: 123;
+	--on-hue2: 168;
+	--fg: hsl(var(--hue),10%,90%);
+	--primary: hsl(var(--hue),90%,50%);
+	--trans-dur: 0.6s;
+	--trans-timing: cubic-bezier(0.65,0,0.35,1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -347,7 +355,7 @@ body {
 
 .Toastify__toast-icon svg{
 
-  scale: 2 !important;
+  scale: 1.4 !important;
 }
 
 .Toastify__toast-icon svg:nth-child(2){
@@ -363,6 +371,24 @@ body {
   100% { transform: translateX(0); }
 }
 
+
+.darkScrollBar::-webkit-scrollbar-track {
+  background: #3f3f3f !important;
+}
+
+.darkScrollBar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.darkScrollBar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.darkScrollBar::-webkit-scrollbar-track {
+  background: #3f3f3f;
+}
 
 ::-webkit-scrollbar {
   width: 5px;
@@ -419,6 +445,7 @@ body {
 
 .overlay{
   z-index: 9999 !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
 /*
@@ -439,9 +466,16 @@ body {
 }
 */
 
+
 .menu-wrap{
   width: 100vw !important;
-  background-color: #F2F2F2 !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  z-index: 9999 !important;
+}
+
+.dark-menu-wrap.menu-wrap{
+  width: 100vw !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
   z-index: 9999 !important;
 }
 
@@ -451,8 +485,17 @@ body {
 }
 
 .menu-wrap .menu{
-  background-color: #F2F2F2 !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
   height: 100vh !important;
+}
+
+.dark-menu-wrap.menu-wrap .menu{
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  height: 100vh !important;
+}
+
+.dark-menu-wrap.menu-wrap svg{
+  filter: invert(1) !important;
 }
 
 .med_test_class{
@@ -564,4 +607,223 @@ body {
   100% {
     background-position: 100% 50%; /* Adjust the distance based on the desired movement */
   }
+}
+
+.navSubMenu{
+  position: relative !important;
+   z-index: 9999 !important;
+   padding: 0px !important;
+   border-radius: 4px !important;
+   overflow: hidden !important;
+}
+
+.darkNavSubMenu{
+  position: relative !important;
+   z-index: 9999 !important;
+   padding: 0px !important;
+   border-radius: 8px !important;
+   overflow: hidden !important;
+   background-color: #050505 !important;
+   border: solid .2px #F2F2F2 !important; 
+}
+
+#ReactSimpleImageViewer{
+  z-index: 9999 !important;
+}
+
+.neonSwitch,
+.switch__input {
+	-webkit-tap-highlight-color: #0000;
+}
+.neonSwitch {
+	display: block;
+	margin: auto;
+	position: relative;
+	width: 5em;
+	height: 3em;
+}
+.switch__base-outer,
+.switch__base-inner {
+	display: block;
+	position: absolute;
+}
+.switch__base-outer {
+	border-radius: 1.25em;
+	box-shadow:
+		-0.125em -0.125em 0.25em hsl(var(--hue),10%,30%),
+		0.125em 0.125em 0.125em hsl(var(--hue),10%,30%) inset,
+		0.125em 0.125em 0.25em hsl(0,0%,0%),
+		-0.125em -0.125em 0.125em hsl(var(--hue),10%,5%) inset;
+	top: 0.125em;
+	left: 0.125em;
+	width: 4.75em;
+	height: 2.75em;
+}
+.switch__base-inner {
+	border-radius: 1.125em;
+	box-shadow:
+		-0.25em -0.25em 0.25em hsl(var(--hue),10%,30%) inset,
+		0.0625em 0.0625em 0.125em hsla(var(--hue),10%,30%),
+		0.125em 0.25em 0.25em hsl(var(--hue),10%,5%) inset,
+		-0.0625em -0.0625em 0.125em hsla(var(--hue),10%,5%);
+	top: 0.375em;
+	left: 0.375em;
+	width: 4.25em;
+	height: 2.25em;
+}
+.switch__base-neon {
+	display: block;
+	overflow: visible;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: auto;
+}
+.switch__base-neon path {
+	stroke-dasharray: 0 104.26 0;
+	transition: stroke-dasharray var(--trans-dur) var(--trans-timing);
+}
+.switch__input {
+	outline: transparent;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	-webkit-appearance: none;
+	appearance: none;
+}
+.switch__input:before {
+	border-radius: 0.125em;
+	box-shadow: 0 0 0 0.125em hsla(var(--hue),90%,50%,0);
+	content: "";
+	display: block;
+	position: absolute;
+	inset: -0.125em;
+	transition: box-shadow 0.15s linear;
+}
+.switch__input:focus-visible:before {
+	box-shadow: 0 0 0 0.125em var(--primary);
+}
+.switch__knob,
+.switch__knob-container {
+	border-radius: 1em;
+	display: block;
+	position: absolute;
+}
+.switch__knob {
+	background-color: hsl(var(--hue),10%,15%);
+	background-image:
+		radial-gradient(88% 88% at 50% 50%,hsl(var(--hue),10%,20%) 47%,hsla(var(--hue),10%,20%,0) 50%),
+		radial-gradient(88% 88% at 47% 47%,hsl(var(--hue),10%,85%) 45%,hsla(var(--hue),10%,85%,0) 50%),
+		radial-gradient(65% 70% at 40% 60%,hsl(var(--hue),10%,20%) 46%,hsla(var(--hue),10%,20%,0) 50%);
+	box-shadow:
+		-0.0625em -0.0625em 0.0625em hsl(var(--hue),10%,15%) inset,
+		-0.125em -0.125em 0.0625em hsl(var(--hue),10%,5%) inset,
+		0.75em 0.25em 0.125em hsla(0,0%,0%,0.8);
+	width: 2em;
+	height: 2em;
+	transition: transform var(--trans-dur) var(--trans-timing);
+}
+ 
+.light_switch__knob {
+	background-color: hsl(var(--hue),10%,15%);
+	background-image:
+		radial-gradient(88% 88% at 50% 50%,hsl(var(--hue),10%,20%) 47%,hsla(var(--hue),10%,20%,0) 50%),
+		radial-gradient(88% 88% at 47% 47%,hsl(var(--hue),10%,85%) 45%,hsla(var(--hue),10%,85%,0) 50%),
+		radial-gradient(65% 70% at 40% 60%,hsl(var(--hue),10%,20%) 46%,hsla(var(--hue),10%,20%,0) 50%);
+	box-shadow:
+		-0.0625em -0.0625em 0.0625em hsl(var(--hue),10%,15%) inset,
+		-0.125em -0.125em 0.0625em hsl(var(--hue),10%,5%) inset,
+		0.75em 0.25em 0.125em hsla(0,0%,0%,0.8);
+	width: 2em;
+	height: 2em;
+	transition: transform var(--trans-dur) var(--trans-timing);
+}
+.switch__knob-container {
+	overflow: hidden;
+	top: 0.5em;
+	left: 0.5em;
+	width: 4em;
+	height: 2em;
+}
+.switch__knob-neon {
+	display: block;
+	width: 2em;
+	height: auto;
+}
+.switch__knob-neon circle {
+	opacity: 0;
+	stroke-dasharray: 0 90.32 0 54.19;
+	transition:
+		opacity var(--trans-dur) steps(1,end),
+		stroke-dasharray var(--trans-dur) var(--trans-timing);
+}
+.switch__knob-shadow {
+	border-radius: 50%;
+	box-shadow: 0.125em 0.125em 0.125em hsla(0, 0%, 0%, 0.9);
+	display: block;
+	position: absolute;
+	top: 0.5em;
+	left: 0.5em;
+	width: 2em;
+	height: 2em;
+	transition: transform var(--trans-dur) var(--trans-timing);
+}
+.switch__text {
+	overflow: hidden;
+	position: absolute;
+	width: 1px;
+	height: 1px;
+}
+.switch__input:checked ~ .switch__led {
+	background-color: hsl(var(--on-hue1),90%,70%);
+	box-shadow:
+		0 -0.0625em 0.0625em hsl(var(--on-hue1),90%,40%) inset,
+		0 -0.125em 0.125em hsla(var(--on-hue1),90%,70%,0.3),
+		0 0.125em 0.125em hsla(var(--on-hue1),90%,70%,0.3),
+		0.125em 0.125em 0.125em hsla(0,0%,0%,0.5);
+}
+.switch__input:checked ~ .switch__base-neon path {
+	stroke-dasharray: 52.13 0 52.13;
+}
+.switch__input:checked ~ .switch__knob-shadow,
+.switch__input:checked ~ .switch__knob-container .switch__knob {
+	transform: translateX(100%);
+}
+.switch__input:checked ~ .switch__knob-container .switch__knob-neon circle {
+	opacity: 1;
+	stroke-dasharray: 45.16 0 45.16 54.19;
+	transition-timing-function: steps(1,start), var(--trans-timing);
+}
+
+.darkAutoComplete .wrapper{
+  background-color: transparent !important;
+  border-color: #FFFFFF !important;
+}
+
+.darkAutoComplete input{
+  background-color: transparent !important;
+  color: #FFFFFF !important;
+}
+
+.darkAutoComplete .sc-gEvEer{
+  background-color: #050505 !important;
+  border-color: #FFFFFF !important;
+}
+
+.MuiButton-root{
+  background-color: #86afbfe6 !important;
+}
+
+.MuiIconButton-root{
+  border-color: #2A2A2A !important;
+}
+
+.cefiButton{
+  background: radial-gradient(circle at -3.7% -5%, rgb(113, 213, 225) 0.3%, rgb(73, 146, 226) 90.5%) !important; 
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important; 
+}
+
+.defiButton{
+  background-color: #5E869B !important;
 }

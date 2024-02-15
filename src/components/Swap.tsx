@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react'
 import { BiSolidChevronDown } from 'react-icons/bi'
 import { AiOutlineSwap, AiOutlinePlus } from 'react-icons/ai'
 import { LiaWalletSolid } from 'react-icons/lia'
+import { RiLoader2Line } from "react-icons/ri";
+
 
 // Store
 import useTradePageStore from '@/store/tradeStore'
@@ -32,14 +34,14 @@ import { BsInfoCircle } from 'react-icons/bs'
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import cookingAnimation from '@assets/lottie/cooking.json'
-import loading from 'react-useanimations/lib/loading'
+
 
 import { GenericToast } from './GenericToast'
 import { parseEther } from 'viem'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import GenericTooltip from './GenericTooltip'
 
-import UseAnimations from 'react-useanimations'
+
 import getPoolAddress from '@/uniswap/utils'
 // import { CurrentConfig } from '@/uniswap/configure'
 // import convertToUSD from '@/utils/convertToUsd'
@@ -754,14 +756,8 @@ const Swap = () => {
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
 						{loadingTokens ? (
 							<div className="flex flex-col items-center justify-center gap-10 py-12">
-								<UseAnimations
-									animation={loading}
-									wrapperStyle={{
-										width: 'fit-content',
-									}}
-									strokeColor="#5E869B"
-									size={100}
-								/>
+								
+								<RiLoader2Line size={100} color="#5E869B"/>
 							</div>
 						) : (
 							<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto  py-2" id="coinsList">
@@ -806,14 +802,7 @@ const Swap = () => {
 					<div className="w-full h-fit max-h-[50vh] bg-white overflow-hidden my-4 px-2">
 						{loadingTokens ? (
 							<div className="flex flex-col items-center justify-center gap-10 py-12">
-								<UseAnimations
-									animation={loading}
-									wrapperStyle={{
-										width: 'fit-content',
-									}}
-									strokeColor="#5E869B"
-									size={100}
-								/>
+								<RiLoader2Line size={100} color="#5E869B"/>
 							</div>
 						) : (
 							<div className="w-full h-fit max-h-[50vh] bg-white overflow-y-auto px-2 py-2" id="coinsList">
@@ -851,7 +840,9 @@ const Swap = () => {
 				}}
 			>
 				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
-					<Lottie
+					{
+						/*
+						<Lottie
 						animationData={cookingAnimation}
 						loop={true}
 						style={{
@@ -860,6 +851,8 @@ const Swap = () => {
 							overflow: 'hidden',
 						}}
 					/>
+						*/
+					}
 					<h5 className="InterBold text-blackText-500 text-2xl text-center w-full -mt-6">THE MAGIC IS HAPPENING...</h5>
 					<h5 className="interMedium text-blackText-500 text-lg text-center w-9/12 my-2">
 						Your NFT receipt is being minted. Once it is ready, you can find it the {'"'}Receipts{'"'} section.

@@ -27,9 +27,9 @@ const NFTReceiptBox = () => {
 	}, [ref])
 
 	return (
-		<div className="w-full h-full rounded-xl shadow shadow-blackText-500 flex flex-col items-start justify-start px-4 py-3">
+		<div className="w-full h-full max-h-full rounded-xl shadow shadow-blackText-500 flex flex-col items-start justify-start px-4 py-3">
 			<h5 className="interBlack text-blackText-500 text-base mb-5">Reciepts</h5>
-			<div className="rounded-2xl overflow-hidden h-full w-full">
+			<div className="rounded-2xl overflow-hidden h-fit w-full">
 				<div
 					ref={ref}
 					className=" w-full h-full bg-cover bg-no-repeat bg-center flex flex-col items-center justify-center py-10 px-3 gap-14"
@@ -38,8 +38,8 @@ const NFTReceiptBox = () => {
 					}}
 				>
 					<h5 className="montrealBold text-whiteText-500 text-xl">{operationTypeExample}</h5>
-					<h5 className="montrealBold text-whiteText-500 text-xl">AMOUNT : {amountExample}</h5>
-					<h5 className="montrealBold text-whiteText-500 text-xl">TIME : {timeExample}</h5>
+					<h5 className="montrealBold text-whiteText-500 text-xl">AMOUNT : N/A</h5>
+					<h5 className="montrealBold text-whiteText-500 text-xl">TIME : N/A</h5>
 				</div>
 			</div>
 			<div

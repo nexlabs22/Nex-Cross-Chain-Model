@@ -17,7 +17,7 @@ const GenericAvatar: React.FC<AvatarProps> = ({ walletAddress }) => {
 	const identiconDataUrl = identicon.toString()
 
 	return (
-		<div className="w-40 lg:w-2/5 aspect-square bg-colorOne-500 rounded-full flex flex-col items-center justify-center">
+		<div className="w-full lg:w-full z-10 relative aspect-square bg-colorOne-500 rounded-full flex flex-col items-center justify-center">
 			<Image src={`data:image/png;base64,${identiconDataUrl}`} width={20} height={20} className='w-full h-full rounded-full' alt="Identicon" />
 		</div>
 	)

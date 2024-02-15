@@ -5,7 +5,6 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, MenuButton } from '@szhsin/react-menu'
-import arrowDown from 'react-useanimations/lib/arrowDown'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import useTradePageStore from '@/store/tradeStore'
@@ -19,11 +18,10 @@ import defi from '@assets/images/DeFi_1a.png'
 import hybrid from '@assets/images/hybrid.png'
 import crypto from '@assets/images/crypto.png'
 import circle from '@assets/images/circle.png'
-import { GoChevronDown } from 'react-icons/go'
+import { GoArrowRight, GoChevronDown } from 'react-icons/go'
 import bg2 from '@assets/images/bg-2.png'
 
 import Head from 'next/head'
-import UseAnimations from 'react-useanimations'
 
 interface Subcategory {
 	name: string
@@ -59,7 +57,7 @@ export default function Explore() {
 
 	const subCategories = [
 		{
-			name: 'Hybrid Indices',
+			name: 'Hybrid Indieedfgerfgces',
 			symbol: 'sub1',
 			logo: hybrid.src,
 		},
@@ -158,7 +156,7 @@ export default function Explore() {
 	return (
 		<>
 			<Head>
-				<title>Nexlabs.io, welcome!</title>
+				<title>Nex Labs - Explore Our Products</title>
 				<meta
 					name="description"
 					content="Traders love the Nex Labs platform for its wide selection of CeFi and DeFi products. Explore margin trading, derivatives, staking, and more - this blog covers all the offerings so you can optimize your crypto portfolio."
@@ -407,15 +405,7 @@ export default function Explore() {
 								<Link href={'https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model'}>
 									<button className="h-fit w-fit flex flex-row items-center justify-center gap-1 bg-white shadow rounded-md px-4 py-1 interBold text-blackText-500 text-base">
 										<span>Learn More</span>
-										<UseAnimations
-											animation={arrowDown}
-											wrapperStyle={{
-												width: 'fit-content',
-											}}
-											strokeColor="#5E869B"
-											size={40}
-											className=" -rotate-90"
-										/>
+										<GoArrowRight color="#5E869B" size={30} />
 									</button>
 								</Link>
 							</div>
