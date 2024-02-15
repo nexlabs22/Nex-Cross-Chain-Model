@@ -89,8 +89,7 @@ contract IndexFactory is
     mapping(uint => uint) public redemptionNonceTotalValue;
     mapping(uint => uint) public redemptionCompletedTokensCount;
     mapping(uint => address) public redemptionNonceRequester;
-    mapping(uint => address) public redemptionNonceOutputToken;
-    mapping(uint => uint) public redemptionNonceOutputTokenSwapVersion;
+    
 
     mapping(uint => uint) public portfolioTotalValueByNonce;
     mapping(uint => uint) public updatedTokensValueCount;
@@ -98,6 +97,9 @@ contract IndexFactory is
 
     mapping(uint => uint) public reweightWethValueByNonce;
     mapping(uint => uint) public reweightTokensCount;
+
+    mapping(uint => address) public redemptionNonceOutputToken;
+    mapping(uint => uint) public redemptionNonceOutputTokenSwapVersion;
 
     event Issuanced(
         address indexed user,
@@ -169,23 +171,23 @@ contract IndexFactory is
         return indexFactoryStorage.totalCurrentList();
     }
 
-    function oracleList(uint _index) public view returns (address) {
-        return indexFactoryStorage.oracleList(_index);
-    }
+    // function oracleList(uint _index) public view returns (address) {
+    //     return indexFactoryStorage.oracleList(_index);
+    // }
 
     function currentList(uint _index) public view returns (address) {
         return indexFactoryStorage.currentList(_index);
     }
 
-    function tokenOracleListIndex(address _address) public view returns (uint) {
-        return indexFactoryStorage.tokenOracleListIndex(_address);
-    }
+    // function tokenOracleListIndex(address _address) public view returns (uint) {
+    //     return indexFactoryStorage.tokenOracleListIndex(_address);
+    // }
 
-    function tokenCurrentListIndex(
-        address _address
-    ) public view returns (uint) {
-        return indexFactoryStorage.tokenCurrentListIndex(_address);
-    }
+    // function tokenCurrentListIndex(
+    //     address _address
+    // ) public view returns (uint) {
+    //     return indexFactoryStorage.tokenCurrentListIndex(_address);
+    // }
 
     function tokenCurrentMarketShare(
         address _address
@@ -509,7 +511,7 @@ contract IndexFactory is
             amountToMint = (totalNewVaules * price) / 1e16;
         }
         indexToken.mint(issuanceNonceRequester[_issuanceNonce], amountToMint);
-        // emit Issuanced(msg.sender, address(weth), _inputAmount, amountToMint, block.timestamp);
+        emit Issuanced(issuanceNonceRequester[_issuanceNonce], address(weth), amountToMint, amountToMint, block.timestamp);
     }
 
     function redemption(
@@ -686,8 +688,10 @@ contract IndexFactory is
         require(_ownerSuccess, "transfer eth fee to the owner failed");
         if(outputToken == address(weth)){
         weth.transfer(requester, wethAmount - fee);
+        emit Redemption(requester, outputToken, wethAmount - fee, wethAmount - fee, block.timestamp);
         }else{
         uint reallOut = swap(address(weth), outputToken, wethAmount - fee, requester, outputTokenSwapVersion);
+        emit Redemption(requester, outputToken, wethAmount - fee, reallOut, block.timestamp);
         }
     }
 
