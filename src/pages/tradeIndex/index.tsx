@@ -158,7 +158,7 @@ export default function Trade() {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className={`flex min-h-screen h-fit w-screen  ${mode == "dark" ? "bg-gradient-to-tl from-[#050505] to-[#050505]" : "bg-whiteBackground-500"} flex-col items-center justify-start`}>
-				<DappNavbar />
+				<DappNavbar tradeNavbar={true} />
 				<section className="w-full h-fit  flex flex-col lg:flex-row items-center lg:items-stretch justify-start gap-2 p-5">
 					<div className="w-full lg:w-9/12  flex-grow">
 						<TradeChartBox />

@@ -825,5 +825,8 @@ body {
 }
 
 .defiButton{
-  background-color: #5E869B !important;
+  background-image: url('../assets/images/mesh1.png') !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
 }
