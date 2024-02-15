@@ -26,7 +26,7 @@ type LandingPageStore = {
 const useLandingPageStore = create<LandingPageStore>()((set) => ({
 	//Select slide index
 
-	mode: "light",
+	mode: "dark",
 	changeMode: (mode: Mode) => set((state) => ({ mode: mode })),
 	
 	selectedSlideIndex: 0,

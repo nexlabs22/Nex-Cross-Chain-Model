@@ -504,10 +504,10 @@ export default function Explore() {
 							></div>
 						</div>
 						<div className="relative top-0 left-0 z-40 xl:bg-transparent ">
-							<h5 className={`interBold titleShadow mb-12 text-5xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"} `}>
+							<h5 className={`interBold titleShadow mb-12 text-4xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"} `}>
 								CeFi vs DeFi
 							</h5>
-							<p className={`interMedium mb-4 w-1/2 text-2xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"}`}>
+							<p className={`interMedium mb-4 w-2/3 text-xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"}`}>
 
 								Let{"'"}s explore <span className="interBold">CeFi</span>, where traditional banks and institutions manage your money against <span className="interBold">DeFi</span>, where technology lets people handle their finances without middlemen.
 							</p>
