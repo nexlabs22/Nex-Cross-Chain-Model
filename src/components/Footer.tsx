@@ -34,7 +34,7 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
       boxShadow: mode == "dark" && tradeFooter && selectedTradingCategory == "cefi" ? "0px -2px 6px 1px rgb(73, 146, 226)" : mode == "dark" && tradeFooter && selectedTradingCategory != "cefi" ? "0px -2px 6px 1px #5E869B" :  ""
     }}>
       <div className="flex h-fit w-full flex-col items-start justify-center gap-3 pb-6 pt-6 xl:flex-row xl:justify-start xl:pb-10 xl:pt-10">
-        <div className="flex h-full w-full flex-col items-start justify-start px-10 xl: w-1/3 xl:items-start">
+        <div className="flex h-full flex-col items-start justify-start px-10 xl: w-1/3 xl:items-start">
           <div className="flex w-fit flex-row items-center justify-between">
             <div className=" mr-2 h-fit w-fit">
               <Link href={"https://www.nexlabs.io/"}>

@@ -1,4 +1,5 @@
 "use client";
+import { useLandingPageStore } from '@/store/store';
 import useTradePageStore from '@/store/tradeStore';
 import { ConnectWallet, darkTheme } from '@thirdweb-dev/react';
 import React, { createContext, useEffect, useState } from 'react';
@@ -51,6 +52,7 @@ const ConnectButton: React.FC<ConnectWalletButton> = ({ tradeNavbarButton }) => 
   });
 
   const { selectedTradingCategory } = useTradePageStore()
+  const {mode} = useLandingPageStore()
 
   useEffect(() => {
     // Logic to determine theme based on your variable
@@ -93,14 +95,14 @@ const ConnectButton: React.FC<ConnectWalletButton> = ({ tradeNavbarButton }) => 
         },
       });
     }
-  }, [theme]);
+  }, [tradeNavbarButton, selectedTradingCategory]);
 
   
 
   return (
     <ConnectWallet
       theme={darkTheme(theme)}
-      className={`${tradeNavbarButton && selectedTradingCategory == "cefi" ? "cefiButton" : "defiButton"}`}
+      className={`${tradeNavbarButton && selectedTradingCategory == "cefi" ?  "cefiButton" : mode == "dark" ? "defiButton" : ""}`}
     />
 
   )
