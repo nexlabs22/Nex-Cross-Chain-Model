@@ -87,10 +87,12 @@ const DashboardChartBox = () => {
 	const [stc5DayChange, setStc5DayChange] = useState('0')
 	useEffect(()=>{
 		const stock5 = STOCK5Data.sort((a,b)=>b.time - a.time)
-		const currentPrice = stock5[0].value;
-		const previousPrice = stock5[1].value;
-		const change = ((currentPrice - previousPrice) / previousPrice) * 100;
-		setStc5DayChange(change.toFixed(2))
+		if(stock5.length > 2){
+			const currentPrice = stock5[0].value;
+			const previousPrice = stock5[1].value;
+			const change = ((currentPrice - previousPrice) / previousPrice) * 100;
+			setStc5DayChange(change.toFixed(2))
+		}
 	},[STOCK5Data])
 
 	const PrevArrow = ({ onClick }: { onClick: () => void }) => (
