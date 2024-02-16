@@ -170,7 +170,6 @@ const TopIndexData = () => {
 	async function getANFIWeights() {
 		try {
 			const response = await axios.get('/api/getWeights');
-			console.log("getANFIWeights-->",response)
 			const RawANFIUnderlyingAssets = response.data.anfi;
 
 			// Big logos for POR section : 
@@ -210,7 +209,6 @@ const TopIndexData = () => {
 	async function getCR5Weights() {
 		try {
 			const response = await axios.get('/api/getWeights');
-			console.log("getCR5Weights-->",response)
 			const RawCR5UnderlyingAssets = response.data.cr5;
 
 			//Big logos for POR section : 
@@ -269,7 +267,7 @@ const TopIndexData = () => {
 
 	useEffect(() => {
 		getANFIWeights();
-		// getCR5Weights();
+		getCR5Weights();
 	}, []);
 
 	useEffect(() => {
