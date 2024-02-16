@@ -45,6 +45,7 @@ interface chartDataStoreType {
 	IndexData: { time: number, value: number }[],
 	ANFIData: { time: number, value: number }[],
 	CR5Data: { time: number, value: number }[],
+	STOCK5Data: { time: number, value: number }[],
 	selectedIndex: { time: number, open: number, high: number, low: number, close: number }[],
 	ANFIWeightage: { time: number, btc: number, gold: number }[],
 	dayChange: dayChangeType,
@@ -67,6 +68,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	IndexData: [],
 	ANFIData: [],
 	CR5Data: [],
+	STOCK5Data:[],
 	selectedIndex: [],
 	ANFIWeightage: [],
 	dayChange: dayChangeInitial,
@@ -82,15 +84,17 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			)
 
 			const inputData = await response.json()
+			const top5stockmarketcap = await fetch('/api/getStockMarketCap').then(res=> res.json()).catch(err=> console.log(err))
 
 			set((state) => {
 				if (index === 'OurIndex') {
-					const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
 					const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
-					//console.log({cr5IndexPrices, anfiIndexPrices})
+					const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
+					const stock5Prices = getIndexData('STOCK5', inputData.data, top5stockmarketcap)			
 					return {
 						ANFIData: anfiIndexPrices,
 						CR5Data: cr5IndexPrices,
+						STOCK5Data: stock5Prices,
 						loading: false
 					}
 				} else {

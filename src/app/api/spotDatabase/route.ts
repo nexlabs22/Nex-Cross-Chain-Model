@@ -24,7 +24,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
 			// 	columnName = 'bitcoin,gold'
 			// }
 		if(indexName === 'OurIndex'){
-			columnName = 'bitcoin,gold,binancecoin,ethereum,ripple,solana,litecoin, dogecoin,monero,stellar,ethereumclassic,bitcoincash,cardano,eos,bitcoincashsv,chainlink,polkadot,okb'
+			columnName = 'bitcoin,gold,binancecoin,ethereum,ripple,solana,litecoin,dogecoin,monero,stellar,ethereumclassic,bitcoincash,cardano,eos,bitcoincashsv,chainlink,polkadot,okb,microsoft,apple,alphabet,amazon,nvidia'
 		}	
 		let query = ''
 		if (indexName === 'OurIndex') {
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest, response: NextResponse) {
 		return NextResponse.json({data:res.rows}, { status: 200 })
 	} catch (error) {
 		console.log(error)
-		return NextResponse.json({ message: 'incorrect axios combine request nftfloor' }, { status: 404 })
+		return NextResponse.json(error, { status: 404 })
 	} finally {
 		await client.end()
 	}
