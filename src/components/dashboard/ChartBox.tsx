@@ -84,14 +84,14 @@ const DashboardChartBox = () => {
 		setClassesModalOpen(false)
 	}
 
-	const [stc5DayChange, setStc5DayChange] = useState('0')
+	const [stc5DayChange, setStc5DayChange] = useState(0)
 	useEffect(() => {
 		const stock5 = STOCK5Data.sort((a, b) => b.time - a.time)
 		if (stock5.length > 2) {
 			const currentPrice = stock5[0].value
 			const previousPrice = stock5[1].value
 			const change = ((currentPrice - previousPrice) / previousPrice) * 100
-			setStc5DayChange(change.toFixed(2))
+			setStc5DayChange(Number(change.toFixed(2)))
 		}
 	}, [STOCK5Data])
 
@@ -456,10 +456,10 @@ const DashboardChartBox = () => {
 											</div>
 											<h5
 												className={`pangramCompact ${selectedIndices.includes(assetClass.colName) ? ' bg-whiteText-500 p-1 rounded-full border border-gray-400' : ''} text-sm ${
-													(assetClass.name === 'STOCK5' ? Number(stc5DayChange) : Number(dayChange[assetClass.colName])) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'
+													(assetClass.name === 'STOCK5' ? stc5DayChange : Number(dayChange[assetClass.colName])) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'
 												}`}
 											>{`${
-												(assetClass.name === 'STOCK5' ? Number(stc5DayChange) : Number(dayChange[assetClass.colName])) > 0
+												(assetClass.name === 'STOCK5' ? stc5DayChange : Number(dayChange[assetClass.colName])) > 0
 													? '+' + (assetClass.name === 'STOCK5' ? stc5DayChange : dayChange[assetClass.colName])
 													: assetClass.name === 'STOCK5'
 													? stc5DayChange

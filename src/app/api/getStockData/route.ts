@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server'
 
-interface dataType {
+type dataType = {
     name: string | null;
     marketCap: number;
 }
