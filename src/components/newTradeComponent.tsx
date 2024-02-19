@@ -28,7 +28,7 @@ const NewTradeComponent = () => {
 	const { mode, changeMode } = useLandingPageStore()
 	
 	return (
-		<div className={`w-full mt-4 relative h-full overflow-hidden ${mode == "dark" ? selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" :  "bg-cover border-transparent bg-center bg-no-repeat" : selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : "bg-colorSeven-500 "} rounded-xl`} style={{
+		<div className={`w-full mt-4 relative h-full overflow-hidden ${mode == "dark" ? selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" :  "bg-cover border-transparent bg-center bg-no-repeat" : selectedTradingCategory == "cefi" ? "shadow shadow-[#7335CA] bg-gradient-to-bl from-[#7335CA] to-[#B790E2]" : "bg-colorSeven-500 "} rounded-xl`} style={{
 			boxShadow:
 			  mode == "dark" && selectedTradingCategory != "cefi" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
 			backgroundImage: mode == "dark" && selectedTradingCategory !="cefi" ? `url('${mesh1.src}')` : "",
