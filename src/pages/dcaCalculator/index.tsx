@@ -56,7 +56,7 @@ export default function DCACalculator() {
 
 	const address = useAddress()
 	const [connectedUser, setConnectedUser] = useState<User>()
-	const [connectedUserId, setConnectedUserId] = useState<String>('')
+	const [connectedUserId, setConnectedUserId] = useState('')
 
 	useEffect(() => {
 		function getUser() {

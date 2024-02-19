@@ -139,7 +139,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 
 
 
-	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
+	const [QRModalVisible, setQRModalVisible] = useState(false)
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
@@ -304,11 +304,11 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	const dataToshow = assetData.filter((asset) => asset.symbol === assetName)[0]
 	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
 
-	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
-	const [chosenPPType, setChosenPPType] = useState<string>('none')
+	const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	const [chosenPPType, setChosenPPType] = useState('none')
 
 	const [connectedUser, setConnectedUser] = useState<User>()
-	const [connectedUserId, setConnectedUserId] = useState<String>('')
+	const [connectedUserId, setConnectedUserId] = useState('')
 
 	useEffect(() => {
 		function getUser() {

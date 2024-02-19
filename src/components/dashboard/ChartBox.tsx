@@ -68,8 +68,8 @@ const DashboardChartBox = () => {
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
 	const { fetchIndexData, removeIndex, clearChartData, selectedDuration, selectDuration, loading, dayChange, STOCK5Data, CR5Data, chartData, comparisionIndices, setComparisonIndices } =
 		useChartDataStore()
-	const [classesModalOpen, setClassesModalOpen] = useState<boolean>(false)
-	const [classesCategory, setClassesCategory] = useState<string>('indices')
+	const [classesModalOpen, setClassesModalOpen] = useState(false)
+	const [classesCategory, setClassesCategory] = useState('indices')
 
 	useEffect(() => {
 		clearChartData()

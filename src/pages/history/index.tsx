@@ -85,7 +85,7 @@ import ConnectButton from '@/components/ConnectButton'
 function History() {
 	const { mode } = useLandingPageStore()
 	const address = useAddress()
-	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
+	const [QRModalVisible, setQRModalVisible] = useState(false)
 	const { portfolioData } = usePortfolioPageStore()
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
@@ -265,11 +265,11 @@ function History() {
 		{ time: '2018-04-04', value: 0 },
 	]
 
-	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
-	const [chosenPPType, setChosenPPType] = useState<string>('none')
+	const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	const [chosenPPType, setChosenPPType] = useState('none')
 
 	const [connectedUser, setConnectedUser] = useState<User>()
-	const [connectedUserId, setConnectedUserId] = useState<String>('')
+	const [connectedUserId, setConnectedUserId] = useState('')
 
 	useEffect(() => {
 		function getUser() {

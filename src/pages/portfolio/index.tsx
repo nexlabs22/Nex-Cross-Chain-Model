@@ -104,10 +104,10 @@ interface User {
 export default function Portfolio() {
 	const address = useAddress()
 	const router = useRouter()
-	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
+	const [QRModalVisible, setQRModalVisible] = useState(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex, setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
 	const { portfolioData, setDayChange } = usePortfolioPageStore()
-	const [chartType, setChartType] = useState<string>('pie')
+	const [chartType, setChartType] = useState('pie')
 	const { mode } = useLandingPageStore()
 
 	// console.log("ethPriceInUsd--->",ethPriceInUsd)
@@ -327,11 +327,11 @@ export default function Portfolio() {
 	// }
 	//   }, []);
 
-	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
-	const [chosenPPType, setChosenPPType] = useState<string>('none')
+	const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	const [chosenPPType, setChosenPPType] = useState('none')
 
 	const [connectedUser, setConnectedUser] = useState<User>()
-	const [connectedUserId, setConnectedUserId] = useState<String>('')
+	const [connectedUserId, setConnectedUserId] = useState('')
 
 	useEffect(() => {
 		function getUser() {

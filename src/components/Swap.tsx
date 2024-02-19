@@ -73,7 +73,7 @@ const Swap = () => {
 	const [firstInputValue, setFirstInputValue] = useState<number | string | null>(0)
 	const [secondInputValue, setSecondInputValue] = useState<number | string | null>(0)
 
-	const [cookingModalVisible, setCookingModalVisible] = useState<boolean>(false)
+	const [cookingModalVisible, setCookingModalVisible] = useState(false)
 
 	const { isFromCurrencyModalOpen, isToCurrencyModalOpen, setFromCurrencyModalOpen, setToCurrencyModalOpen, changeSwapFromCur, changeSwapToCur, swapFromCur, swapToCur, nftImage, setNftImage } =
 		useTradePageStore()
@@ -98,11 +98,11 @@ const Swap = () => {
 	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'addMintRequest')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'burn')
 
-	const [from1UsdPrice, setFrom1UsdPrice] = useState<number>()
-	const [fromConvertedPrice, setFromConvertedPrice] = useState<number>(0)
+	const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
+	const [fromConvertedPrice, setFromConvertedPrice] = useState(0)
 
-	const [to1UsdPrice, setTo1UsdPrice] = useState<number>()
-	const [toConvertedPrice, setToConvertedPrice] = useState<number>(0)
+	const [to1UsdPrice, setTo1UsdPrice] = useState(0)
+	const [toConvertedPrice, setToConvertedPrice] = useState(0)
 
 
 
@@ -366,8 +366,8 @@ const Swap = () => {
 	])
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
 
-	const [loadingTokens, setLoadingTokens] = useState<boolean>(true)
-	const [currentArrayId, setCurrentArrayId] = useState<number>(0)
+	const [loadingTokens, setLoadingTokens] = useState(true)
+	const [currentArrayId, setCurrentArrayId] = useState(0)
 
 	const fetchAllLiFiTokens = async () => {
 		const options = {

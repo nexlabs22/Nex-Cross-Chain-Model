@@ -86,11 +86,11 @@ const SwapV2Cefi = () => {
 	const [isChecked, setChecked] = useState(false)
 	const [isMainnet, setIsmainnet] = useState(false)
 
-	const [firstInputValue, setFirstInputValue] = useState<string>('0')
-	const [secondInputValue, setSecondInputValue] = useState<string>('0')
+	const [firstInputValue, setFirstInputValue] = useState('0')
+	const [secondInputValue, setSecondInputValue] = useState('0')
 
-	const [cookingModalVisible, setCookingModalVisible] = useState<boolean>(false)
-	const [userEthBalance, setUserEthBalance] = useState<number>(0)
+	const [cookingModalVisible, setCookingModalVisible] = useState(false)
+	const [userEthBalance, setUserEthBalance] = useState(0)
 
 	const {
 		isFromCurrencyModalOpen,
@@ -176,11 +176,11 @@ const SwapV2Cefi = () => {
 		getRedemptionOutput()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
 
-	const [from1UsdPrice, setFrom1UsdPrice] = useState<number>()
-	const [fromConvertedPrice, setFromConvertedPrice] = useState<number>(0)
+	const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
+	const [fromConvertedPrice, setFromConvertedPrice] = useState(0)
 
-	const [to1UsdPrice, setTo1UsdPrice] = useState<number>()
-	const [toConvertedPrice, setToConvertedPrice] = useState<number>(0)
+	const [to1UsdPrice, setTo1UsdPrice] = useState(0)
+	const [toConvertedPrice, setToConvertedPrice] = useState(0)
 
 	useEffect(() => {
 		async function fetchData(tokenDetails: Coin, place: string) {
@@ -478,9 +478,9 @@ const SwapV2Cefi = () => {
 	// ])
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
 
-	const [loadingTokens, setLoadingTokens] = useState<boolean>(true)
-	const [currentArrayId, setCurrentArrayId] = useState<number>(0)
-	const [buyAndSell, setBuyAndSell] = useState<string>("buy")
+	const [loadingTokens, setLoadingTokens] = useState(true)
+	const [currentArrayId, setCurrentArrayId] = useState(0)
+	const [buyAndSell, setBuyAndSell] = useState("buy")
 
 	const fetchAllLiFiTokens = async () => {
 		const options = {

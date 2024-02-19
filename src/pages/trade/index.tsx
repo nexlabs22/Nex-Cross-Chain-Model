@@ -47,7 +47,7 @@ interface Product {
 export default function Explore() {
 	const { mode } = useLandingPageStore()
 	const router = useRouter()
-	const [selectedCategory, setSelectedCategory] = useState<String>('defi')
+	const [selectedCategory, setSelectedCategory] = useState('defi')
 	const { changeDefaultIndex, selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct } = useTradePageStore()
 	const [searchResult, setSearchResult] = useState<Product>()
 	const [selectedSubCategory, setSelectedsubCategory] = useState<Subcategory>({
