@@ -68,6 +68,7 @@ import getPoolAddress from '@/uniswap/utils'
 import { SwapNumbers } from '@/utils/general'
 import convertToUSD from '@/utils/convertToUsd'
 import axios from 'axios'
+import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -151,6 +152,8 @@ const SwapV2Defi = () => {
 	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data /10000;
 
 	const {mode} = useLandingPageStore()
+
+	const crossChainValue = GetCrossChainPortfolioBalance()
 
 	useEffect(() => {
 		async function getIssuanceOutput() {

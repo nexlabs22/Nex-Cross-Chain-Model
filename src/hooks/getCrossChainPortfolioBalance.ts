@@ -2,124 +2,88 @@ import { num } from './math'
 import { useEffect, useState, useCallback } from 'react'
 // import { useAccountAddressStore } from '@store/zustandStore'
 import { createPublicClient, http, parseAbiItem } from 'viem'
-import { goerli } from 'viem/chains'
+import { goerli, polygonMumbai, sepolia } from 'viem/chains'
 // import { getTickerFromAddress } from '../utils/general'
-import { zeroAddress } from '@constants/contractAddresses'
+import { mumbaiChainSelector, mumbaiCrypto5V2IndexFactory, mumbaiCrypto5V2Vault, mumbaiWmaticAddress, sepoliaCrypto5V2Factory, zeroAddress } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
+import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi } from '@/constants/abi'
 
-interface Positions {
-    side: string,
-    user: `0x${string}` | string,
-    nonce: number,
-    amount: number,
-    depositAddress: `0x${string}` | string,
-    timestamp: number,
-    requestHash: string,
-    indexName: string
-}
 
-export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker: string) {
-	// const accountAddress = useAccountAddressStore((state) => state.accountAddress)
-	// if(!exchangeAddress) return;
-	const [accountAddress, setAccountAddress] = useState<`0x${string}` | string>()
-    const address = useAddress()
 
-	const [positions, setPositions] = useState<Positions[]>([])
+export function GetCrossChainPortfolioBalance() {
+	
+	const [portfolioValue, setPortfolioValue] = useState<number>()
 
-    useEffect(() => {
-        if(address){
-            setAccountAddress(address)
-        }
-    },[address])
-
-	// useEffect(() => {
-	const getHistory = useCallback(async () => {
-		console.log("getHistory")
-		setPositions([])
-
-		const client = createPublicClient({
-			chain: goerli,
-			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			transport: http(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`),
-		})
-
-		const positions0: Positions[] = []
-		// return;
-		if (!accountAddress || exchangeAddress === zeroAddress || !exchangeAddress) return
-		//store open long history
-		// console.log(exchangeAddress)
-		const mintRequestlogs = await client.getLogs({
-			address: exchangeAddress,
-			event: parseAbiItem(
-				'event MintRequestAdd( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
-			),
-			args: {
-				requester: accountAddress as `0x${string}` ,
-			},
-			fromBlock: BigInt(0),
-		})
-		const userMintRequestLogs = mintRequestlogs.filter((log) => log.args.requester == accountAddress)
-
-		userMintRequestLogs.forEach((log) => {
-			const obj:Positions = {
-				side: 'Mint Request',
-				user: log.args.requester as `0x${string}`,
-				nonce: Number(log.args.nonce),
-				amount: num(log.args.amount),
-				depositAddress: log.args.depositAddress as `0x${string}`,
-				timestamp: Number(log.args.timestamp),
-				requestHash: log.args.requestHash as `0x${string}`,
-				indexName: activeTicker,
-			}
-			positions0.push(obj)
-			// setPositions(preObj => [...preObj, obj])
-		})
-
-		//store open short history
-		const burnRequestLogs = await client.getLogs({
-			address: exchangeAddress,
-			event: parseAbiItem(
-				'event Burned( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
-			),
-			args: {
-				requester: accountAddress as `0x${string}` ,
-			},
-			fromBlock: BigInt(0),
-		})
-		const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.requester == accountAddress)
-
-		userBurnRequestLogsLogs.forEach((log) => {
-			const obj:Positions = {
-				side: 'Burn Request',
-				user: log.args.requester as `0x${string}`,
-				nonce: Number(log.args.nonce),
-				amount: num(log.args.amount),
-				depositAddress: log.args.depositAddress as `0x${string}`,
-				timestamp: Number(log.args.timestamp),
-				requestHash: log.args.requestHash as `0x${string}`,
-				indexName: activeTicker,
-			}
-			positions0.push(obj)
-			// setPositions(preObj => [...preObj, obj])
-		})
-
+    
+	const getPortfolioValue = useCallback(async () => {
 		
+		const sepoliaPublicClient = createPublicClient({
+			chain: sepolia,
+			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
+			transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
+		})
 
-		setPositions(positions0)
-		setPositions((positions) =>
-			positions.sort(function (a, b) {
-				if (!a.timestamp || !b.timestamp) return 0
-				return Number(b.timestamp) - Number(a.timestamp)
+		const mumbaiPublicClient = createPublicClient({
+			chain: polygonMumbai,
+			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
+			transport: http(`https://rpc.ankr.com/polygon_mumbai/bf22a1af586c8f23c56205136ecbee0965c7d06d57c29d414bcd8ad877a0afc4`),
+		})
+
+		let totalPortfolioBalance: number = 0;
+
+		const sepoliaPortfolioBalance = await sepoliaPublicClient.readContract({
+			address: sepoliaCrypto5V2Factory,
+			abi: crossChainIndexFactoryV2Abi,
+			functionName: 'getPortfolioBalance',
+		  })
+		totalPortfolioBalance += Number(sepoliaPortfolioBalance)
+		const totalCurrentList = await sepoliaPublicClient.readContract({
+			address: sepoliaCrypto5V2Factory,
+			abi: crossChainIndexFactoryV2Abi,
+			functionName: 'totalCurrentList',
+		  })
+		
+		for (let i = 0; i < Number(totalCurrentList); i++) { 
+			const tokenAddress = await sepoliaPublicClient.readContract({
+				address: sepoliaCrypto5V2Factory,
+				abi: crossChainIndexFactoryV2Abi,
+				functionName: 'currentList',
+				args:[i]
+			  })
+			const tokenChainSelector = await sepoliaPublicClient.readContract({
+				address: sepoliaCrypto5V2Factory,
+				abi: crossChainIndexFactoryV2Abi,
+				functionName: 'tokenChainSelector',
+				args:[tokenAddress]
 			})
-		)
-	}, [accountAddress, exchangeAddress, activeTicker])
+			
+			if(tokenChainSelector == mumbaiChainSelector){
+				const tokenBalance = await mumbaiPublicClient.readContract({
+					address: tokenAddress as `0x${string}`,
+					abi: tokenAbi,
+					functionName: 'balanceOf',
+					args:[mumbaiCrypto5V2Vault]
+				  })
+				const tokenValue = await mumbaiPublicClient.readContract({
+					address: mumbaiCrypto5V2IndexFactory,
+					abi: indexFactoryV2Abi,
+					functionName: 'getAmountOut',
+					args:[tokenAddress, mumbaiWmaticAddress, tokenBalance, 3]
+				})
+				totalPortfolioBalance += Number(tokenValue)
+				
+			}
+		}
+		console.log("totalPortfolioBalance", totalPortfolioBalance)
+		setPortfolioValue(totalPortfolioBalance);
+	}, [])
 
 	useEffect(() => {
-		getHistory()
-	}, [getHistory, exchangeAddress])
+		getPortfolioValue()
+	}, [getPortfolioValue])
 
 	return {
-		data: positions,
-		reload: getHistory,
+		data: portfolioValue,
+		reload: getPortfolioValue,
 	}
 }
