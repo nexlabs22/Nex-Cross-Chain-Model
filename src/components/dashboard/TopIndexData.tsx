@@ -51,7 +51,7 @@ type underlyingAsset = {
 const TopIndexData = () => {
 	const { mode } = useLandingPageStore()
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
-	const { setANFIWeightage, fetchIndexData, setDayChangePer } = useChartDataStore()
+	const { setANFIWeightage, fetchIndexData, setDayChangePer, loading,  STOCK5Data} = useChartDataStore()
 
 	useEffect(() => {
 		fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
@@ -169,8 +169,8 @@ const TopIndexData = () => {
 
 	async function getANFIWeights() {
 		try {
-			const response = await axios.get(`https://app.nexlabs.io/api/getAnfiWeights`);
-			const RawANFIUnderlyingAssets = response.data.data.allocations;
+			const response = await axios.get('/api/getWeights');
+			const RawANFIUnderlyingAssets = response.data.anfi;
 
 			// Big logos for POR section : 
 
@@ -208,8 +208,8 @@ const TopIndexData = () => {
 	}
 	async function getCR5Weights() {
 		try {
-			const response = await axios.get(`https://app.nexlabs.io/api/getCR5Weights`);
-			const RawCR5UnderlyingAssets = response.data.data.allocations;
+			const response = await axios.get('/api/getWeights');
+			const RawCR5UnderlyingAssets = response.data.cr5;
 
 			//Big logos for POR section : 
 			setCR5UnderLyingAssets([]);

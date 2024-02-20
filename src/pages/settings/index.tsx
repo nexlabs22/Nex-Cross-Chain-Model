@@ -104,7 +104,7 @@ interface User {
 export default function Settings() {
 	const { mode } = useLandingPageStore()
 	const address = useAddress()
-	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
+	const [QRModalVisible, setQRModalVisible] = useState(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex } = useTradePageStore()
 
 	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
@@ -286,34 +286,34 @@ export default function Settings() {
 
 	const router = useRouter()
 
-	const [imageViwerOpened, setImageViwerOpened] = useState<boolean>(false)
-	const [imageUploaderOpened, setImageUploaderOpened] = useState<boolean>(false)
+	const [imageViwerOpened, setImageViwerOpened] = useState(false)
+	const [imageUploaderOpened, setImageUploaderOpened] = useState(false)
 
-	const [isRetailerAccount, setIsRetailerAccount] = useState<boolean>(false)
+	const [isRetailerAccount, setIsRetailerAccount] = useState(false)
 
-	const [option1, setOption1] = useState<boolean>(false)
-	const [option2, setOption2] = useState<boolean>(false)
-	const [option3, setOption3] = useState<boolean>(false)
-	const [option4, setOption4] = useState<boolean>(false)
-	const [option5, setOption5] = useState<boolean>(false)
+	const [option1, setOption1] = useState(false)
+	const [option2, setOption2] = useState(false)
+	const [option3, setOption3] = useState(false)
+	const [option4, setOption4] = useState(false)
+	const [option5, setOption5] = useState(false)
 
-	const [editable1, setEditable1] = useState<boolean>(false)
-	const [editable2, setEditable2] = useState<boolean>(false)
-	const [editable3, setEditable3] = useState<boolean>(false)
-	const [editable4, setEditable4] = useState<boolean>(false)
-	const [editable5, setEditable5] = useState<boolean>(false)
-	const [editable6, setEditable6] = useState<boolean>(false)
+	const [editable1, setEditable1] = useState(false)
+	const [editable2, setEditable2] = useState(false)
+	const [editable3, setEditable3] = useState(false)
+	const [editable4, setEditable4] = useState(false)
+	const [editable5, setEditable5] = useState(false)
+	const [editable6, setEditable6] = useState(false)
 
-	const [name, setName] = useState<string>('')
-	const [instName, setInstName] = useState<string>('')
-	const [email, setEmail] = useState<string>('')
-	const [adr, setAdr] = useState<string>('')
-	const [vatin, setVatin] = useState<string>('')
-	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
-	const [chosenPPType, setChosenPPType] = useState<string>('none')
+	const [name, setName] = useState('')
+	const [instName, setInstName] = useState('')
+	const [email, setEmail] = useState('')
+	const [adr, setAdr] = useState('')
+	const [vatin, setVatin] = useState('')
+	const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	const [chosenPPType, setChosenPPType] = useState('none')
 
 	const [connectedUser, setConnectedUser] = useState<User>()
-	const [connectedUserId, setConnectedUserId] = useState<String>('')
+	const [connectedUserId, setConnectedUserId] = useState('')
 
 	const uploader = Uploader({
 		apiKey: 'free', // Get production API keys from Bytescale

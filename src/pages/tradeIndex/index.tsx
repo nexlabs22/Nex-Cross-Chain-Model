@@ -67,8 +67,8 @@ export default function Trade() {
 		creationDate: 'null',
 		showTradePopUp: true,
 	})
-	const [connectedUserId, setConnectedUserId] = useState<String>('')
-	const [userFound, setUserFound] = useState<boolean>(false)
+	const [connectedUserId, setConnectedUserId] = useState('')
+	const [userFound, setUserFound] = useState(false)
 	const { globalConnectedUser, setGlobalConnectedUser } = usePortfolioPageStore()
 
 	const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
@@ -97,13 +97,13 @@ export default function Trade() {
 			})
 	}, [reference])
 
-	const [isTradePopUpOpen, setIsTradePopUpOpen] = useState<boolean>(false)
+	const [isTradePopUpOpen, setIsTradePopUpOpen] = useState(false)
 
 	function closeTradePopUp() {
 		setIsTradePopUpOpen(!isTradePopUpOpen)
 	}
 
-	const [showAgain, setShowAgain] = useState<boolean>(false)
+	const [showAgain, setShowAgain] = useState(false)
 
 	const router = useRouter();
 

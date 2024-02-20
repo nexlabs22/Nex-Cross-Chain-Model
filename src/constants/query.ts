@@ -20,8 +20,8 @@ function QueryCommaSplit(tableName: string, columnName: string) {
            END AS close
     FROM ${tableName}
     WHERE to_timestamp(stampsec) > (CURRENT_TIMESTAMP - INTERVAL '7 year')
-    AND (strpos(${columnName}, ',') > 0 OR LENGTH(REGEXP_REPLACE(${columnName}, '[^0-9.]', '', 'g')) > 0);
-    `
+    AND (strpos(${columnName}, ',') > 0 OR LENGTH(REGEXP_REPLACE(${columnName}, '[^0-9.]', '', 'g')) > 0)
+    ORDER BY stampsec;`
 }
 
 function QueryforIndex(tableName: string, columnNames: string) { 
@@ -31,7 +31,7 @@ function QueryforIndex(tableName: string, columnNames: string) {
         ${columnNames}
     FROM ${tableName}
     WHERE to_timestamp(stampsec) > (CURRENT_TIMESTAMP - INTERVAL '7 year')
-    ;`
+    ORDER BY stampsec;`
     // AND (
         // LENGTH(REGEXP_REPLACE(dow, '[^0-9.]', '', 'g')) > 0
         // OR LENGTH(dow) > 0 

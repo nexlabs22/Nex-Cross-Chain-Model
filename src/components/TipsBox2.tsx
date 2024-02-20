@@ -16,7 +16,7 @@ const TipsBox2 = () => {
 		'Trade with confidence on trusted and secure platforms for peace of mind.',
 	]
 
-	const [selectedIndex, setSelectedIndex] = useState<number>(0)
+	const [selectedIndex, setSelectedIndex] = useState(0)
 
 	return (
 		<div className="w-full relative h-full overflow-hidden bg-colorSeven-500 rounded-xl">

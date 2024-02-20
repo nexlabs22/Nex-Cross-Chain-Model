@@ -22,7 +22,7 @@ const generateRandomString = (): string => {
 };
 
 const GenericTooltip: React.FC<TooltipProps> = ({ children, color, content }) => {
-  const [id, setId] = useState<string>(generateRandomString());
+  const [id, setId] = useState(generateRandomString());
 
   useEffect(() => {
     setId(generateRandomString());
