@@ -2,7 +2,7 @@ import { num } from './math'
 import { useEffect, useState, useCallback } from 'react'
 // import { useAccountAddressStore } from '@store/zustandStore'
 import { createPublicClient, http, parseAbiItem } from 'viem'
-import { goerli } from 'viem/chains'
+import { goerli, sepolia } from 'viem/chains'
 // import { getTickerFromAddress } from '../utils/general'
 import { factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, zeroAddress } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
@@ -42,9 +42,9 @@ export function GetPositionsHistory2() {
 		setPositions([])
 
 		const client = createPublicClient({
-			chain: goerli,
+			chain: sepolia,
 			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			transport: http(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`),
+			transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
 		})
 
 		const positions0: Positions[] = []
