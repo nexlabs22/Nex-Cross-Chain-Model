@@ -57,7 +57,7 @@ import anfiLogo from '@assets/images/anfi.png'
 import cookingAnimation from '@assets/lottie/cooking.json'
 
 import { GenericToast } from './GenericToast'
-import { parseEther } from 'viem'
+import { createPublicClient, http, parseEther } from 'viem'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
 import { ethers } from 'ethers'
 import { LiaWalletSolid } from 'react-icons/lia'
@@ -69,6 +69,8 @@ import { SwapNumbers } from '@/utils/general'
 import convertToUSD from '@/utils/convertToUsd'
 import axios from 'axios'
 import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
+import { sepolia } from 'viem/chains'
+import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -135,6 +137,8 @@ const SwapV2Defi = () => {
 
 	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
 	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
+	const fromTokenTotalSupply = useContractRead(fromTokenContract.contract, 'totalSupply', [])
+	const toTokenTotalSupply = useContractRead(toTokenContract.contract, 'totalSupply', [])
 	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
 	const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
 	// const issuanceOutput = useContractRead(mintFactoryContract.contract, 'getIssuanceAmountOut', [convertedInputValue.toString(), swapFromCur.address ,"3"])
@@ -153,7 +157,8 @@ const SwapV2Defi = () => {
 
 	const {mode} = useLandingPageStore()
 
-	const crossChainValue = GetCrossChainPortfolioBalance()
+	const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
+	const defiPortfolioValue = GetDefiPortfolioBalance()
 
 	useEffect(() => {
 		async function getIssuanceOutput() {
@@ -171,7 +176,51 @@ const SwapV2Defi = () => {
 				console.log('getIssuanceOutput error:', error)
 			}
 		}
-		getIssuanceOutput()
+		// getIssuanceOutput()
+	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
+
+
+	useEffect(() => {
+		async function getIssuanceOutput2() {
+			// console.log("HHH")
+			try {
+				if ((swapToCur.address == sepoliaAnfiV2IndexToken || swapToCur.address == sepoliaCrypto5V2IndexToken) && convertedInputValue) {
+					const currentPortfolioValue = swapToCur.address == sepoliaAnfiV2IndexToken ? defiPortfolioValue.data : crossChainPortfolioValue.data;
+					const currentTotalSupply = Number(toTokenTotalSupply.data);
+					let inputValue;
+					if(swapFromCur.address == sepoliaWethAddress){
+						inputValue = firstInputValue
+					}else{
+						const sepoliaPublicClient = createPublicClient({
+							chain: sepolia,
+							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
+							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
+						})
+						const inputEthValue = await sepoliaPublicClient.readContract({
+							address: sepoliaCrypto5V2Factory,
+							abi: crossChainIndexFactoryV2Abi,
+							functionName: 'getAmountOut',
+							args:[swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3]
+						  })
+						  inputValue = Number(inputEthValue)
+					}
+					const newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
+					const newTotalSupply = currentTotalSupply*newPortfolioValue/Number(currentPortfolioValue);
+					const amountToMint = newTotalSupply - currentTotalSupply;
+					console.log("amountToMint", amountToMint)
+					setSecondInputValue(num(amountToMint).toString())
+					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
+					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
+					// const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
+					// const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
+					// console.log("HHH2", output)
+					// setSecondInputValue(num(output).toString())
+				}
+			} catch (error) {
+				console.log('getIssuanceOutput error:', error)
+			}
+		}
+		getIssuanceOutput2()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
 
 	useEffect(() => {
@@ -187,7 +236,47 @@ const SwapV2Defi = () => {
 				console.log('getRedemptionOutput error:', error)
 			}
 		}
-		getRedemptionOutput()
+		// getRedemptionOutput()
+	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
+
+	useEffect(() => {
+		async function getRedemptionOutput2() {
+			try {
+				if ((swapFromCur.address == sepoliaAnfiV2IndexToken || swapFromCur.address == sepoliaCrypto5V2IndexToken) && convertedInputValue) {
+					let outputValue;
+					const currentPortfolioValue = swapFromCur.address == sepoliaAnfiV2IndexToken ? defiPortfolioValue.data : crossChainPortfolioValue.data;
+					const currentTotalSupply = Number(fromTokenTotalSupply.data);
+					const newTotalSupply = currentTotalSupply - Number(convertedInputValue);
+					const newPortfolioValue = Number(currentPortfolioValue)*newTotalSupply/currentTotalSupply
+					const ethAmountOut = (Number(currentPortfolioValue) - newPortfolioValue)*0.999
+					if(swapToCur.address == sepoliaWethAddress){
+						outputValue = ethAmountOut
+					}else{
+						const sepoliaPublicClient = createPublicClient({
+							chain: sepolia,
+							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
+							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
+						})
+						const outPutTokenValue = await sepoliaPublicClient.readContract({
+							address: sepoliaCrypto5V2Factory,
+							abi: crossChainIndexFactoryV2Abi,
+							functionName: 'getAmountOut',
+							args:[sepoliaWethAddress, swapToCur.address, (ethAmountOut).toFixed(0), 3]
+						  })
+						  outputValue = Number(outPutTokenValue)
+					}
+					console.log("outputData:", Number(currentPortfolioValue)/1e18, currentTotalSupply/1e18, newTotalSupply/1e18, newPortfolioValue/1e18, ethAmountOut/1e18, outputValue/1e18)
+					// let inputValue;
+					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
+					// const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
+					// const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
+					// setSecondInputValue(num(output).toString())
+				}
+			} catch (error) {
+				console.log('getRedemptionOutput error:', error)
+			}
+		}
+		getRedemptionOutput2()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
 
 	const [from1UsdPrice, setFrom1UsdPrice] = useState<number>()
