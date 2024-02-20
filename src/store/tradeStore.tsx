@@ -5,7 +5,7 @@ import circle from '@assets/images/circle.png'
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import axios from 'axios'
-import { goerliAnfiFactory, goerliAnfiIndexToken, goerliAnfiV2Factory, goerliAnfiV2IndexToken, goerliUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
+import { goerliAnfiFactory, goerliAnfiIndexToken, goerliAnfiV2Factory, goerliAnfiV2IndexToken, goerliUsdtAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
 
 type Coin = {
 	id: number
@@ -101,7 +101,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
 		name: 'Tether',
 		Symbol: 'USDT',
-		address: goerliUsdtAddress,
+		address: sepoliaUsdtAddress,
 		factoryAddress: '',
 		decimals: 18
 	},
@@ -113,9 +113,9 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		name: 'ANFI',
 		Symbol: 'ANFI',
 		// address: goerliAnfiIndexToken,
-		address: goerliAnfiV2IndexToken,
+		address: sepoliaAnfiV2IndexToken,
 		// factoryAddress: goerliAnfiFactory,
-		factoryAddress: goerliAnfiV2Factory,
+		factoryAddress: sepoliaAnfiV2Factory,
 		decimals: 18
 	},
 	changeSwapToCur: (cur: Coin) => set((state) => ({ swapToCur: cur })),
