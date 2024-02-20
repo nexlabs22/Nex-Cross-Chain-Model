@@ -32,6 +32,11 @@ function NewHistoryTable() {
 	} = useTradePageStore()
 	const { ownedAssetInActivity, setPortfolioData } = usePortfolioPageStore()
 	const positionHistory = GetPositionsHistory2()
+	
+	useEffect(() => {
+		console.log("positionHistory", positionHistory)
+		console.log("positionHistory")
+	},[positionHistory])
 
 	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'

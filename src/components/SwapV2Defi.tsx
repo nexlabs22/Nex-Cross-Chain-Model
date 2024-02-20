@@ -117,7 +117,7 @@ const SwapV2Defi = () => {
 		ethPriceInUsd
 	} = useTradePageStore()
 
-	const OurIndexCoins = ['ANFI', 'CR5'];
+	const OurIndexCoins = ['ANFI', 'CRYPTO5'];
 	const address = useAddress()
 	const signer = useSigner()
 
@@ -504,7 +504,7 @@ const SwapV2Defi = () => {
 			// 	id: 0,
 			// 	logo: cr5Logo.src,
 			// 	name: 'CRYPTO5',
-			// 	Symbol: 'CR5',
+			// 	Symbol: 'CRYPTO5',
 			// 	address: goerliCrypto5IndexToken,
 			// 	factoryAddress: goerliCrypto5Factory,
 			// 	decimals: 18
@@ -540,7 +540,7 @@ const SwapV2Defi = () => {
 				id: 4,
 				logo: cr5Logo.src,
 				name: 'CRYPTO5',
-				Symbol: 'CR5',
+				Symbol: 'CRYPTO5',
 				address: sepoliaCrypto5V2IndexToken,
 				factoryAddress: sepoliaCrypto5V2Factory,
 				decimals: 18,
@@ -554,7 +554,7 @@ const SwapV2Defi = () => {
 	// 	// 	id: 0,
 	// 	// 	logo: cr5Logo.src,
 	// 	// 	name: 'CRYPTO5',
-	// 	// 	Symbol: 'CR5',
+	// 	// 	Symbol: 'CRYPTO5',
 	// 	// 	address: goerliCrypto5IndexToken,
 	// 	// 	factoryAddress: goerliCrypto5Factory,
 	// 	// 	decimals: 18
@@ -957,7 +957,7 @@ const SwapV2Defi = () => {
 	}
 
 
-	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapFromCur.Symbol !== "CR5" && swapToCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'CR5') ? true : false
+	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapFromCur.Symbol !== "CRYPTO5" && swapToCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'CRYPTO5') ? true : false
 
 	return (
 		<>

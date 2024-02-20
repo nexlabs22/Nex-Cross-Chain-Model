@@ -134,6 +134,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	ethPriceInUsd: 0,
 	setEthPriceInUsd: async () => {
+		console.log('ethPriceInUsd')
 		const wethPriceinUsd = await axios
 			.get('https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd')
 			.then((res) => res.data.weth.usd)
