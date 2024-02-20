@@ -19,6 +19,7 @@ const nextConfig = {
 	},
 	env: {
 		ALCHEMY_KEY: process.env.ALCHEMY_KEY,
+		ALCHEMY_SEPOLIA_KEY: process.env.ALCHEMY_SEPOLIA_KEY,
 		CHAINBASE_KEY: process.env.CHAINBASE_KEY,
 	},
 	reactStrictMode: true,

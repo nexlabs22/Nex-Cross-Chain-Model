@@ -117,7 +117,6 @@ export default function Trade() {
 	}
 
 	useEffect(() => {
-		
 
 		async function getUser() {
 			const usersRef = ref(database, 'users/')
@@ -170,7 +169,7 @@ export default function Trade() {
 								selectedTradingCategory == "cefi" ? <SwapV2Cefi /> : <SwapV2Defi />
 							}
 							<div className='flex-grow-1'>
-							<NewTradeComponent />
+							{/* <NewTradeComponent /> */}
 							</div>
 							
 						</div>

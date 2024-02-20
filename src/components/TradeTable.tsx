@@ -29,33 +29,33 @@ function HistoryTable() {
 		setEthPriceInUsd,
 		ethPriceInUsd,
 	} = useTradePageStore()
-	const positionHistory = GetPositionsHistory2()
-
+	// const positionHistory = GetPositionsHistory2()
+	let positionHistory:any
 	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 	// useEffect(() => {
 	// 	setEthPriceInUsd()
 	// }, [])
 
-	useEffect(() => {
-		const allowedSymbols = ['ANFI', 'CRYPTO5']
-		const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
-		if (path === '/tradeIndex') {
-			const data = positionHistory.data.filter((data) => {
-				return activeTicker.includes(data.indexName)
-			})
-			setPositionHistoryData(data)
-		} else if (path === '/portfolio') {
-			setPositionHistoryData(positionHistory.data)
-		}
-	}, [path, positionHistory.data, swapFromCur.Symbol, swapToCur.Symbol])
+	// useEffect(() => {
+	// 	const allowedSymbols = ['ANFI', 'CRYPTO5']
+	// 	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
+	// 	if (path === '/tradeIndex') {
+	// 		const data = positionHistory.data.filter((data) => {
+	// 			return activeTicker.includes(data.indexName)
+	// 		})
+	// 		setPositionHistoryData(data)
+	// 	} else if (path === '/portfolio') {
+	// 		setPositionHistoryData(positionHistory.data)
+	// 	}
+	// }, [path, positionHistory.data, swapFromCur.Symbol, swapToCur.Symbol])
 
-	useEffect(() => {
-		if (tradeTableReload) {
-			positionHistory.reload()
-			setTradeTableReload(false)
-		}
-	}, [positionHistory, setTradeTableReload, tradeTableReload])
+	// useEffect(() => {
+	// 	if (tradeTableReload) {
+	// 		positionHistory.reload()
+	// 		setTradeTableReload(false)
+	// 	}
+	// }, [positionHistory, setTradeTableReload, tradeTableReload])
 
 	const roundNumber = (number: number) => {
 		return FormatToViewNumber({ value: number, returnType: 'number' })
@@ -69,21 +69,21 @@ function HistoryTable() {
 	}
 	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
 
-	useEffect(() => {
-		async function getUsdPrices() {
-			tokens.map(async (token) => {
-				if (token.symbol !== 'CRYPTO5' && ethPriceInUsd > 0) {
-					const obj = usdPrices
-					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
-					if (Object.keys(usdPrices).length === tokens.length - 1) {
-						setUsdPrices(obj)
-					}
-				}
-			})
-		}
+	// useEffect(() => {
+	// 	async function getUsdPrices() {
+	// 		tokens.map(async (token) => {
+	// 			if (token.symbol !== 'CRYPTO5' && ethPriceInUsd > 0) {
+	// 				const obj = usdPrices
+	// 				obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+	// 				if (Object.keys(usdPrices).length === tokens.length - 1) {
+	// 					setUsdPrices(obj)
+	// 				}
+	// 			}
+	// 		})
+	// 	}
 
-		getUsdPrices()
-	}, [ethPriceInUsd])
+	// 	getUsdPrices()
+	// }, [ethPriceInUsd])
 
 	const dataToShow: { timestamp: number; tokenAddress: string; indexName: string; side: string; inputAmount: number; outputAmount: number }[] = Array.from(
 		{ length: Math.max(5, positionHistoryData.length) },

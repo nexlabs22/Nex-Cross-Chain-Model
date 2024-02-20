@@ -35,8 +35,14 @@ import {
 	goerliUsdtAddress,
 	goerliWethAddress,
 	zeroAddress,
+	sepoliaCrypto5V2IndexToken,
+	sepoliaCrypto5V2Factory,
+	sepoliaUsdtAddress,
+	sepoliaWethAddress,
+	sepoliaAnfiV2IndexToken,
+	sepoliaAnfiV2Factory,
 } from '@/constants/contractAddresses'
-import { indexFactoryAbi, indexFactoryV2Abi, indexTokenAbi, tokenAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
+import { crossChainIndexFactoryV2Abi, indexFactoryAbi, indexFactoryV2Abi, indexTokenAbi, tokenAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import Lottie from 'lottie-react'
 import PaymentModal from './PaymentModal'
@@ -51,7 +57,7 @@ import anfiLogo from '@assets/images/anfi.png'
 import cookingAnimation from '@assets/lottie/cooking.json'
 
 import { GenericToast } from './GenericToast'
-import { parseEther } from 'viem'
+import { createPublicClient, http, parseEther } from 'viem'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
 import { ethers } from 'ethers'
 import { LiaWalletSolid } from 'react-icons/lia'
@@ -62,6 +68,9 @@ import getPoolAddress from '@/uniswap/utils'
 import { SwapNumbers } from '@/utils/general'
 import convertToUSD from '@/utils/convertToUsd'
 import axios from 'axios'
+import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
+import { sepolia } from 'viem/chains'
+import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -108,7 +117,7 @@ const SwapV2Defi = () => {
 		ethPriceInUsd
 	} = useTradePageStore()
 
-	const OurIndexCoins = ['ANFI', 'CRYPTO5'];
+	const OurIndexCoins = ['ANFI', 'CR5'];
 	const address = useAddress()
 	const signer = useSigner()
 
@@ -118,8 +127,8 @@ const SwapV2Defi = () => {
 
 	//integration hooks
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
-	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, indexFactoryV2Abi)
-	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, indexFactoryV2Abi)
+	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, (swapToCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi))
+	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, (swapFromCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi))
 
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
 	const toTokenContract = useContract(swapToCur.address, tokenAbi)
@@ -128,6 +137,8 @@ const SwapV2Defi = () => {
 
 	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
 	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
+	const fromTokenTotalSupply = useContractRead(fromTokenContract.contract, 'totalSupply', [])
+	const toTokenTotalSupply = useContractRead(toTokenContract.contract, 'totalSupply', [])
 	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
 	const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
 	// const issuanceOutput = useContractRead(mintFactoryContract.contract, 'getIssuanceAmountOut', [convertedInputValue.toString(), swapFromCur.address ,"3"])
@@ -135,7 +146,9 @@ const SwapV2Defi = () => {
 
 	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
 	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
+	const crossChainMintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
+	const crossChainMintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
 
 	const curr = OurIndexCoins.includes(swapFromCur.Symbol) ? swapFromCur : swapToCur
@@ -144,27 +157,77 @@ const SwapV2Defi = () => {
 
 	const {mode} = useLandingPageStore()
 
+	const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
+	const defiPortfolioValue = GetDefiPortfolioBalance()
+
 	useEffect(() => {
 		async function getIssuanceOutput() {
+			// console.log("HHH")
 			try {
-				if (swapToCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
-					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
+				if (swapToCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
+					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
+					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 					const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
 					const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
+					console.log("HHH2", output)
 					setSecondInputValue(num(output).toString())
 				}
 			} catch (error) {
 				console.log('getIssuanceOutput error:', error)
 			}
 		}
-		getIssuanceOutput()
+		// getIssuanceOutput()
+	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
+
+
+	useEffect(() => {
+		async function getIssuanceOutput2() {
+			// console.log("HHH")
+			try {
+				if ((swapToCur.address == sepoliaAnfiV2IndexToken || swapToCur.address == sepoliaCrypto5V2IndexToken) && convertedInputValue) {
+					const currentPortfolioValue = swapToCur.address == sepoliaAnfiV2IndexToken ? defiPortfolioValue.data : crossChainPortfolioValue.data;
+					const currentTotalSupply = Number(toTokenTotalSupply.data);
+					let inputValue;
+					if(swapFromCur.address == sepoliaWethAddress){
+						inputValue = firstInputValue
+					}else{
+						const sepoliaPublicClient = createPublicClient({
+							chain: sepolia,
+							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
+							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
+						})
+						const inputEthValue = await sepoliaPublicClient.readContract({
+							address: sepoliaCrypto5V2Factory,
+							abi: crossChainIndexFactoryV2Abi,
+							functionName: 'getAmountOut',
+							args:[swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3]
+						  })
+						  inputValue = Number(inputEthValue)
+					}
+					const newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
+					const newTotalSupply = currentTotalSupply*newPortfolioValue/Number(currentPortfolioValue);
+					const amountToMint = newTotalSupply - currentTotalSupply;
+					console.log("amountToMint", amountToMint)
+					setSecondInputValue(num(amountToMint).toString())
+					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
+					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
+					// const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
+					// const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
+					// console.log("HHH2", output)
+					// setSecondInputValue(num(output).toString())
+				}
+			} catch (error) {
+				console.log('getIssuanceOutput error:', error)
+			}
+		}
+		getIssuanceOutput2()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
 
 	useEffect(() => {
 		async function getRedemptionOutput() {
 			try {
-				if (swapFromCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
-					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
+				if (swapFromCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
+					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 					const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
 					const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
 					setSecondInputValue(num(output).toString())
@@ -173,7 +236,47 @@ const SwapV2Defi = () => {
 				console.log('getRedemptionOutput error:', error)
 			}
 		}
-		getRedemptionOutput()
+		// getRedemptionOutput()
+	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
+
+	useEffect(() => {
+		async function getRedemptionOutput2() {
+			try {
+				if ((swapFromCur.address == sepoliaAnfiV2IndexToken || swapFromCur.address == sepoliaCrypto5V2IndexToken) && convertedInputValue) {
+					let outputValue;
+					const currentPortfolioValue = swapFromCur.address == sepoliaAnfiV2IndexToken ? defiPortfolioValue.data : crossChainPortfolioValue.data;
+					const currentTotalSupply = Number(fromTokenTotalSupply.data);
+					const newTotalSupply = currentTotalSupply - Number(convertedInputValue);
+					const newPortfolioValue = Number(currentPortfolioValue)*newTotalSupply/currentTotalSupply
+					const ethAmountOut = (Number(currentPortfolioValue) - newPortfolioValue)*0.999
+					if(swapToCur.address == sepoliaWethAddress){
+						outputValue = ethAmountOut
+					}else{
+						const sepoliaPublicClient = createPublicClient({
+							chain: sepolia,
+							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
+							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
+						})
+						const outPutTokenValue = await sepoliaPublicClient.readContract({
+							address: sepoliaCrypto5V2Factory,
+							abi: crossChainIndexFactoryV2Abi,
+							functionName: 'getAmountOut',
+							args:[sepoliaWethAddress, swapToCur.address, (ethAmountOut).toFixed(0), 3]
+						  })
+						  outputValue = Number(outPutTokenValue)
+					}
+					console.log("outputData:", Number(currentPortfolioValue)/1e18, currentTotalSupply/1e18, newTotalSupply/1e18, newPortfolioValue/1e18, ethAmountOut/1e18, outputValue/1e18)
+					// let inputValue;
+					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
+					// const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
+					// const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
+					// setSecondInputValue(num(output).toString())
+				}
+			} catch (error) {
+				console.log('getRedemptionOutput error:', error)
+			}
+		}
+		getRedemptionOutput2()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
 
 	const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
@@ -411,8 +514,8 @@ const SwapV2Defi = () => {
 				logo: anfiLogo.src,
 				name: 'ANFI',
 				Symbol: 'ANFI',
-				address: goerliAnfiV2IndexToken,
-				factoryAddress: goerliAnfiV2Factory,
+				address: sepoliaAnfiV2IndexToken,
+				factoryAddress: sepoliaAnfiV2Factory,
 				decimals: 18,
 			},
 			{
@@ -420,7 +523,7 @@ const SwapV2Defi = () => {
 				logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
 				name: 'Tether',
 				Symbol: 'USDT',
-				address: goerliUsdtAddress,
+				address: sepoliaUsdtAddress,
 				factoryAddress: '',
 				decimals: 18,
 			},
@@ -429,8 +532,17 @@ const SwapV2Defi = () => {
 				logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
 				name: 'Ethereum',
 				Symbol: 'ETH',
-				address: goerliWethAddress,
+				address: sepoliaWethAddress,
 				factoryAddress: '',
+				decimals: 18,
+			},
+			{
+				id: 4,
+				logo: cr5Logo.src,
+				name: 'CRYPTO5',
+				Symbol: 'CR5',
+				address: sepoliaCrypto5V2IndexToken,
+				factoryAddress: sepoliaCrypto5V2Factory,
 				decimals: 18,
 			},
 		],
@@ -626,7 +738,7 @@ const SwapV2Defi = () => {
 	}
 
 	function getPrimaryBalance() {
-		if (swapFromCur.address == goerliWethAddress) {
+		if (swapFromCur.address == sepoliaWethAddress) {
 			// return (Number(userEthBalance) / 1e18).toFixed(2)
 			if (!userEthBalance) {
 				return 0
@@ -651,7 +763,7 @@ const SwapV2Defi = () => {
 	}
 
 	function getSecondaryBalance() {
-		if (swapToCur.address == goerliWethAddress) {
+		if (swapToCur.address == sepoliaWethAddress) {
 			// return (Number(userEthBalance) / 1e18).toFixed(2)
 			if (!userEthBalance) {
 				return 0
@@ -724,12 +836,14 @@ const SwapV2Defi = () => {
 	}
 
 	async function mintRequest() {
-		if (swapFromCur.address == goerliWethAddress) {
+		if (swapFromCur.address == sepoliaWethAddress) {
 			mintRequestEth()
 		} else {
 			mintRequestTokens()
 		}
 	}
+
+	
 
 	async function mintRequestTokens() {
 		try {
@@ -747,12 +861,21 @@ const SwapV2Defi = () => {
 						message: `Please enter amount you want to mint`,
 					})
 				}
+				if(swapToCur.address == sepoliaAnfiV2IndexToken) {
 				await mintRequestHook.mutateAsync({
 					args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
 					overrides: {
 						gasLimit: 1000000,
 					},
 				})
+				} else {
+				await mintRequestHook.mutateAsync({
+					args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
+					overrides: {
+						gasLimit: 2000000,
+					},
+				})
+				}
 			}
 		} catch (error) {
 			console.log('mint error', error)
@@ -776,6 +899,7 @@ const SwapV2Defi = () => {
 						message: `Please enter amount you want to mint`,
 					})
 				}
+				if(swapToCur.address == sepoliaAnfiV2IndexToken) {
 				await mintRequestEthHook.mutateAsync({
 					args: [(Number(firstInputValue) * 1e18).toString()],
 					overrides: {
@@ -783,6 +907,15 @@ const SwapV2Defi = () => {
 						value: convertedValue,
 					},
 				})
+				}else{
+				await mintRequestEthHook.mutateAsync({
+					args: [(Number(firstInputValue) * 1e18).toString(), '0'],
+					overrides: {
+						gasLimit: 2000000,
+						value: convertedValue,
+					},
+				})
+				}
 			}
 		} catch (error) {
 			console.log('mint error', error)
@@ -805,9 +938,18 @@ const SwapV2Defi = () => {
 						message: `Please enter amount you want to burn`,
 					})
 				}
+				if(swapFromCur.address == sepoliaAnfiV2IndexToken) {
 				await burnRequestHook.mutateAsync({
 					args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
 				})
+				}else{
+				await burnRequestHook.mutateAsync({
+					args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
+					overrides: {
+						gasLimit: 2000000,
+					},
+				})
+				}
 			}
 		} catch (error) {
 			console.log('burn error', error)
@@ -815,7 +957,7 @@ const SwapV2Defi = () => {
 	}
 
 
-	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'ANFI') ? true : false
+	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapFromCur.Symbol !== "CR5" && swapToCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'CR5') ? true : false
 
 	return (
 		<>
@@ -833,7 +975,7 @@ const SwapV2Defi = () => {
 						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
 							<p
 								onClick={() => {
-									if (swapFromCur.address == goerliWethAddress) {
+									if (swapFromCur.address == sepoliaWethAddress) {
 										setFirstInputValue('0.00001')
 									} else setFirstInputValue('1')
 								}}
@@ -992,9 +1134,9 @@ const SwapV2Defi = () => {
 				</div>
 				<div className="h-fit w-full mt-6">
 					<div className={`w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3`}>
-						{swapToCur.address == goerliAnfiV2IndexToken || swapToCur.address == goerliCrypto5IndexToken ? (
+						{swapToCur.address == sepoliaAnfiV2IndexToken || swapToCur.address == sepoliaCrypto5V2IndexToken ? (
 							<>
-								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) && swapFromCur.address != goerliWethAddress ? (
+								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) && swapFromCur.address != sepoliaWethAddress ? (
 									<button
 										onClick={approve}
 										disabled={isButtonDisabled}
