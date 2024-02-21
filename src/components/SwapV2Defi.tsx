@@ -190,7 +190,7 @@ const SwapV2Defi = () => {
 					const currentTotalSupply = Number(toTokenTotalSupply.data);
 					let inputValue;
 					if(swapFromCur.address == sepoliaWethAddress){
-						inputValue = firstInputValue
+						inputValue = Number(firstInputValue)*1e18
 					}else{
 						const sepoliaPublicClient = createPublicClient({
 							chain: sepolia,
@@ -205,12 +205,16 @@ const SwapV2Defi = () => {
 						  })
 						  inputValue = Number(inputEthValue)
 					}
-					// const newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
-					const newPortfolioValue = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
+					let newPortfolioValue:number = 0;
+					if(swapToCur.address == sepoliaCrypto5V2IndexToken){
+						newPortfolioValue = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
+					}else{
+						newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
+					}
 					// console.log("newPortfolioValue2", newPortfolioValue2)
 					const newTotalSupply = currentTotalSupply*newPortfolioValue/Number(currentPortfolioValue);
 					const amountToMint = newTotalSupply - currentTotalSupply;
-					console.log("amountToMint", amountToMint, newTotalSupply, currentTotalSupply, newPortfolioValue, currentPortfolioValue)
+					console.log("amountToMint",inputValue, amountToMint, newTotalSupply, currentTotalSupply, newPortfolioValue, currentPortfolioValue)
 					setSecondInputValue(num(amountToMint).toString())
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
