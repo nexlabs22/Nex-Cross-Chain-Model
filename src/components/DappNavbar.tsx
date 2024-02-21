@@ -64,7 +64,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 
 	const { globalConnectedUser, setGlobalConnectedUser } = usePortfolioPageStore()
 	const { openMobileMenu, setOpenMobileMenu, selectedTradingCategory } = useTradePageStore()
-	const [subMenuOpen, setSubMenuOpen] = useState<boolean>(false)
+	const [subMenuOpen, setSubMenuOpen] = useState(false)
 
 	const connectionStatus = useConnectionStatus()
 	const address = useAddress()

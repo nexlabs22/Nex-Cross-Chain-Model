@@ -19,8 +19,8 @@ const TradeChartBox = () => {
 	const { defaultIndex } = useLandingPageStore()
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
 	const { fetchIndexData, removeIndex, selectedDuration, selectDuration, loading, dayChange, ANFIData, CR5Data } = useChartDataStore()
-	const [classesModalOpen, setClassesModalOpen] = useState<boolean>(false)
-	const [classesCategory, setClassesCategory] = useState<string>('indices')
+	const [classesModalOpen, setClassesModalOpen] = useState(false)
+	const [classesCategory, setClassesCategory] = useState('indices')
 
 	useEffect(() => {
 		console.log('dayChange', dayChange)

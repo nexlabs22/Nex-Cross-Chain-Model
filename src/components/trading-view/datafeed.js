@@ -1,5 +1,6 @@
 import { makeApiRequest, generateSymbol, parseFullSymbol, generateNexSymbol } from "./helpers.js";
 import { subscribeOnStream, unsubscribeFromStream } from "./streaming.js";
+import getIndexData from '@utils/indexCalculation'
 
 const lastBarsCache = new Map();
 
@@ -54,6 +55,7 @@ async function getAllSymbols() {
     isTopTier: true,
     pairs: {
       ANFI: ['USD'], CRYPTO5: ['USD'],
+      STOCK5: ['USD'],
       GSPC: ['USD'],
       IXIC: ['USD'],
       DJI: ['USD'],
@@ -90,7 +92,7 @@ async function getAllSymbols() {
     }
   }
   const indexes = ['ANFI', 'CRYPTO5', 'GSPC', 'IXIC', 'DJI', 'NYA']
-  const stocks = ['V', 'ASML', 'PYPL', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', 'TCEHY', 'TSM', 'XOM', 'NVDA', 'UNH', 'JNJ', 'LVMHF', 'TSLA', 'JPM', 'WMT', 'META', 'SPY', 'MA', 'CVX', 'BRKA']
+  const stocks = ['V', 'ASML', 'PYPL', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', 'TCEHY', 'TSM', 'XOM', 'NVDA', 'UNH', 'JNJ', 'LVMHF', 'TSLA', 'JPM', 'WMT', 'META', 'SPY', 'MA', 'CVX', 'BRKA','STOCK5']
   const commodities = ['GOLD', 'COPPER', 'LITHIUM', 'CRUDEOIL', 'SILVER']
   data.Data.Nexlabs = nexLabsData;
   let allSymbols = [];
@@ -227,9 +229,15 @@ const dataFeed = {
       .map((name) => `${name}=${encodeURIComponent(urlParameters[name])}`)
       .join("&");
     try {
+
+      const top5stockdata = await fetch('/api/getStockDataFromSpot').then(res => res.json()).catch(err => console.log(err))
+      const top5stockmarketcap = await fetch('/api/getStockMarketCap').then(res => res.json()).catch(err => console.log(err))
+      const stock5Prices = getIndexData('STOCK5', top5stockdata, top5stockmarketcap)
+      const stock5OHLCPrices = stock5Prices.map(({time, value}) => ({ time, open: value, high: value, low: value, close: value }));
+
       const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
       const data2 = await makeApiRequest(`data/histoday?${query}`);
-      const data = data2.Response === 'Error' ? data1[urlParameters.fsym] : data2.Data
+      const data = urlParameters.fsym === 'STOCK5' ? stock5OHLCPrices: data2.Response === 'Error' ? data1[urlParameters.fsym] : data2.Data
       // if (
       //   (data.Response && data.Response === "Error") ||
       //   data.Data.length === 0
@@ -267,7 +275,7 @@ const dataFeed = {
       });
       return;
     } catch (error) {
-      // console.log("[getBars]: Get error", error);
+      console.log("[getBars]: Get error", error);
       onErrorCallback(error);
     }
   },

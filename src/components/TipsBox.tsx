@@ -20,7 +20,7 @@ const TipsBox = () => {
 		'Trade with confidence on trusted and secure platforms for peace of mind.',
 	] 
 
-	const [selectedIndex, setSelectedIndex] = useState<number>(0)
+	const [selectedIndex, setSelectedIndex] = useState(0)
 
 	const { selectedTradingCategory} = useTradePageStore()
 

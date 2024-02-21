@@ -1,5 +1,5 @@
-import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, tokenAddresses } from '@/constants/contractAddresses'
-import { tokens } from '@/constants/goerliTokens'
+import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaTokenAddresses } from '@/constants/contractAddresses'
+import { sepoliaTokens } from '@/constants/goerliTokens'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
@@ -31,9 +31,9 @@ function HistoryTable() {
 	} = useTradePageStore()
 	const positionHistory = GetPositionsHistory2()
 	useEffect(() => {
-		console.log("positionHistory", positionHistory)
-		console.log("positionHistory")
-	},[positionHistory])
+		console.log('positionHistory', positionHistory)
+		console.log('positionHistory')
+	}, [positionHistory])
 	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 	useEffect(() => {
@@ -43,7 +43,7 @@ function HistoryTable() {
 	useEffect(() => {
 		const allowedSymbols = ['ANFI', 'CRYPTO5']
 		const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
-		console.log("activeTicker", activeTicker)
+		console.log('activeTicker', activeTicker)
 		if (path === '/tradeIndex') {
 			const data = positionHistory.data.filter((data) => {
 				return activeTicker.includes(data.indexName)
@@ -72,15 +72,16 @@ function HistoryTable() {
 		return localDate + ' ' + localTime
 	}
 	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
+	console.log('usdPrices->', usdPrices)
 
 	useEffect(() => {
 		async function getUsdPrices() {
 			console.log('getUsdPrices', ethPriceInUsd)
-			tokens.map(async (token) => {
+			sepoliaTokens.map(async (token) => {
 				if (ethPriceInUsd > 0) {
 					const obj = usdPrices
 					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
-					if (Object.keys(usdPrices).length === tokens.length - 1) {
+					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
 						setUsdPrices(obj)
 					}
 				}
@@ -116,7 +117,14 @@ function HistoryTable() {
 						>
 							<th className="px-4 py-2 text-left">Time</th>
 							<th className="px-4 py-2 text-left">Pair</th>
-							<th className="px-4 py-2 text-left">Request Side</th>
+							<th
+								className="px-4 py-2 text-left"
+								onClick={() => {
+									positionHistory.reload()
+								}}
+							>
+								Request Side
+							</th>
 							<th className="px-4 py-2 text-left">Input Amount</th>
 							<th className="px-4 py-2 text-left">Output Amount</th>
 						</tr>
@@ -125,7 +133,7 @@ function HistoryTable() {
 			</div>
 			<div className="max-h-64 overflow-y-auto">
 				<table className="w-full"> */}
-					<tbody className={`"overflow-y-scroll overflow-x-hidden ${mode == 'dark' ? ' bg-[#101010] ' : 'bg-gray-200'} `}>
+					<tbody className={`"overflow-y-scroll overflow-x-hidden ${mode == 'dark' ? ' bg-[#101010]  ' : 'bg-gray-200'} `}>
 						{dataToShow.map(
 							(
 								position: {
@@ -160,15 +168,19 @@ function HistoryTable() {
 										<tr
 											key={i}
 											// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
-											className="text-gray-700 interMedium text-base border-b border-blackText-500"
+											className={`${mode == 'dark' ? ' text-gray-200  ' : 'text-gray-700'} interMedium text-base border-b border-blackText-500`}
 										>
-											<td className={`px-4 text-left py-3 ${position.timestamp ? '' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}`}>{position.timestamp ? convertTime(position.timestamp) : '-'}</td>
+											<td className={`px-4 text-left py-3 ${position.timestamp ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+												{position.timestamp ? convertTime(position.timestamp) : '-'}
+											</td>
 
 											{/* <td>{swapToCur.Symbol}</td> */}
-											<td className={`px-4 text-left py-3 ${position.indexName ? '' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}`}>{position.indexName ? position.indexName : '-'}</td>
+											<td className={`px-4 text-left py-3 ${position.indexName ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+												{position.indexName ? position.indexName : '-'}
+											</td>
 											<td className="px-4 text-left py-3">
 												<div
-													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}  
+													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}  
 													${
 														position.side === 'Mint Request'
 															? 'bg-nexLightGreen-500 text-whiteText-500'
@@ -180,23 +192,43 @@ function HistoryTable() {
 													{position.side ? position.side.toString().split(' ')[0] : '-'}
 												</div>
 											</td>
-											<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}`}>
+											<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
 												{position.inputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
-														{position.side === 'Mint Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
-														<em>(${usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]) : 0}) </em>{' '}
+														{position.side === 'Mint Request'
+															? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
+															: position?.indexName}{' '}
+														<em>
+															($
+															{usdPrices
+																? position.side === 'Mint Request'
+																	? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
+																	: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																: 0}
+															){' '}
+														</em>{' '}
 													</>
 												) : (
 													'-'
 												)}
 											</td>
-											<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress ? '' : (mode === 'dark'? 'text-[#101010]': 'text-[#E5E7EB]')}`}>
+											<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
 												{position.outputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
-														{position.side === 'Burn Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
-														<em>(${usdPrices ? formatNumber(position.outputAmount * usdPrices[position.tokenAddress]) : 0} ) </em>
+														{position.side === 'Burn Request'
+															? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
+															: position?.indexName}{' '}
+														<em>
+															($
+															{usdPrices
+																? position.side === 'Burn Request'
+																	? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
+																	: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																: 0}{' '}
+															){' '}
+														</em>
 													</>
 												) : (
 													'-'

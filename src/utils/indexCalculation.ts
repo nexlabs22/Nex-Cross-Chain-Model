@@ -17,7 +17,7 @@ type ANFIDataType = {
 	priceGold: number
 }
 
-function getGoldPrice(str: string): number {
+function getCommaSeperatedPrice(str: string): number {
 	if (str.includes(',')) {
 		return Number(str.split(',')[0]);
 	} else {
@@ -66,7 +66,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 			function calculatePriceChange(data: dataFromDatabasetype[]): PriceChange {
 				let totalBitcoinReturns = 0;
 				let totalGoldReturns = 0;
-				data.sort((a,b)=>b.time - a.time)
+				data.sort((a, b) => b.time - a.time)
 
 				for (let i = 1; i < data.length; i++) {
 					const prevDayBitcoinPrice = data[i - 1].bitcoin;
@@ -91,7 +91,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 
 			function findPriceDataInRange(data: dataFromDatabasetype[], closeDate: number, openDate: number): PriceChange {
 				const result: dataFromDatabasetype[] = [];
-				data.sort((a,b)=>a.time - b.time)
+				data.sort((a, b) => a.time - b.time)
 
 				let foundCloseDate = false;
 				let openDateFound = false;
@@ -153,7 +153,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 				obj.weightBtc = weightBTC
 				obj.weightGold = weightGold
 				obj.priceBtc = Number(closeData.bitcoin)
-				obj.priceGold = getGoldPrice(closeData.gold)
+				obj.priceGold = getCommaSeperatedPrice(closeData.gold)
 				array.push(obj)
 				anfiWeightMap.set(closeData.time, array)
 			}
@@ -198,7 +198,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 				isCreationDay = false
 				enteredMonthTimestamp = foundFirstData[0].date
 				const arr = dataArr[0]
-				divisor = ((arr.priceBtc * arr.weightBtc * 1) + (arr.priceGold * arr.weightGold * 1)) /100
+				divisor = ((arr.priceBtc * arr.weightBtc * 1) + (arr.priceGold * arr.weightGold * 1)) / 100
 
 				anfiObj.time = timestamp
 				anfiObj.value = 100
@@ -242,7 +242,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 		const CRYPTO5Data: CRYPTO5[] = []
 		const processedData = new Map<number, processedDataType[]>()
 
-		data.forEach((list) => {
+		data.sort((a,b)=>a.time-b.time).forEach((list) => {
 			top5.forEach((top) => {
 				if (isSameMonth(list.time, Number(top.timestamp))) {
 					const time = Number(list?.time)
@@ -367,5 +367,138 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 		});
 
 		return CRYPTO5Data
+	} else if (index === 'STOCK5') {
+		type STOCK5 = { time: number; value: number }
+
+		const STOCK5Data: STOCK5[] = []
+		const processedData = new Map<number, processedDataType[]>()
+
+
+		data = data.filter(obj => Number(obj.time) >= 1548997200) // After this timestamp we have the market cap data
+		data = data.filter(obj => obj.microsoft !== null && obj.apple !== null && obj.amazon !== null && obj.nvidia !== null && obj.alphabet !== null);
+
+		data.forEach((list,index) => {
+			top5.forEach((top) => {
+				if (isSameMonth(list.time, Number(top.timestamp)/1000)) {
+					const time = Number(list?.time)
+					const top5Arr: { token: string, marketCap: number }[] = []
+					top.top5.split(',').map((tokenWithMarketcap) => {
+						const arr = tokenWithMarketcap.split(':')
+						const obj: { token: string, marketCap: number } = { token: '', marketCap: 0 };
+						obj.token = arr[0]
+						obj.marketCap = Number(arr[1])
+						top5Arr.push(obj)
+					})
+
+					const sum = top5Arr.reduce((total, obj) => total + obj.marketCap, 0);
+
+					top5Arr.map((data) => {
+						const tokenName = data.token.includes('-') ? data.token.split('-').join('') : data.token
+						const obj: {
+							date: string
+							weight: number
+							price: number
+							token: string
+						} = { date: '', weight: 0, price: 0, token: '' }
+						if (!(processedData.get(time))) {
+							let array = []
+							obj.token = tokenName
+							obj.weight = data.marketCap / sum
+							obj.price = Number(getCommaSeperatedPrice(list[tokenName].toString()))
+							obj.date = new Date(time * 1000).toDateString()
+							array.push(obj)
+							processedData.set(time, array)
+						} else {
+							const existingArray = processedData.get(time)
+							obj.token = tokenName
+							obj.weight = data.marketCap / sum
+							obj.price = Number(getCommaSeperatedPrice(list[tokenName].toString()))
+							obj.date = new Date(time * 1000).toDateString()
+							existingArray?.push(obj)
+						}
+					})
+				}
+			})
+		})
+
+		const sortedProcessedData = new Map<number, processedDataType[]>(
+			Array.from(processedData).sort((a, b) => a[0] - b[0])
+		);
+
+		const firstEntryOfEachMonth: Map<number, processedDataType[]> = new Map();
+
+		const seenMonths = new Set<string>();
+
+		sortedProcessedData.forEach((dataArr, timestamp) => {
+			const firstTimeStamp = timestamp;
+
+			const year = new Date(firstTimeStamp * 1000).getFullYear()
+			const month = new Date(firstTimeStamp * 1000).getMonth()
+			const monthYearKey = `${year}-${month}`;
+
+			if (!seenMonths.has(monthYearKey)) {
+				seenMonths.add(monthYearKey);
+				firstEntryOfEachMonth.set(timestamp, dataArr);
+			}
+		});
+
+		let isCreationDay = true;
+		let divisor = 0
+		const firstEntryKey = sortedProcessedData.keys().next().value;
+		const firstEntryValue = sortedProcessedData.get(firstEntryKey);
+		let enteredMonthTimestamp = firstEntryValue ? firstEntryValue[0].date : ''
+		let baseMult = 1
+		sortedProcessedData.forEach((dataArr, timestamp) => {
+			const stk5Obj: { time: number; value: number } = { time: 0, value: 0 }
+			let foundFirstData: processedDataType[] = [];
+			firstEntryOfEachMonth.forEach((firstObj, firstTimestamp) => {
+				if (isSameMonth(firstTimestamp, timestamp)) {
+					foundFirstData = firstObj
+				}
+			})
+
+			if (isCreationDay) {
+				isCreationDay = false
+				enteredMonthTimestamp = foundFirstData[0].date
+				divisor = dataArr.reduce((accumulator, obj) => {
+					return accumulator + (obj.weight * Number(obj.price) * 1); //base mul is 1 for the starting
+				}, 0) / 100 	// Taking the index value as 100 for the starting
+
+				stk5Obj.time = timestamp
+				stk5Obj.value = 100
+				STOCK5Data.push(stk5Obj)
+
+			} else {
+
+				if (enteredMonthTimestamp !== foundFirstData[0].date) {
+					enteredMonthTimestamp = foundFirstData[0].date
+					let previousKey = null;
+
+					for (const [key, value] of firstEntryOfEachMonth) {
+						if (value === foundFirstData) {
+							break;
+						}
+						previousKey = key;
+					}
+
+					if (previousKey !== null) {
+						const previousValue = firstEntryOfEachMonth.get(previousKey);
+						const alteredPrev = previousValue?.map((data, index) => {
+
+							return { ...data, price: foundFirstData[index].price }
+						}) as processedDataType[]
+						const oldBase = baseMult
+						baseMult = getIndexValue(alteredPrev, oldBase, divisor) * (1 / getIndexValue(foundFirstData, oldBase, divisor))
+					}
+				}
+
+				stk5Obj.time = timestamp
+				stk5Obj.value = getIndexValue(dataArr, baseMult, divisor)
+				STOCK5Data.push(stk5Obj)
+			}
+
+		});
+
+		return STOCK5Data
 	}
 }

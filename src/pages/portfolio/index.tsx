@@ -38,6 +38,8 @@ import {
 	goerliUsdtAddress,
 	goerliLinkAddress,
 	goerliLinkWethPoolAddress,
+	sepoliaAnfiV2IndexToken,
+	sepoliaCrypto5V2IndexToken,
 } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
@@ -83,6 +85,8 @@ import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import { useLandingPageStore } from '@/store/store'
 import ConnectButton from '@/components/ConnectButton'
+import getPoolAddress from '@/uniswap/utils'
+import { sepoliaTokens } from '@/constants/goerliTokens'
 
 interface User {
 	email: string
@@ -104,10 +108,10 @@ interface User {
 export default function Portfolio() {
 	const address = useAddress()
 	const router = useRouter()
-	const [QRModalVisible, setQRModalVisible] = useState<boolean>(false)
+	const [QRModalVisible, setQRModalVisible] = useState(false)
 	const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex, setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
 	const { portfolioData, setDayChange } = usePortfolioPageStore()
-	const [chartType, setChartType] = useState<string>('pie')
+	const [chartType, setChartType] = useState('pie')
 	const { mode } = useLandingPageStore()
 
 	// console.log("ethPriceInUsd--->",ethPriceInUsd)
@@ -115,21 +119,25 @@ export default function Portfolio() {
 	// 	setEthPriceInUsd()
 	// }, [setEthPriceInUsd])
 
-	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
-	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
+	const anfiTokenContract = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
+	const crypto5TokenContract = useContract(sepoliaCrypto5V2IndexToken, indexTokenAbi)
+	// const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
+	// const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
 
 	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
 	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
 
 	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
+	const anfiDetails = sepoliaTokens.filter((token)=> token.symbol === 'ANFI')
+	const cr5Details = sepoliaTokens.filter((token)=> token.symbol === 'CRYPTO5')
 
 	const {
 		loading: loadingAnfi,
 		error: errorAnfi,
 		data: dataAnfi,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		variables: { poolAddress: getPoolAddress(anfiDetails[0].address, anfiDetails[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
 	const {
@@ -137,8 +145,10 @@ export default function Portfolio() {
 		error: errorCR5,
 		data: dataCR5,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		variables: { poolAddress: getPoolAddress(cr5Details[0].address, cr5Details[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
+
+	console.log(dataAnfi, dataCR5)
 
 	const [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
 	const indexPercent = { anfi: anfiPercent, cr5: crypto5Percent }
@@ -193,8 +203,17 @@ export default function Portfolio() {
 		['Asset', 'Percentage'],
 		['CRYPTO 5', crypto5Percent ? crypto5Percent : 0],
 		['ANFI', anfiPercent ? anfiPercent : 0],
-		['FIAT', anfiPercent ? 0 : 5],
+		// ['FIAT', anfiPercent ? 0 : 5],
 	]
+
+	// const data = [
+    //     ["Asset", "Percentage"],
+    //     ["ANFI", 11],
+    //     ["CRYPTO5", 2],
+    //     ["ETH", 2],
+    //     ["BTC", 2],
+    //     ["MATIC", 7],
+    // ];
 
 	const PieChartdata = [
 		{
@@ -294,7 +313,7 @@ export default function Portfolio() {
 		async function getTokenDetails() {
 			const data = await Promise.all(
 				nexTokens.map(async (item: nexTokenDataType) => {
-					const calculatedUsdValue = !['CRYPTO5'].includes(item.symbol) ? (await convertToUSD(item.address, ethPriceInUsd, false)) || 0 : 0
+					const calculatedUsdValue = (await convertToUSD(item.address, ethPriceInUsd, false)) || 0 
 					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
 					const totalTokenUsd = calculatedUsdValue * totalToken || 0
 					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
@@ -327,11 +346,11 @@ export default function Portfolio() {
 	// }
 	//   }, []);
 
-	const [uploadedPPLink, setUploadedPPLink] = useState<string>('none')
-	const [chosenPPType, setChosenPPType] = useState<string>('none')
+	const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	const [chosenPPType, setChosenPPType] = useState('none')
 
 	const [connectedUser, setConnectedUser] = useState<User>()
-	const [connectedUserId, setConnectedUserId] = useState<String>('')
+	const [connectedUserId, setConnectedUserId] = useState('')
 
 	useEffect(() => {
 		function getUser() {
@@ -625,7 +644,7 @@ export default function Portfolio() {
 								</Menu>
 								<div className="w-full h-full flex flex-col xl:flex-row items-start xl:items-center justify-center xl:justify-around">
 									<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-2">
-										{chartType == 'pie' ? <New3DPieChart></New3DPieChart> : <TreemapChart percentage={indexPercent} />}
+										{chartType == 'pie' ? <New3DPieChart data={data} /> : <TreemapChart percentage={indexPercent} />}
 									</div>
 									<div className="w-full xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-2">
 										<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>
@@ -656,7 +675,7 @@ export default function Portfolio() {
 											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}`}>
 												Txn history :{' '}
 												<span className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"} `}>
-													<Link href={`https://goerli.etherscan.io/txs?a=${address}`}>See More</Link>
+													<Link href={`https://sepolia.etherscan.io/txs?a=${address}`}>See More</Link>
 												</span>
 											</h5>
 										</div>

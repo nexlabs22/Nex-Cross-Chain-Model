@@ -96,11 +96,11 @@ const SwapV2Defi = () => {
 	const [isChecked, setChecked] = useState(false)
 	const [isMainnet, setIsmainnet] = useState(false)
 
-	const [firstInputValue, setFirstInputValue] = useState<string>('0')
-	const [secondInputValue, setSecondInputValue] = useState<string>('0')
+	const [firstInputValue, setFirstInputValue] = useState('0')
+	const [secondInputValue, setSecondInputValue] = useState('0')
 
-	const [cookingModalVisible, setCookingModalVisible] = useState<boolean>(false)
-	const [userEthBalance, setUserEthBalance] = useState<number>(0)
+	const [cookingModalVisible, setCookingModalVisible] = useState(false)
+	const [userEthBalance, setUserEthBalance] = useState(0)
 
 	const {
 		isFromCurrencyModalOpen,
@@ -273,7 +273,7 @@ const SwapV2Defi = () => {
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 					// const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
 					// const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
-					// setSecondInputValue(num(output).toString())
+					setSecondInputValue(num(outputValue).toString())
 				}
 			} catch (error) {
 				console.log('getRedemptionOutput error:', error)
@@ -282,11 +282,11 @@ const SwapV2Defi = () => {
 		getRedemptionOutput2()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
 
-	const [from1UsdPrice, setFrom1UsdPrice] = useState<number>()
-	const [fromConvertedPrice, setFromConvertedPrice] = useState<number>(0)
+	const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
+	const [fromConvertedPrice, setFromConvertedPrice] = useState(0)
 
-	const [to1UsdPrice, setTo1UsdPrice] = useState<number>()
-	const [toConvertedPrice, setToConvertedPrice] = useState<number>(0)
+	const [to1UsdPrice, setTo1UsdPrice] = useState(0)
+	const [toConvertedPrice, setToConvertedPrice] = useState(0)
 
 	useEffect(() => {
 		async function fetchData(tokenDetails: Coin, place: string) {
@@ -294,7 +294,8 @@ const SwapV2Defi = () => {
 				const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
 				let isRevPool = false
 
-				const chainName = isMainnet ? 'ethereum' : 'goerli'
+				// const chainName = isMainnet ? 'ethereum' : 'goerli'
+				const chainName = isMainnet ? 'ethereum' : 'sepolia'
 				const sdk = new ThirdwebSDK(chainName)
 				const poolContract = await sdk.getContract(poolAddress as string, uniswapV3PoolContractAbi)
 
@@ -593,8 +594,8 @@ const SwapV2Defi = () => {
 	// ])
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
 
-	const [loadingTokens, setLoadingTokens] = useState<boolean>(true)
-	const [currentArrayId, setCurrentArrayId] = useState<number>(0)
+	const [loadingTokens, setLoadingTokens] = useState(true)
+	const [currentArrayId, setCurrentArrayId] = useState(0)
 
 	const fetchAllLiFiTokens = async () => {
 		const options = {
@@ -875,7 +876,7 @@ const SwapV2Defi = () => {
 				await mintRequestHook.mutateAsync({
 					args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
 					overrides: {
-						gasLimit: 2000000,
+						gasLimit: 3000000,
 					},
 				})
 				}
@@ -914,7 +915,7 @@ const SwapV2Defi = () => {
 				await mintRequestEthHook.mutateAsync({
 					args: [(Number(firstInputValue) * 1e18).toString(), '0'],
 					overrides: {
-						gasLimit: 2000000,
+						gasLimit: 3000000,
 						value: convertedValue,
 					},
 				})
@@ -949,7 +950,7 @@ const SwapV2Defi = () => {
 				await burnRequestHook.mutateAsync({
 					args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
 					overrides: {
-						gasLimit: 2000000,
+						gasLimit: 3000000,
 					},
 				})
 				}

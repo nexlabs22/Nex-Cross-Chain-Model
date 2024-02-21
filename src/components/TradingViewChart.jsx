@@ -44,6 +44,7 @@ const colNameToSymbol = {
   copper: "COPPER",
   silver: "SILVER",
   bitcoin: "BTC",
+  stock5: "STOCK5"
 }
 
 const TradingViewChart = ({ index, selectedIndices }) => {

@@ -1,5 +1,5 @@
-import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, tokenAddresses } from '@/constants/contractAddresses'
-import { tokens } from '@/constants/goerliTokens'
+import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaTokenAddresses } from '@/constants/contractAddresses'
+import { sepoliaTokens } from '@/constants/goerliTokens'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
@@ -88,11 +88,11 @@ function NewHistoryTable() {
 
 	useEffect(() => {
 		async function getUsdPrices() {
-			tokens.map(async (token) => {
-				if (token.symbol !== 'CRYPTO5' && ethPriceInUsd > 0) {
+			sepoliaTokens.map(async (token) => {
+				if (ethPriceInUsd > 0) {
 					const obj = usdPrices
 					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
-					if (Object.keys(usdPrices).length === tokens.length - 1) {
+					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
 						setUsdPrices(obj)
 					}
 				}
@@ -191,7 +191,7 @@ function NewHistoryTable() {
 												{position.inputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
-														{position.side === 'Mint Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <br />
+														{position.side === 'Mint Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName} <br />
 														<em className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base`}>≈(${usdPrices ? formatNumber(position.inputAmount * usdPrices[position.tokenAddress]) : 0}) </em>{' '}
 													</>
 												) : (
@@ -202,7 +202,7 @@ function NewHistoryTable() {
 												{position.outputAmount && position.tokenAddress ? (
 													<>
 														{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
-														{position.side === 'Burn Request' ? Object.keys(tokenAddresses).find((key) => tokenAddresses[key] === position.tokenAddress) : position?.indexName} <br />
+														{position.side === 'Burn Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName} <br />
 														<em className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-base`}>≈(${usdPrices ? formatNumber(position.outputAmount * usdPrices[position.tokenAddress]) : 0} ) </em>
 													</>
 												) : (
