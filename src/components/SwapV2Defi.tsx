@@ -71,6 +71,7 @@ import axios from 'axios'
 import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
 import { sepolia } from 'viem/chains'
 import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
+import { getNewCrossChainPortfolioBalance } from '@/hooks/getNewCrossChainPortfolioBalance'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -204,10 +205,12 @@ const SwapV2Defi = () => {
 						  })
 						  inputValue = Number(inputEthValue)
 					}
-					const newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
+					// const newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
+					const newPortfolioValue = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
+					// console.log("newPortfolioValue2", newPortfolioValue2)
 					const newTotalSupply = currentTotalSupply*newPortfolioValue/Number(currentPortfolioValue);
 					const amountToMint = newTotalSupply - currentTotalSupply;
-					console.log("amountToMint", amountToMint)
+					console.log("amountToMint", amountToMint, newTotalSupply, currentTotalSupply, newPortfolioValue, currentPortfolioValue)
 					setSecondInputValue(num(amountToMint).toString())
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)

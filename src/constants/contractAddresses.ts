@@ -24,6 +24,8 @@ export const sepoliaAnfiV2Factory = "0x7427E998D4db46E15f831e4Cff0393Ebb277c637"
 export const sepoliaCrypto5V2Factory = "0x877E48015097aAeEa3307C309dBc3AABed688Eca"
 
 export const mumbaiWmaticAddress = "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889";
+export const sepoliaCrossChainTokenAddress = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05"
+export const mumbaiCrossChainTokenAddress = "0xf1E3A5842EeEF51F2967b3F05D45DD4f4205FF40"
 
 export const sepoliaChainSelector = "16015286601757825753"
 export const mumbaiChainSelector = "12532609583862916517"
