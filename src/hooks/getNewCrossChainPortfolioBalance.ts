@@ -83,7 +83,6 @@ export async function getNewCrossChainPortfolioBalance(totalPortfolioValue:numbe
 			}else{
                 totalPortfolioBalance += wethAmount*Number(tokenMarketShare)/100e18
             }
-            // totalPortfolioBalance = wethAmount*Number(tokenMarketShare)/100e18
 		}
 		console.log("totalPortfolioBalance", totalPortfolioBalance)
 		return totalPortfolioBalance;
