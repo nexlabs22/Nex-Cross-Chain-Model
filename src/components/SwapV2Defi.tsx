@@ -270,7 +270,7 @@ const SwapV2Defi = () => {
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 					// const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
 					// const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
-					// setSecondInputValue(num(output).toString())
+					setSecondInputValue(num(outputValue).toString())
 				}
 			} catch (error) {
 				console.log('getRedemptionOutput error:', error)
@@ -291,7 +291,8 @@ const SwapV2Defi = () => {
 				const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
 				let isRevPool = false
 
-				const chainName = isMainnet ? 'ethereum' : 'goerli'
+				// const chainName = isMainnet ? 'ethereum' : 'goerli'
+				const chainName = isMainnet ? 'ethereum' : 'sepolia'
 				const sdk = new ThirdwebSDK(chainName)
 				const poolContract = await sdk.getContract(poolAddress as string, uniswapV3PoolContractAbi)
 
@@ -872,7 +873,7 @@ const SwapV2Defi = () => {
 				await mintRequestHook.mutateAsync({
 					args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
 					overrides: {
-						gasLimit: 2000000,
+						gasLimit: 3000000,
 					},
 				})
 				}
@@ -911,7 +912,7 @@ const SwapV2Defi = () => {
 				await mintRequestEthHook.mutateAsync({
 					args: [(Number(firstInputValue) * 1e18).toString(), '0'],
 					overrides: {
-						gasLimit: 2000000,
+						gasLimit: 3000000,
 						value: convertedValue,
 					},
 				})
@@ -946,7 +947,7 @@ const SwapV2Defi = () => {
 				await burnRequestHook.mutateAsync({
 					args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
 					overrides: {
-						gasLimit: 2000000,
+						gasLimit: 3000000,
 					},
 				})
 				}

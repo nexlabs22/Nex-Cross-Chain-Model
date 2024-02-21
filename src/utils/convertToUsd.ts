@@ -3,19 +3,20 @@ import { uniswapV3PoolContractAbi } from '@/constants/abi'
 import getPoolAddress from '@/uniswap/utils'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { SwapNumbers } from './general'
-import { tokens } from '@/constants/goerliTokens'
+import { goerliTokens, sepoliaTokens } from '@/constants/goerliTokens'
 
 export default async function convertToUSD(tokenAddress: string, ethPrice: number, isMainnet: boolean) {
 	try {
-		const tokenDetails = tokens.find((d) => d.address === tokenAddress) as { address: string, decimals: number, symbol: string }
+		const tokenDetails = sepoliaTokens.find((d) => d.address === tokenAddress) as { address: string, decimals: number, symbol: string }
 
 		if (tokenDetails.symbol === 'ETH') return ethPrice;
-		if (tokenDetails.symbol === 'CRYPTO5') return 0;
+		// if (tokenDetails.symbol === 'CRYPTO5') return 0;
 
 		const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
 		let isRevPool = false
 
-		const chainName = isMainnet ? 'ethereum' : 'goerli'
+		// const chainName = isMainnet ? 'ethereum' : 'goerli'
+		const chainName = isMainnet ? 'ethereum' : 'sepolia'
 		const sdk = new ThirdwebSDK(chainName)
 		const poolContract = await sdk.getContract(poolAddress as string, uniswapV3PoolContractAbi)
 
