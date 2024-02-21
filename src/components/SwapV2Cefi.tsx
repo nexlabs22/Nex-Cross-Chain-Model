@@ -186,9 +186,11 @@ const SwapV2Cefi = () => {
 		async function fetchData(tokenDetails: Coin, place: string) {
 			try {
 				const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
+				console.log("--->pool address", poolAddress);
 				let isRevPool = false
 
-				const chainName = isMainnet ? 'ethereum' : 'goerli'
+				// const chainName = isMainnet ? 'ethereum' : 'goerli'
+				const chainName = isMainnet ? 'ethereum' : 'sepolia'
 				const sdk = new ThirdwebSDK(chainName)
 				const poolContract = await sdk.getContract(poolAddress as string, uniswapV3PoolContractAbi)
 

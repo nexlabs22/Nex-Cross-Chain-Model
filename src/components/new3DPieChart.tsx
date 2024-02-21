@@ -1,15 +1,10 @@
 import { Chart } from "react-google-charts";
 
-const New3DPieChart = () => {
+interface PieChart3DProps {
+    data: (string | number)[][];
+  }
 
-    const data = [
-        ["Asset", "Percentage"],
-        ["ANFI", 11],
-        ["CRYPTO5", 2],
-        ["ETH", 2],
-        ["BTC", 2],
-        ["MATIC", 7],
-    ];
+const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => { 
 
     const options = {
         title: "",
