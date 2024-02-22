@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Datafeed from "./trading-view/datafeed";
 import TradingView from "../charting_library/charting_library.standalone";
 import { useLandingPageStore } from '@/store/store'
+import useTradePageStore from '@/store/tradeStore'
+import { useRouter } from 'next/router'
 
 function compareArrays(oldArray, newArray) {
   const addedStrings = newArray.filter((item) => !oldArray.includes(item))
@@ -52,6 +54,13 @@ const TradingViewChart = ({ index, selectedIndices }) => {
   const [wid, setWid] = useState()
   const chartContainerRef = useRef()
   const { mode } = useLandingPageStore()
+  const router = useRouter()
+  const location = router.pathname
+
+  const {
+		swapFromCur,
+		swapToCur,
+	} = useTradePageStore()
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -100,6 +109,14 @@ const TradingViewChart = ({ index, selectedIndices }) => {
       wid.setSymbol(`Nexlabs:${index}/USD`, 'D');
     }
   }, [index, wid])
+
+  useEffect(() => {    
+    if (wid && wid.setSymbol && location === '/tradeIndex') {
+      const allowedSymbols = ['ANFI', 'CRYPTO5']
+      const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
+      wid.setSymbol(`Nexlabs:${activeTicker[0]}/USD`, 'D');
+    }
+  }, [location, wid,swapFromCur.Symbol, swapToCur.Symbol])
 
   useEffect(() => {
     if (wid && wid.changeTheme) {
