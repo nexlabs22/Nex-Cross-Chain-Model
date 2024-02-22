@@ -63,60 +63,14 @@ import { deployment, updateOracleList } from "./Deployer";
       ethPriceOracle = deploymentObject.ethPriceOracle
     })
     
-    async function addLiquidityEth(token: Token, ethAmount: string, tokenAmount: string){
-      let tokens = [];
-      tokens[0] = token.address < weth9.address ? token.address : weth9.address
-      tokens[1] = token.address > weth9.address ? token.address : weth9.address
-      const amount0 = tokens[0] == weth9.address ? ethers.utils.parseEther(ethAmount) : ethers.utils.parseEther(tokenAmount)
-      const amount1 = tokens[1] == weth9.address ? ethers.utils.parseEther(ethAmount) : ethers.utils.parseEther(tokenAmount)
-
-      await nft.createAndInitializePoolIfNecessary(
-        // weth9.address,
-        tokens[0],
-        // token0.address,
-        tokens[1],
-        "3000",
-        encodePriceSqrt(1, 1)
-      )
-      // return
-      await token.approve(nft.address, ethers.utils.parseEther(tokenAmount));
-      await weth9.deposit({value:ethers.utils.parseEther(ethAmount)});
-      await weth9.approve(nft.address, ethers.utils.parseEther(ethAmount));
-      
-      const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-      const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
-      // return;
-      // const block = new Block()
-      const liquidityParams = {
-      token0: tokens[0],
-      token1: tokens[1],
-      fee: "3000",
-      tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      recipient: owner.address,
-      // amount0Desired: amount0,
-      amount0Desired: amount0,
-      amount1Desired: amount1,
-      amount0Min: 0,
-      amount1Min: 0,
-      deadline: unlockTime,
-      }
-      
-      await nft.mint(liquidityParams)
-
-
-    }
-
+    
     
   
     describe("Deployment", function () {
       it("Test oracle list", async function () {
-        //adding liquidity
-        await addLiquidityEth(token0, "1", "1000")
-        //update oracle list
         const assetList = [
-          token0.address,
-          token1.address
+            token0.address,
+            token1.address
         ]
         const percentages = ["70000000000000000000", "30000000000000000000"]
         const swapVersions = ["3", "3"]
@@ -124,40 +78,38 @@ import { deployment, updateOracleList } from "./Deployer";
         await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, percentages, swapVersions, chainSelectors)
         //check oracle list
         expect(await indexFactory.oracleList("0")).to.be.equal(token0.address)
+        expect(await indexFactory.oracleList("1")).to.be.equal(token1.address)
+        expect(await indexFactory.currentList("0")).to.be.equal(token0.address)
+        expect(await indexFactory.currentList("1")).to.be.equal(token1.address)
         expect(ethers.utils.formatEther(await indexFactory.tokenOracleMarketShare(token0.address))).to.be.equal("70.0")
-        expect((await indexFactory.tokenChainSelector(token0.address))).to.be.equal("1")
+        expect(ethers.utils.formatEther(await indexFactory.tokenOracleMarketShare(token1.address))).to.be.equal("30.0")
+        expect(ethers.utils.formatEther(await indexFactory.tokenCurrentMarketShare(token0.address))).to.be.equal("70.0")
+        expect(ethers.utils.formatEther(await indexFactory.tokenCurrentMarketShare(token1.address))).to.be.equal("30.0")
+        expect(await indexFactory.tokenSwapVersion(token0.address)).to.be.equal("3")
+        expect(await indexFactory.tokenSwapVersion(token1.address)).to.be.equal("3")
+        expect(await indexFactory.tokenChainSelector(token0.address)).to.be.equal("1")
+        expect(await indexFactory.tokenChainSelector(token1.address)).to.be.equal("2")
+        //chainselotor stors
+        expect(await indexFactory.oracleChainSelectorsCount()).to.be.equal("2")
+        expect(await indexFactory.currentChainSelectorsCount()).to.be.equal("2")
+        expect(await indexFactory.oracleChainSelectores("0")).to.be.equal("1")
+        expect(await indexFactory.oracleChainSelectores("1")).to.be.equal("2")
+        expect(await indexFactory.currentChainSelectores("0")).to.be.equal("1")
+        expect(await indexFactory.currentChainSelectores("1")).to.be.equal("2")
+        expect(await indexFactory.oracleChainSelecotrTokensCount("1")).to.be.equal("1")
+        expect(await indexFactory.oracleChainSelecotrTokensCount("2")).to.be.equal("1")
+        expect(await indexFactory.currentChainSelecotrTokensCount("1")).to.be.equal("1")
+        expect(await indexFactory.currentChainSelecotrTokensCount("2")).to.be.equal("1")
+        expect(await indexFactory.oracleChainSelecotrTokens("1", "0")).to.be.equal(token0.address)
+        expect(await indexFactory.oracleChainSelecotrTokens("2", "0")).to.be.equal(token1.address)
+        expect(await indexFactory.currentChainSelecotrTokens("1", "0")).to.be.equal(token0.address)
+        expect(await indexFactory.currentChainSelecotrTokens("2", "0")).to.be.equal(token1.address)
+        // expect(await indexFactory.currentChainSelectores("1")).to.be.equal("2")
+        // expect(await indexFactory.currentChainSelectorsCount()).to.be.equal("2")
+
       });
 
-      it("Test manual swap", async function () {
-        //adding liquidity
-        const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-        const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
-
-        await addLiquidityEth(token0, "1", "1000")
-        const params1 = {
-          tokenIn: weth9.address,
-          tokenOut: token0.address,
-          fee: FeeAmount.MEDIUM,
-          recipient: await owner.getAddress(),
-          deadline: unlockTime,
-          amountIn: ethers.utils.parseEther("0.1"),
-          amountOutMinimum:0,
-          sqrtPriceLimitX96: 0
-        }
-        const ownerAddress = owner.address
-        console.log("token0 before swap:", ethers.utils.formatEther(await token0.balanceOf(ownerAddress)))
-        // await deploymentObj.token0.approve(deploymentObj.v3Router.target, ethers.parseEther("10"));
-        // await deploymentObj.v3Router.exactInputSingle(params1);
-        await weth9.deposit({value:ethers.utils.parseEther("0.1")});
-        await weth9.approve(v3Router.address, ethers.utils.parseEther("0.1"));
-        console.log("weth before swap:", ethers.utils.formatEther(await weth9.balanceOf(ownerAddress)))
-
-        console.log("expected token before swap:", ethers.utils.formatEther(await indexFactory.estimateAmountOut(weth9.address, token0.address, ethers.utils.parseEther("0.1"), "1")))
-
-        await v3Router.exactInputSingle(params1);
-        console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(ownerAddress)))
-        console.log("weth after swap:", ethers.utils.formatEther(await weth9.balanceOf(ownerAddress)))
-      });
+      
 
       
       

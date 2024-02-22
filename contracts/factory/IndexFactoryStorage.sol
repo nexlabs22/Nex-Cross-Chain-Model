@@ -56,6 +56,9 @@ contract IndexFactoryStorage is
     uint public totalOracleList;
     uint public totalCurrentList;
 
+    uint public totalOracleChainSelectores;
+    uint public totalCurrentChainSelectores;
+
     mapping(uint => address) public oracleList;
     mapping(uint => address) public currentList;
 
@@ -66,6 +69,25 @@ contract IndexFactoryStorage is
     mapping(address => uint) public tokenOracleMarketShare;
     mapping(address => uint) public tokenSwapVersion;
     mapping(address => uint64) public tokenChainSelector;
+
+    //new mappings
+    uint public oracleFilledCount;
+    uint public currentFilledCount;
+
+    // uint public latestOracleChainsCount;
+    // uint public latestCurrentChainsCount;
+
+    mapping(uint => uint64[]) public oracleChainSelectores;
+    mapping(uint => uint64[]) public currentChainSelectores;
+
+    mapping(uint => mapping(uint64 => bool)) public isOracleChainSelectorStored;
+    mapping(uint => mapping(uint64 => bool)) public isCurrentChainSelectorStored;
+
+    mapping(uint => mapping(uint64 => address[])) public oracleChainSelecotrTokens;
+    mapping(uint => mapping(uint64 => address[])) public currentChainSelecotrTokens;
+
+    mapping(uint => mapping(uint64 => uint)) public oracleChainSelecotrTotalShares;
+    mapping(uint => mapping(uint64 => uint)) public currentChainSelecotrTotalShares;
 
     mapping(uint64 => address) public crossChainFactoryBySelector;
 
@@ -124,7 +146,19 @@ contract IndexFactoryStorage is
     }
 
     
-    
+    function oracleChainSelectorsCount() public view returns(uint){
+        return oracleChainSelectores[oracleFilledCount].length;
+    }
+    function currentChainSelectorsCount() public view returns(uint){
+        return oracleChainSelectores[oracleFilledCount].length;
+    }
+
+    function oracleChainSelecotrTokensCount(uint64 _chainSelector) public view returns(uint){
+        return oracleChainSelecotrTokens[oracleFilledCount][_chainSelector].length;
+    }
+    function currentChainSelecotrTokensCount(uint64 _chainSelector) public view returns(uint){
+        return currentChainSelecotrTokens[currentFilledCount][_chainSelector].length;
+    }
 
   /**
     * @dev Sets the price feed address of the native coin to USD from the Chainlink oracle.
@@ -192,27 +226,60 @@ contract IndexFactoryStorage is
         return sendChainlinkRequestTo(chainlinkOracleAddress(), req, oraclePayment);
     }
 
+    //new mappings
+    // uint oracleFilledCount;
+    // uint currentFilledCount;
+    // uint latestOracleChainsCount;
+    // uint latestCurrentChainsCount;
+    // mapping(uint => uint64[]) public oracleChainSelectores;
+    // mapping(uint => uint64[]) public currentChainSelectores;
+    // mapping(uint => mapping(uint64 => bool)) public isOracleChainSelectorStored;
+    // mapping(uint => mapping(uint64 => bool)) public isCurrentChainSelectorStored;
+    // mapping(uint => mapping(uint64 => address[])) public oracleChainSelecotrTokens;
+    // mapping(uint => mapping(uint64 => address[])) public currentChainSelecotrTokens;
+    // mapping(uint => mapping(uint64 => uint)) public oracleChainSelecotrTotalShares;
+    // mapping(uint => mapping(uint64 => uint)) public currentChainSelecotrTotalShares;
   function fulfillAssetsData(bytes32 requestId, address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions, uint64[] memory _chainSelectors)
     public
     recordChainlinkFulfillment(requestId)
   {
-    
+    insertOracleData(_tokens, _marketShares, _swapVersions, _chainSelectors);
+    /**
     address[] memory tokens0 = _tokens;
     uint[] memory marketShares0 = _marketShares;
     uint[] memory swapVersions0 = _swapVersions;
     uint64[] memory chainSelectors0 = _chainSelectors;
 
-    // //save mappings
+    //save mappings
     for(uint i =0; i < tokens0.length; i++){
         oracleList[i] = tokens0[i];
         tokenOracleListIndex[tokens0[i]] = i;
         tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
         tokenSwapVersion[tokens0[i]] = swapVersions0[i];
         tokenChainSelector[tokens0[i]] = chainSelectors0[i];
+        // oracle chain selector actions
+        oracleFilledCount +=1;
+        if(!isOracleChainSelectorStored[oracleFilledCount][chainSelectors0[i]]){
+            oracleChainSelectores[oracleFilledCount].push(chainSelectors0[i]);
+            isOracleChainSelectorStored[oracleFilledCount][chainSelectors0[i]] = true;
+        }
+        oracleChainSelecotrTokens[oracleFilledCount][chainSelectors0[i]].push(tokens0[i]);
+        oracleChainSelecotrTotalShares[oracleFilledCount][chainSelectors0[i]] += marketShares0[i];
+
         if(totalCurrentList == 0){
-            currentList[i] = tokens0[i];
-            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
-            tokenCurrentListIndex[tokens0[i]] = i;
+
+        currentList[i] = tokens0[i];
+        tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
+        tokenCurrentListIndex[tokens0[i]] = i;
+        
+        // current chain selector actions
+        currentFilledCount +=1;
+        if(!isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]]){
+            isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]] = true;
+            currentChainSelectores[currentFilledCount].push(chainSelectors0[i]);
+        }
+        currentChainSelecotrTokens[currentFilledCount][chainSelectors0[i]].push(tokens0[i]);
+        currentChainSelecotrTotalShares[currentFilledCount][chainSelectors0[i]] += marketShares0[i];
         }
     }
     totalOracleList = tokens0.length;
@@ -220,6 +287,7 @@ contract IndexFactoryStorage is
         totalCurrentList  = tokens0.length;
     }
     lastUpdateTime = block.timestamp;
+    */
     }
 
 
@@ -250,6 +318,55 @@ contract IndexFactoryStorage is
         totalCurrentList  = tokens0.length;
     }
     lastUpdateTime = block.timestamp;
+    }
+
+
+    function insertOracleData(address[] memory _tokens, uint256[] memory _marketShares, uint256[] memory _swapVersions, uint64[] memory _chainSelectors) private {
+        address[] memory tokens0 = _tokens;
+        uint[] memory marketShares0 = _marketShares;
+        uint[] memory swapVersions0 = _swapVersions;
+        uint64[] memory chainSelectors0 = _chainSelectors;
+
+        oracleFilledCount +=1;
+        if(totalCurrentList == 0){
+        currentFilledCount +=1;
+        }
+        //save mappings
+        for(uint i =0; i < tokens0.length; i++){
+            oracleList[i] = tokens0[i];
+            tokenOracleListIndex[tokens0[i]] = i;
+            tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
+            tokenSwapVersion[tokens0[i]] = swapVersions0[i];
+            tokenChainSelector[tokens0[i]] = chainSelectors0[i];
+            // oracle chain selector actions
+            if(!isOracleChainSelectorStored[oracleFilledCount][chainSelectors0[i]]){
+                oracleChainSelectores[oracleFilledCount].push(chainSelectors0[i]);
+                isOracleChainSelectorStored[oracleFilledCount][chainSelectors0[i]] = true;
+            }
+            oracleChainSelecotrTokens[oracleFilledCount][chainSelectors0[i]].push(tokens0[i]);
+            oracleChainSelecotrTotalShares[oracleFilledCount][chainSelectors0[i]] += marketShares0[i];
+
+            if(totalCurrentList == 0){
+
+            currentList[i] = tokens0[i];
+            tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
+            tokenCurrentListIndex[tokens0[i]] = i;
+            
+            // current chain selector actions
+            
+            if(!isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]]){
+                isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]] = true;
+                currentChainSelectores[currentFilledCount].push(chainSelectors0[i]);
+            }
+            currentChainSelecotrTokens[currentFilledCount][chainSelectors0[i]].push(tokens0[i]);
+            currentChainSelecotrTotalShares[currentFilledCount][chainSelectors0[i]] += marketShares0[i];
+            }
+        }
+        totalOracleList = tokens0.length;
+        if(totalCurrentList == 0){
+            totalCurrentList  = tokens0.length;
+        }
+        lastUpdateTime = block.timestamp;
     }
 
 
