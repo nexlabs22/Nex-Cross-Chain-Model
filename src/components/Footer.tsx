@@ -13,6 +13,8 @@ import {
   BsMedium,
 } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
+import tradingViewDark from '@assets/images/tradingview-dark.png'
+import tradingViewLight from '@assets/images/tradingview-light.png'
 
 import logo1 from "@assets/images/logo1.png";
 import logo2 from "@assets/images/logo2.png";
@@ -75,6 +77,13 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
               }
               
             </Link>
+            <Link href={'https://www.tradingview.com/'}>
+							{mode == 'dark' ? (
+								<Image src={tradingViewDark.src} alt="TradingView Logo" width={25} height={25} />
+							) : (
+								<Image src={tradingViewLight.src} alt="TradingView Logo" width={25} height={25} />
+							)}
+						</Link>
           </div>
         </div>
         <div className="mt-8 flex h-full flex-col items-center justify-start px-2 xl:mt-0 xl:w-1/3 xl:items-start xl:px-10">
@@ -95,6 +104,11 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
           <Link href={"https://nex-labs.gitbook.io/nex-dex/"}>
             <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
               Whitepaper
+            </h5>
+          </Link>
+          <Link href={'/license'}>
+            <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
+              License
             </h5>
           </Link>
           <h5 className="interBold mb-5 text-xl text-whiteText-500 opacity-0">
