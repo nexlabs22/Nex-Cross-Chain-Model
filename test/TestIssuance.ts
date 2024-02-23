@@ -125,8 +125,8 @@ import {V3_CORE_FACTORY_ADDRESSES, SWAP_ROUTER_02_ADDRESSES, CHAIN_TO_ADDRESSES_
         console.log("link decimals:", Number(await linkToken.decimals()))
         await indexFactory.issuanceIndexTokensWithEth(ethers.utils.parseEther("0.1"), ethers.utils.parseEther("1"), {value: ethers.utils.parseEther("1.1001")})
         console.log("==>");
-        console.log("index total shares:", Number(await indexFactory.issuanceChainSelectorTotalSharesByNonce("1", "2")))
-        console.log("index total shares:", (await indexFactory.issuanceChainSelectorSharesByNonce("1", "2", "0")))
+        // console.log("index total shares:", Number(await indexFactory.issuanceChainSelectorTotalSharesByNonce("1", "2")))
+        // console.log("index total shares:", (await indexFactory.issuanceChainSelectorSharesByNonce("1", "2", "0")))
         console.log("link token balance after swap:", ethers.utils.formatEther(await linkToken.balanceOf(indexFactory.address)))
         console.log("ccVault balance after swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance after swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))

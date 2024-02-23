@@ -33,6 +33,10 @@ contract IndexFactoryStorage is
     IndexToken public indexToken;
     address public indexFactory;
 
+    mapping(uint64 => address) public crossChainToken;
+    mapping(uint64 => address) public crossChainFactoryBySelector;
+
+
     // uint256 public fee;
     uint8 public feeRate; // 10/10000 = 0.1%
     uint256 public latestFeeUpdate;
@@ -56,8 +60,8 @@ contract IndexFactoryStorage is
     uint public totalOracleList;
     uint public totalCurrentList;
 
-    uint public totalOracleChainSelectores;
-    uint public totalCurrentChainSelectores;
+    uint public totalOracleChainSelectors;
+    uint public totalCurrentChainSelectors;
 
     mapping(uint => address) public oracleList;
     mapping(uint => address) public currentList;
@@ -77,8 +81,8 @@ contract IndexFactoryStorage is
     // uint public latestOracleChainsCount;
     // uint public latestCurrentChainsCount;
 
-    mapping(uint => uint64[]) public oracleChainSelectores;
-    mapping(uint => uint64[]) public currentChainSelectores;
+    mapping(uint => uint64[]) public oracleChainSelectors;
+    mapping(uint => uint64[]) public currentChainSelectors;
 
     mapping(uint => mapping(uint64 => bool)) public isOracleChainSelectorStored;
     mapping(uint => mapping(uint64 => bool)) public isCurrentChainSelectorStored;
@@ -86,10 +90,13 @@ contract IndexFactoryStorage is
     mapping(uint => mapping(uint64 => address[])) public oracleChainSelecotrTokens;
     mapping(uint => mapping(uint64 => address[])) public currentChainSelecotrTokens;
 
+    mapping(uint => mapping(uint64 => uint[])) public oracleChainSelecotrTokenShares;
+    mapping(uint => mapping(uint64 => uint[])) public currentChainSelecotrTokenShares;
+
     mapping(uint => mapping(uint64 => uint)) public oracleChainSelecotrTotalShares;
     mapping(uint => mapping(uint64 => uint)) public currentChainSelecotrTotalShares;
 
-    mapping(uint64 => address) public crossChainFactoryBySelector;
+    // mapping(uint64 => address) public crossChainFactoryBySelector;
 
     
     ISwapRouter public swapRouterV3;
@@ -147,10 +154,10 @@ contract IndexFactoryStorage is
 
     
     function oracleChainSelectorsCount() public view returns(uint){
-        return oracleChainSelectores[oracleFilledCount].length;
+        return oracleChainSelectors[oracleFilledCount].length;
     }
     function currentChainSelectorsCount() public view returns(uint){
-        return oracleChainSelectores[oracleFilledCount].length;
+        return oracleChainSelectors[oracleFilledCount].length;
     }
 
     function oracleChainSelecotrTokensCount(uint64 _chainSelector) public view returns(uint){
@@ -158,6 +165,38 @@ contract IndexFactoryStorage is
     }
     function currentChainSelecotrTokensCount(uint64 _chainSelector) public view returns(uint){
         return currentChainSelecotrTokens[currentFilledCount][_chainSelector].length;
+    }
+
+    function allOracleChainSelecotrTokens(uint64 _chainSelector) public view returns(address[] memory tokens){
+        // for(uint i; i < currentChainSelecotrTokensCount(_chainSelector); i++){
+        //     tokens.push(currentChainSelecotrTokens[currentFilledCount][_chainSelector][i]);
+        // }
+        tokens = oracleChainSelecotrTokens[oracleFilledCount][_chainSelector];
+    }
+    function allCurrentChainSelecotrTokens(uint64 _chainSelector) public view returns(address[] memory tokens){
+        // for(uint i; i < currentChainSelecotrTokensCount(_chainSelector); i++){
+        //     tokens.push(currentChainSelecotrTokens[currentFilledCount][_chainSelector][i]);
+        // }
+        tokens = currentChainSelecotrTokens[currentFilledCount][_chainSelector];
+    }
+
+    function allOracleChainSelecotrTokenShares(uint64 _chainSelector) public view returns(uint[] memory){
+        return oracleChainSelecotrTokenShares[oracleFilledCount][_chainSelector];
+    }
+
+    function allCurrentChainSelecotrTokenShares(uint64 _chainSelector) public view returns(uint[] memory){
+        return currentChainSelecotrTokenShares[currentFilledCount][_chainSelector];
+    }
+
+    function setCrossChainToken(uint64 _chainSelector, address _crossChainToken) public onlyOwner {
+        crossChainToken[_chainSelector] = _crossChainToken;
+    }
+
+    function setCrossChainFactory(
+        address _crossChainFactoryAddress,
+        uint64 _chainSelector
+    ) public onlyOwner {
+        crossChainFactoryBySelector[_chainSelector] = _crossChainFactoryAddress;
     }
 
   /**
@@ -231,8 +270,8 @@ contract IndexFactoryStorage is
     // uint currentFilledCount;
     // uint latestOracleChainsCount;
     // uint latestCurrentChainsCount;
-    // mapping(uint => uint64[]) public oracleChainSelectores;
-    // mapping(uint => uint64[]) public currentChainSelectores;
+    // mapping(uint => uint64[]) public oracleChainSelectors;
+    // mapping(uint => uint64[]) public currentChainSelectors;
     // mapping(uint => mapping(uint64 => bool)) public isOracleChainSelectorStored;
     // mapping(uint => mapping(uint64 => bool)) public isCurrentChainSelectorStored;
     // mapping(uint => mapping(uint64 => address[])) public oracleChainSelecotrTokens;
@@ -260,7 +299,7 @@ contract IndexFactoryStorage is
         // oracle chain selector actions
         oracleFilledCount +=1;
         if(!isOracleChainSelectorStored[oracleFilledCount][chainSelectors0[i]]){
-            oracleChainSelectores[oracleFilledCount].push(chainSelectors0[i]);
+            oracleChainSelectors[oracleFilledCount].push(chainSelectors0[i]);
             isOracleChainSelectorStored[oracleFilledCount][chainSelectors0[i]] = true;
         }
         oracleChainSelecotrTokens[oracleFilledCount][chainSelectors0[i]].push(tokens0[i]);
@@ -276,7 +315,7 @@ contract IndexFactoryStorage is
         currentFilledCount +=1;
         if(!isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]]){
             isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]] = true;
-            currentChainSelectores[currentFilledCount].push(chainSelectors0[i]);
+            currentChainSelectors[currentFilledCount].push(chainSelectors0[i]);
         }
         currentChainSelecotrTokens[currentFilledCount][chainSelectors0[i]].push(tokens0[i]);
         currentChainSelecotrTotalShares[currentFilledCount][chainSelectors0[i]] += marketShares0[i];
@@ -340,11 +379,13 @@ contract IndexFactoryStorage is
             tokenChainSelector[tokens0[i]] = chainSelectors0[i];
             // oracle chain selector actions
             if(!isOracleChainSelectorStored[oracleFilledCount][chainSelectors0[i]]){
-                oracleChainSelectores[oracleFilledCount].push(chainSelectors0[i]);
+                oracleChainSelectors[oracleFilledCount].push(chainSelectors0[i]);
                 isOracleChainSelectorStored[oracleFilledCount][chainSelectors0[i]] = true;
             }
             oracleChainSelecotrTokens[oracleFilledCount][chainSelectors0[i]].push(tokens0[i]);
             oracleChainSelecotrTotalShares[oracleFilledCount][chainSelectors0[i]] += marketShares0[i];
+
+            oracleChainSelecotrTokenShares[oracleFilledCount][chainSelectors0[i]].push(marketShares0[i]);
 
             if(totalCurrentList == 0){
 
@@ -356,10 +397,11 @@ contract IndexFactoryStorage is
             
             if(!isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]]){
                 isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]] = true;
-                currentChainSelectores[currentFilledCount].push(chainSelectors0[i]);
+                currentChainSelectors[currentFilledCount].push(chainSelectors0[i]);
             }
             currentChainSelecotrTokens[currentFilledCount][chainSelectors0[i]].push(tokens0[i]);
             currentChainSelecotrTotalShares[currentFilledCount][chainSelectors0[i]] += marketShares0[i];
+            currentChainSelecotrTokenShares[currentFilledCount][chainSelectors0[i]].push(marketShares0[i]);
             }
         }
         totalOracleList = tokens0.length;

@@ -92,10 +92,10 @@ import { deployment, updateOracleList } from "./Deployer";
         //chainselotor stors
         expect(await indexFactory.oracleChainSelectorsCount()).to.be.equal("2")
         expect(await indexFactory.currentChainSelectorsCount()).to.be.equal("2")
-        expect(await indexFactory.oracleChainSelectores("0")).to.be.equal("1")
-        expect(await indexFactory.oracleChainSelectores("1")).to.be.equal("2")
-        expect(await indexFactory.currentChainSelectores("0")).to.be.equal("1")
-        expect(await indexFactory.currentChainSelectores("1")).to.be.equal("2")
+        expect(await indexFactory.oracleChainSelectors("0")).to.be.equal("1")
+        expect(await indexFactory.oracleChainSelectors("1")).to.be.equal("2")
+        expect(await indexFactory.currentChainSelectors("0")).to.be.equal("1")
+        expect(await indexFactory.currentChainSelectors("1")).to.be.equal("2")
         expect(await indexFactory.oracleChainSelecotrTokensCount("1")).to.be.equal("1")
         expect(await indexFactory.oracleChainSelecotrTokensCount("2")).to.be.equal("1")
         expect(await indexFactory.currentChainSelecotrTokensCount("1")).to.be.equal("1")
@@ -104,7 +104,9 @@ import { deployment, updateOracleList } from "./Deployer";
         expect(await indexFactory.oracleChainSelecotrTokens("2", "0")).to.be.equal(token1.address)
         expect(await indexFactory.currentChainSelecotrTokens("1", "0")).to.be.equal(token0.address)
         expect(await indexFactory.currentChainSelecotrTokens("2", "0")).to.be.equal(token1.address)
-        // expect(await indexFactory.currentChainSelectores("1")).to.be.equal("2")
+        expect(ethers.utils.formatEther(await indexFactory.currentChainSelecotrTotalShares("1"))).to.be.equal("70.0")
+        expect(ethers.utils.formatEther(await indexFactory.currentChainSelecotrTotalShares("2"))).to.be.equal("30.0")
+        // expect(await indexFactory.currentChainSelectors("1")).to.be.equal("2")
         // expect(await indexFactory.currentChainSelectorsCount()).to.be.equal("2")
 
       });

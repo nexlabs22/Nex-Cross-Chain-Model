@@ -1,7 +1,7 @@
 
 import { ContractReceipt, ContractTransaction, Signer, constants } from "ethers";
 import { ethers, network } from "hardhat";
-import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexFactoryStorage, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
+import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexFactoryBalancer, IndexFactoryStorage, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
 import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { expect } from 'chai';
 import { BasicMessageSender } from "../typechain-types/contracts/ccip";
@@ -35,6 +35,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let indexToken : IndexToken
     let indexFactoryStorage : IndexFactoryStorage
     let indexFactory : IndexFactory
+    let indexFactoryBalancer : IndexFactoryBalancer
     let crossChainVault : CrossChainVault
     let crossChainIndexFactory : CrossChainIndexFactory
     let oracle : MockApiOracle
@@ -125,14 +126,9 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             "1",
             crossChainVault.address,
             linkToken.address,
-            // oracle.address,
-            // jobId,
-            // ethPriceOracle.address,
-            //ccip
             mockRouter.address,
             //swap addresses
             weth9.address,
-            // v3Router.address, //quoter
             v3Router.address,
             v3Factory.address,
             v3Router.address, //v2
@@ -172,13 +168,28 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             //swap addresses
             weth9.address
       )
+
+
+      const IndexFactoryBalancer = await ethers.getContractFactory("IndexFactoryBalancer");
+      indexFactoryBalancer = await IndexFactoryBalancer.deploy()
+      // return;
+      await indexFactoryBalancer.initialize(
+            "1",
+            indexToken.address,
+            indexFactoryStorage.address,
+            linkToken.address,
+            // ccip
+            mockRouter.address,
+            //swap addresses
+            weth9.address
+      )
       
       
       //set minter
       await indexToken.setMinter(indexFactory.address)
-      await indexFactory.setCrossChainToken("2", crossChainToken.address)
+      await indexFactoryStorage.setCrossChainToken("2", crossChainToken.address)
+      await indexFactoryStorage.setCrossChainFactory(crossChainIndexFactory.address, "2");
       await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address)
-      await indexFactory.setCrossChainFactory(crossChainIndexFactory.address, "2");
       await crossChainIndexFactory.setCrossChainToken("1", crossChainToken.address)
       await crossChainVault.setFactory(crossChainIndexFactory.address);
       

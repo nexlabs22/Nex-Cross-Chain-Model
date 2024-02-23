@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.7;
+pragma solidity ^0.8.7;
 
 import "../token/IndexToken.sol";
 import "../proposable/ProposableOwnableUpgradeable.sol";
@@ -41,7 +41,7 @@ contract IndexFactory is
     uint16 public i_maxTokensLength;
 
     // address public crossChainToken;
-    mapping(uint64 => address) public crossChainToken;
+    // mapping(uint64 => address) public crossChainToken;
 
     IndexToken public indexToken;
 
@@ -50,7 +50,7 @@ contract IndexFactory is
     uint256 public latestFeeUpdate;
     uint64 public currentChainSelector;
 
-    mapping(uint64 => address) public crossChainFactoryBySelector;
+    // mapping(uint64 => address) public crossChainFactoryBySelector;
 
     IWETH public weth;
 
@@ -69,7 +69,7 @@ contract IndexFactory is
         public issuanceTokenOldAndNewValues;
     mapping(uint => uint) public issuanceCompletedTokensCount;
     mapping(uint => address) public issuanceNonceRequester;
-
+    /**
     mapping(uint => mapping(uint64 => address[]))
         public issuanceChainSelectorTokensByNonce;
     mapping(uint => mapping(uint64 => uint[]))
@@ -87,7 +87,7 @@ contract IndexFactory is
         public redemptionChainSelectorTotalSharesByNonce;
     mapping(uint => uint64[]) public redemptionChainSelectors;
     mapping(uint => mapping(uint64 => bool)) public redemptionChainSelectorFilled;
-
+    */
     mapping(uint => uint) public redemptionNonceTotalValue;
     mapping(uint => uint) public redemptionCompletedTokensCount;
     mapping(uint => address) public redemptionNonceRequester;
@@ -160,17 +160,18 @@ contract IndexFactory is
     }
 
     
-    function setCrossChainToken(uint64 _chainSelector, address _crossChainToken) public onlyOwner {
-        crossChainToken[_chainSelector] = _crossChainToken;
-    }
+    // function setCrossChainToken(uint64 _chainSelector, address _crossChainToken) public onlyOwner {
+    //     crossChainToken[_chainSelector] = _crossChainToken;
+    // }
 
-    function setCrossChainFactory(
-        address _crossChainFactoryAddress,
-        uint64 _chainSelector
-    ) public onlyOwner {
-        crossChainFactoryBySelector[_chainSelector] = _crossChainFactoryAddress;
-    }
+    // function setCrossChainFactory(
+    //     address _crossChainFactoryAddress,
+    //     uint64 _chainSelector
+    // ) public onlyOwner {
+    //     crossChainFactoryBySelector[_chainSelector] = _crossChainFactoryAddress;
+    // }
 
+    /*
     function totalOracleList() public view returns (uint) {
         return indexFactoryStorage.totalOracleList();
     }
@@ -195,13 +196,13 @@ contract IndexFactory is
         return indexFactoryStorage.currentChainSelectorsCount();
     }
 
-    function oracleChainSelectores(uint index) public view returns(uint64){
+    function oracleChainSelectors(uint index) public view returns(uint64){
         uint latestCount = indexFactoryStorage.oracleFilledCount();
-        return indexFactoryStorage.oracleChainSelectores(latestCount, index);
+        return indexFactoryStorage.oracleChainSelectors(latestCount, index);
     }
-    function currentChainSelectores(uint index) public view returns(uint64){
+    function currentChainSelectors(uint index) public view returns(uint64){
         uint latestCount = indexFactoryStorage.currentFilledCount();
-        return indexFactoryStorage.currentChainSelectores(latestCount, index);
+        return indexFactoryStorage.currentChainSelectors(latestCount, index);
     }
 
     function oracleChainSelecotrTokensCount(uint64 _chainSelector) public view returns(uint){
@@ -218,6 +219,15 @@ contract IndexFactory is
     function currentChainSelecotrTokens(uint64 _chainSelector, uint index) public view returns(address){
         uint latestCount = indexFactoryStorage.currentFilledCount();
         return indexFactoryStorage.currentChainSelecotrTokens(latestCount, _chainSelector, index);
+    }
+
+    // function oracleChainSelecotrTotalShares(uint64 _chainSelector, uint index) public view returns(uint){
+    //     uint latestCount = indexFactoryStorage.oracleFilledCount();
+    //     return indexFactoryStorage.oracleChainSelecotrTotalShares(latestCount, _chainSelector);
+    // }
+    function currentChainSelecotrTotalShares(uint64 _chainSelector) public view returns(uint){
+        uint latestCount = indexFactoryStorage.currentFilledCount();
+        return indexFactoryStorage.currentChainSelecotrTotalShares(latestCount, _chainSelector);
     }
 
     // function tokenOracleListIndex(address _address) public view returns (uint) {
@@ -248,6 +258,15 @@ contract IndexFactory is
 
     function tokenChainSelector(address _address) public view returns (uint64) {
         return indexFactoryStorage.tokenChainSelector(_address);
+    }
+    */
+
+    function crossChainFactoryBySelector(uint64 _chainSelector) public view returns(address){
+        return indexFactoryStorage.crossChainFactoryBySelector(_chainSelector);
+    }
+
+    function crossChainToken(uint64 _chainSelector) public view returns(address){
+        return indexFactoryStorage.crossChainToken(_chainSelector);
     }
 
     function priceInWei() public view returns (uint256) {
@@ -361,6 +380,107 @@ contract IndexFactory is
     }
 
 
+    function _issuance(
+        address _tokenIn,
+        uint _inputAmount,
+        uint _crossChainFee
+    ) internal {
+        
+        weth.transfer(address(indexToken), _inputAmount);
+        if (_crossChainFee > 0) {
+            //swap ccip fee from eth to link
+            uint ccipLinkFee = swap(
+                address(weth),
+                i_link,
+                _crossChainFee,
+                address(this),
+                3
+            );
+        }
+        uint wethAmount = _inputAmount;
+        // uint firstPortfolioValue = getPortfolioBalance();
+        // uint crossChainWethAmount;
+        // uint totalCrossChainShares;
+        //swap to underlying assets on all chain
+        uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
+        uint latestCount = indexFactoryStorage.currentFilledCount();
+        for(uint i = 0; i < totalChains; i++){
+            uint64 chainSelector = indexFactoryStorage.currentChainSelectors(latestCount, i);
+            uint chainSelectorTokensCount = indexFactoryStorage.oracleChainSelecotrTokensCount(chainSelector);
+            if(chainSelector == currentChainSelector){
+                for (uint i = 0; i < chainSelectorTokensCount; i++) {
+                    address tokenAddress = indexFactoryStorage.currentList(i);
+                    uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
+                    uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
+                    issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
+                    .oldTokenValue = getAmountOut(
+                    tokenAddress,
+                    address(weth),
+                    IERC20(tokenAddress).balanceOf(address(indexToken)),
+                    tokenSwapVersion
+                );
+                _swapSingle(
+                    address(weth),
+                    tokenAddress,
+                    (wethAmount * tokenMarketShare) /
+                        100e18,
+                    address(indexToken),
+                    tokenSwapVersion
+                );
+                issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
+                    .newTokenValue =
+                    issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
+                        .oldTokenValue +
+                    (wethAmount * tokenMarketShare) /
+                    100e18;
+                issuanceCompletedTokensCount[issuanceNonce] += 1;
+                }
+            }else{
+                uint[] memory totalSharesArr = new uint[](1);
+                    totalSharesArr[0] = indexFactoryStorage.currentChainSelecotrTotalShares(latestCount, chainSelector);
+                    uint crossChainTokenAmount = _swapSingle(
+                    address(weth),
+                    crossChainToken(chainSelector),
+                    (wethAmount*totalSharesArr[0])/100e18,
+                    address(this),
+                    3
+                    );
+                    address crossChainIndexFactory = crossChainFactoryBySelector(
+                    chainSelector
+                    );
+                    
+                    address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
+                    uint[] memory tokenShares = indexFactoryStorage.allCurrentChainSelecotrTokenShares(chainSelector);
+
+                    //fee
+                    Client.EVMTokenAmount[]
+                        memory tokensToSendArray = new Client.EVMTokenAmount[](
+                            1
+                        );
+                    tokensToSendArray[0].token = crossChainToken(chainSelector);
+                    tokensToSendArray[0].amount = crossChainTokenAmount;
+                    
+                    bytes memory data = abi.encode(
+                        0,
+                        tokenAddresses,
+                        issuanceNonce,
+                        tokenShares,
+                        totalSharesArr
+                    );
+                
+                    sendToken(
+                        chainSelector,
+                        data,
+                        crossChainIndexFactory,
+                        tokensToSendArray,
+                        PayFeesIn.LINK
+                    );
+            }
+        }
+    }
+
+
+    /**
     function _issuance(
         address _tokenIn,
         uint _inputAmount,
@@ -530,19 +650,21 @@ contract IndexFactory is
                 
                 }
     }
-
+    */
 
     
 
     function completeIssuanceRequest(uint _issuanceNonce) internal {
         uint totalOldVaules;
         uint totalNewVaules;
-        for (uint i = 0; i < totalCurrentList(); i++) {
+        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
+        for (uint i = 0; i < totalCurrentList; i++) {
+            address tokenAddress = indexFactoryStorage.currentList(i);
             totalOldVaules += issuanceTokenOldAndNewValues[_issuanceNonce][
-                currentList(i)
+                tokenAddress
             ].oldTokenValue;
             totalNewVaules += issuanceTokenOldAndNewValues[_issuanceNonce][
-                currentList(i)
+                tokenAddress
             ].newTokenValue;
         }
 
@@ -560,6 +682,92 @@ contract IndexFactory is
         emit Issuanced(issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);
     }
 
+    function redemption(
+        uint amountIn,
+        uint _crossChainFee,
+        address _tokenOut,
+        uint _tokenOutSwapVersion
+    ) public payable returns (uint) {
+        require(msg.value >= _crossChainFee, "lower than required amount");
+        uint burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
+        redemptionNonce += 1;
+        redemptionNonceRequester[redemptionNonce] = msg.sender;
+        redemptionNonceOutputToken[redemptionNonce] = _tokenOut;
+        redemptionNonceOutputTokenSwapVersion[redemptionNonce] = _tokenOutSwapVersion;
+        redemptionInputAmount[redemptionNonce] = amountIn;
+        redemptionOutputToken[redemptionNonce] = _tokenOut;
+
+        indexToken.burn(msg.sender, amountIn);
+
+        if (_crossChainFee > 0) {
+            weth.deposit{value: _crossChainFee}();
+            //swap ccip fee from eth to link
+            uint ccipLinkFee = swap(
+                address(weth),
+                i_link,
+                _crossChainFee,
+                address(this),
+                3
+            );
+        }
+        // uint outputAmount;
+        //swap
+        uint totalCrossChainShares;
+        uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
+        uint latestCount = indexFactoryStorage.currentFilledCount();
+        for(uint i = 0; i < totalChains; i++){
+            uint64 chainSelector = indexFactoryStorage.currentChainSelectors(latestCount, i);
+            uint chainSelectorTokensCount = indexFactoryStorage.oracleChainSelecotrTokensCount(chainSelector);
+            if(chainSelector == currentChainSelector){
+                for (uint i = 0; i < chainSelectorTokensCount; i++) {
+                    address tokenAddress = indexFactoryStorage.currentList(i);
+                    uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
+                    uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
+                    //
+                    uint swapAmount = (burnPercent *
+                    IERC20(tokenAddress).balanceOf(address(indexToken))) /
+                    1e18;
+                    uint swapAmountOut = _swapSingle(
+                        tokenAddress,
+                        address(weth),
+                        swapAmount,
+                        address(this),
+                        tokenSwapVersion
+                    );
+                    redemptionNonceTotalValue[redemptionNonce] += swapAmountOut;
+                    redemptionCompletedTokensCount[redemptionNonce] += 1;
+                }
+            }else{
+                
+                address crossChainIndexFactory = crossChainFactoryBySelector(
+                chainSelector
+                );
+                
+                address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
+                uint[] memory tokenShares = indexFactoryStorage.allCurrentChainSelecotrTokenShares(chainSelector);
+
+                uint[] memory burnPercentages = new uint[](1);
+                burnPercentages[0] = burnPercent;
+
+                bytes memory data = abi.encode(
+                    1,
+                    tokenAddresses,
+                    redemptionNonce,
+                    tokenShares,
+                    burnPercentages
+                );
+                sendMessage(
+                    chainSelector,
+                    crossChainIndexFactory,
+                    data,
+                    PayFeesIn.LINK
+                );
+                    
+            }
+        }
+    }
+
+    /**
     function redemption(
         uint amountIn,
         uint _crossChainFee,
@@ -724,7 +932,7 @@ contract IndexFactory is
                 // );
                 }
     }
-
+    */
     function completeRedemptionRequest(uint nonce) internal {
         uint wethAmount = redemptionNonceTotalValue[nonce];
         address requester = redemptionNonceRequester[nonce];
@@ -745,7 +953,6 @@ contract IndexFactory is
         emit Redemption(requester, outputToken, redemptionInputAmount[nonce], reallOut, block.timestamp);
         }
     }
-
     // }
 
     function getAmountOut(
@@ -765,14 +972,17 @@ contract IndexFactory is
 
     function getPortfolioBalance() public view returns (uint) {
         uint totalValue;
-        for (uint i = 0; i < totalCurrentList(); i++) {
-            uint64 tokenChainSelector = tokenChainSelector(currentList(i));
+        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
+        for (uint i = 0; i < totalCurrentList; i++) {
+            address tokenAddress = indexFactoryStorage.currentList(i);
+            uint64 tokenChainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
+            uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
             if (tokenChainSelector == currentChainSelector) {
             uint value = indexFactoryStorage.getAmountOut(
-                currentList(i),
+                tokenAddress,
                 address(weth),
-                IERC20(currentList(i)).balanceOf(address(indexToken)),
-                tokenSwapVersion(currentList(i))
+                IERC20(tokenAddress).balanceOf(address(indexToken)),
+                tokenSwapVersion
             );
             totalValue += value;
             }
@@ -899,7 +1109,7 @@ contract IndexFactory is
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
-
+        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
         (
             uint actionType,
             address[] memory tokenAddresses,
@@ -923,7 +1133,7 @@ contract IndexFactory is
             }
             if (
                 issuanceCompletedTokensCount[issuanceNonce] ==
-                totalCurrentList()
+                totalCurrentList
             ) {
                 completeIssuanceRequest(issuanceNonce);
             }
@@ -944,7 +1154,7 @@ contract IndexFactory is
             redemptionCompletedTokensCount[redemptionNonce] += tokenAddresses.length;
             if (
                 redemptionCompletedTokensCount[redemptionNonce] ==
-                totalCurrentList()
+                totalCurrentList
             ) {
                 completeRedemptionRequest(redemptionNonce);
             }
@@ -967,6 +1177,75 @@ contract IndexFactory is
             reweightWethValueByNonce[nonce] += wethAmount;
         }
     }
+
+    // function askValues() public onlyOwner {
+    //     updatePortfolioNonce += 1;
+
+    //     uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
+    //     uint latestCount = indexFactoryStorage.currentFilledCount();
+    //     for(uint i = 0; i < totalChains; i++){
+    //         uint64 chainSelector = indexFactoryStorage.currentChainSelectors(latestCount, i);
+    //         uint chainSelectorTokensCount = indexFactoryStorage.oracleChainSelecotrTokensCount(chainSelector);
+    //         if(chainSelector == currentChainSelector){
+    //             for (uint i = 0; i < chainSelectorTokensCount; i++) {
+    //                 address tokenAddress = indexFactoryStorage.currentList(i);
+    //                 uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
+    //                 uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
+
+    //                 uint value = getAmountOut(
+    //                 currentList(i),
+    //                 address(weth),
+    //                 IERC20(currentList(i)).balanceOf(address(indexToken)),
+    //                 tokenSwapVersion(currentList(i))
+    //             );
+    //             portfolioTotalValueByNonce[updatePortfolioNonce] += value;
+    //             tokenValueByNonce[updatePortfolioNonce][
+    //                 currentList(i)
+    //             ] += value;
+    //             updatedTokensValueCount[updatePortfolioNonce] += 1;
+    //             }
+    //         }
+    //     }
+
+
+    //     for (uint i = 0; i < totalCurrentList(); i++) {
+    //         uint64 tokenChainSelector = tokenChainSelector(currentList(i));
+    //         if (tokenChainSelector == currentChainSelector) {
+    //             uint value = getAmountOut(
+    //                 currentList(i),
+    //                 address(weth),
+    //                 IERC20(currentList(i)).balanceOf(address(indexToken)),
+    //                 tokenSwapVersion(currentList(i))
+    //             );
+    //             portfolioTotalValueByNonce[updatePortfolioNonce] += value;
+    //             tokenValueByNonce[updatePortfolioNonce][
+    //                 currentList(i)
+    //             ] += value;
+    //             updatedTokensValueCount[updatePortfolioNonce] += 1;
+    //         } else {
+    //             address crossChainIndexFactory = crossChainFactoryBySelector[
+    //                 tokenChainSelector
+    //             ];
+    //             address[] memory tokens = new address[](1);
+    //             tokens[0] = currentList(i);
+    //             uint[] memory zeroArr = new uint[](0);
+
+    //             bytes memory data = abi.encode(
+    //                 2,
+    //                 tokens,
+    //                 updatePortfolioNonce,
+    //                 zeroArr,
+    //                 zeroArr
+    //             );
+    //             sendMessage(
+    //                 tokenChainSelector,
+    //                 crossChainIndexFactory,
+    //                 data,
+    //                 PayFeesIn.LINK
+    //             );
+    //         }
+    //     }
+    // }
 
     // function askValues() public onlyOwner {
     //     updatePortfolioNonce += 1;

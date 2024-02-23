@@ -367,8 +367,7 @@ contract CrossChainIndexFactory is
         if(actionType == 0){
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
             .destTokenAmounts;
-        // address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
-        // uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
+        
         uint wethAmount = swap(tokenAmounts[0].token, address(weth), tokenAmounts[0].amount, address(crossChainVault), 3);
         uint[] memory oldTokenValues = new uint[](targetAddresses.length);
         uint[] memory newTokenValues = new uint[](targetAddresses.length);
@@ -400,14 +399,15 @@ contract CrossChainIndexFactory is
           sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
         }else if( actionType == 2){
             uint[] memory zeroArr = new uint[](0);
-            uint[] memory tokenValueArr = new uint[](1);
-            uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
-            tokenValueArr[0] = tokenValue;
+            uint[] memory tokenValueArr = new uint[](targetAddresses.length);
+            for(uint i = 0; i < targetAddresses.length; i++){
+                uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
+                tokenValueArr[i] = tokenValue;
+            }
             bytes memory data = abi.encode(2, targetAddresses, nonce, tokenValueArr, zeroArr);
             sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }else if( actionType == 3){
-            // uint portfolioValue = percentages[0];
-            // uint marketShare = extraValues[0];
+            
             uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
             uint sellPercent = tokenValue*100e18/percentages[0] - extraValues[0];
             uint sellValue = tokenValue - (extraValues[0]*percentages[0])/100e18;
