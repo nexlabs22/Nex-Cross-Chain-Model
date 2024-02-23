@@ -67,7 +67,7 @@ export function GetPositionsHistory2() {
 				fromBlock: BigInt(0),
 			})
 			const userMintRequestLogs: any = mintRequestlogs.filter((log) => log.args.user == accountAddress)
-
+			console.log("User Mint Request Logs",  userMintRequestLogs)
 			userMintRequestLogs.forEach((log: any) => {
 				const obj: Positions = {
 					side: 'Mint Request',
@@ -76,6 +76,7 @@ export function GetPositionsHistory2() {
 					outputAmount: num(log.args.outputAmount),
 					tokenAddress: log.args.inputToken as `0x${string}`,
 					timestamp: Number(log.args.time),
+					txHash: log.transactionHash,
 					indexName: key,
 				}
 				positions0.push(obj)
@@ -104,6 +105,7 @@ export function GetPositionsHistory2() {
 					outputAmount: num(log.args.outputAmount),
 					tokenAddress: log.args.outputToken as `0x${string}`,
 					timestamp: Number(log.args.time),
+					txHash: log.transactionHash,
 					indexName: key,
 				}
 				positions0.push(obj)

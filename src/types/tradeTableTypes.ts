@@ -6,4 +6,5 @@ export interface Positions {
 	inputAmount: number;
 	outputAmount: number;
 	indexName: string;
+	txHash: string;
 }

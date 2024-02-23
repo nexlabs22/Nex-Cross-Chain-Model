@@ -40,6 +40,7 @@ import {
 	goerliLinkWethPoolAddress,
 	sepoliaAnfiV2IndexToken,
 	sepoliaCrypto5V2IndexToken,
+	goerliCR5PoolAddress,
 } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
@@ -87,6 +88,7 @@ import { useLandingPageStore } from '@/store/store'
 import ConnectButton from '@/components/ConnectButton'
 import getPoolAddress from '@/uniswap/utils'
 import { sepoliaTokens } from '@/constants/goerliTokens'
+import getPriceHistory from '@/utils/getHistoryPriceByDate'
 
 interface User {
 	email: string
@@ -137,7 +139,8 @@ export default function Portfolio() {
 		error: errorAnfi,
 		data: dataAnfi,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: getPoolAddress(anfiDetails[0].address, anfiDetails[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		// variables: { poolAddress: getPoolAddress(anfiDetails[0].address, anfiDetails[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
 	const {
@@ -145,10 +148,26 @@ export default function Portfolio() {
 		error: errorCR5,
 		data: dataCR5,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: getPoolAddress(cr5Details[0].address, cr5Details[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
-	console.log(dataAnfi, dataCR5)
+	// *** FUNCTION TO GET THE INDEX PRICE HISTORY *** // Commented for later use
+	// useEffect(()=>{
+	// 	async function getCR5PriceHistory() {
+	// 		//  const cr5poolAddress = getPoolAddress(cr5Details[0].address, cr5Details[0].decimals, false )
+	// 		const cr5poolAddress = '0x70393314c70C903ebf6ef073783B7F207cC9A5e2'
+	// 		const numberOfDays = 45
+	// 		const priceList = []
+	// 		for  (let i=0; i<=numberOfDays; i++) {
+	// 			const price = await getPriceHistory(cr5poolAddress as string, 86400 * i)
+	// 			priceList.push({date : new Date().getTime() - (86400 * i), price})
+	// 		}
+	// 		console.log(priceList)
+	// 		return priceList
+	// 	}
+
+	// 	// getCR5PriceHistory()
+	// })
 
 	const [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
 	const indexPercent = { anfi: anfiPercent, cr5: crypto5Percent }
@@ -159,7 +178,7 @@ export default function Portfolio() {
 		const CR5Data = dataCR5.poolDayDatas
 		for (let i = 0; i <= ANFIData.length - 1; i++) {
 			const chartObj: { time: number; value: number } = { time: 0, value: 0 }
-			const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i].token0Price)
+			const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i]?.token0Price||0)
 			chartObj.time = ANFIData[i].date
 			chartObj.value = value
 			chartData.push(chartObj)
@@ -175,7 +194,7 @@ export default function Portfolio() {
 		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
 
 		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price || 0
-		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price || 0
+		const yesterdayCR5Price = CR5Data[CR5Data.length - 2]?.token0Price || 0
 		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
 
 		setDayChange({ anfi: todayANFIPrice - yesterdayANFIPrice, cr5: todayCR5Price - yesterdayCR5Price })
@@ -722,10 +741,6 @@ export default function Portfolio() {
 										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
 									</div>
 								</div>
-
-
-
-
 							</section>
 						)
 					}

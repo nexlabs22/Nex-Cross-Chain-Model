@@ -7,6 +7,8 @@ export const sepoliaUsdtAddress = '0xE8888fE3Bde6f287BDd0922bEA6E0bF6e5f418e7';
 export const goerliLinkAddress = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB';
 export const sepoliaLinkAddress = '0x779877A7B0D9E8603169DdbD7836e478b4624789';
 
+export const sepoliaUniswapV3FactoryAddress = '0x0227628f3F023bb0B980b67D528571c95c6DaC1c'
+
 export const goerliAnfiIndexToken = "0x40d284001E3f6501C3f59FA4719776f973Ef6F91";
 export const goerliCrypto5IndexToken = "0x63E7c9AD503973059D94EcCc0EB1daFC0fb7497c";
 
@@ -36,6 +38,7 @@ export const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
 export const goerliUsdtWethPoolAddress = '0xE297447C5fCA561cAC6C1cEDc91Eab74D68dC6eb'
 export const goerlianfiPoolAddress = '0xEdFEEeFf1DAF631b4aBC8C021Cff4b1267547eF2';
+export const goerliCR5PoolAddress = '0x9329c764A2d8B02b01F5eC8fb6F4BB0a7155cFc0';
 export const goerliLinkWethPoolAddress = '0x4Cff90F02897259E1aB69FF6bbD370EA14529bD8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
 export const crypto5PoolAddress = '0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
