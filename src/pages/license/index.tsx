@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import DappNavbar from '@/components/DappNavbar'
 import Footer from '@/components/Footer'
 import Image from 'next/image'
+import Link from 'next/link'
 import Head from 'next/head'
 import { Menu, MenuButton } from '@szhsin/react-menu'
 import { useLandingPageStore } from '@/store/store'
@@ -18,15 +19,23 @@ export default function Licenses() {
 				<meta name="description" content="" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className={`m-0 min-h-screen h-fit w-screen ${mode == 'dark' ? 'text-[#F2F2F2] bg-gradient-to-tl from-[#050505] to-[#050505]' : 'text-[#2A2A2A] bg-whiteBackground-500'} p-0 overflow-x-hidden`}>
+			<main
+				className={`m-0 min-h-screen h-fit w-screen ${
+					mode == 'dark' ? 'text-[#F2F2F2] bg-gradient-to-tl from-[#050505] to-[#050505]' : 'text-[#2A2A2A] bg-whiteBackground-500'
+				} p-0 overflow-x-hidden`}
+			>
 				<section className="h-full w-fit overflow-x-hidde">
 					<DappNavbar />
 					<section className="w-screen h-fit flex flex-col items-stretch justify-start px-4 pt-10 pb-12">
-						<div className="w-full p-10 flex-grow flex flex-col  justify-between">
-							<strong className='text-2xl'>Trading View</strong>
+						<div className="w-full p-10 flex-grow flex flex-col justify-between">
+							<strong className="text-2xl">TradingView</strong>
 							<p>
 								Nexlabs has partnered with TradingView, a top-tier charting and trading platform, to elevate your experience. Access advanced charting and market analysis tools, amplifying
-								success and gaining valuable insights into financial markets.
+								success and gaining valuable insights into
+								<Link href="https://www.tradingview.com/markets/stocks-usa/market-movers-pre-market-gainers/">
+									<em> financial markets</em>
+								</Link>
+								.
 							</p>
 						</div>
 						{/* <div className="w-full xl:w-9/12 flex-grow flex flex-col "></div> */}
