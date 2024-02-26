@@ -58,6 +58,7 @@ contract IndexFactoryBalancer is
     mapping(uint => uint) public portfolioTotalValueByNonce;
     mapping(uint => uint) public updatedTokensValueCount;
     mapping(uint => mapping(address => uint)) public tokenValueByNonce;
+    mapping(uint => mapping(uint64 => uint)) public chainValueByNonce;
 
     mapping(uint => uint) public reweightWethValueByNonce;
     mapping(uint => uint) public reweightTokensCount;
@@ -368,6 +369,7 @@ contract IndexFactoryBalancer is
         } else if (actionType == 2) {
             portfolioTotalValueByNonce[nonce] += value1[0];
             tokenValueByNonce[nonce][tokenAddresses[0]] += value1[0];
+            chainValueByNonce[nonce][sourceChainSelector] += value1[0];
             updatedTokensValueCount[nonce] += 1;
         } else if (actionType == 3) {
             Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
@@ -516,6 +518,74 @@ contract IndexFactoryBalancer is
     //         }
     //     }
     // }
+
+    function firstReweightAction() public onlyOwner {
+        uint nonce = updatePortfolioNonce;
+        uint portfolioValue = portfolioTotalValueByNonce[nonce];
+
+        uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
+        uint latestCount = indexFactoryStorage.currentFilledCount();
+
+        for(uint i = 0; i < totalChains; i++){
+            uint64 chainSelector = indexFactoryStorage.currentChainSelectors(latestCount, i);
+            uint chainSelectorCurrentTokensCount = indexFactoryStorage.currentChainSelecotrTokensCount(chainSelector);
+            uint chainSelectorOracleTokensCount = indexFactoryStorage.oracleChainSelecotrTokensCount(chainSelector);
+            uint chainSelectorTotalShares = indexFactoryStorage.oracleChainSelecotrTotalShares(chainSelector);
+            uint chainValue = chainValueByNonce[nonce][chainSelector];
+
+            if((chainValue*100)/portfolioValue > chainSelectorTotalShares){
+                 if(chainSelector == currentChainSelector){
+                    address tokenAddress = indexFactoryStorage.currentList(i);
+                    uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
+                    uint tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(tokenAddress);
+                    uint swapWethAmount;
+                    for(uint i = 0; i < chainSelectorCurrentTokensCount; i++){
+                        uint wethAmount = _swapSingle(
+                        tokenAddress,
+                        address(weth),
+                        swapAmount,
+                        address(indexToken),
+                        tokenSwapVersion
+                        );
+                        swapWethAmount += wethAmount; 
+                    }
+                    uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/100e18;
+                    uint extraWethAmount = swapWethAmount - wethAmountToSwap;
+                    for(uint i = 0; i < chainSelectorOracleTokensCount; i++){
+                        uint wethAmount = _swapSingle(
+                        address(weth),
+                        currentList(i),
+                        wethAmountToSwap*tokenMarketShare/100e18,
+                        address(indexToken),
+                        tokenSwapVersion(currentList(i))
+                        );
+                        // swapWethAmount += wethAmount; 
+                    }
+                 }else{
+                    address crossChainIndexFactory = crossChainFactoryBySelector(
+                chainSelector
+                );
+                
+                address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
+                uint[] memory zeroArray = new uint[](0);
+
+                bytes memory data = abi.encode(
+                    2,
+                    tokenAddresses,
+                    updatePortfolioNonce,
+                    zeroArray,
+                    zeroArray
+                );
+                sendMessage(
+                    chainSelector,
+                    crossChainIndexFactory,
+                    data,
+                    PayFeesIn.LINK
+                );
+                }
+                 }
+            }
+    }
 
     /**
     function firstReweightAction() public onlyOwner {

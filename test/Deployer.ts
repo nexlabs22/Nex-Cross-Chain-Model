@@ -220,6 +220,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         indexToken,
         indexFactoryStorage,
         indexFactory,
+        indexFactoryBalancer,
         crossChainVault,
         crossChainIndexFactory,
         oracle,
