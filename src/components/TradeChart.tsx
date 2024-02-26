@@ -36,15 +36,15 @@ const TradeChartBox = () => {
 		<>
 			<section className="h-full w-full">
 				{/* <div className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300"> */}
-				<div className={`h-full w-full p-3 rounded-2xl border border-gray-300/50 ${mode=== 'dark' ? 'bg-[#131722]': 'bg-[#FFFFFF]'} shadow-md shadow-gray-300`}>
+				<div className={`h-full w-full p-3 rounded-2xl border border-gray-300/50 ${mode === 'dark' ? 'bg-[#131722]' : 'bg-[#FFFFFF]'} shadow-md shadow-gray-300`}>
 					{/* <div className="flex flex-row items-start justify-between px-2 mt-2 mb-6"> */}
-						{/* <div className="flex flex-col items-start justify-start">
+					{/* <div className="flex flex-col items-start justify-start">
 							<h5 className="interBlack text-lg text-blackText-500">{selectedTradingProduct}</h5>
 							<h5 className={`interMedium text-sm ${chart24hchange > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'}`}>
 								{chart24hchange ? (chart24hchange > 0 ? '+ ' + chart24hchange.toFixed(2) : chart24hchange.toFixed(2)) : '0.00'}%
 							</h5>
 						</div> */}
-						{/* <Menu
+					{/* <Menu
 							menuButton={
 								<div className="w-fit h-fit px-3 py-2 ml-2 hidden lg:flex flex-row items-center justify-center gap-1 rounded-md bg-colorSeven-500 shadow-sm shadow-blackText-500">
 									<h5 className="text-sm interExtraBold titleShadow text-whiteText-500">
@@ -119,10 +119,9 @@ const TradeChartBox = () => {
 						</Menu> */}
 					{/* </div> */}
 					{/* <Chart data={chartData} /> */}
-					<div className='h-[70vh] w-full'>
-						<TradingViewChart selectedIndices={[]} index={selectedTradingProduct}  />
+					<div className="h-[70vh] w-full">
+						<TradingViewChart selectedIndices={[]} index={selectedTradingProduct} page={'trade'} />
 					</div>
-					
 				</div>
 			</section>
 		</>

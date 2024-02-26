@@ -115,10 +115,10 @@ const SwapV2Defi = () => {
 		setNftImage,
 		setTradeTableReload,
 		setEthPriceInUsd,
-		ethPriceInUsd
+		ethPriceInUsd,
 	} = useTradePageStore()
 
-	const OurIndexCoins = ['ANFI', 'CRYPTO5'];
+	const OurIndexCoins = ['ANFI', 'CRYPTO5']
 	const address = useAddress()
 	const signer = useSigner()
 
@@ -128,8 +128,8 @@ const SwapV2Defi = () => {
 
 	//integration hooks
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
-	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, (swapToCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi))
-	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, (swapFromCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi))
+	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
+	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
 
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
 	const toTokenContract = useContract(swapToCur.address, tokenAbi)
@@ -153,10 +153,10 @@ const SwapV2Defi = () => {
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
 
 	const curr = OurIndexCoins.includes(swapFromCur.Symbol) ? swapFromCur : swapToCur
-	const IndexContract : UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
-	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data /10000;
+	const IndexContract: UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
+	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data / 10000
 
-	const {mode} = useLandingPageStore()
+	const { mode } = useLandingPageStore()
 
 	const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
 	const defiPortfolioValue = GetDefiPortfolioBalance()
@@ -170,7 +170,7 @@ const SwapV2Defi = () => {
 					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 					const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
 					const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
-					console.log("HHH2", output)
+					console.log('HHH2', output)
 					setSecondInputValue(num(output).toString())
 				}
 			} catch (error) {
@@ -180,18 +180,17 @@ const SwapV2Defi = () => {
 		// getIssuanceOutput()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
 
-
 	useEffect(() => {
 		async function getIssuanceOutput2() {
 			// console.log("HHH")
 			try {
 				if ((swapToCur.address == sepoliaAnfiV2IndexToken || swapToCur.address == sepoliaCrypto5V2IndexToken) && convertedInputValue) {
-					const currentPortfolioValue = swapToCur.address == sepoliaAnfiV2IndexToken ? defiPortfolioValue.data : crossChainPortfolioValue.data;
-					const currentTotalSupply = Number(toTokenTotalSupply.data);
-					let inputValue;
-					if(swapFromCur.address == sepoliaWethAddress){
-						inputValue = Number(firstInputValue)*1e18
-					}else{
+					const currentPortfolioValue = swapToCur.address == sepoliaAnfiV2IndexToken ? defiPortfolioValue.data : crossChainPortfolioValue.data
+					const currentTotalSupply = Number(toTokenTotalSupply.data)
+					let inputValue
+					if (swapFromCur.address == sepoliaWethAddress) {
+						inputValue = Number(firstInputValue) * 1e18
+					} else {
 						const sepoliaPublicClient = createPublicClient({
 							chain: sepolia,
 							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
@@ -201,20 +200,20 @@ const SwapV2Defi = () => {
 							address: sepoliaCrypto5V2Factory,
 							abi: crossChainIndexFactoryV2Abi,
 							functionName: 'getAmountOut',
-							args:[swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3]
-						  })
-						  inputValue = Number(inputEthValue)
+							args: [swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3],
+						})
+						inputValue = Number(inputEthValue)
 					}
-					let newPortfolioValue:number = 0;
-					if(swapToCur.address == sepoliaCrypto5V2IndexToken){
+					let newPortfolioValue: number = 0
+					if (swapToCur.address == sepoliaCrypto5V2IndexToken) {
 						newPortfolioValue = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
-					}else{
+					} else {
 						newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
 					}
 					// console.log("newPortfolioValue2", newPortfolioValue2)
-					const newTotalSupply = currentTotalSupply*newPortfolioValue/Number(currentPortfolioValue);
-					const amountToMint = newTotalSupply - currentTotalSupply;
-					console.log("amountToMint",inputValue, amountToMint, newTotalSupply, currentTotalSupply, newPortfolioValue, currentPortfolioValue)
+					const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
+					const amountToMint = newTotalSupply - currentTotalSupply
+					console.log('amountToMint', inputValue, amountToMint, newTotalSupply, currentTotalSupply, newPortfolioValue, currentPortfolioValue)
 					setSecondInputValue(num(amountToMint).toString())
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
@@ -250,15 +249,15 @@ const SwapV2Defi = () => {
 		async function getRedemptionOutput2() {
 			try {
 				if ((swapFromCur.address == sepoliaAnfiV2IndexToken || swapFromCur.address == sepoliaCrypto5V2IndexToken) && convertedInputValue) {
-					let outputValue;
-					const currentPortfolioValue = swapFromCur.address == sepoliaAnfiV2IndexToken ? defiPortfolioValue.data : crossChainPortfolioValue.data;
-					const currentTotalSupply = Number(fromTokenTotalSupply.data);
-					const newTotalSupply = currentTotalSupply - Number(convertedInputValue);
-					const newPortfolioValue = Number(currentPortfolioValue)*newTotalSupply/currentTotalSupply
-					const ethAmountOut = (Number(currentPortfolioValue) - newPortfolioValue)*0.999
-					if(swapToCur.address == sepoliaWethAddress){
+					let outputValue
+					const currentPortfolioValue = swapFromCur.address == sepoliaAnfiV2IndexToken ? defiPortfolioValue.data : crossChainPortfolioValue.data
+					const currentTotalSupply = Number(fromTokenTotalSupply.data)
+					const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
+					const newPortfolioValue = (Number(currentPortfolioValue) * newTotalSupply) / currentTotalSupply
+					const ethAmountOut = (Number(currentPortfolioValue) - newPortfolioValue) * 0.999
+					if (swapToCur.address == sepoliaWethAddress) {
 						outputValue = ethAmountOut
-					}else{
+					} else {
 						const sepoliaPublicClient = createPublicClient({
 							chain: sepolia,
 							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
@@ -268,11 +267,11 @@ const SwapV2Defi = () => {
 							address: sepoliaCrypto5V2Factory,
 							abi: crossChainIndexFactoryV2Abi,
 							functionName: 'getAmountOut',
-							args:[sepoliaWethAddress, swapToCur.address, (ethAmountOut).toFixed(0), 3]
-						  })
-						  outputValue = Number(outPutTokenValue)
+							args: [sepoliaWethAddress, swapToCur.address, ethAmountOut.toFixed(0), 3],
+						})
+						outputValue = Number(outPutTokenValue)
 					}
-					console.log("outputData:", Number(currentPortfolioValue)/1e18, currentTotalSupply/1e18, newTotalSupply/1e18, newPortfolioValue/1e18, ethAmountOut/1e18, outputValue/1e18)
+					console.log('outputData:', Number(currentPortfolioValue) / 1e18, currentTotalSupply / 1e18, newTotalSupply / 1e18, newPortfolioValue / 1e18, ethAmountOut / 1e18, outputValue / 1e18)
 					// let inputValue;
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 					// const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
@@ -313,7 +312,7 @@ const SwapV2Defi = () => {
 
 				if (token0 !== tokenDetails.address) {
 					isRevPool = true
-						;[decimal0, decimal1] = SwapNumbers(decimal0, decimal1)
+					;[decimal0, decimal1] = SwapNumbers(decimal0, decimal1)
 				}
 
 				const calculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** decimal1 / 10 ** decimal0)
@@ -327,14 +326,12 @@ const SwapV2Defi = () => {
 					setTo1UsdPrice(fromPriceInUSD)
 				}
 
-
 				if (swapFromCur.Symbol === 'WETH' || swapFromCur.Symbol === 'ETH') {
 					setFrom1UsdPrice(ethPriceInUsd)
 				}
 				if (swapToCur.Symbol === 'WETH' || swapToCur.Symbol === 'ETH') {
 					setTo1UsdPrice(ethPriceInUsd)
 				}
-
 			} catch (err) {
 				console.log(err)
 			}
@@ -557,45 +554,7 @@ const SwapV2Defi = () => {
 	])
 
 	const [allCoinsList, setAllCoinsList] = useState<Coin[][]>([[]])
-	// [
-	// 	// {
-	// 	// 	id: 0,
-	// 	// 	logo: cr5Logo.src,
-	// 	// 	name: 'CRYPTO5',
-	// 	// 	Symbol: 'CRYPTO5',
-	// 	// 	address: goerliCrypto5IndexToken,
-	// 	// 	factoryAddress: goerliCrypto5Factory,
-	// 	// 	decimals: 18
-	// 	// },
-	// 	{
-	// 		id: 1,
-	// 		logo: anfiLogo.src,
-	// 		name: 'ANFI',
-	// 		Symbol: 'ANFI',
-	// 		address: goerliAnfiV2IndexToken,
-	// 		factoryAddress: goerliAnfiV2Factory,
-	// 		decimals: 18,
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
-	// 		name: 'Tether',
-	// 		Symbol: 'USDT',
-	// 		address: goerliUsdtAddress,
-	// 		factoryAddress: '',
-	// 		decimals: 18,
-	// 	},
-	// 	{
-	// 		id: 3,
-	// 		logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
-	// 		name: 'Ethereum',
-	// 		Symbol: 'ETH',
-	// 		address: goerliWethAddress,
-	// 		factoryAddress: '',
-	// 		decimals: 18,
-	// 	},
-	// ],
-	// ])
+
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
 
 	const [loadingTokens, setLoadingTokens] = useState(true)
@@ -664,34 +623,32 @@ const SwapV2Defi = () => {
 	// const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([OurIndexCoinList, OtherCoinList])
 
 	useEffect(() => {
-		const finalCoinList = isMainnet ? coinsList : testnetCoinsList[0];
-		const OurIndexCoinList: Coin[] = finalCoinList.filter(coin => OurIndexCoins.includes(coin.Symbol));
-		const OtherCoinList: Coin[] = finalCoinList.filter(coin => !OurIndexCoins.includes(coin.Symbol));
-		setMergedCoinList([OtherCoinList, OurIndexCoinList]);
-	  }, [isMainnet]);
+		const finalCoinList = isMainnet ? coinsList : testnetCoinsList[0]
+		const OurIndexCoinList: Coin[] = finalCoinList.filter((coin) => OurIndexCoins.includes(coin.Symbol))
+		const OtherCoinList: Coin[] = finalCoinList.filter((coin) => !OurIndexCoins.includes(coin.Symbol))
+		setMergedCoinList([OtherCoinList, OurIndexCoinList])
+	}, [isMainnet])
 
 	const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([[], []])
 
-
 	function Switching() {
-		let switchReserve: Coin = swapFromCur;
+		let switchReserve: Coin = swapFromCur
 		changeSwapFromCur(swapToCur)
 		changeSwapToCur(switchReserve)
 
-		if(OurIndexCoins.includes(switchReserve.Symbol)){
-			if(mergedCoinList[0].some(obj => OurIndexCoins.includes(obj.Symbol))){
+		if (OurIndexCoins.includes(switchReserve.Symbol)) {
+			if (mergedCoinList[0].some((obj) => OurIndexCoins.includes(obj.Symbol))) {
 				const newArray = [mergedCoinList[1], mergedCoinList[0]]
 				setMergedCoinList(newArray)
-			}else{
+			} else {
 				const newArray = [mergedCoinList[0], mergedCoinList[1]]
 				setMergedCoinList(newArray)
-				
 			}
-		}else{
-			if(mergedCoinList[0].some(obj => OurIndexCoins.includes(obj.Symbol))){
+		} else {
+			if (mergedCoinList[0].some((obj) => OurIndexCoins.includes(obj.Symbol))) {
 				const newArray = [mergedCoinList[0], mergedCoinList[1]]
 				setMergedCoinList(newArray)
-			}else{
+			} else {
 				const newArray = [mergedCoinList[1], mergedCoinList[0]]
 				setMergedCoinList(newArray)
 			}
@@ -713,13 +670,13 @@ const SwapV2Defi = () => {
 	}
 
 	const changeFirstInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const enteredValue = e?.target?.value 
-		if(Number(enteredValue) != 0 && Number(enteredValue) < 0.00001){
+		const enteredValue = e?.target?.value
+		if (Number(enteredValue) != 0 && Number(enteredValue) < 0.00001) {
 			GenericToast({
 				type: 'error',
 				message: 'Please enter the input value greater than this value...',
 			})
-			return 
+			return
 		}
 		setFirstInputValue(e?.target?.value)
 	}
@@ -760,13 +717,14 @@ const SwapV2Defi = () => {
 			if (!fromTokenBalance.data) {
 				return 0
 			}
-			// return (Number(fromTokenBalance.data) / 1e18).toFixed(2)
-			else
-				return FormatToViewNumber({
-					// value: Number((fromTokenBalance.data))/1e18,
+			else {
+				const bal = FormatToViewNumber({
 					value: Number(ethers.utils.formatEther(fromTokenBalance.data)) as number,
 					returnType: 'string',
-				})
+				}).toString()
+				const balWithoutComma = bal.includes(',') ? bal.split(',').join(''): bal;
+				return balWithoutComma;
+			}
 		}
 	}
 
@@ -851,8 +809,6 @@ const SwapV2Defi = () => {
 		}
 	}
 
-	
-
 	async function mintRequestTokens() {
 		try {
 			if (isChecked) {
@@ -869,20 +825,20 @@ const SwapV2Defi = () => {
 						message: `Please enter amount you want to mint`,
 					})
 				}
-				if(swapToCur.address == sepoliaAnfiV2IndexToken) {
-				await mintRequestHook.mutateAsync({
-					args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
-					overrides: {
-						gasLimit: 1000000,
-					},
-				})
+				if (swapToCur.address == sepoliaAnfiV2IndexToken) {
+					await mintRequestHook.mutateAsync({
+						args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
+						overrides: {
+							gasLimit: 1000000,
+						},
+					})
 				} else {
-				await mintRequestHook.mutateAsync({
-					args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
-					overrides: {
-						gasLimit: 3000000,
-					},
-				})
+					await mintRequestHook.mutateAsync({
+						args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
+						overrides: {
+							gasLimit: 3000000,
+						},
+					})
 				}
 			}
 		} catch (error) {
@@ -907,22 +863,22 @@ const SwapV2Defi = () => {
 						message: `Please enter amount you want to mint`,
 					})
 				}
-				if(swapToCur.address == sepoliaAnfiV2IndexToken) {
-				await mintRequestEthHook.mutateAsync({
-					args: [(Number(firstInputValue) * 1e18).toString()],
-					overrides: {
-						gasLimit: 1000000,
-						value: convertedValue,
-					},
-				})
-				}else{
-				await mintRequestEthHook.mutateAsync({
-					args: [(Number(firstInputValue) * 1e18).toString(), '0'],
-					overrides: {
-						gasLimit: 3000000,
-						value: convertedValue,
-					},
-				})
+				if (swapToCur.address == sepoliaAnfiV2IndexToken) {
+					await mintRequestEthHook.mutateAsync({
+						args: [(Number(firstInputValue) * 1e18).toString()],
+						overrides: {
+							gasLimit: 1000000,
+							value: convertedValue,
+						},
+					})
+				} else {
+					await mintRequestEthHook.mutateAsync({
+						args: [(Number(firstInputValue) * 1e18).toString(), '0'],
+						overrides: {
+							gasLimit: 3000000,
+							value: convertedValue,
+						},
+					})
 				}
 			}
 		} catch (error) {
@@ -946,17 +902,17 @@ const SwapV2Defi = () => {
 						message: `Please enter amount you want to burn`,
 					})
 				}
-				if(swapFromCur.address == sepoliaAnfiV2IndexToken) {
-				await burnRequestHook.mutateAsync({
-					args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
-				})
-				}else{
-				await burnRequestHook.mutateAsync({
-					args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
-					overrides: {
-						gasLimit: 3000000,
-					},
-				})
+				if (swapFromCur.address == sepoliaAnfiV2IndexToken) {
+					await burnRequestHook.mutateAsync({
+						args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
+					})
+				} else {
+					await burnRequestHook.mutateAsync({
+						args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
+						overrides: {
+							gasLimit: 3000000,
+						},
+					})
 				}
 			}
 		} catch (error) {
@@ -964,8 +920,7 @@ const SwapV2Defi = () => {
 		}
 	}
 
-
-	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapFromCur.Symbol !== "CRYPTO5" && swapToCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'CRYPTO5') ? true : false
+	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapFromCur.Symbol !== 'CRYPTO5' && swapToCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'CRYPTO5') ? true : false
 
 	return (
 		<>
@@ -1001,7 +956,10 @@ const SwapV2Defi = () => {
 							</p>
 							<p
 								// onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2e18).toString())}
-								onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())}
+								onClick={() => {
+									console.log((Number(getPrimaryBalance()) / 2).toString())
+									setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
+								}}
 								className={`text-base lg:text-xs  interBold ${
 									mode == 'dark'
 										? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
@@ -1015,7 +973,10 @@ const SwapV2Defi = () => {
 								HALF
 							</p>
 							<p
-								onClick={() => setFirstInputValue(Number(getPrimaryBalance()).toString())}
+								onClick={() => {
+									console.log(Number(getPrimaryBalance()).toString())
+									setFirstInputValue(Number(getPrimaryBalance()).toString())
+								}}
 								className={`text-base lg:text-xs  interBold ${
 									mode == 'dark'
 										? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
@@ -1126,8 +1087,8 @@ const SwapV2Defi = () => {
 									color="#5E869B"
 									content={
 										<div>
-											<p className={`${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} text-sm interBold mb-2`}>No cryptocurrencies in your wallet? No problem!</p>
-											<p className={`${mode == "dark" ? "text-whiteText-500" : "text-blackText-500"} text-sm interMedium`}>
+											<p className={`${mode == 'dark' ? 'text-whiteText-500' : 'text-blackText-500'} text-sm interBold mb-2`}>No cryptocurrencies in your wallet? No problem!</p>
+											<p className={`${mode == 'dark' ? 'text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
 												Revolutionize your trading experience with Nex Labs – introducing fiat payments for the first time, providing you seamless and convenient transactions in
 												traditional currencies.
 											</p>
@@ -1149,7 +1110,9 @@ const SwapV2Defi = () => {
 										onClick={approve}
 										disabled={isButtonDisabled}
 										className={`text-xl titleShadow interBold ${
-											mode == 'dark' ? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat' : ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+											mode == 'dark'
+												? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
+												: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
 										} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${
 											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 										} hover:bg-colorTwo-500/30`}
@@ -1165,15 +1128,16 @@ const SwapV2Defi = () => {
 										onClick={mintRequest}
 										disabled={isButtonDisabled}
 										className={`text-xl titleShadow interBold ${
-											mode == 'dark' ? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat' : ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+											mode == 'dark'
+												? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
+												: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
 										}  active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded-lg ${
 											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 										} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
 										style={{
-											boxShadow:
-											  mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-											backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
-										  }}
+											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+										}}
 									>
 										Mint
 									</button>
@@ -1198,16 +1162,16 @@ const SwapV2Defi = () => {
 						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH</p>
 					</div> */}
 					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-black/70"}  pb-2`}>Platform Fees</p>
+						<p className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-black/70'}  pb-2`}>Platform Fees</p>
 						<div className="flex flex-row items-center justify-start gap-2">
-							<p className={`text-sm interMedium ${mode == "dark" ? " text-whiteText-500" : "text-black/70"} `}>
+							<p className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-black/70'} `}>
 								{FormatToViewNumber({ value: Number(firstInputValue) * feeRate, returnType: 'string' })} {swapFromCur.Symbol} ({feeRate * 100} %)
 							</p>
 							<GenericTooltip
-								color="#5E869B" 
+								color="#5E869B"
 								content={
 									<div>
-										<p className={`${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-sm interMedium`}>
+										<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
 											Platform fees support ongoing development and security, ensuring a sustainable and innovative decentralized financial ecosystem.
 										</p>
 									</div>
@@ -1229,34 +1193,36 @@ const SwapV2Defi = () => {
 						<button
 							onClick={toggleMainnetCheckbox}
 							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								isMainnet ? ` ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"}  text-white titleShadow` : ` ${mode == "dark" ? " bg-transparent border border-gray-300" : "bg-gradient-to-tl from-gray-200 to-gray-100"}  text-gray-300`
+								isMainnet
+									? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
+									: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
 							} interBold text-xl`}
 							style={{
-								boxShadow:
-								  mode == "dark" && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-								backgroundImage: mode == "dark" && isMainnet ? `url('${mesh1.src}')` : "",
-							  }}
+								boxShadow: mode == 'dark' && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+								backgroundImage: mode == 'dark' && isMainnet ? `url('${mesh1.src}')` : '',
+							}}
 						>
 							Mainnet
 						</button>
 						<button
 							onClick={toggleMainnetCheckbox}
 							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								!isMainnet ? ` ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"}  text-white titleShadow` : ` ${mode == "dark" ? " bg-transparent border border-gray-300" : "bg-gradient-to-tl from-gray-200 to-gray-100"}  text-gray-300`
+								!isMainnet
+									? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
+									: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
 							} interBold text-xl`}
 							style={{
-								boxShadow:
-								  mode == "dark" && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-								backgroundImage: mode == "dark" && !isMainnet ? `url('${mesh1.src}')` : "",
-							  }}
+								boxShadow: mode == 'dark' && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+								backgroundImage: mode == 'dark' && !isMainnet ? `url('${mesh1.src}')` : '',
+							}}
 						>
 							Testnet
 						</button>
 					</div>
 
 					<ReactSearchAutocomplete items={mergedCoinList[0]} formatResult={formatResult} autoFocus className="relative z-50" />
-					<div className={`w-full h-fit max-h-[50vh] ${mode == "dark" ? " bg-transparent" : "bg-white"}  overflow-hidden my-4 px-2`}>
-						<div className={`w-full h-fit max-h-[50vh] ${mode == "dark" ? " bg-transparent" : "bg-white"} overflow-y-auto  py-2`} id="coinsList">
+					<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'}  overflow-hidden my-4 px-2`}>
+						<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'} overflow-y-auto  py-2`} id="coinsList">
 							{mergedCoinList[0].map((item, index) => {
 								return (
 									<div
@@ -1269,9 +1235,9 @@ const SwapV2Defi = () => {
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
 											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className={`text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  interBold`}>{item.Symbol}</h5>
+											<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
 										</div>
-										<h5 className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "ext-gray-300"} t inter italic`}>{item.Symbol}</h5>
+										<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'ext-gray-300'} t inter italic`}>{item.Symbol}</h5>
 									</div>
 								)
 							})}
@@ -1282,36 +1248,38 @@ const SwapV2Defi = () => {
 			<GenericModal isOpen={isToCurrencyModalOpen} onRequestClose={closeToCurrencyModal}>
 				<div className="w-full h-fit px-2">
 					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
-					<button
+						<button
 							onClick={toggleMainnetCheckbox}
 							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								isMainnet ? ` ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"}  text-white titleShadow` : ` ${mode == "dark" ? " bg-transparent border border-gray-300" : "bg-gradient-to-tl from-gray-200 to-gray-100"}  text-gray-300`
+								isMainnet
+									? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
+									: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
 							} interBold text-xl`}
 							style={{
-								boxShadow:
-								  mode == "dark" && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-								backgroundImage: mode == "dark" && isMainnet ? `url('${mesh1.src}')` : "",
-							  }}
+								boxShadow: mode == 'dark' && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+								backgroundImage: mode == 'dark' && isMainnet ? `url('${mesh1.src}')` : '',
+							}}
 						>
 							Mainnet
 						</button>
 						<button
 							onClick={toggleMainnetCheckbox}
 							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								!isMainnet ? ` ${mode == "dark" ? " bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"}  text-white titleShadow` : ` ${mode == "dark" ? " bg-transparent border border-gray-300" : "bg-gradient-to-tl from-gray-200 to-gray-100"}  text-gray-300`
+								!isMainnet
+									? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
+									: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
 							} interBold text-xl`}
 							style={{
-								boxShadow:
-								  mode == "dark" && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-								backgroundImage: mode == "dark" && !isMainnet ? `url('${mesh1.src}')` : "",
-							  }}
+								boxShadow: mode == 'dark' && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+								backgroundImage: mode == 'dark' && !isMainnet ? `url('${mesh1.src}')` : '',
+							}}
 						>
 							Testnet
 						</button>
 					</div>
 					<ReactSearchAutocomplete items={mergedCoinList[1]} formatResult={formatResult} autoFocus className="relative z-50" />
-					<div className={`w-full h-fit max-h-[50vh] ${mode == "dark" ? " bg-transparent" : "bg-white"}  overflow-hidden my-4 px-2`}>
-						<div className={`w-full h-fit max-h-[50vh] ${mode == "dark" ? " bg-transparent" : "bg-white"} overflow-y-auto  py-2`} id="coinsList">
+					<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'}  overflow-hidden my-4 px-2`}>
+						<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'} overflow-y-auto  py-2`} id="coinsList">
 							{mergedCoinList[1].map((item, index) => {
 								return (
 									<div
@@ -1324,9 +1292,9 @@ const SwapV2Defi = () => {
 									>
 										<div className="flex flex-row items-center justify-start gap-3">
 											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className={`text-base ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  interBold`}>{item.Symbol}</h5>
+											<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
 										</div>
-										<h5 className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "ext-gray-300"} t inter italic`}>{item.Symbol}</h5>
+										<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'ext-gray-300'} t inter italic`}>{item.Symbol}</h5>
 									</div>
 								)
 							})}
