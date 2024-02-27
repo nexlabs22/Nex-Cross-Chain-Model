@@ -34,7 +34,7 @@ const TradeChartBox = () => {
 
 	return (
 		<>
-			<section className="h-full w-full">
+			<section className="w-full">
 				{/* <div className="h-full w-full p-3 rounded-2xl border border-gray-300/50 bg-gray-100/20 shadow-md shadow-gray-300"> */}
 				<div className={`h-full w-full p-3 rounded-2xl border border-gray-300/50 ${mode === 'dark' ? 'bg-[#131722]' : 'bg-[#FFFFFF]'} shadow-md shadow-gray-300`}>
 					{/* <div className="flex flex-row items-start justify-between px-2 mt-2 mb-6"> */}
