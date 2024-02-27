@@ -72,6 +72,7 @@ import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBal
 import { sepolia } from 'viem/chains'
 import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
 import { getNewCrossChainPortfolioBalance } from '@/hooks/getNewCrossChainPortfolioBalance'
+import { useRouter } from 'next/router'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -121,7 +122,15 @@ const SwapV2Defi = () => {
 	const OurIndexCoins = ['ANFI', 'CRYPTO5']
 	const address = useAddress()
 	const signer = useSigner()
-
+	const router = useRouter()
+	const query = router.query;
+	
+	useEffect(()=>{
+		const selectedCoin = query.index || 'ANFI'
+		const coinDetails = testnetCoinsList[0].filter((coin:Coin)=>{ return coin.Symbol === selectedCoin })
+		changeSwapToCur(coinDetails[0])
+	},[])
+	
 	// useEffect(()=>{
 	// 	setEthPriceInUsd();
 	// },[])
@@ -476,7 +485,6 @@ const SwapV2Defi = () => {
 
 	const toggleMainnetCheckbox = () => {
 		setIsmainnet(!isMainnet)
-		console.log(!isMainnet)
 	}
 
 	const openPaymentModal = () => {
