@@ -185,12 +185,12 @@ function NewHistoryTable() {
 										// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
 										className={`${mode == 'dark' ? ' text-gray-200  ' : 'text-gray-700'} interMedium text-base border-b border-blackText-500`}
 									>
-										<td className={`px-4 text-left py-3 ${position.timestamp ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.timestamp ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
 											{position.timestamp ? convertTime(position.timestamp) : '-'}
 										</td>
 
 										{/* <td>{swapToCur.Symbol}</td> */}
-										<td className={`px-4 text-left py-3 ${position.indexName ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.indexName ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
 											{position.indexName ? position.indexName : '-'}
 										</td>
 										<td className="px-4 text-left py-3">
@@ -207,7 +207,7 @@ function NewHistoryTable() {
 												{position.side ? position.side.toString().split(' ')[0] : '-'}
 											</div>
 										</td>
-										<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.inputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
 											{position.inputAmount && position.tokenAddress ? (
 												<>
 													{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
@@ -226,7 +226,7 @@ function NewHistoryTable() {
 												'-'
 											)}
 										</td>
-										<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.outputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
 											{position.outputAmount && position.tokenAddress ? (
 												<>
 													{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
@@ -245,15 +245,15 @@ function NewHistoryTable() {
 												'-'
 											)}
 										</td>
-										<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
-											<div className="flex flex-row gap-3">
+										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
+											<div className="flex flex-row items-center justify-start gap-3 ">
 												{(position.indexName === 'ANFI' || position.indexName === 'CRYPTO5') && (
-													<Link title={'View in Etherscan'} className="my-auto" href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
+													<Link title={'View in Etherscan'} className="my-auto" target='_blank' href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
 														<Image src={etherscan.src} alt="etherscan Logo" width={25} height={25} />
 													</Link>
 												)}
 												{position.indexName === 'CRYPTO5' && (
-													<Link title={'View in CCIP'} href={`https://ccip.chain.link/tx/${position.txHash}`}>
+													<Link title={'View in CCIP'} target='_blank' href={`https://ccip.chain.link/tx/${position.txHash}`}>
 														<Image src={ccip.src} alt="ccip Logo" width={25} height={25} />
 													</Link>
 												)}

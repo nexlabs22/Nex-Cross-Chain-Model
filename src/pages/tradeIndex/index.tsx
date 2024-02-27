@@ -170,14 +170,14 @@ export default function Trade() {
 								selectedTradingCategory == "cefi" ? <SwapV2Cefi /> : <SwapV2Defi />
 							}
 							<div className='flex-grow-1'>
-							{/* <NewTradeComponent /> */}
+							{<NewTradeComponent />}
 							</div>
 							
 						</div>
 					</div>
 				</section>
 				<section className="w-full h-fit flex flex-col lg:flex-row items-stretch justify-start gap-2 px-5 pb-5">
-					<div className="w-full lg:w-9/12 flex-grow ">
+					<div className="w-full lg:w-9/12 h-full ">
 						<HistoryTable />
 					</div>
 					<div className="w-full flex-grow lg:w-3/12 flex flex-col items-center justify-start gap-2">

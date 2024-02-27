@@ -219,13 +219,13 @@ export default function Portfolio() {
 		}
 	}
 
-	
+
 	const handleCopyIndexDetails = () => {
 		GenericToast({
 			type: 'success',
 			message: 'Copied !',
 		})
-}
+	}
 
 	const data = [
 		['Asset', 'Percentage'],
@@ -412,14 +412,14 @@ export default function Portfolio() {
 			index: 'ANFI',
 			smartContract: sepoliaAnfiV2IndexToken || 'N/A',
 			lastTnx: latestObjectsMap.get('ANFI')?.txHash || 'N/A',
-			ownedAmount: FormatToViewNumber({value:num(anfiTokenBalance.data), returnType:'string'}) + ' ANFI',
+			ownedAmount: FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) + ' ANFI',
 			// tnxHistory: ,
 		},
 		{
 			index: 'CRYPTO5',
 			smartContract: sepoliaCrypto5V2IndexToken || 'N/A',
 			lastTnx: latestObjectsMap.get('CRYPTO5')?.txHash || 'N/A',
-			ownedAmount: FormatToViewNumber({value:num(crypto5TokenBalance.data), returnType:'string'}) + ' CRYPTO5',
+			ownedAmount: FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) + ' CRYPTO5',
 			// tnxHistory: ,
 		},
 	]
@@ -457,8 +457,8 @@ export default function Portfolio() {
 													uploadedPPLink != 'none'
 														? `url('${uploadedPPLink}')`
 														: uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon'
-														? `url('${connectedUser?.ppLink}')`
-														: '',
+															? `url('${connectedUser?.ppLink}')`
+															: '',
 											}}
 										>
 											{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
@@ -472,8 +472,8 @@ export default function Portfolio() {
 												? connectedUser.inst_name != 'x'
 													? connectedUser.inst_name
 													: connectedUser.name != 'x'
-													? connectedUser.name
-													: 'Nex User'
+														? connectedUser.name
+														: 'Nex User'
 												: 'Nex User'}
 										</h5>
 										<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
@@ -502,9 +502,8 @@ export default function Portfolio() {
 											</div>
 										</div>
 										<div
-											className={` ${
-												mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500'
-											} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}
+											className={` ${mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500'
+												} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}
 										>
 											{mode == 'dark' ? <BsCalendar4 color="#000000" size={15} /> : <BsCalendar4 color="#000000" size={15} />}
 
@@ -552,9 +551,8 @@ export default function Portfolio() {
 									<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500/80' : 'text-blackText-500'}  text-center lg:text-left`}>24h Change</h5>
 									<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
 										<h5
-											className={`interExtraBold text-2xl ${
-												showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
-											} `}
+											className={`interExtraBold text-2xl ${showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
+												} `}
 										>
 											$
 											{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
@@ -562,9 +560,8 @@ export default function Portfolio() {
 												: '0.00'}
 										</h5>
 										<div
-											className={`w-fit h-fit rounded-lg ${
-												showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
-											} p-1`}
+											className={`w-fit h-fit rounded-lg ${showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
+												} p-1`}
 										>
 											{showPortfolioData ? (
 												portfolio24hChange > 0 ? (
@@ -601,68 +598,68 @@ export default function Portfolio() {
 									<div>
 										{assetData.map((asset) => (
 											// <>
-												<div
-													key={asset.symbol}
-													className="w-fit xl:w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center border-b gap-16 xl:gap-0 border-b-[#E4E4E4]"
-												>
-													<div className="w-[30vw] xl:w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
-														<Image
-															src={asset.logo}
-															alt="anfi"
-															width={50}
-															height={50}
-															className="cursor-pointer"
-															onClick={() => {
-																router.push(`/ownedAsset?asset=${asset.symbol.toLowerCase()}`)
-															}}
-														></Image>
-														<div>
-															<h5 className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  text-lg cursor-pointer`}>{asset.symbol}</h5>
-															<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500/80' : ' text-blackText-500'} italic text-base cursor-pointer`}>{asset.shortName}</h5>
-														</div>
+											<div
+												key={asset.symbol}
+												className="w-fit xl:w-full h-fit px-3 py-4 flex -flex-row items-center justify-start xl:justify-center border-b gap-16 xl:gap-0 border-b-[#E4E4E4]"
+											>
+												<div className="w-[30vw] xl:w-1/4 h-fit px-1 flex flex-row items-center justify-start gap-3">
+													<Image
+														src={asset.logo}
+														alt="anfi"
+														width={50}
+														height={50}
+														className="cursor-pointer"
+														onClick={() => {
+															router.push(`/ownedAsset?asset=${asset.symbol.toLowerCase()}`)
+														}}
+													></Image>
+													<div>
+														<h5 className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  text-lg cursor-pointer`}>{asset.symbol}</h5>
+														<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500/80' : ' text-blackText-500'} italic text-base cursor-pointer`}>{asset.shortName}</h5>
 													</div>
-													<div className="w-fit xl:w-1/4 h-fit px-1">
-														<h5
-															className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-blackText-500 whitespace-nowrap text-lg cursor-pointer`}
-														>
-															{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol}
-														</h5>
-														<h5 className={`interBold whitespace-nowrap ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  text-base cursor-pointer`}>
-															≈${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}
-														</h5>
-													</div>
-													<div className="w-fit xl:w-1/4 h-fit px-1">
-														{mode == 'dark' ? (
-															<ProgressBar
-																completed={showPortfolioData ? Number(asset.percentage) : 0}
-																height="10px"
-																isLabelVisible={false}
-																className="w-[30vw] xl:w-8/12 mb-3"
-																bgColor="#089981"
-																baseBgColor="#FFFFFF"
-															/>
-														) : (
-															<ProgressBar
-																completed={showPortfolioData ? Number(asset.percentage) : 0}
-																height="10px"
-																isLabelVisible={false}
-																className="w-[30vw] xl:w-8/12 mb-3"
-																bgColor="#5E869B"
-																baseBgColor="#A9A9A9"
-															/>
-														)}
+												</div>
+												<div className="w-fit xl:w-1/4 h-fit px-1">
+													<h5
+														className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-blackText-500 whitespace-nowrap text-lg cursor-pointer`}
+													>
+														{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol}
+													</h5>
+													<h5 className={`interBold whitespace-nowrap ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  text-base cursor-pointer`}>
+														≈${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}
+													</h5>
+												</div>
+												<div className="w-fit xl:w-1/4 h-fit px-1">
+													{mode == 'dark' ? (
+														<ProgressBar
+															completed={showPortfolioData ? Number(asset.percentage) : 0}
+															height="10px"
+															isLabelVisible={false}
+															className="w-[30vw] xl:w-8/12 mb-3"
+															bgColor="#089981"
+															baseBgColor="#FFFFFF"
+														/>
+													) : (
+														<ProgressBar
+															completed={showPortfolioData ? Number(asset.percentage) : 0}
+															height="10px"
+															isLabelVisible={false}
+															className="w-[30vw] xl:w-8/12 mb-3"
+															bgColor="#5E869B"
+															baseBgColor="#A9A9A9"
+														/>
+													)}
 
-														<h5 className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-base cursor-pointer`}>
-															{showPortfolioData ? asset.percentage?.toFixed(2) : '0.00'}%
-														</h5>
-													</div>
-													<div className="w-fit xl:w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
+													<h5 className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-base cursor-pointer`}>
+														{showPortfolioData ? asset.percentage?.toFixed(2) : '0.00'}%
+													</h5>
+												</div>
+												<div className="w-fit xl:w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
+													<Link href={`/tradeIndex?index=${asset.symbol}&category=defi`}>
 														<button
-															className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} rounded-xl ${
-																mode == 'dark'
+															className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} rounded-xl ${mode == 'dark'
 																	? ' bg-cover border-transparent bg-center bg-no-repeat '
 																	: 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500'
-															}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`}
+																}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`}
 															style={{
 																boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 																backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -670,21 +667,10 @@ export default function Portfolio() {
 														>
 															Trade
 														</button>
-														<button
-															className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} rounded-xl ${
-																mode == 'dark'
-																	? ' bg-cover border-transparent bg-center bg-no-repeat '
-																	: 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500'
-															}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`}
-															style={{
-																boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-															}}
-														>
-															Details
-														</button>
-													</div>
+													</Link>
+
 												</div>
+											</div>
 											// </>
 										))}
 									</div>
@@ -696,11 +682,9 @@ export default function Portfolio() {
 									menuButton={
 										<MenuButton>
 											<div
-												className={`w-full xl:w-[14vw] ${
-													mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'
-												} relative z-10 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${
-													mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500'
-												} shadow-sm shadow-blackText-500 gap-8 cursor-pointer mt-6`}
+												className={`w-full xl:w-[14vw] ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'
+													} relative z-10 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500'
+													} shadow-sm shadow-blackText-500 gap-8 cursor-pointer mt-6`}
 												style={{
 													boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 													backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -757,9 +741,9 @@ export default function Portfolio() {
 												Smart contract : <span className="interMedium">{reduceAddress(indexDetailsMap.get(indexSelectedInPie).smartContract)}</span>
 											</h5>
 											<div className={` ${mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500/50'} w-fit h-fit p-4 xl:p-2 rounded-full`}>
-											<CopyToClipboard text={indexDetailsMap.get(indexSelectedInPie).smartContract} onCopy={handleCopyIndexDetails}>
-												<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
-											</CopyToClipboard>
+												<CopyToClipboard text={indexDetailsMap.get(indexSelectedInPie).smartContract} onCopy={handleCopyIndexDetails}>
+													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+												</CopyToClipboard>
 											</div>
 										</div>
 										<div className="flex flex-row items-center justify-between gap-2">
@@ -767,9 +751,9 @@ export default function Portfolio() {
 												Last transaction : <span className="interMedium">{reduceAddress(indexDetailsMap.get(indexSelectedInPie).lastTnx)}</span>
 											</h5>
 											<div className={` ${mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500/50'} w-fit h-fit p-4 xl:p-2 rounded-full`}>
-											<CopyToClipboard text={indexDetailsMap.get(indexSelectedInPie).lastTnx} onCopy={handleCopyIndexDetails}>
-												<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
-											</CopyToClipboard>
+												<CopyToClipboard text={indexDetailsMap.get(indexSelectedInPie).lastTnx} onCopy={handleCopyIndexDetails}>
+													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+												</CopyToClipboard>
 											</div>
 										</div>
 										<div className="flex flex-row items-center justify-between gap-2">
@@ -783,7 +767,7 @@ export default function Portfolio() {
 												<span className={`interMedium ${mode == 'dark' ? ' text-[#007271]' : 'text-colorSeven-500'} `}>
 													<Link href={`https://sepolia.etherscan.io/txs?a=${address}`}>
 														See More
-														</Link>
+													</Link>
 												</span>
 											</h5>
 										</div>
@@ -796,9 +780,8 @@ export default function Portfolio() {
 							<div className="w-full h-fit relative hidden xl:block">
 								<div className=" absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center">
 									<div
-										className={`w-4/12 h-fit ${
-											mode == 'dark' ? ' bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
-										} border shadow-sm px-4 py-12 rounded-lg`}
+										className={`w-4/12 h-fit ${mode == 'dark' ? ' bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
+											} border shadow-sm px-4 py-12 rounded-lg`}
 									>
 										<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
 										<p className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
@@ -819,9 +802,8 @@ export default function Portfolio() {
 							<div className="w-full h-fit relative block xl:hidden">
 								<div className=" absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center">
 									<div
-										className={`w-11/12 h-fit ${
-											mode == 'dark' ? 'bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
-										} shadow-sm border px-4 py-12 rounded-lg`}
+										className={`w-11/12 h-fit ${mode == 'dark' ? 'bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
+											} shadow-sm border px-4 py-12 rounded-lg`}
 									>
 										<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
 										<p className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
@@ -865,9 +847,8 @@ export default function Portfolio() {
 									</p>
 									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
 										<button
-											className={`interBold mt-8 mb-4 flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl ${
-												mode == 'dark' ? 'titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500' : 'bg-gradient-to-br from-colorFour-500 to-colorSeven-500 text-blackText-500'
-											}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
+											className={`interBold mt-8 mb-4 flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl ${mode == 'dark' ? 'titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500' : 'bg-gradient-to-br from-colorFour-500 to-colorSeven-500 text-blackText-500'
+												}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
 											style={{
 												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
 												boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
