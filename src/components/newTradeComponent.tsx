@@ -36,7 +36,7 @@ const NewTradeComponent = () => {
             <div className='absolute h-full w-2/3 -right-10 -bottom-10 bg-center bg-contain bg-no-repeat rounded-xl opacity-20' style={{
                 backgroundImage: `url('${xLogo.src}')`
             }}></div>
-			<div className=" relative z-50 w-full h-full rounded-xl shadow shadow-blackText-500 flex flex-col items-start justify-start px-4 py-10">
+			<div className=" relative z-50 w-full h-full rounded-xl shadow shadow-blackText-500 flex flex-col items-start justify-start px-4 py-2">
 				<h5 className={`interBlack  ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-xl mb-3 titleShadow`}>Nex News</h5>
 				<Carousel
 					className="m-0 h-full w-full p-0"
@@ -61,18 +61,7 @@ const NewTradeComponent = () => {
 							</div>
 							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[0]}</h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-4">
-							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
-								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
-							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[1]}</h5>
-						</div>
-                        <div className="flex flex-row items-center justify-start gap-4">
-							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
-								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
-							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[1]}</h5>
-						</div>
+						
 					</div>
 					<div key={2} className={`p-2 w-full h-fit flex flex-col items-center ${mode == "dark" ? "" : "invert"} justify-center gap-3`}>
 						<div className="flex flex-row items-center justify-start gap-4">
@@ -81,18 +70,7 @@ const NewTradeComponent = () => {
 							</div>
 							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[2]}</h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-4">
-							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
-								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
-							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[3]}</h5>
-						</div>
-                        <div className="flex flex-row items-center justify-start gap-4">
-							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
-								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
-							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[3]}</h5>
-						</div>
+						
 					</div>
 					<div key={3} className={`p-2 w-full h-fit flex ${mode == "dark" ? "" : "invert"} flex-col items-center justify-center gap-3`}>
 						<div className="flex flex-row items-center justify-start gap-4">
@@ -101,18 +79,7 @@ const NewTradeComponent = () => {
 							</div>
 							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[4]}</h5>
 						</div>
-						<div className="flex flex-row items-center justify-start gap-4">
-							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
-								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
-							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[5]}</h5>
-						</div>
-                        <div className="flex flex-row items-center justify-start gap-4">
-							<div className="w-fit h-fit border border-whiteText-500 rounded-full p-[2px] shadow-sm shadow-white">
-								<div className="w-2 aspect-square rounded-full bg-whiteBackground-500 m-0"></div>
-							</div>
-							<h5 className="interMedium text-left text-whiteText-500 text-base w-11/12">{tips[5]}</h5>
-						</div>
+						
 					</div>
 				</Carousel>
 
