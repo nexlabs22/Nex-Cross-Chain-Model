@@ -35,6 +35,8 @@ import {
 	goerliUsdtAddress,
 	goerliLinkAddress,
 	goerliLinkWethPoolAddress,
+	sepoliaAnfiV2IndexToken,
+	sepoliaCrypto5V2IndexToken,
 } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
@@ -93,7 +95,6 @@ import { nexTokens } from '@/constants/nexIndexTokens'
 import usePortfolioPageStore from '@/store/portfolioStore'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 
-
 export default function OwnedAsset({ params, searchParams }: { params: { slug: string }; searchParams: { [key: string]: string | string[] | undefined } }) {
 	const address = useAddress()
 	const router = useRouter()
@@ -104,7 +105,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	useEffect(() => {
 		// setEthPriceInUsd()
 		setPortfolioData(positionHistory.data)
-	}, [setEthPriceInUsd,positionHistory.data,setPortfolioData])
+	}, [setEthPriceInUsd, positionHistory.data, setPortfolioData])
 
 	const {
 		loading: loadingAnfi,
@@ -122,9 +123,11 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
 	})
 
-	const [dayChange, setDayChange] = useState<{anfi:number|null, cr5:number|null}>({anfi:null,cr5:null})
+	console.log('dataAnfi', dataAnfi, dataCR5)
 
-	if ((!loadingCR5 && !loadingAnfi) && (!errorCR5 && !errorAnfi) && (dayChange.anfi === null && dayChange.cr5 === null)) {
+	const [dayChange, setDayChange] = useState<{ anfi: number | null; cr5: number | null }>({ anfi: null, cr5: null })
+
+	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && dayChange.anfi === null && dayChange.cr5 === null) {
 		const ANFIData = dataAnfi.poolDayDatas
 		const CR5Data = dataCR5.poolDayDatas
 
@@ -137,12 +140,10 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		setDayChange({ anfi: todayANFIPrice - yesterdayANFIPrice, cr5: todayCR5Price - yesterdayCR5Price })
 	}
 
-
-
 	const [QRModalVisible, setQRModalVisible] = useState(false)
 
-	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
-	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
+	const anfiTokenContract = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
+	const crypto5TokenContract = useContract(sepoliaCrypto5V2IndexToken, indexTokenAbi)
 
 	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
 	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
@@ -156,6 +157,9 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
 	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
 
+	console.log('TRUE OR FALSE', !loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent))
+	console.log(!loadingCR5, !loadingAnfi, !errorCR5, !errorAnfi, chartArr.length == 0, !!anfiPercent || !!crypto5Percent)
+
 	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
 		const chartData: { time: number; value: number }[] = []
 		const ANFIData = dataAnfi.poolDayDatas
@@ -167,6 +171,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 			chartObj.value = value
 			chartData.push(chartObj)
 		}
+		console.log('chartData', chartData)
 		setChartArr(chartData)
 
 		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price * num(anfiTokenBalance.data)
@@ -274,14 +279,13 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		{ time: '2018-04-04', value: 0 },
 	]
 
-
 	useEffect(() => {
 		async function getTokenDetails() {
 			const data = await Promise.all(
 				nexTokens.map(async (item: nexTokenDataType) => {
 					const calculatedUsdValue = !['CRYPTO5'].includes(item.symbol) ? (await convertToUSD(item.address, ethPriceInUsd, false)) || 0 : 0
 					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) : 0
-					const indexDayChange = Math.abs(item.symbol === 'ANFI' ? (dayChange.anfi || 0) : item.symbol === 'ANFI' ? (dayChange.cr5||0) : 0)
+					const indexDayChange = Math.abs(item.symbol === 'ANFI' ? dayChange.anfi || 0 : item.symbol === 'ANFI' ? dayChange.cr5 || 0 : 0)
 					const totalTokenUsd = calculatedUsdValue * totalToken
 					const percentage = item.symbol === 'ANFI' ? anfiPercent : crypto5Percent
 
@@ -299,7 +303,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		}
 
 		getTokenDetails()
-	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent,dayChange.anfi,dayChange.cr5])
+	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent, dayChange.anfi, dayChange.cr5])
 
 	const dataToshow = assetData.filter((asset) => asset.symbol === assetName)[0]
 	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
@@ -328,8 +332,6 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		getUser()
 	}, [address])
 
-	
-
 	return (
 		<>
 			<Head>
@@ -354,8 +356,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 												uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
 										}}
 									>
-										
-										{connectedUser?.ppType == 'identicon' || chosenPPType == 'identicon' && uploadedPPLink == "none" ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+										{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
 									</div>
 								) : (
 									<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
