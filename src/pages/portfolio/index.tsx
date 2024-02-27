@@ -780,8 +780,10 @@ export default function Portfolio() {
 										<div className="flex flex-row items-center justify-between gap-2">
 											<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
 												Txn history :{' '}
-												<span className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500'} `}>
-													<Link href={`https://sepolia.etherscan.io/txs?a=${address}`}><em>See More</em></Link>
+												<span className={`interMedium ${mode == 'dark' ? ' text-[#007271]' : 'text-colorSeven-500'} `}>
+													<Link href={`https://sepolia.etherscan.io/txs?a=${address}`}>
+														See More
+														</Link>
 												</span>
 											</h5>
 										</div>

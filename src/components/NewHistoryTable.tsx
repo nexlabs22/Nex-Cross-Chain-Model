@@ -180,23 +180,22 @@ function NewHistoryTable() {
 								i: React.Key | null | undefined
 							) => {
 								return (
-									<>
-										<tr
-											key={i}
-											// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
-											className={`${mode == 'dark' ? ' text-gray-200  ' : 'text-gray-700'} interMedium text-base border-b border-blackText-500`}
-										>
-											<td className={`px-4 text-left py-3 ${position.timestamp ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
-												{position.timestamp ? convertTime(position.timestamp) : '-'}
-											</td>
+									<tr
+										key={i}
+										// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
+										className={`${mode == 'dark' ? ' text-gray-200  ' : 'text-gray-700'} interMedium text-base border-b border-blackText-500`}
+									>
+										<td className={`px-4 text-left py-3 ${position.timestamp ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+											{position.timestamp ? convertTime(position.timestamp) : '-'}
+										</td>
 
-											{/* <td>{swapToCur.Symbol}</td> */}
-											<td className={`px-4 text-left py-3 ${position.indexName ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
-												{position.indexName ? position.indexName : '-'}
-											</td>
-											<td className="px-4 text-left py-3">
-												<div
-													className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}  
+										{/* <td>{swapToCur.Symbol}</td> */}
+										<td className={`px-4 text-left py-3 ${position.indexName ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+											{position.indexName ? position.indexName : '-'}
+										</td>
+										<td className="px-4 text-left py-3">
+											<div
+												className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}  
 													${
 														position.side === 'Mint Request'
 															? 'bg-nexLightGreen-500 text-whiteText-500'
@@ -204,59 +203,52 @@ function NewHistoryTable() {
 															? 'bg-nexLightRed-500 text-whiteText-500'
 															: 'bg-transparent'
 													} flex flex-row items-center justify-center`}
-												>
-													{position.side ? position.side.toString().split(' ')[0] : '-'}
-												</div>
-											</td>
-											<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
-												{position.inputAmount && position.tokenAddress ? (
-													<>
-														{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
-														{position.side === 'Mint Request'
-															? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
-															: position?.indexName}{' '}
-														<em>
-															($
-															{usdPrices
-																? position.side === 'Mint Request'
-																	? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
-																	: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-																: 0}
-															){' '}
-														</em>{' '}
-													</>
-												) : (
-													'-'
-												)}
-											</td>
-											<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
-												{position.outputAmount && position.tokenAddress ? (
-													<>
-														{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
-														{position.side === 'Burn Request'
-															? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
-															: position?.indexName}{' '}
-														<em>
-															($
-															{usdPrices
-																? position.side === 'Burn Request'
-																	? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
-																	: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-																: 0}{' '}
-															){' '}
-														</em>
-													</>
-												) : (
-													'-'
-												)}
-											</td>
-											<td
-												className={`px-4 gap-5 flex flex-row interExtraBold text-lg py-3 ${
-													position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'
-												}`}
 											>
+												{position.side ? position.side.toString().split(' ')[0] : '-'}
+											</div>
+										</td>
+										<td className={`px-4 text-left py-3 ${position.inputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+											{position.inputAmount && position.tokenAddress ? (
+												<>
+													{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
+													{position.side === 'Mint Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
+													<em>
+														($
+														{usdPrices
+															? position.side === 'Mint Request'
+																? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
+																: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+															: 0}
+														){' '}
+													</em>{' '}
+												</>
+											) : (
+												'-'
+											)}
+										</td>
+										<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+											{position.outputAmount && position.tokenAddress ? (
+												<>
+													{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
+													{position.side === 'Burn Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
+													<em>
+														($
+														{usdPrices
+															? position.side === 'Burn Request'
+																? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
+																: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+															: 0}
+														){' '}
+													</em>{' '}
+												</>
+											) : (
+												'-'
+											)}
+										</td>
+										<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
+											<div className="flex flex-row gap-3">
 												{(position.indexName === 'ANFI' || position.indexName === 'CRYPTO5') && (
-													<Link title={'View in Etherscan'} href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
+													<Link title={'View in Etherscan'} className="my-auto" href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
 														<Image src={etherscan.src} alt="etherscan Logo" width={25} height={25} />
 													</Link>
 												)}
@@ -265,11 +257,9 @@ function NewHistoryTable() {
 														<Image src={ccip.src} alt="ccip Logo" width={25} height={25} />
 													</Link>
 												)}
-											</td>
-											{/* <td>{Number(position.amount * 1.001)} USD</td> */}
-											{/* <td className="text-left">{position.requestHash}</td> */}
-										</tr>
-									</>
+											</div>
+										</td>
+									</tr>
 								)
 							}
 						)}
