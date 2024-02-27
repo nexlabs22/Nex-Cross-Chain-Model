@@ -177,21 +177,21 @@ contract CounterTest is Test {
         );
 
         factory = new IndexFactory();
-        factory.initialize(
-            payable(address(indexToken)),
-            // address(0),
-            address(link),
-            address(oracle),
-            jobId,
-            address(ethPriceOracle),
-            //swap addresses
-            WETH9,
-            QUOTER,
-            SwapRouterV3,
-            FactoryV3,
-            SwapRouterV2,
-            FactoryV2
-        );
+        // factory.initialize(
+        //     payable(address(indexToken)),
+        //     // address(0),
+        //     address(link),
+        //     address(oracle),
+        //     jobId,
+        //     address(ethPriceOracle),
+        //     //swap addresses
+        //     WETH9,
+        //     QUOTER,
+        //     SwapRouterV3,
+        //     FactoryV3,
+        //     SwapRouterV2,
+        //     FactoryV2
+        // );
 
         indexToken.setMinter(address(factory));
 
@@ -225,9 +225,10 @@ contract CounterTest is Test {
         // console.log(link.balanceOf(address(this)));
         // console.log(link.balanceOf(address(this)));
         // link.transfer(address(factory), 1e18);
-        link.transfer(address(factory), 1e17);
-        bytes32 requestId = factory.requestAssetsData();
-        oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapVersions);
+
+        // link.transfer(address(factory), 1e17);
+        // bytes32 requestId = factory.requestAssetsData();
+        // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapVersions);
     }
     function testOracleList() public {
         updateOracleList();
