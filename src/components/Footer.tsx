@@ -77,13 +77,13 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
               }
               
             </Link>
-            <Link href={'https://www.tradingview.com/'}>
+            {/* <Link href={'https://www.tradingview.com/'}>
 							{mode == 'dark' ? (
 								<Image src={tradingViewDark.src} alt="TradingView Logo" width={25} height={25} />
 							) : (
 								<Image src={tradingViewLight.src} alt="TradingView Logo" width={25} height={25} />
 							)}
-						</Link>
+						</Link> */}
           </div>
         </div>
         <div className="mt-8 flex h-full flex-col items-center justify-start px-2 xl:mt-0 xl:w-1/3 xl:items-start xl:px-10">

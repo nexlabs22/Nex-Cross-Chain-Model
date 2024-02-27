@@ -37,6 +37,9 @@ type PortfolioPageStore = {
 
 	globalConnectedUser: User,
 	setGlobalConnectedUser: (user: User) => void
+
+	indexSelectedInPie: string
+	setIndexSelectedInPie: (index: string) => void
 }
 
 
@@ -98,6 +101,10 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 
 		set({ portfolioData: { tradedBalance: { anfi: anfiTotalTradeBalance, crypto5: crypto5TotalTradeBalance, total: anfiTotalTradeBalance + crypto5TotalTradeBalance } } })
 	},
+
+	indexSelectedInPie: 'ANFI',
+	setIndexSelectedInPie: (index: string) => set({ indexSelectedInPie: index }),
+
 }))
 
 export default usePortfolioPageStore
