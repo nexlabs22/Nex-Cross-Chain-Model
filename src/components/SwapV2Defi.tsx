@@ -1040,7 +1040,7 @@ const SwapV2Defi = () => {
 					</div>
 					<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
 				</div>
-				<div className="w-full h-fit flex flex-col items-center justify-end">
+				<div className="w-full h-fit flex flex-col items-start justify-end">
 					<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  pb-1`}>You Recieve</p>
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-2">
 						<input

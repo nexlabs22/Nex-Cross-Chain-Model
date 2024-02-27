@@ -246,14 +246,14 @@ function NewHistoryTable() {
 											)}
 										</td>
 										<td className={`px-4 text-left py-3 ${position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
-											<div className="flex flex-row gap-3">
+											<div className="flex flex-row items-center justify-center p-3">
 												{(position.indexName === 'ANFI' || position.indexName === 'CRYPTO5') && (
-													<Link title={'View in Etherscan'} className="my-auto" href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
+													<Link title={'View in Etherscan'} className="my-auto" target='_blank' href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
 														<Image src={etherscan.src} alt="etherscan Logo" width={25} height={25} />
 													</Link>
 												)}
 												{position.indexName === 'CRYPTO5' && (
-													<Link title={'View in CCIP'} href={`https://ccip.chain.link/tx/${position.txHash}`}>
+													<Link title={'View in CCIP'} target='_blank' href={`https://ccip.chain.link/tx/${position.txHash}`}>
 														<Image src={ccip.src} alt="ccip Logo" width={25} height={25} />
 													</Link>
 												)}
