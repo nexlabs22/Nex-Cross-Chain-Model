@@ -1030,25 +1030,25 @@ const SwapV2Defi = () => {
 							</p>
 						</div>
 					</div>
-					<div className="w-full h-fit flex flex-row items-center justify-between gap-1">
+					<div className="w-full h-fit flex flex-row items-center justify-end gap-1">
 						<input
 							type="text"
 							placeholder="0.00"
-							className={`w-2/3 border-none text-2xl ${
+							className={`w-1/2 border-none text-2xl ${
 								mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
 							}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
 							onChange={changeFirstInputValue}
 							value={firstInputValue ? firstInputValue : ''}
 						/>
 						<div
-							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between cursor-pointer"
+							className="w-fit lg:w-1/2 gap-2 p-2 h-10 flex flex-row items-center justify-end cursor-pointer"
 							onClick={() => {
 								openFromCurrencyModal()
 							}}
 						>
 							<div className="flex flex-row items-center justify-start w-fit">
 								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
-								<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBlack pt-1`}>{swapFromCur.Symbol}</h5>
+								<h5 className={`text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBlack pt-1`}>{swapFromCur.Symbol}</h5>
 							</div>
 							{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
 						</div>
@@ -1079,27 +1079,27 @@ const SwapV2Defi = () => {
 					</div>
 					<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
 				</div>
-				<div className="w-full h-fit flex flex-col items-start justify-start">
+				<div className="w-full h-fit flex flex-col items-center justify-end">
 					<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  pb-1`}>You Recieve</p>
-					<div className="w-full h-fit flex flex-row items-center justify-between gap-2">
+					<div className="w-full h-fit flex flex-row items-center justify-end gap-2">
 						<input
 							type="text"
 							placeholder="0.00"
-							className={`w-2/3 border-none text-2xl ${
+							className={`w-1/2 border-none text-2xl ${
 								mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
 							}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
 							onChange={changeSecondInputValue}
 							value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue)) : 0}
 						/>
 						<div
-							className="w-fit lg:w-fit gap-2 p-2 h-10 flex flex-row items-center justify-between  cursor-pointer"
+							className="w-fit lg:w-1/2 gap-2 p-2 h-10 flex flex-row items-center justify-end  cursor-pointer"
 							onClick={() => {
 								openToCurrencyModal()
 							}}
 						>
-							<div className="flex flex-row items-center justify-start ">
+							<div className="flex flex-row items-center justify-end ">
 								<Image src={swapToCur.logo} alt={swapToCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
-								<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack pt-1`}>{swapToCur.Symbol}</h5>
+								<h5 className={`text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack pt-1`}>{swapToCur.Symbol}</h5>
 							</div>
 							{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
 						</div>
