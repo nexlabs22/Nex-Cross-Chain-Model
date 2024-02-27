@@ -9,8 +9,11 @@ import { comparisonIndicesType } from '@/types/chartTypes'
 import { comparisonIndices } from '@/constants/comparisionIndices'
 import isEqual from 'lodash/isEqual';
 import { Mode } from '@anatoliygatt/dark-mode-toggle';
+import { darkTheme, lightTheme, Theme } from "@theme/theme"
 
 type LandingPageStore = {
+
+
 	//Select slide index
 	selectedSlideIndex: number
 	changeSelectedSlideIndex: (percentage: number) => void
@@ -21,14 +24,21 @@ type LandingPageStore = {
 
 	mode: Mode
 	changeMode: (index: Mode) => void
+
+	theme: Theme;
+	setTheme: (selectedTheme: Theme) => void;
 }
 
 const useLandingPageStore = create<LandingPageStore>()((set) => ({
+
+
+	theme: darkTheme, // Set initial theme as light
+	setTheme: (newTheme) => set({ theme: newTheme }),
 	//Select slide index
 
 	mode: "dark",
 	changeMode: (mode: Mode) => set((state) => ({ mode: mode })),
-	
+
 	selectedSlideIndex: 0,
 	changeSelectedSlideIndex: (index: number) => set((state) => ({ selectedSlideIndex: index })),
 
@@ -68,7 +78,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	IndexData: [],
 	ANFIData: [],
 	CR5Data: [],
-	STOCK5Data:[],
+	STOCK5Data: [],
 	selectedIndex: [],
 	ANFIWeightage: [],
 	dayChange: dayChangeInitial,
@@ -84,13 +94,13 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			)
 
 			const inputData = await response.json()
-			const top5stockmarketcap = await fetch('/api/getStockMarketCap').then(res=> res.json()).catch(err=> console.log(err))
+			const top5stockmarketcap = await fetch('/api/getStockMarketCap').then(res => res.json()).catch(err => console.log(err))
 
 			set((state) => {
 				if (index === 'OurIndex') {
 					const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
 					const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
-					const stock5Prices = getIndexData('STOCK5', inputData.data, top5stockmarketcap)			
+					const stock5Prices = getIndexData('STOCK5', inputData.data, top5stockmarketcap)
 					return {
 						ANFIData: anfiIndexPrices,
 						CR5Data: cr5IndexPrices,
@@ -122,7 +132,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 			return ({ chartData: activeIndex })
 		})
 	},
-	clearChartData: async()=> set({chartData:{}}),
+	clearChartData: async () => set({ chartData: {} }),
 	setANFIWeightage: async () => {
 		const bitcoinMC_URL = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=max`;
 		const goldMC_URL = `https://api.coingecko.com/api/v3/coins/tether-gold/market_chart?vs_currency=usd&days=max`;
@@ -167,11 +177,11 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	setComparisonIndices(data) {
 		set((state) => {
 			const indexToUpdate = state.comparisionIndices.findIndex((d) => data.name === d.name);
-	
+
 			if (indexToUpdate !== -1) {
 				const updatedArray = [...state.comparisionIndices];
-				const updatedObject = { ...updatedArray[indexToUpdate],  };
-	
+				const updatedObject = { ...updatedArray[indexToUpdate], };
+
 				if (!isEqual(updatedObject, data)) {
 					updatedArray[indexToUpdate] = { ...updatedObject, ...data };
 					return { comparisionIndices: updatedArray };

@@ -24,6 +24,7 @@
 			"@assets/*": ["./src/assets/*"],
 			"@hooks/*": ["./src/hooks/*"],
 			"@store/*": ["./src/store/*"],
+			"@theme/*": ["./src/theme/*"],
 			"@constants/*": ["./src/constants/*"],
 			"@utils/*": ["./src/utils/*"],
 		}
