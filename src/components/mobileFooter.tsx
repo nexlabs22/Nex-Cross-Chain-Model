@@ -96,9 +96,9 @@ const MobileFooterSection = () => {
               </div>
               <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
                 <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
-                <Link href={"/licence"}>
+                <Link href={"/license"}>
                   <h5 className="interBold text-xl text-white md:text-3xl">
-                    Licence
+                    License
                   </h5>
                 </Link>
               </div>

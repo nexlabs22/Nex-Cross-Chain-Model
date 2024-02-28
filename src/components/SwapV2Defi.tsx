@@ -163,14 +163,14 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		async function getIssuanceOutput() {
-			// console.log("HHH")
+			
 			try {
 				if (swapToCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
 					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 					const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
 					const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
-					console.log('HHH2', output)
+					
 					setSecondInputValue(num(output).toString())
 				}
 			} catch (error) {

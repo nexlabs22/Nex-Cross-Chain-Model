@@ -98,9 +98,9 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
                 Whitepaper
               </h5>
             </Link>
-            <Link href={"/licence"}>
+            <Link href={"/license"}>
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
-                Licence
+                License
               </h5>
             </Link>
           </div>

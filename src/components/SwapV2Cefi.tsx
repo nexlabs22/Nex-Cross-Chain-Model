@@ -186,7 +186,7 @@ const SwapV2Cefi = () => {
 		async function fetchData(tokenDetails: Coin, place: string) {
 			try {
 				const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
-				console.log("--->pool address", poolAddress);
+				
 				let isRevPool = false
 
 				// const chainName = isMainnet ? 'ethereum' : 'goerli'
@@ -270,7 +270,7 @@ const SwapV2Cefi = () => {
 
 	useEffect(() => {
 		if (approveHook.isLoading) {
-			console.log()
+			
 			toast.dismiss()
 			// toast.loading('Approving ...')
 			GenericToast({
@@ -297,7 +297,7 @@ const SwapV2Cefi = () => {
 
 	useEffect(() => {
 		if (mintRequestHook.isLoading || mintRequestEthHook.isLoading) {
-			console.log()
+			
 			toast.dismiss()
 			GenericToast({
 				type: 'loading',
@@ -323,7 +323,7 @@ const SwapV2Cefi = () => {
 
 	useEffect(() => {
 		if (burnRequestHook.isLoading) {
-			console.log()
+			
 			toast.dismiss()
 
 			GenericToast({
@@ -370,7 +370,7 @@ const SwapV2Cefi = () => {
 
 	const toggleMainnetCheckbox = () => {
 		setIsmainnet(!isMainnet)
-		console.log(!isMainnet)
+		
 	}
 
 	const openPaymentModal = () => {
@@ -682,7 +682,7 @@ const SwapV2Cefi = () => {
 			if (address && signer) {
 				const balance = await signer?.provider?.getBalance(address as string)
 				const convertedBalance = ethers.utils.formatEther(balance as BigNumber)
-				console.log('Balance converted', convertedBalance)
+				
 				setUserEthBalance(Number(balance))
 			}
 		}

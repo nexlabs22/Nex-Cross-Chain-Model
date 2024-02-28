@@ -206,7 +206,7 @@ const Swap = () => {
 
 	useEffect(() => {
 		if (approveHook.isLoading) {
-			console.log()
+			
 			toast.dismiss()
 			// toast.loading('Approving ...')
 			GenericToast({
@@ -233,7 +233,7 @@ const Swap = () => {
 
 	useEffect(() => {
 		if (mintRequestHook.isLoading) {
-			console.log()
+			
 			toast.dismiss()
 			GenericToast({
 				type: 'loading',
@@ -259,7 +259,7 @@ const Swap = () => {
 
 	useEffect(() => {
 		if (burnRequestHook.isLoading) {
-			console.log()
+			
 			toast.dismiss()
 
 			GenericToast({

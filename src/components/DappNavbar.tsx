@@ -118,7 +118,6 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 				const users = snapshot.val()
 				if (address) {
 					for (const key in users) {
-						console.log(users[key])
 						const potentialUser: User = users[key]
 						if (potentialUser.main_wallet == address) {
 							setConnectedUser(potentialUser)
