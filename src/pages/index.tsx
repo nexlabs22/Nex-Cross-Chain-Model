@@ -46,26 +46,18 @@ const Dashboard: NextPage = () => {
 								className="w-full hidden md:block xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
 								style={{
 									backgroundImage: `url('${bg2.src}')`,
-									backgroundSize: '45%',
-									backgroundPositionX: '80%',
+									backgroundSize: '40%',
+									backgroundPositionX: '90%',
 									backgroundPositionY: '100%',
 								}}
 							></div>
-							<div
-								className="w-full block md:hidden xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
-								style={{
-									backgroundImage: `url('${bg2.src}')`,
-									backgroundSize: '55%',
-									backgroundPositionX: '90%',
-									backgroundPositionY: '98%',
-								}}
-							></div>
+							
 						</div>
 						<div className="relative top-0 left-0 z-40 xl:bg-transparent ">
 							<h5 className={`interBold titleShadow mb-12 text-4xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"} `}>
 								DCA Calculator
 							</h5>
-							<p className={`interMedium mb-4 w-2/3 text-xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"}`}>
+							<p className={`interMedium mb-4 w-11/12 md:w-7/12 text-xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"}`}>
 
 							Explore our Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors aiming to mitigate market volatility and enhance portfolio growth. This calculator
 								enables a disciplined investment approach by automating the DCA strategy, which involves regular, fixed-amount investments.

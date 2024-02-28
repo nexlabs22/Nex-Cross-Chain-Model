@@ -489,26 +489,18 @@ export default function Explore() {
 								className="w-full hidden md:block xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
 								style={{
 									backgroundImage: `url('${bg2.src}')`,
-									backgroundSize: '45%',
+									backgroundSize: '40%',
 									backgroundPositionX: '80%',
 									backgroundPositionY: '35%',
 								}}
 							></div>
-							<div
-								className="w-full block md:hidden xl:w-1/2 h-full bg-no-repeat xl:cefiCsDefiAnimated"
-								style={{
-									backgroundImage: `url('${bg2.src}')`,
-									backgroundSize: '55%',
-									backgroundPositionX: '90%',
-									backgroundPositionY: '98%',
-								}}
-							></div>
+							
 						</div>
 						<div className="relative top-0 left-0 z-40 xl:bg-transparent ">
 							<h5 className={`interBold titleShadow mb-12 text-4xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"} `}>
 								CeFi vs DeFi
 							</h5>
-							<p className={`interMedium mb-4 w-2/3 text-xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"}`}>
+							<p className={`interMedium mb-4 w-full md:w-6/12 xl:w-8/12 text-xl ${mode != "dark" ? " text-blackText-500" : " text-whiteBackground-500"}`}>
 
 								Let{"'"}s explore <span className="interBold">CeFi</span>, where traditional banks and institutions manage your money against <span className="interBold">DeFi</span>, where technology lets people handle their finances without middlemen.
 							</p>
