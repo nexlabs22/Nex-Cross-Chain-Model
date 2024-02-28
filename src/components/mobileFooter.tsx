@@ -11,20 +11,19 @@ import 'react-accessible-accordion/dist/fancy-example.css'
 import { useLandingPageStore } from '@/store/store'
 
 interface FooterProps {
-	tradeFooter?: boolean
+  tradeFooter?: boolean
 }
 
 const MobileFooterSection = () => {
-	const { mode } = useLandingPageStore()
-	return (
-		<section className="px-2 pb-4 pt-10 ">
-      <div className={`h-fit w-full rounded-[30px] ${
-          mode == "dark" ? "bg-[#101010]" : "bg-colorSeven-500"
+  const { mode } = useLandingPageStore()
+  return (
+    <section className="px-2 pb-4 pt-10 ">
+      <div className={`h-fit w-full rounded-[30px] ${mode == "dark" ? "bg-[#101010]" : "bg-colorSeven-500"
         } px-6 py-8 md:p-10`} style={{
           boxShadow:
             mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
         }}>
-        <Link href={"https://www.nexlabs.io/"}> 
+        <Link href={"https://www.nexlabs.io/"}>
           <Image
             src={xLogo}
             alt="nex logo"
@@ -35,7 +34,7 @@ const MobileFooterSection = () => {
           Index your trades, your investment, your future
         </h5>
         <Accordion allowZeroExpanded>
-          <AccordionItem  className="w-full border-none bg-transparent px-0 shadow-none">
+          <AccordionItem className="w-full border-none bg-transparent px-0 shadow-none">
             <AccordionItemHeading className="w-full border-none bg-transparent px-0 shadow-none">
               <AccordionItemButton className="w-full border-none bg-transparent px-0 shadow-none">
                 <div className="my-6 flex h-fit w-full flex-row items-end justify-between border-b-[1.5px] border-b-white pb-5">
@@ -62,7 +61,7 @@ const MobileFooterSection = () => {
             <AccordionItemPanel className="w-full px-2 py-2">
               <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
                 <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
-                <Link href={"/"}>
+                <Link href={"https://www.nexlabs.io/"}>
                   <h5 className="interBold text-xl text-white md:text-3xl">
                     Home
                   </h5>
@@ -70,7 +69,7 @@ const MobileFooterSection = () => {
               </div>
               <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
                 <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
-                <Link href={"https://app.nexlabs.io/"}>
+                <Link href={"/"}>
                   <h5 className="interBold text-xl text-white md:text-3xl">
                     Dapp
                   </h5>
@@ -79,6 +78,7 @@ const MobileFooterSection = () => {
               <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
                 <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
                 <Link
+                  target="_blank"
                   href={"https://github.com/nexlabs22/…ices-Model-Contracts"}
                 >
                   <h5 className="interBold text-xl text-white md:text-3xl">
@@ -88,13 +88,13 @@ const MobileFooterSection = () => {
               </div>
               <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
                 <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
-                <Link href={"https://nex-labs.gitbook.io/nex-dex/"}>
+                <Link target="_blank" href={"https://nex-labs.gitbook.io/nex-dex/"}>
                   <h5 className="interBold text-xl text-white md:text-3xl">
                     Whitepaper
                   </h5>
                 </Link>
               </div>
-			  <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
+              <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
                 <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
                 <Link href={"/licence"}>
                   <h5 className="interBold text-xl text-white md:text-3xl">
@@ -135,6 +135,7 @@ const MobileFooterSection = () => {
                   href={
                     "https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model"
                   }
+                  target="_blank"
                 >
                   <h5 className="interBold text-xl text-white md:text-3xl">
                     Spot - Indices
@@ -143,7 +144,7 @@ const MobileFooterSection = () => {
               </div>
               <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
                 <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
-                <Link href={"https://nex-labs.gitbook.io/nex-dex/"}>
+                <Link target="_blank" href={"https://nex-labs.gitbook.io/nex-dex/"}>
                   <h5 className="interBold text-xl text-white md:text-3xl">
                     Protocol structure
                   </h5>
@@ -155,6 +156,7 @@ const MobileFooterSection = () => {
                   href={
                     "https://nex-labs.gitbook.io/nex-dex/token-and-smart-contract-details/address-and-ticker"
                   }
+                  target="_blank"
                 >
                   <h5 className="interBold text-xl text-white md:text-3xl">
                     Token & smart contract details
@@ -167,6 +169,7 @@ const MobileFooterSection = () => {
                   href={
                     "https://nex-labs.gitbook.io/nex-dex/additional-information/roadmap"
                   }
+                  target="_blank"
                 >
                   <h5 className="interBold text-xl text-white md:text-3xl">
                     Roadmap
@@ -179,11 +182,13 @@ const MobileFooterSection = () => {
                   href={
                     "https://nex-labs.gitbook.io/nex-dex/additional-information/faq"
                   }
+                  target="_blank"
                 >
                   <h5 className="interBold text-xl text-white md:text-3xl">
                     FAQ
                   </h5>
                 </Link>
+
               </div>
             </AccordionItemPanel>
           </AccordionItem>
@@ -194,7 +199,7 @@ const MobileFooterSection = () => {
         </h5>
       </div>
     </section>
-	)
+  )
 }
 
 export default MobileFooterSection

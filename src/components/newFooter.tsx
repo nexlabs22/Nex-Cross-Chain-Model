@@ -52,25 +52,25 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
               Index your trades, your investment, your future.
             </h5>
             <div className="flex w-6/12 flex-row items-center justify-between">
-              <Link href={"https://www.linkedin.com/company/nex-labs/"}>
+              <Link target="_blank" href={"https://www.linkedin.com/company/nex-labs/"}>
                 {
                   mode == "dark" ? <BsLinkedin size={25} color="#F2F2F2" /> : <BsLinkedin size={25} color="#252525" />
                 }
                 
               </Link>
-              <Link href={"https://twitter.com/NEX_Protocol"}>
+              <Link target="_blank" href={"https://twitter.com/NEX_Protocol"}>
                 {
                   mode == "dark" ? <BsTwitter size={25} color="#F2F2F2" /> : <BsTwitter size={25} color="#252525" />
                 }
                 
               </Link>
-              <Link href={"https://nexlabs.medium.com/"}>
+              <Link target="_blank" href={"https://nexlabs.medium.com/"}>
                 {
                   mode == "dark" ? <BsMedium size={25} color="#F2F2F2" /> : <BsMedium size={25} color="#252525" />
                 }
                 
               </Link>
-              <Link href={"https://github.com/nexlabs22"}>
+              <Link target="_blank" href={"https://github.com/nexlabs22"}>
                 {
                   mode == "dark" ? <BsGithub size={25} color="#F2F2F2" /> : <BsGithub size={25} color="#252525" />
                 }
@@ -82,18 +82,18 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
             <h5 className={`interBlack mb-6 text-2xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
               Nex Labs
             </h5>
-            <Link href={"https://www.nexlabs.io/"}>
+            <Link target="_blank" href={"https://www.nexlabs.io/"}>
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>Home</h5>
             </Link>
-            <Link href={"https://app.nexlabs.io/"}>
+            <Link href={"/"}>
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>Dapp</h5>
             </Link>
-            <Link href={"https://github.com/nexlabs22/…ices-Model-Contracts"}>
+            <Link target="_blank" href={"https://github.com/nexlabs22/…ices-Model-Contracts"}>
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
                 Public Repository
               </h5>
             </Link>
-            <Link href={"https://nex-labs.gitbook.io/nex-dex/"}>
+            <Link target="_blank" href={"https://nex-labs.gitbook.io/nex-dex/"}>
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
                 Whitepaper
               </h5>
@@ -109,6 +109,7 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
               Whitepaper Pieces
             </h5>
             <Link
+             target="_blank"
               href={
                 "https://nex-labs.gitbook.io/nex-dex/spot-indices/nex-labs-spot-index-standard-model"
               }
@@ -117,7 +118,7 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
                 Spot - Indices
               </h5>
             </Link>
-            <Link href={"https://nex-labs.gitbook.io/nex-dex/"}>
+            <Link target="_blank" href={"https://nex-labs.gitbook.io/nex-dex/"}>
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
                 Protocol structure
               </h5>
@@ -126,6 +127,7 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
               href={
                 "https://nex-labs.gitbook.io/nex-dex/token-and-smart-contract-details/address-and-ticker"
               }
+              target="_blank"
             >
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
                 Token & smart contract details
@@ -135,6 +137,7 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
               href={
                 "https://nex-labs.gitbook.io/nex-dex/additional-information/roadmap"
               }
+              target="_blank"
             >
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>
                 Roadmap
@@ -144,6 +147,7 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
               href={
                 "https://nex-labs.gitbook.io/nex-dex/additional-information/faq"
               }
+              target="_blank"
             >
               <h5 className={`interBold mb-5 text-xl ${mode == "dark" ? "text-whiteText-500" : " text-blackText-500"}`}>FAQ</h5>
             </Link>
