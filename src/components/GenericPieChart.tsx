@@ -135,7 +135,6 @@ const GenericPieChart3D: React.FC<PieChart3DProps> = ({ data }) => {
           if (newIntersectedSlice.material instanceof THREE.MeshPhongMaterial) {
             newIntersectedSlice.material.emissiveIntensity = 0.02;
 
-            console.log('Hovered Slice Data:', newIntersectedSlice.userData.label);
 
             // Tween the scale
             new TWEEN.Tween(newIntersectedSlice.scale)

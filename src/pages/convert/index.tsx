@@ -4,8 +4,8 @@ import Image from 'next/image'
 import DappNavbar from '@/components/DappNavbar'
 import { LifiWidget } from '@components/LifiWidget'
 import dynamic from 'next/dynamic'
-import Footer from '@/components/Footer'
-
+import Footer from '@/components/newFooter'
+import MobileFooterSection from '@/components/mobileFooter'
 import convert from '@assets/images/convert.png'
 import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
@@ -44,8 +44,11 @@ export default function Convert() {
 					</section>
 				</section>
 
-				<div className="w-fit h-fit pt-0 lg:pt-16">
+				<div className="w-fit hidden xl:block h-fit pt-0 lg:pt-16">
 					<Footer />
+				</div>
+				<div className='block xl:hidden'>
+					<MobileFooterSection />
 				</div>
 			</main>
 		</>

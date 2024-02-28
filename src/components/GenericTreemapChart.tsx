@@ -45,7 +45,7 @@ const GenericTreemapChart3D: React.FC<TreeMapChartProps> = ({ percentage }) => {
 		const selectedItem = Chart.chart.getSelection()[0]
 		if (selectedItem) {
 			const selectedValue = Chart.chart.getDataTable().getValue(selectedItem.row, selectedItem.column)
-			console.log(selectedValue)
+			
 			//   setSelectedData(selectedValue);
 		}
 	}

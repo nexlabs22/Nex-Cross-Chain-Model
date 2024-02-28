@@ -118,7 +118,6 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 				const users = snapshot.val()
 				if (address) {
 					for (const key in users) {
-						console.log(users[key])
 						const potentialUser: User = users[key]
 						if (potentialUser.main_wallet == address) {
 							setConnectedUser(potentialUser)
@@ -253,6 +252,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 						boxShadow: mode == 'dark' && !tradeNavbar && selectedTradingCategory != "cefi" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 					}}
 				>
+					
 					{mode == 'light' ? <IoSunnyOutline color="#F2F2F2" size={22} /> : <IoMoonOutline color="#F2F2F2" size={22} />}
 				</button>
 				{
@@ -289,11 +289,11 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 				<ConnectButton tradeNavbarButton={tradeNavbar} />
 				<button
 					className={`h-fit w-fit rounded-xl bg-gradient-to-tl ml-2 ${
-						mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : ' shadow-green-200 active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
+						mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : ' shadow-green-200  active:shadow-gray-500 bg-center bg-cover bg-no-repeat' : tradeNavbar && selectedTradingCategory == "cefi" ? "shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]" : 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
 					} p-3 shadow-sm  active:translate-y-[1px]`}
 					onClick={toggleMode}
 					style={{
-						backgroundImage: mode == 'dark' && selectedTradingCategory != "cefi" ? `url('${mesh1.src}')` : '',
+						backgroundImage: mode == 'dark' ? tradeNavbar && selectedTradingCategory == "cefi" ? "" : `url('${mesh1.src}')` : ``,
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 					}}
 				>
@@ -301,8 +301,8 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 				</button>
 			</div>
 			<Menu isOpen={openMobileMenu} className={`${mode == "dark" ? "dark-menu-wrap" : ""}`}>
-				<div className="w-full h-full">
-					<div className="flex flex-row items-center justify-end p-3">
+				<div className="w-full h-fit pt-4">
+					<div className="flex flex-row items-center justify-end px-3 pt-3">
 						<AiOutlineClose
 							color="#2A2A2A"
 							size={30}
@@ -312,7 +312,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 						></AiOutlineClose>
 					</div>
 					<div className="w-full h-full flex flex-col items-center justify-around">
-						<div className="w-9/12 mx-auto h-fit flex flex-col items-start justify-center gap-12">
+						<div className="w-9/12 mx-auto h-fit flex flex-col items-start justify-center py-16 gap-12">
 							<Link
 								href={'/'}
 								onClick={() => {
@@ -380,7 +380,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 								''
 							)}
 						</div>
-						<div className="pt-4">
+						<div className="">
 							<ConnectButton />
 						</div>
 					</div>

@@ -3,7 +3,8 @@
 import Image from 'next/image'
 import DappNavbar from '@/components/DappNavbar'
 import dynamic from 'next/dynamic'
-import Footer from '@/components/Footer'
+import Footer from '@/components/newFooter'
+import MobileFooterSection from '@/components/mobileFooter'
 import 'react-tabs/style/react-tabs.css'
 import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import TipsBox2 from '@/components/TipsBox'
@@ -369,8 +370,11 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 						<TipsBox2></TipsBox2>
 					</div>
 				</section>
-				<div className="w-fit h-fit xl:pt-16">
+				<div className="w-fit hidden xl:block h-fit pt-0 lg:pt-16">
 					<Footer />
+				</div>
+				<div className='block xl:hidden'>
+					<MobileFooterSection />
 				</div>
 				<GenericModal
 					isOpen={QRModalVisible}
