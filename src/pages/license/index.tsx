@@ -30,7 +30,7 @@ export default function Licenses() {
 			>
 
 				<DappNavbar />
-				<section className="w-screen h-fit flex flex-col items-stretch justify-start px-10 pt-10 pb-12">
+				<section className="w-screen h-fit flex flex-col items-stretch justify-start px-2 lg:px-10 pt-10 pb-12">
 					<h5 className={` text-4xl interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Our Licences</h5>
 					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
 						Licences indicate collaborations with different third-party and players in the economic ecosystem (institutions, hi-tech companies ...) to ensure compliance with regulations, protect users from potential harm, and contribute to a more trustworthy financial environment. Without proper licenses, users risk legal repercussions and potentially engaging in unauthorized financial activities.
