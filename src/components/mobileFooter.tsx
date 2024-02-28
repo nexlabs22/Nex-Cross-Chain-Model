@@ -17,7 +17,7 @@ interface FooterProps {
 const MobileFooterSection = () => {
   const { mode } = useLandingPageStore()
   return (
-    <section className="px-2 pb-4 pt-10 ">
+    <section className="px-2 pb-4">
       <div className={`h-fit w-full rounded-[30px] ${mode == "dark" ? "bg-[#101010]" : "bg-colorSeven-500"
         } px-6 py-8 md:p-10`} style={{
           boxShadow:
