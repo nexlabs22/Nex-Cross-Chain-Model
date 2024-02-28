@@ -301,8 +301,8 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 				</button>
 			</div>
 			<Menu isOpen={openMobileMenu} className={`${mode == "dark" ? "dark-menu-wrap" : ""}`}>
-				<div className="w-full h-full">
-					<div className="flex flex-row items-center justify-end p-3">
+				<div className="w-full h-fit pt-4">
+					<div className="flex flex-row items-center justify-end px-3 pt-3">
 						<AiOutlineClose
 							color="#2A2A2A"
 							size={30}
@@ -312,7 +312,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 						></AiOutlineClose>
 					</div>
 					<div className="w-full h-full flex flex-col items-center justify-around">
-						<div className="w-9/12 mx-auto h-fit flex flex-col items-start justify-center gap-12">
+						<div className="w-9/12 mx-auto h-fit flex flex-col items-start justify-center py-16 gap-12">
 							<Link
 								href={'/'}
 								onClick={() => {
@@ -380,7 +380,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 								''
 							)}
 						</div>
-						<div className="pt-4">
+						<div className="">
 							<ConnectButton />
 						</div>
 					</div>
