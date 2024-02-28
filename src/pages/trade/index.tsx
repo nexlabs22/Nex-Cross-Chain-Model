@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import DappNavbar from '@/components/DappNavbar'
-import Footer from '@/components/Footer'
+import Footer from '@/components/newFooter'
+import MobileFooterSection from '@/components/mobileFooter'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -535,8 +536,11 @@ export default function Explore() {
 				</section>
 				</section>
 
-				<div className="w-fit h-fit pt-0 lg:pt-16">
-					<Footer tradeFooter />
+				<div className="w-fit hidden xl:block h-fit pt-0 lg:pt-16">
+					<Footer tradeFooter/>
+				</div>
+				<div className='block xl:hidden'>
+					<MobileFooterSection />
 				</div>
 			</main>
 		</>

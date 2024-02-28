@@ -1,7 +1,8 @@
 'use client'
 
 import DappNavbar from '@/components/DappNavbar'
-import Footer from '@/components/Footer'
+import Footer from '@/components/newFooter'
+import MobileFooterSection from '@/components/mobileFooter'
 import Image from 'next/image'
 import { useChartDataStore } from '@/store/store'
 import Head from 'next/head'
@@ -587,8 +588,11 @@ export default function DCACalculator() {
 					</div>
 				</div>
 
-				<div className="w-fit h-fit pt-0 lg:pt-16">
+				<div className="w-fit hidden xl:block h-fit pt-0 lg:pt-16">
 					<Footer />
+				</div>
+				<div className='block xl:hidden'>
+					<MobileFooterSection />
 				</div>
 			</main>
 		</>

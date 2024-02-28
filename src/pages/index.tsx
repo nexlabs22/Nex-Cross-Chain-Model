@@ -1,7 +1,7 @@
 import { type NextPage } from 'next'
 import DappNavbar from '@components/DappNavbar'
 import TopIndexData from '@components/dashboard/TopIndexData'
-import Footer from '@components/Footer'
+import Footer from '@/components/newFooter'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GoArrowRight } from 'react-icons/go'
@@ -11,6 +11,7 @@ import mesh2 from '@assets/images/mesh2.png'
 import { useLandingPageStore } from '@/store/store'
 import { useEffect } from 'react'
 import axios from 'axios'
+import MobileFooterSection from '@/components/mobileFooter'
 
 const Dashboard: NextPage = () => {
 	const { mode } = useLandingPageStore()
@@ -91,7 +92,12 @@ const Dashboard: NextPage = () => {
 						</div>
 					</div>
 				</section>
-				<Footer />
+				<div className="w-fit hidden xl:block h-fit pt-0 lg:pt-16">
+					<Footer />
+				</div>
+				<div className='block xl:hidden'>
+					<MobileFooterSection />
+				</div>
 			</main>
 		</>
 	)
