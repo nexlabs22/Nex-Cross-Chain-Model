@@ -18,6 +18,7 @@ import { useLandingPageStore } from '@/store/store'
 import Image from 'next/image'
 import Link from 'next/link'
 import { BsArrowCounterclockwise } from 'react-icons/bs'
+import { reduceAddress } from '@/utils/general'
 
 function NewHistoryTable() {
 	const { mode } = useLandingPageStore()
@@ -55,9 +56,9 @@ function NewHistoryTable() {
 		setPortfolioData(positionHistory.data)
 	}, [setEthPriceInUsd, setPortfolioData, positionHistory.data])
 
+	const allowedSymbols = ['ANFI', 'CRYPTO5']
+	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
 	useEffect(() => {
-		const allowedSymbols = ['ANFI', 'CRYPTO5']
-		const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
 		if (path === '/tradeIndex') {
 			const data = positionHistory.data.filter((data) => {
 				return activeTicker.includes(data.indexName)
@@ -72,7 +73,7 @@ function NewHistoryTable() {
 
 			setPositionHistoryData(data)
 		}
-	}, [path, positionHistory.data, assetName, swapFromCur.Symbol, swapToCur.Symbol, ownedAssetInActivity])
+	}, [path, positionHistory.data, assetName, swapFromCur.Symbol, swapToCur.Symbol, ownedAssetInActivity, activeTicker])
 
 	useEffect(() => {
 		if (tradeTableReload) {
@@ -122,10 +123,63 @@ function NewHistoryTable() {
 			}
 	)
 
+	const [localStorageHash, setLocalStorageHash] = useState<string[]>([])
+	if (typeof window !== 'undefined' && localStorage.getItem('txHash')) {
+		const txHash = JSON.parse(localStorage.getItem('txHash') || '{}')
+		const txHashArray: string[] = Object.values(txHash)
+		if (JSON.stringify(localStorageHash) !== JSON.stringify(txHashArray)) {
+			setLocalStorageHash(txHashArray)
+		}
+	}
+
+	useEffect(() => {
+		if (localStorageHash && positionHistoryData) {
+			localStorageHash.forEach((hash) => {
+				const ifExist = positionHistoryData.filter((data) => {
+					data.txHash === hash
+				})
+
+				if (ifExist.length > 0) {
+					const txHash = JSON.parse(localStorage.getItem('txHash') || '{}')
+					const newObj = Object.fromEntries(Object.entries(txHash).filter(([key, value]) => value !== hash))
+					Object.keys(newObj).length === 0 ? localStorage.removeItem('txHash') : localStorage.setItem('txHash', JSON.stringify(newObj))
+					const newArray: string[] = Object.values(newObj) as string[]
+					setLocalStorageHash(newArray)
+				}
+			})
+		}
+	}, [localStorageHash, positionHistoryData])
+
 	return (
 		<div className={`w-full h-full overflow-x-auto ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
 			{' '}
 			{/* Added overflow-x-auto for X-axis scrolling */}
+			{ path==='/tradeIndex' && activeTicker[0] === 'CRYPTO5' && localStorageHash.length > 0 && (
+				<div role="alert" className="alert alert-info mb-2">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+					<span>
+						You have sent a CCIP transaction.{' '}
+						<div className="dropdown dropdown-hover">
+							<div tabIndex={0} role="button" className="">
+								<em> Click here </em>
+							</div>
+							<ul tabIndex={0} className="dropdown-content z-[1] menu shadow bg-base-100 rounded-box w-fit">
+								{localStorageHash.map((hash) => (
+									<li key={hash}>
+										<Link href={`https://ccip.chain.link/tx/${hash}`}>{reduceAddress(hash)}</Link>
+									</li>
+								))}
+							</ul>
+						</div>
+						{/* <Link href={`https://ccip.chain.link/tx/${localStorageHash}`}>
+							<em>Click Here </em>
+						</Link> */}{' '}
+						to view in ccip
+					</span>
+				</div>
+			)}
 			<div className={`h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[400px] ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
 				<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
 					<thead className="sticky top-0">
@@ -149,6 +203,9 @@ function NewHistoryTable() {
 						</tr>
 					</thead>
 					<tbody className="overflow-y-scroll overflow-x-hidden">
+						{/* {localStorageHash ? 
+					():( */}
+
 						{dataToShow.map(
 							(
 								position: {
@@ -196,13 +253,13 @@ function NewHistoryTable() {
 										<td className="px-4 text-left py-3">
 											<div
 												className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}  
-													${
-														position.side === 'Mint Request'
-															? 'bg-nexLightGreen-500 text-whiteText-500'
-															: position.side === 'Burn Request'
-															? 'bg-nexLightRed-500 text-whiteText-500'
-															: 'bg-transparent'
-													} flex flex-row items-center justify-center`}
+										${
+											position.side === 'Mint Request'
+												? 'bg-nexLightGreen-500 text-whiteText-500'
+												: position.side === 'Burn Request'
+												? 'bg-nexLightRed-500 text-whiteText-500'
+												: 'bg-transparent'
+										} flex flex-row items-center justify-center`}
 											>
 												{position.side ? position.side.toString().split(' ')[0] : '-'}
 											</div>
@@ -212,15 +269,16 @@ function NewHistoryTable() {
 												<>
 													{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
 													{position.side === 'Mint Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
-													<em>
-														($
-														{usdPrices
-															? position.side === 'Mint Request'
-																? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
-																: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-															: 0}
-														){' '}
-													</em>{' '}
+													<div className="text-slate-500">
+														<em>
+															≈ $
+															{usdPrices
+																? position.side === 'Mint Request'
+																	? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
+																	: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																: 0}{' '}
+														</em>
+													</div>{' '}
 												</>
 											) : (
 												'-'
@@ -231,15 +289,16 @@ function NewHistoryTable() {
 												<>
 													{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
 													{position.side === 'Burn Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
-													<em>
-														($
-														{usdPrices
-															? position.side === 'Burn Request'
-																? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
-																: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-															: 0}
-														){' '}
-													</em>{' '}
+													<div className="text-slate-500">
+														<em>
+															≈ $
+															{usdPrices
+																? position.side === 'Burn Request'
+																	? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
+																	: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																: 0}{' '}
+														</em>
+													</div>{' '}
 												</>
 											) : (
 												'-'
@@ -248,12 +307,12 @@ function NewHistoryTable() {
 										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
 											<div className="flex flex-row items-center justify-start gap-3 ">
 												{(position.indexName === 'ANFI' || position.indexName === 'CRYPTO5') && (
-													<Link title={'View in Etherscan'} className="my-auto" target='_blank' href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
+													<Link title={'View in Etherscan'} className="my-auto" target="_blank" href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
 														<Image src={etherscan.src} alt="etherscan Logo" width={25} height={25} />
 													</Link>
 												)}
 												{position.indexName === 'CRYPTO5' && (
-													<Link title={'View in CCIP'} target='_blank' href={`https://ccip.chain.link/tx/${position.txHash}`}>
+													<Link title={'View in CCIP'} target="_blank" href={`https://ccip.chain.link/tx/${position.txHash}`}>
 														<Image src={ccip.src} alt="ccip Logo" width={25} height={25} />
 													</Link>
 												)}

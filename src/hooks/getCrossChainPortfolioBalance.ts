@@ -74,7 +74,7 @@ export function GetCrossChainPortfolioBalance() {
 				
 			}
 		}
-		console.log("totalPortfolioBalance", totalPortfolioBalance)
+		// console.log("totalPortfolioBalance", totalPortfolioBalance)
 		setPortfolioValue(totalPortfolioBalance);
 	}, [])
 

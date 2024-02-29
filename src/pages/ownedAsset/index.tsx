@@ -158,9 +158,6 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
 	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
 
-	console.log('TRUE OR FALSE', !loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent))
-	console.log(!loadingCR5, !loadingAnfi, !errorCR5, !errorAnfi, chartArr.length == 0, !!anfiPercent || !!crypto5Percent)
-
 	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
 		const chartData: { time: number; value: number }[] = []
 		const ANFIData = dataAnfi.poolDayDatas
@@ -412,6 +409,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 								<PNLChart
 									data={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? chartArr : emptyData}
 									change={address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? portfolio24hChange : 0}
+									totalPortfolioBalance={0}
 								/>
 							</div>
 						</div>
