@@ -363,7 +363,7 @@ contract CrossChainIndexFactory is
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
         
-        (uint actionType, address[] memory targetAddresses, uint nonce, uint[] memory percentages, uint[] memory extraValues) = abi.decode(any2EvmMessage.data, (uint, address[], uint, uint[], uint[])); // abi-decoding of the sent string message
+        (uint actionType, address[] memory targetAddresses, address[] memory targetAddresses2, uint nonce, uint[] memory percentages, uint[] memory extraValues) = abi.decode(any2EvmMessage.data, (uint, address[], address[], uint, uint[], uint[])); // abi-decoding of the sent string message
         if(actionType == 0){
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
             .destTokenAmounts;
@@ -380,7 +380,7 @@ contract CrossChainIndexFactory is
         oldTokenValues[i] = oldTokenValue;
         newTokenValues[i] = newTokenValue;
         }
-        bytes memory data = abi.encode(0, targetAddresses, nonce, oldTokenValues, newTokenValues);
+        bytes memory data = abi.encode(0, targetAddresses, targetAddresses2, nonce, oldTokenValues, newTokenValues);
         sendMessage(sourceChainSelector, address(sender), data, PayFeesIn.LINK);
         // sendMessage(sourceChainSelector, address(sender), abi.encode("HHH"), PayFeesIn.LINK);
         }else if( actionType == 1){
@@ -395,7 +395,7 @@ contract CrossChainIndexFactory is
           tokensToSendArray[0].token = crossChainToken[sourceChainSelector];
           tokensToSendArray[0].amount = crossChainTokenAmount;
           uint[] memory zeroArr = new uint[](0);
-          bytes memory data = abi.encode(1, targetAddresses, nonce, zeroArr, zeroArr);
+          bytes memory data = abi.encode(1, targetAddresses, targetAddresses2, nonce, zeroArr, zeroArr);
           sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
         }else if( actionType == 2){
             uint[] memory zeroArr = new uint[](0);
@@ -404,7 +404,7 @@ contract CrossChainIndexFactory is
                 uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
                 tokenValueArr[i] = tokenValue;
             }
-            bytes memory data = abi.encode(2, targetAddresses, nonce, tokenValueArr, zeroArr);
+            bytes memory data = abi.encode(2, targetAddresses, targetAddresses2, nonce, tokenValueArr, zeroArr);
             sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }else if( actionType == 3){
             

@@ -420,11 +420,14 @@ contract IndexFactoryBalancer is
                 );
                 
                 address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
+                address[] memory zeroAddresses = new address[](0);
+
                 uint[] memory zeroArray = new uint[](0);
 
                 bytes memory data = abi.encode(
                     2,
                     tokenAddresses,
+                    zeroAddresses,
                     updatePortfolioNonce,
                     zeroArray,
                     zeroArray
@@ -439,101 +442,24 @@ contract IndexFactoryBalancer is
         }
     }
 
-    //     for (uint i = 0; i < totalCurrentList(); i++) {
-    //         uint64 tokenChainSelector = tokenChainSelector(currentList(i));
-    //         if (tokenChainSelector == currentChainSelector) {
-    //             uint value = getAmountOut(
-    //                 currentList(i),
-    //                 address(weth),
-    //                 IERC20(currentList(i)).balanceOf(address(indexToken)),
-    //                 tokenSwapVersion(currentList(i))
-    //             );
-    //             portfolioTotalValueByNonce[updatePortfolioNonce] += value;
-    //             tokenValueByNonce[updatePortfolioNonce][
-    //                 currentList(i)
-    //             ] += value;
-    //             updatedTokensValueCount[updatePortfolioNonce] += 1;
-    //         } else {
-    //             address crossChainIndexFactory = crossChainFactoryBySelector[
-    //                 tokenChainSelector
-    //             ];
-    //             address[] memory tokens = new address[](1);
-    //             tokens[0] = currentList(i);
-    //             uint[] memory zeroArr = new uint[](0);
-
-    //             bytes memory data = abi.encode(
-    //                 2,
-    //                 tokens,
-    //                 updatePortfolioNonce,
-    //                 zeroArr,
-    //                 zeroArr
-    //             );
-    //             sendMessage(
-    //                 tokenChainSelector,
-    //                 crossChainIndexFactory,
-    //                 data,
-    //                 PayFeesIn.LINK
-    //             );
-    //         }
-    //     }
-    // }
-
-    // function askValues() public onlyOwner {
-    //     updatePortfolioNonce += 1;
-    //     for (uint i = 0; i < totalCurrentList(); i++) {
-    //         uint64 tokenChainSelector = tokenChainSelector(currentList(i));
-    //         if (tokenChainSelector == currentChainSelector) {
-    //             uint value = getAmountOut(
-    //                 currentList(i),
-    //                 address(weth),
-    //                 IERC20(currentList(i)).balanceOf(address(indexToken)),
-    //                 tokenSwapVersion(currentList(i))
-    //             );
-    //             portfolioTotalValueByNonce[updatePortfolioNonce] += value;
-    //             tokenValueByNonce[updatePortfolioNonce][
-    //                 currentList(i)
-    //             ] += value;
-    //             updatedTokensValueCount[updatePortfolioNonce] += 1;
-    //         } else {
-    //             address crossChainIndexFactory = crossChainFactoryBySelector[
-    //                 tokenChainSelector
-    //             ];
-    //             address[] memory tokens = new address[](1);
-    //             tokens[0] = currentList(i);
-    //             uint[] memory zeroArr = new uint[](0);
-
-    //             bytes memory data = abi.encode(
-    //                 2,
-    //                 tokens,
-    //                 updatePortfolioNonce,
-    //                 zeroArr,
-    //                 zeroArr
-    //             );
-    //             sendMessage(
-    //                 tokenChainSelector,
-    //                 crossChainIndexFactory,
-    //                 data,
-    //                 PayFeesIn.LINK
-    //             );
-    //         }
-    //     }
-    // }
+    
 
     function firstReweightAction() public onlyOwner {
         uint nonce = updatePortfolioNonce;
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
 
         uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
-        uint latestCount = indexFactoryStorage.currentFilledCount();
+        uint latestCurrentCount = indexFactoryStorage.currentFilledCount();
+        uint latestOracleCount = indexFactoryStorage.oracleFilledCount();
 
         for(uint i = 0; i < totalChains; i++){
-            uint64 chainSelector = indexFactoryStorage.currentChainSelectors(latestCount, i);
+            uint64 chainSelector = indexFactoryStorage.currentChainSelectors(latestCurrentCount, i);
             uint chainSelectorCurrentTokensCount = indexFactoryStorage.currentChainSelecotrTokensCount(chainSelector);
             uint chainSelectorOracleTokensCount = indexFactoryStorage.oracleChainSelecotrTokensCount(chainSelector);
-            uint chainSelectorTotalShares = indexFactoryStorage.oracleChainSelecotrTotalShares(chainSelector);
+            uint chainSelectorTotalShares = indexFactoryStorage.oracleChainSelecotrTotalShares(latestOracleCount, chainSelector);
             uint chainValue = chainValueByNonce[nonce][chainSelector];
 
-            if((chainValue*100)/portfolioValue > chainSelectorTotalShares){
+            if((chainValue*100e18)/portfolioValue > chainSelectorTotalShares){
                  if(chainSelector == currentChainSelector){
                     address tokenAddress = indexFactoryStorage.currentList(i);
                     uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
@@ -543,7 +469,7 @@ contract IndexFactoryBalancer is
                         uint wethAmount = _swapSingle(
                         tokenAddress,
                         address(weth),
-                        IERC20(tokenAddress).balanceOf(indexToken),
+                        IERC20(tokenAddress).balanceOf(address(indexToken)),
                         address(indexToken),
                         tokenSwapVersion
                         );
@@ -552,7 +478,7 @@ contract IndexFactoryBalancer is
                     uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/100e18;
                     uint extraWethAmount = swapWethAmount - wethAmountToSwap;
                     for(uint i = 0; i < chainSelectorOracleTokensCount; i++){
-                        address newTokenAddress = indexFactoryStorage.currentList(i);
+                        address newTokenAddress = indexFactoryStorage.oracleList(i);
                         uint newTokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
                         uint newTokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(tokenAddress);
                         uint wethAmount = _swapSingle(
@@ -565,161 +491,105 @@ contract IndexFactoryBalancer is
                         // swapWethAmount += wethAmount; 
                     }
                  }else{
-                    address crossChainIndexFactory = crossChainFactoryBySelector(
-                chainSelector
-                );
+                    address crossChainIndexFactory = crossChainFactoryBySelector(chainSelector);
                 
-                address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
-                uint[] memory zeroArray = new uint[](0);
+                    address[] memory currentTokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
+                    address[] memory newTokenAddresses = indexFactoryStorage.allOracleChainSelecotrTokens(chainSelector);
+                    // address[] memory zeroAddresses = new address[](0);
+                    uint[] memory zeroArray = new uint[](0);
 
-                bytes memory data = abi.encode(
-                    2,
-                    tokenAddresses,
-                    updatePortfolioNonce,
-                    zeroArray,
-                    zeroArray
-                );
-                sendMessage(
-                    chainSelector,
-                    crossChainIndexFactory,
-                    data,
-                    PayFeesIn.LINK
-                );
+                    bytes memory data = abi.encode(
+                        2,
+                        currentTokenAddresses,
+                        newTokenAddresses,
+                        updatePortfolioNonce,
+                        zeroArray,
+                        zeroArray
+                    );
+                    sendMessage(
+                        chainSelector,
+                        crossChainIndexFactory,
+                        data,
+                        PayFeesIn.LINK
+                    );
                 }
                  }
             }
     }
 
-    /**
-    function firstReweightAction() public onlyOwner {
-        uint nonce = updatePortfolioNonce;
-        uint portfolioValue = portfolioTotalValueByNonce[nonce];
-        for (uint i; i < totalCurrentList(); i++) {
-            uint tokenValue = tokenValueByNonce[nonce][currentList(i)];
-            if (
-                (tokenValue * 100e18) / portfolioValue >
-                tokenOracleMarketShare(currentList(i))
-            ) {
-                uint64 tokenChainSelector = tokenChainSelector(currentList(i));
-                if (tokenChainSelector == currentChainSelector) {
-                    uint sellPercent = (tokenValue * 100e18) /
-                        portfolioValue -
-                        tokenOracleMarketShare(currentList(i));
-                    uint sellValue = tokenValue -
-                        (tokenOracleMarketShare(currentList(i)) *
-                            portfolioValue) /
-                        100e18;
-                    // uint swapAmount = (sellPercent*IERC20(currentList(i)).balanceOf(address(indexToken)))/100e18;
-                    uint swapAmount = (sellValue *
-                        IERC20(currentList(i)).balanceOf(address(indexToken))) /
-                        tokenValue;
-                    uint wethAmount = _swapSingle(
-                        currentList(i),
-                        address(weth),
-                        swapAmount,
-                        address(indexToken),
-                        tokenSwapVersion(currentList(i))
-                    );
-                    reweightWethValueByNonce[nonce] += wethAmount;
-                } else {
-                    address crossChainIndexFactory = crossChainFactoryBySelector[
-                            tokenChainSelector
-                        ];
-                    address[] memory tokens = new address[](1);
-                    tokens[0] = currentList(i);
-                    uint[] memory portfolioValueArr = new uint[](1);
-                    portfolioValueArr[0] = portfolioValue;
-                    uint[] memory tokenOracleMarketShareArr = new uint[](1);
-                    tokenOracleMarketShareArr[0] = tokenOracleMarketShare(currentList(i));
-                    bytes memory data = abi.encode(
-                        3,
-                        tokens,
-                        nonce,
-                        portfolioValueArr,
-                        tokenOracleMarketShareArr
-                    );
-                    sendMessage(
-                        tokenChainSelector,
-                        crossChainIndexFactory,
-                        data,
-                        PayFeesIn.LINK
-                    );
-                }
-            }
-        }
-    }
-    */
+    
 
     function secondReweightAction() public onlyOwner {
         uint nonce = updatePortfolioNonce;
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
-        for (uint i; i < totalCurrentList(); i++) {
-            uint tokenValue = tokenValueByNonce[nonce][currentList(i)];
-            if (
-                (tokenValue * 100e18) / portfolioValue <
-                tokenOracleMarketShare(currentList(i))
-            ) {
-                uint64 tokenChainSelector = tokenChainSelector(currentList(i));
-                if (tokenChainSelector == currentChainSelector) {
-                    uint buyValue = (tokenOracleMarketShare(currentList(i)) *
-                        portfolioValue) /
-                        100e18 -
-                        tokenValue;
-                    uint wethAmount = swap(
+
+        uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
+        uint latestCurrentCount = indexFactoryStorage.currentFilledCount();
+        uint latestOracleCount = indexFactoryStorage.oracleFilledCount();
+
+        for(uint i = 0; i < totalChains; i++){
+            uint64 chainSelector = indexFactoryStorage.currentChainSelectors(latestCurrentCount, i);
+            uint chainSelectorCurrentTokensCount = indexFactoryStorage.currentChainSelecotrTokensCount(chainSelector);
+            uint chainSelectorOracleTokensCount = indexFactoryStorage.oracleChainSelecotrTokensCount(chainSelector);
+            uint chainSelectorTotalShares = indexFactoryStorage.oracleChainSelecotrTotalShares(latestOracleCount, chainSelector);
+            uint chainValue = chainValueByNonce[nonce][chainSelector];
+
+            if((chainValue*100)/portfolioValue < chainSelectorTotalShares){
+                 if(chainSelector == currentChainSelector){
+                    address tokenAddress = indexFactoryStorage.currentList(i);
+                    uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
+                    uint tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(tokenAddress);
+                    uint swapWethAmount;
+                    for(uint i = 0; i < chainSelectorCurrentTokensCount; i++){
+                        uint wethAmount = _swapSingle(
+                        tokenAddress,
                         address(weth),
-                        currentList(i),
-                        buyValue,
+                        IERC20(tokenAddress).balanceOf(address(indexToken)),
                         address(indexToken),
-                        3
-                    );
-                } else {
-                    uint buyValue = (tokenOracleMarketShare(currentList(i)) *
-                        portfolioValue) /
-                        100e18 -
-                        tokenValue;
-                    if (buyValue > weth.balanceOf(address(indexToken))) {
-                        buyValue = weth.balanceOf(address(indexToken));
-                    }
-                    uint crossChainTokenAmount = _swapSingle(
-                        address(weth),
-                        crossChainToken[tokenChainSelector],
-                        buyValue,
-                        address(this),
-                        3
-                    );
-                    Client.EVMTokenAmount[]
-                        memory tokensToSendArray = new Client.EVMTokenAmount[](
-                            1
+                        tokenSwapVersion
                         );
-                    tokensToSendArray[0].token = crossChainToken[tokenChainSelector];
-                    tokensToSendArray[0].amount = crossChainTokenAmount;
-                    address[] memory tokens = new address[](1);
-                    tokens[0] = currentList(i);
-                    uint[] memory zeroArr = new uint[](0);
+                        swapWethAmount += wethAmount; 
+                    }
+                    uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/100e18;
+                    uint extraWethAmount = swapWethAmount - wethAmountToSwap;
+                    for(uint i = 0; i < chainSelectorOracleTokensCount; i++){
+                        address newTokenAddress = indexFactoryStorage.currentList(i);
+                        uint newTokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
+                        uint newTokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(tokenAddress);
+                        uint wethAmount = _swapSingle(
+                            address(weth),
+                            newTokenAddress,
+                            wethAmountToSwap*newTokenMarketShare/100e18,
+                            address(indexToken),
+                            newTokenSwapVersion
+                        );
+                        // swapWethAmount += wethAmount; 
+                    }
+                 }else{
+                    address crossChainIndexFactory = crossChainFactoryBySelector(chainSelector);
+                
+                    address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
+                    address[] memory zeroAddresses = new address[](0);
+                    uint[] memory zeroArray = new uint[](0);
+
                     bytes memory data = abi.encode(
-                        4,
-                        tokens,
-                        nonce,
-                        zeroArr,
-                        zeroArr
+                        2,
+                        tokenAddresses,
+                        zeroAddresses,
+                        updatePortfolioNonce,
+                        zeroArray,
+                        zeroArray
                     );
-                    address crossChainIndexFactory = crossChainFactoryBySelector[
-                            tokenChainSelector
-                        ];
-                    sendToken(
-                        tokenChainSelector,
-                        data,
+                    sendMessage(
+                        chainSelector,
                         crossChainIndexFactory,
-                        tokensToSendArray,
+                        data,
                         PayFeesIn.LINK
                     );
                 }
+                 }
             }
-        }
-
-        indexFactoryStorage.updateCurrentList();
     }
-    
     /**
     function secondReweightAction() public onlyOwner {
         uint nonce = updatePortfolioNonce;

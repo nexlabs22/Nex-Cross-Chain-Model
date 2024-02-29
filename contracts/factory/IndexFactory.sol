@@ -451,7 +451,7 @@ contract IndexFactory is
                     
                     address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
                     uint[] memory tokenShares = indexFactoryStorage.allCurrentChainSelecotrTokenShares(chainSelector);
-
+                    address[] memory zeroAddresses = new address[](0);
                     //fee
                     Client.EVMTokenAmount[]
                         memory tokensToSendArray = new Client.EVMTokenAmount[](
@@ -463,6 +463,7 @@ contract IndexFactory is
                     bytes memory data = abi.encode(
                         0,
                         tokenAddresses,
+                        zeroAddresses,
                         issuanceNonce,
                         tokenShares,
                         totalSharesArr
@@ -745,6 +746,7 @@ contract IndexFactory is
                 
                 address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
                 uint[] memory tokenShares = indexFactoryStorage.allCurrentChainSelecotrTokenShares(chainSelector);
+                address[] memory zeroAddresses = new address[](0);
 
                 uint[] memory burnPercentages = new uint[](1);
                 burnPercentages[0] = burnPercent;
@@ -752,6 +754,7 @@ contract IndexFactory is
                 bytes memory data = abi.encode(
                     1,
                     tokenAddresses,
+                    zeroAddresses,
                     redemptionNonce,
                     tokenShares,
                     burnPercentages
@@ -1113,12 +1116,13 @@ contract IndexFactory is
         (
             uint actionType,
             address[] memory tokenAddresses,
+            address[] memory tokenAddresses2,
             uint nonce,
             uint[] memory value1,
             uint[] memory value2
         ) = abi.decode(
                 any2EvmMessage.data,
-                (uint, address[], uint, uint[], uint[])
+                (uint, address[], address[], uint, uint[], uint[])
             ); // abi-decoding of the sent string message
         if (actionType == 0) {
             uint issuanceNonce = nonce;
