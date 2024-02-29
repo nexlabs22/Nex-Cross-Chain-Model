@@ -19,4 +19,11 @@ function reduceAddress(address:string){
     return address.toString().slice(0, 7) + '...' + address.toString().substring(address.toString().length - 7)
 }
 
-export { getPreviousWeekday, SwapNumbers, reduceAddress};
+function convertTime(timestamp: number) {
+    const date = new Date(timestamp * 1000)
+    const localDate = date.toLocaleDateString('en-US')
+    const localTime = date.toLocaleTimeString('en-US')
+    return localDate + ' ' + localTime
+}
+
+export { getPreviousWeekday, SwapNumbers, reduceAddress, convertTime};

@@ -12,13 +12,14 @@ import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
 import etherscan from '@assets/images/etherscan2.png'
 import ccip from '@assets/images/ccip.png'
+import chainlink from '@assets/images/chainlink.png'
 // import etherscan from '@assets/images/etherscan2.jpg'
 // import ccip from '@assets/images/ccip.jpg'
 import { useLandingPageStore } from '@/store/store'
 import Image from 'next/image'
 import Link from 'next/link'
 import { BsArrowCounterclockwise } from 'react-icons/bs'
-import { reduceAddress } from '@/utils/general'
+import { convertTime, reduceAddress } from '@/utils/general'
 
 function NewHistoryTable() {
 	const { mode } = useLandingPageStore()
@@ -86,12 +87,12 @@ function NewHistoryTable() {
 		return FormatToViewNumber({ value: number, returnType: 'number' })
 	}
 
-	const convertTime = (timestamp: number) => {
-		const date = new Date(timestamp * 1000)
-		const localDate = date.toLocaleDateString('en-US')
-		const localTime = date.toLocaleTimeString('en-US')
-		return localDate + ' ' + localTime
-	}
+	// const convertTime = (timestamp: number) => {
+	// 	const date = new Date(timestamp * 1000)
+	// 	const localDate = date.toLocaleDateString('en-US')
+	// 	const localTime = date.toLocaleTimeString('en-US')
+	// 	return localDate + ' ' + localTime
+	// }
 	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
 
 	useEffect(() => {
@@ -313,7 +314,7 @@ function NewHistoryTable() {
 												)}
 												{position.indexName === 'CRYPTO5' && (
 													<Link title={'View in CCIP'} target="_blank" href={`https://ccip.chain.link/tx/${position.txHash}`}>
-														<Image src={ccip.src} alt="ccip Logo" width={25} height={25} />
+														<Image src={chainlink.src} alt="chainlink Logo" width={25} height={25} />
 													</Link>
 												)}
 											</div>
