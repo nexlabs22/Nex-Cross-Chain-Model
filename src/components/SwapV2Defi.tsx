@@ -363,17 +363,11 @@ const SwapV2Defi = () => {
 	}, [approveHook.isSuccess, approveHook, fromTokenAllowance])
 
 	useEffect(() => {
-		console.log('MINT HOOK', mintRequestHook)
-
 		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess || mintRequestEthHook.isSuccess) {
-			// if (mintRequestHook.data) {
-			console.log(swapToCur, swapToCur.address, sepoliaCrypto5V2IndexToken)
 			if (mintRequestHook.data && swapToCur.address === sepoliaCrypto5V2IndexToken) {
-				console.log('inside if')
 				const txHashObj: { [key: number]: string } = JSON.parse(localStorage.getItem('txHash') || '{}')
 				const txHash = mintRequestHook.data.receipt.transactionHash
 				txHashObj[mintRequestHook.data.receipt.blockNumber] = txHash
-				console.log(txHashObj)
 				localStorage.setItem('txHash', JSON.stringify(txHashObj))
 			}
 			if (burnRequestHook.data && swapToCur.address === sepoliaCrypto5V2IndexToken) {
@@ -381,7 +375,6 @@ const SwapV2Defi = () => {
 				const txHash = burnRequestHook.data.receipt.transactionHash
 				txHashObj[burnRequestHook.data.receipt.blockNumber] = txHash
 				localStorage.setItem('txHash', JSON.stringify(txHashObj))
-				// localStorage.setItem('txHash',txHash)
 			}
 			fromTokenBalance.refetch()
 			toTokenBalance.refetch()
@@ -786,7 +779,7 @@ const SwapV2Defi = () => {
 			if (address && signer) {
 				const balance = await signer?.provider?.getBalance(address as string)
 				const convertedBalance = ethers.utils.formatEther(balance as BigNumber)
-				console.log('Balance converted', convertedBalance)
+				// console.log('Balance converted', convertedBalance)
 				setUserEthBalance(Number(balance))
 			}
 		}

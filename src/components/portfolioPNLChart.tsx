@@ -18,7 +18,6 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change,tota
 	const address = useAddress()
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
-	console.log(totalPortfolioBalance)
 
 	const minValue = Math.min(...data.map((point) => point.value))
 	const maxValue = Math.max(...data.map((point) => point.value))
