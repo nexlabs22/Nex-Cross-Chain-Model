@@ -29,6 +29,8 @@ import {
 	goerliUsdtAddress,
 	goerliLinkAddress,
 	goerliLinkWethPoolAddress,
+	sepoliaAnfiV2IndexToken,
+	sepoliaCrypto5V2IndexToken,
 } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
@@ -82,15 +84,19 @@ interface User {
 import usePortfolioPageStore from '@/store/portfolioStore'
 import { Shimmer } from 'react-shimmer'
 import ConnectButton from '@/components/ConnectButton'
+import { nexTokens } from '@/constants/nexIndexTokens'
+import { nexTokenDataType } from '@/types/nexTokenData'
+import convertToUSD from '@/utils/convertToUsd'
 
 function History() {
 	const { mode } = useLandingPageStore()
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState(false)
 	const { portfolioData } = usePortfolioPageStore()
+	const { ethPriceInUsd } = useTradePageStore()
 
-	const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
-	const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
+	const anfiTokenContract = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
+	const crypto5TokenContract = useContract(sepoliaCrypto5V2IndexToken, indexTokenAbi)
 
 	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
 	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
@@ -290,6 +296,34 @@ function History() {
 		getUser()
 	}, [address])
 
+	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
+
+	useEffect(() => {
+		async function getTokenDetails() {
+			const data = await Promise.all(
+				nexTokens.map(async (item: nexTokenDataType) => {
+					const calculatedUsdValue = (await convertToUSD(item.address, ethPriceInUsd, false)) || 0
+					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
+					const totalTokenUsd = calculatedUsdValue * totalToken || 0
+					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
+
+					return {
+						...item,
+						totalToken,
+						totalTokenUsd,
+						percentage,
+					}
+				})
+			)
+
+			setAssetData(data)
+		}
+
+		getTokenDetails()
+	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent])
+
+	const totalPortfolioBalance = assetData.reduce((total, data) => total + Number(data.totalTokenUsd), 0)
+
 	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
 
 	return (
@@ -303,202 +337,215 @@ function History() {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className={`min-h-screen overflow-x-hidden h-fit w-screen ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'}`}>
-				{
-					address ? (
-						<section className='h-full w-fit overflow-x-hidden'>
-							<section className="h-full w-fit overflow-x-hidde">
-								<DappNavbar />
-								<section className="w-screen h-fit pt-10">
-									<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col lg:flex-row items-center justify-between mb-10">
-										<div className="w-full lg:w-2/5  h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
-											{address && address != '' ? (
-												<div
-													className="w-40 lg:h-44 lg:w-auto xl:w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
-													style={{
-														backgroundImage:
-															uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
-													}}
-												>
-													{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
-												</div>
-											) : (
-												<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
-											)}
-											<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
-												<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold text-center lg:whitespace-nowrap lg:text-left`}>
-													{connectedUser && connectedUser.main_wallet == address
-														? connectedUser.inst_name != 'x'
-															? connectedUser.inst_name
-															: connectedUser.name != 'x'
-																? connectedUser.name
-																: 'Nex User'
-														: 'Nex User'}
+				{address ? (
+					<section className="h-full w-fit overflow-x-hidden">
+						<section className="h-full w-fit overflow-x-hidde">
+							<DappNavbar />
+							<section className="w-screen h-fit pt-10">
+								<div className="w-full h-fit px-20 xl:px-20 py-5 flex flex-col lg:flex-row items-center justify-between mb-10">
+									<div className="w-full lg:w-2/5  h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
+										{address && address != '' ? (
+											<div
+												className="w-40 lg:h-44 lg:w-auto xl:w-40 aspect-square flex rounded-full relative bg-center bg-cover bg-no-repeat"
+												style={{
+													backgroundImage:
+														uploadedPPLink != 'none'
+															? `url('${uploadedPPLink}')`
+															: uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon'
+															? `url('${connectedUser?.ppLink}')`
+															: '',
+												}}
+											>
+												{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
+											</div>
+										) : (
+											<div className="w-40 lg:w-2/5 aspect-square bg-colorSeven-500 rounded-full"></div>
+										)}
+										<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
+											<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} interBold text-center lg:whitespace-nowrap lg:text-left`}>
+												{connectedUser && connectedUser.main_wallet == address
+													? connectedUser.inst_name != 'x'
+														? connectedUser.inst_name
+														: connectedUser.name != 'x'
+														? connectedUser.name
+														: 'Nex User'
+													: 'Nex User'}
+											</h5>
+											<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
+												<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500/70' : ' text-blackText-500'}  interMedium`}>
+													{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}
 												</h5>
-												<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
-													<h5 className={`text-base ${mode == "dark" ? " text-whiteText-500/70" : " text-blackText-500"}  interMedium`}>{address && address != '' ? reduceAddress(address) : 'Connect your wallet'}</h5>
-													<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
-														<div className={` ${mode == "dark" ? " bg-whiteText-500" : "bg-colorSeven-500/50"} w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full`}>
-															<CopyToClipboard text={address as string} onCopy={handleCopy}>
-
-																<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
-															</CopyToClipboard>
-														</div>
-														<div
-															className={` ${mode == "dark" ? " bg-whiteText-500" : "bg-colorSeven-500/50"} w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full`}
-															onClick={() => {
-																if (address) setQRModalVisible(true)
-																else
-																	GenericToast({
-																		type: 'error',
-																		message: `Please connect your wallet!`,
-																	})
-															}}
-														>
-															<PiQrCodeDuotone color="#000000" size={15} className="scale-150 xl:scale-100" />
-														</div>
+												<div className="w-fit h-fit flex flex-row items-center justify-between gap-2">
+													<div className={` ${mode == 'dark' ? ' bg-whiteText-500' : 'bg-colorSeven-500/50'} w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full`}>
+														<CopyToClipboard text={address as string} onCopy={handleCopy}>
+															<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+														</CopyToClipboard>
+													</div>
+													<div
+														className={` ${mode == 'dark' ? ' bg-whiteText-500' : 'bg-colorSeven-500/50'} w-fit cursor-pointer h-fit p-4 xl:p-2 rounded-full`}
+														onClick={() => {
+															if (address) setQRModalVisible(true)
+															else
+																GenericToast({
+																	type: 'error',
+																	message: `Please connect your wallet!`,
+																})
+														}}
+													>
+														<PiQrCodeDuotone color="#000000" size={15} className="scale-150 xl:scale-100" />
 													</div>
 												</div>
-												<div className={` ${mode == "dark" ? " bg-whiteBackground-500" : "bg-colorSeven-500"} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}>
-													{
-														mode == "dark" ? <BsCalendar4 color="#000000" size={15} /> : <BsCalendar4 color="#000000" size={15} />
-													}
+											</div>
+											<div
+												className={` ${
+													mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500'
+												} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}
+											>
+												{mode == 'dark' ? <BsCalendar4 color="#000000" size={15} /> : <BsCalendar4 color="#000000" size={15} />}
 
-													<h5 className={`text-base ${mode != "dark" ? " text-blackText-500" : "text-blackText-500"}  interBold`}>Joined N/A day ago</h5>
-												</div>
+												<h5 className={`text-base ${mode != 'dark' ? ' text-blackText-500' : 'text-blackText-500'}  interBold`}>Joined N/A day ago</h5>
 											</div>
 										</div>
-										{/* <div className="lg:flex w-3/5 h-fit justify-end" id="smallChartBox">
+									</div>
+									{/* <div className="lg:flex w-3/5 h-fit justify-end" id="smallChartBox">
 							<Chart data={complexData} />
 						</div> */}
-										<div className="lg:flex w-2/5 "></div>
-										<div className="hidden lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
-											{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
+									<div className="lg:flex w-2/5 "></div>
+									<div className="hidden lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
+										{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-											<PNLChart data={showPortfolioData ? chartArr : emptyData} change={showPortfolioData ? portfolio24hChange : 0} />
-										</div>
+										<PNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChange : 0} />
 									</div>
-									<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
-										<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
-											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500/80" : "text-blackText-500"}  text-center lg:text-left`}>Total Portfolio Balance</h5>
+								</div>
+								<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
+									<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+										<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500/80' : 'text-blackText-500'}  text-center lg:text-left`}>Total Portfolio Balance</h5>
+										<h5
+											className={`interExtraBold text-2xl ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  text-center lg:text-left`}
+											title={totalPortfolioBalance.toString()}
+										>
+											$
+											{showPortfolioData && totalPortfolioBalance
+												? totalPortfolioBalance < 0.01
+													? '≈ 0.00 '
+													: FormatToViewNumber({ value: totalPortfolioBalance, returnType: 'string' })
+												: '0.00'}
+										</h5>
+									</div>
+									<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+										<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500/80' : 'text-blackText-500'}  text-center lg:text-left`}>Total Traded Balance</h5>
+										<h5 className={`interExtraBold text-2xl ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  text-center lg:text-left`}>
+											${portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString() : '0.00'}
+										</h5>
+									</div>
+									<div className="w-1/2 mt-8 lg:mt-0 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
+										<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500/80' : 'text-blackText-500'}  text-center lg:text-left`}>24h Change</h5>
+										<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
 											<h5
-												className={`interExtraBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}  text-center lg:text-left`}
-												title={
-													showPortfolioData && chartArr && chartArr[chartArr.length - 1] && chartArr[chartArr.length - 1].value < 0.01
-														? formatNumber(chartArr[chartArr.length - 1].value).toString()
-														: '0.00'
-												}
+												className={`interExtraBold text-2xl ${
+													showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
+												} `}
 											>
-												≈$
+												$
 												{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
-													? chartArr[chartArr.length - 1].value < 0.01
-														? ' 0.00 '
-														: FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' })
+													? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
 													: '0.00'}
 											</h5>
-										</div>
-										<div className="w-1/2 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
-											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500/80" : "text-blackText-500"}  text-center lg:text-left`}>Total Traded Balance</h5>
-											<h5 className={`interExtraBold text-2xl ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}  text-center lg:text-left`}>
-												${portfolioData && portfolioData.tradedBalance ? Number(portfolioData.tradedBalance.total.toFixed(2)).toLocaleString() : '0.00'}
-											</h5>
-										</div>
-										<div className="w-1/2 mt-8 lg:mt-0 lg:w-1/3 flex-grow flex flex-col items-center justify-center gap-2">
-											<h5 className={`interBold text-xl ${mode == "dark" ? " text-whiteText-500/80" : "text-blackText-500"}  text-center lg:text-left`}>24h Change</h5>
-											<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
-												<h5
-													className={`interExtraBold text-2xl ${showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
-														} `}
-												>
-													$
-													{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
-														? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
-														: '0.00'}
-												</h5>
-												<div
-													className={`w-fit h-fit rounded-lg ${showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
-														} p-1`}
-												>
-													{showPortfolioData ? portfolio24hChange > 0 ? <IoMdArrowUp color="#FFFFFF" size={15} /> : portfolio24hChange < 0 ? <IoMdArrowDown color="#FFFFFF" size={15} /> : '' : ''}
-												</div>
+											<div
+												className={`w-fit h-fit rounded-lg ${
+													showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
+												} p-1`}
+											>
+												{showPortfolioData ? (
+													portfolio24hChange > 0 ? (
+														<IoMdArrowUp color="#FFFFFF" size={15} />
+													) : portfolio24hChange < 0 ? (
+														<IoMdArrowDown color="#FFFFFF" size={15} />
+													) : (
+														''
+													)
+												) : (
+													''
+												)}
 											</div>
 										</div>
 									</div>
-								</section>
-							</section>
-							<section className="w-full h-fit mb-10 px-4 xl:px-20">
-								<div className="w-full h-fit flex flex-row items-center justify-between mb-3">
-									<h5 className={`${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} text-2xl interBold`}>Transactions History</h5>
-									<button className={`flex flex-row items-center justify-center gap-1 ${mode == "dark" ? "bg-cover border-transparent bg-center bg-no-repeat" : "bg-gradient-to-tl from-colorFour-500 to-colorSeven-500"} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 py-2 px-6 rounded-full`} style={{
-										boxShadow:
-											mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : "",
-										backgroundImage: mode == "dark" ? `url('${mesh1.src}')` : "",
-
-									}}>
-										<h5 className={`text-lg interBold ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} `}>Export</h5>
-										{
-											mode == "dark" ? <CiExport size={17} color="#FFFFFF" strokeWidth={1.5} /> : <CiExport size={17} color="#252525" strokeWidth={1.5} />
-										}
-
-									</button>
 								</div>
-
-								{address ? <NewHistoryTable /> : ''}
 							</section>
 						</section>
-					) : (
-						<section className='h-full w-fit overflow-x-hidde'>
-							<DappNavbar />
-							<section className='w-full h-fit xl:px-20 relative z-[1] py-5 mb-10'>
-								<div className='w-full h-fit relative hidden xl:block'>
-									<div className=' absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center'>
-										<div className={`w-4/12 h-fit ${mode == "dark" ? " bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50" : "bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50"} border shadow-sm px-4 py-12 rounded-lg`}>
-											<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
-											<p className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
-											<div className='w-fit h-fit scale-150 mx-auto mt-12'>
-												<ConnectButton />
-											</div>
+						<section className="w-full h-fit mb-10 px-4 xl:px-20">
+							<div className="w-full h-fit flex flex-row items-center justify-between mb-3">
+								<h5 className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-2xl interBold`}>Transactions History</h5>
+								<button
+									className={`flex flex-row items-center justify-center gap-1 ${
+										mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'
+									} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 py-2 px-6 rounded-full`}
+									style={{
+										boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+										backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+									}}
+								>
+									<h5 className={`text-lg interBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>Export</h5>
+									{mode == 'dark' ? <CiExport size={17} color="#FFFFFF" strokeWidth={1.5} /> : <CiExport size={17} color="#252525" strokeWidth={1.5} />}
+								</button>
+							</div>
 
-										</div>
-									</div>
-									<div className='w-full h-fit hidden xl:flex flex-col items-start justify-start relative z-30'>
-										<div className='w-full lg:w-2/5 h-fit flex flex-col xl:flex-col items-start justify-start gap-8'>
-											<Shimmer width={300} height={300} className={`rounded-full ${mode == "dark" ? "invert" : ""}`} />
-
-										</div>
-										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
-										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
-									</div>
-								</div>
-
-								<div className='w-full h-fit relative block xl:hidden'>
-									<div className=' absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center'>
-										<div className={`w-11/12 h-fit ${mode == "dark" ? "bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50" : "bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50"} shadow-sm border px-4 py-12 rounded-lg`}>
-											<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
-											<p className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
-											<div className='w-fit h-fit mx-auto mt-12'>
-												<ConnectButton />
-											</div>
-
-										</div>
-									</div>
-									<div className='w-screen px-4 h-fit xl:hidden'>
-										<Shimmer width={150} height={150} className={`rounded-full max-w-[40%] ${mode == "dark" ? "invert" : ""}`} />
-										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
-										<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == "dark" ? "invert" : ""}`} />
-									</div>
-								</div>
-
-
-
-
-							</section>
+							{address ? <NewHistoryTable /> : ''}
 						</section>
-					)
-				}
+					</section>
+				) : (
+					<section className="h-full w-fit overflow-x-hidde">
+						<DappNavbar />
+						<section className="w-full h-fit xl:px-20 relative z-[1] py-5 mb-10">
+							<div className="w-full h-fit relative hidden xl:block">
+								<div className=" absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center">
+									<div
+										className={`w-4/12 h-fit ${
+											mode == 'dark' ? ' bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
+										} border shadow-sm px-4 py-12 rounded-lg`}
+									>
+										<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
+										<p className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
+										<div className="w-fit h-fit scale-150 mx-auto mt-12">
+											<ConnectButton />
+										</div>
+									</div>
+								</div>
+								<div className="w-full h-fit hidden xl:flex flex-col items-start justify-start relative z-30">
+									<div className="w-full lg:w-2/5 h-fit flex flex-col xl:flex-col items-start justify-start gap-8">
+										<Shimmer width={300} height={300} className={`rounded-full ${mode == 'dark' ? 'invert' : ''}`} />
+									</div>
+									<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == 'dark' ? 'invert' : ''}`} />
+									<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == 'dark' ? 'invert' : ''}`} />
+								</div>
+							</div>
 
+							<div className="w-full h-fit relative block xl:hidden">
+								<div className=" absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center">
+									<div
+										className={`w-11/12 h-fit ${
+											mode == 'dark' ? 'bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
+										} shadow-sm border px-4 py-12 rounded-lg`}
+									>
+										<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
+										<p className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
+										<div className="w-fit h-fit mx-auto mt-12">
+											<ConnectButton />
+										</div>
+									</div>
+								</div>
+								<div className="w-screen px-4 h-fit xl:hidden">
+									<Shimmer width={150} height={150} className={`rounded-full max-w-[40%] ${mode == 'dark' ? 'invert' : ''}`} />
+									<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == 'dark' ? 'invert' : ''}`} />
+									<Shimmer width={800} height={300} className={`rounded-lg mt-10 min-w-full max-w-full ${mode == 'dark' ? 'invert' : ''}`} />
+								</div>
+							</div>
+						</section>
+					</section>
+				)}
 
-				<div className="w-fit hidden xl:block h-fit pt-0 lg:pt-16">
+				<div className="w-fit h-fit xl:pt-16">
 					<Footer />
 				</div>
 				<div className='block xl:hidden'>

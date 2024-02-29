@@ -123,14 +123,16 @@ const SwapV2Defi = () => {
 	const address = useAddress()
 	const signer = useSigner()
 	const router = useRouter()
-	const query = router.query;
-	
-	useEffect(()=>{
+	const query = router.query
+
+	useEffect(() => {
 		const selectedCoin = query.index || 'ANFI'
-		const coinDetails = testnetCoinsList[0].filter((coin:Coin)=>{ return coin.Symbol === selectedCoin })
+		const coinDetails = testnetCoinsList[0].filter((coin: Coin) => {
+			return coin.Symbol === selectedCoin
+		})
 		changeSwapToCur(coinDetails[0])
-	},[])
-	
+	}, [])
+
 	// useEffect(()=>{
 	// 	setEthPriceInUsd();
 	// },[])
@@ -361,7 +363,26 @@ const SwapV2Defi = () => {
 	}, [approveHook.isSuccess, approveHook, fromTokenAllowance])
 
 	useEffect(() => {
+		console.log('MINT HOOK', mintRequestHook)
+
 		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess || mintRequestEthHook.isSuccess) {
+			// if (mintRequestHook.data) {
+			console.log(swapToCur, swapToCur.address, sepoliaCrypto5V2IndexToken)
+			if (mintRequestHook.data && swapToCur.address === sepoliaCrypto5V2IndexToken) {
+				console.log('inside if')
+				const txHashObj: { [key: number]: string } = JSON.parse(localStorage.getItem('txHash') || '{}')
+				const txHash = mintRequestHook.data.receipt.transactionHash
+				txHashObj[mintRequestHook.data.receipt.blockNumber] = txHash
+				console.log(txHashObj)
+				localStorage.setItem('txHash', JSON.stringify(txHashObj))
+			}
+			if (burnRequestHook.data && swapToCur.address === sepoliaCrypto5V2IndexToken) {
+				const txHashObj: { [key: number]: string } = JSON.parse(localStorage.getItem('txHash') || '{}')
+				const txHash = burnRequestHook.data.receipt.transactionHash
+				txHashObj[burnRequestHook.data.receipt.blockNumber] = txHash
+				localStorage.setItem('txHash', JSON.stringify(txHashObj))
+				// localStorage.setItem('txHash',txHash)
+			}
 			fromTokenBalance.refetch()
 			toTokenBalance.refetch()
 			fromTokenAllowance.refetch()
@@ -381,6 +402,7 @@ const SwapV2Defi = () => {
 		toTokenBalance,
 		fromTokenAllowance,
 		setTradeTableReload,
+		swapToCur,
 	])
 
 	useEffect(() => {
@@ -724,14 +746,13 @@ const SwapV2Defi = () => {
 		} else {
 			if (!fromTokenBalance.data) {
 				return 0
-			}
-			else {
+			} else {
 				const bal = FormatToViewNumber({
 					value: Number(ethers.utils.formatEther(fromTokenBalance.data)) as number,
 					returnType: 'string',
 				}).toString()
-				const balWithoutComma = bal.includes(',') ? bal.split(',').join(''): bal;
-				return balWithoutComma;
+				const balWithoutComma = bal.includes(',') ? bal.split(',').join('') : bal
+				return balWithoutComma
 			}
 		}
 	}

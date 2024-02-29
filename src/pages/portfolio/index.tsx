@@ -220,7 +220,6 @@ export default function Portfolio() {
 		}
 	}
 
-
 	const handleCopyIndexDetails = () => {
 		GenericToast({
 			type: 'success',
@@ -361,6 +360,8 @@ export default function Portfolio() {
 
 		getTokenDetails()
 	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent])
+	// roundedPercentages.reduce((acc, { weight }) => acc + weight, 0)
+	const totalPortfolioBalance = assetData.reduce((total, data) => total + Number(data.totalTokenUsd), 0)
 
 	// const storedData = localStorage.getItem('totalTradedBalance')
 	// const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
@@ -388,7 +389,6 @@ export default function Portfolio() {
 
 	const [connectedUser, setConnectedUser] = useState<User>()
 	const [connectedUserId, setConnectedUserId] = useState('')
-
 
 	useEffect(() => {
 		function getUser() {
@@ -458,8 +458,8 @@ export default function Portfolio() {
 													uploadedPPLink != 'none'
 														? `url('${uploadedPPLink}')`
 														: uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon'
-															? `url('${connectedUser?.ppLink}')`
-															: '',
+														? `url('${connectedUser?.ppLink}')`
+														: '',
 											}}
 										>
 											{connectedUser?.ppType == 'identicon' || (chosenPPType == 'identicon' && uploadedPPLink == 'none') ? <GenericAvatar walletAddress={address}></GenericAvatar> : ''}
@@ -473,8 +473,8 @@ export default function Portfolio() {
 												? connectedUser.inst_name != 'x'
 													? connectedUser.inst_name
 													: connectedUser.name != 'x'
-														? connectedUser.name
-														: 'Nex User'
+													? connectedUser.name
+													: 'Nex User'
 												: 'Nex User'}
 										</h5>
 										<div className="flex flex-col lg:flex-row items-center justify-start gap-2">
@@ -503,8 +503,9 @@ export default function Portfolio() {
 											</div>
 										</div>
 										<div
-											className={` ${mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500'
-												} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}
+											className={` ${
+												mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500'
+											} w-fit mt-5 xl:mt-0 h-fit py-1 px-3 rounded-2xl flex flex-row items-center justify-center gap-2`}
 										>
 											{mode == 'dark' ? <BsCalendar4 color="#000000" size={15} /> : <BsCalendar4 color="#000000" size={15} />}
 
@@ -520,7 +521,7 @@ export default function Portfolio() {
 									{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-									<PNLChart data={showPortfolioData ? chartArr : emptyData} change={showPortfolioData ? portfolio24hChange : 0} />
+									<PNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChange : 0} />
 								</div>
 							</div>
 							<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
@@ -528,17 +529,18 @@ export default function Portfolio() {
 									<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500/80' : 'text-blackText-500'}  text-center lg:text-left`}>Total Portfolio Balance</h5>
 									<h5
 										className={`interExtraBold text-2xl ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  text-center lg:text-left`}
-										title={
-											showPortfolioData && chartArr && chartArr[chartArr.length - 1] && chartArr[chartArr.length - 1].value < 0.01
-												? formatNumber(chartArr[chartArr.length - 1].value).toString()
-												: '0.00'
-										}
+										title={totalPortfolioBalance.toString()}
+										// title={
+										// 	showPortfolioData && chartArr && chartArr[chartArr.length - 1] && chartArr[chartArr.length - 1].value < 0.01
+										// 		? formatNumber(totalPortfolioBalance).toString()
+										// 		: '0.00'
+										// }
 									>
-										≈$
-										{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
-											? chartArr[chartArr.length - 1].value < 0.01
-												? ' 0.00 '
-												: FormatToViewNumber({ value: chartArr[chartArr.length - 1].value, returnType: 'string' })
+										$
+										{showPortfolioData && totalPortfolioBalance
+											? totalPortfolioBalance < 0.01
+												? '≈ 0.00 '
+												: FormatToViewNumber({ value: totalPortfolioBalance, returnType: 'string' })
 											: '0.00'}
 									</h5>
 								</div>
@@ -552,8 +554,9 @@ export default function Portfolio() {
 									<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500/80' : 'text-blackText-500'}  text-center lg:text-left`}>24h Change</h5>
 									<div className="w-fill h-fit flex flex-row items-center justify-center gap-1">
 										<h5
-											className={`interExtraBold text-2xl ${showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
-												} `}
+											className={`interExtraBold text-2xl ${
+												showPortfolioData ? (portfolio24hChange > 0 ? 'text-nexLightGreen-500' : portfolio24hChange < 0 ? 'text-nexLightRed-500' : 'text-[#646464]') : 'text-[#646464]'
+											} `}
 										>
 											$
 											{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
@@ -561,8 +564,9 @@ export default function Portfolio() {
 												: '0.00'}
 										</h5>
 										<div
-											className={`w-fit h-fit rounded-lg ${showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
-												} p-1`}
+											className={`w-fit h-fit rounded-lg ${
+												showPortfolioData ? (portfolio24hChange > 0 ? 'bg-nexLightGreen-500' : portfolio24hChange < 0 ? 'bg-nexLightRed-500' : '') : ''
+											} p-1`}
 										>
 											{showPortfolioData ? (
 												portfolio24hChange > 0 ? (
@@ -620,9 +624,7 @@ export default function Portfolio() {
 													</div>
 												</div>
 												<div className="w-fit xl:w-1/4 h-fit px-1">
-													<h5
-														className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-blackText-500 whitespace-nowrap text-lg cursor-pointer`}
-													>
+													<h5 className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-blackText-500 whitespace-nowrap text-lg cursor-pointer`}>
 														{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol}
 													</h5>
 													<h5 className={`interBold whitespace-nowrap ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  text-base cursor-pointer`}>
@@ -657,10 +659,11 @@ export default function Portfolio() {
 												<div className="w-fit xl:w-1/4 h-fit px-1 flex flex-row items-center justify-normal gap-2">
 													<Link href={`/tradeIndex?index=${asset.symbol}&category=defi`}>
 														<button
-															className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} rounded-xl ${mode == 'dark'
+															className={`h-fit w-fit px-4 py-2 interBold text-base ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} rounded-xl ${
+																mode == 'dark'
 																	? ' bg-cover border-transparent bg-center bg-no-repeat '
 																	: 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:to-colorFive-500'
-																}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`}
+															}  active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500`}
 															style={{
 																boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 																backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -669,7 +672,6 @@ export default function Portfolio() {
 															Trade
 														</button>
 													</Link>
-
 												</div>
 											</div>
 											// </>
@@ -683,9 +685,11 @@ export default function Portfolio() {
 									menuButton={
 										<MenuButton>
 											<div
-												className={`w-full xl:w-[14vw] ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'
-													} relative z-10 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500'
-													} shadow-sm shadow-blackText-500 gap-8 cursor-pointer mt-6`}
+												className={`w-full xl:w-[14vw] ${
+													mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'
+												} relative z-10 h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md ${
+													mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500'
+												} shadow-sm shadow-blackText-500 gap-8 cursor-pointer mt-6`}
 												style={{
 													boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 													backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -766,9 +770,7 @@ export default function Portfolio() {
 											<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
 												Txn history :{' '}
 												<span className={`interMedium ${mode == 'dark' ? ' text-[#007271]' : 'text-colorSeven-500'} `}>
-													<Link href={`https://sepolia.etherscan.io/txs?a=${address}`}>
-														See More
-													</Link>
+													<Link href={`https://sepolia.etherscan.io/txs?a=${address}`}>See More</Link>
 												</span>
 											</h5>
 										</div>
@@ -781,8 +783,9 @@ export default function Portfolio() {
 							<div className="w-full h-fit relative hidden xl:block">
 								<div className=" absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center">
 									<div
-										className={`w-4/12 h-fit ${mode == 'dark' ? ' bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
-											} border shadow-sm px-4 py-12 rounded-lg`}
+										className={`w-4/12 h-fit ${
+											mode == 'dark' ? ' bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
+										} border shadow-sm px-4 py-12 rounded-lg`}
 									>
 										<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
 										<p className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
@@ -803,8 +806,9 @@ export default function Portfolio() {
 							<div className="w-full h-fit relative block xl:hidden">
 								<div className=" absolute z-50 w-full h-full mx-auto flex flex-col items-center justify-center">
 									<div
-										className={`w-11/12 h-fit ${mode == 'dark' ? 'bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
-											} shadow-sm border px-4 py-12 rounded-lg`}
+										className={`w-11/12 h-fit ${
+											mode == 'dark' ? 'bg-[#151515] shadow-whiteBackground-500 border-whiteBackground-500/50' : 'bg-whiteBackground-500 shadow-blackText-500 border-blackText-500/50'
+										} shadow-sm border px-4 py-12 rounded-lg`}
 									>
 										<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-3xl mb-3 text-center`}>Connect Your Wallet</h5>
 										<p className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-xl text-center`}>Sign-in with your wallet to manage your portfolio.</p>
@@ -848,8 +852,9 @@ export default function Portfolio() {
 									</p>
 									<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/automatic-rebalancing-mechanism'}>
 										<button
-											className={`interBold mt-8 mb-4 flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl ${mode == 'dark' ? 'titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500' : 'bg-gradient-to-br from-colorFour-500 to-colorSeven-500 text-blackText-500'
-												}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
+											className={`interBold mt-8 mb-4 flex h-fit w-fit flex-row items-center justify-center gap-1 rounded-2xl ${
+												mode == 'dark' ? 'titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500' : 'bg-gradient-to-br from-colorFour-500 to-colorSeven-500 text-blackText-500'
+											}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
 											style={{
 												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
 												boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',

@@ -10,13 +10,15 @@ import mesh2 from '@assets/images/mesh2.png'
 interface GradientAreaChartProps {
 	data: { time: string | number | Date; value: number }[]
 	change: number
+	totalPortfolioBalance: number
 }
 
-const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) => {
+const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change,totalPortfolioBalance }) => {
 	const { mode } = useLandingPageStore()
 	const address = useAddress()
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
+	console.log(totalPortfolioBalance)
 
 	const minValue = Math.min(...data.map((point) => point.value))
 	const maxValue = Math.max(...data.map((point) => point.value))
@@ -106,9 +108,9 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change }) =
 				<div className="py-4 px-[10%] flex flex-col items-end justify-start h-full w-full">
 					<h1
 						className={`text-2xl ${mode == "dark" ? " text-whiteText-500 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]" : "text-blackText-500"} titleShadow interBold`}
-						title={data[data.length - 1]?.value && data[data.length - 1]?.value < 0.01 ? formatNumber(data[data.length - 1]?.value).toString() : ''}
+						title={totalPortfolioBalance ? totalPortfolioBalance.toString(): '0.00'}
 					>
-						${data[data.length - 1]?.value ? (data[data.length - 1]?.value < 0.01 ? '≈ 0.00 ' : FormatToViewNumber({ value: data[data.length - 1]?.value, returnType: 'string' })) : '0.00'}
+						${totalPortfolioBalance ? (totalPortfolioBalance < 0.01 ? '≈ 0.00 ' : FormatToViewNumber({ value: totalPortfolioBalance, returnType: 'string' })) : '0.00'}
 					</h1>
 					<h1 className={`text-lg ${address && change > 0 ? 'text-nexLightGreen-500' : address && change < 0 ? 'text-nexLightRed-500' : 'text-black'} titleShadow interMedium`}>
 						{address ? (change > 0 ? '+' + change.toFixed(2) : change.toFixed(2)) : '0.00'}%
