@@ -882,14 +882,16 @@ const SwapV2Defi = () => {
 				}
 				if (swapToCur.address == sepoliaAnfiV2IndexToken) {
 					await mintRequestHook.mutateAsync({
-						args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
+						// args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
+						args: [swapFromCur.address, parseEther((Number(firstInputValue)).toString()), '3'],
 						overrides: {
 							gasLimit: 1000000,
 						},
 					})
 				} else {
 					await mintRequestHook.mutateAsync({
-						args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
+						// args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
+						args: [swapFromCur.address, parseEther((Number(firstInputValue)).toString()), '0', '3'],
 						overrides: {
 							gasLimit: 3000000,
 						},
@@ -903,7 +905,8 @@ const SwapV2Defi = () => {
 
 	async function mintRequestEth() {
 		try {
-			const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
+			const firstConvertedValue = parseEther(Number(firstInputValue).toString() as string)
+			const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000).toString() as string)
 			if (isChecked) {
 				openPaymentModal()
 			} else {
@@ -920,7 +923,8 @@ const SwapV2Defi = () => {
 				}
 				if (swapToCur.address == sepoliaAnfiV2IndexToken) {
 					await mintRequestEthHook.mutateAsync({
-						args: [(Number(firstInputValue) * 1e18).toString()],
+						// args: [(Number(firstInputValue) * 1e18).toString()],
+						args: [parseEther(Number(firstInputValue).toString())],
 						overrides: {
 							gasLimit: 1000000,
 							value: convertedValue,
@@ -928,7 +932,8 @@ const SwapV2Defi = () => {
 					})
 				} else {
 					await mintRequestEthHook.mutateAsync({
-						args: [(Number(firstInputValue) * 1e18).toString(), '0'],
+						// args: [(Number(firstInputValue) * 1e18).toString(), '0'],
+						args: [parseEther(Number(firstInputValue).toString()), '0'],
 						overrides: {
 							gasLimit: 3000000,
 							value: convertedValue,
