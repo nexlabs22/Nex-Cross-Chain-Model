@@ -18,6 +18,8 @@ import { BsCalendar4 } from 'react-icons/bs'
 import { useEffect, useState } from 'react'
 import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
+// import pdfMake from 'pdfmake/build/pdfmake';
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { useLandingPageStore } from '@/store/store'
 import {
 	goerliAnfiIndexToken,
@@ -31,6 +33,7 @@ import {
 	goerliLinkWethPoolAddress,
 	sepoliaAnfiV2IndexToken,
 	sepoliaCrypto5V2IndexToken,
+	sepoliaTokenAddresses,
 } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
@@ -48,7 +51,7 @@ import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
 import bg2 from '@assets/images/bg-2.png'
 import HistoryTable from '@/components/TradeTable'
 import TopHolders from '@/components/topHolders'
-import { reduceAddress } from '@/utils/general'
+import { convertTime, reduceAddress } from '@/utils/general'
 import { GoArrowRight } from 'react-icons/go'
 import { CiExport } from 'react-icons/ci'
 
@@ -87,6 +90,11 @@ import ConnectButton from '@/components/ConnectButton'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
+import handleExportPDF from '@/utils/exportTable'
+import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
+import { sepoliaTokens } from '@/constants/goerliTokens'
+import exportPDF from '@/utils/exportTable'
+import { toast } from 'react-toastify'
 
 function History() {
 	const { mode } = useLandingPageStore()
@@ -326,6 +334,131 @@ function History() {
 
 	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
 
+	// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+	// const [isGenerating, setIsGenerating] = useState(false);
+
+	// const handleExportPDF = () => {
+	//     setIsGenerating(true);
+
+	//     const tableData = [
+	//         ['Column 1', 'Column 2', 'Column 3'],
+	//         ['Data 1', 'Data 2', 'Data 3'],
+	//         ['Data 4', 'Data 5', 'Data 6'],
+	//         // Add more rows as needed
+	//     ];
+
+	//     const docDefinition = {
+	//         content: [
+	//             {
+	//                 table: {
+	//                     body: tableData,
+	//                 },
+	//             },
+	//         ],
+	//     };
+
+	//     pdfMake.createPdf(docDefinition).download('table_data.pdf', () => {
+	//         setIsGenerating(false);
+	//     });
+	// };
+	const positionHistory = GetPositionsHistory2()
+	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
+
+	useEffect(() => {
+		async function getUsdPrices() {
+			sepoliaTokens.map(async (token) => {
+				if (ethPriceInUsd > 0) {
+					const obj = usdPrices
+					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
+						setUsdPrices(obj)
+					}
+				}
+			})
+		}
+
+		getUsdPrices()
+	}, [ethPriceInUsd, usdPrices])
+
+	const handleExportPDF = () => {
+
+		toast.dismiss()
+		GenericToast({
+			type: 'loading',
+			message: 'Generating PDF...'
+		})
+
+		const dataToExport = []
+		const heading = ['Time', 'Pair', 'Request Side', 'Input Amount', 'Output Amount', 'Transaction hash']
+		dataToExport.push(heading)
+		positionHistory.data
+		.sort((a, b) => b.timestamp - a.timestamp)
+		.forEach((position) => {
+			const side = position.side.split(' ')[0]
+
+			dataToExport.push([
+				convertTime(position.timestamp),
+				position.indexName,
+				{ text: side, bold: true, color: 'white', alignment: 'center', fillColor: side.toLowerCase() === 'mint' ? '#089981' : '#F23645' },
+				{
+					text: [
+						`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${
+							side.toLowerCase() === 'mint' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+						}\n`,
+						{
+							text: `≈ $ ${
+								usdPrices
+									? side.toLowerCase() === 'mint'
+										? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
+										: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+									: 0
+								}`,
+							color: 'gray',
+							italics: true,
+						},
+					],
+				},
+				{
+					text: [
+						`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${
+							side.toLowerCase() === 'burn' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+						}\n`,
+						{
+							text: `≈ $ ${
+								usdPrices
+								? side.toLowerCase() === 'burn'
+								? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
+								: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+								: 0
+							}`,
+							color: 'gray',
+							italics: true,
+						},
+					],
+				},
+				position.txHash,
+			])
+		})
+		
+		const tableData = dataToExport
+
+		exportPDF(tableData, 'landscape', address as string);
+	}
+		
+	// const tableData = [
+	// 	['Column 1', 'Column 2', 'Column 3'],
+	// 	['Data 1', { text: ['Data 2\n', { text: 'hello', color: 'gray' }] }, 'Data 3'],
+	// 	['Data 4', { text: ['Data 5\n', { text: 'hello', color: 'gray' }] }, 'Data 6'],
+	// 	// Add more rows as needed
+	// ];
+
+	// const tableData = [
+	// 	['Column 1', 'Column 2', 'Column 3'],
+	// 	['Data 1', 'Data 2', 'Data 3'],
+	// 	['Data 4', 'Data 5', 'Data 6'],
+	// 	// Add more rows as needed
+	// ]
+
 	return (
 		<>
 			<Head>
@@ -485,6 +618,8 @@ function History() {
 										boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 										backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
 									}}
+									onClick={() => handleExportPDF()}
+									// disabled={isGenerating}
 								>
 									<h5 className={`text-lg interBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>Export</h5>
 									{mode == 'dark' ? <CiExport size={17} color="#FFFFFF" strokeWidth={1.5} /> : <CiExport size={17} color="#252525" strokeWidth={1.5} />}
@@ -548,7 +683,7 @@ function History() {
 				<div className="w-fit h-fit xl:pt-16">
 					<Footer />
 				</div>
-				<div className='block xl:hidden'>
+				<div className="block xl:hidden">
 					<MobileFooterSection />
 				</div>
 				<GenericModal

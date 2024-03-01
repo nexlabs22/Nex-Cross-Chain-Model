@@ -40,6 +40,9 @@ type PortfolioPageStore = {
 
 	indexSelectedInPie: string
 	setIndexSelectedInPie: (index: string) => void
+
+	isPdfGenerating: boolean
+	setIsPdfGenerating: (val: boolean) => void
 }
 
 
@@ -104,6 +107,11 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 
 	indexSelectedInPie: 'ANFI',
 	setIndexSelectedInPie: (index: string) => set({ indexSelectedInPie: index }),
+
+	isPdfGenerating: false,
+	setIsPdfGenerating(val) {
+		set({isPdfGenerating:val})
+	},
 
 }))
 
