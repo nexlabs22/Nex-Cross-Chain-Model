@@ -737,44 +737,50 @@ export default function Portfolio() {
 										{chartType == 'pie' ? <New3DPieChart data={data} /> : <TreemapChart percentage={indexPercent} />}
 										{/* {chartType == 'pie' ? <New3DPieChart data={data} /> : <TreemapChart  data={data} />} */}
 									</div>
-									<div className="w-full xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-2">
-										<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
-											Index / Asset : <span className="interMedium">{indexSelectedInPie}</span>
-										</h5>
-										<div className="flex flex-row items-center justify-between gap-2">
+									{indexSelectedInPie !== '' ? (
+										<div className="w-full xl:w-1/2 h-full flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-2">
 											<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
-												Smart contract : <span className="interMedium">{reduceAddress(indexDetailsMap.get(indexSelectedInPie).smartContract)}</span>
+												Index / Asset : <span className="interMedium">{indexSelectedInPie}</span>
 											</h5>
-											<div className={` ${mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500/50'} w-fit h-fit p-4 xl:p-2 rounded-full`}>
-												<CopyToClipboard text={indexDetailsMap.get(indexSelectedInPie).smartContract} onCopy={handleCopyIndexDetails}>
-													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
-												</CopyToClipboard>
+											<div className="flex flex-row items-center justify-between gap-2">
+												<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
+													Smart contract : <span className="interMedium">{reduceAddress(indexDetailsMap.get(indexSelectedInPie).smartContract)}</span>
+												</h5>
+												<div className={` ${mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500/50'} w-fit h-fit p-4 xl:p-2 rounded-full`}>
+													<CopyToClipboard text={indexDetailsMap.get(indexSelectedInPie).smartContract} onCopy={handleCopyIndexDetails}>
+														<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+													</CopyToClipboard>
+												</div>
+											</div>
+											<div className="flex flex-row items-center justify-between gap-2">
+												<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
+													Last transaction : <span className="interMedium">{reduceAddress(indexDetailsMap.get(indexSelectedInPie).lastTnx)}</span>
+												</h5>
+												<div className={` ${mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500/50'} w-fit h-fit p-4 xl:p-2 rounded-full`}>
+													<CopyToClipboard text={indexDetailsMap.get(indexSelectedInPie).lastTnx} onCopy={handleCopyIndexDetails}>
+														<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
+													</CopyToClipboard>
+												</div>
+											</div>
+											<div className="flex flex-row items-center justify-between gap-2">
+												<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
+													Owned amount : <span className="interMedium">{indexDetailsMap.get(indexSelectedInPie).ownedAmount}</span>
+												</h5>
+											</div>
+											<div className="flex flex-row items-center justify-between gap-2">
+												<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
+													Txn history :{' '}
+													<span className={`interMedium ${mode == 'dark' ? ' text-[#007271]' : 'text-colorSeven-500'} `}>
+														<Link href={`https://sepolia.etherscan.io/txs?a=${address}`}>See More</Link>
+													</span>
+												</h5>
 											</div>
 										</div>
-										<div className="flex flex-row items-center justify-between gap-2">
-											<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
-												Last transaction : <span className="interMedium">{reduceAddress(indexDetailsMap.get(indexSelectedInPie).lastTnx)}</span>
-											</h5>
-											<div className={` ${mode == 'dark' ? ' bg-whiteBackground-500' : 'bg-colorSeven-500/50'} w-fit h-fit p-4 xl:p-2 rounded-full`}>
-												<CopyToClipboard text={indexDetailsMap.get(indexSelectedInPie).lastTnx} onCopy={handleCopyIndexDetails}>
-													<BiCopy color="#000000" size={15} className="scale-150 xl:scale-100" />
-												</CopyToClipboard>
-											</div>
+									) : (
+										<div className="w-full xl:w-1/2 h-full text-lg flex flex-col items-start justify-center xl:justify-start gap-4 pt-14 pb-14 xl:pb-0 xl:pt-2">
+											Please click on a slice to know more about the Index
 										</div>
-										<div className="flex flex-row items-center justify-between gap-2">
-											<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
-												Owned amount : <span className="interMedium">{indexDetailsMap.get(indexSelectedInPie).ownedAmount}</span>
-											</h5>
-										</div>
-										<div className="flex flex-row items-center justify-between gap-2">
-											<h5 className={`interBold text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>
-												Txn history :{' '}
-												<span className={`interMedium ${mode == 'dark' ? ' text-[#007271]' : 'text-colorSeven-500'} `}>
-													<Link href={`https://sepolia.etherscan.io/txs?a=${address}`}>See More</Link>
-												</span>
-											</h5>
-										</div>
-									</div>
+									)}
 								</div>
 							</div>
 						</section>
@@ -875,7 +881,7 @@ export default function Portfolio() {
 				<div className="w-fit hidden xl:block h-fit pt-0 lg:pt-16">
 					<Footer />
 				</div>
-				<div className='block xl:hidden'>
+				<div className="block xl:hidden">
 					<MobileFooterSection />
 				</div>
 				<GenericModal

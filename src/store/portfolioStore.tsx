@@ -105,7 +105,7 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 		set({ portfolioData: { tradedBalance: { anfi: anfiTotalTradeBalance, crypto5: crypto5TotalTradeBalance, total: anfiTotalTradeBalance + crypto5TotalTradeBalance } } })
 	},
 
-	indexSelectedInPie: 'ANFI',
+	indexSelectedInPie: '',
 	setIndexSelectedInPie: (index: string) => set({ indexSelectedInPie: index }),
 
 	isPdfGenerating: false,
