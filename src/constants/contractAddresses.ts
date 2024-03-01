@@ -41,6 +41,8 @@ export const goerlianfiPoolAddress = '0xEdFEEeFf1DAF631b4aBC8C021Cff4b1267547eF2
 export const goerliCR5PoolAddress = '0x9329c764A2d8B02b01F5eC8fb6F4BB0a7155cFc0';
 export const goerliLinkWethPoolAddress = '0x4Cff90F02897259E1aB69FF6bbD370EA14529bD8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
+export const sepoliaTokenFaucet = "0x5Efe973Bc615112Bca43696483bd53Ce86E2B0ab"
+
 export const crypto5PoolAddress = '0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
 export const factoryAddresses =  { 'ANFI': sepoliaAnfiV2Factory, 'CRYPTO5': sepoliaCrypto5V2Factory }
