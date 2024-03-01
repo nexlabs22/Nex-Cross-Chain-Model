@@ -964,11 +964,13 @@ const SwapV2Defi = () => {
 				}
 				if (swapFromCur.address == sepoliaAnfiV2IndexToken) {
 					await burnRequestHook.mutateAsync({
-						args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
+						// args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
+						args: [parseEther(Number(firstInputValue).toString()), swapToCur.address, '3'],
 					})
 				} else {
 					await burnRequestHook.mutateAsync({
-						args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
+						// args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
+						args: [parseEther(Number(firstInputValue).toString()), '0', swapToCur.address, '3'],
 						overrides: {
 							gasLimit: 3000000,
 						},
