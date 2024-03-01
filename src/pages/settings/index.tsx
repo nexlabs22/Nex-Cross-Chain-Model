@@ -618,7 +618,7 @@ export default function Settings() {
 					</div>
 				</div>
 				<div className={`${!isRetailerAccount ? 'hidden' : ''} w-full h-fit px-4 xl:px-20 py-1 flex flex-col items-center justify-center mb-4 `}>
-					<h5 className="text-base interMedium text-[#181818] w-full">
+					<h5 className={`text-base interMedium ${mode == "dark" ? " text-whiteText-500" : "text-[#181818]"} w-full`}>
 						You can personalize your account by editing the general account information. This would also help us enhance your user experience.
 					</h5>
 					<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between gap-3 my-6">
