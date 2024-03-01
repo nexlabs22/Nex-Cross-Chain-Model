@@ -211,6 +211,20 @@ body {
   z-index: 99999 !important;
 }
 
+#ribbonBox > div > div{
+  z-index: 100 !important;
+}
+
+.darkCCIP{
+  background-color: #2A2A2A !important;
+  color: #ededed !important;
+}
+
+.lightCCIP{
+  background-color: #ededed !important;
+  color: #2A2A2A !important;
+}
+
 .szh-accordion__item-btn{
   width: 100% !important;
 }

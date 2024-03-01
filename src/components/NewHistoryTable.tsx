@@ -155,8 +155,16 @@ function NewHistoryTable() {
 		<div className={`w-full h-full overflow-x-auto ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
 			{' '}
 			{/* Added overflow-x-auto for X-axis scrolling */}
-			{ path==='/tradeIndex' && activeTicker[0] === 'CRYPTO5' && localStorageHash.length > 0 && (
-				<div role="alert" className="alert alert-info mb-2">
+			{ path==='/tradeIndex' && (
+				<div role="alert" className={`alert  mb-2 ${mode == 'dark'
+				? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
+				: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+			}`}
+			style={{
+				boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+				backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+			}}
+			>
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
 						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
 					</svg>
@@ -166,7 +174,7 @@ function NewHistoryTable() {
 							<div tabIndex={0} role="button" className="">
 								<em> Click here </em>
 							</div>
-							<ul tabIndex={0} className="dropdown-content z-[1] menu shadow bg-base-100 rounded-box w-fit">
+							<ul tabIndex={0} className={`dropdown-content z-[1] menu shadow bg-base-100 rounded-box w-fit${mode == "dark" ? " bg-blackText-500 text-whiteText-500 darkCCIP" : " lightCCIP text-blackText-500"}`}>
 								{localStorageHash.map((hash) => (
 									<li key={hash}>
 										<Link href={`https://ccip.chain.link/tx/${hash}`}>{reduceAddress(hash)}</Link>
