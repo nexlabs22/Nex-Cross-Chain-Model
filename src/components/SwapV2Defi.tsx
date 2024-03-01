@@ -41,8 +41,9 @@ import {
 	sepoliaWethAddress,
 	sepoliaAnfiV2IndexToken,
 	sepoliaAnfiV2Factory,
+	sepoliaTokenFaucet,
 } from '@/constants/contractAddresses'
-import { crossChainIndexFactoryV2Abi, indexFactoryAbi, indexFactoryV2Abi, indexTokenAbi, tokenAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
+import { crossChainIndexFactoryV2Abi, indexFactoryAbi, indexFactoryV2Abi, indexTokenAbi, tokenAbi, tokenFaucetAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import Lottie from 'lottie-react'
 import PaymentModal from './PaymentModal'
@@ -142,6 +143,7 @@ const SwapV2Defi = () => {
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
 	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
 	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
+	const faucetContract: UseContractResult = useContract(sepoliaTokenFaucet, tokenFaucetAbi)
 
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
 	const toTokenContract = useContract(swapToCur.address, tokenAbi)
@@ -163,6 +165,7 @@ const SwapV2Defi = () => {
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const crossChainMintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
+	const faucetHook = useContractWrite(faucetContract.contract, 'getToken')
 
 	const curr = OurIndexCoins.includes(swapFromCur.Symbol) ? swapFromCur : swapToCur
 	const IndexContract: UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
@@ -364,7 +367,7 @@ const SwapV2Defi = () => {
 	}, [approveHook.isSuccess, approveHook, fromTokenAllowance])
 
 	useEffect(() => {
-		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess || mintRequestEthHook.isSuccess) {
+		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess || mintRequestEthHook.isSuccess || mintRequestEthHook.isSuccess) {
 			if (mintRequestHook.data && swapToCur.address === sepoliaCrypto5V2IndexToken) {
 				const txHashObj: { [key: number]: string } = JSON.parse(localStorage.getItem('txHash') || '{}')
 				const txHash = mintRequestHook.data.receipt.transactionHash
@@ -397,7 +400,36 @@ const SwapV2Defi = () => {
 		fromTokenAllowance,
 		setTradeTableReload,
 		swapToCur,
+		faucetHook
 	])
+
+
+	useEffect(() => {
+		if (faucetHook.isLoading) {
+			console.log()
+			toast.dismiss()
+			// toast.loading('Approving ...')
+			GenericToast({
+				type: 'loading',
+				message: 'Receiving usdt...',
+			})
+			// approveHook.reset()
+		} else if (faucetHook.isSuccess) {
+			toast.dismiss()
+			GenericToast({
+				type: 'success',
+				message: 'You received 1000 usdt Successfully!',
+			})
+			// approveHook.reset()
+		} else if (faucetHook.isError) {
+			toast.dismiss()
+			GenericToast({
+				type: 'error',
+				message: `Receiving Failed!`,
+			})
+			// approveHook.reset()
+		}
+	}, [faucetHook.isLoading, faucetHook.isSuccess, faucetHook.isError])
 
 	useEffect(() => {
 		if (approveHook.isLoading) {
@@ -943,6 +975,15 @@ const SwapV2Defi = () => {
 		}
 	}
 
+	async function faucet(){
+		if(address){
+		await faucetHook.mutateAsync({ args: [sepoliaUsdtAddress] })
+		}
+	}
+
+
+
+
 	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapFromCur.Symbol !== 'CRYPTO5' && swapToCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'CRYPTO5') ? true : false
 
 	return (
@@ -1119,7 +1160,7 @@ const SwapV2Defi = () => {
 						</div>
 					</div>
 					<div className={`flex flex-row items-center justify-end`}>
-						<span className={` ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-700'} interMedium text-sm`}>Testnet USDT</span>
+						<span onClick={() => faucet()} className={` ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-700'} interMedium text-sm cursor-pointer`}>Testnet USDT</span>
 						<GoArrowUpRight color={mode == "dark" ? "#FFFFFF" : "#252525"} size={20} />
 					</div>
 				</div>
