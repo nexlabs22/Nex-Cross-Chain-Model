@@ -57,6 +57,7 @@ export const sepoliaBasicMessageReceiver = "0x97e30e590237cc1accb09c2bf60872bb74
 export const mumbaiBasicMessageSender = "0xAdE6a41c952aCe26f84F56C055E8073C01461461"
 export const mumbaiBasicMessageReceiver = "0x49b480bd8D8af565bb902bAefC2e26423416342e"
 export const arbitrumSepoliaBasicMessageSender = "0x577F4f1Cc45b9e14C0b770A1efBf601f5E8b7594"
+export const sepoliaTokenFaucet = "0x5Efe973Bc615112Bca43696483bd53Ce86E2B0ab"
 
 export const testSepoliaCR5IndexFactory = "0x389A9BA2a80421473468077FeDC1Ce58D2E1d228"
 
