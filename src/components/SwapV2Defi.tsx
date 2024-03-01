@@ -977,7 +977,11 @@ const SwapV2Defi = () => {
 
 	async function faucet(){
 		if(address){
+		try{
 		await faucetHook.mutateAsync({ args: [sepoliaUsdtAddress] })
+		} catch (error) {
+			console.log('faucet error', error)
+		}
 		}
 	}
 
