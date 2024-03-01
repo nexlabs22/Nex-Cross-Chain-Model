@@ -6,7 +6,9 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, MenuButton } from '@szhsin/react-menu'
-import { RibbonContainer, Ribbon } from "react-ribbons";
+import dynamic from 'next/dynamic';
+const DynamicRibbon = dynamic(() => import("@components/dynamicRibbon").then(module => module.default), { ssr: false });
+
 import arrowDown from 'react-useanimations/lib/arrowDown'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
@@ -213,61 +215,49 @@ export default function Explore() {
 						<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  interMedium text-center`}>Explore our Index Products</h5>
 						<div className=" mt-10 mb-2 w-full h-fit mx-auto flex flex-col xl:flex-row items-center justify-center gap-2">
 							<div className='w-full xl:w-1/2 h-fit' id='ribbonBox'>
-							<RibbonContainer>
-								<Ribbon
-									side="left"
-									type="corner"
-									size="normal"
-									backgroundColor={mode == "dark" ? "#4992E2" : "#4992E2"}
-									color={mode == "dark" ? "#FFFFFF" : "#252525"}
-									fontFamily="inter"
-									withStripes={true}
-									
-								>
-									<p className='interMedium text-base'>Soon</p>
-									
-								</Ribbon>
+								<DynamicRibbon>
 								<div
-								className={`w-full grayscale h-fit overflow-hidden flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${selectedTradingCategory == 'cefi'
-									? `${mode == 'dark' ? 'shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] ' : 'shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] '} `
-									: ` ${mode == 'dark' ? ' bg-transparent' : 'bg-zinc-200/30'} `
-									} p-5 cursor-pointer gap-2`}
-								onClick={() => {
-									GenericToast({
-										type: 'info',
-										message: 'CeFi Products will be available soon.',
-									})
-									//setSelectedTradingCategory('cefi')
-									//setSelectedsubCategory(subCategories[0])
-									// here you disable or enable cefi choice
-								}}
-
-							>
-								<div className={`h-24 w-28 rounded-lg flex flex-row items-center justify-center ${selectedTradingCategory == "cefi ? 'opacity-100' : ' opacity-40' "}`}>
-									<div
-										className={`w-full h-full scale-[1.6] -translate-x-6 ${selectedTradingCategory == 'cefi' ? '' : ` ${mode == 'dark' ? '' : 'grayscale'} brightness-75 opacity-40`
-											} aspect-square bg-center bg-contain bg-no-repeat  `}
-										style={{
-											backgroundImage: `url('${cefi.src}')`,
+										className={`w-full grayscale h-fit overflow-hidden flex flex-row items-center justify-between border border-slate-400 rounded-xl shadow ${selectedTradingCategory == 'cefi'
+											? `${mode == 'dark' ? 'shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] ' : 'shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2] '} `
+											: ` ${mode == 'dark' ? ' bg-transparent' : 'bg-zinc-200/30'} `
+											} p-5 cursor-pointer gap-2`}
+										onClick={() => {
+											GenericToast({
+												type: 'info',
+												message: 'CeFi Products will be available soon.',
+											})
+											//setSelectedTradingCategory('cefi')
+											//setSelectedsubCategory(subCategories[0])
+											// here you disable or enable cefi choice
 										}}
-									></div>
-								</div>
-								<div className="w-fit h-fit flex flex-col items-start justify-between">
-									<h5
-										className={`interBold text-2xl ${selectedTradingCategory == 'cefi' ? `${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} titleShadow` : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `
-											}`}
+
 									>
-										CeFi
-									</h5>
-									<h5 className={`interBold text-base ${selectedTradingCategory == 'cefi' ? `${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}` : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `}`}>
-										CeFi involves traditional centralized financial systems, like banks and institutions.
-									</h5>
-								</div>
+										<div className={`h-24 w-28 rounded-lg flex flex-row items-center justify-center ${selectedTradingCategory == "cefi ? 'opacity-100' : ' opacity-40' "}`}>
+											<div
+												className={`w-full h-full scale-[1.6] -translate-x-6 ${selectedTradingCategory == 'cefi' ? '' : ` ${mode == 'dark' ? '' : 'grayscale'} brightness-75 opacity-40`
+													} aspect-square bg-center bg-contain bg-no-repeat  `}
+												style={{
+													backgroundImage: `url('${cefi.src}')`,
+												}}
+											></div>
+										</div>
+										<div className="w-fit h-fit flex flex-col items-start justify-between">
+											<h5
+												className={`interBold text-2xl ${selectedTradingCategory == 'cefi' ? `${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} titleShadow` : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `
+													}`}
+											>
+												CeFi
+											</h5>
+											<h5 className={`interBold text-base ${selectedTradingCategory == 'cefi' ? `${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}` : `${mode == 'dark' ? ' text-whiteText-500' : 'text-colorSeven-500/30'} `}`}>
+												CeFi involves traditional centralized financial systems, like banks and institutions.
+											</h5>
+										</div>
+									</div>
+								</DynamicRibbon>
+
 							</div>
-							</RibbonContainer>
-							</div>
-							
-							
+
+
 							<div
 								className={`w-full xl:w-1/2 h-fit flex flex-row items-center overflow-hidden justify-between border border-slate-400 rounded-xl shadow ${selectedTradingCategory == 'defi'
 									? `${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'shadow-colorSeven-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'} `
