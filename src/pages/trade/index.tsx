@@ -32,6 +32,11 @@ import bg2 from '@assets/images/bg-2.png'
 import Head from 'next/head'
 import UseAnimations from 'react-useanimations'
 import { useLandingPageStore } from '@/store/store'
+import { sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken } from '@/constants/contractAddresses'
+import { reduceAddress } from '@/utils/general'
+import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
+import { indexTokenV2Abi } from '@/constants/abi'
+import { FormatToViewNumber, num } from '@/hooks/math'
 
 interface Subcategory {
 	name: string
@@ -44,7 +49,7 @@ interface Product {
 	symbol: string
 	logo: string // Assuming logo is a file path or URL (string)
 	address: string
-	totalSupply: number // Corrected typo in property name
+	totalSupply: number | string // Corrected typo in property name
 	category: string
 	subcategory: string
 }
@@ -66,6 +71,12 @@ export default function Explore() {
 		setSelectedCategory(selectedCategory === 'defi' ? 'cefi' : 'defi')
 	}
 
+	const AnfiContract: UseContractResult = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
+	const Cr5Contract: UseContractResult = useContract(sepoliaCrypto5V2IndexToken, indexTokenV2Abi)
+	
+	const totalSupplyAnfi = useContractRead(AnfiContract.contract, 'totalSupply')
+	const totalSupplyCR5 = useContractRead(Cr5Contract.contract, 'totalSupply')
+
 	const subCategories = [
 		{
 			name: 'Hybrid Indices',
@@ -84,8 +95,8 @@ export default function Explore() {
 			name: 'CRYPTO 5',
 			symbol: 'CRYPTO5',
 			logo: cr5Logo.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 20938,
+			address: reduceAddress(sepoliaCrypto5V2IndexToken),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyCR5.data), returnType:'string'}) +' '+ 'CR5',
 			category: 'defi',
 			subcategory: 'sub2',
 		},
@@ -93,8 +104,8 @@ export default function Explore() {
 			name: 'CRYPTO 5',
 			symbol: 'CRYPTO5',
 			logo: cr5Logo.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 20938,
+			address: reduceAddress(sepoliaCrypto5V2IndexToken),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyCR5.data), returnType:'string'}) +' '+ 'CR5',
 			category: 'cefi',
 			subcategory: 'sub2',
 		},
@@ -102,8 +113,8 @@ export default function Explore() {
 			name: 'Anti Inflation Index',
 			symbol: 'ANFI',
 			logo: anfiLogo.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
+			address: reduceAddress(sepoliaAnfiV2IndexToken),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyAnfi.data), returnType:'string'}) +' '+ 'ANFI',
 			category: 'defi',
 			subcategory: 'sub1',
 		},
@@ -111,8 +122,8 @@ export default function Explore() {
 			name: 'Anti Inflation Index',
 			symbol: 'ANFI',
 			logo: anfiLogo.src,
-			address: '0xIE9303...0392K0',
-			totalSupply: 109338,
+			address: reduceAddress(sepoliaAnfiV2IndexToken),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyAnfi.data), returnType:'string'}) +' '+ 'ANFI',
 			category: 'cefi',
 			subcategory: 'sub1',
 		},
@@ -401,7 +412,7 @@ export default function Explore() {
 														<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-base italic`}>{product.symbol}</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
-														<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-base`}>N/A</h5>
+														<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-base`}>{product.totalSupply}</h5>
 													</div>
 													<div className="w-1/5 h-fit px-1">
 														<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"}  text-base`}>{product.address}</h5>

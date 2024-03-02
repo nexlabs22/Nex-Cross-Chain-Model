@@ -56,13 +56,13 @@ const TradingViewChart = ({ index, selectedIndices, page }) => {
 	const router = useRouter()
 	const location = router.pathname
 
-	function getDisabledFeatures(page) {
-		if (page === 'dashboard') {
-			return ['header_widget', 'left_toolbar']
-		} else if (page === 'trade') {
-			return []
-		}
-	}
+	// function getDisabledFeatures(page) {
+	// 	if (page === 'dashboard') {
+	// 		return ['header_widget', 'left_toolbar']
+	// 	} else if (page === 'trade') {
+	// 		return []
+	// 	}
+	// }
 
 	const { swapFromCur, swapToCur } = useTradePageStore()
 
@@ -84,7 +84,7 @@ const TradingViewChart = ({ index, selectedIndices, page }) => {
 			allow_symbol_change: false,
 			datafeed: Datafeed,
 			autosize: true,
-      disabled_features: getDisabledFeatures(page),
+    //   disabled_features: getDisabledFeatures(page),
 			overrides: {
 				'mainSeriesProperties.style': 2,
 				'paneProperties.background': '#020024',

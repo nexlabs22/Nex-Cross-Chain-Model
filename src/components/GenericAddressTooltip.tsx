@@ -4,17 +4,28 @@ import Link from 'next/link'
 import { IoIosSearch } from 'react-icons/io'
 import { IoCopyOutline } from 'react-icons/io5'
 import { useLandingPageStore } from '@/store/store'
+import CopyToClipboard from 'react-copy-to-clipboard'
+import { GenericToast } from './GenericToast'
 
 interface TooltipProps {
 	children: ReactNode
 	color: string
 	address: string
+	totalSupply: string
+	name: string
 }
 
-const GenericAddressTooltip: React.FC<TooltipProps> = ({ children, color, address }) => {
+const GenericAddressTooltip: React.FC<TooltipProps> = ({ children, color, address, totalSupply,name }) => {
 	const [isHovered, setIsHovered] = useState(false)
 
 	const { mode } = useLandingPageStore()
+
+	const handleCopy = () => {
+		GenericToast({
+			type: 'success',
+			message: 'Copied !',
+		})
+	}
 
 	return (
 		<div className="relative inline-block" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
@@ -28,26 +39,22 @@ const GenericAddressTooltip: React.FC<TooltipProps> = ({ children, color, addres
 					}}
 				>
 					<div className="w-[30rem] h-fit flex flex-col items-start justify-start gap-2 px-3">
-						<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-lg`}>Contract name 1</h5>
-						<div className={`w-full h-fit py-2 border ${mode == "dark" ? "border-gray-300" : " border-blackText-500"}  rounded-md flex flex-col items-start justify-start gap-1`}>
-							<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-sm px-2`}>Address: {address}</h5>
-							<div className={`my-2 ${mode == "dark" ? " bg-gray-100/50" : " bg-black"} w-full h-[1px]`}></div>
-							<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-sm px-2`}>Total supply: $78622.32</h5>
-							<div className={`my-2 ${mode == "dark" ? " bg-gray-100/50" : " bg-black"} w-full h-[1px]`}></div>
-							<h5 className={`interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-sm px-2`}>Total holders: 875</h5>
+						<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-lg`}>{name}</h5>
+						<div className={`w-full h-fit py-2 border ${mode == 'dark' ? 'border-gray-300' : ' border-blackText-500'}  rounded-md flex flex-col items-start justify-start gap-1`}>
+							<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-sm px-2`}>Address: {address}</h5>
+							<div className={`my-2 ${mode == 'dark' ? ' bg-gray-100/50' : ' bg-black'} w-full h-[1px]`}></div>
+							<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-sm px-2`}>Total supply: ${totalSupply}</h5>
+							<div className={`my-2 ${mode == 'dark' ? ' bg-gray-100/50' : ' bg-black'} w-full h-[1px]`}></div>
+							<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-sm px-2`}>Total holders: N/A</h5>
 						</div>
-
 					</div>
-					<div className={`mt-3 border-t w-full h-fit ${mode == "dark" ? "border-t-whiteText-500" : "border-t-blackText-500"} flex flex-row items-center justify-center`}>
-						<div className={`w-1/2 py-2 h-fit flex flex-row items-center justify-center border-r ${mode != "dark" ? " border-r-blackText-500" : "border-r-whiteBackground-500"} gap-5`}>
-							<Link href={`https://etherscan.io/token/${address}`}>
-								
-								{
-									mode == "dark" ? <IoIosSearch color="#F2F2F2" size={25} className="cursor-pointer" /> : <IoIosSearch color="#252525" size={25} className="cursor-pointer" />
-								}
+					<div className={`mt-3 border-t w-full h-fit ${mode == 'dark' ? 'border-t-whiteText-500' : 'border-t-blackText-500'} flex flex-row items-center justify-center`}>
+						<div className={`w-1/2 py-2 h-fit flex flex-row items-center justify-center border-r ${mode != 'dark' ? ' border-r-blackText-500' : 'border-r-whiteBackground-500'} gap-5`}>
+							<Link href={`https://sepolia.etherscan.io/token/${address}`}>
+								{mode == 'dark' ? <IoIosSearch color="#F2F2F2" size={25} className="cursor-pointer" /> : <IoIosSearch color="#252525" size={25} className="cursor-pointer" />}
 							</Link>
-							<Link href={`https://etherscan.io/token/${address}`}>
-								<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-sm cursor-pointer`}>
+							<Link href={`https://sepolia.etherscan.io/token/${address}`}>
+								<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-sm cursor-pointer`}>
 									EXPLORE ON
 									<br />
 									ETHERSCAN
@@ -55,11 +62,13 @@ const GenericAddressTooltip: React.FC<TooltipProps> = ({ children, color, addres
 							</Link>
 						</div>
 						<div className="w-1/2 py-2 h-fit flex flex-row items-center justify-center gap-5">
-							{
-								mode == "dark" ? <IoCopyOutline color="#F2F2F2" size={25} className="cursor-pointer" /> : <IoCopyOutline color="#252525" size={25} className="cursor-pointer" />
-							}
-							
-							<h5 className={`interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"} text-sm cursor-pointer`}>COPY ADDRESS</h5>
+							<CopyToClipboard text={address as string} onCopy={handleCopy}>
+								{mode == 'dark' ? <IoCopyOutline color="#F2F2F2" size={25} className="cursor-pointer" /> : <IoCopyOutline color="#252525" size={25} className="cursor-pointer" />}
+							</CopyToClipboard>
+
+							<CopyToClipboard text={address as string} onCopy={handleCopy}>
+								<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-sm cursor-pointer`}>COPY ADDRESS</h5>
+							</CopyToClipboard>
 						</div>
 					</div>
 					<div

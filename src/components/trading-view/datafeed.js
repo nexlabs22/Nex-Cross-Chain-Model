@@ -161,11 +161,12 @@ const dataFeed = {
       const isExchangeValid = exchange === "" || symbol.exchange === exchange;
       const isFullSymbolContainsInput =
         symbol.full_name.toLowerCase().indexOf(userInput.toLowerCase()) !== -1;
+        const isDescContainsInput = symbol.description.split(" ").join('').toLowerCase().indexOf(userInput.toLowerCase()) !== -1
       if (symbolType !== 'all') {
         const isTypeValid = symbol.type === symbolType;
-        return isExchangeValid && isFullSymbolContainsInput && isTypeValid;
+        return isExchangeValid && isTypeValid && (isDescContainsInput || isFullSymbolContainsInput);
       } else {
-        return isExchangeValid && isFullSymbolContainsInput;
+        return isExchangeValid && (isFullSymbolContainsInput || isDescContainsInput);
       }
     });
     onResultReadyCallback(newSymbols);
