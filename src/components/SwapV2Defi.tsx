@@ -413,7 +413,7 @@ const SwapV2Defi = () => {
 				type: 'loading',
 				message: 'Receiving usdt...',
 			})
-			// approveHook.reset()
+			// appr oveHook.reset()
 		} else if (faucetHook.isSuccess) {
 			toast.dismiss()
 			GenericToast({
