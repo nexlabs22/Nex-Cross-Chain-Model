@@ -458,6 +458,7 @@ contract IndexFactoryBalancer is
             uint chainSelectorOracleTokensCount = indexFactoryStorage.oracleChainSelecotrTokensCount(chainSelector);
             uint chainSelectorTotalShares = indexFactoryStorage.oracleChainSelecotrTotalShares(latestOracleCount, chainSelector);
             uint chainValue = chainValueByNonce[nonce][chainSelector];
+            uint[] memory oracleTokenShares = indexFactoryStorage.allOracleChainSelecotrTokenShares(chainSelector);
 
             if((chainValue*100e18)/portfolioValue > chainSelectorTotalShares){
                  if(chainSelector == currentChainSelector){
@@ -503,7 +504,7 @@ contract IndexFactoryBalancer is
                         currentTokenAddresses,
                         newTokenAddresses,
                         updatePortfolioNonce,
-                        zeroArray,
+                        oracleTokenShares,
                         zeroArray
                     );
                     sendMessage(

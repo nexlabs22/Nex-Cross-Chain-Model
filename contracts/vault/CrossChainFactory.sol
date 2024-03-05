@@ -407,7 +407,7 @@ contract CrossChainIndexFactory is
             bytes memory data = abi.encode(2, targetAddresses, targetAddresses2, nonce, tokenValueArr, zeroArr);
             sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }else if( actionType == 3){
-            
+            //first reweight action
             uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
             uint sellPercent = tokenValue*100e18/percentages[0] - extraValues[0];
             uint sellValue = tokenValue - (extraValues[0]*percentages[0])/100e18;
@@ -426,6 +426,90 @@ contract CrossChainIndexFactory is
 
             // uint wethAmount = swap(crossChainToken[sourceChainSelector], address(weth), tokenAmounts[0].amount, address(crossChainVault), 3);
             // _swapSingle(address(weth), targetAddresses[0], wethAmount, address(crossChainVault), 3);
+        }
+    }
+
+    function _handleFirstReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint64 sourceChainSelector, address memory sender, uint nonce) private {
+        uint chainSelectorCurrentTokensCount = currentTokens.length;
+        uint swapWethAmount;
+        uint chainSelectorTotalShares;
+        for(uint i = 0; i < chainSelectorCurrentTokensCount; i++){
+
+            address tokenAddress = currentTokens[i];
+            uint tokenMarketShare = oracleTokenShares[i];
+            chainSelectorTotalShares += tokenMarketShare;
+
+            uint wethAmount = _swapSingle(
+            tokenAddress,
+            address(weth),
+            IERC20(tokenAddress).balanceOf(address(crossChainVault)),
+            address(crossChainVault),
+            3
+            );
+            swapWethAmount += wethAmount; 
+        }
+        uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/100e18;
+        uint extraWethAmount = swapWethAmount - wethAmountToSwap;
+        uint chainSelectorOracleTokensCount = oracleTokens.length;
+        for(uint i = 0; i < chainSelectorOracleTokensCount; i++){
+            address newTokenAddress = oracleTokens[i];
+            uint newTokenMarketShare = oracleTokenShares[i];
+            // uint newTokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
+            uint wethAmount = _swapSingle(
+            address(weth),
+            newTokenAddress,
+            wethAmountToSwap*newTokenMarketShare/100e18,
+            address(crossChainVault),
+            3
+            );
+            // swapWethAmount += wethAmount; 
+        }
+
+        uint crossChainTokenAmount = swap(address(weth), address(crossChainToken[sourceChainSelector]), extraWethAmount, address(this), 3);
+        Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+        tokensToSendArray[0].token = crossChainToken[sourceChainSelector];
+        tokensToSendArray[0].amount = crossChainTokenAmount;
+        uint[] memory zeroArr = new uint[](0);
+        // bytes memory data = abi.encode(1, targetAddresses, targetAddresses2, nonce, zeroArr, zeroArr);
+        bytes memory data = abi.encode(3, targetAddresses, targetAddresses2, nonce, zeroArr, zeroArr);
+        sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
+    }
+
+
+    function _handleSecondReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares) private {
+        uint chainSelectorCurrentTokensCount = currentTokens.length;
+        uint swapWethAmount;
+        uint chainSelectorTotalShares;
+        for(uint i = 0; i < chainSelectorCurrentTokensCount; i++){
+
+            address tokenAddress = currentTokens[i];
+            uint tokenMarketShare = oracleTokenShares[i];
+            chainSelectorTotalShares += tokenMarketShare;
+
+            uint wethAmount = _swapSingle(
+            tokenAddress,
+            address(weth),
+            IERC20(tokenAddress).balanceOf(address(crossChainVault)),
+            address(crossChainVault),
+            3
+            );
+            swapWethAmount += wethAmount; 
+        }
+        uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/100e18;
+        uint extraWethAmount = swapWethAmount - wethAmountToSwap;
+        uint chainSelectorOracleTokensCount = oracleTokens.length;
+        for(uint i = 0; i < chainSelectorOracleTokensCount; i++){
+            address newTokenAddress = oracleTokens[i];
+            uint newTokenMarketShare = oracleTokenShares[i];
+            // uint newTokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
+            uint wethAmount = _swapSingle(
+            address(weth),
+            newTokenAddress,
+            wethAmountToSwap*newTokenMarketShare/100e18,
+            address(crossChainVault),
+            3
+            );
+            // swapWethAmount += wethAmount; 
         }
     }
 
