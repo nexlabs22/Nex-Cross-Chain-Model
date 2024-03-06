@@ -429,7 +429,7 @@ contract CrossChainIndexFactory is
         }
     }
 
-    function _handleFirstReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint64 sourceChainSelector, address memory sender, uint nonce) private {
+    function _handleFirstReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint64 sourceChainSelector, address sender, uint nonce) private {
         uint chainSelectorCurrentTokensCount = currentTokens.length;
         uint swapWethAmount;
         uint chainSelectorTotalShares;
@@ -471,15 +471,19 @@ contract CrossChainIndexFactory is
         tokensToSendArray[0].amount = crossChainTokenAmount;
         uint[] memory zeroArr = new uint[](0);
         // bytes memory data = abi.encode(1, targetAddresses, targetAddresses2, nonce, zeroArr, zeroArr);
-        bytes memory data = abi.encode(3, targetAddresses, targetAddresses2, nonce, zeroArr, zeroArr);
+        bytes memory data = abi.encode(3, currentTokens, oracleTokens, nonce, zeroArr, zeroArr);
         sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
     }
 
 
-    function _handleSecondReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares) private {
+    function _handleSecondReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint tokenAmount, uint64 sourceChainSelector, address sender, uint nonc) private {
+
+        uint crossChainWethAmount = swap(crossChainToken[sourceChainSelector], address(weth), tokenAmount, address(crossChainVault), 3);
+
         uint chainSelectorCurrentTokensCount = currentTokens.length;
         uint swapWethAmount;
         uint chainSelectorTotalShares;
+
         for(uint i = 0; i < chainSelectorCurrentTokensCount; i++){
 
             address tokenAddress = currentTokens[i];
@@ -495,9 +499,12 @@ contract CrossChainIndexFactory is
             );
             swapWethAmount += wethAmount; 
         }
-        uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/100e18;
-        uint extraWethAmount = swapWethAmount - wethAmountToSwap;
+
+        uint wethAmountToSwap = crossChainWethAmount + swapWethAmount;
+        // uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/100e18;
+        // uint extraWethAmount = swapWethAmount - wethAmountToSwap;
         uint chainSelectorOracleTokensCount = oracleTokens.length;
+
         for(uint i = 0; i < chainSelectorOracleTokensCount; i++){
             address newTokenAddress = oracleTokens[i];
             uint newTokenMarketShare = oracleTokenShares[i];
@@ -511,6 +518,8 @@ contract CrossChainIndexFactory is
             );
             // swapWethAmount += wethAmount; 
         }
+
+        
     }
 
     function testSend(uint64 destinationChainSelector, address receiver) public {
