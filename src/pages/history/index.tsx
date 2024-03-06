@@ -404,36 +404,38 @@ function History() {
 					text: [
 						`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${
 							side.toLowerCase() === 'mint' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
-						}\n`,
-						{
-							text: `≈ $ ${
-								usdPrices
-									? side.toLowerCase() === 'mint'
-										? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
-										: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-									: 0
-								}`,
-							color: 'gray',
-							italics: true,
-						},
+						}`
+						// \n`,
+						// {
+						// 	text: `≈ $ ${
+						// 		usdPrices
+						// 			? side.toLowerCase() === 'mint'
+						// 				? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
+						// 				: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+						// 			: 0
+						// 		}`,
+						// 	color: 'gray',
+						// 	italics: true,
+						// },
 					],
 				},
 				{
 					text: [
 						`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${
 							side.toLowerCase() === 'burn' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
-						}\n`,
-						{
-							text: `≈ $ ${
-								usdPrices
-								? side.toLowerCase() === 'burn'
-								? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
-								: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-								: 0
-							}`,
-							color: 'gray',
-							italics: true,
-						},
+						}`
+						// \n`,
+						// {
+						// 	text: `≈ $ ${
+						// 		usdPrices
+						// 		? side.toLowerCase() === 'burn'
+						// 		? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
+						// 		: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+						// 		: 0
+						// 	}`,
+						// 	color: 'gray',
+						// 	italics: true,
+						// },
 					],
 				},
 				position.txHash,

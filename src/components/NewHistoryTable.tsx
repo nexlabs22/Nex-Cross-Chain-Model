@@ -38,6 +38,7 @@ function NewHistoryTable() {
 		tradeTableReload,
 		setEthPriceInUsd,
 		ethPriceInUsd,
+		isMainnet,
 	} = useTradePageStore()
 	const { ownedAssetInActivity, setPortfolioData } = usePortfolioPageStore()
 	const positionHistory = GetPositionsHistory2()
@@ -64,7 +65,7 @@ function NewHistoryTable() {
 			const data = positionHistory.data.filter((data) => {
 				return activeTicker.includes(data.indexName)
 			})
-			if(JSON.stringify(data) !== JSON.stringify(positionHistoryData)){
+			if (JSON.stringify(data) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(data)
 			}
 		} else if (path === '/portfolio' || path === '/history') {
@@ -290,16 +291,20 @@ function NewHistoryTable() {
 												<>
 													{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
 													{position.side === 'Mint Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
-													<div className="text-slate-500">
-														<em>
-															≈ $
-															{usdPrices
-																? position.side === 'Mint Request'
-																	? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
-																	: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-																: 0}{' '}
-														</em>
-													</div>{' '}
+													{isMainnet && (
+														<>
+															<div className="text-slate-500">
+																<em>
+																	≈ $
+																	{usdPrices
+																		? position.side === 'Mint Request'
+																			? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
+																			: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																		: 0}{' '}
+																</em>
+															</div>{' '}
+														</>
+													)}
 												</>
 											) : (
 												'-'
@@ -310,16 +315,20 @@ function NewHistoryTable() {
 												<>
 													{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
 													{position.side === 'Burn Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
-													<div className="text-slate-500">
-														<em>
-															≈ $
-															{usdPrices
-																? position.side === 'Burn Request'
-																	? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
-																	: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-																: 0}{' '}
-														</em>
-													</div>{' '}
+													{isMainnet && (
+														<>
+															<div className="text-slate-500">
+																<em>
+																	≈ $
+																	{usdPrices
+																		? position.side === 'Burn Request'
+																			? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
+																			: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																		: 0}{' '}
+																</em>
+															</div>{' '}
+														</>
+													)}
 												</>
 											) : (
 												'-'

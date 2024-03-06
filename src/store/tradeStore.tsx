@@ -68,6 +68,9 @@ type TradePageStore = {
 
 	ethPriceInUsd: number
 	setEthPriceInUsd: () => void
+
+	isMainnet: boolean
+	setIsmainnet: (value: boolean) => void
 }
 
 const useTradePageStore = create<TradePageStore>()((set) => ({
@@ -95,6 +98,9 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	isToCurrencyModalOpen: false,
 	setToCurrencyModalOpen: (open: boolean) => set((state) => ({ isToCurrencyModalOpen: open })),
+
+	isMainnet: false,
+	setIsmainnet: (open: boolean) => set((state) => ({ isMainnet: open })),
 
 	swapFromCur: {
 		id: 2,
