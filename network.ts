@@ -48,9 +48,9 @@ export const mumbaiTestRippleAddress = "0xdcD77a498720D6F3Fbd241046a477062Cd1E76
 //protocol contract addresses
 export const sepoliaCR5IndexToken = "0x47Fa73B6E9cFDB28B134D380Ef3f931e77260B24"
 export const sepoliaCR5IndexFactoryStorage = "0xc97EA0C219CD117C2035707Cb4dD3e818FB4E023"
+export const sepoliaCR5IndexFactoryBalancer = "0x50134bCE1C2c3aB499a07f467Eb8FA49FebeA221"
 export const sepoliaCR5IndexFactory = "0x877E48015097aAeEa3307C309dBc3AABed688Eca"
 export const mumbaiCR5CrossChainVault = "0x53B8876a23C057630c487D5a7B394EF45e64f2fA"
-// export const mumbaiCR5CrossChainFactory = "0x76b82cDBe05837C971E2dcaBAb679a70De633DeB" old
 export const mumbaiCR5CrossChainFactory = "0xe0c7EC4711EEa139Eaa5F04f6549C2dc9b5bF5Cf"
 export const sepoliaBasicMessageSender = "0xd090590b7f3f1e01c33ae567ec346d8e51ec6cd8"
 export const sepoliaBasicMessageReceiver = "0x97e30e590237cc1accb09c2bf60872bb74ca63b1"

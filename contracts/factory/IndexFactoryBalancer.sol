@@ -56,6 +56,7 @@ contract IndexFactoryBalancer is
     
 
     mapping(uint => uint) public portfolioTotalValueByNonce;
+    mapping(uint => uint) public extraWethByNonce;
     mapping(uint => uint) public updatedTokensValueCount;
     mapping(uint => mapping(address => uint)) public tokenValueByNonce;
     mapping(uint => mapping(uint64 => uint)) public chainValueByNonce;
@@ -461,7 +462,55 @@ contract IndexFactoryBalancer is
             uint[] memory oracleTokenShares = indexFactoryStorage.allOracleChainSelecotrTokenShares(chainSelector);
 
             if((chainValue*100e18)/portfolioValue > chainSelectorTotalShares){
+            
+                
                  if(chainSelector == currentChainSelector){
+                    _swapExtraValueCurrentChain(
+                        i,
+                        nonce,
+                        portfolioValue,
+                        chainSelector,
+                        chainSelectorCurrentTokensCount,
+                        chainSelectorOracleTokensCount,
+                        chainSelectorTotalShares
+                    );
+                 }else{
+                    address crossChainIndexFactory = crossChainFactoryBySelector(chainSelector);
+                
+                    address[] memory currentTokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
+                    address[] memory newTokenAddresses = indexFactoryStorage.allOracleChainSelecotrTokens(chainSelector);
+                    uint[] memory zeroArray = new uint[](0);
+
+                    bytes memory data = abi.encode(
+                        3,
+                        currentTokenAddresses,
+                        newTokenAddresses,
+                        updatePortfolioNonce,
+                        oracleTokenShares,
+                        zeroArray
+                    );
+                    sendMessage(
+                        chainSelector,
+                        crossChainIndexFactory,
+                        data,
+                        PayFeesIn.LINK
+                    );
+                }
+                
+                 }
+            }
+    }
+
+
+    function _swapExtraValueCurrentChain(
+        uint i,
+        uint nonce,
+        uint portfolioValue,
+        uint64 chainSelector,
+        uint chainSelectorCurrentTokensCount,
+        uint chainSelectorOracleTokensCount,
+        uint chainSelectorTotalShares
+    ) internal {
                     address tokenAddress = indexFactoryStorage.currentList(i);
                     uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
                     uint tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(tokenAddress);
@@ -476,7 +525,7 @@ contract IndexFactoryBalancer is
                         );
                         swapWethAmount += wethAmount; 
                     }
-                    uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/100e18;
+                    uint wethAmountToSwap = portfolioValue*chainSelectorTotalShares/100e18;
                     uint extraWethAmount = swapWethAmount - wethAmountToSwap;
                     for(uint i = 0; i < chainSelectorOracleTokensCount; i++){
                         address newTokenAddress = indexFactoryStorage.oracleList(i);
@@ -485,40 +534,13 @@ contract IndexFactoryBalancer is
                         uint wethAmount = _swapSingle(
                         address(weth),
                         newTokenAddress,
-                        wethAmountToSwap*newTokenMarketShare/100e18,
+                        wethAmountToSwap*newTokenMarketShare/chainSelectorTotalShares,
                         address(indexToken),
                         newTokenSwapVersion
                         );
-                        // swapWethAmount += wethAmount; 
                     }
-                 }else{
-                    address crossChainIndexFactory = crossChainFactoryBySelector(chainSelector);
-                
-                    address[] memory currentTokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
-                    address[] memory newTokenAddresses = indexFactoryStorage.allOracleChainSelecotrTokens(chainSelector);
-                    // address[] memory zeroAddresses = new address[](0);
-                    uint[] memory zeroArray = new uint[](0);
-
-                    bytes memory data = abi.encode(
-                        2,
-                        currentTokenAddresses,
-                        newTokenAddresses,
-                        updatePortfolioNonce,
-                        oracleTokenShares,
-                        zeroArray
-                    );
-                    sendMessage(
-                        chainSelector,
-                        crossChainIndexFactory,
-                        data,
-                        PayFeesIn.LINK
-                    );
-                }
-                 }
-            }
+                    extraWethByNonce[nonce] += extraWethAmount;
     }
-
-    
 
     function secondReweightAction() public onlyOwner {
         uint nonce = updatePortfolioNonce;
