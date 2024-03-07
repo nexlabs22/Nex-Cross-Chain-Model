@@ -45,6 +45,10 @@ export const sepoliaTokenFaucet = "0x5Efe973Bc615112Bca43696483bd53Ce86E2B0ab"
 
 export const crypto5PoolAddress = '0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
+export const exchangeAddresses:{[key:string]: string} = {
+    bitfinex: "0x0000000000000000000000000000000000000000",
+    bybit: "0x0000000000000000000000000000000000000000"
+} 
 export const factoryAddresses =  { 'ANFI': sepoliaAnfiV2Factory, 'CRYPTO5': sepoliaCrypto5V2Factory }
 export const goerliTokenAddresses:{[key:string]: string} = {'ANFI': goerliAnfiIndexToken,'CRYPTO5': goerliCrypto5IndexToken, 'USDT': goerliUsdtAddress, 'ETH': goerliWethAddress}
 export const sepoliaTokenAddresses:{[key:string]: string} = {'ANFI': sepoliaAnfiV2IndexToken,'CRYPTO5':sepoliaCrypto5V2IndexToken ,'USDT': sepoliaUsdtAddress, 'ETH': sepoliaWethAddress}
