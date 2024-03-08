@@ -373,21 +373,21 @@ const TopIndexData = () => {
 		getCR5Weights()
 	}, [])
 
-	useEffect(() => {
-		console.log('CR5 : ', CR5UnderLyingAssets)
-	}, [CR5UnderLyingAssets])
+	// useEffect(() => {
+	// 	console.log('CR5 : ', CR5UnderLyingAssets)
+	// }, [CR5UnderLyingAssets])
 
-	useEffect(() => {
-		console.log('CR5 : ', SmallCR5UnderLyingAssets)
-	}, [SmallCR5UnderLyingAssets])
+	// useEffect(() => {
+	// 	console.log('CR5 : ', SmallCR5UnderLyingAssets)
+	// }, [SmallCR5UnderLyingAssets])
 
-	useEffect(() => {
-		console.log('ANFI :', ANFIUnderLyingAssets)
-	}, [ANFIUnderLyingAssets])
+	// useEffect(() => {
+	// 	console.log('ANFI :', ANFIUnderLyingAssets)
+	// }, [ANFIUnderLyingAssets])
 
-	useEffect(() => {
-		console.log('ANFI :', SmallANFIUnderLyingAssets)
-	}, [SmallANFIUnderLyingAssets])
+	// useEffect(() => {
+	// 	console.log('ANFI :', SmallANFIUnderLyingAssets)
+	// }, [SmallANFIUnderLyingAssets])
 
 	return (
 		<section className="px-2 h-fit lg:px-10 py-6 xl:pt-16">
