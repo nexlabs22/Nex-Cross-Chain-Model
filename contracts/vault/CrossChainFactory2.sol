@@ -23,7 +23,7 @@ import "./CrossChainVault.sol";
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
-contract CrossChainIndexFactory is
+contract CrossChainIndexFactory2 is
     CCIPReceiver,
     ChainlinkClient,
     ContextUpgradeable,
