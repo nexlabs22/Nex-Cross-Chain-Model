@@ -7,6 +7,7 @@ import { useLandingPageStore } from '@/store/store'
 import useTradePageStore from '@/store/tradeStore'
 import { useRouter } from 'next/router'
 
+
 function compareArrays(oldArray, newArray) {
 	const addedStrings = newArray.filter((item) => !oldArray.includes(item))
 	const removedStrings = oldArray.filter((item) => !newArray.includes(item))
@@ -84,6 +85,9 @@ const TradingViewChart = ({ index, selectedIndices, page }) => {
 			allow_symbol_change: false,
 			datafeed: Datafeed,
 			autosize: true,
+			enabled_features: ["header_in_fullscreen_mode"],
+			
+			
     //   disabled_features: getDisabledFeatures(page),
 			overrides: {
 				'mainSeriesProperties.style': 2,
@@ -105,6 +109,10 @@ const TradingViewChart = ({ index, selectedIndices, page }) => {
 		widget.onChartReady(() => {
 			setWid(widget)
 		})
+
+		
+
+		
 
 		return () => script.remove()
 	}, [])
