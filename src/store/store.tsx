@@ -27,6 +27,9 @@ type LandingPageStore = {
 
 	theme: Theme;
 	setTheme: (selectedTheme: Theme) => void;
+
+	isSearchModalOpen: boolean;
+	setSearchModal: (val: boolean) => void;
 }
 
 const useLandingPageStore = create<LandingPageStore>()((set) => ({
@@ -44,6 +47,9 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 
 	defaultIndex: 'CRYPTO5',
 	changeDefaultIndex: (index: string) => set((state) => ({ defaultIndex: index })),
+	
+	isSearchModalOpen: false,
+	setSearchModal: (val: boolean) => set({ isSearchModalOpen: val }),
 }))
 
 interface value {
