@@ -478,19 +478,20 @@ contract CrossChainIndexFactory is
     }
 
 
-    function _handleSecondReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint tokenAmount, uint64 sourceChainSelector, address sender, uint nonc) private {
-
+    function _handleSecondReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint tokenAmount, uint64 sourceChainSelector, address sender, uint nonc, uint[] memory extraData) private {
+        
         uint crossChainWethAmount = swap(crossChainToken[sourceChainSelector], address(weth), tokenAmount, address(crossChainVault), 3);
-
+        // uint portfolioValue = extraData[0];
+        uint chainSelectorTotalShares = extraData[1];
         uint chainSelectorCurrentTokensCount = currentTokens.length;
         uint swapWethAmount;
-        uint chainSelectorTotalShares;
+        // uint chainSelectorTotalShares;
 
         for(uint i = 0; i < chainSelectorCurrentTokensCount; i++){
 
             address tokenAddress = currentTokens[i];
-            uint tokenMarketShare = oracleTokenShares[i];
-            chainSelectorTotalShares += tokenMarketShare;
+            // uint tokenMarketShare = oracleTokenShares[i];
+            // chainSelectorTotalShares += tokenMarketShare;
 
             uint wethAmount = _swapSingle(
             tokenAddress,
@@ -514,7 +515,7 @@ contract CrossChainIndexFactory is
             uint wethAmount = _swapSingle(
             address(weth),
             newTokenAddress,
-            wethAmountToSwap*newTokenMarketShare/100e18,
+            wethAmountToSwap*newTokenMarketShare/chainSelectorTotalShares,
             address(crossChainVault),
             3
             );

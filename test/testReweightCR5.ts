@@ -315,12 +315,16 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
         console.log("portfolio values count:", ethers.utils.formatEther(await indexFactoryBalancer.portfolioTotalValueByNonce(1)))
         console.log("first token1 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token0.address)))
         console.log("first token2 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token1.address)))
+        console.log("first chainValueByNonce:", ethers.utils.formatEther(await indexFactoryBalancer.chainValueByNonce(1, 1)))
+        console.log("second chainValueByNonce:", ethers.utils.formatEther(await indexFactoryBalancer.chainValueByNonce(1, 2)))
         //
         const newPercentages = ["60000000000000000000", "40000000000000000000"]
         await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, newPercentages, swapVersions, chainSelectors)
         //
-        // await indexFactory.firstReweightAction()
-        console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactory.reweightWethValueByNonce(1)))
+        console.log("first reweighting action...");
+        await indexFactoryBalancer.firstReweightAction()
+        console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactoryBalancer.extraWethByNonce(1)))
+        return;
         // await indexFactory.secondReweightAction()
         // console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactory.reweightWethValueByNonce(1)))
         // await indexFactory.askValues();
