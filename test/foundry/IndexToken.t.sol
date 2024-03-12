@@ -70,7 +70,7 @@ contract CounterTest is Test {
             SwapRouterV2,
             FactoryV2
         );
-        indexToken.setMinter(minter);
+        indexToken.setMinter(minter, true);
     }
 
     function testInitialized() public {
@@ -297,9 +297,9 @@ contract CounterTest is Test {
         vm.expectEmit(true, true, true, true);
         emit MinterSet(newMinter);
         //set data
-        assertEq(indexToken.minter(), minter);
-        indexToken.setMinter(newMinter);
-        assertEq(indexToken.minter(), newMinter);
+        assertEq(indexToken.isMinter(minter), true);
+        indexToken.setMinter(newMinter, true);
+        assertEq(indexToken.isMinter(minter), true);
     }
 
     function testSetSupplyCeiling() public {

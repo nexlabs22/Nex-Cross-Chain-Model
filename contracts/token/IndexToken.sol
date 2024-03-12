@@ -44,7 +44,8 @@ contract IndexToken is
     address public methodologist;
 
     // Address that has privilege to mint and burn. It will be Controller and Admin to begin.
-    address public minter;
+    // address public minter;
+    mapping(address => bool) public isMinter;
 
     string public methodology;
 
@@ -72,6 +73,7 @@ contract IndexToken is
     event MethodologistSet(address indexed methodologist);
     event MethodologySet(string methodology);
     event MinterSet(address indexed minter);
+    event MinterRemoved(address indexed minter);
     event SupplyCeilingSet(uint256 supplyCeiling);
     event MintFeeToReceiver(address feeReceiver, uint256 timestamp, uint256 totalSupply, uint256 amount);
     event ToggledRestricted(address indexed account, bool isRestricted);
@@ -82,7 +84,8 @@ contract IndexToken is
     }
 
     modifier onlyMinter() {
-        require(msg.sender == minter, "IndexToken: caller is not the minter");
+        // require(msg.sender == minter, "IndexToken: caller is not the minter");
+        require(isMinter[msg.sender], "IndexToken: caller is not the minter");
         _;
     }
 
@@ -245,10 +248,14 @@ contract IndexToken is
 
     /// @notice Ownable function to set the contract that controls minting
     /// @param _minter address
-    function setMinter(address _minter) external onlyOwner {
+    function setMinter(address _minter, bool _enabled) external onlyOwner {
         require(_minter != address(0));
-        minter = _minter;
+        isMinter[_minter] = _enabled;
+        if(_enabled){
         emit MinterSet(_minter);
+        }else{
+        emit MinterRemoved(_minter);
+        }
     }
 
     /// @notice Ownable function to set the limit at which the total supply cannot exceed

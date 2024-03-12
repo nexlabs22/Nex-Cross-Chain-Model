@@ -186,7 +186,8 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       
       
       //set minter
-      await indexToken.setMinter(indexFactory.address)
+      await indexToken.setMinter(indexFactory.address, true)
+      await indexToken.setMinter(indexFactoryBalancer.address, true)
       await indexFactoryStorage.setCrossChainToken("2", crossChainToken.address)
       await indexFactoryStorage.setCrossChainFactory(crossChainIndexFactory.address, "2");
       await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address)

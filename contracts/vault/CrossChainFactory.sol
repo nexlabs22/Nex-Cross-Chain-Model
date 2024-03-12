@@ -44,6 +44,13 @@ contract CrossChainIndexFactory is
         uint256 amount; // received amount.
     }
 
+    struct ReweightActionData {
+        uint chainSelectorCurrentTokensCount;
+        uint portfolioValue;
+        uint chainSelectorTotalShares;
+        uint swapWethAmount;
+    }
+
     // address public i_router;
     address public i_link;
     uint16 public i_maxTokensLength;
@@ -394,29 +401,47 @@ contract CrossChainIndexFactory is
           bytes memory data = abi.encode(1, targetAddresses, targetAddresses2, nonce, zeroArr, zeroArr);
           sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
         }else if( actionType == 2){
-            uint[] memory zeroArr = new uint[](0);
-            uint[] memory tokenValueArr = new uint[](targetAddresses.length);
-            for(uint i = 0; i < targetAddresses.length; i++){
-                uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
-                tokenValueArr[i] = tokenValue;
-            }
-            bytes memory data = abi.encode(2, targetAddresses, targetAddresses2, nonce, tokenValueArr, zeroArr);
-            sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
+            _handleAskValues(
+                targetAddresses,
+                targetAddresses2,
+                nonce,
+                sourceChainSelector,
+                sender
+            );
+            // uint[] memory zeroArr = new uint[](0);
+            // uint[] memory tokenValueArr = new uint[](targetAddresses.length);
+            // for(uint i = 0; i < targetAddresses.length; i++){
+            //     uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
+            //     tokenValueArr[i] = tokenValue;
+            // }
+            // bytes memory data = abi.encode(2, targetAddresses, targetAddresses2, nonce, tokenValueArr, zeroArr);
+            // sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
         }else if( actionType == 3){
             //first reweight action
+            _handleFirstReweightAction(
+                targetAddresses,
+                targetAddresses2,
+                percentages,
+                sourceChainSelector,
+                sender,
+                nonce,
+                extraValues
+            );
+            /**
             uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
             uint sellPercent = tokenValue*100e18/percentages[0] - extraValues[0];
             uint sellValue = tokenValue - (extraValues[0]*percentages[0])/100e18;
             uint swapAmount = (sellValue*IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)))/tokenValue;
             uint wethSwapAmountOut = _swapSingle(targetAddresses[0], address(weth), swapAmount, address(this), 3);
+            */
             // uint crossChainTokenAmount = swap(address(weth), crossChainToken[sourceChainSelector], wethSwapAmountOut, address(this), 3);
             // Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
             // tokensToSendArray[0].token = crossChainToken[sourceChainSelector];
             // tokensToSendArray[0].amount = crossChainTokenAmount;
             // bytes memory data = abi.encode(3, targetAddresses[0], nonce, 0, 0);
         }else if( actionType == 4){
-            Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
-            .destTokenAmounts;
+            // Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
+            // .destTokenAmounts;
             // address token = tokenAmounts[0].token; // we expect one token to be transfered at once but of course, you can transfer several tokens.
             // uint256 amount = tokenAmounts[0].amount; // we expect one token to be transfered at once but of course, you can transfer several tokens.
 
@@ -425,6 +450,77 @@ contract CrossChainIndexFactory is
         }
     }
 
+    function _handleAskValues(
+        address[] memory targetAddresses,
+        address[] memory targetAddresses2,
+        uint nonce,
+        uint64 sourceChainSelector,
+        address sender
+    ) internal {
+        uint[] memory zeroArr = new uint[](0);
+        uint[] memory tokenValueArr = new uint[](targetAddresses.length);
+        for(uint i = 0; i < targetAddresses.length; i++){
+            uint tokenValue = getAmountOut(targetAddresses[0], address(weth), IERC20(targetAddresses[0]).balanceOf(address(crossChainVault)), 3);
+            tokenValueArr[i] = tokenValue;
+        }
+        bytes memory data = abi.encode(2, targetAddresses, targetAddresses2, nonce, tokenValueArr, zeroArr);
+        sendMessage(sourceChainSelector, sender, data, PayFeesIn.LINK);
+    }
+
+    
+
+    function _handleFirstReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint64 sourceChainSelector, address sender, uint nonce, uint[] memory extraData) private {
+        ReweightActionData memory data;
+        data.chainSelectorCurrentTokensCount = currentTokens.length;
+        data.portfolioValue = extraData[0];
+        data.chainSelectorTotalShares = extraData[1];
+        
+        for(uint i = 0; i < data.chainSelectorCurrentTokensCount; i++){
+            address tokenAddress = currentTokens[i];
+            uint tokenMarketShare = oracleTokenShares[i];
+            data.chainSelectorTotalShares += tokenMarketShare;
+
+            uint wethAmount = _swapSingle(
+                tokenAddress,
+                address(weth),
+                IERC20(tokenAddress).balanceOf(address(crossChainVault)),
+                address(crossChainVault),
+                3
+            );
+
+            data.swapWethAmount += wethAmount; 
+        }
+
+        uint wethAmountToSwap = data.portfolioValue * data.chainSelectorTotalShares / 100e18;
+        uint extraWethAmount = data.swapWethAmount - wethAmountToSwap;
+        uint chainSelectorOracleTokensCount = oracleTokens.length;
+
+        for(uint i = 0; i < chainSelectorOracleTokensCount; i++){
+            address newTokenAddress = oracleTokens[i];
+            uint newTokenMarketShare = oracleTokenShares[i];
+            uint wethAmount = _swapSingle(
+                address(weth),
+                newTokenAddress,
+                wethAmountToSwap * newTokenMarketShare / data.chainSelectorTotalShares,
+                address(crossChainVault),
+                3
+            );
+
+            // swapWethAmount += wethAmount; 
+        }
+
+        uint crossChainTokenAmount = swap(address(weth), address(crossChainToken[sourceChainSelector]), extraWethAmount, address(this), 3);
+        Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+        tokensToSendArray[0].token = crossChainToken[sourceChainSelector];
+        tokensToSendArray[0].amount = crossChainTokenAmount;
+        uint[] memory zeroArr = new uint[](0);
+        // bytes memory data = abi.encode(1, targetAddresses, targetAddresses2, nonce, zeroArr, zeroArr);
+        bytes memory encodedData = abi.encode(3, currentTokens, oracleTokens, nonce, zeroArr, zeroArr);
+        sendToken(sourceChainSelector, encodedData, sender, tokensToSendArray, PayFeesIn.LINK);
+    }
+
+
+    /**
     function _handleFirstReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint64 sourceChainSelector, address sender, uint nonce, uint[] memory extraData) private {
         uint chainSelectorCurrentTokensCount = currentTokens.length;
         uint portfolioValue = extraData[0];
@@ -476,6 +572,7 @@ contract CrossChainIndexFactory is
         bytes memory data = abi.encode(3, currentTokens, oracleTokens, nonce, zeroArr, zeroArr);
         sendToken(sourceChainSelector, data, sender, tokensToSendArray, PayFeesIn.LINK);
     }
+     */
 
 
     function _handleSecondReweightAction(address[] memory currentTokens, address[] memory oracleTokens, uint[] memory oracleTokenShares, uint tokenAmount, uint64 sourceChainSelector, address sender, uint nonc, uint[] memory extraData) private {
@@ -523,11 +620,6 @@ contract CrossChainIndexFactory is
         }
 
         
-    }
-
-    function testSend(uint64 destinationChainSelector, address receiver) public {
-        // sendMessage(16015286601757825753, 0x97e30e590237cc1accb09c2bf60872bb74ca63b1, abi.encode("HHH"), PayFeesIn.LINK);
-        sendMessage(destinationChainSelector, receiver, abi.encode("HHH"), PayFeesIn.LINK);
     }
 
     function sendMessage(

@@ -193,7 +193,7 @@ contract CounterTest is Test {
         //     FactoryV2
         // );
 
-        indexToken.setMinter(address(factory));
+        indexToken.setMinter(address(factory), true);
 
         // swap = new Swap();
         dai = ERC20(DAI);
@@ -213,7 +213,7 @@ contract CounterTest is Test {
         assertEq(indexToken.feeReceiver(), feeReceiver);
         assertEq(indexToken.methodology(), "");
         assertEq(indexToken.supplyCeiling(), 1000000e18);
-        assertEq(indexToken.minter(), address(factory));
+        assertEq(indexToken.isMinter(address(factory)), true);
     }
 
     enum DexStatus {
