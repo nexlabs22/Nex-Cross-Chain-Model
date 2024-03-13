@@ -45,6 +45,14 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
         uint newTokenValue;
     }
 
+    struct SwapVariables {
+        address tokenAddress;
+        uint tokenSwapVersion;
+        uint tokenMarketShare;
+        uint chainValue;
+        uint swapWethAmount;
+    }
+
     uint public updatePortfolioNonce;
 
     mapping(uint => uint) public portfolioTotalValueByNonce;
@@ -522,6 +530,8 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
 
     uint public swapWethAmount0;
     uint public chainValue0;
+    
+
     function _swapExtraValueCurrentChain(
         uint i,
         uint nonce,
@@ -531,47 +541,48 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
         uint chainSelectorOracleTokensCount,
         uint chainSelectorTotalShares
     ) internal {
-        address tokenAddress = indexFactoryStorage.currentList(i);
-        uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(
-            tokenAddress
+        SwapVariables memory swapVars;
+        swapVars.tokenAddress = indexFactoryStorage.currentList(i);
+        swapVars.tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(
+            swapVars.tokenAddress
         );
-        uint tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(
-            tokenAddress
+        swapVars.tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(
+            swapVars.tokenAddress
         );
-        uint swapWethAmount;
-        for (uint i = 0; i < chainSelectorCurrentTokensCount; i++) {
+        swapVars.chainValue = chainValueByNonce[nonce][chainSelector];
+
+        for (uint j = 0; j < chainSelectorCurrentTokensCount; j++) {
             uint wethAmount = _swapSingle(
-                tokenAddress,
+                swapVars.tokenAddress,
                 address(weth),
-                IERC20(tokenAddress).balanceOf(address(indexToken)),
+                IERC20(swapVars.tokenAddress).balanceOf(address(indexToken)),
                 address(indexToken),
-                tokenSwapVersion
+                swapVars.tokenSwapVersion
             );
-            swapWethAmount += wethAmount;
+            swapVars.swapWethAmount += wethAmount;
         }
-        uint wethAmountToSwap = (portfolioValue * chainSelectorTotalShares) /
-            100e18;
-        
-        swapWethAmount0 = swapWethAmount;
+
+        uint chainCurrentRealShare = swapVars.chainValue * 100e18 / portfolioValue;
+        uint wethAmountToSwap = swapVars.swapWethAmount*chainSelectorTotalShares/chainCurrentRealShare;
+
+        swapWethAmount0 = swapVars.swapWethAmount;
         chainValue0 = chainValueByNonce[nonce][chainSelector];
 
-        uint extraWethAmount = swapWethAmount - wethAmountToSwap;
-        // for (uint i = 0; i < chainSelectorOracleTokensCount; i++) {
-        //     address newTokenAddress = indexFactoryStorage.oracleList(i);
-        //     uint newTokenSwapVersion = indexFactoryStorage.tokenSwapVersion(
-        //         tokenAddress
-        //     );
-        //     uint newTokenMarketShare = indexFactoryStorage
-        //         .tokenOracleMarketShare(tokenAddress);
-        //     uint wethAmount = _swapSingle(
-        //         address(weth),
-        //         newTokenAddress,
-        //         (wethAmountToSwap * newTokenMarketShare) /
-        //             chainSelectorTotalShares,
-        //         address(indexToken),
-        //         newTokenSwapVersion
-        //     );
-        // }
+        uint extraWethAmount = swapVars.swapWethAmount - wethAmountToSwap;
+        for (uint k = 0; k < chainSelectorOracleTokensCount; k++) {
+            address newTokenAddress = indexFactoryStorage.oracleList(k);
+            uint newTokenSwapVersion = indexFactoryStorage.tokenSwapVersion(
+                swapVars.tokenAddress
+            );
+            uint newTokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(swapVars.tokenAddress);
+            uint wethAmount = _swapSingle(
+                address(weth),
+                newTokenAddress,
+                (wethAmountToSwap * newTokenMarketShare) / chainSelectorTotalShares,
+                address(indexToken),
+                newTokenSwapVersion
+            );
+        }
         extraWethByNonce[nonce] += extraWethAmount;
     }
 
@@ -644,6 +655,7 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
         uint tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(
             tokenAddress
         );
+        uint chainValue = chainValueByNonce[nonce][chainSelector];
         uint swapWethAmount;
         for (uint i = 0; i < chainSelectorCurrentTokensCount; i++) {
             uint wethAmount = _swapSingle(
@@ -655,8 +667,11 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
             );
             swapWethAmount += wethAmount;
         }
-        uint wethAmountToSwap = (portfolioValue * chainSelectorTotalShares) /
-            100e18;
+
+        uint chainCurrentRealShare = chainValue * 100e18 / portfolioValue;
+        uint wethAmountToSwap = swapWethAmount*chainCurrentRealShare/chainSelectorTotalShares;
+        // uint wethAmountToSwap = (portfolioValue * chainSelectorTotalShares) /
+        //     100e18;
         uint extraWethAmount = wethAmountToSwap - swapWethAmount;
         swapWethAmount += extraWethAmount;
         for (uint i = 0; i < chainSelectorOracleTokensCount; i++) {
@@ -687,23 +702,26 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
         uint chainValue,
         uint[] memory oracleTokenShares
     ) internal {
-        uint wethAmountToSwap = (portfolioValue * chainSelectorTotalShares) /
-            100e18;
-        // uint extraWethAmount = wethAmountToSwap - chainValue;
-        uint extraWethAmount = chainValue;
+        uint chainCurrentRealShare = chainValue * 100e18 / portfolioValue;
+        uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/chainCurrentRealShare;
+        
+        // uint wethAmountToSwap = (portfolioValue * chainSelectorTotalShares) /
+        //     100e18;
+        uint extraWethAmount = wethAmountToSwap - chainValue;
+        // uint extraWethAmount = chainValue;
         
         address crossChainIndexFactory = crossChainFactoryBySelector(
             chainSelector
         );
 
         extraAmount = extraWethAmount;
-        // uint crossChainTokenAmount = _swapSingle(
-        //     address(weth),
-        //     crossChainToken(chainSelector),
-        //     extraWethAmount,
-        //     address(this),
-        //     3
-        // );
+        uint crossChainTokenAmount = _swapSingle(
+            address(weth),
+            crossChainToken(chainSelector),
+            extraWethAmount,
+            address(this),
+            3
+        );
         
         // address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelecotrTokens(chainSelector);
         // address[] memory zeroAddresses = new address[](0);

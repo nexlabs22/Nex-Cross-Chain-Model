@@ -327,8 +327,8 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
         console.log("balancer weth balance:", ethers.utils.formatEther(await weth9.balanceOf(indexToken.address)))
         console.log("swapWethAmount0:", ethers.utils.formatEther(await indexFactoryBalancer.swapWethAmount0()))
         console.log("portfolioValue0:", ethers.utils.formatEther(await indexFactoryBalancer.chainValue0()))
-        return;
         await indexFactoryBalancer.secondReweightAction()
+        return;
         console.log("extraAmount:", ethers.utils.formatEther(await indexFactoryBalancer.extraAmount()))
         console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactoryBalancer.reweightWethValueByNonce(1)))
         // await indexFactory.askValues();
