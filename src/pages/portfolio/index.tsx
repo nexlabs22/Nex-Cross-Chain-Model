@@ -142,7 +142,7 @@ export default function Portfolio() {
 		data: dataAnfi,
 	} = useQuery(GET_HISTORICAL_PRICES, {
 		// variables: { poolAddress: getPoolAddress(anfiDetails[0].address, anfiDetails[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
-		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
 	})
 
 	const {
@@ -150,7 +150,7 @@ export default function Portfolio() {
 		error: errorCR5,
 		data: dataCR5,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
 	})
 
 	// *** FUNCTION TO GET THE INDEX PRICE HISTORY *** // Commented for later use
@@ -171,7 +171,7 @@ export default function Portfolio() {
 	// 	// getCR5PriceHistory()
 	// })
 
-	const [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
+	let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
 	const indexPercent = { anfi: anfiPercent, cr5: crypto5Percent }
 
 	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
@@ -431,7 +431,7 @@ export default function Portfolio() {
 		indexDetailsMap.set(detail.index, detail)
 	})
 
-	// console.log(indexSelectedInPie, indexDetailsMap )
+	chartArr = chartArr.filter((obj) => obj.time !== 1702512000)
 
 	return (
 		<>
