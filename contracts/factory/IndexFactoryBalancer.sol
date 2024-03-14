@@ -63,6 +63,7 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
 
     mapping(uint => uint) public reweightWethValueByNonce;
     mapping(uint => uint) public reweightTokensCount;
+    mapping(uint => uint) public reweightExtraPercentage;
 
     mapping(uint => address) public redemptionNonceOutputToken;
     mapping(uint => uint) public redemptionNonceOutputTokenSwapVersion;
@@ -497,6 +498,9 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
                         chainSelectorTotalShares
                     );
                 } else {
+                    uint chainCurrentRealShare = chainValue * 100e18 / portfolioValue;
+                    reweightExtraPercentage[nonce] += (chainCurrentRealShare - chainSelectorTotalShares);
+
                     address crossChainIndexFactory = crossChainFactoryBySelector(
                             chainSelector
                         );
@@ -584,9 +588,64 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
             );
         }
         extraWethByNonce[nonce] += extraWethAmount;
+        reweightExtraPercentage[nonce] += (chainCurrentRealShare - swapVars.tokenMarketShare);
     }
 
     function secondReweightAction() public onlyOwner {
+        uint nonce = updatePortfolioNonce;
+        uint portfolioValue = portfolioTotalValueByNonce[nonce];
+
+        uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
+        uint latestCurrentCount = indexFactoryStorage.currentFilledCount();
+        uint latestOracleCount = indexFactoryStorage.oracleFilledCount();
+
+        for (uint i = 0; i < totalChains; i++) {
+            uint64 chainSelector = indexFactoryStorage.currentChainSelectors(
+                latestCurrentCount,
+                i
+            );
+            uint chainSelectorCurrentTokensCount = indexFactoryStorage
+                .currentChainSelecotrTokensCount(chainSelector);
+            uint chainSelectorOracleTokensCount = indexFactoryStorage
+                .oracleChainSelecotrTokensCount(chainSelector);
+            uint chainSelectorTotalShares = indexFactoryStorage
+                .oracleChainSelecotrTotalShares(
+                    latestOracleCount,
+                    chainSelector
+                );
+            uint chainValue = chainValueByNonce[nonce][chainSelector];
+            uint[] memory oracleTokenShares = indexFactoryStorage
+                .allOracleChainSelecotrTokenShares(chainSelector);
+
+            if (
+                (chainValue * 100) / portfolioValue < chainSelectorTotalShares
+            ) {
+                if (chainSelector == currentChainSelector) {
+                    _swapLowerValueCurrentChain(
+                        i,
+                        nonce,
+                        portfolioValue,
+                        chainSelector,
+                        chainSelectorCurrentTokensCount,
+                        chainSelectorOracleTokensCount,
+                        chainSelectorTotalShares
+                    );
+                } else {
+                    _sendLowerValueOtherChain(
+                        nonce,
+                        portfolioValue,
+                        chainSelector,
+                        chainSelectorTotalShares,
+                        chainValue,
+                        oracleTokenShares
+                    );
+                }
+            }
+        }
+    }
+
+
+    function secondReweightAction2() public onlyOwner {
         uint nonce = updatePortfolioNonce;
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
 
@@ -703,11 +762,13 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
         uint[] memory oracleTokenShares
     ) internal {
         uint chainCurrentRealShare = chainValue * 100e18 / portfolioValue;
-        uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/chainCurrentRealShare;
+        uint negativePercentage = chainSelectorTotalShares - chainCurrentRealShare;
+        // uint wethAmountToSwap = swapWethAmount*chainSelectorTotalShares/chainCurrentRealShare;
         
         // uint wethAmountToSwap = (portfolioValue * chainSelectorTotalShares) /
         //     100e18;
-        uint extraWethAmount = wethAmountToSwap - chainValue;
+        uint extraWethAmount = negativePercentage*extraWethByNonce[nonce]/100e18;
+        // uint extraWethAmount = wethAmountToSwap - chainValue;
         // uint extraWethAmount = chainValue;
         
         address crossChainIndexFactory = crossChainFactoryBySelector(
