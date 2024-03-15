@@ -11,7 +11,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
 import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/CrossChainVault";
 import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
   
-  describe("TEST REWEIGHT CR5", function () {
+  describe("TEST REWEIGHT ANFI", function () {
     // We define a fixture to reuse the same setup in every test.
     // We use loadFixture to run this setup once, snapshot that state,
     // and reset Hardhat Network to that snapshot in every test.
@@ -78,28 +78,20 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
     
   
     describe("Deployment", function () {
+      
       it("Test manual swap", async function () {
         
       });
 
       it("Test factory single swap", async function () {
+        //update oracle list
         const assetList = [
           token0.address,
-          token1.address,
-          token2.address,
-          token3.address,
-          token4.address
+          token1.address
         ]
-        const percentages = [
-            "30000000000000000000", 
-            "20000000000000000000",
-            "10000000000000000000",
-            "10000000000000000000",
-            "30000000000000000000",
-        ]
-        const swapVersions = ["3", "3", "3", "3", "3"]
-        const chainSelectors = ["1", "1", "1", "2", "2"]
-
+        const percentages = ["70000000000000000000", "30000000000000000000"]
+        const swapVersions = ["3", "3"]
+        const chainSelectors = ["1", "2"]
         await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, percentages, swapVersions, chainSelectors)
         //adding liquidity
         const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
@@ -107,9 +99,6 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
 
         await addLiquidityEth(owner, weth9, nft, token0, "1", "1000")
         await addLiquidityEth(owner, weth9, nft, token1, "1", "1000")
-        await addLiquidityEth(owner, weth9, nft, token2, "1", "1000")
-        await addLiquidityEth(owner, weth9, nft, token3, "1", "1000")
-        await addLiquidityEth(owner, weth9, nft, token4, "1", "1000")
         await addLiquidityEth(owner, weth9, nft, crossChainToken, "1", "2000")
         await addLiquidityEth(owner, weth9, nft, linkToken, "10", "10000")
         await linkToken.transfer(crossChainIndexFactory.address, ethers.utils.parseEther("10"))
@@ -123,10 +112,7 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
         console.log("ccVault balance after swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         console.log("index token balance after swap:", ethers.utils.formatEther(await indexToken.balanceOf(owner.address)))
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
-        console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
-        console.log("token2 after swap:", ethers.utils.formatEther(await token2.balanceOf(indexToken.address)))
-        console.log("token3 after swap:", ethers.utils.formatEther(await token3.balanceOf(crossChainVault.address)))
-        console.log("token4 after swap:", ethers.utils.formatEther(await token4.balanceOf(crossChainVault.address)))
+        console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(crossChainVault.address)))
         await network.provider.send("evm_mine");
         console.log("chain 1 portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
         
@@ -136,34 +122,21 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
         console.log("portfolio values count:", ethers.utils.formatEther(await indexFactoryBalancer.portfolioTotalValueByNonce(1)))
         console.log("first token1 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token0.address)))
         console.log("first token2 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token1.address)))
-        console.log("first token3 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token2.address)))
-        console.log("first token4 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token3.address)))
-        console.log("first‌ ‌token5 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token4.address)))
         console.log("first chainValueByNonce:", ethers.utils.formatEther(await indexFactoryBalancer.chainValueByNonce(1, 1)))
         console.log("second chainValueByNonce:", ethers.utils.formatEther(await indexFactoryBalancer.chainValueByNonce(1, 2)))
         //
-        const newPercentages = [
-          "20000000000000000000", 
-          "20000000000000000000",
-          "10000000000000000000",
-          "20000000000000000000",
-          "30000000000000000000"
-        ]
+        const newPercentages = ["60000000000000000000", "40000000000000000000"]
         await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, newPercentages, swapVersions, chainSelectors)
         //
         console.log("first reweighting action...");
         await indexFactoryBalancer.firstReweightAction()
         console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactoryBalancer.extraWethByNonce(1)))
         console.log("balancer weth balance:", ethers.utils.formatEther(await weth9.balanceOf(indexToken.address)))
-        console.log("reweightExtraPercentage:", ethers.utils.formatEther(await indexFactoryBalancer.reweightExtraPercentage(1)))
         await indexFactoryBalancer.secondReweightAction()
         console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactoryBalancer.reweightWethValueByNonce(1)))
         await indexFactoryBalancer.askValues();
         console.log("second token1 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token0.address)))
         console.log("second token2 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token1.address)))
-        console.log("second token3 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token2.address)))
-        console.log("second token4 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token3.address)))
-        console.log("second token5 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token4.address)))
         console.log("balancer weth balance:", ethers.utils.formatEther(await weth9.balanceOf(indexToken.address)))
         return;
       });
