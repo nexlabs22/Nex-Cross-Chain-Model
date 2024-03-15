@@ -379,7 +379,7 @@ export default function DCACalculatorTest() {
 		const tableData = dataToExport
 
 		const userDetails = {
-			initialAmount: '$' + initialAmount,
+			initialAmount: '$' + (isChecked ? initialAmount : initialAmount2),
 			monthlyInvestment: '$' + monthlyInvestment,
 			selectedStartMonth,
 			selectedStartYear: selectedStartYear.toString(),
@@ -387,7 +387,7 @@ export default function DCACalculatorTest() {
 			selectedEndYear: selectedEndYear.toString(),
 		}
 
-		exportDCATable(tableData, 'portrait', fileName, userDetails)
+		exportDCATable(tableData, 'portrait', fileName, userDetails, isChecked)
 	}
 
 	function exportCSV() {
@@ -472,7 +472,7 @@ export default function DCACalculatorTest() {
 										mode == 'dark'
 											? ' bg-transparent border border-whiteText-500 text-whiteText-500 placeholder:text-whiteText-500'
 											: ' text-blackText-500 bg-whiteBackground-50 placeholder:text-blackText-500'
-									} interMedium placeholder:text-2xl shadow-sm shadow-black rounded-lg p-2 ${!isChecked?'cursor-not-allowed':'cursor-pointer'}`}
+									} interMedium placeholder:text-2xl shadow-sm shadow-black rounded-lg p-2 ${!isChecked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
 									onChange={changeInitialAmount}
 									disabled={!isChecked}
 									value={isChecked ? initialAmount : initialAmount2}
@@ -612,7 +612,8 @@ export default function DCACalculatorTest() {
 										? 'bg-cover border-transparent bg-center bg-no-repeat'
 										: 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 hover:from-colorFour-500 hover:to-colorSeven-500/90'
 								} active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-11/12 px-2 py-3 rounded-lg
-										cursor-pointer `}
+								${!isChecked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+								disabled={!isChecked}
 								style={{
 									boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
