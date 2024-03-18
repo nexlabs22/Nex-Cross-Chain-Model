@@ -32,6 +32,7 @@ contract IndexFactoryStorage is
     
     IndexToken public indexToken;
     address public indexFactory;
+    address public indexFactoryBalancer;
 
     mapping(uint64 => address) public crossChainToken;
     mapping(uint64 => address) public crossChainFactoryBySelector;
@@ -108,8 +109,8 @@ contract IndexFactoryStorage is
 
     //nonce
     
-    modifier onlyIndexFactory() {
-        require(msg.sender == indexFactory, "Caller is not index factory contract.");
+    modifier onlyIndexFactoryBalancer() {
+        require(msg.sender == indexFactoryBalancer, "Caller is not index factory balancer contract.");
         _;
     }
 
@@ -157,7 +158,7 @@ contract IndexFactoryStorage is
         return oracleChainSelectors[oracleFilledCount].length;
     }
     function currentChainSelectorsCount() public view returns(uint){
-        return oracleChainSelectors[oracleFilledCount].length;
+        return currentChainSelectors[currentFilledCount].length;
     }
 
     function oracleChainSelecotrTokensCount(uint64 _chainSelector) public view returns(uint){
@@ -210,6 +211,10 @@ contract IndexFactoryStorage is
 
     function setIndexFactory(address _indexFactory) public onlyOwner {
         indexFactory = _indexFactory;
+    }
+
+    function setIndexFactoryBalancer(address _indexFactoryBalancer) public onlyOwner {
+        indexFactoryBalancer = _indexFactoryBalancer;
     }
 
     
@@ -334,6 +339,8 @@ contract IndexFactoryStorage is
     public
     onlyOwner
   {
+    insertOracleData(_tokens, _marketShares, _swapVersions, _chainSelectors);
+    /**
     address[] memory tokens0 = _tokens;
     uint[] memory marketShares0 = _marketShares;
     uint[] memory swapVersions0 = _swapVersions;
@@ -357,6 +364,7 @@ contract IndexFactoryStorage is
         totalCurrentList  = tokens0.length;
     }
     lastUpdateTime = block.timestamp;
+    */
     }
 
 
@@ -393,6 +401,7 @@ contract IndexFactoryStorage is
             tokenCurrentMarketShare[tokens0[i]] = marketShares0[i];
             tokenCurrentListIndex[tokens0[i]] = i;
             
+            // uint64 token
             // current chain selector actions
             
             if(!isCurrentChainSelectorStored[currentFilledCount][chainSelectors0[i]]){
@@ -414,11 +423,26 @@ contract IndexFactoryStorage is
 
 
 
-    function updateCurrentList() public onlyIndexFactory {
+    function updateCurrentList() public onlyIndexFactoryBalancer {
+        currentFilledCount +=1;
         for(uint i =0; i < totalOracleList; i++){
+            // currentList[i] = oracleList[i];
+            // tokenCurrentMarketShare[oracleList[i]] = tokenOracleMarketShare[oracleList[i]];
+            // tokenCurrentListIndex[oracleList[i]] = tokenOracleListIndex[oracleList[i]];
+
             currentList[i] = oracleList[i];
-            tokenCurrentMarketShare[oracleList[i]] = tokenOracleMarketShare[oracleList[i]];
-            tokenCurrentListIndex[oracleList[i]] = tokenOracleListIndex[oracleList[i]];
+            tokenCurrentMarketShare[currentList[i]] = tokenOracleMarketShare[oracleList[i]];
+            tokenCurrentListIndex[currentList[i]] = tokenOracleListIndex[oracleList[i]];
+            
+            // current chain selector actions
+            uint64 chainSelector = tokenChainSelector[oracleList[i]];
+            if(!isCurrentChainSelectorStored[currentFilledCount][chainSelector]){
+                isCurrentChainSelectorStored[currentFilledCount][chainSelector] = true;
+                currentChainSelectors[currentFilledCount].push(chainSelector);
+            }
+            currentChainSelecotrTokens[currentFilledCount][chainSelector].push(oracleList[i]);
+            currentChainSelecotrTotalShares[currentFilledCount][chainSelector] += tokenOracleMarketShare[oracleList[i]];
+            currentChainSelecotrTokenShares[currentFilledCount][chainSelector].push(tokenOracleMarketShare[oracleList[i]]);
         }
         totalCurrentList = totalOracleList;
     }

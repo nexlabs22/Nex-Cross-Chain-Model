@@ -1,7 +1,7 @@
 
 import { ContractReceipt, ContractTransaction, Signer, constants } from "ethers";
 import { ethers } from "hardhat";
-import { BasicMessageReceiver, BasicTokenSender, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token, IndexFactoryStorage } from "../typechain-types";
+import { BasicMessageReceiver, BasicTokenSender, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token, IndexFactoryStorage, IndexFactoryBalancer } from "../typechain-types";
 import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { expect } from 'chai';
 import { BasicMessageSender } from "../typechain-types/contracts/ccip";
@@ -24,6 +24,7 @@ import { deployment, updateOracleList } from "./Deployer";
     let otherAccount : any
     let token0 : Token
     let token1 : Token
+    let token2 : Token
     let weth9: IWETH
     let v3Factory: IUniswapV3Factory
     let v3Router: ISwapRouter
@@ -31,6 +32,7 @@ import { deployment, updateOracleList } from "./Deployer";
     let indexToken : IndexToken
     let indexFactoryStorage : IndexFactoryStorage
     let indexFactory : IndexFactory
+    let indexFactoryBalancer : IndexFactoryBalancer
     let oracle : MockApiOracle
     let ethPriceOracle: MockV3Aggregator
 
@@ -46,6 +48,7 @@ import { deployment, updateOracleList } from "./Deployer";
       otherAccount = deploymentObject.otherAccount,
       token0 = deploymentObject.token0,
       token1 = deploymentObject.token1,
+      token2 = deploymentObject.token2,
       // token2 = deploymentObject.token2,
       // token3 = deploymentObject.token3,
       // token4 = deploymentObject.token4,
@@ -56,6 +59,7 @@ import { deployment, updateOracleList } from "./Deployer";
       nft = deploymentObject.nft,
       indexToken = deploymentObject.indexToken,
       indexFactoryStorage = deploymentObject.indexFactoryStorage,
+      indexFactoryBalancer = deploymentObject.indexFactoryBalancer,
       indexFactory = deploymentObject.indexFactory,
       // crossChainVault = deploymentObject.crossChainVault,
       // crossChainIndexFactory = deploymentObject.crossChainIndexFactory,
@@ -77,38 +81,78 @@ import { deployment, updateOracleList } from "./Deployer";
         const chainSelectors = ["1", "2"]
         await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, percentages, swapVersions, chainSelectors)
         //check oracle list
-        expect(await indexFactory.oracleList("0")).to.be.equal(token0.address)
-        expect(await indexFactory.oracleList("1")).to.be.equal(token1.address)
-        expect(await indexFactory.currentList("0")).to.be.equal(token0.address)
-        expect(await indexFactory.currentList("1")).to.be.equal(token1.address)
-        expect(ethers.utils.formatEther(await indexFactory.tokenOracleMarketShare(token0.address))).to.be.equal("70.0")
-        expect(ethers.utils.formatEther(await indexFactory.tokenOracleMarketShare(token1.address))).to.be.equal("30.0")
-        expect(ethers.utils.formatEther(await indexFactory.tokenCurrentMarketShare(token0.address))).to.be.equal("70.0")
-        expect(ethers.utils.formatEther(await indexFactory.tokenCurrentMarketShare(token1.address))).to.be.equal("30.0")
-        expect(await indexFactory.tokenSwapVersion(token0.address)).to.be.equal("3")
-        expect(await indexFactory.tokenSwapVersion(token1.address)).to.be.equal("3")
-        expect(await indexFactory.tokenChainSelector(token0.address)).to.be.equal("1")
-        expect(await indexFactory.tokenChainSelector(token1.address)).to.be.equal("2")
+        expect(await indexFactoryStorage.oracleList("0")).to.be.equal(token0.address)
+        expect(await indexFactoryStorage.oracleList("1")).to.be.equal(token1.address)
+        expect(await indexFactoryStorage.currentList("0")).to.be.equal(token0.address)
+        expect(await indexFactoryStorage.currentList("1")).to.be.equal(token1.address)
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenOracleMarketShare(token0.address))).to.be.equal("70.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenOracleMarketShare(token1.address))).to.be.equal("30.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenCurrentMarketShare(token0.address))).to.be.equal("70.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenCurrentMarketShare(token1.address))).to.be.equal("30.0")
+        expect(await indexFactoryStorage.tokenSwapVersion(token0.address)).to.be.equal("3")
+        expect(await indexFactoryStorage.tokenSwapVersion(token1.address)).to.be.equal("3")
+        expect(await indexFactoryStorage.tokenChainSelector(token0.address)).to.be.equal("1")
+        expect(await indexFactoryStorage.tokenChainSelector(token1.address)).to.be.equal("2")
         //chainselotor stors
-        expect(await indexFactory.oracleChainSelectorsCount()).to.be.equal("2")
-        expect(await indexFactory.currentChainSelectorsCount()).to.be.equal("2")
-        expect(await indexFactory.oracleChainSelectors("0")).to.be.equal("1")
-        expect(await indexFactory.oracleChainSelectors("1")).to.be.equal("2")
-        expect(await indexFactory.currentChainSelectors("0")).to.be.equal("1")
-        expect(await indexFactory.currentChainSelectors("1")).to.be.equal("2")
-        expect(await indexFactory.oracleChainSelecotrTokensCount("1")).to.be.equal("1")
-        expect(await indexFactory.oracleChainSelecotrTokensCount("2")).to.be.equal("1")
-        expect(await indexFactory.currentChainSelecotrTokensCount("1")).to.be.equal("1")
-        expect(await indexFactory.currentChainSelecotrTokensCount("2")).to.be.equal("1")
-        expect(await indexFactory.oracleChainSelecotrTokens("1", "0")).to.be.equal(token0.address)
-        expect(await indexFactory.oracleChainSelecotrTokens("2", "0")).to.be.equal(token1.address)
-        expect(await indexFactory.currentChainSelecotrTokens("1", "0")).to.be.equal(token0.address)
-        expect(await indexFactory.currentChainSelecotrTokens("2", "0")).to.be.equal(token1.address)
-        expect(ethers.utils.formatEther(await indexFactory.currentChainSelecotrTotalShares("1"))).to.be.equal("70.0")
-        expect(ethers.utils.formatEther(await indexFactory.currentChainSelecotrTotalShares("2"))).to.be.equal("30.0")
-        // expect(await indexFactory.currentChainSelectors("1")).to.be.equal("2")
-        // expect(await indexFactory.currentChainSelectorsCount()).to.be.equal("2")
+        expect(await indexFactoryStorage.oracleChainSelectorsCount()).to.be.equal("2")
+        expect(await indexFactoryStorage.currentChainSelectorsCount()).to.be.equal("2")
+        expect(await indexFactoryStorage.oracleChainSelectors("1", "0")).to.be.equal("1")
+        expect(await indexFactoryStorage.oracleChainSelectors("1", "1")).to.be.equal("2")
+        expect(await indexFactoryStorage.currentChainSelectors("1", "0")).to.be.equal("1")
+        expect(await indexFactoryStorage.currentChainSelectors("1", "1")).to.be.equal("2")
+        expect(await indexFactoryStorage.oracleChainSelecotrTokensCount("1")).to.be.equal("1")
+        expect(await indexFactoryStorage.oracleChainSelecotrTokensCount("2")).to.be.equal("1")
+        expect(await indexFactoryStorage.currentChainSelecotrTokensCount("1")).to.be.equal("1")
+        expect(await indexFactoryStorage.currentChainSelecotrTokensCount("2")).to.be.equal("1")
+        expect(await indexFactoryStorage.oracleChainSelecotrTokens("1", "1", "0")).to.be.equal(token0.address)
+        expect(await indexFactoryStorage.oracleChainSelecotrTokens("1", "2", "0")).to.be.equal(token1.address)
+        expect(await indexFactoryStorage.currentChainSelecotrTokens("1", "1", "0")).to.be.equal(token0.address)
+        expect(await indexFactoryStorage.currentChainSelecotrTokens("1", "2", "0")).to.be.equal(token1.address)
+        expect(ethers.utils.formatEther(await indexFactoryStorage.currentChainSelecotrTotalShares("1", "1"))).to.be.equal("70.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.currentChainSelecotrTotalShares("1", "2"))).to.be.equal("30.0")
+        
+        //check oracle update
 
+        const newAssetList = [
+            token0.address,
+            token2.address
+        ]
+        const newPercentages = ["60000000000000000000", "40000000000000000000"]
+        const newChainSelectors = ["1", "1"]
+
+        await updateOracleList(linkToken, indexFactoryStorage, oracle, newAssetList, newPercentages, swapVersions, newChainSelectors)
+
+        //check oracle list
+        expect(await indexFactoryStorage.oracleList("0")).to.be.equal(token0.address)
+        expect(await indexFactoryStorage.oracleList("1")).to.be.equal(token2.address)
+        expect(await indexFactoryStorage.currentList("0")).to.be.equal(token0.address)
+        expect(await indexFactoryStorage.currentList("1")).to.be.equal(token1.address)
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenOracleMarketShare(token0.address))).to.be.equal("60.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenOracleMarketShare(token2.address))).to.be.equal("40.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenCurrentMarketShare(token0.address))).to.be.equal("70.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenCurrentMarketShare(token1.address))).to.be.equal("30.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.tokenCurrentMarketShare(token2.address))).to.be.equal("0.0")
+        expect(await indexFactoryStorage.tokenSwapVersion(token0.address)).to.be.equal("3")
+        expect(await indexFactoryStorage.tokenSwapVersion(token1.address)).to.be.equal("3")
+        expect(await indexFactoryStorage.tokenChainSelector(token0.address)).to.be.equal("1")
+        expect(await indexFactoryStorage.tokenChainSelector(token1.address)).to.be.equal("2")
+        expect(await indexFactoryStorage.tokenChainSelector(token2.address)).to.be.equal("1")
+        //chainselotor stors
+        expect(await indexFactoryStorage.oracleChainSelectorsCount()).to.be.equal("1")
+        expect(await indexFactoryStorage.currentChainSelectorsCount()).to.be.equal("2")
+        expect(await indexFactoryStorage.oracleChainSelectors("2", "0")).to.be.equal("1")
+        expect(await indexFactoryStorage.currentChainSelectors("1", "0")).to.be.equal("1")
+        expect(await indexFactoryStorage.currentChainSelectors("1", "1")).to.be.equal("2")
+        expect(await indexFactoryStorage.oracleChainSelecotrTokensCount("1")).to.be.equal("2")
+        expect(await indexFactoryStorage.oracleChainSelecotrTokensCount("2")).to.be.equal("0")
+        expect(await indexFactoryStorage.currentChainSelecotrTokensCount("1")).to.be.equal("1")
+        expect(await indexFactoryStorage.currentChainSelecotrTokensCount("2")).to.be.equal("1")
+        expect(await indexFactoryStorage.oracleChainSelecotrTokens("2", "1", "0")).to.be.equal(token0.address)
+        expect(await indexFactoryStorage.oracleChainSelecotrTokens("2", "1", "1")).to.be.equal(token2.address)
+        expect(await indexFactoryStorage.currentChainSelecotrTokens("1", "1", "0")).to.be.equal(token0.address)
+        expect(await indexFactoryStorage.currentChainSelecotrTokens("1", "2", "0")).to.be.equal(token1.address)
+        expect(ethers.utils.formatEther(await indexFactoryStorage.currentChainSelecotrTotalShares("1", "1"))).to.be.equal("70.0")
+        expect(ethers.utils.formatEther(await indexFactoryStorage.currentChainSelecotrTotalShares("1", "2"))).to.be.equal("30.0")
       });
 
       

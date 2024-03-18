@@ -27,6 +27,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let token2 : Token
     let token3 : Token
     let token4 : Token
+    let token5 : Token
     let crossChainToken : Token
     let weth9: IWETH
     let v3Factory: IUniswapV3Factory
@@ -37,7 +38,9 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let indexFactory : IndexFactory
     let indexFactoryBalancer : IndexFactoryBalancer
     let crossChainVault : CrossChainVault
+    let crossChainVault2 : CrossChainVault
     let crossChainIndexFactory : CrossChainIndexFactory
+    let crossChainIndexFactory2 : CrossChainIndexFactory
     let oracle : MockApiOracle
     let ethPriceOracle: MockV3Aggregator
 
@@ -60,6 +63,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       token2 = await Token.deploy(ethers.utils.parseEther("100000"));
       token3 = await Token.deploy(ethers.utils.parseEther("100000"));
       token4 = await Token.deploy(ethers.utils.parseEther("100000"));
+      token5 = await Token.deploy(ethers.utils.parseEther("100000"));
       crossChainToken = await Token.deploy(ethers.utils.parseEther("100000"));
 
       const BasicMessageSender = await ethers.getContractFactory("BasicMessageSender");
@@ -114,6 +118,17 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             v3Router.address, //router v2
             v3Factory.address //factory v2
       )
+      // crossChainVault2 = await CrossChainVault.deploy()
+      // await crossChainVault2.initialize(
+      //       ethers.constants.AddressZero,
+      //       //swap addresses
+      //       weth9.address,
+      //       v3Router.address,//quoter
+      //       v3Router.address,
+      //       v3Factory.address,
+      //       v3Router.address, //router v2
+      //       v3Factory.address //factory v2
+      // )
 
       const jobId = ethers.utils.toUtf8Bytes("29fa9aa13bf1468788b7cc4a500a45b8"); //test job id
       const fee = "100000000000000000" // fee = 0.1 linkToken
@@ -123,7 +138,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       crossChainIndexFactory = await CrossChainIndexFactory.deploy()
 
       await crossChainIndexFactory.initialize(
-            "1",
+            "2",
             crossChainVault.address,
             linkToken.address,
             mockRouter.address,
@@ -134,6 +149,22 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             v3Router.address, //v2
             v3Factory.address //v2
       )
+
+
+      // crossChainIndexFactory2 = await CrossChainIndexFactory.deploy({gasLimit: 3000000})
+
+      // await crossChainIndexFactory2.initialize(
+      //       "3",
+      //       crossChainVault.address,
+      //       linkToken.address,
+      //       mockRouter.address,
+      //       //swap addresses
+      //       weth9.address,
+      //       v3Router.address,
+      //       v3Factory.address,
+      //       v3Router.address, //v2
+      //       v3Factory.address //v2
+      // )
       
 
       const IndexFactoryStorage = await ethers.getContractFactory("IndexFactoryStorage");
@@ -190,6 +221,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       await indexToken.setMinter(indexFactoryBalancer.address, true)
       await indexFactoryStorage.setCrossChainToken("2", crossChainToken.address)
       await indexFactoryStorage.setCrossChainFactory(crossChainIndexFactory.address, "2");
+      await indexFactoryStorage.setIndexFactoryBalancer(indexFactoryBalancer.address);
       await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address)
       await crossChainIndexFactory.setCrossChainToken("1", crossChainToken.address)
       await crossChainVault.setFactory(crossChainIndexFactory.address);
@@ -213,6 +245,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         token2,
         token3,
         token4,
+        token5,
         crossChainToken,
         weth9,
         v3Factory,

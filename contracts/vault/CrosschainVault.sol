@@ -150,5 +150,9 @@ contract CrossChainVault is
             }
     }
 
+    function wethTransfer(address to, uint amount) public onlyIndexFactory {
+        weth.transfer(to, amount);
+    }
+
     
 }

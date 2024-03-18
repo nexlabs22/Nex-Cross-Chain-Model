@@ -357,5 +357,9 @@ contract IndexToken is
             }
     }
 
+    function wethTransfer(address to, uint amount) public onlyMinter {
+        weth.transfer(to, amount);
+    }
+
     
 }

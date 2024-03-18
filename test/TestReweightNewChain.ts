@@ -1,4 +1,4 @@
-
+    
 import { ContractReceipt, ContractTransaction, Signer, constants } from "ethers";
 import { ethers, network } from "hardhat";
 import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexFactoryBalancer, IndexFactoryStorage, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
@@ -11,7 +11,7 @@ import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
 import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/CrossChainVault";
 import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
   
-  describe("TEST REWEIGHT CR5", function () {
+  describe("TEST REWEIGHT New Token", function () {
     // We define a fixture to reuse the same setup in every test.
     // We use loadFixture to run this setup once, snapshot that state,
     // and reset Hardhat Network to that snapshot in every test.
@@ -27,6 +27,7 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
     let token2 : Token
     let token3 : Token
     let token4 : Token
+    let token5 : Token
     let crossChainToken : Token
     let weth9: IWETH
     let v3Factory: IUniswapV3Factory
@@ -58,6 +59,7 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
       token2 = deploymentObject.token2,
       token3 = deploymentObject.token3,
       token4 = deploymentObject.token4,
+      token5 = deploymentObject.token5,
       crossChainToken = deploymentObject.crossChainToken,
       weth9 = deploymentObject.weth9,
       v3Factory = deploymentObject.v3Factory,
@@ -98,7 +100,7 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
             "30000000000000000000",
         ]
         const swapVersions = ["3", "3", "3", "3", "3"]
-        const chainSelectors = ["1", "1", "1", "2", "2"]
+        const chainSelectors = ["1", "1", "1", "1", "1"]
 
         await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, percentages, swapVersions, chainSelectors)
         //adding liquidity
@@ -110,6 +112,7 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
         await addLiquidityEth(owner, weth9, nft, token2, "1", "1000")
         await addLiquidityEth(owner, weth9, nft, token3, "1", "1000")
         await addLiquidityEth(owner, weth9, nft, token4, "1", "1000")
+        await addLiquidityEth(owner, weth9, nft, token5, "1", "1000")
         await addLiquidityEth(owner, weth9, nft, crossChainToken, "1", "2000")
         await addLiquidityEth(owner, weth9, nft, linkToken, "10", "10000")
         await linkToken.transfer(crossChainIndexFactory.address, ethers.utils.parseEther("10"))
@@ -125,8 +128,9 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
         console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
         console.log("token2 after swap:", ethers.utils.formatEther(await token2.balanceOf(indexToken.address)))
-        console.log("token3 after swap:", ethers.utils.formatEther(await token3.balanceOf(crossChainVault.address)))
-        console.log("token4 after swap:", ethers.utils.formatEther(await token4.balanceOf(crossChainVault.address)))
+        console.log("token3 after swap:", ethers.utils.formatEther(await token3.balanceOf(indexToken.address)))
+        console.log("token4 after swap:", ethers.utils.formatEther(await token4.balanceOf(indexToken.address)))
+        console.log("token5 after swap:", ethers.utils.formatEther(await token5.balanceOf(crossChainVault.address)))
         await network.provider.send("evm_mine");
         console.log("chain 1 portfolio after swap:", ethers.utils.formatEther(await indexFactory.getPortfolioBalance()))
         
@@ -134,13 +138,24 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
         await indexFactoryBalancer.askValues();
         console.log("token values count:", Number(await indexFactoryBalancer.updatedTokensValueCount(1)))
         console.log("portfolio values count:", ethers.utils.formatEther(await indexFactoryBalancer.portfolioTotalValueByNonce(1)))
-        console.log("first token1 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token0.address)))
-        console.log("first token2 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token1.address)))
-        console.log("first token3 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token2.address)))
-        console.log("first token4 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token3.address)))
-        console.log("first‌ ‌token5 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token4.address)))
+        console.log("first token0 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token0.address)))
+        console.log("first token1 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token1.address)))
+        console.log("first token2 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token2.address)))
+        console.log("first token3 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token3.address)))
+        console.log("first‌ ‌token4 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token4.address)))
+        console.log("first‌ ‌token5 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(1, token5.address)))
         console.log("first chainValueByNonce:", ethers.utils.formatEther(await indexFactoryBalancer.chainValueByNonce(1, 1)))
         console.log("second chainValueByNonce:", ethers.utils.formatEther(await indexFactoryBalancer.chainValueByNonce(1, 2)))
+
+        const newAssetList = [
+            token0.address,
+            token1.address,
+            token2.address,
+            token3.address,
+            token5.address
+          ]
+
+        const newChainSelectors = ["1", "1", "1", "1", "2"]
         //
         const newPercentages = [
           "20000000000000000000", 
@@ -149,8 +164,11 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
           "20000000000000000000",
           "30000000000000000000"
         ]
-        await updateOracleList(linkToken, indexFactoryStorage, oracle, assetList, newPercentages, swapVersions, chainSelectors)
+        await updateOracleList(linkToken, indexFactoryStorage, oracle, newAssetList, newPercentages, swapVersions, newChainSelectors)
         //
+        
+        console.log("currentChainSelectorsCount:", Number(await indexFactoryStorage.currentChainSelectorsCount()))
+
         console.log("first reweighting action...");
         await indexFactoryBalancer.firstReweightAction()
         console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactoryBalancer.extraWethByNonce(1)))
@@ -161,19 +179,25 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
         await indexFactoryBalancer.secondReweightAction()
         console.log("Reweight Weth Value By Nonce:", ethers.utils.formatEther(await indexFactoryBalancer.reweightWethValueByNonce(1)))
         await indexFactoryBalancer.askValues();
-        console.log("second token1 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token0.address)))
-        console.log("second token2 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token1.address)))
-        console.log("second token3 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token2.address)))
-        console.log("second token4 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token3.address)))
-        console.log("second token5 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token4.address)))
+        console.log("second token0 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token0.address)))
+        console.log("second token1 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token1.address)))
+        console.log("second token2 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token2.address)))
+        console.log("second token3 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token3.address)))
+        console.log("second token4 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token4.address)))
+        console.log("second token5 value:", ethers.utils.formatEther(await indexFactoryBalancer.tokenValueByNonce(2, token5.address)))
         console.log("balancer weth balance:", ethers.utils.formatEther(await weth9.balanceOf(indexToken.address)))
 
         console.log("token0 after swap:", ethers.utils.formatEther(await token0.balanceOf(indexToken.address)))
         console.log("token1 after swap:", ethers.utils.formatEther(await token1.balanceOf(indexToken.address)))
         console.log("token2 after swap:", ethers.utils.formatEther(await token2.balanceOf(indexToken.address)))
-        console.log("token3 after swap:", ethers.utils.formatEther(await token3.balanceOf(crossChainVault.address)))
-        console.log("token4 after swap:", ethers.utils.formatEther(await token4.balanceOf(crossChainVault.address)))
-        return;
+        console.log("token3 after swap:", ethers.utils.formatEther(await token3.balanceOf(indexToken.address)))
+        console.log("token4 after swap:", ethers.utils.formatEther(await token4.balanceOf(indexToken.address)))
+        console.log("token5 after swap:", ethers.utils.formatEther(await token5.balanceOf(crossChainVault.address)))
+        
+        //chainselotor stors
+        expect(await indexFactoryStorage.oracleChainSelectorsCount()).to.be.equal("2")
+        expect(await indexFactoryStorage.currentChainSelectorsCount()).to.be.equal("2")
+        
       });
       
     });
