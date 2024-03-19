@@ -576,6 +576,9 @@ contract CrossChainIndexFactory is
         uint[] memory zeroArr = new uint[](0);
         uint[] memory tokenValueArr = new uint[](targetAddresses.length);
         for (uint i = 0; i < targetAddresses.length; i++) {
+            if(targetAddresses[i] == address(weth)){
+            tokenValueArr[i] = IERC20(targetAddresses[i]).balanceOf(address(crossChainVault));
+            }else{
             uint tokenValue = getAmountOut(
                 targetAddresses[i],
                 address(weth),
@@ -583,6 +586,7 @@ contract CrossChainIndexFactory is
                 3
             );
             tokenValueArr[i] = tokenValue;
+            }
         }
         bytes memory data = abi.encode(
             2,
@@ -661,14 +665,14 @@ contract CrossChainIndexFactory is
     ) internal returns (uint) {
         ReweightActionData memory swapData;
         // swapData.chainSelectorCurrentTokensCount = data.chainSelectorCurrentTokensCount;
-
+        uint initialWethBalance = weth.balanceOf(address(crossChainVault));
         for (uint i = 0; i < swapData.chainSelectorCurrentTokensCount; i++) {
             address tokenAddress = currentTokens[i];
             uint tokenMarketShare = oracleTokenShares[i];
             // swapData.chainSelectorTotalShares += tokenMarketShare;
             uint wethAmount;
             if(tokenAddress == address(weth)){
-            wethAmount = weth.balanceOf(address(crossChainVault));
+            wethAmount = initialWethBalance;
             }else{
             wethAmount = _swapSingle(
                 tokenAddress,
@@ -761,12 +765,13 @@ contract CrossChainIndexFactory is
     ) internal {
         uint chainSelectorTotalShares = extraData[1];
         uint chainSelectorCurrentTokensCount = currentTokens.length;
+        uint initialWethBalance = weth.balanceOf(address(crossChainVault));
         uint swapWethAmount;
         for (uint i = 0; i < chainSelectorCurrentTokensCount; i++) {
             address tokenAddress = currentTokens[i];
             uint wethAmount;
             if(tokenAddress == address(weth)){
-            wethAmount = weth.balanceOf(address(crossChainVault));
+            wethAmount =initialWethBalance;
             }else{
             wethAmount = _swapSingle(
                 tokenAddress,
@@ -783,7 +788,7 @@ contract CrossChainIndexFactory is
         for (uint i = 0; i < chainSelectorOracleTokensCount; i++) {
             address newTokenAddress = oracleTokens[i];
             uint newTokenMarketShare = oracleTokenShares[i];
-            if(newTokenAddress != newTokenAddress){
+            if(newTokenAddress != address(weth)){
             uint wethAmount = _swapSingle(
                 address(weth),
                 newTokenAddress,

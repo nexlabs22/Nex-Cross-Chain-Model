@@ -412,18 +412,23 @@ contract IndexFactory is
                     address tokenAddress = indexFactoryStorage.currentList(i);
                     uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
                     uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
+                    if(tokenAddress == address(weth)){
+                    issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
+                    .oldTokenValue = IERC20(tokenAddress).balanceOf(address(indexToken));
+                    }else{
                     issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
                     .oldTokenValue = getAmountOut(
                     tokenAddress,
                     address(weth),
                     IERC20(tokenAddress).balanceOf(address(indexToken)),
                     tokenSwapVersion
-                );
+                    );
+                    }
                 if(tokenAddress == address(weth)){
-                weth.transfer(
-                    address(indexToken), 
-                    (wethAmount*tokenMarketShare)/100e18
-                );
+                // weth.transfer(
+                //     address(indexToken), 
+                //     (wethAmount*tokenMarketShare)/100e18
+                // );
                 }else{
                 _swapSingle(
                     address(weth),
@@ -662,6 +667,9 @@ contract IndexFactory is
             uint64 tokenChainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
             uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
             if (tokenChainSelector == currentChainSelector) {
+            if(tokenAddress == address(weth)){
+            totalValue += IERC20(tokenAddress).balanceOf(address(indexToken));
+            }else{
             uint value = indexFactoryStorage.getAmountOut(
                 tokenAddress,
                 address(weth),
@@ -669,6 +677,7 @@ contract IndexFactory is
                 tokenSwapVersion
             );
             totalValue += value;
+            }
             }
         }
         return totalValue;

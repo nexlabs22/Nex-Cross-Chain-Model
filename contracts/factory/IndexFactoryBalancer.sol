@@ -408,13 +408,17 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
                         .tokenSwapVersion(tokenAddress);
                     uint tokenMarketShare = indexFactoryStorage
                         .tokenCurrentMarketShare(tokenAddress);
-
-                    uint value = getAmountOut(
+                    uint value;
+                    if(tokenAddress == address(weth)){
+                        value = IERC20(tokenAddress).balanceOf(address(indexToken));
+                    }else{
+                    value = getAmountOut(
                         tokenAddress,
                         address(weth),
                         IERC20(tokenAddress).balanceOf(address(indexToken)),
                         tokenSwapVersion
                     );
+                    }
                     portfolioTotalValueByNonce[updatePortfolioNonce] += value;
                     tokenValueByNonce[updatePortfolioNonce][
                         tokenAddress
@@ -533,6 +537,7 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
         }
     }
 
+    uint public test;
     function _swapExtraValueCurrentChain(
         uint i,
         uint nonce,
@@ -551,7 +556,7 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
         //     swapVars.tokenAddress
         // );
         swapVars.chainValue = chainValueByNonce[nonce][chainSelector];
-
+        uint initialWethBalance = weth.balanceOf(address(indexToken));
         for (uint j = 0; j < chainSelectorCurrentTokensCount; j++) {
             swapVars.tokenAddress = indexFactoryStorage.currentList(j);
             swapVars.tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(
@@ -560,23 +565,27 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
             swapVars.tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(
                 swapVars.tokenAddress
             );
-            uint wethAmount = _swapSingle(
+            uint wethAmount;
+            if(swapVars.tokenAddress == address(weth)){
+                wethAmount = initialWethBalance;
+            }else{
+            wethAmount = _swapSingle(
                 swapVars.tokenAddress,
                 address(weth),
                 IERC20(swapVars.tokenAddress).balanceOf(address(indexToken)),
                 address(indexToken),
                 swapVars.tokenSwapVersion
             );
+            }
             swapVars.swapWethAmount += wethAmount;
         }
 
         uint chainCurrentRealShare = (swapVars.chainValue * 100e18) /
             portfolioValue;
-        // uint wethAmountToSwap = (swapVars.swapWethAmount);
         uint wethAmountToSwap = (swapVars.swapWethAmount *
             chainSelectorTotalShares) / chainCurrentRealShare;
-        // test = chainCurrentRealShare;
         uint extraWethAmount = swapVars.swapWethAmount - wethAmountToSwap;
+        test = swapVars.swapWethAmount;
         for (uint k = 0; k < chainSelectorOracleTokensCount; k++) {
             address newTokenAddress = indexFactoryStorage.oracleList(k);
             uint newTokenSwapVersion = indexFactoryStorage.tokenSwapVersion(
@@ -584,7 +593,12 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
             );
             uint newTokenMarketShare = indexFactoryStorage
                 .tokenOracleMarketShare(newTokenAddress);
-            uint wethAmount = _swapSingle(
+            uint wethAmount;
+            if(newTokenAddress == address(weth)){
+            wethAmount = (wethAmountToSwap * newTokenMarketShare) /
+                    chainSelectorTotalShares;
+            }else{
+            wethAmount = _swapSingle(
                 address(weth),
                 newTokenAddress,
                 (wethAmountToSwap * newTokenMarketShare) /
@@ -592,6 +606,7 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
                 address(indexToken),
                 newTokenSwapVersion
             );
+            }
         }
         extraWethByNonce[nonce] += extraWethAmount;
         reweightExtraPercentage[nonce] += (chainCurrentRealShare -
@@ -675,8 +690,11 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
             swapVars.tokenAddress
         );
         swapVars.chainValue = chainValueByNonce[nonce][chainSelector];
-
+        uint initialWethBalance = IERC20(swapVars.tokenAddress).balanceOf(address(indexToken));
         for (uint j = 0; j < chainSelectorCurrentTokensCount; j++) {
+            if(swapVars.tokenAddress == address(weth)){
+                swapVars.wethAmount = initialWethBalance;
+            }else{
             swapVars.wethAmount = _swapSingle(
                 swapVars.tokenAddress,
                 address(weth),
@@ -684,6 +702,7 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
                 address(indexToken),
                 swapVars.tokenSwapVersion
             );
+            }
             swapVars.swapWethAmount += swapVars.wethAmount;
         }
 
@@ -702,6 +721,9 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
             );
             uint newTokenMarketShare = indexFactoryStorage
                 .tokenOracleMarketShare(newTokenAddress);
+            if(newTokenAddress == address(weth)){
+                swapVars.wethAmount = (swapVars.swapWethAmount * newTokenMarketShare) / chainSelectorTotalShares;
+            }else{
             swapVars.wethAmount = _swapSingle(
                 address(weth),
                 newTokenAddress,
@@ -710,6 +732,7 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
                 address(indexToken),
                 newTokenSwapVersion
             );
+            }
         }
     }
 
