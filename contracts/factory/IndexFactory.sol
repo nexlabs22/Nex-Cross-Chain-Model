@@ -160,106 +160,7 @@ contract IndexFactory is
     }
 
     
-    // function setCrossChainToken(uint64 _chainSelector, address _crossChainToken) public onlyOwner {
-    //     crossChainToken[_chainSelector] = _crossChainToken;
-    // }
-
-    // function setCrossChainFactory(
-    //     address _crossChainFactoryAddress,
-    //     uint64 _chainSelector
-    // ) public onlyOwner {
-    //     crossChainFactoryBySelector[_chainSelector] = _crossChainFactoryAddress;
-    // }
-
-    /*
-    function totalOracleList() public view returns (uint) {
-        return indexFactoryStorage.totalOracleList();
-    }
-
-    function totalCurrentList() public view returns (uint) {
-        return indexFactoryStorage.totalCurrentList();
-    }
-
-    function oracleList(uint _index) public view returns (address) {
-        return indexFactoryStorage.oracleList(_index);
-    }
-
-    function currentList(uint _index) public view returns (address) {
-        return indexFactoryStorage.currentList(_index);
-    }
-
-    function oracleChainSelectorsCount() public view returns(uint){
-        return indexFactoryStorage.oracleChainSelectorsCount();
-    }
-
-    function currentChainSelectorsCount() public view returns(uint){
-        return indexFactoryStorage.currentChainSelectorsCount();
-    }
-
-    function oracleChainSelectors(uint index) public view returns(uint64){
-        uint latestCount = indexFactoryStorage.oracleFilledCount();
-        return indexFactoryStorage.oracleChainSelectors(latestCount, index);
-    }
-    function currentChainSelectors(uint index) public view returns(uint64){
-        uint latestCount = indexFactoryStorage.currentFilledCount();
-        return indexFactoryStorage.currentChainSelectors(latestCount, index);
-    }
-
-    function oracleChainSelecotrTokensCount(uint64 _chainSelector) public view returns(uint){
-        return indexFactoryStorage.oracleChainSelecotrTokensCount(_chainSelector);
-    }
-    function currentChainSelecotrTokensCount(uint64 _chainSelector) public view returns(uint){
-        return indexFactoryStorage.currentChainSelecotrTokensCount(_chainSelector);
-    }
-
-    function oracleChainSelecotrTokens(uint64 _chainSelector, uint index) public view returns(address){
-        uint latestCount = indexFactoryStorage.oracleFilledCount();
-        return indexFactoryStorage.oracleChainSelecotrTokens(latestCount, _chainSelector, index);
-    }
-    function currentChainSelecotrTokens(uint64 _chainSelector, uint index) public view returns(address){
-        uint latestCount = indexFactoryStorage.currentFilledCount();
-        return indexFactoryStorage.currentChainSelecotrTokens(latestCount, _chainSelector, index);
-    }
-
-    // function oracleChainSelecotrTotalShares(uint64 _chainSelector, uint index) public view returns(uint){
-    //     uint latestCount = indexFactoryStorage.oracleFilledCount();
-    //     return indexFactoryStorage.oracleChainSelecotrTotalShares(latestCount, _chainSelector);
-    // }
-    function currentChainSelecotrTotalShares(uint64 _chainSelector) public view returns(uint){
-        uint latestCount = indexFactoryStorage.currentFilledCount();
-        return indexFactoryStorage.currentChainSelecotrTotalShares(latestCount, _chainSelector);
-    }
-
-    // function tokenOracleListIndex(address _address) public view returns (uint) {
-    //     return indexFactoryStorage.tokenOracleListIndex(_address);
-    // }
-
-    // function tokenCurrentListIndex(
-    //     address _address
-    // ) public view returns (uint) {
-    //     return indexFactoryStorage.tokenCurrentListIndex(_address);
-    // }
-
-    function tokenCurrentMarketShare(
-        address _address
-    ) public view returns (uint) {
-        return indexFactoryStorage.tokenCurrentMarketShare(_address);
-    }
-
-    function tokenOracleMarketShare(
-        address _address
-    ) public view returns (uint) {
-        return indexFactoryStorage.tokenOracleMarketShare(_address);
-    }
-
-    function tokenSwapVersion(address _address) public view returns (uint) {
-        return indexFactoryStorage.tokenSwapVersion(_address);
-    }
-
-    function tokenChainSelector(address _address) public view returns (uint64) {
-        return indexFactoryStorage.tokenChainSelector(_address);
-    }
-    */
+    
 
     function crossChainFactoryBySelector(uint64 _chainSelector) public view returns(address){
         return indexFactoryStorage.crossChainFactoryBySelector(_chainSelector);
@@ -271,6 +172,10 @@ contract IndexFactory is
 
     function priceInWei() public view returns (uint256) {
         return indexFactoryStorage.priceInWei();
+    }
+
+    function convertEthToUsd(uint _ethAmount) public view returns (uint256) {
+        return _ethAmount * priceInWei() / 1e18;
     }
 
     //Notice: newFee should be between 1 to 100 (0.01% - 1%)
@@ -414,15 +319,15 @@ contract IndexFactory is
                     uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
                     if(tokenAddress == address(weth)){
                     issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
-                    .oldTokenValue = IERC20(tokenAddress).balanceOf(address(indexToken));
+                    .oldTokenValue = convertEthToUsd(IERC20(tokenAddress).balanceOf(address(indexToken)));
                     }else{
                     issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
-                    .oldTokenValue = getAmountOut(
+                    .oldTokenValue = convertEthToUsd(getAmountOut(
                     tokenAddress,
                     address(weth),
                     IERC20(tokenAddress).balanceOf(address(indexToken)),
                     tokenSwapVersion
-                    );
+                    ));
                     }
                 if(tokenAddress == address(weth)){
                 // weth.transfer(
@@ -443,8 +348,7 @@ contract IndexFactory is
                     .newTokenValue =
                     issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
                         .oldTokenValue +
-                    (wethAmount * tokenMarketShare) /
-                    100e18;
+                    convertEthToUsd((wethAmount * tokenMarketShare)/100e18);
                 issuanceCompletedTokensCount[issuanceNonce] += 1;
                 }
             }else{
@@ -518,8 +422,10 @@ contract IndexFactory is
                 totalOldVaules -
                 indexToken.totalSupply();
         } else {
-            uint price = priceInWei();
-            amountToMint = (totalNewVaules * price) / 1e16;
+            // uint price = priceInWei();
+            // uint price = priceInWei();
+            // amountToMint = (totalNewVaules * price) / 1e16;
+            amountToMint = (totalNewVaules) / 100;
         }
         indexToken.mint(issuanceNonceRequester[_issuanceNonce], amountToMint);
         emit Issuanced(issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);

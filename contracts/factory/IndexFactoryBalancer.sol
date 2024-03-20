@@ -124,6 +124,10 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
         return indexFactoryStorage.priceInWei();
     }
 
+    function convertEthToUsd(uint _ethAmount) public view returns (uint256) {
+        return _ethAmount * priceInWei() / 1e18;
+    }
+
     //Notice: newFee should be between 1 to 100 (0.01% - 1%)
     function setFeeRate(uint8 _newFee) public onlyOwner {
         uint256 distance = block.timestamp - latestFeeUpdate;
@@ -419,14 +423,14 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
                         tokenSwapVersion
                     );
                     }
-                    portfolioTotalValueByNonce[updatePortfolioNonce] += value;
+                    portfolioTotalValueByNonce[updatePortfolioNonce] += convertEthToUsd(value);
                     tokenValueByNonce[updatePortfolioNonce][
                         tokenAddress
-                    ] += value;
+                    ] += convertEthToUsd(value);
                     updatedTokensValueCount[updatePortfolioNonce] += 1;
                     chainValueByNonce[updatePortfolioNonce][
                         currentChainSelector
-                    ] += value;
+                    ] += convertEthToUsd(value);
                 }
             } else {
                 address crossChainIndexFactory = crossChainFactoryBySelector(
@@ -479,7 +483,7 @@ contract IndexFactoryBalancer is CCIPReceiver, ProposableOwnableUpgradeable {
                 .oracleChainSelecotrTotalShares(
                     latestOracleCount,
                     chainSelector
-                );
+            );
             uint chainValue = chainValueByNonce[nonce][chainSelector];
             uint[] memory oracleTokenShares = indexFactoryStorage
                 .allOracleChainSelecotrTokenShares(chainSelector);

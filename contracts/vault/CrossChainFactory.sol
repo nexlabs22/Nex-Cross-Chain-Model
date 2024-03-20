@@ -14,6 +14,8 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../libraries/OracleLibrary.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
 // import "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import "../ccip/CCIPReceiver.sol";
 import "./CrossChainVault.sol";
@@ -89,6 +91,7 @@ contract CrossChainIndexFactory is
     mapping(address => bool) public isRestricted;
 
     uint256 public oraclePayment;
+    AggregatorV3Interface public toUsdPriceFeed;
 
     ISwapRouter public swapRouterV3;
     IUniswapV3Factory public factoryV3;
@@ -136,7 +139,8 @@ contract CrossChainIndexFactory is
         address _swapRouterV3,
         address _factoryV3,
         address _swapRouterV2,
-        address _factoryV2
+        address _factoryV2,
+        address _toUsdPriceFeed
     ) external initializer {
         CCIPReceiver(_router);
         __Ownable_init();
@@ -163,6 +167,26 @@ contract CrossChainIndexFactory is
         factoryV3 = IUniswapV3Factory(_factoryV3);
         swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
         factoryV2 = IUniswapV2Factory(_factoryV2);
+        //oracle
+        toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
+    }
+
+    function _toWei(int256 _amount, uint8 _amountDecimals, uint8 _chainDecimals) private pure returns (int256) {        
+        if (_chainDecimals > _amountDecimals)
+            return _amount * int256(10 **(_chainDecimals - _amountDecimals));
+        else
+            return _amount * int256(10 **(_amountDecimals - _chainDecimals));
+    }
+
+    function priceInWei() public view returns (uint256) {
+        (,int price,,,) = toUsdPriceFeed.latestRoundData();
+        uint8 priceFeedDecimals = toUsdPriceFeed.decimals();
+        price = _toWei(price, priceFeedDecimals, 18);
+        return uint256(price);
+    }
+
+    function convertEthToUsd(uint _ethAmount) public view returns (uint256) {
+        return _ethAmount * priceInWei() / 1e18;
     }
 
     function setCcipRouter(address _router) public onlyOwner {
@@ -431,7 +455,6 @@ contract CrossChainIndexFactory is
             );
             uint[] memory oldTokenValues = new uint[](targetAddresses.length);
             uint[] memory newTokenValues = new uint[](targetAddresses.length);
-
             for (uint i = 0; i < targetAddresses.length; i++) {
                 uint wethToSwap = (wethAmount * percentages[i]) /
                     extraValues[0];
@@ -460,9 +483,10 @@ contract CrossChainIndexFactory is
                 );
                 }
                 uint newTokenValue = oldTokenValue + wethAmount;
-                oldTokenValues[i] = oldTokenValue;
-                newTokenValues[i] = newTokenValue;
+                oldTokenValues[i] = convertEthToUsd(oldTokenValue);
+                newTokenValues[i] = convertEthToUsd(newTokenValue);
             }
+            
             bytes memory data = abi.encode(
                 0,
                 targetAddresses,
@@ -477,6 +501,7 @@ contract CrossChainIndexFactory is
                 data,
                 PayFeesIn.LINK
             );
+            
             // sendMessage(sourceChainSelector, address(sender), abi.encode("HHH"), PayFeesIn.LINK);
         } else if (actionType == 1) {
             uint wethSwapAmountOut;
@@ -577,7 +602,7 @@ contract CrossChainIndexFactory is
         uint[] memory tokenValueArr = new uint[](targetAddresses.length);
         for (uint i = 0; i < targetAddresses.length; i++) {
             if(targetAddresses[i] == address(weth)){
-            tokenValueArr[i] = IERC20(targetAddresses[i]).balanceOf(address(crossChainVault));
+            tokenValueArr[i] = convertEthToUsd(IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)));
             }else{
             uint tokenValue = getAmountOut(
                 targetAddresses[i],
@@ -585,7 +610,7 @@ contract CrossChainIndexFactory is
                 IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)),
                 3
             );
-            tokenValueArr[i] = tokenValue;
+            tokenValueArr[i] = convertEthToUsd(tokenValue);
             }
         }
         bytes memory data = abi.encode(

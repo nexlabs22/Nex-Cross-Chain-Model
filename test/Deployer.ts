@@ -43,6 +43,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let crossChainIndexFactory2 : CrossChainIndexFactory
     let oracle : MockApiOracle
     let ethPriceOracle: MockV3Aggregator
+    let ethPriceOracle2: MockV3Aggregator
 
     
 
@@ -87,6 +88,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       //deploy eth price oracle
       const EthPriceOracle = await ethers.getContractFactory("MockV3Aggregator");
       ethPriceOracle = await EthPriceOracle.deploy('18', ethers.utils.parseEther("2000"));
+      ethPriceOracle2 = await EthPriceOracle.deploy('18', ethers.utils.parseEther("2000"));
       //deploy index token
       const IndexToken = await ethers.getContractFactory("IndexToken");
       
@@ -147,7 +149,8 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             v3Router.address,
             v3Factory.address,
             v3Router.address, //v2
-            v3Factory.address //v2
+            v3Factory.address, //v2
+            ethPriceOracle2.address
       )
 
 
