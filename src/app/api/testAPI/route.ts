@@ -84,8 +84,8 @@ import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 
 export async function GET() {
-	const apiKey = process.env.BITFINEX_API_KEY
-	const apiSecret = process.env.BITFINEX_SECRETE_KEY
+	const apiKey = process.env.BITFINEX_API_KEY as string
+	const apiSecret = process.env.BITFINEX_SECRETE_KEY as string
 	const baseUrl = 'https://api.bitfinex.com'
 	const url = '/v1/balances'
 
@@ -99,7 +99,7 @@ export async function GET() {
 
 	const signature = crypto.createHmac('sha384', apiSecret).update(encodedPayload).digest('hex')
 
-	const options = {
+	const options:AxiosRequestConfig = {
 		method: 'POST',
 		url: baseUrl + url,
 		headers: {
