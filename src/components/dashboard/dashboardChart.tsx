@@ -23,7 +23,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const { selectedDuration, comparisionIndices } = useChartDataStore()
 	const { selectedIndex } = useToolPageStore()
 	const location = window.location.pathname
-	const ourIndexName = location === '/tradeIndex' ? selectedTradingProduct : location === '/dcaCalculator' ? selectedIndex : defaultIndex
+	const ourIndexName = location === '/tradeIndex' ? selectedTradingProduct : (location === '/dcaCalculator')||location === '/dcaCalculatorTest' ? selectedIndex : defaultIndex
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
 
