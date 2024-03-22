@@ -8,15 +8,7 @@ import { factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, zeroAddres
 import { useAddress } from '@thirdweb-dev/react'
 import { Positions } from '@/types/tradeTableTypes'
 
-// interface Positions {
-// 	side: string,
-// 	user: `0x${string}` | string,
-// 	tokenAddress: `0x${string}` | string,
-// 	timestamp: number,
-// 	inputAmount: number,
-// 	outputAmount: number,
-// 	indexName: string
-// }
+
 
 // export function GetPositionsHistory2(exchangeAddress: `0x${string}`, activeTicker: string) {
 export function GetPositionsHistory2() {
@@ -96,7 +88,7 @@ export function GetPositionsHistory2() {
 			})
 			const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
 
-			userBurnRequestLogsLogs.forEach((log) => {
+			userBurnRequestLogsLogs.forEach(async (log) => {
 				const obj: Positions = {
 					side: 'Burn Request',
 					user: log.args.user as `0x${string}`,

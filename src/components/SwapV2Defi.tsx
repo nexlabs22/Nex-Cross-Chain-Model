@@ -75,6 +75,8 @@ import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
 import { getNewCrossChainPortfolioBalance } from '@/hooks/getNewCrossChainPortfolioBalance'
 import { useRouter } from 'next/router'
 import { GoArrowUpRight } from 'react-icons/go'
+import { getCCIPStatus } from '@/hooks/getCcipStatusModel'
+import { getTransactionReceipt } from '@/hooks/getMessageID'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -615,6 +617,11 @@ const SwapV2Defi = () => {
 
 	const [loadingTokens, setLoadingTokens] = useState(true)
 	const [currentArrayId, setCurrentArrayId] = useState(0)
+
+	useEffect(() => {
+		getCCIPStatus("0x992385f2953b30d34809da260ab52536500a241872161a0b881a44e0c4389288")
+		// getTransactionReceipt("0x992385f2953b30d34809da260ab52536500a241872161a0b881a44e0c4389288")
+	},[])
 
 	const fetchAllLiFiTokens = async () => {
 		const options = {

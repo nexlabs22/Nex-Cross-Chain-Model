@@ -4,11 +4,15 @@
 //     getRouterConfig,
 //     getMessageStatus,
 //   } = require("./config");
-  const { ethers, JsonRpcProvider } = require("ethers");
+  // const { ethers, JsonRpcProvider } = require("ethers");
+  // import { ethers, JsonRpcProvider } from "ethers";
   // const routerAbi = require("../../abi/Router.json");
   import routerAbi from "@constants/router.json"
   // const offRampAbi = require("../../abi/OffRamp.json");
   import offRampAbi from "@constants/OffRamp.json"
+import { ethers } from "ethers";
+import { Result } from "ethers/lib/utils";
+import { getTransactionReceipt } from "./getMessageID";
   
   // Command: node src/get-status.js sourceChain destinationChain messageId
   // Examples(sepolia-->Fuji):
@@ -36,28 +40,30 @@
     // Extract the arguments from the command line
     const chain = "ethereumSepolia";
     const targetChain = "polygonMumbai";
-    const messageId = "";
+    // const messageId = "0x977b6bbb044654c757890abb26e0163bb51fb23dfc95cd65acc450becd8e0da4";
   
     // Return the arguments in an object
     return {
       chain,
       targetChain,
-      messageId,
+      // messageId,
     };
   };
   
   // Main function to get the status of a message by its ID
-  export const getStatus = async () => {
+  export const getCCIPStatus = async (txHash:string) => {
     // Parse command-line arguments
-    const { chain, targetChain, messageId } = handleArguments();
-  
+    const { chain, targetChain} = handleArguments();
+    const messageId = await getTransactionReceipt(txHash);
     // Get the RPC URLs for both the source and destination chains
-    const destinationRpcUrl = "getProviderRpcUrl(targetChain)";
-    const sourceRpcUrl = "getProviderRpcUrl(chain)";
+    const destinationRpcUrl = `https://polygon-mumbai.g.alchemy.com/v2/-hjSosjGnNxLAOZRTIUAulRG0KCs5-cI`;
+    const sourceRpcUrl = `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`;
   
     // Initialize providers for interacting with the blockchains
-    const destinationProvider = new JsonRpcProvider(destinationRpcUrl);
-    const sourceProvider = new JsonRpcProvider(sourceRpcUrl);
+    // const destinationProvider = new JsonRpcProvider(destinationRpcUrl);
+    const destinationProvider = new ethers.providers.JsonRpcProvider(destinationRpcUrl)
+    // const sourceProvider = new JsonRpcProvider(sourceRpcUrl);
+    const sourceProvider = new ethers.providers.JsonRpcProvider(sourceRpcUrl);
   
     // Retrieve router configuration for the source and destination chains
     const sourceRouterAddress = "0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59";
@@ -105,7 +111,7 @@
       );
   
       if (events.length > 0) {
-        const { state } = events[0].args;
+        const { state } = events[0].args as Result;
         const status = getMessageStatus(state);
         console.log(
           `Status of message ${messageId} on offRamp ${matchingOffRamp.offRamp} is ${status}\n`
@@ -118,10 +124,10 @@
     console.log(
       `Either the message ${messageId} does not exist OR it has not been processed yet on destination chain\n`
     );
-  };  
+  };
 
   // Run the getStatus function and handle any errors
-  getStatus().catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+  // getStatus().catch((e) => {
+  //   console.error(e);
+  //   process.exit(1);
+  // });
