@@ -40,12 +40,12 @@ const exportDCATable = async (tableData: any, pageOrientation: PageOrientation, 
 				columns: [
 					{
 						width: '*',
-						margin: [10, 10, 0, 5],
+						margin: [0, 10, 0, 5],
 						text: `Started at: ${userDetails.selectedStartMonth} ${userDetails.selectedStartYear}`,
 					},
 					{
 						width: '*',
-						margin: [10, 10, 0, 5],
+						margin: [0, 10, 0, 5],
 						text: `Ended at: ${userDetails.selectedEndMonth} ${userDetails.selectedEndYear}`,
 					},
 				],
@@ -55,20 +55,20 @@ const exportDCATable = async (tableData: any, pageOrientation: PageOrientation, 
 				columns: [
 					{
 						width: '*',
-						margin: [10, 5, 0, 20],
+						margin: [0, 5, 0, 20],
 						text: `Initial Investment: ${userDetails.initialAmount}`,
 					},
 					isTestPage
 						? isChecked
 							? {
 									width: '*',
-									margin: [10, 5, 0, 20],
+									margin: [0, 5, 0, 20],
 									text: `Monthly Investment: ${userDetails.monthlyInvestment}`,
 							  }
 							: ''
 						: {
 								width: '*',
-								margin: [10, 5, 0, 20],
+								margin: [0, 5, 0, 20],
 								text: `Monthly Investment: ${userDetails.monthlyInvestment}`,
 						  },
 				],
@@ -124,7 +124,7 @@ const exportDCATable = async (tableData: any, pageOrientation: PageOrientation, 
 				],
 			}
 		},
-		pageMargins: [100, 50, 50, 100],
+		pageMargins: [50, 50, 50, 50],
 	}
 
 	// const timestampstring = new Date().toISOString().replace(/[-:]/g, '').split('.')[0].split('T').join('')
