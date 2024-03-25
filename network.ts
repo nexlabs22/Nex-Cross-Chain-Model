@@ -4,9 +4,6 @@ export const goerliFactoryV2Address = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6
 //v3 addresses
 export const goerliRouterV3Address = "0xE592427A0AEce92De3Edee1F18E0157C05861564";
 export const sepoliaRouterV3Address = "0x7b192a675Ac3877c6308F7d96033b9c2d7Ae5600"; // my deployed one
-// export const sepoliaRouterV3Address = "0x89840d36C96067DE8bd311d73802e3BC80877c2F"; // working one
-// export const sepoliaRouterV3Address2 = "0x3bfa4769fb09eefc5a80d6e87c3b9c650f7ae48e"; //failing one
-// export const mumbaiRouterV3Address = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
 export const mumbaiRouterV3Address = "0x525313c59dfde111583dad42e15F774295642F06"; // my deployed one
 export const goerliFactoryV3Address = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
 export const sepoliaFactoryV3Address = "0x0227628f3F023bb0B980b67D528571c95c6DaC1c";
@@ -14,7 +11,6 @@ export const mumbaiFactoryV3Address = "0x1F98431c8aD98523631AE4a59f267346ea31F98
 export const goerliQouterAddress = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6";
 //weth
 export const goerliWethAddress = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
-// export const seploliaWethAddress = "0x7b79995e5f793a07bc00c21412e50ecae098e7f9"; //wrong
 export const seploliaWethAddress = "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"; //uniswap weth
 export const mumbaiWmaticAddress = "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889";
 export const arbitrumSeploliaWethAddress = "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"; //uniswap weth
@@ -27,6 +23,7 @@ export const goerliExternalJobIdBytes32 = "0x39386161663334303737656334643066613
 export const goerliOldExternalJobIdBytes32 = "0x6134346561343635323436333465616461623837623237343564373230333536"
 export const goerliEthUsdPriceFeed = "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e"
 export const sepoliaEthUsdPriceFeed = "0x694AA1769357215DE4FAC081bf1f309aDC325306"
+export const mumbaiEthUsdPriceFeed = "0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada"
 //ccip data
 export const sepoliaChainSelector = "16015286601757825753"
 export const mumbaiChainSelector = "12532609583862916517"

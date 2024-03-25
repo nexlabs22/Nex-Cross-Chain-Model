@@ -10154,7 +10154,7 @@
             "src": "contracts\\factory\\IndexFactoryStorage.sol:88"
           },
           {
-            "label": "oracleChainSelecotrTokens",
+            "label": "oracleChainSelectorTokens",
             "offset": 0,
             "slot": "189",
             "type": "t_mapping(t_uint256,t_mapping(t_uint64,t_array(t_address)dyn_storage))",
@@ -10162,7 +10162,7 @@
             "src": "contracts\\factory\\IndexFactoryStorage.sol:90"
           },
           {
-            "label": "currentChainSelecotrTokens",
+            "label": "currentChainSelectorTokens",
             "offset": 0,
             "slot": "190",
             "type": "t_mapping(t_uint256,t_mapping(t_uint64,t_array(t_address)dyn_storage))",
@@ -10170,7 +10170,7 @@
             "src": "contracts\\factory\\IndexFactoryStorage.sol:91"
           },
           {
-            "label": "oracleChainSelecotrTokenShares",
+            "label": "oracleChainSelectorTokenShares",
             "offset": 0,
             "slot": "191",
             "type": "t_mapping(t_uint256,t_mapping(t_uint64,t_array(t_uint256)dyn_storage))",
@@ -10178,7 +10178,7 @@
             "src": "contracts\\factory\\IndexFactoryStorage.sol:93"
           },
           {
-            "label": "currentChainSelecotrTokenShares",
+            "label": "currentChainSelectorTokenShares",
             "offset": 0,
             "slot": "192",
             "type": "t_mapping(t_uint256,t_mapping(t_uint64,t_array(t_uint256)dyn_storage))",
@@ -10186,7 +10186,7 @@
             "src": "contracts\\factory\\IndexFactoryStorage.sol:94"
           },
           {
-            "label": "oracleChainSelecotrTotalShares",
+            "label": "oracleChainSelectorTotalShares",
             "offset": 0,
             "slot": "193",
             "type": "t_mapping(t_uint256,t_mapping(t_uint64,t_uint256))",
@@ -10194,7 +10194,7 @@
             "src": "contracts\\factory\\IndexFactoryStorage.sol:96"
           },
           {
-            "label": "currentChainSelecotrTotalShares",
+            "label": "currentChainSelectorTotalShares",
             "offset": 0,
             "slot": "194",
             "type": "t_mapping(t_uint256,t_mapping(t_uint64,t_uint256))",
