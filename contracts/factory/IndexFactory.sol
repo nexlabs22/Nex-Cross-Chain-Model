@@ -76,7 +76,7 @@ contract IndexFactory is
     
 
     event RequestIssuance(
-        address indexed messageId,
+        bytes32 indexed messageId,
         address indexed user,
         address indexed inputToken,
         uint inputAmount,
@@ -85,6 +85,7 @@ contract IndexFactory is
     );
 
     event Issuanced(
+        bytes32 indexed messageId,
         address indexed user,
         address indexed inputToken,
         uint inputAmount,
@@ -93,7 +94,7 @@ contract IndexFactory is
     );
 
     event RequestRedemption(
-        address indexed messageId,
+        bytes32 indexed messageId,
         address indexed user,
         address indexed outputToken,
         uint inputAmount,
@@ -102,6 +103,7 @@ contract IndexFactory is
     );
 
     event Redemption(
+        bytes32 indexed messageId,
         address indexed user,
         address indexed outputToken,
         uint inputAmount,
@@ -303,7 +305,9 @@ contract IndexFactory is
                 _issuanceSwapsCurrentChain(
                     wethAmount, 
                     issuanceNonce, 
-                    chainSelectorTokensCount
+                    chainSelectorTokensCount,
+                    chainSelector,
+                    latestCount
                 );
                 
             }else{
@@ -330,10 +334,13 @@ contract IndexFactory is
     function _issuanceSwapsCurrentChain(
         uint wethAmount,
         uint issuanceNonce,
-        uint chainSelectorTokensCount
+        uint chainSelectorTokensCount,
+        uint64 chainSelector,
+        uint latestCount
     ) internal {
         for (uint i = 0; i < chainSelectorTokensCount; i++) {
-            address tokenAddress = indexFactoryStorage.currentList(i);
+            // address tokenAddress = indexFactoryStorage.currentList(i);
+            address tokenAddress = indexFactoryStorage.currentChainSelectorTokens(latestCount, chainSelector, i);
             uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
             uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
             if(tokenAddress == address(weth)){
@@ -432,7 +439,7 @@ contract IndexFactory is
         issuanceMessageIdByNonce[issuanceNonce] = messageId;
     }
 
-    function completeIssuanceRequest(uint _issuanceNonce) internal {
+    function completeIssuanceRequest(uint _issuanceNonce, bytes32 _messageId) internal {
         uint totalOldVaules;
         uint totalNewVaules;
         uint totalCurrentList = indexFactoryStorage.totalCurrentList();
@@ -459,7 +466,7 @@ contract IndexFactory is
             amountToMint = (totalNewVaules) / 100;
         }
         indexToken.mint(issuanceNonceRequester[_issuanceNonce], amountToMint);
-        emit Issuanced(issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);
+        emit Issuanced(_messageId, issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);
     }
 
     function redemption(
@@ -598,7 +605,7 @@ contract IndexFactory is
         redemptionMessageIdByNonce[redemptionNonce] = messageId;
     }
 
-    function completeRedemptionRequest(uint nonce) internal {
+    function completeRedemptionRequest(uint nonce, bytes32 _messageId) internal {
         uint wethAmount = redemptionNonceTotalValue[nonce];
         address requester = redemptionNonceRequester[nonce];
         address outputToken = redemptionNonceOutputToken[nonce];
@@ -612,10 +619,10 @@ contract IndexFactory is
         weth.withdraw(wethAmount - fee);
         (bool _ownerSuccess, ) = requester.call{value: wethAmount - fee}("");
         require(_ownerSuccess, "transfer eth to the requester failed");
-        emit Redemption(requester, outputToken,  redemptionInputAmount[nonce], wethAmount - fee, block.timestamp);
+        emit Redemption(_messageId, requester, outputToken,  redemptionInputAmount[nonce], wethAmount - fee, block.timestamp);
         }else{
         uint reallOut = swap(address(weth), outputToken, wethAmount - fee, requester, outputTokenSwapVersion);
-        emit Redemption(requester, outputToken, redemptionInputAmount[nonce], reallOut, block.timestamp);
+        emit Redemption(_messageId, requester, outputToken, redemptionInputAmount[nonce], reallOut, block.timestamp);
         }
     }
     // }
@@ -738,7 +745,7 @@ contract IndexFactory is
         address receiver,
         bytes memory _data,
         PayFeesIn payFeesIn
-    ) public {
+    ) public  returns(bytes32){
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: _data,
@@ -800,7 +807,8 @@ contract IndexFactory is
                 tokenAddresses,
                 value1,
                 value2,
-                totalCurrentList
+                totalCurrentList,
+                messageId
             );
             
         } else if (actionType == 1) {
@@ -809,7 +817,8 @@ contract IndexFactory is
                 any2EvmMessage,
                 tokenAddresses,
                 totalCurrentList,
-                sourceChainSelector
+                sourceChainSelector,
+                messageId
             );
         }
     }
@@ -820,7 +829,8 @@ contract IndexFactory is
         address[] memory tokenAddresses,
         uint[] memory value1,
         uint[] memory value2,
-        uint totalCurrentList
+        uint totalCurrentList,
+        bytes32 _messageId
         ) private {
         uint issuanceNonce = nonce;
         for (uint i; i < tokenAddresses.length; i++) {
@@ -836,7 +846,7 @@ contract IndexFactory is
             issuanceCompletedTokensCount[issuanceNonce] ==
             totalCurrentList
         ) {
-            completeIssuanceRequest(issuanceNonce);
+            completeIssuanceRequest(issuanceNonce, _messageId);
         }
     }
 
@@ -845,7 +855,8 @@ contract IndexFactory is
         Client.Any2EVMMessage memory any2EvmMessage,
         address[] memory tokenAddresses,
         uint totalCurrentList,
-        uint64 sourceChainSelector
+        uint64 sourceChainSelector,
+        bytes32 _messageId
     ) private {
         uint redemptionNonce = nonce;
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
@@ -865,7 +876,7 @@ contract IndexFactory is
             redemptionCompletedTokensCount[redemptionNonce] ==
             totalCurrentList
         ) {
-            completeRedemptionRequest(redemptionNonce);
+            completeRedemptionRequest(redemptionNonce, _messageId);
         }
 }
 

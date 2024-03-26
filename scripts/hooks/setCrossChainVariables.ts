@@ -13,6 +13,7 @@ import {
   } from '../../artifacts/contracts/vault/CrossChainVault.sol/CrossChainVault.json'
 import { IndexFactory } from "../../typechain-types";
 import { mumbaiCR5CrossChainFactory, mumbaiCR5CrossChainVault, mumbaiChainSelector, mumbaiCrossChainTokenAddress, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaCrossChainTokenAddress, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory } from "../../network";
+import { ChainSelectors, CR5CrossChainFactoryAddresses, CR5CrossChainVaultAddresses, CrossChainTokenAddresses } from "../../contractAddresses";
 // import { goerliAnfiFactoryAddress } from "../contractAddresses";
 require("dotenv").config()
 
@@ -23,13 +24,13 @@ async function main() {
     // const provider = new ethers.JsonRpcProvider(process.env.GOERLI_RPC_URL)
     const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_SEPOLIA_RPC_URL)
     const factoryCotract:any = new ethers.Contract(
-        mumbaiCR5CrossChainFactory as string, //factory goerli
+        CR5CrossChainFactoryAddresses['polygonMumbai'] as string, //factory goerli
         // testSepoliaCR5IndexFactory as string, //factory goerli
         Factory_ABI,
         provider
     )
     const vaultCotract:any = new ethers.Contract(
-        mumbaiCR5CrossChainVault as string, //factory goerli
+        CR5CrossChainVaultAddresses['polygonMumbai'] as string, //factory goerli
         // testSepoliaCR5IndexFactory as string, //factory goerli
         Vault_ABI,
         provider
@@ -39,15 +40,16 @@ async function main() {
 
     console.log("setting cross chain index token in the cross chain factory contract ...")
     const result1 = await factoryCotract.connect(deployer).setCrossChainToken(
-        sepoliaChainSelector,
-        mumbaiCrossChainTokenAddress
+        ChainSelectors['sepolia'],
+        CrossChainTokenAddresses['polygonMumbai'],
+        "3"
     )
     const receipt1 = await result1.wait();
 
 
     console.log("setting cross chain index factory in the cross chain vault...")
     const result2 = await vaultCotract.connect(deployer).setFactory(
-        mumbaiCR5CrossChainFactory
+        CR5CrossChainFactoryAddresses['polygonMumbai'],
     )
     const receipt2 = await result2.wait();
 

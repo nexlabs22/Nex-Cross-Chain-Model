@@ -81,11 +81,11 @@ import { addLiquidityEth, deployment, updateOracleList } from "./Deployer";
       it("Test factory single swap", async function () {
         //update oracle list
         const assetList = [
-            token0.address,
-            token1.address,
-            token2.address,
-            token3.address,
-            token4.address
+          token0.address,
+          token1.address,
+          token2.address,
+          token3.address,
+          token4.address
         ]
         const percentages = [
             "30000000000000000000", 

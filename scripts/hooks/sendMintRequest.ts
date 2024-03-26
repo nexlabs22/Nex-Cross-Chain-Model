@@ -9,6 +9,7 @@ import {
   } from '../../artifacts/contracts/factory/IndexFactory.sol/IndexFactory.json'
 import { IndexFactory } from "../../typechain-types";
 import { mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory } from "../../network";
+import { CR5CrossChainFactoryAddresses, CR5IndexFactoryAddresses } from "../../contractAddresses";
 // import { goerliAnfiFactoryAddress } from "../contractAddresses";
 require("dotenv").config()
 
@@ -19,7 +20,7 @@ async function main() {
     // const provider = new ethers.JsonRpcProvider(process.env.GOERLI_RPC_URL)
     const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_SEPOLIA_RPC_URL)
     const cotract:any = new ethers.Contract(
-        sepoliaCR5IndexFactory as string, //factory goerli
+        CR5IndexFactoryAddresses['sepolia'] as string, //factory goerli
         // testSepoliaCR5IndexFactory as string, //factory goerli
         Factory_ABI,
         provider

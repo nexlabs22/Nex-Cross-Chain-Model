@@ -66,7 +66,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       chainId: 31337
     },
-    ethereumSepolia: {
+    sepolia: {
       url: ETHEREUM_SEPOLIA_RPC_URL !== undefined ? ETHEREUM_SEPOLIA_RPC_URL : '',
       accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
       chainId: 11155111
@@ -101,11 +101,10 @@ const config: HardhatUserConfig = {
     externalArtifacts: ['./abi/*.json']
   },
   etherscan: {
-    // Your API key for Etherscan
-    // Obtain one at https://etherscan.io/
-    apiKey: process.env.ETHERSCAN_API_KEY
-    // apiKey: process.env.POLYGONSCAN_API_KEY,
-    // apiKey: process.env.ARBITRUMSCAN_API_KEY
+    apiKey: {
+      sepolia: process.env.ETHERSCAN_API_KEY as string,
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY as string
+    }
   },
   contractSizer: {
     // alphaSort: true,

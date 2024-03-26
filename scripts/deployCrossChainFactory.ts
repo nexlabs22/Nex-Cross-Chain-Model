@@ -1,5 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress, mumbaiCR5CrossChainVault, mumbaiChainSelector, mumbaiFactoryV3Address, mumbaiLinkTokenAddress, mumbaiRouterAddress, mumbaiRouterV3Address, mumbaiWmaticAddress } from "../network";
+import { ccipRouterAddresses, ChainSelectors, CR5CrossChainVaultAddresses, EthUsdPriceFeeds, FactoryV2Addresses, FactoryV3Addresses, LINKAddresses, RouterV2Addresses, RouterV3Addresses, WethAddresses } from "../contractAddresses";
 // import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress } from "../contractAddresses";
 // const { ethers, upgrades, network, hre } = require('hardhat');
 
@@ -11,15 +12,25 @@ async function deployIndexToken() {
   console.log('Deploying CrossChainIndexFactory...');
 
   const crossChainIndexFactory = await upgrades.deployProxy(CrossChainIndexFactory, [
-      mumbaiChainSelector,
-      mumbaiCR5CrossChainVault,
-      mumbaiLinkTokenAddress,
-      mumbaiRouterAddress,
-      mumbaiWmaticAddress,
-      mumbaiRouterV3Address,
-      mumbaiFactoryV3Address,
-      goerliRouterV2Address,
-      goerliFactoryV2Address
+      ChainSelectors['polygonMumbai'],
+      CR5CrossChainVaultAddresses['polygonMumbai'],
+      LINKAddresses['polygonMumbai'],
+      ccipRouterAddresses['polygonMumbai'],
+      WethAddresses['polygonMumbai'],
+      RouterV3Addresses['polygonMumbai'],
+      FactoryV3Addresses['polygonMumbai'],
+      RouterV2Addresses['goerli'],
+      FactoryV2Addresses['goerli'],
+      EthUsdPriceFeeds['polygonMumbai']
+      // mumbaiChainSelector,
+      // mumbaiCR5CrossChainVault,
+      // mumbaiLinkTokenAddress,
+      // mumbaiRouterAddress,
+      // mumbaiWmaticAddress,
+      // mumbaiRouterV3Address,
+      // mumbaiFactoryV3Address,
+      // goerliRouterV2Address,
+      // goerliFactoryV2Address
       /**
       ethers.constants.AddressZero,
       mumbaiWmaticAddress,

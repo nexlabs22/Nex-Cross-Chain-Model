@@ -10,6 +10,7 @@ import {
   } from '../../artifacts/contracts/token/IndexToken.sol/IndexToken.json'
 import { IndexFactory } from "../../typechain-types";
 import { mumbaiCR5CrossChainFactory, mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaCR5IndexToken, sepoliaChainSelector, sepoliaCrossChainTokenAddress, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory } from "../../network";
+import { CR5IndexFactoryAddresses, CR5IndexFactoryBalancerAddresses, CR5IndexTokenAddresses } from "../../contractAddresses";
 // import { goerliAnfiFactoryAddress } from "../contractAddresses";
 require("dotenv").config()
 
@@ -20,7 +21,7 @@ async function main() {
     // const provider = new ethers.JsonRpcProvider(process.env.GOERLI_RPC_URL)
     const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_SEPOLIA_RPC_URL)
     const cotract:any = new ethers.Contract(
-        sepoliaCR5IndexToken as string, //factory goerli
+        CR5IndexTokenAddresses['sepolia'] as string, //factory goerli
         // testSepoliaCR5IndexFactory as string, //factory goerli
         IndexToken_ABI,
         provider
@@ -28,11 +29,18 @@ async function main() {
     // await wallet.connect(provider);
     // console.log("sending data...")
 
-    console.log("setting minter...")
+    console.log("setting factory as minter...")
     const result1 = await cotract.connect(deployer).setMinter(
-        sepoliaCR5IndexFactory
+        CR5IndexFactoryAddresses['sepolia'] as string,
+        true
     )
     const receipt1 = await result1.wait();
+    console.log("setting balancer as minter...")
+    const result2 = await cotract.connect(deployer).setMinter(
+        CR5IndexFactoryBalancerAddresses['sepolia'] as string,
+        true
+    )
+    const receipt2 = await result2.wait();
     console.log('Ended')
     
 }

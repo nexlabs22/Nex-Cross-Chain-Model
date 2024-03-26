@@ -1,5 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress, mumbaiFactoryV3Address, mumbaiRouterV3Address, mumbaiWmaticAddress } from "../network";
+import { FactoryV2Addresses, FactoryV3Addresses, QouterAddresses, RouterV2Addresses, RouterV3Addresses, WethAddresses } from "../contractAddresses";
 // import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress } from "../contractAddresses";
 // const { ethers, upgrades, network, hre } = require('hardhat');
 
@@ -12,12 +13,19 @@ async function deployIndexToken() {
 
   const crossChainVault = await upgrades.deployProxy(CrossChainVault, [
       ethers.constants.AddressZero,
-      mumbaiWmaticAddress,
-      goerliQouterAddress,
-      mumbaiRouterV3Address,
-      mumbaiFactoryV3Address,
-      goerliRouterV2Address,
-      goerliFactoryV2Address
+      WethAddresses['polygonMumbai'],
+      QouterAddresses['goerli'],
+      RouterV3Addresses['polygonMumbai'],
+      FactoryV3Addresses['polygonMumbai'],
+      RouterV2Addresses['goerli'],
+      FactoryV2Addresses['goerli']
+      // ethers.constants.AddressZero,
+      // mumbaiWmaticAddress,
+      // goerliQouterAddress,
+      // mumbaiRouterV3Address,
+      // mumbaiFactoryV3Address,
+      // goerliRouterV2Address,
+      // goerliFactoryV2Address
       /**
       "Crypto5",
       "CR5",

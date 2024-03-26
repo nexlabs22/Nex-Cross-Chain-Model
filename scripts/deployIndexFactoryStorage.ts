@@ -1,5 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 import { goerliEthUsdPriceFeed, goerliExternalJobIdBytes32, goerliFactoryV2Address, goerliFactoryV3Address, goerliOracleAdress, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress, mumbaiCR5CrossChainVault, mumbaiChainSelector, mumbaiLinkTokenAddress, mumbaiRouterAddress, mumbaiWmaticAddress, seploliaWethAddress, sepoliaCR5IndexToken, sepoliaChainSelector, sepoliaEthUsdPriceFeed, sepoliaFactoryV3Address, sepoliaLinkTokenAddress, sepoliaRouterV3Address } from "../network";
+import { ApiOracleAddresses, ChainSelectors, CR5IndexTokenAddresses, EthUsdPriceFeeds, ExternalJobIdBytes32Addresses, FactoryV2Addresses, FactoryV3Addresses, LINKAddresses, RouterV2Addresses, RouterV3Addresses, WethAddresses } from "../contractAddresses";
 // import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress } from "../contractAddresses";
 // const { ethers, upgrades, network, hre } = require('hardhat');
 
@@ -11,17 +12,28 @@ async function deployIndexToken() {
   console.log('Deploying IndexFactoryStorage...');
 
   const indexFactoryStorage = await upgrades.deployProxy(IndexFactoryStorage, [
-      sepoliaChainSelector,
-      sepoliaCR5IndexToken,
-      sepoliaLinkTokenAddress,
-      goerliOracleAdress,
-      goerliExternalJobIdBytes32,
-      sepoliaEthUsdPriceFeed,
-      seploliaWethAddress,
-      sepoliaRouterV3Address,
-      sepoliaFactoryV3Address,
-      goerliRouterV2Address,
-      goerliFactoryV2Address
+      ChainSelectors['sepolia'],
+      CR5IndexTokenAddresses['sepolia'],
+      LINKAddresses['sepolia'],
+      ApiOracleAddresses['goerli'],
+      ExternalJobIdBytes32Addresses['goerli'],
+      EthUsdPriceFeeds['sepolia'],
+      WethAddresses['sepolia'],
+      RouterV3Addresses['sepolia'],
+      FactoryV3Addresses['sepolia'],
+      RouterV2Addresses['goerli'],
+      FactoryV2Addresses['goerli']
+      // sepoliaChainSelector,
+      // sepoliaCR5IndexToken,
+      // sepoliaLinkTokenAddress,
+      // goerliOracleAdress,
+      // goerliExternalJobIdBytes32,
+      // sepoliaEthUsdPriceFeed,
+      // seploliaWethAddress,
+      // sepoliaRouterV3Address,
+      // sepoliaFactoryV3Address,
+      // goerliRouterV2Address,
+      // goerliFactoryV2Address
       /**
       ethers.constants.AddressZero,
       mumbaiWmaticAddress,
