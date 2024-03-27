@@ -8,8 +8,8 @@ import {
     bytecode as Factory_BYTECODE,
   } from '../../artifacts/contracts/factory/IndexFactoryStorage.sol/IndexFactoryStorage.json'
 import { IndexFactory } from "../../typechain-types";
-import { mumbaiChainSelector, mumbaiTestRippleAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress } from "../../network";
-import { CR5IndexFactoryStorageAddresses, WethAddresses } from "../../contractAddresses";
+import { mumbaiChainSelector, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector } from "../../network";
+import { arbitrumSepoliaTestRippleAddress, ChainSelectors, CR5IndexFactoryStorageAddresses, sepoliaBitcoinAddress, sepoliaTestBinanceAddress, sepoliaTestSolanaAddress, WethAddresses } from "../../contractAddresses";
 // import { goerliAnfiFactoryAddress } from "../contractAddresses";
 require("dotenv").config()
 
@@ -32,7 +32,7 @@ async function main() {
         WethAddresses['sepolia'],
         sepoliaTestBinanceAddress,
         sepoliaTestSolanaAddress,
-        mumbaiTestRippleAddress
+        arbitrumSepoliaTestRippleAddress
         ],
         [
         "20000000000000000000", 
@@ -53,7 +53,7 @@ async function main() {
         sepoliaChainSelector,
         sepoliaChainSelector,
         sepoliaChainSelector,
-        mumbaiChainSelector
+        ChainSelectors[`arbitrumSepolia`]
         ]
     )
     console.log("waiting for results...")

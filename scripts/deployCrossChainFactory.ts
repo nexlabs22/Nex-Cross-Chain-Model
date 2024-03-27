@@ -12,16 +12,16 @@ async function deployIndexToken() {
   console.log('Deploying CrossChainIndexFactory...');
 
   const crossChainIndexFactory = await upgrades.deployProxy(CrossChainIndexFactory, [
-      ChainSelectors['polygonMumbai'],
-      CR5CrossChainVaultAddresses['polygonMumbai'],
-      LINKAddresses['polygonMumbai'],
-      ccipRouterAddresses['polygonMumbai'],
-      WethAddresses['polygonMumbai'],
-      RouterV3Addresses['polygonMumbai'],
-      FactoryV3Addresses['polygonMumbai'],
+      ChainSelectors['arbitrumSepolia'],
+      CR5CrossChainVaultAddresses['arbitrumSepolia'],
+      LINKAddresses['arbitrumSepolia'],
+      ccipRouterAddresses['arbitrumSepolia'],
+      WethAddresses['arbitrumSepolia'],
+      RouterV3Addresses['arbitrumSepolia'],
+      FactoryV3Addresses['arbitrumSepolia'],
       RouterV2Addresses['goerli'],
       FactoryV2Addresses['goerli'],
-      EthUsdPriceFeeds['polygonMumbai']
+      EthUsdPriceFeeds['arbitrumSepolia']
       // mumbaiChainSelector,
       // mumbaiCR5CrossChainVault,
       // mumbaiLinkTokenAddress,

@@ -9,7 +9,7 @@ import "@nomicfoundation/hardhat-foundry";
 import "hardhat-gas-reporter"
 require("@openzeppelin/hardhat-upgrades");
 require("dotenv").config()
-
+// import "@nomicfoundation/hardhat-verify";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ETHEREUM_SEPOLIA_RPC_URL = process.env.ETHEREUM_SEPOLIA_RPC_URL;
@@ -101,11 +101,35 @@ const config: HardhatUserConfig = {
     externalArtifacts: ['./abi/*.json']
   },
   etherscan: {
-    apiKey: {
-      sepolia: process.env.ETHERSCAN_API_KEY as string,
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY as string
-    }
+    // apiKey: {
+    //   sepolia: process.env.ETHERSCAN_API_KEY as string,
+    //   polygonMumbai: process.env.POLYGONSCAN_API_KEY as string,
+    //   arbitrumSepolia: process.env.ARBITRUMSCAN_API_KEY as string
+    //   // arbitrumTestnet: process.env.ARBITRUMSCAN_API_KEY as string
+    // }
+    apiKey: process.env.ETHERSCAN_API_KEY as string
   },
+  // etherscan: {
+  //   apiKey: {
+  //     // arbitrumSepolia: process.env.ARBITRUMSCAN_API_KEY as string
+  //     arbitrumSepolia: "NW8YIPUKMU92RE8USZNZ7I2D31V4RWY7S8" as string
+  //   },
+  //   customChains: [
+  //     {
+  //       network: "arbitrumSepolia",
+  //       chainId: 421614,
+  //       urls: {
+  //         apiURL: ARBITRUM_SEPOLIA_RPC_URL as string,
+  //         browserURL: "https://sepolia.arbiscan.io"
+  //       }
+  //     }
+  //   ]
+  // },
+  // sourcify: {
+  //   // Disabled by default
+  //   // Doesn't need an API key
+  //   enabled: true
+  // },
   contractSizer: {
     // alphaSort: true,
     // disambiguatePaths: false,

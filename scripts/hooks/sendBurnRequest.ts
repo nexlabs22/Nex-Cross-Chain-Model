@@ -4,7 +4,8 @@ import {
     bytecode as Factory_BYTECODE,
   } from '../../artifacts/contracts/factory/IndexFactory.sol/IndexFactory.json'
 import { IndexFactory } from "../../typechain-types";
-import { mumbaiChainSelector, mumbaiTestRippleAddress, seploliaWethAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress, testSepoliaCR5IndexFactory } from "../../network";
+import { mumbaiChainSelector, seploliaWethAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, testSepoliaCR5IndexFactory } from "../../network";
+import { CR5CrossChainFactoryAddresses, CR5IndexFactoryAddresses, WethAddresses } from "../../contractAddresses";
 require("dotenv").config()
 
 async function main() {
@@ -12,7 +13,7 @@ async function main() {
     const [deployer] = await ethers.getSigners();
     const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_SEPOLIA_RPC_URL)
     const cotract:any = new ethers.Contract(
-        sepoliaCR5IndexFactory as string, //factory goerli
+        CR5IndexFactoryAddresses['sepolia'] as string, //factory goerli
         // testSepoliaCR5IndexFactory as string, //factory goerli
         Factory_ABI,
         provider
@@ -20,9 +21,9 @@ async function main() {
     // await wallet.connect(provider);
     console.log("sending data...")
     const result = await cotract.connect(deployer).redemption(
-        ethers.utils.parseEther("10"),
+        ethers.utils.parseEther("0.01"),
         "0",
-        seploliaWethAddress,
+        WethAddresses['sepolia'],
         "3",
         {gasLimit: 2000000}
     )

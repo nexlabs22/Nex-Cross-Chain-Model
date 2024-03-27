@@ -13,10 +13,10 @@ async function deployIndexToken() {
 
   const crossChainVault = await upgrades.deployProxy(CrossChainVault, [
       ethers.constants.AddressZero,
-      WethAddresses['polygonMumbai'],
+      WethAddresses['arbitrumSepolia'],
       QouterAddresses['goerli'],
-      RouterV3Addresses['polygonMumbai'],
-      FactoryV3Addresses['polygonMumbai'],
+      RouterV3Addresses['arbitrumSepolia'],
+      FactoryV3Addresses['arbitrumSepolia'],
       RouterV2Addresses['goerli'],
       FactoryV2Addresses['goerli']
       // ethers.constants.AddressZero,

@@ -10,12 +10,14 @@ import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { getMaxTick, getMinTick } from "./uniswap/utils/ticks";
 import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
 import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
-import { mumbaiCrossChainTokenAddress, mumbaiFactoryV3Address, mumbaiRouterV3Address, mumbaiTestRippleAddress, mumbaiWmaticAddress, seploliaWethAddress, sepoliaBitcoinAddress, sepoliaCrossChainTokenAddress, sepoliaFactoryV3Address, sepoliaRouterV3Address } from "../network";
+import { seploliaWethAddress, sepoliaCrossChainTokenAddress, sepoliaFactoryV3Address, sepoliaRouterV3Address, sepoliaRouterV3Address2 } from "../network";
 // import { WETH9 } from "@uniswap/sdk-core";
 import WETH9 from "./uniswap/utils/WETH9.json";
 import UniswapV3Factory from "@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json"
 import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json"
+import { arbitrumSepoliaTestRippleAddress, CrossChainTokenAddresses, FactoryV3Addresses, RouterV3Addresses, WethAddresses } from "../contractAddresses";
 
+  
   describe("Swap", function () {
     // We define a fixture to reuse the same setup in every test.
     // We use loadFixture to run this setup once, snapshot that state,
@@ -25,10 +27,10 @@ import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol
     //   const res = await UniswapV3Deployer.deploy(owner);
       // return
     // const provider = ethers.getDefaultProvider()
-    const weth9 = new ethers.Contract(mumbaiWmaticAddress, WETH9.abi) as IWETH
-    const v3Fctory = new ethers.Contract(mumbaiFactoryV3Address, UniswapV3Factory.abi) as IUniswapV3Factory
-    const v3Router = new ethers.Contract(mumbaiRouterV3Address, SwapRouter.abi) as ISwapRouter
-    const token = new ethers.Contract(mumbaiCrossChainTokenAddress, WETH9.abi) as IWETH
+    const weth9 = new ethers.Contract(WethAddresses[`arbitrumSepolia`], WETH9.abi) as IWETH
+    const v3Fctory = new ethers.Contract(FactoryV3Addresses['arbitrumSepolia'], UniswapV3Factory.abi) as IUniswapV3Factory
+    const v3Router = new ethers.Contract(RouterV3Addresses['arbitrumSepolia'], SwapRouter.abi) as ISwapRouter
+    const token = new ethers.Contract(CrossChainTokenAddresses['arbitrumSepolia'], WETH9.abi) as IWETH
     //   const weth9 = res["weth9"] as IWETH
     //   const v3Fctory = res["factory"] as IUniswapV3Factory
     //   const v3Router = res["router"] as ISwapRouter
@@ -50,6 +52,9 @@ import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol
     describe("Deployment", function () {
       it("Should set the right unlockTime", async function () {
         const deploymentObj = await deployContracts();
+
+        const amountIn = "0.4"
+        
         // console.log(
         //   deploymentObj.token0.address,
         //   deploymentObj.token1.address,
@@ -93,24 +98,23 @@ import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol
       const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
 
       const params1 = {
-        tokenIn: deploymentObj.weth9.address,
-        tokenOut: deploymentObj.token.address,
+        tokenIn: deploymentObj.token.address,
+        tokenOut: deploymentObj.weth9.address,
         fee: FeeAmount.MEDIUM,
         recipient: await deploymentObj.owner.getAddress(),
         deadline: unlockTime,
         // amountIn: ethers.parseEther("1"),
-        amountIn: ethers.utils.parseEther("0.0001"),
+        amountIn: ethers.utils.parseEther(amountIn),
         amountOutMinimum:0,
         sqrtPriceLimitX96: 0
       }
       const ownerAddress = deploymentObj.owner.getAddress()
     //   console.log("token0 before swap:", ethers.utils.formatEther(await deploymentObj.token0.balanceOf(ownerAddress)))
     //   console.log("token1 before swap:", ethers.utils.formatEther(await deploymentObj.token1.balanceOf(ownerAddress)))
-      const depositRes = await deploymentObj.weth9.connect(deploymentObj.owner).deposit({value: ethers.utils.parseEther("0.0001")})
-    //   await depositRes.wait()
-      const approveRes = await deploymentObj.weth9.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther("0.0001"));
-    //   await approveRes.wait()
-    //   await deploymentObj.token.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther("0.0001"));
+    //   await deploymentObj.weth9.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther("0.001"));
+    //   await deploymentObj.weth9.connect(deploymentObj.owner).deposit({value: ethers.utils.parseEther(amountIn)})
+    //   await deploymentObj.weth9.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther(amountIn));
+      await deploymentObj.token.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther(amountIn));
       const res = await deploymentObj.v3Router.connect(deploymentObj.owner).exactInputSingle(params1, {gasLimit: 1000000});
       const receipt = await res.wait()
       if(receipt.status == 1){

@@ -30,7 +30,7 @@ async function main() {
 
     console.log("setting cross chain tokens...")
     const result1 = await cotract.connect(deployer).setCrossChainToken(
-        ChainSelectors['polygonMumbai'],
+        ChainSelectors['arbitrumSepolia'],
         CrossChainTokenAddresses['sepolia'],
         "3"
     )
@@ -38,8 +38,8 @@ async function main() {
 
     console.log("setting cross chain index factory...")
     const result2 = await cotract.connect(deployer).setCrossChainFactory(
-        CR5CrossChainFactoryAddresses['polygonMumbai'],
-        ChainSelectors['polygonMumbai']
+        CR5CrossChainFactoryAddresses['arbitrumSepolia'],
+        ChainSelectors['arbitrumSepolia']
     )
     const receipt2 = await result2.wait();
 

@@ -357,9 +357,7 @@ contract IndexFactoryStorage is
     }
 
 
-
-
-    function updateCurrentList() public onlyIndexFactoryBalancer {
+    function _updateCurrenctList() internal {
         currentFilledCount +=1;
         for(uint i =0; i < totalOracleList; i++){
             
@@ -379,6 +377,14 @@ contract IndexFactoryStorage is
             currentChainSelectorTokenShares[currentFilledCount][chainSelector].push(tokenOracleMarketShare[oracleList[i]]);
         }
         totalCurrentList = totalOracleList;
+    }
+
+    function updateCurrentList() public onlyIndexFactoryBalancer {
+        _updateCurrenctList();
+    }
+
+    function mockUpdateCurrentList() public onlyOwner {
+        _updateCurrenctList();
     }
 
     function _swapSingle(address tokenIn, address tokenOut, uint amountIn, address _recipient, uint _swapVersion) internal returns(uint){

@@ -24,13 +24,13 @@ async function main() {
     // const provider = new ethers.JsonRpcProvider(process.env.GOERLI_RPC_URL)
     const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_SEPOLIA_RPC_URL)
     const factoryCotract:any = new ethers.Contract(
-        CR5CrossChainFactoryAddresses['polygonMumbai'] as string, //factory goerli
+        CR5CrossChainFactoryAddresses['arbitrumSepolia'] as string, //factory goerli
         // testSepoliaCR5IndexFactory as string, //factory goerli
         Factory_ABI,
         provider
     )
     const vaultCotract:any = new ethers.Contract(
-        CR5CrossChainVaultAddresses['polygonMumbai'] as string, //factory goerli
+        CR5CrossChainVaultAddresses['arbitrumSepolia'] as string, //factory goerli
         // testSepoliaCR5IndexFactory as string, //factory goerli
         Vault_ABI,
         provider
@@ -41,7 +41,7 @@ async function main() {
     console.log("setting cross chain index token in the cross chain factory contract ...")
     const result1 = await factoryCotract.connect(deployer).setCrossChainToken(
         ChainSelectors['sepolia'],
-        CrossChainTokenAddresses['polygonMumbai'],
+        CrossChainTokenAddresses['arbitrumSepolia'],
         "3"
     )
     const receipt1 = await result1.wait();
@@ -49,7 +49,7 @@ async function main() {
 
     console.log("setting cross chain index factory in the cross chain vault...")
     const result2 = await vaultCotract.connect(deployer).setFactory(
-        CR5CrossChainFactoryAddresses['polygonMumbai'],
+        CR5CrossChainFactoryAddresses['arbitrumSepolia'],
     )
     const receipt2 = await result2.wait();
 

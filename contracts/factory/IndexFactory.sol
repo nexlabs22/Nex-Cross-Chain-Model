@@ -864,11 +864,11 @@ contract IndexFactory is
         address token = tokenAmounts[0].token;
         uint256 amount = tokenAmounts[0].amount;
         uint wethAmount = swap(
-            token,
+            address(token),
             address(weth),
             amount,
             address(this),
-            crossChainTokenSwapVersion(sourceChainSelector)
+            3
         );
         redemptionNonceTotalValue[redemptionNonce] += wethAmount;
         redemptionCompletedTokensCount[redemptionNonce] += tokenAddresses.length;

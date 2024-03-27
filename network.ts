@@ -36,12 +36,12 @@ export const mumbaiRouterAddress = "0x1035CabC275068e0F4b745A29CEDf38E13aF41b1"
 export const arbitrumSepoliaRouterAddress = "0x2a9C5afB0d0e4BAb2BCdaE109EC4b0c4Be15a165"
 export const sepoliaCrossChainTokenAddress = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05"
 export const mumbaiCrossChainTokenAddress = "0xf1E3A5842EeEF51F2967b3F05D45DD4f4205FF40"
-//tokens        
-export const sepoliaBitcoinAddress = "0x6Ea5aD162d5b74Bc9e4C3e4eEB18AE6861407221"
-export const sepoliaTestEthereumAddress = "0x0C3711069cf889Fc47B3Da3700fFFDc2e16A4DaD"
-export const sepoliaTestBinanceAddress = "0x3eb804cd437c27f5aEB6Be7AbbB32D21a69Ca49e"
-export const sepoliaTestSolanaAddress = "0x357ECA9754fDc02A9860973E261FB08DE0f3b094"
-export const mumbaiTestRippleAddress = "0xdcD77a498720D6F3Fbd241046a477062Cd1E7670"
+// //tokens        
+// export const sepoliaBitcoinAddress = "0x6Ea5aD162d5b74Bc9e4C3e4eEB18AE6861407221"
+// export const sepoliaTestEthereumAddress = "0x0C3711069cf889Fc47B3Da3700fFFDc2e16A4DaD"
+// export const sepoliaTestBinanceAddress = "0x3eb804cd437c27f5aEB6Be7AbbB32D21a69Ca49e"
+// export const sepoliaTestSolanaAddress = "0x357ECA9754fDc02A9860973E261FB08DE0f3b094"
+// export const mumbaiTestRippleAddress = "0xdcD77a498720D6F3Fbd241046a477062Cd1E7670"
 //protocol contract addresses
 export const sepoliaCR5IndexToken = "0x47Fa73B6E9cFDB28B134D380Ef3f931e77260B24"
 export const sepoliaCR5IndexFactoryStorage = "0xc97EA0C219CD117C2035707Cb4dD3e818FB4E023"
