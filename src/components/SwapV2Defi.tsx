@@ -77,6 +77,7 @@ import { useRouter } from 'next/router'
 import { GoArrowUpRight } from 'react-icons/go'
 import { getCCIPStatus } from '@/hooks/getCcipStatusModel'
 import { getTransactionReceipt } from '@/hooks/getMessageID'
+import { GetRequestHistory } from '@/hooks/getRequestHistory'
 
 // Optional Config object, but defaults to demo api-key and eth-mainnet.
 const settings = {
@@ -143,6 +144,10 @@ const SwapV2Defi = () => {
 	// 	setEthPriceInUsd();
 	// },[])
 
+	const data = GetRequestHistory()
+	useEffect(()=>{
+	console.log("cr5 requests", data.data)
+	},[data])
 	//integration hooks
 	// const factoryContract = useContract(goerliAnfiFactory, indexFactoryAbi)
 	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
