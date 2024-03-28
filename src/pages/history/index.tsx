@@ -90,7 +90,6 @@ import ConnectButton from '@/components/ConnectButton'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
-import handleExportPDF from '@/utils/exportTable'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { sepoliaTokens } from '@/constants/goerliTokens'
 import exportPDF from '@/utils/exportTable'
@@ -117,7 +116,7 @@ function History() {
 		error: errorAnfi,
 		data: dataAnfi,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
 	})
 
 	const {
@@ -125,12 +124,12 @@ function History() {
 		error: errorCR5,
 		data: dataCR5,
 	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
 	})
 
 	// let anfiPrice = 0; let cr5Price = 0;
 	// let anfi24hChng = 0; let cr524hChng = 0;
-	const [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
+	let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
 	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
 	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
 
@@ -447,6 +446,8 @@ function History() {
 		exportPDF(tableData, 'landscape', address as string);
 	}
 		
+	chartArr = chartArr.filter((obj) => obj.time !== 1702512000)
+
 	// const tableData = [
 	// 	['Column 1', 'Column 2', 'Column 3'],
 	// 	['Data 1', { text: ['Data 2\n', { text: 'hello', color: 'gray' }] }, 'Data 3'],

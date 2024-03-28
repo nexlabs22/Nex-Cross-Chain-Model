@@ -1,6 +1,7 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import domtoimage from 'dom-to-image';
 import logo from '@assets/images/xlogo_s.png'
 
 class PDFUtils<T> {
@@ -19,7 +20,7 @@ class PDFUtils<T> {
         await this.addHeader('pdfHeader')
         //this.createSettingTable(data, columns, columnMapping);
         
-        await this.addChartImage(chartComponentId);
+        // await this.addChartImage(chartComponentId);
         await this.createTable(data, columns, columnMapping);
         this.pdf.save(`${fileName}.pdf`);
     }
@@ -58,7 +59,9 @@ class PDFUtils<T> {
                     const gainPercentageIndex = columns.indexOf('percentageGain' as keyof T);
                     if (data.column.index === gainPercentageIndex) {
                         const gainPercentage = parseFloat(String(tableData[data.row.index][gainPercentageIndex]));
-                        const textColor = gainPercentage > 0 ? '#089981' : gainPercentage < 0 ? "#F23645" : 80;
+                        console.log(gainPercentage)
+                        const textColor = gainPercentage > 0 ? '#089981' : gainPercentage < 0 ? "#F23645" : '#f9fafb';
+                        console.log(textColor)
                         data.cell.styles.textColor = textColor;
                     }
                 }
@@ -108,12 +111,28 @@ class PDFUtils<T> {
         }
     }
 
+    // private async addHeader(headerComponentId: string) {
+    //     const headerComponent = document.getElementById(headerComponentId);
+    //     console.log(headerComponent)
+    //     if (headerComponent) {
+    //         const canvas = await html2canvas(headerComponent);
+    //         const imgData = canvas.toDataURL('image/png');
+    //         this.pdf.addImage(imgData, 'PNG', 1, 1, 210, 45); // Adjust the coordinates and dimensions as needed
+    //     }
+    // }
     private async addHeader(headerComponentId: string) {
         const headerComponent = document.getElementById(headerComponentId);
+        console.log(headerComponent);
         if (headerComponent) {
-            const canvas = await html2canvas(headerComponent);
-            const imgData = canvas.toDataURL('image/png');
-            this.pdf.addImage(imgData, 'PNG', 1, 1, 210, 45); // Adjust the coordinates and dimensions as needed
+            domtoimage.toPng(headerComponent)
+                .then(function (dataUrl:string) {
+                    // Assuming "this.pdf" is your PDF object
+                    console.log(dataUrl)
+                    // this.pdf.addImage(dataUrl, 'PNG', 1, 1, 210, 45); // Adjust the coordinates and dimensions as needed
+                }.bind(this))
+                .catch(function (error) {
+                    console.error('Error capturing image:', error);
+                });
         }
     }
 
