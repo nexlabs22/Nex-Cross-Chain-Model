@@ -67,7 +67,7 @@ const TopIndexData = () => {
 
 	useEffect(() => {
 		setDayChangePer()
-		setANFIWeightage()
+		// setANFIWeightage()
 	}, [setANFIWeightage, setDayChangePer])
 
 	const [mktPrice, setMktPrice] = useState({ anfi: 0, cr5: 0 })
