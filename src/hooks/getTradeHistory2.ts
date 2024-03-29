@@ -11,7 +11,7 @@ import { Positions } from '@/types/tradeTableTypes'
 
 
 // export function GetPositionsHistory2(exchangeAddress: `0x${string}`, activeTicker: string) {
-export function GetPositionsHistory2() {
+export function GetPositionsHistoryDefi() {
 	// const accountAddress = useAccountAddressStore((state) => state.accountAddress)
 	// if(!exchangeAddress) return;
 

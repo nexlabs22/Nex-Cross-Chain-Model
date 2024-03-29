@@ -5382,7 +5382,7 @@ export const indexFactoryV2Abi = [
   }
 ]
 
-export const indexFactoryV3Abi = [
+export const crossChainIndexFactoryV2Abi = [
   {
     "inputs": [
       {
@@ -6647,2591 +6647,2591 @@ export const indexFactoryV3Abi = [
   }
 ]
 
-export const crossChainIndexFactoryV3Abi = [
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "router",
-        "type": "address"
-      }
-    ],
-    "name": "InvalidRouter",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "T",
-    "type": "error"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "id",
-        "type": "bytes32"
-      }
-    ],
-    "name": "ChainlinkCancelled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "id",
-        "type": "bytes32"
-      }
-    ],
-    "name": "ChainlinkFulfilled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "id",
-        "type": "bytes32"
-      }
-    ],
-    "name": "ChainlinkRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "version",
-        "type": "uint8"
-      }
-    ],
-    "name": "Initialized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "messageId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "nonce",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "time",
-        "type": "uint256"
-      }
-    ],
-    "name": "Issuanced",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "messageId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "MessageSent",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "Paused",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "messageId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "nonce",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "time",
-        "type": "uint256"
-      }
-    ],
-    "name": "Redemption",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "Unpaused",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "bytes32",
-            "name": "messageId",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "uint64",
-            "name": "sourceChainSelector",
-            "type": "uint64"
-          },
-          {
-            "internalType": "bytes",
-            "name": "sender",
-            "type": "bytes"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          },
-          {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct Client.EVMTokenAmount[]",
-            "name": "destTokenAmounts",
-            "type": "tuple[]"
-          }
-        ],
-        "internalType": "struct Client.Any2EVMMessage",
-        "name": "message",
-        "type": "tuple"
-      }
-    ],
-    "name": "ccipReceive",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_ethAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "convertEthToUsd",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "name": "crossChainToken",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "crossChainTokenSwapVersion",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "crossChainVault",
-    "outputs": [
-      {
-        "internalType": "contract CrossChainVault",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "currentChainSelector",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenIn",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokenOut",
-        "type": "address"
-      },
-      {
-        "internalType": "uint128",
-        "name": "amountIn",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint32",
-        "name": "secondsAgo",
-        "type": "uint32"
-      }
-    ],
-    "name": "estimateAmountOut",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "factoryV2",
-    "outputs": [
-      {
-        "internalType": "contract IUniswapV2Factory",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "factoryV3",
-    "outputs": [
-      {
-        "internalType": "contract IUniswapV3Factory",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "fee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "feeRate",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "feeRatePerDayScaled",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "feeReceiver",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "feeTimestamp",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenIn",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokenOut",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_swapVersion",
-        "type": "uint256"
-      }
-    ],
-    "name": "getAmountOut",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "finalAmountOut",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getRouter",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "i_link",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "i_maxTokensLength",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "_currentChainSelector",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address payable",
-        "name": "_crossChainVault",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_chainlinkToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_router",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_weth",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_swapRouterV3",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_factoryV3",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_swapRouterV2",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_factoryV2",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_toUsdPriceFeed",
-        "type": "address"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "isRestricted",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "issuanceCompletedTokensCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "issuanceMessageIdByNonce",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "issuanceTokenOldAndNewValues",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "oldTokenValue",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "newTokenValue",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "latestFeeUpdate",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "messageDetail",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "sourceChainSelector",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "message",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "methodologist",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "methodology",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "minter",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "oraclePayment",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "paused",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "priceInWei",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_proposedOwner",
-        "type": "address"
-      }
-    ],
-    "name": "proposeOwner",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "proposedOwner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "quoter",
-    "outputs": [
-      {
-        "internalType": "contract IQuoter",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "receivedMessages",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "redemptionMessageIdByNonce",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "destinationChainSelector",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_data",
-        "type": "bytes"
-      },
-      {
-        "internalType": "enum CrossChainIndexFactory.PayFeesIn",
-        "name": "payFeesIn",
-        "type": "uint8"
-      }
-    ],
-    "name": "sendMessage",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_router",
-        "type": "address"
-      }
-    ],
-    "name": "setCcipRouter",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "_chainSelector",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address",
-        "name": "_crossChainToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_swapVersion",
-        "type": "uint256"
-      }
-    ],
-    "name": "setCrossChainToken",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "_crossChainVault",
-        "type": "address"
-      }
-    ],
-    "name": "setCrossChainVault",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "sourceChainSelectorF",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "supplyCeiling",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes4",
-        "name": "interfaceId",
-        "type": "bytes4"
-      }
-    ],
-    "name": "supportsInterface",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenIn",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokenOut",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_swapVersion",
-        "type": "uint256"
-      }
-    ],
-    "name": "swap",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "swapRouterV2",
-    "outputs": [
-      {
-        "internalType": "contract IUniswapV2Router02",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "swapRouterV3",
-    "outputs": [
-      {
-        "internalType": "contract ISwapRouter",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "toUsdPriceFeed",
-    "outputs": [
-      {
-        "internalType": "contract AggregatorV3Interface",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "unpause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "weth",
-    "outputs": [
-      {
-        "internalType": "contract IWETH",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
-]
+// export const crossChainIndexFactoryV2Abi = [
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address",
+//         "name": "router",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "InvalidRouter",
+//     "type": "error"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "T",
+//     "type": "error"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": true,
+//         "internalType": "bytes32",
+//         "name": "id",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "name": "ChainlinkCancelled",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": true,
+//         "internalType": "bytes32",
+//         "name": "id",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "name": "ChainlinkFulfilled",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": true,
+//         "internalType": "bytes32",
+//         "name": "id",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "name": "ChainlinkRequested",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": false,
+//         "internalType": "uint8",
+//         "name": "version",
+//         "type": "uint8"
+//       }
+//     ],
+//     "name": "Initialized",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": true,
+//         "internalType": "bytes32",
+//         "name": "messageId",
+//         "type": "bytes32"
+//       },
+//       {
+//         "indexed": true,
+//         "internalType": "uint256",
+//         "name": "nonce",
+//         "type": "uint256"
+//       },
+//       {
+//         "indexed": false,
+//         "internalType": "uint256",
+//         "name": "time",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "Issuanced",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": false,
+//         "internalType": "bytes32",
+//         "name": "messageId",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "name": "MessageSent",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": true,
+//         "internalType": "address",
+//         "name": "previousOwner",
+//         "type": "address"
+//       },
+//       {
+//         "indexed": true,
+//         "internalType": "address",
+//         "name": "newOwner",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "OwnershipTransferred",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": false,
+//         "internalType": "address",
+//         "name": "account",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "Paused",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": true,
+//         "internalType": "bytes32",
+//         "name": "messageId",
+//         "type": "bytes32"
+//       },
+//       {
+//         "indexed": true,
+//         "internalType": "uint256",
+//         "name": "nonce",
+//         "type": "uint256"
+//       },
+//       {
+//         "indexed": false,
+//         "internalType": "uint256",
+//         "name": "time",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "Redemption",
+//     "type": "event"
+//   },
+//   {
+//     "anonymous": false,
+//     "inputs": [
+//       {
+//         "indexed": false,
+//         "internalType": "address",
+//         "name": "account",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "Unpaused",
+//     "type": "event"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "components": [
+//           {
+//             "internalType": "bytes32",
+//             "name": "messageId",
+//             "type": "bytes32"
+//           },
+//           {
+//             "internalType": "uint64",
+//             "name": "sourceChainSelector",
+//             "type": "uint64"
+//           },
+//           {
+//             "internalType": "bytes",
+//             "name": "sender",
+//             "type": "bytes"
+//           },
+//           {
+//             "internalType": "bytes",
+//             "name": "data",
+//             "type": "bytes"
+//           },
+//           {
+//             "components": [
+//               {
+//                 "internalType": "address",
+//                 "name": "token",
+//                 "type": "address"
+//               },
+//               {
+//                 "internalType": "uint256",
+//                 "name": "amount",
+//                 "type": "uint256"
+//               }
+//             ],
+//             "internalType": "struct Client.EVMTokenAmount[]",
+//             "name": "destTokenAmounts",
+//             "type": "tuple[]"
+//           }
+//         ],
+//         "internalType": "struct Client.Any2EVMMessage",
+//         "name": "message",
+//         "type": "tuple"
+//       }
+//     ],
+//     "name": "ccipReceive",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "_ethAmount",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "convertEthToUsd",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint64",
+//         "name": "",
+//         "type": "uint64"
+//       }
+//     ],
+//     "name": "crossChainToken",
+//     "outputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint64",
+//         "name": "",
+//         "type": "uint64"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "crossChainTokenSwapVersion",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "crossChainVault",
+//     "outputs": [
+//       {
+//         "internalType": "contract CrossChainVault",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "currentChainSelector",
+//     "outputs": [
+//       {
+//         "internalType": "uint64",
+//         "name": "",
+//         "type": "uint64"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address",
+//         "name": "tokenIn",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "tokenOut",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "uint128",
+//         "name": "amountIn",
+//         "type": "uint128"
+//       },
+//       {
+//         "internalType": "uint32",
+//         "name": "secondsAgo",
+//         "type": "uint32"
+//       }
+//     ],
+//     "name": "estimateAmountOut",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "amountOut",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "factoryV2",
+//     "outputs": [
+//       {
+//         "internalType": "contract IUniswapV2Factory",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "factoryV3",
+//     "outputs": [
+//       {
+//         "internalType": "contract IUniswapV3Factory",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "fee",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "feeRate",
+//     "outputs": [
+//       {
+//         "internalType": "uint8",
+//         "name": "",
+//         "type": "uint8"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "feeRatePerDayScaled",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "feeReceiver",
+//     "outputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "feeTimestamp",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address",
+//         "name": "tokenIn",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "tokenOut",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "uint256",
+//         "name": "amountIn",
+//         "type": "uint256"
+//       },
+//       {
+//         "internalType": "uint256",
+//         "name": "_swapVersion",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "getAmountOut",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "finalAmountOut",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "getRouter",
+//     "outputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "i_link",
+//     "outputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "i_maxTokensLength",
+//     "outputs": [
+//       {
+//         "internalType": "uint16",
+//         "name": "",
+//         "type": "uint16"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint64",
+//         "name": "_currentChainSelector",
+//         "type": "uint64"
+//       },
+//       {
+//         "internalType": "address payable",
+//         "name": "_crossChainVault",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_chainlinkToken",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_router",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_weth",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_swapRouterV3",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_factoryV3",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_swapRouterV2",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_factoryV2",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_toUsdPriceFeed",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "initialize",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "isRestricted",
+//     "outputs": [
+//       {
+//         "internalType": "bool",
+//         "name": "",
+//         "type": "bool"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "issuanceCompletedTokensCount",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "issuanceMessageIdByNonce",
+//     "outputs": [
+//       {
+//         "internalType": "bytes32",
+//         "name": "",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "issuanceTokenOldAndNewValues",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "oldTokenValue",
+//         "type": "uint256"
+//       },
+//       {
+//         "internalType": "uint256",
+//         "name": "newTokenValue",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "latestFeeUpdate",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "bytes32",
+//         "name": "",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "name": "messageDetail",
+//     "outputs": [
+//       {
+//         "internalType": "uint64",
+//         "name": "sourceChainSelector",
+//         "type": "uint64"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "sender",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "string",
+//         "name": "message",
+//         "type": "string"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "token",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "uint256",
+//         "name": "amount",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "methodologist",
+//     "outputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "methodology",
+//     "outputs": [
+//       {
+//         "internalType": "string",
+//         "name": "",
+//         "type": "string"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "minter",
+//     "outputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "oraclePayment",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "owner",
+//     "outputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "pause",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "paused",
+//     "outputs": [
+//       {
+//         "internalType": "bool",
+//         "name": "",
+//         "type": "bool"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "priceInWei",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address",
+//         "name": "_proposedOwner",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "proposeOwner",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "proposedOwner",
+//     "outputs": [
+//       {
+//         "internalType": "address",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "quoter",
+//     "outputs": [
+//       {
+//         "internalType": "contract IQuoter",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "receivedMessages",
+//     "outputs": [
+//       {
+//         "internalType": "bytes32",
+//         "name": "",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "redemptionMessageIdByNonce",
+//     "outputs": [
+//       {
+//         "internalType": "bytes32",
+//         "name": "",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "renounceOwnership",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint64",
+//         "name": "destinationChainSelector",
+//         "type": "uint64"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "receiver",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "bytes",
+//         "name": "_data",
+//         "type": "bytes"
+//       },
+//       {
+//         "internalType": "enum CrossChainIndexFactory.PayFeesIn",
+//         "name": "payFeesIn",
+//         "type": "uint8"
+//       }
+//     ],
+//     "name": "sendMessage",
+//     "outputs": [
+//       {
+//         "internalType": "bytes32",
+//         "name": "",
+//         "type": "bytes32"
+//       }
+//     ],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address",
+//         "name": "_router",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "setCcipRouter",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "uint64",
+//         "name": "_chainSelector",
+//         "type": "uint64"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_crossChainToken",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "uint256",
+//         "name": "_swapVersion",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "setCrossChainToken",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address payable",
+//         "name": "_crossChainVault",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "setCrossChainVault",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "sourceChainSelectorF",
+//     "outputs": [
+//       {
+//         "internalType": "uint64",
+//         "name": "",
+//         "type": "uint64"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "supplyCeiling",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "bytes4",
+//         "name": "interfaceId",
+//         "type": "bytes4"
+//       }
+//     ],
+//     "name": "supportsInterface",
+//     "outputs": [
+//       {
+//         "internalType": "bool",
+//         "name": "",
+//         "type": "bool"
+//       }
+//     ],
+//     "stateMutability": "pure",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address",
+//         "name": "tokenIn",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "tokenOut",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "uint256",
+//         "name": "amountIn",
+//         "type": "uint256"
+//       },
+//       {
+//         "internalType": "address",
+//         "name": "_recipient",
+//         "type": "address"
+//       },
+//       {
+//         "internalType": "uint256",
+//         "name": "_swapVersion",
+//         "type": "uint256"
+//       }
+//     ],
+//     "name": "swap",
+//     "outputs": [
+//       {
+//         "internalType": "uint256",
+//         "name": "",
+//         "type": "uint256"
+//       }
+//     ],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "swapRouterV2",
+//     "outputs": [
+//       {
+//         "internalType": "contract IUniswapV2Router02",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "swapRouterV3",
+//     "outputs": [
+//       {
+//         "internalType": "contract ISwapRouter",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "toUsdPriceFeed",
+//     "outputs": [
+//       {
+//         "internalType": "contract AggregatorV3Interface",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [
+//       {
+//         "internalType": "address",
+//         "name": "newOwner",
+//         "type": "address"
+//       }
+//     ],
+//     "name": "transferOwnership",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "unpause",
+//     "outputs": [],
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "inputs": [],
+//     "name": "weth",
+//     "outputs": [
+//       {
+//         "internalType": "contract IWETH",
+//         "name": "",
+//         "type": "address"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "stateMutability": "payable",
+//     "type": "receive"
+//   }
+// ]
 
-export const crossChainIndexFactoryV2Abi = [
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: 'router',
-				type: 'address',
-			},
-		],
-		name: 'InvalidRouter',
-		type: 'error',
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: false,
-				internalType: 'uint8',
-				name: 'version',
-				type: 'uint8',
-			},
-		],
-		name: 'Initialized',
-		type: 'event',
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'user',
-				type: 'address',
-			},
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'inputToken',
-				type: 'address',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'inputAmount',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'outputAmount',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'time',
-				type: 'uint256',
-			},
-		],
-		name: 'Issuanced',
-		type: 'event',
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: false,
-				internalType: 'bytes32',
-				name: 'messageId',
-				type: 'bytes32',
-			},
-		],
-		name: 'MessageSent',
-		type: 'event',
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'previousOwner',
-				type: 'address',
-			},
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'newOwner',
-				type: 'address',
-			},
-		],
-		name: 'OwnershipTransferred',
-		type: 'event',
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'user',
-				type: 'address',
-			},
-			{
-				indexed: true,
-				internalType: 'address',
-				name: 'outputToken',
-				type: 'address',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'inputAmount',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'outputAmount',
-				type: 'uint256',
-			},
-			{
-				indexed: false,
-				internalType: 'uint256',
-				name: 'time',
-				type: 'uint256',
-			},
-		],
-		name: 'Redemption',
-		type: 'event',
-	},
-	{
-		inputs: [],
-		name: 'askValues',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				components: [
-					{
-						internalType: 'bytes32',
-						name: 'messageId',
-						type: 'bytes32',
-					},
-					{
-						internalType: 'uint64',
-						name: 'sourceChainSelector',
-						type: 'uint64',
-					},
-					{
-						internalType: 'bytes',
-						name: 'sender',
-						type: 'bytes',
-					},
-					{
-						internalType: 'bytes',
-						name: 'data',
-						type: 'bytes',
-					},
-					{
-						components: [
-							{
-								internalType: 'address',
-								name: 'token',
-								type: 'address',
-							},
-							{
-								internalType: 'uint256',
-								name: 'amount',
-								type: 'uint256',
-							},
-						],
-						internalType: 'struct Client.EVMTokenAmount[]',
-						name: 'destTokenAmounts',
-						type: 'tuple[]',
-					},
-				],
-				internalType: 'struct Client.Any2EVMMessage',
-				name: 'message',
-				type: 'tuple',
-			},
-		],
-		name: 'ccipReceive',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		name: 'crossChainFactoryBySelector',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		name: 'crossChainToken',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'currentChainSelector',
-		outputs: [
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '_index',
-				type: 'uint256',
-			},
-		],
-		name: 'currentList',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: 'tokenIn',
-				type: 'address',
-			},
-			{
-				internalType: 'address',
-				name: 'tokenOut',
-				type: 'address',
-			},
-			{
-				internalType: 'uint128',
-				name: 'amountIn',
-				type: 'uint128',
-			},
-			{
-				internalType: 'uint32',
-				name: 'secondsAgo',
-				type: 'uint32',
-			},
-		],
-		name: 'estimateAmountOut',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: 'amountOut',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'feeRate',
-		outputs: [
-			{
-				internalType: 'uint8',
-				name: '',
-				type: 'uint8',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'firstReweightAction',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: 'tokenIn',
-				type: 'address',
-			},
-			{
-				internalType: 'address',
-				name: 'tokenOut',
-				type: 'address',
-			},
-			{
-				internalType: 'uint256',
-				name: 'amountIn',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_swapVersion',
-				type: 'uint256',
-			},
-		],
-		name: 'getAmountOut',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: 'finalAmountOut',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'getPortfolioBalance',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'getRouter',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'i_link',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'i_maxTokensLength',
-		outputs: [
-			{
-				internalType: 'uint16',
-				name: '',
-				type: 'uint16',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'indexFactoryStorage',
-		outputs: [
-			{
-				internalType: 'contract IndexFactoryStorage',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'indexToken',
-		outputs: [
-			{
-				internalType: 'contract IndexToken',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint64',
-				name: '_currentChainSelector',
-				type: 'uint64',
-			},
-			{
-				internalType: 'address payable',
-				name: '_token',
-				type: 'address',
-			},
-			{
-				internalType: 'address',
-				name: '_chainlinkToken',
-				type: 'address',
-			},
-			{
-				internalType: 'address',
-				name: '_router',
-				type: 'address',
-			},
-			{
-				internalType: 'address',
-				name: '_weth',
-				type: 'address',
-			},
-		],
-		name: 'initialize',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		name: 'issuanceChainSelectorFilled',
-		outputs: [
-			{
-				internalType: 'bool',
-				name: '',
-				type: 'bool',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'issuanceChainSelectorSharesByNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'issuanceChainSelectorTokensByNonce',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		name: 'issuanceChainSelectorTotalSharesByNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'issuanceChainSelectors',
-		outputs: [
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'issuanceCompletedTokensCount',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_tokenIn',
-				type: 'address',
-			},
-			{
-				internalType: 'uint256',
-				name: '_inputAmount',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_crossChainFee',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_tokenInSwapVersion',
-				type: 'uint256',
-			},
-		],
-		name: 'issuanceIndexTokens',
-		outputs: [],
-		stateMutability: 'payable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '_inputAmount',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_crossChainFee',
-				type: 'uint256',
-			},
-		],
-		name: 'issuanceIndexTokensWithEth',
-		outputs: [],
-		stateMutability: 'payable',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'issuanceNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'issuanceNonceRequester',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		name: 'issuanceTokenOldAndNewValues',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: 'oldTokenValue',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: 'newTokenValue',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'latestFeeUpdate',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'owner',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'portfolioTotalValueByNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'priceInWei',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_proposedOwner',
-				type: 'address',
-			},
-		],
-		name: 'proposeOwner',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'proposedOwner',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: 'amountIn',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '_crossChainFee',
-				type: 'uint256',
-			},
-			{
-				internalType: 'address',
-				name: '_tokenOut',
-				type: 'address',
-			},
-			{
-				internalType: 'uint256',
-				name: '_tokenOutSwapVersion',
-				type: 'uint256',
-			},
-		],
-		name: 'redemption',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'payable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		name: 'redemptionChainSelectorFilled',
-		outputs: [
-			{
-				internalType: 'bool',
-				name: '',
-				type: 'bool',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'redemptionChainSelectorSharesByNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'redemptionChainSelectorTokensByNonce',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		name: 'redemptionChainSelectorTotalSharesByNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'redemptionChainSelectors',
-		outputs: [
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'redemptionCompletedTokensCount',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'redemptionNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'redemptionNonceOutputToken',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'redemptionNonceOutputTokenSwapVersion',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'redemptionNonceRequester',
-		outputs: [
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'redemptionNonceTotalValue',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'renounceOwnership',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'reweightTokensCount',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'reweightWethValueByNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'secondReweightAction',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint64',
-				name: 'destinationChainSelector',
-				type: 'uint64',
-			},
-			{
-				internalType: 'address',
-				name: 'receiver',
-				type: 'address',
-			},
-			{
-				internalType: 'bytes',
-				name: '_data',
-				type: 'bytes',
-			},
-			{
-				internalType: 'enum IndexFactory.PayFeesIn',
-				name: 'payFeesIn',
-				type: 'uint8',
-			},
-		],
-		name: 'sendMessage',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_crossChainFactoryAddress',
-				type: 'address',
-			},
-			{
-				internalType: 'uint64',
-				name: '_chainSelector',
-				type: 'uint64',
-			},
-		],
-		name: 'setCrossChainFactory',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint64',
-				name: '_chainSelector',
-				type: 'uint64',
-			},
-			{
-				internalType: 'address',
-				name: '_crossChainToken',
-				type: 'address',
-			},
-		],
-		name: 'setCrossChainToken',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint8',
-				name: '_newFee',
-				type: 'uint8',
-			},
-		],
-		name: 'setFeeRate',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_indexFactoryStorage',
-				type: 'address',
-			},
-		],
-		name: 'setIndexFactoryStorage',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'bytes4',
-				name: 'interfaceId',
-				type: 'bytes4',
-			},
-		],
-		name: 'supportsInterface',
-		outputs: [
-			{
-				internalType: 'bool',
-				name: '',
-				type: 'bool',
-			},
-		],
-		stateMutability: 'pure',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: 'tokenIn',
-				type: 'address',
-			},
-			{
-				internalType: 'address',
-				name: 'tokenOut',
-				type: 'address',
-			},
-			{
-				internalType: 'uint256',
-				name: 'amountIn',
-				type: 'uint256',
-			},
-			{
-				internalType: 'address',
-				name: '_recipient',
-				type: 'address',
-			},
-			{
-				internalType: 'uint256',
-				name: '_swapVersion',
-				type: 'uint256',
-			},
-		],
-		name: 'swap',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_address',
-				type: 'address',
-			},
-		],
-		name: 'tokenChainSelector',
-		outputs: [
-			{
-				internalType: 'uint64',
-				name: '',
-				type: 'uint64',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_address',
-				type: 'address',
-			},
-		],
-		name: 'tokenCurrentMarketShare',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_address',
-				type: 'address',
-			},
-		],
-		name: 'tokenOracleMarketShare',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: '_address',
-				type: 'address',
-			},
-		],
-		name: 'tokenSwapVersion',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-			{
-				internalType: 'address',
-				name: '',
-				type: 'address',
-			},
-		],
-		name: 'tokenValueByNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'totalCurrentList',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'address',
-				name: 'newOwner',
-				type: 'address',
-			},
-		],
-		name: 'transferOwnership',
-		outputs: [],
-		stateMutability: 'nonpayable',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'updatePortfolioNonce',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		name: 'updatedTokensValueCount',
-		outputs: [
-			{
-				internalType: 'uint256',
-				name: '',
-				type: 'uint256',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		inputs: [],
-		name: 'weth',
-		outputs: [
-			{
-				internalType: 'contract IWETH',
-				name: '',
-				type: 'address',
-			},
-		],
-		stateMutability: 'view',
-		type: 'function',
-	},
-	{
-		stateMutability: 'payable',
-		type: 'receive',
-	},
-]
+// export const crossChainIndexFactoryV2Abi = [
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: 'router',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'InvalidRouter',
+// 		type: 'error',
+// 	},
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{
+// 				indexed: false,
+// 				internalType: 'uint8',
+// 				name: 'version',
+// 				type: 'uint8',
+// 			},
+// 		],
+// 		name: 'Initialized',
+// 		type: 'event',
+// 	},
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{
+// 				indexed: true,
+// 				internalType: 'address',
+// 				name: 'user',
+// 				type: 'address',
+// 			},
+// 			{
+// 				indexed: true,
+// 				internalType: 'address',
+// 				name: 'inputToken',
+// 				type: 'address',
+// 			},
+// 			{
+// 				indexed: false,
+// 				internalType: 'uint256',
+// 				name: 'inputAmount',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				indexed: false,
+// 				internalType: 'uint256',
+// 				name: 'outputAmount',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				indexed: false,
+// 				internalType: 'uint256',
+// 				name: 'time',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'Issuanced',
+// 		type: 'event',
+// 	},
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{
+// 				indexed: false,
+// 				internalType: 'bytes32',
+// 				name: 'messageId',
+// 				type: 'bytes32',
+// 			},
+// 		],
+// 		name: 'MessageSent',
+// 		type: 'event',
+// 	},
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{
+// 				indexed: true,
+// 				internalType: 'address',
+// 				name: 'previousOwner',
+// 				type: 'address',
+// 			},
+// 			{
+// 				indexed: true,
+// 				internalType: 'address',
+// 				name: 'newOwner',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'OwnershipTransferred',
+// 		type: 'event',
+// 	},
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{
+// 				indexed: true,
+// 				internalType: 'address',
+// 				name: 'user',
+// 				type: 'address',
+// 			},
+// 			{
+// 				indexed: true,
+// 				internalType: 'address',
+// 				name: 'outputToken',
+// 				type: 'address',
+// 			},
+// 			{
+// 				indexed: false,
+// 				internalType: 'uint256',
+// 				name: 'inputAmount',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				indexed: false,
+// 				internalType: 'uint256',
+// 				name: 'outputAmount',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				indexed: false,
+// 				internalType: 'uint256',
+// 				name: 'time',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'Redemption',
+// 		type: 'event',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'askValues',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				components: [
+// 					{
+// 						internalType: 'bytes32',
+// 						name: 'messageId',
+// 						type: 'bytes32',
+// 					},
+// 					{
+// 						internalType: 'uint64',
+// 						name: 'sourceChainSelector',
+// 						type: 'uint64',
+// 					},
+// 					{
+// 						internalType: 'bytes',
+// 						name: 'sender',
+// 						type: 'bytes',
+// 					},
+// 					{
+// 						internalType: 'bytes',
+// 						name: 'data',
+// 						type: 'bytes',
+// 					},
+// 					{
+// 						components: [
+// 							{
+// 								internalType: 'address',
+// 								name: 'token',
+// 								type: 'address',
+// 							},
+// 							{
+// 								internalType: 'uint256',
+// 								name: 'amount',
+// 								type: 'uint256',
+// 							},
+// 						],
+// 						internalType: 'struct Client.EVMTokenAmount[]',
+// 						name: 'destTokenAmounts',
+// 						type: 'tuple[]',
+// 					},
+// 				],
+// 				internalType: 'struct Client.Any2EVMMessage',
+// 				name: 'message',
+// 				type: 'tuple',
+// 			},
+// 		],
+// 		name: 'ccipReceive',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		name: 'crossChainFactoryBySelector',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		name: 'crossChainToken',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'currentChainSelector',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_index',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'currentList',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: 'tokenIn',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: 'tokenOut',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'uint128',
+// 				name: 'amountIn',
+// 				type: 'uint128',
+// 			},
+// 			{
+// 				internalType: 'uint32',
+// 				name: 'secondsAgo',
+// 				type: 'uint32',
+// 			},
+// 		],
+// 		name: 'estimateAmountOut',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: 'amountOut',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'feeRate',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint8',
+// 				name: '',
+// 				type: 'uint8',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'firstReweightAction',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: 'tokenIn',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: 'tokenOut',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: 'amountIn',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_swapVersion',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'getAmountOut',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: 'finalAmountOut',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'getPortfolioBalance',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'getRouter',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'i_link',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'i_maxTokensLength',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint16',
+// 				name: '',
+// 				type: 'uint16',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'indexFactoryStorage',
+// 		outputs: [
+// 			{
+// 				internalType: 'contract IndexFactoryStorage',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'indexToken',
+// 		outputs: [
+// 			{
+// 				internalType: 'contract IndexToken',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: '_currentChainSelector',
+// 				type: 'uint64',
+// 			},
+// 			{
+// 				internalType: 'address payable',
+// 				name: '_token',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: '_chainlinkToken',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: '_router',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: '_weth',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'initialize',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		name: 'issuanceChainSelectorFilled',
+// 		outputs: [
+// 			{
+// 				internalType: 'bool',
+// 				name: '',
+// 				type: 'bool',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'issuanceChainSelectorSharesByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'issuanceChainSelectorTokensByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		name: 'issuanceChainSelectorTotalSharesByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'issuanceChainSelectors',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'issuanceCompletedTokensCount',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '_tokenIn',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_inputAmount',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_crossChainFee',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_tokenInSwapVersion',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'issuanceIndexTokens',
+// 		outputs: [],
+// 		stateMutability: 'payable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_inputAmount',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_crossChainFee',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'issuanceIndexTokensWithEth',
+// 		outputs: [],
+// 		stateMutability: 'payable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'issuanceNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'issuanceNonceRequester',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'issuanceTokenOldAndNewValues',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: 'oldTokenValue',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: 'newTokenValue',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'latestFeeUpdate',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'owner',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'portfolioTotalValueByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'priceInWei',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '_proposedOwner',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'proposeOwner',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'proposedOwner',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: 'amountIn',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_crossChainFee',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: '_tokenOut',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_tokenOutSwapVersion',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemption',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'payable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		name: 'redemptionChainSelectorFilled',
+// 		outputs: [
+// 			{
+// 				internalType: 'bool',
+// 				name: '',
+// 				type: 'bool',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemptionChainSelectorSharesByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemptionChainSelectorTokensByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		name: 'redemptionChainSelectorTotalSharesByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemptionChainSelectors',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemptionCompletedTokensCount',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'redemptionNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemptionNonceOutputToken',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemptionNonceOutputTokenSwapVersion',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemptionNonceRequester',
+// 		outputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'redemptionNonceTotalValue',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'renounceOwnership',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'reweightTokensCount',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'reweightWethValueByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'secondReweightAction',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: 'destinationChainSelector',
+// 				type: 'uint64',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: 'receiver',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'bytes',
+// 				name: '_data',
+// 				type: 'bytes',
+// 			},
+// 			{
+// 				internalType: 'enum IndexFactory.PayFeesIn',
+// 				name: 'payFeesIn',
+// 				type: 'uint8',
+// 			},
+// 		],
+// 		name: 'sendMessage',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '_crossChainFactoryAddress',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'uint64',
+// 				name: '_chainSelector',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		name: 'setCrossChainFactory',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: '_chainSelector',
+// 				type: 'uint64',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: '_crossChainToken',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'setCrossChainToken',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint8',
+// 				name: '_newFee',
+// 				type: 'uint8',
+// 			},
+// 		],
+// 		name: 'setFeeRate',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '_indexFactoryStorage',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'setIndexFactoryStorage',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'bytes4',
+// 				name: 'interfaceId',
+// 				type: 'bytes4',
+// 			},
+// 		],
+// 		name: 'supportsInterface',
+// 		outputs: [
+// 			{
+// 				internalType: 'bool',
+// 				name: '',
+// 				type: 'bool',
+// 			},
+// 		],
+// 		stateMutability: 'pure',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: 'tokenIn',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: 'tokenOut',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: 'amountIn',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: '_recipient',
+// 				type: 'address',
+// 			},
+// 			{
+// 				internalType: 'uint256',
+// 				name: '_swapVersion',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'swap',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '_address',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'tokenChainSelector',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint64',
+// 				name: '',
+// 				type: 'uint64',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '_address',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'tokenCurrentMarketShare',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '_address',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'tokenOracleMarketShare',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: '_address',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'tokenSwapVersion',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 			{
+// 				internalType: 'address',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'tokenValueByNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'totalCurrentList',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'address',
+// 				name: 'newOwner',
+// 				type: 'address',
+// 			},
+// 		],
+// 		name: 'transferOwnership',
+// 		outputs: [],
+// 		stateMutability: 'nonpayable',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'updatePortfolioNonce',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		name: 'updatedTokensValueCount',
+// 		outputs: [
+// 			{
+// 				internalType: 'uint256',
+// 				name: '',
+// 				type: 'uint256',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: 'weth',
+// 		outputs: [
+// 			{
+// 				internalType: 'contract IWETH',
+// 				name: '',
+// 				type: 'address',
+// 			},
+// 		],
+// 		stateMutability: 'view',
+// 		type: 'function',
+// 	},
+// 	{
+// 		stateMutability: 'payable',
+// 		type: 'receive',
+// 	},
+// ]
 
 export const uniswapV3PoolContractAbi = [
 	{
@@ -10544,3 +10544,1543 @@ export const uniswapV3FactoryAbi = [
 		type: 'function',
 	},
 ]
+
+export const crossChainFactoryStorageAbi = [
+    {
+      "inputs": [],
+      "name": "T",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ChainlinkCancelled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ChainlinkFulfilled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ChainlinkRequested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "allCurrentChainSelectorTokenShares",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "allCurrentChainSelectorTokens",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "tokens",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "allCurrentChainSelectorVersions",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "versions",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "allOracleChainSelectorTokenShares",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "allOracleChainSelectorTokens",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "tokens",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "allOracleChainSelectorVersions",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "versions",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "a",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "b",
+          "type": "string"
+        }
+      ],
+      "name": "concatenation",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "name": "crossChainFactoryBySelector",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "name": "crossChainToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "crossChainTokenSwapVersion",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentChainSelector",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "currentChainSelectorTokenShares",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "currentChainSelectorTokens",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "currentChainSelectorTokensCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "name": "currentChainSelectorTotalShares",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "currentChainSelectorVersions",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "currentChainSelectors",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentChainSelectorsCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentFilledCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "currentList",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenOut",
+          "type": "address"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amountIn",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint32",
+          "name": "secondsAgo",
+          "type": "uint32"
+        }
+      ],
+      "name": "estimateAmountOut",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amountOut",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "externalJobId",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "factoryV2",
+      "outputs": [
+        {
+          "internalType": "contract IUniswapV2Factory",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "factoryV3",
+      "outputs": [
+        {
+          "internalType": "contract IUniswapV3Factory",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "feeRate",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "requestId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_tokens",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_marketShares",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_swapVersions",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint64[]",
+          "name": "_chainSelectors",
+          "type": "uint64[]"
+        }
+      ],
+      "name": "fulfillAssetsData",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenOut",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_swapVersion",
+          "type": "uint256"
+        }
+      ],
+      "name": "getAmountOut",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "finalAmountOut",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getPortfolioBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "indexFactory",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "indexFactoryBalancer",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "indexToken",
+      "outputs": [
+        {
+          "internalType": "contract IndexToken",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_currentChainSelector",
+          "type": "uint64"
+        },
+        {
+          "internalType": "address payable",
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_chainlinkToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_oracleAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_externalJobId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "_toUsdPriceFeed",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_weth",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_swapRouterV3",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_factoryV3",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_swapRouterV2",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_factoryV2",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "name": "isCurrentChainSelectorStored",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "name": "isOracleChainSelectorStored",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "lastUpdateTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "latestFeeUpdate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_tokens",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_marketShares",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_swapVersions",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint64[]",
+          "name": "_chainSelectors",
+          "type": "uint64[]"
+        }
+      ],
+      "name": "mockFillAssetsList",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "mockUpdateCurrentList",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "oracleChainSelectorTokenShares",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "oracleChainSelectorTokens",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "oracleChainSelectorTokensCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "name": "oracleChainSelectorTotalShares",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "oracleChainSelectorVersions",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "oracleChainSelectors",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "oracleChainSelectorsCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "oracleFilledCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "oracleList",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "oraclePayment",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "priceInWei",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_proposedOwner",
+          "type": "address"
+        }
+      ],
+      "name": "proposeOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "proposedOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "quoter",
+      "outputs": [
+        {
+          "internalType": "contract IQuoter",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "requestAssetsData",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_crossChainFactoryAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        }
+      ],
+      "name": "setCrossChainFactory",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "_chainSelector",
+          "type": "uint64"
+        },
+        {
+          "internalType": "address",
+          "name": "_crossChainToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_swapVersion",
+          "type": "uint256"
+        }
+      ],
+      "name": "setCrossChainToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_indexFactory",
+          "type": "address"
+        }
+      ],
+      "name": "setIndexFactory",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_indexFactoryBalancer",
+          "type": "address"
+        }
+      ],
+      "name": "setIndexFactoryBalancer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_toUsdPricefeed",
+          "type": "address"
+        }
+      ],
+      "name": "setPriceFeed",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_beforeAddress",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_afterAddress",
+          "type": "string"
+        }
+      ],
+      "name": "setUrl",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenOut",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_swapVersion",
+          "type": "uint256"
+        }
+      ],
+      "name": "swap",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "swapRouterV2",
+      "outputs": [
+        {
+          "internalType": "contract IUniswapV2Router02",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "swapRouterV3",
+      "outputs": [
+        {
+          "internalType": "contract ISwapRouter",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "toUsdPriceFeed",
+      "outputs": [
+        {
+          "internalType": "contract AggregatorV3Interface",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "tokenChainSelector",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "tokenCurrentListIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "tokenCurrentMarketShare",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "tokenOracleListIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "tokenOracleMarketShare",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "tokenSwapVersion",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalCurrentChainSelectors",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalCurrentList",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalOracleChainSelectors",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalOracleList",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "updateCurrentList",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "weth",
+      "outputs": [
+        {
+          "internalType": "contract IWETH",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]

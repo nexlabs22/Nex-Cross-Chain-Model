@@ -492,10 +492,10 @@ const SwapV2Defi = () => {
 	const [loadingTokens, setLoadingTokens] = useState(true)
 	const [currentArrayId, setCurrentArrayId] = useState(0)
 
-	useEffect(() => {
-		getCCIPStatus("0x992385f2953b30d34809da260ab52536500a241872161a0b881a44e0c4389288")
-		// getTransactionReceipt("0x992385f2953b30d34809da260ab52536500a241872161a0b881a44e0c4389288")
-	},[])
+	// useEffect(() => {
+	// 	// getCCIPStatus("0x992385f2953b30d34809da260ab52536500a241872161a0b881a44e0c4389288")
+	// 	// getTransactionReceipt("0x992385f2953b30d34809da260ab52536500a241872161a0b881a44e0c4389288")
+	// },[])
 
 	const fetchAllLiFiTokens = async () => {
 		const options = {

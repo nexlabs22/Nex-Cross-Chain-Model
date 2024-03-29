@@ -1,7 +1,7 @@
 import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaTokenAddresses } from '@/constants/contractAddresses'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
+import { GetPositionsHistoryDefi } from '@/hooks/getTradeHistory2'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 import usePortfolioPageStore from '@/store/portfolioStore'
 import useTradePageStore from '@/store/tradeStore'
@@ -20,6 +20,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { BsArrowCounterclockwise } from 'react-icons/bs'
 import { convertTime, reduceAddress } from '@/utils/general'
+import { GetRequestHistory } from '@/hooks/getRequestHistory'
+import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
 
 function NewHistoryTable() {
 	const { mode } = useLandingPageStore()
@@ -41,12 +43,20 @@ function NewHistoryTable() {
 		isMainnet,
 	} = useTradePageStore()
 	const { ownedAssetInActivity, setPortfolioData } = usePortfolioPageStore()
-	const positionHistory = GetPositionsHistory2()
+	const positionHistoryDefi = GetPositionsHistoryDefi()
+
+	const crossChainpositionHistory = GetTradeHistoryCrossChain()
+	const crossChainRequestHistory = GetRequestHistory()
+
+	useEffect(()=>{
+		console.log("crossChainpositionHistory--->",crossChainpositionHistory.data)
+		console.log("crossChainRequestHistory--->",crossChainRequestHistory.data)
+	},[crossChainpositionHistory, crossChainRequestHistory ])
 
 	// useEffect(() => {
-	// 	console.log("positionHistory", positionHistory)
-	// 	console.log("positionHistory")
-	// },[positionHistory])
+	// 	console.log("positionHistoryDefi", positionHistoryDefi)
+	// 	console.log("positionHistoryDefi")
+	// },[positionHistoryDefi])
 
 	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
@@ -55,36 +65,36 @@ function NewHistoryTable() {
 
 	useEffect(() => {
 		// setEthPriceInUsd()
-		setPortfolioData(positionHistory.data)
-	}, [setEthPriceInUsd, setPortfolioData, positionHistory.data])
+		setPortfolioData(positionHistoryDefi.data)
+	}, [setEthPriceInUsd, setPortfolioData, positionHistoryDefi.data])
 
 	const allowedSymbols = ['ANFI', 'CRYPTO5']
 	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
 	useEffect(() => {
 		if (path === '/tradeIndex') {
-			const data = positionHistory.data.filter((data) => {
+			const data = positionHistoryDefi.data.filter((data) => {
 				return activeTicker.includes(data.indexName)
 			})
 			if (JSON.stringify(data) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(data)
 			}
 		} else if (path === '/portfolio' || path === '/history') {
-			setPositionHistoryData(positionHistory.data)
+			setPositionHistoryData(positionHistoryDefi.data)
 		} else if (path === '/assetActivity') {
-			const data = positionHistory.data.filter((data) => {
+			const data = positionHistoryDefi.data.filter((data) => {
 				return assetName.toUpperCase() === data.indexName
 			})
 
 			setPositionHistoryData(data)
 		}
-	}, [path, positionHistory.data, assetName, swapFromCur.Symbol, swapToCur.Symbol, ownedAssetInActivity, activeTicker])
+	}, [path, positionHistoryDefi.data, assetName, swapFromCur.Symbol, swapToCur.Symbol, ownedAssetInActivity, activeTicker])
 
 	useEffect(() => {
 		if (tradeTableReload) {
-			positionHistory.reload()
+			positionHistoryDefi.reload()
 			setTradeTableReload(false)
 		}
-	}, [positionHistory, setTradeTableReload, tradeTableReload])
+	}, [positionHistoryDefi, setTradeTableReload, tradeTableReload])
 
 	const roundNumber = (number: number) => {
 		return FormatToViewNumber({ value: number, returnType: 'number' })
@@ -113,6 +123,8 @@ function NewHistoryTable() {
 
 		getUsdPrices()
 	}, [ethPriceInUsd, usdPrices])
+ 
+	const combinedpositionsData = positionHistoryData.concat()
 
 	const dataToShow: { timestamp: number; tokenAddress: string; indexName: string; side: string; inputAmount: number; outputAmount: number; txHash: string }[] = Array.from(
 		{ length: Math.max(5, positionHistoryData.length) },
@@ -215,7 +227,7 @@ function NewHistoryTable() {
 								Actions
 								<div
 									onClick={() => {
-										positionHistory.reload()
+										positionHistoryDefi.reload()
 									}}
 									className="float-end py-1 cursor-pointer"
 								>

@@ -121,7 +121,7 @@ const getMessageStatus = (status:string) => {
     const matchingOffRamps = offRamps.filter(
       (offRamp: any) => offRamp.sourceChainSelector.toString() === sourceChainSelector
     );
-    
+
     for (const matchingOffRamp of matchingOffRamps) {
       const offRampContract = new ethers.Contract(
         matchingOffRamp.offRamp,

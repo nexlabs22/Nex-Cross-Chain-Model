@@ -8,7 +8,7 @@ import { factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, zeroAddres
 import { useAddress } from '@thirdweb-dev/react'
 import { Positions } from '@/types/tradeTableTypes'
 import { getCCIPStatusById } from './getCcipStatusModelById'
-import { indexFactoryV3Abi } from '@/constants/abi'
+import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi } from '@/constants/abi'
 
 export interface Positions1 {
 	side: string;
@@ -85,13 +85,15 @@ export function GetRequestHistory() {
 			})
 			const userMintRequestLogs: any = mintRequestlogs.filter((log) => log.args.user == accountAddress)
 			userMintRequestLogs.forEach(async (log: any) => {
+				// console.log(log)
                 
                 const sendStatus = await getCCIPStatusById(log.args.messageId, "ethereumSepolia", "arbitrumSepolia")
                 let receiveStatus = ""
                 if(sendStatus == "SUCCESS"){
                     const messageId = await client2.readContract({
                         address: "0xeB08A8CA65Bc5f5dD4D54841a55bb6949fab3548",
-                        abi: indexFactoryV3Abi,
+                        // abi: indexFactoryV2Abi,
+                        abi: crossChainIndexFactoryV2Abi,
                         functionName: 'issuanceMessageIdByNonce',
                         args:[log.args.nonce]
                       })
@@ -110,7 +112,6 @@ export function GetRequestHistory() {
                     nonce: Number(log.args.nonce),
                     sendStatus,
                     receiveStatus
-                    // sendStatus: 
 				}
 				positions0.push(obj)
 				// setPositions(preObj => [...preObj, obj])
@@ -137,7 +138,7 @@ export function GetRequestHistory() {
                 if(sendStatus == "SUCCESS"){
                     const messageId = await client2.readContract({
                         address: "0xeB08A8CA65Bc5f5dD4D54841a55bb6949fab3548",
-                        abi: indexFactoryV3Abi,
+                        abi: indexFactoryV2Abi,
                         functionName: 'redemptionMessageIdByNonce',
                         args:[log.args.nonce]
                       })
