@@ -51,7 +51,8 @@ export function GetPositionsHistory2() {
 				address: value as `0x${string}`,
 				event: parseAbiItem(
 					// 'event MintRequestAdd( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
-					'event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time)'
+					// 'event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time)'
+					'event Issuanced(bytes32 indexed messageId,uint indexed nonce,address indexed user,address inputToken,uint inputAmount,uint outputAmount, uint time)'
 				),
 				args: {
 					user: accountAddress as `0x${string}`,
@@ -79,7 +80,8 @@ export function GetPositionsHistory2() {
 				address: value as `0x${string}`,
 				event: parseAbiItem(
 					// 'event Burned( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
-					'event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time)'
+					// 'event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time)'
+					'event Redemption(bytes32 indexed messageId,uint indexed nonce,address indexed user,address outputToken,uint inputAmount,uint outputAmount,uint time)'
 				),
 				args: {
 					user: accountAddress as `0x${string}`,
