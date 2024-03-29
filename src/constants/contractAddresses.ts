@@ -7,6 +7,7 @@ export const sepoliaUsdtAddress = '0xE8888fE3Bde6f287BDd0922bEA6E0bF6e5f418e7';
 export const goerliLinkAddress = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB';
 export const sepoliaLinkAddress = '0x779877A7B0D9E8603169DdbD7836e478b4624789';
 
+export const MainnetUniswapV3FactoryAddress = '0x1F98431c8aD98523631AE4a59f267346ea31F984'
 export const sepoliaUniswapV3FactoryAddress = '0x0227628f3F023bb0B980b67D528571c95c6DaC1c'
 
 export const goerliAnfiIndexToken = "0x40d284001E3f6501C3f59FA4719776f973Ef6F91";

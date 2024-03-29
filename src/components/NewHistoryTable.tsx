@@ -1,5 +1,5 @@
 import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaTokenAddresses } from '@/constants/contractAddresses'
-import { sepoliaTokens } from '@/constants/goerliTokens'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
@@ -103,7 +103,7 @@ function NewHistoryTable() {
 			sepoliaTokens.map(async (token) => {
 				if (ethPriceInUsd > 0) {
 					const obj = usdPrices
-					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					obj[token.address] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
 						setUsdPrices(obj)
 					}

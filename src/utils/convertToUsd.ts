@@ -1,21 +1,30 @@
-
 import { uniswapV3PoolContractAbi } from '@/constants/abi'
 import getPoolAddress from '@/uniswap/utils'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { SwapNumbers } from './general'
-import { goerliTokens, sepoliaTokens } from '@/constants/goerliTokens'
+import { sepoliaTokens } from '@/constants/testnetTokens'
+import { Coin } from '@/types/nexTokenData'
 
-export default async function convertToUSD(tokenAddress: string, ethPrice: number, isMainnet: boolean) {
+export default async function convertToUSD(tokenData: { tokenAddress: string; tokenDecimals: number }, ethPrice: number, isMainnet: boolean) {
 	try {
-		const tokenDetails = sepoliaTokens.find((d) => d.address === tokenAddress) as { address: string, decimals: number, symbol: string }
+		let poolAddress
+		let decimals
 
-		if (tokenDetails.symbol === 'ETH') return ethPrice;
-		// if (tokenDetails.symbol === 'CRYPTO5') return 0;
+		let address
+		if (!isMainnet) {
+			const tokenDetails = sepoliaTokens.find((d) => d.address === tokenData.tokenAddress) as { address: string; decimals: number; Symbol: string }
+			address = tokenDetails.address
+			decimals = tokenDetails.decimals
+			if (tokenDetails.Symbol === 'ETH') return ethPrice
+			poolAddress = await getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
+		} else {
+			address = tokenData.tokenAddress
+			decimals = tokenData.tokenDecimals
+			poolAddress = await getPoolAddress(tokenData.tokenAddress, tokenData.tokenDecimals, isMainnet)
+		}
 
-		const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
 		let isRevPool = false
 
-		// const chainName = isMainnet ? 'ethereum' : 'goerli'
 		const chainName = isMainnet ? 'ethereum' : 'sepolia'
 		const sdk = new ThirdwebSDK(chainName)
 		const poolContract = await sdk.getContract(poolAddress as string, uniswapV3PoolContractAbi)
@@ -25,10 +34,10 @@ export default async function convertToUSD(tokenAddress: string, ethPrice: numbe
 
 		const fromSqrtPriceX96 = data.sqrtPriceX96
 
-		let decimal0 = Number(tokenDetails.decimals)
+		let decimal0 = Number(decimals)
 		let decimal1 = 18
 
-		if (token0 !== tokenDetails.address) {
+		if (token0 !== address) {
 			isRevPool = true;
 			[decimal0, decimal1] = SwapNumbers(decimal0, decimal1)
 		}
@@ -38,10 +47,9 @@ export default async function convertToUSD(tokenAddress: string, ethPrice: numbe
 
 		const priceInUSD = isRevPool ? calculatedPriceAsNumber / ethPrice : 1 / calculatedPriceAsNumber / ethPrice
 
-		return priceInUSD;
+		return priceInUSD as number 
 	} catch (err) {
-		console.log(tokenAddress,ethPrice,isMainnet)
-		console.log("Error in getting USD Price", err)
+		console.log('Error in getting USD Price', err)
+		return 1;
 	}
-
 }

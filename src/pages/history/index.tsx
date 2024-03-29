@@ -91,7 +91,7 @@ import { nexTokens } from '@/constants/nexIndexTokens'
 import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
-import { sepoliaTokens } from '@/constants/goerliTokens'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 import exportPDF from '@/utils/exportTable'
 import { toast } from 'react-toastify'
 
@@ -309,7 +309,7 @@ function History() {
 		async function getTokenDetails() {
 			const data = await Promise.all(
 				nexTokens.map(async (item: nexTokenDataType) => {
-					const calculatedUsdValue = (await convertToUSD(item.address, ethPriceInUsd, false)) || 0
+					const calculatedUsdValue = (await convertToUSD({tokenAddress:item.address, tokenDecimals:item.decimals}, ethPriceInUsd, false)) || 0
 					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
 					const totalTokenUsd = calculatedUsdValue * totalToken || 0
 					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
@@ -368,7 +368,7 @@ function History() {
 			sepoliaTokens.map(async (token) => {
 				if (ethPriceInUsd > 0) {
 					const obj = usdPrices
-					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					obj[token.address] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
 						setUsdPrices(obj)
 					}
@@ -563,7 +563,7 @@ function History() {
 										>
 											$
 											{showPortfolioData && totalPortfolioBalance
-												? totalPortfolioBalance < 0.01
+												? totalPortfolioBalance < 0.01 && totalPortfolioBalance > 0
 													? '≈ 0.00 '
 													: FormatToViewNumber({ value: totalPortfolioBalance, returnType: 'string' })
 												: '0.00'}

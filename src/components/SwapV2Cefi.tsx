@@ -62,24 +62,8 @@ import getPoolAddress from '@/uniswap/utils'
 import { SwapNumbers } from '@/utils/general'
 import convertToUSD from '@/utils/convertToUsd'
 import axios from 'axios'
-
-// Optional Config object, but defaults to demo api-key and eth-mainnet.
-const settings = {
-	apiKey: 'LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1', // Replace with your Alchemy API Key.
-	network: Network.ETH_GOERLI, // Replace with your network.
-}
-
-const alchemy = new Alchemy(settings)
-
-type Coin = {
-	id: number
-	logo: string
-	name: string
-	Symbol: string
-	address: string
-	factoryAddress: string
-	decimals: number
-}
+import { Coin } from '@/types/nexTokenData'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 
 const SwapV2Cefi = () => {
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
@@ -101,7 +85,6 @@ const SwapV2Cefi = () => {
 		changeSwapToCur,
 		swapFromCur,
 		swapToCur,
-		nftImage,
 		setNftImage,
 		setTradeTableReload,
 		setEthPriceInUsd,
@@ -185,7 +168,7 @@ const SwapV2Cefi = () => {
 	useEffect(() => {
 		async function fetchData(tokenDetails: Coin, place: string) {
 			try {
-				const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
+				const poolAddress = await getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
 				
 				let isRevPool = false
 
@@ -397,87 +380,6 @@ const SwapV2Cefi = () => {
 		setToCurrencyModalOpen(false)
 	}
 
-	const [testnetCoinsList, setTestnetCoinsList] = useState<Coin[][]>([
-		[
-			// {
-			// 	id: 0,
-			// 	logo: cr5Logo.src,
-			// 	name: 'CRYPTO5',
-			// 	Symbol: 'CR5',
-			// 	address: goerliCrypto5IndexToken,
-			// 	factoryAddress: goerliCrypto5Factory,
-			// 	decimals: 18
-			// },
-			{
-				id: 1,
-				logo: anfiLogo.src,
-				name: 'ANFI',
-				Symbol: 'ANFI',
-				address: goerliAnfiV2IndexToken,
-				factoryAddress: goerliAnfiV2Factory,
-				decimals: 18,
-			},
-			{
-				id: 2,
-				logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
-				name: 'Tether',
-				Symbol: 'USDT',
-				address: goerliUsdtAddress,
-				factoryAddress: '',
-				decimals: 18,
-			},
-			{
-				id: 3,
-				logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
-				name: 'Ethereum',
-				Symbol: 'ETH',
-				address: goerliWethAddress,
-				factoryAddress: '',
-				decimals: 18,
-			},
-		],
-	])
-
-	const [allCoinsList, setAllCoinsList] = useState<Coin[][]>([[]])
-	// [
-	// 	// {
-	// 	// 	id: 0,
-	// 	// 	logo: cr5Logo.src,
-	// 	// 	name: 'CRYPTO5',
-	// 	// 	Symbol: 'CR5',
-	// 	// 	address: goerliCrypto5IndexToken,
-	// 	// 	factoryAddress: goerliCrypto5Factory,
-	// 	// 	decimals: 18
-	// 	// },
-	// 	{
-	// 		id: 1,
-	// 		logo: anfiLogo.src,
-	// 		name: 'ANFI',
-	// 		Symbol: 'ANFI',
-	// 		address: goerliAnfiV2IndexToken,
-	// 		factoryAddress: goerliAnfiV2Factory,
-	// 		decimals: 18,
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
-	// 		name: 'Tether',
-	// 		Symbol: 'USDT',
-	// 		address: goerliUsdtAddress,
-	// 		factoryAddress: '',
-	// 		decimals: 18,
-	// 	},
-	// 	{
-	// 		id: 3,
-	// 		logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
-	// 		name: 'Ethereum',
-	// 		Symbol: 'ETH',
-	// 		address: goerliWethAddress,
-	// 		factoryAddress: '',
-	// 		decimals: 18,
-	// 	},
-	// ],
-	// ])
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
 
 	const [loadingTokens, setLoadingTokens] = useState(true)
@@ -527,7 +429,6 @@ const SwapV2Cefi = () => {
 		const fetchData = async () => {
 			const initialCoins = await fetchAllLiFiTokens()
 			const dividedArrays = chunkArray(initialCoins, 100)
-			setAllCoinsList(dividedArrays)
 			setCoinsList(dividedArrays[currentArrayId])
 			setLoadingTokens(false)
 		}
@@ -547,7 +448,7 @@ const SwapV2Cefi = () => {
 	// const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([OurIndexCoinList, OtherCoinList])
 
 	useEffect(() => {
-		const finalCoinList = isMainnet ? coinsList : testnetCoinsList[0];
+		const finalCoinList = isMainnet ? coinsList : sepoliaTokens;
 		const OurIndexCoinList: Coin[] = finalCoinList.filter(coin => OurIndexCoins.includes(coin.Symbol));
 		const OtherCoinList: Coin[] = finalCoinList.filter(coin => !OurIndexCoins.includes(coin.Symbol));
 		setMergedCoinList([OtherCoinList, OurIndexCoinList]);

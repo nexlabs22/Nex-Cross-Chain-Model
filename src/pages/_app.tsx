@@ -29,7 +29,6 @@ import { useChartDataStore } from '@/store/store'
 export default function App({ Component, pageProps }: AppProps) {
 	const {setEthPriceInUsd} = useTradePageStore()
 	const {setANFIWeightage} = useChartDataStore()
-	
 
 	useEffect(() => {
 		setEthPriceInUsd()

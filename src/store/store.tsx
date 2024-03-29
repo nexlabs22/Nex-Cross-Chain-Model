@@ -148,12 +148,20 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 				const date = new Date(timestamp[0]);
 				return date.getDate() === 1;
 			}))
+			.catch((err)=>{
+				console.log(err)
+				return [];
+			})
 		const goldMarketCaps = await axios.get(goldMC_URL)
 			.then((res) => res.data.market_caps)
 			.then((res) => res.filter((timestamp: number[]) => {
 				const date = new Date(timestamp[0]);
 				return date.getDate() === 1;
 			}))
+			.catch((err)=>{
+				console.log(err)
+				return [];
+			})
 
 		const weightageResult: { time: number, btc: number, gold: number }[] = []
 

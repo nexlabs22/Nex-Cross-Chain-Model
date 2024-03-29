@@ -19,22 +19,9 @@ import GenericModal from './GenericModal'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
 // Assets:
-import circle from '@assets/images/circle.png'
 import mesh1 from '@assets/images/mesh1.png'
-import mesh2 from '@assets/images/mesh2.png'
-import { it } from 'node:test'
 import { UseContractResult, toWei, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
 import {
-	goerlianfiPoolAddress,
-	goerliAnfiFactory,
-	goerliAnfiIndexToken,
-	goerliAnfiV2Factory,
-	goerliAnfiV2IndexToken,
-	goerliCrypto5Factory,
-	goerliCrypto5IndexToken,
-	goerliUsdtAddress,
-	goerliWethAddress,
-	zeroAddress,
 	sepoliaCrypto5V2IndexToken,
 	sepoliaCrypto5V2Factory,
 	sepoliaUsdtAddress,
@@ -43,19 +30,14 @@ import {
 	sepoliaAnfiV2Factory,
 	sepoliaTokenFaucet,
 } from '@/constants/contractAddresses'
-import { crossChainIndexFactoryV2Abi, indexFactoryAbi, indexFactoryV2Abi, indexTokenAbi, tokenAbi, tokenFaucetAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
+import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi, tokenFaucetAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
-import Lottie from 'lottie-react'
 import PaymentModal from './PaymentModal'
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 
 import { Network, Alchemy, BigNumber } from 'alchemy-sdk'
 
 import { BsInfoCircle } from 'react-icons/bs'
-
-import cr5Logo from '@assets/images/cr5.png'
-import anfiLogo from '@assets/images/anfi.png'
-import cookingAnimation from '@assets/lottie/cooking.json'
 
 import { GenericToast } from './GenericToast'
 import { createPublicClient, http, parseEther } from 'viem'
@@ -65,10 +47,7 @@ import { LiaWalletSolid } from 'react-icons/lia'
 import Switch from 'react-switch'
 import GenericTooltip from './GenericTooltip'
 import getPoolAddress from '@/uniswap/utils'
-// import { CurrentConfig } from '@/uniswap/configure'
 import { SwapNumbers } from '@/utils/general'
-import convertToUSD from '@/utils/convertToUsd'
-import axios from 'axios'
 import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
 import { sepolia } from 'viem/chains'
 import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
@@ -78,29 +57,14 @@ import { GoArrowUpRight } from 'react-icons/go'
 import { getCCIPStatus } from '@/hooks/getCcipStatusModel'
 import { getTransactionReceipt } from '@/hooks/getMessageID'
 import { GetRequestHistory } from '@/hooks/getRequestHistory'
+import { sepoliaTokens } from '@/constants/testnetTokens'
+import { Coin } from '@/types/nexTokenData'
+import convertToUSD from '@/utils/convertToUsd'
 
-// Optional Config object, but defaults to demo api-key and eth-mainnet.
-const settings = {
-	apiKey: 'LOxUiFd7inEC7y9S-rxGH-_FmJjLlYC1', // Replace with your Alchemy API Key.
-	network: Network.ETH_GOERLI, // Replace with your network.
-}
-
-const alchemy = new Alchemy(settings)
-
-type Coin = {
-	id: number
-	logo: string
-	name: string
-	Symbol: string
-	address: string
-	factoryAddress: string
-	decimals: number
-}
 
 const SwapV2Defi = () => {
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
 	const [isChecked, setChecked] = useState(false)
-	// const [isMainnet, setIsmainnet] = useState(false)
 
 	const [firstInputValue, setFirstInputValue] = useState('0')
 	const [secondInputValue, setSecondInputValue] = useState('0')
@@ -117,16 +81,14 @@ const SwapV2Defi = () => {
 		changeSwapToCur,
 		swapFromCur,
 		swapToCur,
-		nftImage,
-		setNftImage,
 		setTradeTableReload,
 		setEthPriceInUsd,
 		ethPriceInUsd,
 		isMainnet,
-		setIsmainnet
+		setIsmainnet,
 	} = useTradePageStore()
 
-	const OurIndexCoins = ['ANFI', 'CRYPTO5']
+	// const OurIndexCoins = ['ANFI', 'CRYPTO5']
 	const address = useAddress()
 	const signer = useSigner()
 	const router = useRouter()
@@ -134,7 +96,7 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		const selectedCoin = query.index || 'ANFI'
-		const coinDetails = testnetCoinsList[0].filter((coin: Coin) => {
+		const coinDetails = sepoliaTokens.filter((coin: Coin) => {
 			return coin.Symbol === selectedCoin
 		})
 		changeSwapToCur(coinDetails[0])
@@ -157,26 +119,20 @@ const SwapV2Defi = () => {
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
 	const toTokenContract = useContract(swapToCur.address, tokenAbi)
 
-	// const anfiFactoryContract = useContract(goerliAnfi, tokenAbi)
-
 	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
 	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
 	const fromTokenTotalSupply = useContractRead(fromTokenContract.contract, 'totalSupply', [])
 	const toTokenTotalSupply = useContractRead(toTokenContract.contract, 'totalSupply', [])
 	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
 	const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
-	// const issuanceOutput = useContractRead(mintFactoryContract.contract, 'getIssuanceAmountOut', [convertedInputValue.toString(), swapFromCur.address ,"3"])
-	// const redemptionOutput = useContractRead(burnFactoryContract.contract, 'getRedemptionAmountOut', [convertedInputValue.toString(), swapToCur.address,"3"])
 
 	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
 	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
-	const crossChainMintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
-	const crossChainMintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
 	const faucetHook = useContractWrite(faucetContract.contract, 'getToken')
 
-	const curr = OurIndexCoins.includes(swapFromCur.Symbol) ? swapFromCur : swapToCur
+	const curr = swapFromCur ? swapFromCur : swapToCur
 	const IndexContract: UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
 	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data / 10000
 
@@ -197,7 +153,7 @@ const SwapV2Defi = () => {
 					setSecondInputValue(num(output).toString())
 				}
 			} catch (error) {
-				console.log('getIssuanceOutput error:', error)
+				// console.log('getIssuanceOutput error:', error)
 			}
 		}
 		// getIssuanceOutput()
@@ -216,7 +172,6 @@ const SwapV2Defi = () => {
 					} else {
 						const sepoliaPublicClient = createPublicClient({
 							chain: sepolia,
-							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
 							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
 						})
 						const inputEthValue = await sepoliaPublicClient.readContract({
@@ -236,17 +191,10 @@ const SwapV2Defi = () => {
 					// console.log("newPortfolioValue2", newPortfolioValue2)
 					const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
 					const amountToMint = newTotalSupply - currentTotalSupply
-					console.log('amountToMint', inputValue, amountToMint, newTotalSupply, currentTotalSupply, newPortfolioValue, currentPortfolioValue)
 					setSecondInputValue(num(amountToMint).toString())
-					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
-					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
-					// const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
-					// const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
-					// console.log("HHH2", output)
-					// setSecondInputValue(num(output).toString())
 				}
 			} catch (error) {
-				console.log('getIssuanceOutput error:', error)
+				// console.log('getIssuanceOutput error:', error)
 			}
 		}
 		getIssuanceOutput2()
@@ -294,7 +242,6 @@ const SwapV2Defi = () => {
 						})
 						outputValue = Number(outPutTokenValue)
 					}
-					console.log('outputData:', Number(currentPortfolioValue) / 1e18, currentTotalSupply / 1e18, newTotalSupply / 1e18, newPortfolioValue / 1e18, ethAmountOut / 1e18, outputValue / 1e18)
 					// let inputValue;
 					// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 					// const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
@@ -314,58 +261,35 @@ const SwapV2Defi = () => {
 	const [to1UsdPrice, setTo1UsdPrice] = useState(0)
 	const [toConvertedPrice, setToConvertedPrice] = useState(0)
 
-	useEffect(() => {
-		async function fetchData(tokenDetails: Coin, place: string) {
-			try {
-				const poolAddress = getPoolAddress(tokenDetails.address, tokenDetails.decimals, isMainnet)
-				let isRevPool = false
-
-				// const chainName = isMainnet ? 'ethereum' : 'goerli'
-				const chainName = isMainnet ? 'ethereum' : 'sepolia'
-				const sdk = new ThirdwebSDK(chainName)
-				const poolContract = await sdk.getContract(poolAddress as string, uniswapV3PoolContractAbi)
-
-				const data = await poolContract.call('slot0', [])
-				const token0 = await poolContract.call('token0', [])
-
-				const fromSqrtPriceX96 = data.sqrtPriceX96
-
-				let decimal0 = Number(tokenDetails.decimals)
-				let decimal1 = 18
-
-				if (token0 !== tokenDetails.address) {
-					isRevPool = true
-					;[decimal0, decimal1] = SwapNumbers(decimal0, decimal1)
-				}
-
-				const calculatedPrice = Math.pow(fromSqrtPriceX96 / 2 ** 96, 2) / (10 ** decimal1 / 10 ** decimal0)
-				const calculatedPriceAsNumber = parseFloat(calculatedPrice.toFixed(decimal1))
-
-				const fromPriceInUSD = isRevPool ? calculatedPriceAsNumber / ethPriceInUsd : 1 / calculatedPriceAsNumber / ethPriceInUsd
-
-				if (place === 'From') {
-					setFrom1UsdPrice(fromPriceInUSD)
-				} else {
-					setTo1UsdPrice(fromPriceInUSD)
-				}
-
-				if (swapFromCur.Symbol === 'WETH' || swapFromCur.Symbol === 'ETH') {
-					setFrom1UsdPrice(ethPriceInUsd)
-				}
-				if (swapToCur.Symbol === 'WETH' || swapToCur.Symbol === 'ETH') {
-					setTo1UsdPrice(ethPriceInUsd)
-				}
-			} catch (err) {
-				console.log(err)
-			}
+	async function fetchData(tokenDetails: Coin, place: string) {
+		try {
+			const price = await convertToUSD({tokenAddress:tokenDetails.address, tokenDecimals:tokenDetails.decimals}, ethPriceInUsd, isMainnet);
+			return price as number;
+		} catch (err) {
+			console.error(`Error fetching ${place} price:`, err);
+			throw err; // Rethrow the error for consistent error handling
 		}
-		if (swapFromCur.Symbol !== 'WETH' && swapFromCur.Symbol !== 'ETH') {
-			fetchData(swapFromCur, 'From')
+	}
+	
+	async function fetchTokenPrices() {
+		try {
+			const [fromPrice, toPrice] = await Promise.all([
+				swapFromCur.Symbol !== 'WETH' && swapFromCur.Symbol !== 'ETH' ? fetchData(swapFromCur, 'From') : ethPriceInUsd,
+				swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH' ? fetchData(swapToCur, 'To') : ethPriceInUsd
+			]);
+	
+			setFrom1UsdPrice(fromPrice);
+			setTo1UsdPrice(toPrice);
+		} catch (error) {
+			// Handle errors if needed
+			console.error('Error fetching token prices:', error);
 		}
-		if (swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH') {
-			fetchData(swapToCur, 'To')
-		}
-	}, [swapFromCur, swapToCur, ethPriceInUsd, isMainnet])
+	}
+	
+	// Call fetchTokenPrices when needed
+	useEffect(()=>{
+		fetchTokenPrices();
+	},[swapFromCur,swapToCur,ethPriceInUsd, isMainnet])
 
 	useEffect(() => {
 		if (approveHook.isSuccess) {
@@ -413,14 +337,11 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		if (faucetHook.isLoading) {
-			console.log()
 			toast.dismiss()
-			// toast.loading('Approving ...')
 			GenericToast({
 				type: 'loading',
 				message: 'Receiving usdt...',
 			})
-			// appr oveHook.reset()
 		} else if (faucetHook.isSuccess) {
 			toast.dismiss()
 			GenericToast({
@@ -566,60 +487,8 @@ const SwapV2Defi = () => {
 		setToCurrencyModalOpen(false)
 	}
 
-	const [testnetCoinsList, setTestnetCoinsList] = useState<Coin[][]>([
-		[
-			// {
-			// 	id: 0,
-			// 	logo: cr5Logo.src,
-			// 	name: 'CRYPTO5',
-			// 	Symbol: 'CRYPTO5',
-			// 	address: goerliCrypto5IndexToken,
-			// 	factoryAddress: goerliCrypto5Factory,
-			// 	decimals: 18
-			// },
-			{
-				id: 1,
-				logo: anfiLogo.src,
-				name: 'ANFI',
-				Symbol: 'ANFI',
-				address: sepoliaAnfiV2IndexToken,
-				factoryAddress: sepoliaAnfiV2Factory,
-				decimals: 18,
-			},
-			{
-				id: 2,
-				logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
-				name: 'Tether',
-				Symbol: 'USDT',
-				address: sepoliaUsdtAddress,
-				factoryAddress: '',
-				decimals: 18,
-			},
-			{
-				id: 3,
-				logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
-				name: 'Ethereum',
-				Symbol: 'ETH',
-				address: sepoliaWethAddress,
-				factoryAddress: '',
-				decimals: 18,
-			},
-			{
-				id: 4,
-				logo: cr5Logo.src,
-				name: 'CRYPTO5',
-				Symbol: 'CRYPTO5',
-				address: sepoliaCrypto5V2IndexToken,
-				factoryAddress: sepoliaCrypto5V2Factory,
-				decimals: 18,
-			},
-		],
-	])
-
-	const [allCoinsList, setAllCoinsList] = useState<Coin[][]>([[]])
-
+	// const [allCoinsList, setAllCoinsList] = useState<Coin[][]>([[]])
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
-
 	const [loadingTokens, setLoadingTokens] = useState(true)
 	const [currentArrayId, setCurrentArrayId] = useState(0)
 
@@ -639,6 +508,7 @@ const SwapV2Defi = () => {
 			const data = await response.json()
 
 			const tokenSets = data.tokens
+			// console.log(tokenSets)
 			const coins: Coin[] = Object.keys(tokenSets).flatMap((key) => {
 				const tokenSet = tokenSets[key]
 				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any; decimals: any }) => ({
@@ -671,7 +541,7 @@ const SwapV2Defi = () => {
 		const fetchData = async () => {
 			const initialCoins = await fetchAllLiFiTokens()
 			const dividedArrays = chunkArray(initialCoins, 100)
-			setAllCoinsList(dividedArrays)
+			// setAllCoinsList(dividedArrays)
 			setCoinsList(dividedArrays[currentArrayId])
 			setLoadingTokens(false)
 		}
@@ -691,9 +561,9 @@ const SwapV2Defi = () => {
 	// const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([OurIndexCoinList, OtherCoinList])
 
 	useEffect(() => {
-		const finalCoinList = isMainnet ? coinsList : testnetCoinsList[0]
-		const OurIndexCoinList: Coin[] = finalCoinList.filter((coin) => OurIndexCoins.includes(coin.Symbol))
-		const OtherCoinList: Coin[] = finalCoinList.filter((coin) => !OurIndexCoins.includes(coin.Symbol))
+		const finalCoinList = isMainnet ? coinsList : (sepoliaTokens as Coin[])
+		const OurIndexCoinList: Coin[] = finalCoinList.filter((coin) => coin.isNexlabToken)
+		const OtherCoinList: Coin[] = finalCoinList.filter((coin) => !coin.isNexlabToken)
 		setMergedCoinList([OtherCoinList, OurIndexCoinList])
 	}, [isMainnet])
 
@@ -704,8 +574,8 @@ const SwapV2Defi = () => {
 		changeSwapFromCur(swapToCur)
 		changeSwapToCur(switchReserve)
 
-		if (OurIndexCoins.includes(switchReserve.Symbol)) {
-			if (mergedCoinList[0].some((obj) => OurIndexCoins.includes(obj.Symbol))) {
+		if (switchReserve.isNexlabToken) {
+			if (mergedCoinList[0].some((obj) => obj.isNexlabToken)) {
 				const newArray = [mergedCoinList[1], mergedCoinList[0]]
 				setMergedCoinList(newArray)
 			} else {
@@ -713,7 +583,7 @@ const SwapV2Defi = () => {
 				setMergedCoinList(newArray)
 			}
 		} else {
-			if (mergedCoinList[0].some((obj) => OurIndexCoins.includes(obj.Symbol))) {
+			if (mergedCoinList[0].some((obj) => obj.isNexlabToken)) {
 				const newArray = [mergedCoinList[0], mergedCoinList[1]]
 				setMergedCoinList(newArray)
 			} else {
@@ -830,18 +700,6 @@ const SwapV2Defi = () => {
 		}
 		getEtherBalance()
 	}, [signer, address])
-
-	// useEffect(() => {
-	//     const getEtherBalance = async() => {
-	//         if (address && signer) {
-	//             const balance = await signer?.provider?.getBalance(address as string);
-	//             const convertedBalance = ethers.utils.formatEther(balance as BigNumber);
-	//             console.log("Balance converted", convertedBalance)
-	//             setUserEthBalance(Number(balance));
-	//         }
-	//     }
-	//     getEtherBalance()
-	// },[signer, address])
 
 	async function approve() {
 		const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
@@ -1041,7 +899,6 @@ const SwapV2Defi = () => {
 							<p
 								// onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2e18).toString())}
 								onClick={() => {
-									console.log((Number(getPrimaryBalance()) / 2).toString())
 									setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
 								}}
 								className={`text-base lg:text-xs  interBold ${

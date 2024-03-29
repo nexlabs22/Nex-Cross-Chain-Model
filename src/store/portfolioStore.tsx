@@ -5,7 +5,7 @@ import useTradePageStore from './tradeStore'
 import convertToUSD from '@/utils/convertToUsd'
 import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { Positions } from '@/types/tradeTableTypes'
-import { sepoliaTokens } from '@/constants/goerliTokens'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 
 interface User {
 	email: string
@@ -81,7 +81,7 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 		const pricesInUsd: any = (
 			await Promise.all(
 				sepoliaTokens.map(async (token) => {
-					priceObj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					priceObj[token.address] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(priceObj).length === sepoliaTokens.length - 1) {
 						return priceObj
 					}

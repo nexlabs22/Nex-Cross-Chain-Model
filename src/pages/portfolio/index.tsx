@@ -75,20 +75,12 @@ import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 // Firebase :
 import { getDatabase, ref, onValue, set, update } from 'firebase/database'
 import { database } from '@/utils/firebase'
-import { FaCheck } from 'react-icons/fa6'
-import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
-import ImageViewer from 'react-simple-image-viewer'
-import { Uploader } from 'uploader'
-import { UploadDropzone } from 'react-uploader'
 import 'react-image-upload/dist/index.css'
 import { Menu, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import { useLandingPageStore } from '@/store/store'
 import ConnectButton from '@/components/ConnectButton'
-import getPoolAddress from '@/uniswap/utils'
-import { sepoliaTokens } from '@/constants/goerliTokens'
-import getPriceHistory from '@/utils/getHistoryPriceByDate'
 import { Positions } from '@/types/tradeTableTypes'
 import MobileFooterSection from '@/components/mobileFooter'
 
@@ -133,8 +125,6 @@ export default function Portfolio() {
 
 	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
-	const anfiDetails = sepoliaTokens.filter((token) => token.symbol === 'ANFI')
-	const cr5Details = sepoliaTokens.filter((token) => token.symbol === 'CRYPTO5')
 
 	const {
 		loading: loadingAnfi,
@@ -341,10 +331,10 @@ export default function Portfolio() {
 		async function getTokenDetails() {
 			const data = await Promise.all(
 				nexTokens.map(async (item: nexTokenDataType) => {
-					const calculatedUsdValue = (await convertToUSD(item.address, ethPriceInUsd, false)) || 0
+					const calculatedUsdValue = (await convertToUSD({tokenAddress:item.address, tokenDecimals:item.decimals}, ethPriceInUsd, false)) || 0
 					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
 					const totalTokenUsd = calculatedUsdValue * totalToken || 0
-					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
+					const percentage = (item.symbol === ' ANFI' ? anfiPercent : crypto5Percent) || 0
 
 					return {
 						...item,
@@ -538,7 +528,7 @@ export default function Portfolio() {
 									>
 										$
 										{showPortfolioData && totalPortfolioBalance
-											? totalPortfolioBalance < 0.01
+											? totalPortfolioBalance < 0.01 && totalPortfolioBalance > 0
 												? '≈ 0.00 '
 												: FormatToViewNumber({ value: totalPortfolioBalance, returnType: 'string' })
 											: '0.00'}

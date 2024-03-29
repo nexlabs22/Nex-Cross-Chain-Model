@@ -107,6 +107,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
 		name: 'Tether',
 		Symbol: 'USDT',
+		isNexlabToken:false,
 		address: sepoliaUsdtAddress,
 		factoryAddress: '',
 		decimals: 18
@@ -118,6 +119,7 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 		logo: anfiLogo.src,
 		name: 'ANFI',
 		Symbol: 'ANFI',
+		isNexlabToken:true,
 		// address: goerliAnfiIndexToken,
 		address: sepoliaAnfiV2IndexToken,
 		// factoryAddress: goerliAnfiFactory,
