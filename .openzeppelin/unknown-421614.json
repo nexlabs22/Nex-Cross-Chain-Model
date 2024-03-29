@@ -746,6 +746,593 @@
         },
         "namespaces": {}
       }
+    },
+    "10dbee3719cd5d3be0ce9cb0514c9179c2451273b90dc083fd1f4486bf3f7980": {
+      "address": "0xc4aa43fA85E8AaC65668fAE0e153e820c68F0Bc7",
+      "txHash": "0x63549e4a4cf77fad1169cca2055e578d01dc67588493569e73a00dd8a7585294",
+      "layout": {
+        "solcVersion": "0.8.7",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "i_router",
+            "offset": 2,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "CCIPReceiver",
+            "src": "contracts\\ccip\\CCIPReceiver.sol:12"
+          },
+          {
+            "label": "s_ens",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(ENSInterface)561",
+            "contract": "ChainlinkClient",
+            "src": "contracts\\chainlink\\ChainlinkClient.sol:29"
+          },
+          {
+            "label": "s_ensNode",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_bytes32",
+            "contract": "ChainlinkClient",
+            "src": "contracts\\chainlink\\ChainlinkClient.sol:30"
+          },
+          {
+            "label": "s_link",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(LinkTokenInterface)656",
+            "contract": "ChainlinkClient",
+            "src": "contracts\\chainlink\\ChainlinkClient.sol:31"
+          },
+          {
+            "label": "s_oracle",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_contract(OperatorInterface)736",
+            "contract": "ChainlinkClient",
+            "src": "contracts\\chainlink\\ChainlinkClient.sol:32"
+          },
+          {
+            "label": "s_requestCount",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_uint256",
+            "contract": "ChainlinkClient",
+            "src": "contracts\\chainlink\\ChainlinkClient.sol:33"
+          },
+          {
+            "label": "s_pendingRequests",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_bytes32,t_address)",
+            "contract": "ChainlinkClient",
+            "src": "contracts\\chainlink\\ChainlinkClient.sol:34"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "57",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "58",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "proposedOwner",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_address",
+            "contract": "ProposableOwnableUpgradeable",
+            "src": "contracts\\proposable\\ProposableOwnableUpgradeable.sol:11"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "108",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ProposableOwnableUpgradeable",
+            "src": "contracts\\proposable\\ProposableOwnableUpgradeable.sol:30"
+          },
+          {
+            "label": "_paused",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_bool",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:29"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:116"
+          },
+          {
+            "label": "i_link",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_address",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:62"
+          },
+          {
+            "label": "i_maxTokensLength",
+            "offset": 20,
+            "slot": "208",
+            "type": "t_uint16",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:63"
+          },
+          {
+            "label": "receivedMessages",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_array(t_bytes32)dyn_storage",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:64"
+          },
+          {
+            "label": "messageDetail",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_mapping(t_bytes32,t_struct(Message)6179_storage)",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:65"
+          },
+          {
+            "label": "crossChainVault",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_contract(CrossChainVault)9016",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:68"
+          },
+          {
+            "label": "fee",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_uint256",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:70"
+          },
+          {
+            "label": "feeRate",
+            "offset": 0,
+            "slot": "213",
+            "type": "t_uint8",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:71"
+          },
+          {
+            "label": "latestFeeUpdate",
+            "offset": 0,
+            "slot": "214",
+            "type": "t_uint256",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:72"
+          },
+          {
+            "label": "currentChainSelector",
+            "offset": 0,
+            "slot": "215",
+            "type": "t_uint64",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:73"
+          },
+          {
+            "label": "feeRatePerDayScaled",
+            "offset": 0,
+            "slot": "216",
+            "type": "t_uint256",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:77"
+          },
+          {
+            "label": "feeTimestamp",
+            "offset": 0,
+            "slot": "217",
+            "type": "t_uint256",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:80"
+          },
+          {
+            "label": "feeReceiver",
+            "offset": 0,
+            "slot": "218",
+            "type": "t_address",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:83"
+          },
+          {
+            "label": "methodologist",
+            "offset": 0,
+            "slot": "219",
+            "type": "t_address",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:86"
+          },
+          {
+            "label": "minter",
+            "offset": 0,
+            "slot": "220",
+            "type": "t_address",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:89"
+          },
+          {
+            "label": "methodology",
+            "offset": 0,
+            "slot": "221",
+            "type": "t_string_storage",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:91"
+          },
+          {
+            "label": "supplyCeiling",
+            "offset": 0,
+            "slot": "222",
+            "type": "t_uint256",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:93"
+          },
+          {
+            "label": "isRestricted",
+            "offset": 0,
+            "slot": "223",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:95"
+          },
+          {
+            "label": "oraclePayment",
+            "offset": 0,
+            "slot": "224",
+            "type": "t_uint256",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:97"
+          },
+          {
+            "label": "toUsdPriceFeed",
+            "offset": 0,
+            "slot": "225",
+            "type": "t_contract(AggregatorV3Interface)448",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:98"
+          },
+          {
+            "label": "swapRouterV3",
+            "offset": 0,
+            "slot": "226",
+            "type": "t_contract(ISwapRouter)2905",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:100"
+          },
+          {
+            "label": "factoryV3",
+            "offset": 0,
+            "slot": "227",
+            "type": "t_contract(IUniswapV3Factory)2734",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:101"
+          },
+          {
+            "label": "swapRouterV2",
+            "offset": 0,
+            "slot": "228",
+            "type": "t_contract(IUniswapV2Router02)4202",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:102"
+          },
+          {
+            "label": "factoryV2",
+            "offset": 0,
+            "slot": "229",
+            "type": "t_contract(IUniswapV2Factory)3806",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:103"
+          },
+          {
+            "label": "weth",
+            "offset": 0,
+            "slot": "230",
+            "type": "t_contract(IWETH)4251",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:104"
+          },
+          {
+            "label": "quoter",
+            "offset": 0,
+            "slot": "231",
+            "type": "t_contract(IQuoter)2805",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:105"
+          },
+          {
+            "label": "crossChainToken",
+            "offset": 0,
+            "slot": "232",
+            "type": "t_mapping(t_uint64,t_address)",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:108"
+          },
+          {
+            "label": "crossChainTokenSwapVersion",
+            "offset": 0,
+            "slot": "233",
+            "type": "t_mapping(t_uint64,t_mapping(t_address,t_uint256))",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:109"
+          },
+          {
+            "label": "issuanceNonce",
+            "offset": 0,
+            "slot": "234",
+            "type": "t_uint256",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:117"
+          },
+          {
+            "label": "sourceChainSelectorF",
+            "offset": 0,
+            "slot": "235",
+            "type": "t_uint64",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:118"
+          },
+          {
+            "label": "issuanceTokenOldAndNewValues",
+            "offset": 0,
+            "slot": "236",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_struct(TokenOldAndNewValues)6272_storage))",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:119"
+          },
+          {
+            "label": "issuanceCompletedTokensCount",
+            "offset": 0,
+            "slot": "237",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:120"
+          },
+          {
+            "label": "redemptionMessageIdByNonce",
+            "offset": 0,
+            "slot": "238",
+            "type": "t_mapping(t_uint256,t_bytes32)",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:135"
+          },
+          {
+            "label": "issuanceMessageIdByNonce",
+            "offset": 0,
+            "slot": "239",
+            "type": "t_mapping(t_uint256,t_bytes32)",
+            "contract": "CrossChainIndexFactory",
+            "src": "contracts\\vault\\CrossChainFactory.sol:136"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(AggregatorV3Interface)448": {
+            "label": "contract AggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_contract(CrossChainVault)9016": {
+            "label": "contract CrossChainVault",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ENSInterface)561": {
+            "label": "contract ENSInterface",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IQuoter)2805": {
+            "label": "contract IQuoter",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISwapRouter)2905": {
+            "label": "contract ISwapRouter",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Factory)3806": {
+            "label": "contract IUniswapV2Factory",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV2Router02)4202": {
+            "label": "contract IUniswapV2Router02",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUniswapV3Factory)2734": {
+            "label": "contract IUniswapV3Factory",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IWETH)4251": {
+            "label": "contract IWETH",
+            "numberOfBytes": "20"
+          },
+          "t_contract(LinkTokenInterface)656": {
+            "label": "contract LinkTokenInterface",
+            "numberOfBytes": "20"
+          },
+          "t_contract(OperatorInterface)736": {
+            "label": "contract OperatorInterface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(TokenOldAndNewValues)6272_storage)": {
+            "label": "mapping(address => struct CrossChainIndexFactory.TokenOldAndNewValues)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_address)": {
+            "label": "mapping(bytes32 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(Message)6179_storage)": {
+            "label": "mapping(bytes32 => struct CrossChainIndexFactory.Message)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bytes32)": {
+            "label": "mapping(uint256 => bytes32)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_struct(TokenOldAndNewValues)6272_storage))": {
+            "label": "mapping(uint256 => mapping(address => struct CrossChainIndexFactory.TokenOldAndNewValues))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint64,t_address)": {
+            "label": "mapping(uint64 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint64,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(uint64 => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Message)6179_storage": {
+            "label": "struct CrossChainIndexFactory.Message",
+            "members": [
+              {
+                "label": "sourceChainSelector",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "sender",
+                "type": "t_address",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "message",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "token",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(TokenOldAndNewValues)6272_storage": {
+            "label": "struct CrossChainIndexFactory.TokenOldAndNewValues",
+            "members": [
+              {
+                "label": "oldTokenValue",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "newTokenValue",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
     }
   }
 }

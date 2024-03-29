@@ -20,12 +20,14 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../ccip/CCIPReceiver.sol";
 import "./CrossChainVault.sol";
 // import {Withdraw} from "./utils/Withdraw.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
 contract CrossChainIndexFactory is
+    Initializable,
     CCIPReceiver,
     ChainlinkClient,
     ContextUpgradeable,
@@ -106,30 +108,32 @@ contract CrossChainIndexFactory is
     mapping(uint64 => address) public crossChainToken;
     mapping(uint64 => mapping(address => uint)) public crossChainTokenSwapVersion;
 
+    
     //nonce
     struct TokenOldAndNewValues {
         uint oldTokenValue;
         uint newTokenValue;
     }
     uint issuanceNonce;
-    // mapping(uint => mapping(address => TokenOldAndNewValues)) public issuanceTokenOldAndNewValues;
-    // mapping(uint => uint) public issuanceCompletedTokensCount;
+    uint64 public sourceChainSelectorF;
+    mapping(uint => mapping(address => TokenOldAndNewValues)) public issuanceTokenOldAndNewValues;
+    mapping(uint => uint) public issuanceCompletedTokensCount;
 
+    
     event Issuanced(
-        address indexed user,
-        address indexed inputToken,
-        uint inputAmount,
-        uint outputAmount,
+        bytes32 indexed messageId,
+        uint indexed nonce,
         uint time
     );
     event Redemption(
-        address indexed user,
-        address indexed outputToken,
-        uint inputAmount,
-        uint outputAmount,
+        bytes32 indexed messageId,
+        uint indexed nonce,
         uint time
     );
     event MessageSent(bytes32 messageId);
+
+    mapping(uint => bytes32) public redemptionMessageIdByNonce;
+    mapping(uint => bytes32) public issuanceMessageIdByNonce;
 
     function initialize(
         uint64 _currentChainSelector,
@@ -374,7 +378,7 @@ contract CrossChainIndexFactory is
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         PayFeesIn payFeesIn
-    ) internal {
+    ) internal returns(bytes32) {
         uint256 length = tokensToSendDetails.length;
         require(
             length <= i_maxTokensLength,
@@ -425,11 +429,14 @@ contract CrossChainIndexFactory is
         }
 
         emit MessageSent(messageId);
+
+        return messageId;
     }
 
     // address public targetAddressF;
-    uint64 public sourceChainSelectorF;
-    // /// handle a received message
+    // uint64 public sourceChainSelectorF;
+
+    /// handle a received message
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
@@ -591,11 +598,17 @@ contract CrossChainIndexFactory is
             vars.oldTokenValues,
             vars.newTokenValues
         );
-        sendMessage(
-            sourceChainSelector,
-            address(sender),
-            vars.data,
-            PayFeesIn.LINK
+        bytes32 messageId = sendMessage(
+                    sourceChainSelector,
+                    address(sender),
+                    vars.data,
+                    PayFeesIn.LINK
+                );
+        issuanceMessageIdByNonce[nonce] = messageId;
+        emit Issuanced(
+            messageId,
+            nonce,
+            block.timestamp
         );
     }
     
@@ -626,7 +639,7 @@ contract CrossChainIndexFactory is
                 );
                 }
             }
-            sourceChainSelectorF = sourceChainSelector;
+            // sourceChainSelectorF = sourceChainSelector;
             uint crossChainTokenAmount = swap(
                 address(weth),
                 address(crossChainToken[sourceChainSelector]),
@@ -647,12 +660,18 @@ contract CrossChainIndexFactory is
                 zeroArr,
                 zeroArr
             );
-            sendToken(
-                sourceChainSelector,
-                data,
-                sender,
-                tokensToSendArray,
-                PayFeesIn.LINK
+            bytes32 messageId = sendToken(
+                                    sourceChainSelector,
+                                    data,
+                                    sender,
+                                    tokensToSendArray,
+                                    PayFeesIn.LINK
+                                );
+            redemptionMessageIdByNonce[nonce] = messageId;
+            emit Redemption(
+                messageId,
+                nonce,
+                block.timestamp
             );
     }
 
@@ -932,7 +951,7 @@ contract CrossChainIndexFactory is
         address receiver,
         bytes memory _data,
         PayFeesIn payFeesIn
-    ) public {
+    ) public returns(bytes32) {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: _data,
@@ -965,5 +984,7 @@ contract CrossChainIndexFactory is
         }
 
         emit MessageSent(messageId);
+
+        return messageId;
     }
 }

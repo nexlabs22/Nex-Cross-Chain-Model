@@ -15002,6 +15002,796 @@
         },
         "namespaces": {}
       }
+    },
+    "307fe9a6418df23509b7565c565856211a7cc7da758af3ed558478755e751ce7": {
+      "address": "0x2B303314b57BeBAD7431B8c85034e8CDab108FA5",
+      "txHash": "0x89dac1e17951dbdb191e35522aeebc4e61adbe0532dcdde307bd71ae63f9264b",
+      "layout": {
+        "solcVersion": "0.8.7",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "i_router",
+            "offset": 2,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "CCIPReceiver",
+            "src": "contracts\\ccip\\CCIPReceiver.sol:12"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "proposedOwner",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "ProposableOwnableUpgradeable",
+            "src": "contracts\\proposable\\ProposableOwnableUpgradeable.sol:11"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ProposableOwnableUpgradeable",
+            "src": "contracts\\proposable\\ProposableOwnableUpgradeable.sol:30"
+          },
+          {
+            "label": "indexFactoryStorage",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_contract(IndexFactoryStorage)10919",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:30"
+          },
+          {
+            "label": "i_link",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_address",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:31"
+          },
+          {
+            "label": "i_maxTokensLength",
+            "offset": 20,
+            "slot": "153",
+            "type": "t_uint16",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:32"
+          },
+          {
+            "label": "indexToken",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_contract(IndexToken)14198",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:34"
+          },
+          {
+            "label": "feeRate",
+            "offset": 20,
+            "slot": "154",
+            "type": "t_uint8",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:37"
+          },
+          {
+            "label": "latestFeeUpdate",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_uint256",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:38"
+          },
+          {
+            "label": "currentChainSelector",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_uint64",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:39"
+          },
+          {
+            "label": "weth",
+            "offset": 8,
+            "slot": "156",
+            "type": "t_contract(IWETH)11376",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:41"
+          },
+          {
+            "label": "issuanceNonce",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_uint256",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:50"
+          },
+          {
+            "label": "redemptionNonce",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_uint256",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:51"
+          },
+          {
+            "label": "updatePortfolioNonce",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:52"
+          },
+          {
+            "label": "issuanceTokenOldAndNewValues",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_struct(TokenOldAndNewValues)4555_storage))",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:54"
+          },
+          {
+            "label": "issuanceCompletedTokensCount",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:56"
+          },
+          {
+            "label": "issuanceNonceRequester",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:57"
+          },
+          {
+            "label": "redemptionNonceTotalValue",
+            "offset": 0,
+            "slot": "163",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:59"
+          },
+          {
+            "label": "redemptionCompletedTokensCount",
+            "offset": 0,
+            "slot": "164",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:60"
+          },
+          {
+            "label": "redemptionNonceRequester",
+            "offset": 0,
+            "slot": "165",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:61"
+          },
+          {
+            "label": "portfolioTotalValueByNonce",
+            "offset": 0,
+            "slot": "166",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:64"
+          },
+          {
+            "label": "updatedTokensValueCount",
+            "offset": 0,
+            "slot": "167",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:65"
+          },
+          {
+            "label": "tokenValueByNonce",
+            "offset": 0,
+            "slot": "168",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:66"
+          },
+          {
+            "label": "issuanceMessageIdByNonce",
+            "offset": 0,
+            "slot": "169",
+            "type": "t_mapping(t_uint256,t_bytes32)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:68"
+          },
+          {
+            "label": "redemptionMessageIdByNonce",
+            "offset": 0,
+            "slot": "170",
+            "type": "t_mapping(t_uint256,t_bytes32)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:69"
+          },
+          {
+            "label": "redemptionNonceOutputToken",
+            "offset": 0,
+            "slot": "171",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:71"
+          },
+          {
+            "label": "redemptionNonceOutputTokenSwapVersion",
+            "offset": 0,
+            "slot": "172",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:72"
+          },
+          {
+            "label": "issuanceInputAmount",
+            "offset": 0,
+            "slot": "173",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:74"
+          },
+          {
+            "label": "issuanceInputToken",
+            "offset": 0,
+            "slot": "174",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:75"
+          },
+          {
+            "label": "redemptionInputAmount",
+            "offset": 0,
+            "slot": "175",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:76"
+          },
+          {
+            "label": "redemptionOutputToken",
+            "offset": 0,
+            "slot": "176",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:77"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IWETH)11376": {
+            "label": "contract IWETH",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IndexFactoryStorage)10919": {
+            "label": "contract IndexFactoryStorage",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IndexToken)14198": {
+            "label": "contract IndexToken",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_struct(TokenOldAndNewValues)4555_storage)": {
+            "label": "mapping(address => struct IndexFactory.TokenOldAndNewValues)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bytes32)": {
+            "label": "mapping(uint256 => bytes32)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_struct(TokenOldAndNewValues)4555_storage))": {
+            "label": "mapping(uint256 => mapping(address => struct IndexFactory.TokenOldAndNewValues))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(uint256 => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(TokenOldAndNewValues)4555_storage": {
+            "label": "struct IndexFactory.TokenOldAndNewValues",
+            "members": [
+              {
+                "label": "oldTokenValue",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "newTokenValue",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "10634de177a01e8652821986cb4d2e2fd8a44f82fa5531ff61c531d507f8d8e2": {
+      "address": "0x2D9dAE00406241950A22af3bB36e378739deF199",
+      "txHash": "0xb2932c52fd593902105eb25ce37403fb7d3b14e8123b1fe52f59bb611e05b129",
+      "layout": {
+        "solcVersion": "0.8.7",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "i_router",
+            "offset": 2,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "CCIPReceiver",
+            "src": "contracts\\ccip\\CCIPReceiver.sol:12"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "proposedOwner",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "ProposableOwnableUpgradeable",
+            "src": "contracts\\proposable\\ProposableOwnableUpgradeable.sol:11"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ProposableOwnableUpgradeable",
+            "src": "contracts\\proposable\\ProposableOwnableUpgradeable.sol:30"
+          },
+          {
+            "label": "indexFactoryStorage",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_contract(IndexFactoryStorage)8610",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:30"
+          },
+          {
+            "label": "i_link",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_address",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:31"
+          },
+          {
+            "label": "i_maxTokensLength",
+            "offset": 20,
+            "slot": "153",
+            "type": "t_uint16",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:32"
+          },
+          {
+            "label": "indexToken",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_contract(IndexToken)11889",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:34"
+          },
+          {
+            "label": "feeRate",
+            "offset": 20,
+            "slot": "154",
+            "type": "t_uint8",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:37"
+          },
+          {
+            "label": "latestFeeUpdate",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_uint256",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:38"
+          },
+          {
+            "label": "currentChainSelector",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_uint64",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:39"
+          },
+          {
+            "label": "weth",
+            "offset": 8,
+            "slot": "156",
+            "type": "t_contract(IWETH)9067",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:41"
+          },
+          {
+            "label": "issuanceNonce",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_uint256",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:50"
+          },
+          {
+            "label": "redemptionNonce",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_uint256",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:51"
+          },
+          {
+            "label": "updatePortfolioNonce",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:52"
+          },
+          {
+            "label": "issuanceTokenOldAndNewValues",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_struct(TokenOldAndNewValues)4555_storage))",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:54"
+          },
+          {
+            "label": "issuanceCompletedTokensCount",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:56"
+          },
+          {
+            "label": "issuanceNonceRequester",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:57"
+          },
+          {
+            "label": "redemptionNonceTotalValue",
+            "offset": 0,
+            "slot": "163",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:59"
+          },
+          {
+            "label": "redemptionCompletedTokensCount",
+            "offset": 0,
+            "slot": "164",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:60"
+          },
+          {
+            "label": "redemptionNonceRequester",
+            "offset": 0,
+            "slot": "165",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:61"
+          },
+          {
+            "label": "portfolioTotalValueByNonce",
+            "offset": 0,
+            "slot": "166",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:64"
+          },
+          {
+            "label": "updatedTokensValueCount",
+            "offset": 0,
+            "slot": "167",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:65"
+          },
+          {
+            "label": "tokenValueByNonce",
+            "offset": 0,
+            "slot": "168",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:66"
+          },
+          {
+            "label": "issuanceMessageIdByNonce",
+            "offset": 0,
+            "slot": "169",
+            "type": "t_mapping(t_uint256,t_bytes32)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:68"
+          },
+          {
+            "label": "redemptionMessageIdByNonce",
+            "offset": 0,
+            "slot": "170",
+            "type": "t_mapping(t_uint256,t_bytes32)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:69"
+          },
+          {
+            "label": "redemptionNonceOutputToken",
+            "offset": 0,
+            "slot": "171",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:71"
+          },
+          {
+            "label": "redemptionNonceOutputTokenSwapVersion",
+            "offset": 0,
+            "slot": "172",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:72"
+          },
+          {
+            "label": "issuanceInputAmount",
+            "offset": 0,
+            "slot": "173",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:74"
+          },
+          {
+            "label": "issuanceInputToken",
+            "offset": 0,
+            "slot": "174",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:75"
+          },
+          {
+            "label": "redemptionInputAmount",
+            "offset": 0,
+            "slot": "175",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:76"
+          },
+          {
+            "label": "redemptionOutputToken",
+            "offset": 0,
+            "slot": "176",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "IndexFactory",
+            "src": "contracts\\factory\\IndexFactory.sol:77"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IWETH)9067": {
+            "label": "contract IWETH",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IndexFactoryStorage)8610": {
+            "label": "contract IndexFactoryStorage",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IndexToken)11889": {
+            "label": "contract IndexToken",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_struct(TokenOldAndNewValues)4555_storage)": {
+            "label": "mapping(address => struct IndexFactory.TokenOldAndNewValues)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bytes32)": {
+            "label": "mapping(uint256 => bytes32)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_struct(TokenOldAndNewValues)4555_storage))": {
+            "label": "mapping(uint256 => mapping(address => struct IndexFactory.TokenOldAndNewValues))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(uint256 => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(TokenOldAndNewValues)4555_storage": {
+            "label": "struct IndexFactory.TokenOldAndNewValues",
+            "members": [
+              {
+                "label": "oldTokenValue",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "newTokenValue",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
     }
   }
 }

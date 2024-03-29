@@ -11,12 +11,14 @@ import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import "../ccip/CCIPReceiver.sol";
 import "./IndexFactoryStorage.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
 contract IndexFactory is
+    Initializable,
     CCIPReceiver,
     ProposableOwnableUpgradeable
 {
@@ -77,8 +79,9 @@ contract IndexFactory is
 
     event RequestIssuance(
         bytes32 indexed messageId,
+        uint indexed nonce,
         address indexed user,
-        address indexed inputToken,
+        address inputToken,
         uint inputAmount,
         uint outputAmount,
         uint time
@@ -86,8 +89,9 @@ contract IndexFactory is
 
     event Issuanced(
         bytes32 indexed messageId,
+        uint indexed nonce,
         address indexed user,
-        address indexed inputToken,
+        address inputToken,
         uint inputAmount,
         uint outputAmount,
         uint time
@@ -95,8 +99,9 @@ contract IndexFactory is
 
     event RequestRedemption(
         bytes32 indexed messageId,
+        uint indexed nonce,
         address indexed user,
-        address indexed outputToken,
+        address outputToken,
         uint inputAmount,
         uint outputAmount,
         uint time
@@ -104,8 +109,9 @@ contract IndexFactory is
 
     event Redemption(
         bytes32 indexed messageId,
+        uint indexed nonce,
         address indexed user,
-        address indexed outputToken,
+        address outputToken,
         uint inputAmount,
         uint outputAmount,
         uint time
@@ -322,9 +328,10 @@ contract IndexFactory is
         }
         emit RequestIssuance(
                 issuanceMessageIdByNonce[issuanceNonce], 
+                issuanceNonce,
                 msg.sender, 
                 _tokenIn, 
-                _inputAmount, 
+                issuanceInputAmount[issuanceNonce], 
                 0, 
                 block.timestamp
             );
@@ -466,9 +473,10 @@ contract IndexFactory is
             amountToMint = (totalNewVaules) / 100;
         }
         indexToken.mint(issuanceNonceRequester[_issuanceNonce], amountToMint);
-        emit Issuanced(_messageId, issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);
+        emit Issuanced(_messageId, _issuanceNonce, issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);
     }
 
+    
     function redemption(
         uint amountIn,
         uint _crossChainFee,
@@ -486,20 +494,20 @@ contract IndexFactory is
 
         indexToken.burn(msg.sender, amountIn);
 
-        if (_crossChainFee > 0) {
-            weth.deposit{value: _crossChainFee}();
-            //swap ccip fee from eth to link
-            uint ccipLinkFee = swap(
-                address(weth),
-                i_link,
-                _crossChainFee,
-                address(this),
-                3
-            );
-        }
+        // if (_crossChainFee > 0) {
+        //     weth.deposit{value: _crossChainFee}();
+        //     //swap ccip fee from eth to link
+        //     uint ccipLinkFee = swap(
+        //         address(weth),
+        //         i_link,
+        //         _crossChainFee,
+        //         address(this),
+        //         3
+        //     );
+        // }
         // uint outputAmount;
         //swap
-        uint totalCrossChainShares;
+        // uint totalCrossChainShares;
         uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
         uint latestCount = indexFactoryStorage.currentFilledCount();
         for(uint i = 0; i < totalChains; i++){
@@ -523,7 +531,8 @@ contract IndexFactory is
             }
 
             emit RequestRedemption(
-                redemptionMessageIdByNonce[redemptionNonce], 
+                redemptionMessageIdByNonce[redemptionNonce],
+                redemptionNonce,
                 msg.sender, 
                 _tokenOut, 
                 amountIn, 
@@ -619,10 +628,10 @@ contract IndexFactory is
         weth.withdraw(wethAmount - fee);
         (bool _ownerSuccess, ) = requester.call{value: wethAmount - fee}("");
         require(_ownerSuccess, "transfer eth to the requester failed");
-        emit Redemption(_messageId, requester, outputToken,  redemptionInputAmount[nonce], wethAmount - fee, block.timestamp);
+        emit Redemption(_messageId, nonce, requester, outputToken,  redemptionInputAmount[nonce], wethAmount - fee, block.timestamp);
         }else{
         uint reallOut = swap(address(weth), outputToken, wethAmount - fee, requester, outputTokenSwapVersion);
-        emit Redemption(_messageId, requester, outputToken, redemptionInputAmount[nonce], reallOut, block.timestamp);
+        emit Redemption(_messageId, nonce, requester, outputToken, redemptionInputAmount[nonce], reallOut, block.timestamp);
         }
     }
     // }
