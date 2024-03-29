@@ -375,7 +375,7 @@ const SwapV2Defi = () => {
 				txHashObj[mintRequestHook.data.receipt.blockNumber] = txHash
 				localStorage.setItem('txHash', JSON.stringify(txHashObj))
 			}
-			if (burnRequestHook.data && swapToCur.address === sepoliaCrypto5V2IndexToken) {
+			if (burnRequestHook.data && swapFromCur.address === sepoliaCrypto5V2IndexToken) {
 				const txHashObj: { [key: number]: string } = JSON.parse(localStorage.getItem('txHash') || '{}')
 				const txHash = burnRequestHook.data.receipt.transactionHash
 				txHashObj[burnRequestHook.data.receipt.blockNumber] = txHash
