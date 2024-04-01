@@ -529,8 +529,8 @@ contract IndexFactory is
                 );
                 
             }
-
-            emit RequestRedemption(
+        }
+        emit RequestRedemption(
                 redemptionMessageIdByNonce[redemptionNonce],
                 redemptionNonce,
                 msg.sender, 
@@ -539,7 +539,6 @@ contract IndexFactory is
                 0, 
                 block.timestamp
             );
-        }
     }
 
     function _redemptionSwapsCurrentChain(
