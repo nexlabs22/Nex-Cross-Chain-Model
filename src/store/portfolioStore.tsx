@@ -3,7 +3,7 @@ import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken } from '@/constants/con
 import { create } from 'zustand'
 import useTradePageStore from './tradeStore'
 import convertToUSD from '@/utils/convertToUsd'
-import { Positions } from '@/types/tradeTableTypes'
+import { PositionType } from '@/types/tradeTableTypes'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 
@@ -33,7 +33,7 @@ type PortfolioPageStore = {
 	setDayChange: (change: { anfi: number; cr5: number }) => void
 
 	portfolioData: { tradedBalance: { [key: string]: number; anfi: number; crypto5: number; total: number } }
-	setPortfolioData: (positionHistoryData: Positions[]) => void
+	setPortfolioData: (positionHistoryData: PositionType[]) => void
 
 	globalConnectedUser: User,
 	setGlobalConnectedUser: (user: User) => void
@@ -74,7 +74,7 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 	setDayChange: (change: { anfi: number; cr5: number }) => set({ dayChange: change }),
 
 	portfolioData: { tradedBalance: { anfi: 0, crypto5: 0, total: 0 } },
-	setPortfolioData: async (positionHistoryData: Positions[]) => {
+	setPortfolioData: async (positionHistoryData: PositionType[]) => {
 		const ethPriceInUsd = useTradePageStore.getState().ethPriceInUsd
 		const priceObj: { [key: string]: number } = {}
 

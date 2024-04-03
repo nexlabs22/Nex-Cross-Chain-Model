@@ -4,7 +4,7 @@ import { GetPositionsHistory } from '@/hooks/getTradeHistory'
 import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 import useTradePageStore from '@/store/tradeStore'
-import { Positions } from '@/types/tradeTableTypes'
+import { PositionType } from '@/types/tradeTableTypes'
 import convertToUSD from '@/utils/convertToUsd'
 import React, { useEffect, useState } from 'react'
 import mesh1 from '@assets/images/mesh1.png'
@@ -34,7 +34,7 @@ function HistoryTable() {
 		console.log('positionHistory', positionHistory)
 		console.log('positionHistory')
 	}, [positionHistory])
-	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
+	const [positionHistoryData, setPositionHistoryData] = useState<PositionType[]>([])
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 	useEffect(() => {
 		setEthPriceInUsd()
