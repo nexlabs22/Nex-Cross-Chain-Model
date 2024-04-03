@@ -3,9 +3,9 @@ import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken } from '@/constants/con
 import { create } from 'zustand'
 import useTradePageStore from './tradeStore'
 import convertToUSD from '@/utils/convertToUsd'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { Positions } from '@/types/tradeTableTypes'
 import { sepoliaTokens } from '@/constants/testnetTokens'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 
 interface User {
 	email: string

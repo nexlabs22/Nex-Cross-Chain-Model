@@ -6,6 +6,7 @@ export const nexTokens = [
     {
         symbol: 'ANFI',
         shortName: 'ANFI',
+        indexType: 'defi',
         address: sepoliaAnfiV2IndexToken,
         decimals: 18,
         logo:anfiLogo.src
@@ -13,6 +14,7 @@ export const nexTokens = [
     {
         symbol: 'CRYPTO5',
         shortName: 'CR5',
+        indexType: 'crosschain',
         address: sepoliaCrypto5V2IndexToken,
         decimals: 18,
         logo: cr5Logo.src

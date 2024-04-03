@@ -17,6 +17,7 @@ export interface Coin {
 	Symbol: string
 	address: string
     isNexlabToken?:boolean
+    indexType?: string
 	factoryAddress: string
 	decimals: number
     

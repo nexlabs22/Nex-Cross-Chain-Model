@@ -70,7 +70,6 @@ import { nexTokens } from '@/constants/nexIndexTokens'
 import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 import usePortfolioPageStore from '@/store/portfolioStore'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 
 // Firebase :
 import { getDatabase, ref, onValue, set, update } from 'firebase/database'
@@ -81,8 +80,11 @@ import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import { useLandingPageStore } from '@/store/store'
 import ConnectButton from '@/components/ConnectButton'
-import { Positions } from '@/types/tradeTableTypes'
+import { PositionType } from '@/types/tradeTableTypes'
 import MobileFooterSection from '@/components/mobileFooter'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
+import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
+import { emptyData } from '@/constants/emptyChartData'
 
 interface User {
 	email: string
@@ -109,11 +111,6 @@ export default function Portfolio() {
 	const { portfolioData, setDayChange, indexSelectedInPie } = usePortfolioPageStore()
 	const [chartType, setChartType] = useState('pie')
 	const { mode } = useLandingPageStore()
-
-	// console.log("ethPriceInUsd--->",ethPriceInUsd)
-	// useEffect(() => {
-	// 	setEthPriceInUsd()
-	// }, [setEthPriceInUsd])
 
 	const anfiTokenContract = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
 	const crypto5TokenContract = useContract(sepoliaCrypto5V2IndexToken, indexTokenAbi)
@@ -217,21 +214,12 @@ export default function Portfolio() {
 		})
 	}
 
-	const data = [
+	const pieData = [
 		['Asset', 'Percentage'],
 		['CRYPTO5', crypto5Percent ? crypto5Percent : 0],
 		['ANFI', anfiPercent ? anfiPercent : 0],
 		// ['FIAT', anfiPercent ? 0 : 5],
 	]
-
-	// const data = [
-	//     ["Asset", "Percentage"],
-	//     ["ANFI", 11],
-	//     ["CRYPTO5", 2],
-	//     ["ETH", 2],
-	//     ["BTC", 2],
-	//     ["MATIC", 7],
-	// ];
 
 	const PieChartdata = [
 		{
@@ -258,71 +246,6 @@ export default function Portfolio() {
 		},
 	}
 
-	const emptyData = [
-		{ time: '2018-01-04', value: 0 },
-		{ time: '2018-01-05', value: 0 },
-		{ time: '2018-01-08', value: 0 },
-		{ time: '2018-01-09', value: 0 },
-		{ time: '2018-01-10', value: 0 },
-		{ time: '2018-01-11', value: 0 },
-		{ time: '2018-01-12', value: 0 },
-		{ time: '2018-01-16', value: 0 },
-		{ time: '2018-01-17', value: 0 },
-		{ time: '2018-01-18', value: 0 },
-		{ time: '2018-01-19', value: 0 },
-		{ time: '2018-01-22', value: 0 },
-		{ time: '2018-01-23', value: 0 },
-		{ time: '2018-01-24', value: 0 },
-		{ time: '2018-01-25', value: 0 },
-		{ time: '2018-01-26', value: 0 },
-		{ time: '2018-01-29', value: 0 },
-		{ time: '2018-01-30', value: 0 },
-		{ time: '2018-01-31', value: 0 },
-		{ time: '2018-02-01', value: 0 },
-		{ time: '2018-02-02', value: 0 },
-		{ time: '2018-02-05', value: 0 },
-		{ time: '2018-02-06', value: 0 },
-		{ time: '2018-02-07', value: 0 },
-		{ time: '2018-02-08', value: 0 },
-		{ time: '2018-02-09', value: 0 },
-		{ time: '2018-02-12', value: 0 },
-		{ time: '2018-02-13', value: 0 },
-		{ time: '2018-02-14', value: 0 },
-		{ time: '2018-02-15', value: 0 },
-		{ time: '2018-02-16', value: 0 },
-		{ time: '2018-02-20', value: 0 },
-		{ time: '2018-02-21', value: 0 },
-		{ time: '2018-02-22', value: 0 },
-		{ time: '2018-02-23', value: 0 },
-		{ time: '2018-02-26', value: 0 },
-		{ time: '2018-02-27', value: 0 },
-		{ time: '2018-02-28', value: 0 },
-		{ time: '2018-03-01', value: 0 },
-		{ time: '2018-03-02', value: 0 },
-		{ time: '2018-03-05', value: 0 },
-		{ time: '2018-03-06', value: 0 },
-		{ time: '2018-03-07', value: 0 },
-		{ time: '2018-03-08', value: 0 },
-		{ time: '2018-03-09', value: 0 },
-		{ time: '2018-03-12', value: 0 },
-		{ time: '2018-03-13', value: 0 },
-		{ time: '2018-03-14', value: 0 },
-		{ time: '2018-03-15', value: 0 },
-		{ time: '2018-03-16', value: 0 },
-		{ time: '2018-03-19', value: 0 },
-		{ time: '2018-03-20', value: 0 },
-		{ time: '2018-03-21', value: 0 },
-		{ time: '2018-03-22', value: 0 },
-		{ time: '2018-03-23', value: 0 },
-		{ time: '2018-03-26', value: 0 },
-		{ time: '2018-03-27', value: 0 },
-		{ time: '2018-03-28', value: 0 },
-		{ time: '2018-03-29', value: 0 },
-		{ time: '2018-04-02', value: 0 },
-		{ time: '2018-04-03', value: 0 },
-		{ time: '2018-04-04', value: 0 },
-	]
-
 	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
 
 	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
@@ -334,7 +257,7 @@ export default function Portfolio() {
 					const calculatedUsdValue = (await convertToUSD({tokenAddress:item.address, tokenDecimals:item.decimals}, ethPriceInUsd, false)) || 0
 					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
 					const totalTokenUsd = calculatedUsdValue * totalToken || 0
-					const percentage = (item.symbol === ' ANFI' ? anfiPercent : crypto5Percent) || 0
+					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
 
 					return {
 						...item,
@@ -350,25 +273,14 @@ export default function Portfolio() {
 
 		getTokenDetails()
 	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent])
-	// roundedPercentages.reduce((acc, { weight }) => acc + weight, 0)
+	
 	const totalPortfolioBalance = assetData.reduce((total, data) => total + Number(data.totalTokenUsd), 0)
+	const positionHistoryDefi = GetPositionsHistoryDefi()
+	const positionHistoryCrosschain = GetTradeHistoryCrossChain()
+	const combinedData = positionHistoryDefi.data.concat(positionHistoryCrosschain.data)
+	const latestObjectsMap: Map<string, PositionType> = new Map()
 
-	// const storedData = localStorage.getItem('totalTradedBalance')
-	// const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
-	// const totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
-
-	// useEffect(() => {
-	// let totalTradedBalance = 0
-	// if (typeof window !== 'undefined') {
-	//   	const storedData = localStorage.getItem('totalTradedBalance');
-	// 	const totalTradedBalanceObj:{anfi:number,cr5:number} = storedData ? JSON.parse(storedData) : {anfi:0,cr5:0}
-	// 	totalTradedBalance = totalTradedBalanceObj.anfi + totalTradedBalanceObj.cr5
-	// }
-	//   }, []);
-	const positionHistory = GetPositionsHistory2()
-	const latestObjectsMap: Map<string, Positions> = new Map()
-
-	for (const item of positionHistory.data) {
+	for (const item of combinedData) {
 		if (!latestObjectsMap.has(item.indexName)) {
 			latestObjectsMap.set(item.indexName, item)
 		}
@@ -618,7 +530,7 @@ export default function Portfolio() {
 														{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol}
 													</h5>
 													<h5 className={`interBold whitespace-nowrap ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'}  text-base cursor-pointer`}>
-														≈${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}
+														≈ ${Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()}
 													</h5>
 												</div>
 												<div className="w-fit xl:w-1/4 h-fit px-1">
@@ -724,7 +636,7 @@ export default function Portfolio() {
 								</Menu>
 								<div className="w-full h-full flex flex-col xl:flex-row items-start xl:items-center justify-center xl:justify-around">
 									<div className="w-full xl:w-1/2 h-fit flex flex-row items-center justify-center pt-2">
-										{chartType == 'pie' ? <New3DPieChart data={data} /> : <TreemapChart percentage={indexPercent} />}
+										{chartType == 'pie' ? <New3DPieChart data={pieData} /> : <TreemapChart percentage={indexPercent} />}
 										{/* {chartType == 'pie' ? <New3DPieChart data={data} /> : <TreemapChart  data={data} />} */}
 									</div>
 									{indexSelectedInPie !== '' ? (

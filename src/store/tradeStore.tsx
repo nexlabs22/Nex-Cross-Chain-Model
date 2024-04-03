@@ -6,16 +6,8 @@ import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import axios from 'axios'
 import { goerliAnfiFactory, goerliAnfiIndexToken, goerliAnfiV2Factory, goerliAnfiV2IndexToken, goerliUsdtAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaUsdtAddress, zeroAddress } from '@/constants/contractAddresses'
-
-type Coin = {
-	id: number
-	logo: string
-	name: string
-	Symbol: string
-	address: string
-	factoryAddress: string
-	decimals: number
-}
+import { sepoliaTokens } from '@/constants/testnetTokens'
+import { Coin } from '@/types/nexTokenData'
 
 type TradePageStore = {
 	//dashboard default index
@@ -66,6 +58,9 @@ type TradePageStore = {
 	tradeTableReload: boolean
 	setTradeTableReload: (input: boolean) => void
 
+	crosschainTableReload: boolean
+	setCrosschainTableTableReload: (input: boolean) => void
+
 	ethPriceInUsd: number
 	setEthPriceInUsd: () => void
 
@@ -102,30 +97,32 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 	isMainnet: false,
 	setIsmainnet: (open: boolean) => set((state) => ({ isMainnet: open })),
 
-	swapFromCur: {
-		id: 2,
-		logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
-		name: 'Tether',
-		Symbol: 'USDT',
-		isNexlabToken:false,
-		address: sepoliaUsdtAddress,
-		factoryAddress: '',
-		decimals: 18
-	},
+	// swapFromCur: {
+	// 	id: 2,
+	// 	logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
+	// 	name: 'Tether',
+	// 	Symbol: 'USDT',
+	// 	isNexlabToken:false,
+	// 	address: sepoliaUsdtAddress,
+	// 	factoryAddress: '',
+	// 	decimals: 18
+	// },
+	swapFromCur: sepoliaTokens.find((token)=> {return token.Symbol === 'USDT'}) as Coin,
 	changeSwapFromCur: (cur: Coin) => set((state) => ({ swapFromCur: cur })),
 
-	swapToCur: {
-		id: 1,
-		logo: anfiLogo.src,
-		name: 'ANFI',
-		Symbol: 'ANFI',
-		isNexlabToken:true,
-		// address: goerliAnfiIndexToken,
-		address: sepoliaAnfiV2IndexToken,
-		// factoryAddress: goerliAnfiFactory,
-		factoryAddress: sepoliaAnfiV2Factory,
-		decimals: 18
-	},
+	// swapToCur: {
+	// 	id: 1,
+	// 	logo: anfiLogo.src,
+	// 	name: 'ANFI',
+	// 	Symbol: 'ANFI',
+	// 	isNexlabToken:true,
+	// 	// address: goerliAnfiIndexToken,
+	// 	address: sepoliaAnfiV2IndexToken,
+	// 	// factoryAddress: goerliAnfiFactory,
+	// 	factoryAddress: sepoliaAnfiV2Factory,
+	// 	decimals: 18
+	// },
+	swapToCur: sepoliaTokens.find((token)=> {return token.Symbol === 'ANFI'}) as Coin,
 	changeSwapToCur: (cur: Coin) => set((state) => ({ swapToCur: cur })),
 
 	swapFromAmount: 0,
@@ -139,6 +136,9 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 	
 	tradeTableReload: false,
 	setTradeTableReload: (input: boolean) => set({ tradeTableReload: input }),
+
+	crosschainTableReload: false,
+	setCrosschainTableTableReload: (input: boolean) => set({ crosschainTableReload: input }),
 
 	ethPriceInUsd: 0,
 	setEthPriceInUsd: async () => {

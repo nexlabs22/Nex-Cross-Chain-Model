@@ -6,8 +6,9 @@ import { goerli, sepolia } from 'viem/chains'
 // import { getTickerFromAddress } from '../utils/general'
 import { factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, zeroAddress } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
-import { Positions } from '@/types/tradeTableTypes'
-import { Positions1 } from './getRequestHistory'
+import { PositionType } from '@/types/tradeTableTypes'
+// import { Positions } from '@/types/tradeTableTypes'
+// import { Positions1 } from './getRequestHistory'
 
 
 
@@ -19,7 +20,7 @@ export function GetTradeHistoryCrossChain() {
 	const [accountAddress, setAccountAddress] = useState<`0x${string}` | string>()
 	const address = useAddress()
 
-	const [positions, setPositions] = useState<Positions[]>([])
+	const [positions, setPositions] = useState<PositionType[]>([])
 
 	useEffect(() => {
 		if (address) {
@@ -40,7 +41,7 @@ export function GetTradeHistoryCrossChain() {
 			transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
 		})
 
-		const positions0: Positions[] = []
+		const positions0: PositionType[] = []
 		// return;
 		if (!accountAddress) return
 		//store open long history
@@ -62,7 +63,7 @@ export function GetTradeHistoryCrossChain() {
 			})
 			const userMintRequestLogs: any = mintRequestlogs.filter((log) => log.args.user == accountAddress)
 			userMintRequestLogs.forEach((log: any) => {
-				const obj: Positions1 = {
+				const obj: PositionType = {
 					side: 'Mint Request',
 					user: log.args.user as `0x${string}`,
 					inputAmount: num(log.args.inputAmount),
@@ -96,7 +97,7 @@ export function GetTradeHistoryCrossChain() {
 			const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
 
 			userBurnRequestLogsLogs.forEach(async (log) => {
-				const obj: Positions1 = {
+				const obj: PositionType = {
 					side: 'Burn Request',
 					user: log.args.user as `0x${string}`,
 					inputAmount: num(log.args.inputAmount),

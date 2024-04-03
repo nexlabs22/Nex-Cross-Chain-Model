@@ -147,6 +147,9 @@ const getMessageStatus = (status:string) => {
       `Either the message ${messageId} does not exist OR it has not been processed yet on destination chain\n`
     );
 
+    if(messageId){
+      return "PENDING"
+    }
     return ""
   };
 

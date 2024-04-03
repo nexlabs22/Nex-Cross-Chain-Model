@@ -2,11 +2,11 @@ import { num } from './math'
 import { useEffect, useState, useCallback } from 'react'
 // import { useAccountAddressStore } from '@store/zustandStore'
 import { createPublicClient, http, parseAbiItem } from 'viem'
-import { goerli, polygonMumbai, sepolia } from 'viem/chains'
+import { arbitrumSepolia, goerli, polygonMumbai, sepolia } from 'viem/chains'
 // import { getTickerFromAddress } from '../utils/general'
-import { mumbaiChainSelector, mumbaiCrossChainTokenAddress, mumbaiCrypto5V2IndexFactory, mumbaiCrypto5V2Vault, mumbaiWmaticAddress, sepoliaCrossChainTokenAddress, sepoliaCrypto5V2Factory, sepoliaWethAddress, zeroAddress } from '@constants/contractAddresses'
+import { arbitrumSepoliaChainSelector, arbitrumSepoliaCrossChainTokenAddress, arbitrumSepoliaWethAddress, arbtirumSepoliaCR5CrossChainFactory, mumbaiChainSelector, mumbaiCrossChainTokenAddress, mumbaiCrypto5V2IndexFactory, mumbaiCrypto5V2Vault, mumbaiWmaticAddress, sepoliaCR5FactoryStorage, sepoliaCrossChainTokenAddress, sepoliaCrypto5V2Factory, sepoliaWethAddress, zeroAddress } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
-import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi } from '@/constants/abi'
+import { crossChainFactoryStorageAbi, crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi } from '@/constants/abi'
 
 
 
@@ -19,10 +19,16 @@ export async function getNewCrossChainPortfolioBalance(totalPortfolioValue:numbe
 			transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
 		})
 
-		const mumbaiPublicClient = createPublicClient({
-			chain: polygonMumbai,
+		// const mumbaiPublicClient = createPublicClient({
+		// 	chain: polygonMumbai,
+		// 	// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
+		// 	transport: http(`https://rpc.ankr.com/polygon_mumbai/bf22a1af586c8f23c56205136ecbee0965c7d06d57c29d414bcd8ad877a0afc4`),
+		// })
+		const arbitrumSepoliaPublicClient = createPublicClient({
+			chain: arbitrumSepolia,
 			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			transport: http(`https://rpc.ankr.com/polygon_mumbai/bf22a1af586c8f23c56205136ecbee0965c7d06d57c29d414bcd8ad877a0afc4`),
+			// transport: http(`https://rpc.ankr.com/polygon_mumbai/bf22a1af586c8f23c56205136ecbee0965c7d06d57c29d414bcd8ad877a0afc4`),
+			transport: http(`https://arb-sepolia.g.alchemy.com/v2/Go-5TbveGF0JbuWNP4URPr5cm5xgIKCy`),
 		})
 
 		let totalPortfolioBalance: number = totalPortfolioValue;
@@ -34,32 +40,32 @@ export async function getNewCrossChainPortfolioBalance(totalPortfolioValue:numbe
 		//   })
 		// totalPortfolioBalance += Number(sepoliaPortfolioBalance)
 		const totalCurrentList = await sepoliaPublicClient.readContract({
-			address: sepoliaCrypto5V2Factory,
-			abi: crossChainIndexFactoryV2Abi,
+			address: sepoliaCR5FactoryStorage,
+			abi: crossChainFactoryStorageAbi,
 			functionName: 'totalCurrentList',
 		  })
 		
 		for (let i = 0; i < Number(totalCurrentList); i++) { 
 			const tokenAddress = await sepoliaPublicClient.readContract({
-				address: sepoliaCrypto5V2Factory,
-				abi: crossChainIndexFactoryV2Abi,
+				address: sepoliaCR5FactoryStorage,
+				abi: crossChainFactoryStorageAbi,
 				functionName: 'currentList',
 				args:[i]
 			  })
 			const tokenChainSelector = await sepoliaPublicClient.readContract({
-				address: sepoliaCrypto5V2Factory,
-				abi: crossChainIndexFactoryV2Abi,
+				address: sepoliaCR5FactoryStorage,
+				abi: crossChainFactoryStorageAbi,
 				functionName: 'tokenChainSelector',
 				args:[tokenAddress]
 			})
 			const tokenMarketShare = await sepoliaPublicClient.readContract({
-				address: sepoliaCrypto5V2Factory,
-				abi: crossChainIndexFactoryV2Abi,
+				address: sepoliaCR5FactoryStorage,
+				abi: crossChainFactoryStorageAbi,
 				functionName: 'tokenCurrentMarketShare',
 				args:[tokenAddress]
 			})
 			
-			if(tokenChainSelector == mumbaiChainSelector){
+			if(tokenChainSelector == arbitrumSepoliaChainSelector){
 				// const tokenBalance = await mumbaiPublicClient.readContract({
 				// 	address: tokenAddress as `0x${string}`,
 				// 	abi: tokenAbi,
@@ -72,11 +78,11 @@ export async function getNewCrossChainPortfolioBalance(totalPortfolioValue:numbe
 					functionName: 'getAmountOut',
 					args:[sepoliaWethAddress, sepoliaCrossChainTokenAddress, (wethAmount*Number(tokenMarketShare)/100e18).toFixed(0), 3]
 				})
-				const tokenValue = await mumbaiPublicClient.readContract({
-					address: mumbaiCrypto5V2IndexFactory,
+				const tokenValue = await arbitrumSepoliaPublicClient.readContract({
+					address: arbtirumSepoliaCR5CrossChainFactory,
 					abi: indexFactoryV2Abi,
 					functionName: 'getAmountOut',
-					args:[mumbaiCrossChainTokenAddress, mumbaiWmaticAddress, crossChainValue, 3]
+					args:[arbitrumSepoliaCrossChainTokenAddress, arbitrumSepoliaWethAddress, crossChainValue, 3]
 				})
 				totalPortfolioBalance += Number(tokenValue)
 				

@@ -59,16 +59,16 @@ import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 import useTradePageStore from '@/store/tradeStore'
 import { nexTokens } from '@/constants/nexIndexTokens'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 
 import { useQuery } from '@apollo/client'
 import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 
 export default function OwnedAsset({ params, searchParams }: { params: { slug: string }; searchParams: { [key: string]: string | string[] | undefined } }) {
 	const address = useAddress()
 	const { setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
-	const positionHistory = GetPositionsHistory2()
+	const positionHistory = GetPositionsHistoryDefi()
 	const { portfolioData, setPortfolioData } = usePortfolioPageStore()
 
 	useEffect(() => {

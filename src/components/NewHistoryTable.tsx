@@ -1,119 +1,100 @@
 import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaTokenAddresses } from '@/constants/contractAddresses'
 import { sepoliaTokens } from '@/constants/testnetTokens'
-import { GetPositionsHistory } from '@/hooks/getTradeHistory'
-import { GetPositionsHistoryDefi } from '@/hooks/getTradeHistory2'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 import usePortfolioPageStore from '@/store/portfolioStore'
 import useTradePageStore from '@/store/tradeStore'
-import { Positions } from '@/types/tradeTableTypes'
+import { PositionType } from '@/types/tradeTableTypes'
 import convertToUSD from '@/utils/convertToUsd'
 import React, { useEffect, useState } from 'react'
-import mesh1 from '@assets/images/mesh1.png'
-import mesh2 from '@assets/images/mesh2.png'
 import etherscan from '@assets/images/etherscan2.png'
 import ccip from '@assets/images/ccip.png'
 import chainlink from '@assets/images/chainlink.png'
-// import etherscan from '@assets/images/etherscan2.jpg'
-// import ccip from '@assets/images/ccip.jpg'
 import { useLandingPageStore } from '@/store/store'
 import Image from 'next/image'
 import Link from 'next/link'
 import { BsArrowCounterclockwise } from 'react-icons/bs'
 import { convertTime, reduceAddress } from '@/utils/general'
-import { GetRequestHistory } from '@/hooks/getRequestHistory'
-import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
+
+import Box from '@mui/material/Box'
+import LinearProgress from '@mui/material/LinearProgress'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
+import { GetPositionsHistoryCrossChain } from '@/hooks/getPositiontHistoryCrosschain'
+import { useAddress } from '@thirdweb-dev/react'
 
 function NewHistoryTable() {
+	const address = useAddress()
 	const { mode } = useLandingPageStore()
-	const {
-		isFromCurrencyModalOpen,
-		isToCurrencyModalOpen,
-		setFromCurrencyModalOpen,
-		setToCurrencyModalOpen,
-		changeSwapFromCur,
-		changeSwapToCur,
-		swapFromCur,
-		swapToCur,
-		nftImage,
-		setNftImage,
-		setTradeTableReload,
-		tradeTableReload,
-		setEthPriceInUsd,
-		ethPriceInUsd,
-		isMainnet,
-	} = useTradePageStore()
+	const { swapFromCur, swapToCur, setTradeTableReload, tradeTableReload, crosschainTableReload, setEthPriceInUsd, ethPriceInUsd, isMainnet } = useTradePageStore()
 	const { ownedAssetInActivity, setPortfolioData } = usePortfolioPageStore()
+
 	const positionHistoryDefi = GetPositionsHistoryDefi()
+	const positionHistoryCrosschain = GetPositionsHistoryCrossChain()
 
-	const crossChainpositionHistory = GetTradeHistoryCrossChain()
-	const crossChainRequestHistory = GetRequestHistory()
+	const [positionHistoryData, setPositionHistoryData] = useState<PositionType[]>([])
+	const [combinedPositionTableData, setCombinedPositionTableData] = useState<PositionType[]>([])
+	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
 
-	useEffect(()=>{
-		console.log("crossChainpositionHistory--->",crossChainpositionHistory.data)
-		console.log("crossChainRequestHistory--->",crossChainRequestHistory.data)
-	},[crossChainpositionHistory, crossChainRequestHistory ])
+	const activeIndexType = swapFromCur?.indexType === 'defi' || swapToCur?.indexType === 'defi' ? 'defi' : 'crosschain'
 
-	// useEffect(() => {
-	// 	console.log("positionHistoryDefi", positionHistoryDefi)
-	// 	console.log("positionHistoryDefi")
-	// },[positionHistoryDefi])
+	useEffect(() => {
+		const crossChainRequests = positionHistoryCrosschain.requests
+		const crossChainHistory = positionHistoryCrosschain.history
 
-	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
+		const activeRequests = crossChainRequests.filter((data) => {
+			const isExist = crossChainHistory.find((hist) => {
+				return hist.nonce === data.nonce && hist.side === data.side
+			})
+			return !isExist
+		})
+
+		const combinedData = [...crossChainHistory, ...activeRequests].sort((a, b) => b.timestamp - a.timestamp)
+
+		if (JSON.stringify(combinedData) !== JSON.stringify(combinedPositionTableData)) {
+			setCombinedPositionTableData(combinedData)
+		}
+	}, [positionHistoryCrosschain])
+
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 	const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
 	const assetName = searchQuery.split('=')[1]
 
 	useEffect(() => {
-		// setEthPriceInUsd()
-		setPortfolioData(positionHistoryDefi.data)
-	}, [setEthPriceInUsd, setPortfolioData, positionHistoryDefi.data])
+		const combinedData = positionHistoryDefi.data.concat(positionHistoryCrosschain.history)
+		setPortfolioData(combinedData)
+	}, [setEthPriceInUsd, setPortfolioData, positionHistoryDefi.data, positionHistoryCrosschain.history])
 
-	const allowedSymbols = ['ANFI', 'CRYPTO5']
-	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
 	useEffect(() => {
 		if (path === '/tradeIndex') {
-			const data = positionHistoryDefi.data.filter((data) => {
-				return activeTicker.includes(data.indexName)
-			})
+			const data = activeIndexType === 'defi' ? positionHistoryDefi.data : combinedPositionTableData
 			if (JSON.stringify(data) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(data)
 			}
 		} else if (path === '/portfolio' || path === '/history') {
-			setPositionHistoryData(positionHistoryDefi.data)
+			const data = positionHistoryCrosschain.history.concat(positionHistoryDefi.data).sort((a, b) => b.timestamp - a.timestamp)
+			setPositionHistoryData(data)
 		} else if (path === '/assetActivity') {
-			const data = positionHistoryDefi.data.filter((data) => {
+			const dataTotal = combinedPositionTableData.concat(positionHistoryDefi.data).sort((a, b) => b.timestamp - a.timestamp)
+			const data = dataTotal.filter((data) => {
 				return assetName.toUpperCase() === data.indexName
 			})
 
 			setPositionHistoryData(data)
 		}
-	}, [path, positionHistoryDefi.data, assetName, swapFromCur.Symbol, swapToCur.Symbol, ownedAssetInActivity, activeTicker])
+	}, [path, positionHistoryDefi.data, assetName, swapFromCur.Symbol, swapToCur.Symbol, ownedAssetInActivity, combinedPositionTableData])
 
 	useEffect(() => {
 		if (tradeTableReload) {
-			positionHistoryDefi.reload()
+			activeIndexType === 'defi' ? positionHistoryDefi.reload() : positionHistoryCrosschain.reload()
 			setTradeTableReload(false)
 		}
-	}, [positionHistoryDefi, setTradeTableReload, tradeTableReload])
-
-	const roundNumber = (number: number) => {
-		return FormatToViewNumber({ value: number, returnType: 'number' })
-	}
-
-	// const convertTime = (timestamp: number) => {
-	// 	const date = new Date(timestamp * 1000)
-	// 	const localDate = date.toLocaleDateString('en-US')
-	// 	const localTime = date.toLocaleTimeString('en-US')
-	// 	return localDate + ' ' + localTime
-	// }
-	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
+	}, [positionHistoryDefi, setTradeTableReload, tradeTableReload, activeIndexType, positionHistoryCrosschain])
 
 	useEffect(() => {
 		async function getUsdPrices() {
 			sepoliaTokens.map(async (token) => {
 				if (ethPriceInUsd > 0) {
 					const obj = usdPrices
-					obj[token.address] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					obj[token.address] = (await convertToUSD({ tokenAddress: token.address, tokenDecimals: token.decimals }, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
 						setUsdPrices(obj)
 					}
@@ -123,10 +104,8 @@ function NewHistoryTable() {
 
 		getUsdPrices()
 	}, [ethPriceInUsd, usdPrices])
- 
-	const combinedpositionsData = positionHistoryData.concat()
 
-	const dataToShow: { timestamp: number; tokenAddress: string; indexName: string; side: string; inputAmount: number; outputAmount: number; txHash: string }[] = Array.from(
+	const dataToShow: PositionType[] = Array.from(
 		{ length: Math.max(5, positionHistoryData.length) },
 		(_, index) =>
 			positionHistoryData[index] || {
@@ -136,98 +115,39 @@ function NewHistoryTable() {
 				outputAmount: 0,
 				tokenAddress: '',
 				side: '',
+				sendStatus: '',
+				receiveStatus: '',
 			}
 	)
 
-	const [localStorageHash, setLocalStorageHash] = useState<string[]>([])
-	if (typeof window !== 'undefined' && localStorage.getItem('txHash')) {
-		const txHash = JSON.parse(localStorage.getItem('txHash') || '{}')
-		const txHashArray: string[] = Object.values(txHash)
-		if (JSON.stringify(localStorageHash) !== JSON.stringify(txHashArray)) {
-			setLocalStorageHash(txHashArray)
-		}
-	}
-
-	useEffect(() => {
-		if (localStorageHash && positionHistoryData) {
-			localStorageHash.forEach((hash) => {
-				const ifExist = positionHistoryData.filter((data) => {
-					data.txHash === hash
-				})
-
-				if (ifExist.length > 0) {
-					const txHash = JSON.parse(localStorage.getItem('txHash') || '{}')
-					const newObj = Object.fromEntries(Object.entries(txHash).filter(([key, value]) => value !== hash))
-					Object.keys(newObj).length === 0 ? localStorage.removeItem('txHash') : localStorage.setItem('txHash', JSON.stringify(newObj))
-					const newArray: string[] = Object.values(newObj) as string[]
-					setLocalStorageHash(newArray)
-				}
-			})
-		}
-	}, [localStorageHash, positionHistoryData])
-
 	return (
 		<div className={`w-full h-full overflow-x-auto ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
-			{' '}
-			{/* Added overflow-x-auto for X-axis scrolling */}
-			{path === '/tradeIndex' && activeTicker[0] === 'CRYPTO5' && localStorageHash.length > 0 && (
-				<div
-					role="alert"
-					className={`alert  mb-2 ${
-						mode == 'dark'
-							? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
-							: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
-					}`}
-					style={{
-						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-						backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-					}}
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-					</svg>
-					<span>
-						You have sent a CCIP transaction.{' '}
-						<div className="dropdown dropdown-hover">
-							<div tabIndex={0} role="button" className="">
-								<em> Click here </em>
-							</div>
-							<ul
-								tabIndex={0}
-								className={`dropdown-content z-[1] menu shadow bg-base-100 rounded-box w-fit${
-									mode == 'dark' ? ' bg-blackText-500 text-whiteText-500 darkCCIP' : ' lightCCIP text-blackText-500'
-								}`}
-							>
-								{localStorageHash.map((hash) => (
-									<li key={hash}>
-										<Link href={`https://ccip.chain.link/tx/${hash}`} target="_blank">
-											{reduceAddress(hash)}
-										</Link>
-									</li>
-								))}
-							</ul>
-						</div>
-						{/* <Link href={`https://ccip.chain.link/tx/${localStorageHash}`}>
-							<em>Click Here </em>
-						</Link> */}{' '}
-						to view in ccip
-					</span>
-				</div>
-			)}
 			<div className={`h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[400px] ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
+				{address && path === '/tradeIndex' && activeIndexType === 'crosschain' && crosschainTableReload && (
+					<Box sx={{ p: 2, width: '100%' }}>
+						<LinearProgress />
+					</Box>
+				)}
+
 				<table className="heir-[th]:h-9 heir-[th]:border-b dark:heir-[th]:border-[#161C10] table-fixed border-collapse w-full rounded-xl dark:border-[#161C10] min-w-[700px]">
 					<thead className="sticky top-0">
-						<tr className={`text-lg interExtraBold ${mode == 'dark' ? ' text-whiteText-500 bg-[#000000]' : ' text-blackText-500 bg-[#F2F2F2]'} border-b border-b-[#E4E4E4]`}>
+						<tr className={`text-md interExtraBold ${mode == 'dark' ? ' text-whiteText-500 bg-[#000000]' : ' text-blackText-500 bg-[#F2F2F2]'} border-b border-b-[#E4E4E4]`}>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Time</th>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Pair</th>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Request Side</th>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Input Amount</th>
 							<th className="px-4 py-3 text-left whitespace-nowrap">Output Amount</th>
+							{path === '/tradeIndex' && activeIndexType === 'crosschain' && (
+								<>
+									<th className="px-4 py-3 text-left whitespace-nowrap">Send Status</th>
+									<th className="px-4 py-3 text-left whitespace-nowrap">Receive Status</th>
+								</>
+							)}
 							<th className="px-4 py-3 text-left whitespace-nowrap">
 								Actions
 								<div
 									onClick={() => {
-										positionHistoryDefi.reload()
+										activeIndexType === 'defi' ? positionHistoryDefi.reload() : positionHistoryCrosschain.reload()
 									}}
 									className="float-end py-1 cursor-pointer"
 								>
@@ -237,56 +157,18 @@ function NewHistoryTable() {
 						</tr>
 					</thead>
 					<tbody className="overflow-y-scroll overflow-x-hidden">
-						{/* {localStorageHash ? 
-					():( */}
-
-						{dataToShow.map(
-							(
-								position: {
-									timestamp: number | null
-									tokenAddress: string | null
-									indexName:
-										| string
-										| number
-										| boolean
-										| React.ReactElement<any, string | React.JSXElementConstructor<any>>
-										| Iterable<React.ReactNode>
-										| React.ReactPortal
-										| React.PromiseLikeOfReactNode
-										| null
-										| undefined
-									side:
-										| string
-										| number
-										| boolean
-										| React.ReactElement<any, string | React.JSXElementConstructor<any>>
-										| Iterable<React.ReactNode>
-										| React.PromiseLikeOfReactNode
-										| null
-										| undefined
-									inputAmount: number | null
-									outputAmount: number | null
-									txHash: string
-								},
-								i: React.Key | null | undefined
-							) => {
-								return (
-									<tr
-										key={i}
-										// className="child-[td]:text-[#D8DBD5]/60 child:px-4 child:text-[10px] bg-[#1C2018]/20"
-										className={`${mode == 'dark' ? ' text-gray-200  ' : 'text-gray-700'} interMedium text-base border-b border-blackText-500`}
-									>
-										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.timestamp ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
-											{position.timestamp ? convertTime(position.timestamp) : '-'}
-										</td>
-
-										{/* <td>{swapToCur.Symbol}</td> */}
-										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.indexName ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
-											{position.indexName ? position.indexName : '-'}
-										</td>
-										<td className="px-4 text-left py-3">
-											<div
-												className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}  
+						{dataToShow.map((position: PositionType, i: React.Key | null | undefined) => {
+							return (
+								<tr key={i} className={`${mode == 'dark' ? ' text-gray-200  ' : 'text-gray-700'} interMedium text-base border-b border-blackText-500`}>
+									<td className={`px-4 text-left py-3  ${position.timestamp ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+										{position.timestamp ? convertTime(position.timestamp) : '-'}
+									</td>
+									<td className={`px-4 text-left py-3 whitespace-nowrap ${position.indexName ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+										{position.indexName ? position.indexName : '-'}
+									</td>
+									<td className="px-4 text-left py-3">
+										<div
+											className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}  
 										${
 											position.side === 'Mint Request'
 												? 'bg-nexLightGreen-500 text-whiteText-500'
@@ -294,76 +176,103 @@ function NewHistoryTable() {
 												? 'bg-nexLightRed-500 text-whiteText-500'
 												: 'bg-transparent'
 										} flex flex-row items-center justify-center`}
+										>
+											{position.side ? position.side.toString().split(' ')[0] : '-'}
+										</div>
+									</td>
+									<td className={`px-4 text-left py-3 whitespace-nowrap ${position.inputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+										{position.inputAmount && position.tokenAddress ? (
+											<>
+												{FormatToViewNumber({ value: Number(position.inputAmount), returnType: 'string' })}{' '}
+												{position.side === 'Mint Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
+												{isMainnet && (
+													<>
+														<div className="text-slate-500">
+															<em>
+																≈ $
+																{usdPrices
+																	? position.side === 'Mint Request'
+																		? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
+																		: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																	: 0}{' '}
+															</em>
+														</div>{' '}
+													</>
+												)}
+											</>
+										) : (
+											'-'
+										)}
+									</td>
+									<td className={`px-4 text-left py-3 whitespace-nowrap ${position.outputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
+										{position.outputAmount && position.tokenAddress ? (
+											<>
+												{FormatToViewNumber({ value: Number(position.outputAmount), returnType: 'string' })}{' '}
+												{position.side === 'Burn Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
+												{isMainnet && (
+													<>
+														<div className="text-slate-500">
+															<em>
+																≈ $
+																{usdPrices
+																	? position.side === 'Burn Request'
+																		? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
+																		: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																	: 0}{' '}
+															</em>
+														</div>{' '}
+													</>
+												)}
+											</>
+										) : (
+											'-'
+										)}
+									</td>
+									{path === '/tradeIndex' && activeIndexType === 'crosschain' && (
+										<>
+											<td
+												className={`px-4 text-left py-3 whitespace-nowrap ${
+													position.sendStatus ? (position.sendStatus === 'SUCCESS' ? 'text-nexLightGreen-500' : 'text-[#FFFAA0]') : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'
+												}`}
 											>
-												{position.side ? position.side.toString().split(' ')[0] : '-'}
-											</div>
-										</td>
-										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.inputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
-											{position.inputAmount && position.tokenAddress ? (
-												<>
-													{FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })}{' '}
-													{position.side === 'Mint Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
-													{isMainnet && (
-														<>
-															<div className="text-slate-500">
-																<em>
-																	≈ $
-																	{usdPrices
-																		? position.side === 'Mint Request'
-																			? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
-																			: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-																		: 0}{' '}
-																</em>
-															</div>{' '}
-														</>
-													)}
-												</>
-											) : (
-												'-'
+												{position.sendStatus ? position.sendStatus : '-'}
+											</td>
+											<td
+												className={`px-4 text-left py-3 whitespace-nowrap ${
+													position.receiveStatus
+														? position.receiveStatus === 'SUCCESS'
+															? 'text-nexLightGreen-500'
+															: 'text-[#FFFAA0]'
+														: mode === 'dark'
+														? 'text-[#101010]'
+														: 'text-[#E5E7EB]'
+												}`}
+											>
+												{position.receiveStatus ? position.receiveStatus : '-'}
+											</td>
+										</>
+									)}
+									<td className={`px-4 text-left py-3 whitespace-nowrap ${position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
+										<div className="flex flex-row items-center justify-start gap-3 ">
+											{(position.indexName === 'ANFI' || position.indexName === 'CRYPTO5') && (
+												<Link title={'View in Etherscan'} className="my-auto" target="_blank" href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
+													<Image src={etherscan.src} alt="etherscan Logo" width={25} height={25} />
+												</Link>
 											)}
-										</td>
-										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.outputAmount && position.tokenAddress ? '' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}`}>
-											{position.outputAmount && position.tokenAddress ? (
-												<>
-													{FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })}{' '}
-													{position.side === 'Burn Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
-													{isMainnet && (
-														<>
-															<div className="text-slate-500">
-																<em>
-																	≈ $
-																	{usdPrices
-																		? position.side === 'Burn Request'
-																			? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
-																			: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-																		: 0}{' '}
-																</em>
-															</div>{' '}
-														</>
-													)}
-												</>
-											) : (
-												'-'
+											{position.messageId && (
+												<Link
+													title={'View in CCIP'}
+													target="_blank"
+													href={`https://ccip.chain.link/msg/${position.recieveSideMessageId ? position.recieveSideMessageId : position.messageId}`}
+												>
+													<Image src={chainlink.src} alt="chainlink Logo" width={25} height={25} />
+												</Link>
 											)}
-										</td>
-										<td className={`px-4 text-left py-3 whitespace-nowrap ${position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
-											<div className="flex flex-row items-center justify-start gap-3 ">
-												{(position.indexName === 'ANFI' || position.indexName === 'CRYPTO5') && (
-													<Link title={'View in Etherscan'} className="my-auto" target="_blank" href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
-														<Image src={etherscan.src} alt="etherscan Logo" width={25} height={25} />
-													</Link>
-												)}
-												{position.indexName === 'CRYPTO5' && (
-													<Link title={'View in CCIP'} target="_blank" href={`https://ccip.chain.link/tx/${position.txHash}`}>
-														<Image src={chainlink.src} alt="chainlink Logo" width={25} height={25} />
-													</Link>
-												)}
-											</div>
-										</td>
-									</tr>
-								)
-							}
-						)}
+										</div>
+									</td>
+								</tr>
+							)
+						})}
 					</tbody>
 				</table>
 			</div>

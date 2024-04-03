@@ -1,7 +1,7 @@
 import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaTokenAddresses } from '@/constants/contractAddresses'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 import useTradePageStore from '@/store/tradeStore'
 import { Positions } from '@/types/tradeTableTypes'
@@ -29,7 +29,7 @@ function HistoryTable() {
 		setEthPriceInUsd,
 		ethPriceInUsd,
 	} = useTradePageStore()
-	const positionHistory = GetPositionsHistory2()
+	const positionHistory = GetPositionsHistoryDefi()
 	useEffect(() => {
 		console.log('positionHistory', positionHistory)
 		console.log('positionHistory')

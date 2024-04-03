@@ -35,6 +35,7 @@ export const sepoliaTokens:Coin[] = [
         address: sepoliaAnfiV2IndexToken,
         factoryAddress: sepoliaAnfiV2Factory,
         decimals: 18,
+        indexType: 'defi'
     },
     {
         id: 2,
@@ -65,6 +66,7 @@ export const sepoliaTokens:Coin[] = [
         address: sepoliaCrypto5V2IndexToken,
         factoryAddress: sepoliaCrypto5V2Factory,
         decimals: 18,
+        indexType: 'crosschain'
     }
 ]
 // export const sepoliaTokens = [

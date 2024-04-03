@@ -90,10 +90,12 @@ import ConnectButton from '@/components/ConnectButton'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import exportPDF from '@/utils/exportTable'
 import { toast } from 'react-toastify'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
+import { emptyData } from '@/constants/emptyChartData'
+import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
 
 function History() {
 	const { mode } = useLandingPageStore()
@@ -214,71 +216,6 @@ function History() {
 		},
 	}
 
-	const emptyData = [
-		{ time: '2018-01-04', value: 0 },
-		{ time: '2018-01-05', value: 0 },
-		{ time: '2018-01-08', value: 0 },
-		{ time: '2018-01-09', value: 0 },
-		{ time: '2018-01-10', value: 0 },
-		{ time: '2018-01-11', value: 0 },
-		{ time: '2018-01-12', value: 0 },
-		{ time: '2018-01-16', value: 0 },
-		{ time: '2018-01-17', value: 0 },
-		{ time: '2018-01-18', value: 0 },
-		{ time: '2018-01-19', value: 0 },
-		{ time: '2018-01-22', value: 0 },
-		{ time: '2018-01-23', value: 0 },
-		{ time: '2018-01-24', value: 0 },
-		{ time: '2018-01-25', value: 0 },
-		{ time: '2018-01-26', value: 0 },
-		{ time: '2018-01-29', value: 0 },
-		{ time: '2018-01-30', value: 0 },
-		{ time: '2018-01-31', value: 0 },
-		{ time: '2018-02-01', value: 0 },
-		{ time: '2018-02-02', value: 0 },
-		{ time: '2018-02-05', value: 0 },
-		{ time: '2018-02-06', value: 0 },
-		{ time: '2018-02-07', value: 0 },
-		{ time: '2018-02-08', value: 0 },
-		{ time: '2018-02-09', value: 0 },
-		{ time: '2018-02-12', value: 0 },
-		{ time: '2018-02-13', value: 0 },
-		{ time: '2018-02-14', value: 0 },
-		{ time: '2018-02-15', value: 0 },
-		{ time: '2018-02-16', value: 0 },
-		{ time: '2018-02-20', value: 0 },
-		{ time: '2018-02-21', value: 0 },
-		{ time: '2018-02-22', value: 0 },
-		{ time: '2018-02-23', value: 0 },
-		{ time: '2018-02-26', value: 0 },
-		{ time: '2018-02-27', value: 0 },
-		{ time: '2018-02-28', value: 0 },
-		{ time: '2018-03-01', value: 0 },
-		{ time: '2018-03-02', value: 0 },
-		{ time: '2018-03-05', value: 0 },
-		{ time: '2018-03-06', value: 0 },
-		{ time: '2018-03-07', value: 0 },
-		{ time: '2018-03-08', value: 0 },
-		{ time: '2018-03-09', value: 0 },
-		{ time: '2018-03-12', value: 0 },
-		{ time: '2018-03-13', value: 0 },
-		{ time: '2018-03-14', value: 0 },
-		{ time: '2018-03-15', value: 0 },
-		{ time: '2018-03-16', value: 0 },
-		{ time: '2018-03-19', value: 0 },
-		{ time: '2018-03-20', value: 0 },
-		{ time: '2018-03-21', value: 0 },
-		{ time: '2018-03-22', value: 0 },
-		{ time: '2018-03-23', value: 0 },
-		{ time: '2018-03-26', value: 0 },
-		{ time: '2018-03-27', value: 0 },
-		{ time: '2018-03-28', value: 0 },
-		{ time: '2018-03-29', value: 0 },
-		{ time: '2018-04-02', value: 0 },
-		{ time: '2018-04-03', value: 0 },
-		{ time: '2018-04-04', value: 0 },
-	]
-
 	const [uploadedPPLink, setUploadedPPLink] = useState('none')
 	const [chosenPPType, setChosenPPType] = useState('none')
 
@@ -309,7 +246,7 @@ function History() {
 		async function getTokenDetails() {
 			const data = await Promise.all(
 				nexTokens.map(async (item: nexTokenDataType) => {
-					const calculatedUsdValue = (await convertToUSD({tokenAddress:item.address, tokenDecimals:item.decimals}, ethPriceInUsd, false)) || 0
+					const calculatedUsdValue = (await convertToUSD({ tokenAddress: item.address, tokenDecimals: item.decimals }, ethPriceInUsd, false)) || 0
 					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
 					const totalTokenUsd = calculatedUsdValue * totalToken || 0
 					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
@@ -360,7 +297,8 @@ function History() {
 	//         setIsGenerating(false);
 	//     });
 	// };
-	const positionHistory = GetPositionsHistory2()
+	const positionHistoryDefi = GetPositionsHistoryDefi()
+	const positionHistoryCrosschain = GetTradeHistoryCrossChain()
 	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
 
 	useEffect(() => {
@@ -368,7 +306,7 @@ function History() {
 			sepoliaTokens.map(async (token) => {
 				if (ethPriceInUsd > 0) {
 					const obj = usdPrices
-					obj[token.address] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					obj[token.address] = (await convertToUSD({ tokenAddress: token.address, tokenDecimals: token.decimals }, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
 						setUsdPrices(obj)
 					}
@@ -380,72 +318,48 @@ function History() {
 	}, [ethPriceInUsd, usdPrices])
 
 	const handleExportPDF = () => {
-
 		toast.dismiss()
 		GenericToast({
 			type: 'loading',
-			message: 'Generating PDF...'
+			message: 'Generating PDF...',
 		})
 
 		const dataToExport = []
 		const heading = ['Time', 'Pair', 'Request Side', 'Input Amount', 'Output Amount', 'Transaction hash']
 		dataToExport.push(heading)
-		positionHistory.data
-		.sort((a, b) => b.timestamp - a.timestamp)
-		.forEach((position) => {
-			const side = position.side.split(' ')[0]
+		const combinedData = positionHistoryDefi.data.concat(positionHistoryCrosschain.data)
+		combinedData
+			.sort((a, b) => b.timestamp - a.timestamp)
+			.forEach((position) => {
+				const side = position.side.split(' ')[0]
 
-			dataToExport.push([
-				convertTime(position.timestamp),
-				position.indexName,
-				{ text: side, bold: true, color: 'white', alignment: 'center', fillColor: side.toLowerCase() === 'mint' ? '#089981' : '#F23645' },
-				{
-					text: [
-						`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${
-							side.toLowerCase() === 'mint' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
-						}`
-						// \n`,
-						// {
-						// 	text: `≈ $ ${
-						// 		usdPrices
-						// 			? side.toLowerCase() === 'mint'
-						// 				? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
-						// 				: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-						// 			: 0
-						// 		}`,
-						// 	color: 'gray',
-						// 	italics: true,
-						// },
-					],
-				},
-				{
-					text: [
-						`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${
-							side.toLowerCase() === 'burn' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
-						}`
-						// \n`,
-						// {
-						// 	text: `≈ $ ${
-						// 		usdPrices
-						// 		? side.toLowerCase() === 'burn'
-						// 		? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
-						// 		: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-						// 		: 0
-						// 	}`,
-						// 	color: 'gray',
-						// 	italics: true,
-						// },
-					],
-				},
-				position.txHash,
-			])
-		})
-		
+				dataToExport.push([
+					convertTime(position.timestamp),
+					position.indexName,
+					{ text: side, bold: true, color: 'white', alignment: 'center', fillColor: side.toLowerCase() === 'mint' ? '#089981' : '#F23645' },
+					{
+						text: [
+							`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${
+								side.toLowerCase() === 'mint' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+							}`,
+						],
+					},
+					{
+						text: [
+							`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${
+								side.toLowerCase() === 'burn' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+							}`,
+						],
+					},
+					position.txHash,
+				])
+			})
+
 		const tableData = dataToExport
 
-		exportPDF(tableData, 'landscape', address as string);
+		exportPDF(tableData, 'landscape', address as string)
 	}
-		
+
 	chartArr = chartArr.filter((obj) => obj.time !== 1702512000)
 
 	// const tableData = [

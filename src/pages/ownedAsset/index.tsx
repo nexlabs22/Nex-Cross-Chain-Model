@@ -94,14 +94,14 @@ import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import usePortfolioPageStore from '@/store/portfolioStore'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 
 export default function OwnedAsset({ params, searchParams }: { params: { slug: string }; searchParams: { [key: string]: string | string[] | undefined } }) {
 	const address = useAddress()
 	const router = useRouter()
 	const { setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
 	const { portfolioData, setPortfolioData } = usePortfolioPageStore()
-	const positionHistory = GetPositionsHistory2()
+	const positionHistory = GetPositionsHistoryDefi()
 
 	useEffect(() => {
 		// setEthPriceInUsd()
