@@ -1,3 +1,4 @@
+import { useAddress } from '@thirdweb-dev/react'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import ReactGA from 'react-ga4' // Import from 'react-ga4' instead of 'react-ga'
@@ -9,6 +10,8 @@ const initializeReactGA = () => {
 
 
 const TimeTracker: React.FC = () => {
+
+	const address = useAddress()
 
 	const router = useRouter()
 	const location = router.pathname
@@ -23,17 +26,17 @@ const TimeTracker: React.FC = () => {
 			console.log("duration", {location, duration})
 			localStorage.setItem("Time", JSON.stringify({location, duration}))
 
-		ReactGA.send({
-		  hitType: 'event',
-		  eventCategory: 'User',
-		  eventAction: 'Time Spent',
-		  eventValue: duration
-		});
+		// ReactGA.send({
+		//   hitType: 'event',
+		//   eventCategory: 'User',
+		//   eventAction: 'Time Spent',
+		//   eventValue: duration
+		// });
 	
 		ReactGA.event({
 			category: "User",
 			action: "TimeSpent",
-			// label: "your label", // optional
+			label: address, // optional
 			value: duration, // optional, must be a number
 			// nonInteraction: true, // optional, true/false
 			// transport: "xhr", // optional, beacon/xhr/image
