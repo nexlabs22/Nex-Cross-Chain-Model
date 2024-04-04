@@ -80,6 +80,7 @@
 		"react-copy-to-clipboard": "^5.1.0",
 		"react-csv": "^2.2.2",
 		"react-dom": "latest",
+		"react-ga4": "^2.1.0",
 		"react-google-charts": "^4.0.1",
 		"react-icons": "^4.11.0",
 		"react-image-upload": "^3.0.1",
