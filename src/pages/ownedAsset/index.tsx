@@ -94,14 +94,14 @@ import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import usePortfolioPageStore from '@/store/portfolioStore'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 
 export default function OwnedAsset({ params, searchParams }: { params: { slug: string }; searchParams: { [key: string]: string | string[] | undefined } }) {
 	const address = useAddress()
 	const router = useRouter()
 	const { setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
 	const { portfolioData, setPortfolioData } = usePortfolioPageStore()
-	const positionHistory = GetPositionsHistory2()
+	const positionHistory = GetPositionsHistoryDefi()
 
 	useEffect(() => {
 		// setEthPriceInUsd()
@@ -281,7 +281,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 		async function getTokenDetails() {
 			const data = await Promise.all(
 				nexTokens.map(async (item: nexTokenDataType) => {
-					const calculatedUsdValue = !['CRYPTO5'].includes(item.symbol) ? (await convertToUSD(item.address, ethPriceInUsd, false)) || 0 : 0
+					const calculatedUsdValue = !['CRYPTO5'].includes(item.symbol) ? (await convertToUSD({tokenAddress:item.address, tokenDecimals:item.decimals}, ethPriceInUsd, false)) || 0 : 0
 					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) : 0
 					const indexDayChange = Math.abs(item.symbol === 'ANFI' ? dayChange.anfi || 0 : item.symbol === 'ANFI' ? dayChange.cr5 || 0 : 0)
 					const totalTokenUsd = calculatedUsdValue * totalToken

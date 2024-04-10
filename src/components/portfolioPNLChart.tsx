@@ -109,7 +109,7 @@ const PortfolioPNLChart: React.FC<GradientAreaChartProps> = ({ data, change,tota
 						className={`text-2xl ${mode == "dark" ? " text-whiteText-500 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]" : "text-blackText-500"} titleShadow interBold`}
 						title={totalPortfolioBalance ? totalPortfolioBalance.toString(): '0.00'}
 					>
-						${totalPortfolioBalance ? (totalPortfolioBalance < 0.01 ? '≈ 0.00 ' : FormatToViewNumber({ value: totalPortfolioBalance, returnType: 'string' })) : '0.00'}
+						${totalPortfolioBalance ? (totalPortfolioBalance < 0.01 && totalPortfolioBalance > 0 ? '≈ 0.00 ' : FormatToViewNumber({ value: totalPortfolioBalance, returnType: 'string' })) : '0.00'}
 					</h1>
 					<h1 className={`text-lg ${address && change > 0 ? 'text-nexLightGreen-500' : address && change < 0 ? 'text-nexLightRed-500' : 'text-black'} titleShadow interMedium`}>
 						{address ? (change > 0 ? '+' + change.toFixed(2) : change.toFixed(2)) : '0.00'}%

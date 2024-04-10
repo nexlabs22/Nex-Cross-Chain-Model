@@ -6,19 +6,21 @@ import { goerli, sepolia } from 'viem/chains'
 // import { getTickerFromAddress } from '../utils/general'
 import { factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, zeroAddress } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
-import { Positions } from '@/types/tradeTableTypes'
+import { PositionType } from '@/types/tradeTableTypes'
+// import { Positions } from '@/types/tradeTableTypes'
+// import { Positions1 } from './getRequestHistory'
 
 
 
 // export function GetPositionsHistory2(exchangeAddress: `0x${string}`, activeTicker: string) {
-export function GetPositionsHistory2() {
+export function GetTradeHistoryCrossChain() {
 	// const accountAddress = useAccountAddressStore((state) => state.accountAddress)
 	// if(!exchangeAddress) return;
 
 	const [accountAddress, setAccountAddress] = useState<`0x${string}` | string>()
 	const address = useAddress()
 
-	const [positions, setPositions] = useState<Positions[]>([])
+	const [positions, setPositions] = useState<PositionType[]>([])
 
 	useEffect(() => {
 		if (address) {
@@ -39,7 +41,7 @@ export function GetPositionsHistory2() {
 			transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
 		})
 
-		const positions0: Positions[] = []
+		const positions0: PositionType[] = []
 		// return;
 		if (!accountAddress) return
 		//store open long history
@@ -61,7 +63,7 @@ export function GetPositionsHistory2() {
 			})
 			const userMintRequestLogs: any = mintRequestlogs.filter((log) => log.args.user == accountAddress)
 			userMintRequestLogs.forEach((log: any) => {
-				const obj: Positions = {
+				const obj: PositionType = {
 					side: 'Mint Request',
 					user: log.args.user as `0x${string}`,
 					inputAmount: num(log.args.inputAmount),
@@ -70,6 +72,10 @@ export function GetPositionsHistory2() {
 					timestamp: Number(log.args.time),
 					txHash: log.transactionHash,
 					indexName: key,
+					messageId: log.args.messageId,
+                    nonce: Number(log.args.nonce),
+                    sendStatus: "SUCCESS",
+                    receiveStatus: "SUCCESS"
 				}
 				positions0.push(obj)
 				// setPositions(preObj => [...preObj, obj])
@@ -91,7 +97,7 @@ export function GetPositionsHistory2() {
 			const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
 
 			userBurnRequestLogsLogs.forEach(async (log) => {
-				const obj: Positions = {
+				const obj: PositionType = {
 					side: 'Burn Request',
 					user: log.args.user as `0x${string}`,
 					inputAmount: num(log.args.inputAmount),
@@ -100,6 +106,10 @@ export function GetPositionsHistory2() {
 					timestamp: Number(log.args.time),
 					txHash: log.transactionHash,
 					indexName: key,
+					messageId: log.args.messageId,
+                    nonce: Number(log.args.nonce),
+                    sendStatus: "SUCCESS",
+                    receiveStatus: "SUCCESS"
 				}
 				positions0.push(obj)
 				// setPositions(preObj => [...preObj, obj])

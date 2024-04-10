@@ -121,7 +121,7 @@ const getMessageStatus = (status:string) => {
     const matchingOffRamps = offRamps.filter(
       (offRamp: any) => offRamp.sourceChainSelector.toString() === sourceChainSelector
     );
-    
+
     for (const matchingOffRamp of matchingOffRamps) {
       const offRampContract = new ethers.Contract(
         matchingOffRamp.offRamp,
@@ -147,6 +147,9 @@ const getMessageStatus = (status:string) => {
       `Either the message ${messageId} does not exist OR it has not been processed yet on destination chain\n`
     );
 
+    if(messageId){
+      return "PENDING"
+    }
     return ""
   };
 

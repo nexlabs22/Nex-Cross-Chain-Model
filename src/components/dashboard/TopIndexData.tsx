@@ -29,7 +29,7 @@ import cr5Logo from '@assets/images/cr5.png'
 import etherscanLogo from '@assets/images/etherscan.png'
 import managment from '@assets/images/managment.png'
 import GenericTooltip from '../GenericTooltip'
-import { goerliAnfiV2IndexToken, goerliCR5PoolAddress, goerliCrypto5IndexToken, goerlianfiPoolAddress, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken } from '@/constants/contractAddresses'
+import { goerliAnfiV2IndexToken, goerliCR5PoolAddress, goerliCrypto5IndexToken, goerlianfiPoolAddress, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaWethAddress } from '@/constants/contractAddresses'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
 import { indexTokenV2Abi } from '@/constants/abi'
 import mesh1 from '@assets/images/mesh1.png'
@@ -47,6 +47,8 @@ import useTradePageStore from '@/store/tradeStore'
 import { useQuery } from '@apollo/client'
 import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
+import { sepoliaTokens } from '@/constants/testnetTokens'
+import getPoolAddress from '@/utils/getPoolAddress'
 
 type underlyingAsset = {
 	name: string
@@ -112,13 +114,54 @@ const TopIndexData = () => {
 
 	useEffect(() => {
 		async function getPrice() {
-			const marketPriceANFIUSD = (await convertToUSD(sepoliaAnfiV2IndexToken, ethPriceInUsd, false)) as number
-			const marketPriceCR5USD = (await convertToUSD(sepoliaCrypto5V2IndexToken, ethPriceInUsd, false)) as number
-			setMktPrice({ anfi: marketPriceANFIUSD, cr5: marketPriceCR5USD })
+			const anfiTokenData = sepoliaTokens.find((d) => d.address === sepoliaAnfiV2IndexToken) as {address:string, decimals:number}
+			const cr5TokenData = sepoliaTokens.find((d) => d.address === sepoliaCrypto5V2IndexToken) as {address:string, decimals:number}
+
+			const marketPriceANFIUSD = await convertToUSD({tokenAddress:anfiTokenData.address, tokenDecimals:anfiTokenData.decimals}, ethPriceInUsd, false)
+			const marketPriceCR5USD = await convertToUSD({tokenAddress:cr5TokenData.address, tokenDecimals:cr5TokenData.decimals}, ethPriceInUsd, false)
+			
+			setMktPrice({ anfi: marketPriceANFIUSD as number, cr5: marketPriceCR5USD as number })
 		}
 
 		getPrice()
 	}, [ethPriceInUsd])
+
+	// useEffect(() => {
+	// 	async function getPrice() {
+	// 		try {
+	// 			const anfiTokenData = sepoliaTokens.find((d) => d.address === sepoliaAnfiV2IndexToken) as { address: string, decimals: number };
+	// 			const cr5TokenData = sepoliaTokens.find((d) => d.address === sepoliaCrypto5V2IndexToken) as { address: string, decimals: number };
+	
+	// 			console.log("anfiTokenData:", anfiTokenData);
+	// 			console.log("anfiTokenData:", { tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals });
+	// 			console.log("cr5TokenData:", cr5TokenData);
+	// 			console.log("cr5TokenData:", { tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals });
+	
+	// 			if (!anfiTokenData || !cr5TokenData) {
+	// 				console.error("Token data not found.");
+	// 				return;
+	// 			}
+
+	// 			const marketPriceANFIUSD = await convertToUSD({ tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals }, ethPriceInUsd, false) as number
+	// 			const marketPriceCR5USD = await convertToUSD({ tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals }, ethPriceInUsd, false) as number
+	
+	// 			console.log("marketPriceANFIUSD:", marketPriceANFIUSD);
+	// 			console.log("marketPriceCR5USD:", marketPriceCR5USD);
+	
+	// 			if (isNaN(marketPriceANFIUSD) || isNaN(marketPriceCR5USD)) {
+	// 				console.error("Invalid market price data.");
+	// 				return;
+	// 			}
+	
+	// 			setMktPrice({ anfi: marketPriceANFIUSD, cr5: marketPriceCR5USD });
+	// 		} catch (error) {
+	// 			console.error("Error fetching market prices:", error);
+	// 		}
+	// 	}
+	
+	// 	getPrice();
+	// }, [ethPriceInUsd, sepoliaTokens, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken]);
+	
 
 	const IndicesWithDetails = [
 		{
@@ -222,10 +265,12 @@ const TopIndexData = () => {
 	const IndexContract: UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
 	const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
 	const totalSupply = useContractRead(IndexContract.contract, 'totalSupply')
+	// console.log(num(totalSupply.data))
 
 	if (defaultIndexObject) {
 		defaultIndexObject.managementFee = feeRate.toFixed(2)
 		defaultIndexObject.totalSupply = num(totalSupply.data).toFixed(2)
+		// console.log(num(totalSupply.data) * defaultIndexObject.mktPrice)
 		defaultIndexObject.mktCap = num(totalSupply.data) * defaultIndexObject.mktPrice
 	}
 	const [CR5UnderLyingAssets, setCR5UnderLyingAssets] = useState<underlyingAsset[]>([])

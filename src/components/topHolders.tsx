@@ -1,6 +1,5 @@
 import { goerliAnfiFactory, goerliAnfiV2Factory } from '@/constants/contractAddresses'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
 import { FormatToViewNumber } from '@/hooks/math'
 import useTradePageStore from '@/store/tradeStore'
 import React, { useEffect, useState } from 'react'

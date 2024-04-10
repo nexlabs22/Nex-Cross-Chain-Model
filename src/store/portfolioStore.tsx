@@ -3,9 +3,9 @@ import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken } from '@/constants/con
 import { create } from 'zustand'
 import useTradePageStore from './tradeStore'
 import convertToUSD from '@/utils/convertToUsd'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
-import { Positions } from '@/types/tradeTableTypes'
-import { sepoliaTokens } from '@/constants/goerliTokens'
+import { PositionType } from '@/types/tradeTableTypes'
+import { sepoliaTokens } from '@/constants/testnetTokens'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 
 interface User {
 	email: string
@@ -33,7 +33,7 @@ type PortfolioPageStore = {
 	setDayChange: (change: { anfi: number; cr5: number }) => void
 
 	portfolioData: { tradedBalance: { [key: string]: number; anfi: number; crypto5: number; total: number } }
-	setPortfolioData: (positionHistoryData: Positions[]) => void
+	setPortfolioData: (positionHistoryData: PositionType[]) => void
 
 	globalConnectedUser: User,
 	setGlobalConnectedUser: (user: User) => void
@@ -74,14 +74,14 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 	setDayChange: (change: { anfi: number; cr5: number }) => set({ dayChange: change }),
 
 	portfolioData: { tradedBalance: { anfi: 0, crypto5: 0, total: 0 } },
-	setPortfolioData: async (positionHistoryData: Positions[]) => {
+	setPortfolioData: async (positionHistoryData: PositionType[]) => {
 		const ethPriceInUsd = useTradePageStore.getState().ethPriceInUsd
 		const priceObj: { [key: string]: number } = {}
 
 		const pricesInUsd: any = (
 			await Promise.all(
 				sepoliaTokens.map(async (token) => {
-					priceObj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					priceObj[token.address] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(priceObj).length === sepoliaTokens.length - 1) {
 						return priceObj
 					}

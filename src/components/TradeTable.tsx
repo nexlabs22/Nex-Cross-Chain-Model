@@ -1,10 +1,10 @@
 import { goerliAnfiFactory, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaTokenAddresses } from '@/constants/contractAddresses'
-import { sepoliaTokens } from '@/constants/goerliTokens'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 import { GetPositionsHistory } from '@/hooks/getTradeHistory'
-import { GetPositionsHistory2 } from '@/hooks/getTradeHistory2'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 import useTradePageStore from '@/store/tradeStore'
-import { Positions } from '@/types/tradeTableTypes'
+import { PositionType } from '@/types/tradeTableTypes'
 import convertToUSD from '@/utils/convertToUsd'
 import React, { useEffect, useState } from 'react'
 import mesh1 from '@assets/images/mesh1.png'
@@ -29,12 +29,12 @@ function HistoryTable() {
 		setEthPriceInUsd,
 		ethPriceInUsd,
 	} = useTradePageStore()
-	const positionHistory = GetPositionsHistory2()
+	const positionHistory = GetPositionsHistoryDefi()
 	useEffect(() => {
 		console.log('positionHistory', positionHistory)
 		console.log('positionHistory')
 	}, [positionHistory])
-	const [positionHistoryData, setPositionHistoryData] = useState<Positions[]>([])
+	const [positionHistoryData, setPositionHistoryData] = useState<PositionType[]>([])
 	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 	useEffect(() => {
 		setEthPriceInUsd()
@@ -72,15 +72,13 @@ function HistoryTable() {
 		return localDate + ' ' + localTime
 	}
 	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
-	console.log('usdPrices->', usdPrices)
 
 	useEffect(() => {
 		async function getUsdPrices() {
-			console.log('getUsdPrices', ethPriceInUsd)
 			sepoliaTokens.map(async (token) => {
 				if (ethPriceInUsd > 0) {
 					const obj = usdPrices
-					obj[token.address] = (await convertToUSD(token.address, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					obj[token.address] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
 						setUsdPrices(obj)
 					}

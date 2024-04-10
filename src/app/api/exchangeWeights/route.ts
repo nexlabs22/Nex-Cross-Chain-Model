@@ -180,7 +180,7 @@ export async function GET() {
 			const addressesArray = dataToSend.addresses
 			const marketSharesArray = dataToSend.marketShares
 			addressesArray.push(exchangeAddresses[key])
-			marketSharesArray.push(value)
+			marketSharesArray.push(value * 1e18)
 		})
 
 		return NextResponse.json(err ? { err, ip } : dataToSend, { status: 200 })

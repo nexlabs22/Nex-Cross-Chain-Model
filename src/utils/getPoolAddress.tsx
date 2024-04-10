@@ -16,6 +16,7 @@ const getPoolAddress = async (tokenAddress1: string, tokenAddress2: string, toke
     const pair = await Fetcher.fetchPairData(token1, token2);
 
     // Return the pool address
+    console.log(pair)
     return pair?.liquidityToken.address;
   } catch (error) {
     console.error('Error fetching pool address:', error);

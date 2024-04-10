@@ -7,6 +7,7 @@ export const sepoliaUsdtAddress = '0xE8888fE3Bde6f287BDd0922bEA6E0bF6e5f418e7';
 export const goerliLinkAddress = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB';
 export const sepoliaLinkAddress = '0x779877A7B0D9E8603169DdbD7836e478b4624789';
 
+export const MainnetUniswapV3FactoryAddress = '0x1F98431c8aD98523631AE4a59f267346ea31F984'
 export const sepoliaUniswapV3FactoryAddress = '0x0227628f3F023bb0B980b67D528571c95c6DaC1c'
 
 export const goerliAnfiIndexToken = "0x40d284001E3f6501C3f59FA4719776f973Ef6F91";
@@ -14,8 +15,10 @@ export const goerliCrypto5IndexToken = "0x63E7c9AD503973059D94EcCc0EB1daFC0fb749
 
 export const goerliAnfiV2IndexToken = "0xE62038e2f4A057b014a840Ea6D9F07d1f5779458";
 export const sepoliaAnfiV2IndexToken = "0x5Cd93F5C4ECE56b7faC31ABb3c1933f6a6FE7182";
-export const sepoliaCrypto5V2IndexToken = "0x47Fa73B6E9cFDB28B134D380Ef3f931e77260B24"
+// export const sepoliaCrypto5V2IndexToken = "0x47Fa73B6E9cFDB28B134D380Ef3f931e77260B24"
+export const sepoliaCrypto5V2IndexToken = "0xA16FEC5964aDE6563624C16d0b2EDeC95bEEB63b"
 export const mumbaiCrypto5V2Vault = "0x53B8876a23C057630c487D5a7B394EF45e64f2fA"
+export const arbitrumSepoliaCrypto5V2Vault = "0x04fddfb8b2EFaEaFc590505ffF0bA67E408d8A01"
 
 export const goerliAnfiFactory = "0x12A1d813f70025366B31B27582af902141b50484";
 export const goerliCrypto5Factory = "0x8a5e84A1B5e8640222A6Ae5A20B2740A060acCf4";
@@ -23,14 +26,18 @@ export const mumbaiCrypto5V2IndexFactory = "0xe0c7EC4711EEa139Eaa5F04f6549C2dc9b
   
 export const goerliAnfiV2Factory = "0xfb5BBb9a17eA7eFf0dA692EF60f961af49345606";
 export const sepoliaAnfiV2Factory = "0x7427E998D4db46E15f831e4Cff0393Ebb277c637";
-export const sepoliaCrypto5V2Factory = "0x877E48015097aAeEa3307C309dBc3AABed688Eca"
+// export const sepoliaCrypto5V2Factory = "0x877E48015097aAeEa3307C309dBc3AABed688Eca"
+export const sepoliaCrypto5V2Factory = "0xCd16eDa751CcC77f780E06B7Af9aeD0E90a51586"
 
 export const mumbaiWmaticAddress = "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889";
+export const arbitrumSepoliaWethAddress = "0xE591bf0A0CF924A0674d7792db046B23CEbF5f34";
 export const sepoliaCrossChainTokenAddress = "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05"
 export const mumbaiCrossChainTokenAddress = "0xf1E3A5842EeEF51F2967b3F05D45DD4f4205FF40"
+export const arbitrumSepoliaCrossChainTokenAddress = "0xA8C0c11bf64AF62CDCA6f93D3769B88BdD7cb93D"
 
 export const sepoliaChainSelector = "16015286601757825753"
 export const mumbaiChainSelector = "12532609583862916517"
+export const arbitrumSepoliaChainSelector = "3478487238524512106"
 
 export const goerliAnfiNFT = "0x2e4fd30adBB1687F8c2d9e51707E0AbE8679a442";
 
@@ -42,6 +49,9 @@ export const goerliCR5PoolAddress = '0x9329c764A2d8B02b01F5eC8fb6F4BB0a7155cFc0'
 export const goerliLinkWethPoolAddress = '0x4Cff90F02897259E1aB69FF6bbD370EA14529bD8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
 export const sepoliaTokenFaucet = "0x5Efe973Bc615112Bca43696483bd53Ce86E2B0ab"
+export const sepoliaCR5FactoryStorage ='0x0fDB8A708E4Ab28DB78E0897Fc6bf3aF79Ef2271'
+
+export const arbtirumSepoliaCR5CrossChainFactory = '0xeB08A8CA65Bc5f5dD4D54841a55bb6949fab3548'
 
 export const crypto5PoolAddress = '0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
