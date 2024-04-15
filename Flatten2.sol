@@ -322,14 +322,7 @@ interface IERC20 {
    */
   function approve(address spender, uint256 amount) external returns (bool);
 
-  /**
-   * @dev Moves `amount` tokens from `from` to `to` using the
-   * allowance mechanism. `amount` is then deducted from the caller's
-   * allowance.
-   *
-   * Returns a boolean value indicating whether the operation succeeded.
-   *
-   * Emits a {Transfer} event.
+  
    */
   function transferFrom(
     address from,
@@ -352,6 +345,20 @@ contract Withdraw is OwnerIsCreator {
         (bool sent, ) = beneficiary.call{value: amount}("");
         if (!sent) revert FailedToWithdrawEth(msg.sender, beneficiary, amount);
     }
+     /**
+   * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+   *
+   * Returns a boolean value indicating whether the operation succeeded.
+   *
+   * IMPORTANT: Beware that changing an allowance with this method brings the risk
+   * that someone may use both the old and the new allowance by unfortunate
+   * transaction ordering. One possible solution to mitigate this race
+   * condition is to first reduce the spender's allowance to 0 and set the
+   * desired value afterwards:
+   * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+   *
+   * Emits an {Approval} event.
+    */
 
     function withdrawToken(
         address beneficiary,
@@ -362,65 +369,17 @@ contract Withdraw is OwnerIsCreator {
     }
 }
 
-
-// File contracts/ccip/BasicMessageSender.sol
-
-// Original license: SPDX_License_Identifier: MIT
-// pragma solidity 0.8.19;
-pragma solidity ^0.8.1;
-contract BasicMessageSender is Withdraw {
-    enum PayFeesIn {
-        Native,
-        LINK
-    }
-
-    address immutable i_router;
-    address immutable i_link;
-
-    event MessageSent(bytes32 messageId);
-
-    constructor(address router, address link) {
-        i_router = router;
-        i_link = link;
-        LinkTokenInterface(i_link).approve(i_router, type(uint256).max);
-    }
-
-    receive() external payable {}
-
-    function send(
-        uint64 destinationChainSelector,
-        address receiver,
-        string memory messageText,
-        PayFeesIn payFeesIn
-    ) external {
-        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
-            receiver: abi.encode(receiver),
-            data: abi.encode(messageText),
-            tokenAmounts: new Client.EVMTokenAmount[](0),
-            extraArgs: "",
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
-        });
-
-        uint256 fee = IRouterClient(i_router).getFee(
-            destinationChainSelector,
-            message
-        );
-
-        bytes32 messageId;
-
-        if (payFeesIn == PayFeesIn.LINK) {
-            // LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
-
-        emit MessageSent(messageId);
-    }
-}
+ /**
+   * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+   *
+   * Returns a boolean value indicating whether the operation succeeded.
+   *
+   * IMPORTANT: Beware that changing an allowance with this method brings the risk
+   * that someone may use both the old and the new allowance by unfortunate
+   * transaction ordering. One possible solution to mitigate this race
+   * condition is to first reduce the spender's allowance to 0 and set the
+   * desired value afterwards:
+   * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+   *
+   * Emits an {Approval} event.
+    */
