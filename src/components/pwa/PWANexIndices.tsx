@@ -44,7 +44,10 @@ const PWANexIndices = () => {
                     Nex Indices
                 </Typography>
                 <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1} borderRadius={"4rem"} paddingY={"0.5rem"} paddingX={".8rem"} sx={PWAGradientStack}>
-                    <GoPlus size={25} strokeWidth={1.2} color={lightTheme.palette.text.primary} className=" bg-white p-[0.2rem] rounded-full aspect-square" />
+                    <GoPlus size={25} strokeWidth={1.2} color={lightTheme.palette.text.primary} className=" bg-white p-[0.2rem] rounded-full aspect-square" style={{
+                        border: "solid 1px rgba(37, 37, 37, 0.5)",
+                        boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                    }}/>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
                         fontWeight: 600,

@@ -107,7 +107,9 @@ const PWAIndexSLider = () => {
                                             backgroundColor: lightTheme.palette.pageBackground.main,
                                             paddingX: "0.8rem",
                                             paddingY: "0.2rem",
-                                            borderRadius: "1rem"
+                                            borderRadius: "1rem",
+                                            border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                            boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
                                         }}>
                                             {
                                                 index.change
