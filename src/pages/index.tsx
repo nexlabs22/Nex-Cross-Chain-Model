@@ -18,6 +18,7 @@ import MobileFooterSection from '@/components/mobileFooter'
 import { Stack, Box, Typography, Button } from "@mui/material";
 import { MainStack } from '@/theme/overrides'
 import PWASplashScreen from '@/components/pwa/PWASplashScreen'
+import { lightTheme } from '@/theme/theme'
 
 function isStandaloneFromUserAgent(userAgent: string): boolean {
 	// You can check for specific keywords or patterns in the user agent string
@@ -40,7 +41,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const Dashboard: NextPage = ({ initialStandalone = false }: { initialStandalone?: boolean }) => {
-	const { mode } = useLandingPageStore()
+	const { mode, theme, setTheme } = useLandingPageStore()
 	const [isStandalone, setIsStandalone] = useState(initialStandalone);
 	const [os, setOs] = useState<String>("")
 	const [browser, setBrowser] = useState<String>("")
@@ -102,12 +103,16 @@ const Dashboard: NextPage = ({ initialStandalone = false }: { initialStandalone?
 			</Head>
 			{
 				isStandalone ? (
-					<PWASplashScreen></PWASplashScreen>
-				) : (
 					<>
 						
+						<PWASplashScreen></PWASplashScreen>
+						
+					</>
+				) : (
+					<>
+
 						<Box margin={0} height={"100vh"} width={"100vw"} padding={0} sx={MainStack} display={{ xs: "none", lg: "block" }}>
-						<DappNavbar />
+							<DappNavbar />
 							<TopIndexData />
 							<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10 md:pb-2 xl:pb-10">
 								<div

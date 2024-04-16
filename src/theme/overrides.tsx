@@ -2,6 +2,7 @@ import { CustomArrowProps } from "react-slick";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
 import { useLandingPageStore } from "@/store/store";
 import mesh1 from "@assets/images/mesh1.png";
+import { lightTheme } from "./theme";
 
 export const MainStack = () => {
   const { theme } = useLandingPageStore()
@@ -27,6 +28,34 @@ export const GradientStack = () => {
       }
   )
 }
+
+export const PWAGradientStack = () => {
+  const { theme } = useLandingPageStore()
+  return (
+      {
+        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+
+      }
+  )
+}
+
+export const PWABannerButton = () => {
+  const { theme } = useLandingPageStore()
+  return (
+      {
+        backgroundColor: "#FFFFFF",
+        borderRadius: "0.8rem", 
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingY: "0.5rem",
+        paddingX: "0.8rem",
+        width: "fit-content",
+      }
+  )
+}
+
 
 export const NormalGradientStack = () => {
   const { theme } = useLandingPageStore()

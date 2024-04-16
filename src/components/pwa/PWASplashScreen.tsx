@@ -1,30 +1,46 @@
 import Image from "next/image";
-import { Stack, Container, Box, Typography } from "@mui/material";
+import Link from "next/link";
+import { Stack, Container, Box, Typography, Button } from "@mui/material";
 import PWAIcon from '@assets/images/PWAIcon.png'
+import logo from '@assets/images/xlogo_s.png'
+import { lightTheme } from "@/theme/theme";
+import { useLandingPageStore } from "@/store/store";
 
 const PWASplashScreen = () => {
+    const { setTheme } = useLandingPageStore()
     return (
-        <Stack height={"100vh"} width={"100vw"} direction={"column"} alignItems={"center"} justifyContent={"center"} bgcolor={"#FFFFFF"} paddingX={2}>
-            <Image src={PWAIcon} alt="pwa" className="w-7/12 h-auto"></Image>
-            <Typography variant="h3" align='center' sx={{
-                color: "#000000",
-                fontSize: "1.4rem"
+        <Stack height={"100vh"} width={"100vw"} paddingBottom={6} direction={"column"} alignItems={"center"} justifyContent={"end"} bgcolor={"#FFFFFF"} paddingX={2}>
+            <Image src={logo} alt="pwa" className="w-6/12 h-auto mb-56"></Image>
+            <Stack height={"fit-content"} width={"100%"} direction={"column"} alignItems={"center"} justifyContent={"flex-end"} gap={2}>
+                <Link href={"/pwa_index"} className="w-full flex flex-row items-center justify-center">
+                    <Button sx={{
+                        width: "80%",
+                        paddingY: ".8rem"
+                    }}>
+                        <Typography variant="h3" component="h3" className="w-full" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontSize: "1.6rem",
+                            textShadow: "none"
+                        }} >
+                            Connect Wallet
+                        </Typography>
+                    </Button>
+                </Link>
 
-            }}>
-                Mobile Experince Is Coming Soon ...
-            </Typography>
-            <Typography variant="subtitle2" marginTop={2} width={"90%"} align='center' sx={{
-                color: "#000000",
+                <Button sx={{
+                    width: "80%",
+                    paddingY: ".8rem",
 
-            }}>
-                Nothing can be compared to a native mobile experience, that is why in Nex Labs, we are building a new mobile PWA experience for our users. 
-            </Typography>
-            <Typography variant="subtitle2" marginTop={1} width={"90%"} align='center' sx={{
-                color: "#000000",
-
-            }}>
-                A relaxed user experience combined with stunning user interface, are the key to handy app that will let you enjoy trying and trading with our products.
-            </Typography>
+                }}>
+                    <Typography variant="h3" component="h3" className="w-full" sx={{
+                        color: lightTheme.palette.text.primary,
+                        fontSize: "1.6rem",
+                        textShadow: "none"
+                    }} >
+                        Docs
+                    </Typography>
+                </Button>
+            </Stack>
         </Stack>
     )
 }

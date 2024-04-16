@@ -820,6 +820,16 @@ body {
   color: #FFFFFF !important;
 }
 
+#PWAIndexSlider .slick-list {
+  margin: 0 -10px;
+}
+
+#PWAIndexSlider .slick-slide div:first-child {
+  margin: 0 5px;
+  border-radius: 15px;
+  position: relative !important;
+}
+
 .darkAutoComplete .sc-gEvEer{
   background-color: #050505 !important;
   border-color: #FFFFFF !important;
