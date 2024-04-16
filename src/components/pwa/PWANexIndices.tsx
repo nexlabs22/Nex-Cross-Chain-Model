@@ -15,21 +15,21 @@ const PWANexIndices = () => {
             name: "Anti Inflation Index",
             symbol: "ANFI",
             logo: anfiLogo,
-            price: "N/A",
+            price: "2453.4",
             change: "N/A"
         },
         {
             name: "CRYPTO5",
             symbol: "CR5",
             logo: cr5Logo,
-            price: "N/A",
+            price: "784.8",
             change: "N/A"
         },
         {
             name: "AIIndex",
             symbol: "AII",
             logo: cr5Logo,
-            price: "N/A",
+            price: "826.6",
             change: "N/A"
         },
     ];
@@ -57,13 +57,13 @@ const PWANexIndices = () => {
                 </Stack>
             </Stack>
             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={1} marginY={2}>
-                    {
-                        Indices.map((index, key) => {
-                            return (
-                                <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                        <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
-                                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                {
+                    Indices.map((index, key) => {
+                        return (
+                            <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                                <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                                    <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
+                                    <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                         <Typography variant="caption" sx={{
                                             color: lightTheme.palette.text.primary,
                                             fontWeight: 600,
@@ -80,13 +80,32 @@ const PWANexIndices = () => {
                                                 index.symbol
                                             }
                                         </Typography>
-                                        </Stack>
                                     </Stack>
+                                    
                                 </Stack>
-                            )
-                        })
-                    }
-                </Stack>
+                                <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                        <Typography variant="caption" sx={{
+                                            color: lightTheme.palette.text.primary,
+                                            fontWeight: 600,
+                                        }}>
+                                            ${
+                                                index.price
+                                            }
+                                        </Typography>
+                                        <Typography variant="caption" sx={{
+                                            color: lightTheme.palette.text.primary,
+                                            fontWeight: 500,
+                                        }}>
+                                            {
+                                                index.change
+                                            }
+                                        </Typography>
+                                    </Stack>
+                            </Stack>
+                        )
+                    })
+                }
+            </Stack>
         </Stack>
     )
 }

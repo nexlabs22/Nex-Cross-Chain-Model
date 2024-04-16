@@ -18,21 +18,21 @@ const PWAIndexSLider = () => {
             name: "Anti Inflation Index",
             symbol: "ANFI",
             logo: anfiLogo,
-            price: "N/A",
+            price: "2453.4",
             change: "N/A"
         },
         {
             name: "CRYPTO5",
             symbol: "CR5",
             logo: cr5Logo,
-            price: "N/A",
+            price: "784.8",
             change: "N/A"
         },
         {
             name: "AIIndex",
             symbol: "AII",
             logo: cr5Logo,
-            price: "N/A",
+            price: "826.6",
             change: "N/A"
         },
     ];
@@ -120,8 +120,8 @@ const PWAIndexSLider = () => {
                                         fontSize: "1rem",
                                         width: "90%"
                                     }}>
-                                        {
-                                            index.name
+                                        ${
+                                            index.price
                                         }
                                     </Typography>
                                     <Stack width={"100%"} height={100} bgcolor={"#e2e2e2"} borderRadius={'.8rem'} marginTop={1}></Stack>
