@@ -5,6 +5,7 @@ import PWABottomNav from "@/components/pwa/PWABottomNav";
 import PWABanner from "@/components/pwa/PWABanner";
 import PWAIndexSLider from "@/components/pwa/PWAIndexSlider";
 import PWANexIndices from "@/components/pwa/PWANexIndices";
+import PWATopStories from "@/components/pwa/PWATopStories";
 
 import logo from "@assets/images/xlogo2.png"
 
@@ -15,6 +16,7 @@ export default function PWAIndex(){
             <PWABanner smallText="Welcome NEX User" bigText="Unlock passive investing with our index products" link="/pwa_trade" linkText="Trade Now" image={logo.src}></PWABanner>
             <PWAIndexSLider></PWAIndexSLider>
             <PWANexIndices></PWANexIndices>
+            <PWATopStories></PWATopStories>
             <PWABottomNav></PWABottomNav>
         </Box>
     )

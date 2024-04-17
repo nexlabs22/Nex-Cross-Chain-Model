@@ -56,6 +56,17 @@ export const PWABannerButton = () => {
   )
 }
 
+export const PWAGradientTradeButton = () => {
+  const { theme } = useLandingPageStore()
+  return (
+      {
+        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+        width: "50%",
+        paddingY: "2rem"
+      }
+  )
+}
+
 
 export const NormalGradientStack = () => {
   const { theme } = useLandingPageStore()

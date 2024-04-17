@@ -39,6 +39,7 @@
 		"alchemy-sdk": "^2.10.1",
 		"algoliasearch": "^4.22.1",
 		"apexcharts": "^3.45.1",
+		"axios": "^1.6.8",
 		"bignumber.js": "^9.1.2",
 		"bitfinex-api-node": "^6.0.0",
 		"burger-menu": "^2.0.0",
