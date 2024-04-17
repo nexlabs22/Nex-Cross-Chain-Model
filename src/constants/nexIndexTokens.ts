@@ -20,12 +20,12 @@ export const nexTokens = [
         decimals: 18,
         logo: cr5Logo.src
     },
-    {
-        symbol: 'SCI',
-        shortName: 'SCI',
-        indexType: 'defi',
-        address: sepoliaSciV2IndexToken,
-        decimals: 18,
-        logo: sciLogo.src
-    },
+    // {
+    //     symbol: 'SCI',
+    //     shortName: 'SCI',
+    //     indexType: 'defi',
+    //     address: sepoliaSciV2IndexToken,
+    //     decimals: 18,
+    //     logo: sciLogo.src
+    // },
 ]

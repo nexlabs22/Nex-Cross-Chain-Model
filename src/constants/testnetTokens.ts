@@ -69,17 +69,17 @@ export const sepoliaTokens:Coin[] = [
         decimals: 18,
         indexType: 'crosschain'
     },
-    {
-        id: 4,
-        logo: sciLogo.src,
-        name: 'SCI',
-        Symbol: 'SCI',
-        isNexlabToken:true,
-        address: sepoliaSciV2IndexToken,
-        factoryAddress: sepoliaSciV2Factory,
-        decimals: 18,
-        indexType: 'defi'
-    }
+    // {
+    //     id: 4,
+    //     logo: sciLogo.src,
+    //     name: 'SCI',
+    //     Symbol: 'SCI',
+    //     isNexlabToken:true,
+    //     address: sepoliaSciV2IndexToken,
+    //     factoryAddress: sepoliaSciV2Factory,
+    //     decimals: 18,
+    //     indexType: 'defi'
+    // }
 ]
 // export const sepoliaTokens = [
 //     {
