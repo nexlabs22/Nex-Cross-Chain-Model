@@ -6,7 +6,7 @@ import PWATopBar from "@/components/pwa/PWATopBar";
 import PWABottomNav from "@/components/pwa/PWABottomNav";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
-
+import PWADynamicRibbon from "@/components/pwa/PWADynamicRibbon";
 
 import logo from "@assets/images/xlogo2.png"
 import { PWAGradientStack, PWAGradientTradeButton } from "@/theme/overrides";
@@ -35,7 +35,7 @@ export default function PWATrade() {
             price: "826.6",
             change: "N/A"
         },
-        
+
     ];
 
     return (
@@ -56,21 +56,25 @@ export default function PWATrade() {
                     Explore Our Index Products
                 </Typography>
             </Stack>
-            <Stack width={"100%"} height={"fit-content"}  marginTop={4} marginBottom={2} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
-                <Button sx={{
-                    width: "50%",
-                    paddingY: "0.8rem",
-                    background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-                    boxShadow: "none"
-                }}>
-                    <Typography variant="h3" component="h3" className="w-full" sx={{
-                        color: lightTheme.palette.text.primary,
-                        fontSize: "1.6rem",
-                        textShadow: "none"
-                    }} >
-                        CeFi
-                    </Typography>
-                </Button>
+            <Stack width={"100%"} height={"fit-content"} marginTop={4} marginBottom={2} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                <PWADynamicRibbon>
+                    <Button sx={{
+                        width: "100%",
+                        paddingY: "0.8rem",
+                        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+                        boxShadow: "none",
+                        filter: "grayscale(1)"
+                    }}>
+                        <Typography variant="h3" component="h3" className="w-full" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontSize: "1.6rem",
+                            textShadow: "none"
+                        }} >
+                            CeFi
+                        </Typography>
+                    </Button>
+                </PWADynamicRibbon>
+
                 <Button sx={{
                     width: "50%",
                     paddingY: "0.8rem",
@@ -86,37 +90,37 @@ export default function PWATrade() {
                     </Typography>
                 </Button>
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"cnter"} justifyContent={"start"} gap={1} sx={{
+            <Stack width={"100%"} height={"fit-content"} marginTop={'-2.4rem'} direction={"column"} alignItems={"cnter"} justifyContent={"start"} gap={1} sx={{
                 overflowY: "scroll"
             }}>
                 {
-                    Indices.map((index, key)=>{
-                        return(
+                    Indices.map((index, key) => {
+                        return (
                             <Link href={"/pwa_tradeIndex"} key={key} className="w-full h-fit flex flex-row items-center justify-center">
                                 <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                                <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                    <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
-                                    <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
-                                        <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.text.primary,
-                                            fontWeight: 600,
-                                        }}>
-                                            {
-                                                index.name
-                                            }
-                                        </Typography>
-                                        <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.text.primary,
-                                            fontWeight: 500,
-                                        }}>
-                                            {
-                                                index.symbol
-                                            }
-                                        </Typography>
+                                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                                        <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
+                                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                            <Typography variant="caption" sx={{
+                                                color: lightTheme.palette.text.primary,
+                                                fontWeight: 600,
+                                            }}>
+                                                {
+                                                    index.name
+                                                }
+                                            </Typography>
+                                            <Typography variant="caption" sx={{
+                                                color: lightTheme.palette.text.primary,
+                                                fontWeight: 500,
+                                            }}>
+                                                {
+                                                    index.symbol
+                                                }
+                                            </Typography>
+                                        </Stack>
+
                                     </Stack>
-                                    
-                                </Stack>
-                                <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
                                         <Typography variant="caption" sx={{
                                             color: lightTheme.palette.text.primary,
                                             fontWeight: 600,
@@ -141,7 +145,7 @@ export default function PWATrade() {
                                             }
                                         </Typography>
                                     </Stack>
-                            </Stack>
+                                </Stack>
                             </Link>
                         )
                     })

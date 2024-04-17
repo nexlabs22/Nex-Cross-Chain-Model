@@ -215,6 +215,12 @@ body {
   z-index: 100 !important;
 }
 
+#pwaRibbonBox > div > div{
+  z-index: 100 !important;
+}
+
+
+
 .darkCCIP{
   background-color: #2A2A2A !important;
   color: #ededed !important;
