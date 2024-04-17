@@ -6,7 +6,9 @@ import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import { PWAGradientStack } from "@/theme/overrides";
 import { GoPlus } from "react-icons/go";
-
+import { IoMdLink } from "react-icons/io";
+import { RiDownloadLine } from "react-icons/ri";
+import Divider from '@mui/material/Divider';
 
 const PWAProfileHistoryList = () => {
 
@@ -35,7 +37,7 @@ const PWAProfileHistoryList = () => {
     ];
 
     return (
-        <Stack width={"100%"} height={"fit-content"} marginTop={3} direction={"column"} alignItems={"center"} justifyContent={"start"}>
+        <Stack width={"100%"} height={"fit-content"} minHeight={"100vh"} marginTop={3} direction={"column"} alignItems={"center"} justifyContent={"start"}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={2}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,
@@ -48,512 +50,628 @@ const PWAProfileHistoryList = () => {
             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={1} marginY={2} sx={{
                 overflowY: "scroll"
             }}>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
+                                Total: $133.6
                             </Typography>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 500,
                             }}>
-                                Amount: 5.42 ANFI
+                                27/05/24
                             </Typography>
                             <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
+                                color: lightTheme.palette.warning.main,
                                 fontWeight: 500,
                             }}>
-                                Fees: $24.5
+                                Pending
                             </Typography>
                         </Stack>
-
                     </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
-                    </Stack>
-                </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Amount: 5.42 ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Fees: $24.5
+                                Etherscan
                             </Typography>
                         </Stack>
-
-                    </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
-                    </Stack>
-                </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Amount: 5.42 ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Fees: $24.5
+                                Download
                             </Typography>
                         </Stack>
-
-                    </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
+                        
                     </Stack>
                 </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
+                                Total: $133.6
                             </Typography>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 500,
                             }}>
-                                Amount: 5.42 ANFI
+                                27/05/24
                             </Typography>
                             <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
+                                color: lightTheme.palette.nexGreen.main,
                                 fontWeight: 500,
                             }}>
-                                Fees: $24.5
+                                Successful
                             </Typography>
                         </Stack>
-
                     </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
-                    </Stack>
-                </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Amount: 5.42 ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Fees: $24.5
+                                Etherscan
                             </Typography>
                         </Stack>
-
-                    </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
-                    </Stack>
-                </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Amount: 5.42 ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Fees: $24.5
+                                Download
                             </Typography>
                         </Stack>
-
-                    </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
+                        
                     </Stack>
                 </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
+                                Total: $133.6
                             </Typography>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 500,
                             }}>
-                                Amount: 5.42 ANFI
+                                27/05/24
                             </Typography>
                             <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
+                                color: lightTheme.palette.nexGreen.main,
                                 fontWeight: 500,
                             }}>
-                                Fees: $24.5
+                                Successful
                             </Typography>
                         </Stack>
-
                     </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
-                    </Stack>
-                </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Amount: 5.42 ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Fees: $24.5
+                                Etherscan
                             </Typography>
                         </Stack>
-
-                    </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
-                    </Stack>
-                </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Amount: 5.42 ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Fees: $24.5
+                                Download
                             </Typography>
                         </Stack>
-
-                    </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
+                        
                     </Stack>
                 </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
+                                Total: $133.6
                             </Typography>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 500,
                             }}>
-                                Amount: 5.42 ANFI
+                                27/05/24
                             </Typography>
                             <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
+                                color: lightTheme.palette.nexGreen.main,
                                 fontWeight: 500,
                             }}>
-                                Fees: $24.5
+                                Successful
                             </Typography>
                         </Stack>
-
                     </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
-                    </Stack>
-                </Stack>
-                <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                        <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-                        <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
                             <Typography variant="caption" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 600,
                             }}>
-                                ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Amount: 5.42 ANFI
-                            </Typography>
-                            <Typography variant="caption" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 500,
-                            }}>
-                                Fees: $24.5
+                                Etherscan
                             </Typography>
                         </Stack>
-
-                    </Stack>
-                    <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600,
-                        }}>
-                            Total: $133.6
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            27/05/24
-                        </Typography>
-                        <Typography variant="caption" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500,
-                        }}>
-                            Succesful
-                        </Typography>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Download
+                            </Typography>
+                        </Stack>
+                        
                     </Stack>
                 </Stack>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Total: $133.6
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 500,
+                            }}>
+                                27/05/24
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.nexRed.main,
+                                fontWeight: 500,
+                            }}>
+                                Failed
+                            </Typography>
+                        </Stack>
+                    </Stack>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Etherscan
+                            </Typography>
+                        </Stack>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Download
+                            </Typography>
+                        </Stack>
+                        
+                    </Stack>
+                </Stack>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Total: $133.6
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 500,
+                            }}>
+                                27/05/24
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.nexRed.main,
+                                fontWeight: 500,
+                            }}>
+                                Failed
+                            </Typography>
+                        </Stack>
+                    </Stack>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Etherscan
+                            </Typography>
+                        </Stack>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Download
+                            </Typography>
+                        </Stack>
+                        
+                    </Stack>
+                </Stack>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Total: $133.6
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 500,
+                            }}>
+                                27/05/24
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.nexGreen.main,
+                                fontWeight: 500,
+                            }}>
+                                Successful
+                            </Typography>
+                        </Stack>
+                    </Stack>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Etherscan
+                            </Typography>
+                        </Stack>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Download
+                            </Typography>
+                        </Stack>
+                        
+                    </Stack>
+                </Stack>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Total: $133.6
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 500,
+                            }}>
+                                27/05/24
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.nexGreen.main,
+                                fontWeight: 500,
+                            }}>
+                                Successful
+                            </Typography>
+                        </Stack>
+                    </Stack>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Etherscan
+                            </Typography>
+                        </Stack>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Download
+                            </Typography>
+                        </Stack>
+                        
+                    </Stack>
+                </Stack>
+                <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                        <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                            <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Amount: 5.42 ANFI
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                }}>
+                                    Fees: $24.5
+                                </Typography>
+                            </Stack>
+
+                        </Stack>
+                        <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Total: $133.6
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 500,
+                            }}>
+                                27/05/24
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.nexGreen.main,
+                                fontWeight: 500,
+                            }}>
+                                Successful
+                            </Typography>
+                        </Stack>
+                    </Stack>
+                    <Stack width={"100%"} height={"fit-content"} borderTop={"solid 1px #252525"} marginTop={2} paddingTop={2} paddingBottom={1} direction={"row"} alignItems={"center"} justifyContent={"center"} divider={<Divider orientation="vertical" sx={{backgroundColor: lightTheme.palette.text.primary}} flexItem />} gap={2}>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Etherscan
+                            </Typography>
+                        </Stack>
+                        <Stack width={"50%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+                            <RiDownloadLine size={24} color={lightTheme.palette.text.primary}></RiDownloadLine>
+                            <Typography variant="caption" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 600,
+                            }}>
+                                Download
+                            </Typography>
+                        </Stack>
+                        
+                    </Stack>
+                </Stack>
+
             </Stack>
         </Stack>
     )

@@ -60,7 +60,7 @@ const PWAMyAssets = () => {
                                             }
                                         </Typography>
                                         <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.text.primary,
+                                            color: lightTheme.palette.nexGreen.main,
                                             fontWeight: 600,
                                             fontSize: ".8rem",
                                             backgroundColor: lightTheme.palette.pageBackground.main,
