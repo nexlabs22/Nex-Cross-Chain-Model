@@ -40,7 +40,7 @@ const PWAIndexComparisonBox = () => {
                         breakpoint: 480,
                         settings: {
                             slidesToShow: 3,
-                            slidesToScroll: 1,
+                            slidesToScroll: 3,
                         },
                     },
                 ]}

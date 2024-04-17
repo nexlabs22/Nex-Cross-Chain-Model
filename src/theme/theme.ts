@@ -18,6 +18,10 @@ import mesh2 from "@assets/images/mesh2.png";
 
 declare module '@mui/material/styles' {
   interface Palette {
+    nexRed: Palette['primary']
+    nexGreen: Palette['primary']
+    nexLightRed: Palette['primary']
+    nexLightGreen: Palette['primary']
     mobileTitleDot: Palette['primary']
     pageBackground: Palette['primary']
     mediaCardShadow: string
@@ -34,6 +38,10 @@ declare module '@mui/material/styles' {
     assetChipBgImg: string
   }
   interface PaletteOptions {
+    nexRed: PaletteOptions['primary']
+    nexGreen: PaletteOptions['primary']
+    nexLightRed: PaletteOptions['primary']
+    nexLightGreen: PaletteOptions['primary']
     mobileTitleDot: PaletteOptions['primary']
     pageBackground: PaletteOptions['primary']
     mediaCardShadow: string
@@ -169,6 +177,11 @@ export const darkTheme = createTheme({
     background: {
       default: '#070707', // Customize to your preference
     },
+    info: {main: "#FFFFFF00"},
+    nexRed: {main: "#F23645"},
+    nexGreen: {main: "#089981"},
+    nexLightRed: {main: "rgba(242, 54, 69, 0.2)"},
+    nexLightGreen: {main: "rgba(8, 153, 129, 0.2)"},
     text: {
       primary: '#F2F2F2', // Customize to your preference
     },
@@ -272,6 +285,33 @@ export const darkTheme = createTheme({
           bottom: "0"
         }
       }
+    },
+    MuiTextField: {
+      variants: [
+        {
+          props: {variant: "outlined"},
+          style: {
+            backgroundColor: "#F1F6F9",
+            boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
+            borderRadius: "0.8rem",
+            border: "none",
+            paddingTop: "0px",
+            paddingBottom: "0px",
+            '& .MuiOutlinedInput-root.Mui-focused': {
+              border: "none",
+              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
+              outlineColor: "none"
+            }
+          }
+        }
+      ]
+    },
+    MuiBottomNavigationAction: {
+      styleOverrides: {
+        root: {
+          animation: "none"
+        }
+      }
     }
     
   },
@@ -352,6 +392,11 @@ export const lightTheme = createTheme({
     background: {
       default: '#fff', // Customize to your preference      
     },
+    info: {main: "#FFFFFF00"},
+    nexRed: {main: "#F23645"},
+    nexGreen: {main: "#089981"},
+    nexLightRed: {main: "rgba(242, 54, 69, 0.2)"},
+    nexLightGreen: {main: "rgba(8, 153, 129, 0.2)"},
     text: {
       primary: '#2A2A2A', // Customize to your preference
     },
@@ -446,6 +491,33 @@ export const lightTheme = createTheme({
           gap: "0rem",
           position: "fixed",
           bottom: "0"
+        }
+      }
+    },
+    MuiTextField: {
+      variants: [
+        {
+          props: {variant: "outlined"},
+          style: {
+            backgroundColor: "#F1F6F9",
+            boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
+            borderRadius: "0.8rem",
+            border: "none",
+            paddingTop: "0px",
+            paddingBottom: "0px",
+            '& .MuiOutlinedInput-root.Mui-focused': {
+              border: "none",
+              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
+              outlineColor: "none"
+            }
+          }
+        }
+      ]
+    },
+    MuiBottomNavigationAction: {
+      styleOverrides: {
+        root: {
+          animation: "none"
         }
       }
     }

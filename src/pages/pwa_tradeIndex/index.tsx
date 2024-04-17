@@ -4,13 +4,17 @@ import PWATopBar from "@/components/pwa/PWATopBar";
 import PWABottomNav from "@/components/pwa/PWABottomNav";
 import PWAIndexChartBox from "@/components/pwa/PWAIndexChartBox";
 import PWAIndexComparisonBox from "@/components/pwa/PWAIndexComparisonBox";
-
+import { useLandingPageStore } from "@/store/store";
 import { CgArrowsExchangeAlt } from "react-icons/cg";
 
 import logo from "@assets/images/xlogo2.png"
+import router from "next/router";
 
 
 export default function PWATradeIndex() {
+
+    const { changePWATradeoperation } = useLandingPageStore()
+
     return (
         <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
@@ -41,11 +45,16 @@ export default function PWATradeIndex() {
             <PWAIndexComparisonBox></PWAIndexComparisonBox>
             <PWAIndexChartBox></PWAIndexChartBox>
             <Stack width={"100%"} height={"fit-content"} marginY={1} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
-                <Button sx={{
-                    width: "50%",
-                    paddingY: "1rem",
-                    background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-                }}>
+                <Button onClick={() => {
+                    changePWATradeoperation("buy")
+                    router.push('/pwa_trade_console1')
+                }}
+                    sx={{
+                        width: "50%",
+                        paddingY: "1rem",
+                        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+                        boxShadow: "none"
+                    }}>
                     <Typography variant="h3" component="h3" className="w-full" sx={{
                         color: lightTheme.palette.text.primary,
                         fontSize: "1.6rem",
@@ -54,11 +63,16 @@ export default function PWATradeIndex() {
                         Buy
                     </Typography>
                 </Button>
-                <Button sx={{
-                    width: "50%",
-                    paddingY: "1rem",
-                    background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-                }}>
+                <Button onClick={() => {
+                    changePWATradeoperation("sell")
+                    router.push('/pwa_trade_console1')
+                }}
+                    sx={{
+                        width: "50%",
+                        paddingY: "1rem",
+                        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+                        boxShadow: "none"
+                    }}>
                     <Typography variant="h3" component="h3" className="w-full" sx={{
                         color: lightTheme.palette.text.primary,
                         fontSize: "1.6rem",

@@ -61,6 +61,7 @@ export default function PWATrade() {
                     width: "50%",
                     paddingY: "0.8rem",
                     background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+                    boxShadow: "none"
                 }}>
                     <Typography variant="h3" component="h3" className="w-full" sx={{
                         color: lightTheme.palette.text.primary,
@@ -74,6 +75,7 @@ export default function PWATrade() {
                     width: "50%",
                     paddingY: "0.8rem",
                     background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+                    boxShadow: "none"
                 }}>
                     <Typography variant="h3" component="h3" className="w-full" sx={{
                         color: lightTheme.palette.text.primary,

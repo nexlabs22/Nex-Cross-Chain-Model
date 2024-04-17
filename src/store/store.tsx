@@ -22,6 +22,9 @@ type LandingPageStore = {
 	defaultIndex: string
 	changeDefaultIndex: (index: string) => void
 
+	PWATradeoperation: string
+	changePWATradeoperation: (index: string) => void
+
 	mode: Mode
 	changeMode: (index: Mode) => void
 
@@ -47,6 +50,11 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 
 	defaultIndex: 'CRYPTO5',
 	changeDefaultIndex: (index: string) => set((state) => ({ defaultIndex: index })),
+
+	PWATradeoperation: 'sell',
+	changePWATradeoperation: (operation: string) => set((state) => ({ defaultIndex: operation })),
+
+	
 	
 	isSearchModalOpen: false,
 	setSearchModal: (val: boolean) => set({ isSearchModalOpen: val }),
