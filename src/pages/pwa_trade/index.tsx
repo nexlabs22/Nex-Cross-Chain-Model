@@ -6,10 +6,12 @@ import PWATopBar from "@/components/pwa/PWATopBar";
 import PWABottomNav from "@/components/pwa/PWABottomNav";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
-import PWADynamicRibbon from "@/components/pwa/PWADynamicRibbon";
+const PWADynamicRibbon = dynamic(() => import("@components/pwa/PWADynamicRibbon").then(module => module.default), { ssr: false });
+
 
 import logo from "@assets/images/xlogo2.png"
 import { PWAGradientStack, PWAGradientTradeButton } from "@/theme/overrides";
+import dynamic from "next/dynamic";
 
 export default function PWATrade() {
 

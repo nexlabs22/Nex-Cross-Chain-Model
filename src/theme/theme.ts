@@ -312,8 +312,23 @@ export const darkTheme = createTheme({
           animation: "none"
         }
       }
+    },
+    MuiNativeSelect: {
+      styleOverrides: {
+        root: {
+          color: "#000000",
+          outline: "none",
+          border: "none"
+        }
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          color: "#000000"
+        }
+      }
     }
-    
   },
 })
 
@@ -518,6 +533,13 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           animation: "none"
+        }
+      }
+    },
+    MuiNativeSelect: {
+      styleOverrides: {
+        root: {
+          color: "#000000"
         }
       }
     }
