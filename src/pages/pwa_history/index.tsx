@@ -12,7 +12,7 @@ export default function PWAProfileHistory() {
     
 
     return (
-        <Box width={"100vw"} height={"100vh"} maxHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+        <Box width={"100vw"} height={"fit-content"} maxHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
             <Stack width={"100%"} height={"fit-content"} paddingTop={5} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
                 <PWAProfileHistoryList></PWAProfileHistoryList>
