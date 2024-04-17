@@ -51,8 +51,8 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 	defaultIndex: 'CRYPTO5',
 	changeDefaultIndex: (index: string) => set((state) => ({ defaultIndex: index })),
 
-	PWATradeoperation: 'sell',
-	changePWATradeoperation: (operation: string) => set((state) => ({ defaultIndex: operation })),
+	PWATradeoperation: '',
+	changePWATradeoperation: (operation: string) => set((state) => ({ PWATradeoperation: operation })),
 
 	
 	

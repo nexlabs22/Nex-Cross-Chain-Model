@@ -20,9 +20,9 @@ export default function PWATradeConsole1() {
     const { PWATradeoperation } = useLandingPageStore()
 
     return (
-        <Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingTop={2} paddingBottom={4} paddingX={2} bgcolor={lightTheme.palette.background.default}>
+        <Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingBottom={4} paddingX={2} bgcolor={lightTheme.palette.background.default}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} >
-                <Stack width={"fit-content"} height={"fit-content"} paddingTop={5} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={8}>
+                <Stack width={"fit-content"} height={"fit-content"} paddingTop={4} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={8}>
                     <Link href={"/pwa_tradeIndex"} className="w-fit h-fit flex flex-row items-center justify-center">
                         <IoIosArrowBack size={30} color={lightTheme.palette.text.primary}></IoIosArrowBack>
                         <Typography variant="body1" sx={{
@@ -36,7 +36,7 @@ export default function PWATradeConsole1() {
                         </Typography>
                     </Link>
                 </Stack>
-                <Stack width={"100vw"} height={"fit-content"} paddingTop={5} direction={"row"} alignItems={"center"} justifyContent={"end"}>
+                <Stack width={"100vw"} height={"fit-content"} paddingTop={4} direction={"row"} alignItems={"center"} justifyContent={"end"}>
                     <Typography variant="caption" sx={{
                         color: PWATradeoperation == "buy" ? lightTheme.palette.nexGreen.main : lightTheme.palette.nexRed.main,
                         fontWeight: 600,
@@ -93,15 +93,28 @@ export default function PWATradeConsole1() {
                 </Typography>
             </Stack>
             <Stack width={"100vw"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"}>
-                    <Typography variant="caption" sx={{
-                        color: lightTheme.palette.text.primary,
-                        fontWeight: 500,
-                        fontSize: "0.8rem"
-                    }}>
-                        Enter Amount
-                    </Typography>
-                    <input type="number" className=" bg-transparent border-none w-full h-fit py-4 interMedium outline-none text-black text-center text-6xl" placeholder="0.0"/>
-                </Stack>
+                <Typography variant="caption" sx={{
+                    color: lightTheme.palette.text.primary,
+                    fontWeight: 500,
+                    fontSize: "0.8rem"
+                }}>
+                    Enter Amount
+                </Typography>
+                <input type="number" className=" bg-transparent border-none w-full h-fit pt-4 pb-8 interMedium outline-none text-black text-center text-6xl" placeholder="0.0" />
+                <Typography variant="subtitle1" sx={{
+                    color: lightTheme.palette.text.primary,
+                    fontWeight: 500,
+                }}>
+                    ≈$0.0
+                </Typography>
+                <Typography variant="subtitle1" sx={{
+                    color: lightTheme.palette.text.primary,
+                    fontWeight: 600,
+                    paddingTop: "1rem"
+                }}>
+                    Current Balance : N/A
+                </Typography>
+            </Stack>
         </Box>
     )
 }
