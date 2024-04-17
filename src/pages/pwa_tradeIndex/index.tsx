@@ -43,7 +43,8 @@ export default function PWATradeIndex() {
             <Stack width={"100%"} height={"fit-content"} marginY={1} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
                 <Button sx={{
                     width: "50%",
-                    paddingY: "1rem"
+                    paddingY: "1rem",
+                    background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
                 }}>
                     <Typography variant="h3" component="h3" className="w-full" sx={{
                         color: lightTheme.palette.text.primary,
@@ -55,7 +56,8 @@ export default function PWATradeIndex() {
                 </Button>
                 <Button sx={{
                     width: "50%",
-                    paddingY: "1rem"
+                    paddingY: "1rem",
+                    background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
                 }}>
                     <Typography variant="h3" component="h3" className="w-full" sx={{
                         color: lightTheme.palette.text.primary,
