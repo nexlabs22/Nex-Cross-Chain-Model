@@ -88,7 +88,8 @@ export default function PWATrade() {
                 {
                     Indices.map((index, key)=>{
                         return(
-                            <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                            <Link href={"/pwa_tradeIndex"} key={key} className="w-full h-fit flex flex-row items-center justify-center">
+                                <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
                                     <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
                                     <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
@@ -130,6 +131,7 @@ export default function PWATrade() {
                                         </Typography>
                                     </Stack>
                             </Stack>
+                            </Link>
                         )
                     })
                 }

@@ -1,0 +1,100 @@
+import { lightTheme } from "@/theme/theme";
+import { Stack, Container, Box, Grid, Typography, Button } from "@mui/material";
+import Image from "next/image";
+import Link from "next/link";
+import { IoMdArrowForward } from "react-icons/io";
+import anfiLogo from '@assets/images/anfi.png'
+import cr5Logo from '@assets/images/cr5.png'
+import { PWAGradientStack } from "@/theme/overrides";
+
+const PWAMyAssets = () => {
+
+    const Indices = [
+        {
+            name: "Anti Inflation Index",
+            symbol: "ANFI",
+            logo: anfiLogo,
+            price: "2453.4",
+            change: "N/A"
+        },
+        {
+            name: "CRYPTO5",
+            symbol: "CR5",
+            logo: cr5Logo,
+            price: "784.8",
+            change: "N/A"
+        },
+        {
+            name: "AIIndex",
+            symbol: "AII",
+            logo: cr5Logo,
+            price: "826.6",
+            change: "N/A"
+        },
+    ];
+
+    return (
+        <Stack width={"100%"} height={"fit-content"} marginY={2}>
+            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={2}>
+                <Typography variant="h6" sx={{
+                    color: lightTheme.palette.text.primary,
+                    fontWeight: 700
+                }}>
+                    My Assets
+                </Typography>
+            </Stack>
+            <Stack width={'100%'} height={"fit-content"}>
+                <Grid container columns={2} rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                    {
+                        Indices.map((index, key) => {
+                            return (
+                                <Stack key={key} width={"45%"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} marginBottom={1} sx={PWAGradientStack}>
+                                    <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
+                                    <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
+                                        <Typography variant="subtitle1" sx={{
+                                            color: lightTheme.palette.text.primary,
+                                            fontWeight: 600,
+                                        }}>
+                                            {
+                                                index.symbol
+                                            }
+                                        </Typography>
+                                        <Typography variant="caption" sx={{
+                                            color: lightTheme.palette.text.primary,
+                                            fontWeight: 600,
+                                            fontSize: ".8rem",
+                                            backgroundColor: lightTheme.palette.pageBackground.main,
+                                            paddingX: "0.8rem",
+                                            paddingY: "0.2rem",
+                                            borderRadius: "1rem",
+                                            border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                            boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                        }}>
+                                            {
+                                                index.change
+                                            }
+                                        </Typography>
+                                    </Stack>
+                                    <Typography variant="subtitle1" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 600,
+                                        fontSize: "1rem",
+                                        width: "90%"
+                                    }}>
+                                        ${
+                                            index.price
+                                        }
+                                    </Typography>
+                                    <Stack width={"100%"} height={100} bgcolor={"#e2e2e2"} borderRadius={'.8rem'} marginTop={1}></Stack>
+
+                                </Stack>
+                            )
+                        })
+                    }
+                </Grid>
+            </Stack>
+        </Stack>
+    )
+}
+
+export default PWAMyAssets

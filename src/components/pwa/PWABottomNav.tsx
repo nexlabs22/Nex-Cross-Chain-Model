@@ -24,7 +24,7 @@ const PWABottomNav = () => {
                 <BottomNavigationAction onClick={()=>{router.push('/pwa_index')}} icon={<RiHomeLine size={28} color={lightTheme.palette.text.primary} />} />
                 <BottomNavigationAction onClick={()=>{router.push('/pwa_trade')}} icon={<CgArrowsExchangeAlt size={30} color={lightTheme.palette.text.primary} />} />
                 <BottomNavigationAction onClick={()=>{router.push('/pwa_profile')}} icon={<BiUser size={28} color={lightTheme.palette.text.primary} />} />
-                <BottomNavigationAction onClick={()=>{router.push('/pwa_settings')}}  icon={<BiCog size={28} color={lightTheme.palette.text.primary} />} />
+                <BottomNavigationAction onClick={()=>{router.push('/pwa_external')}}  icon={<BiCog size={28} color={lightTheme.palette.text.primary} />} />
             </BottomNavigation>
 
     )
