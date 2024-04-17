@@ -325,7 +325,16 @@ export const darkTheme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
-          color: "#000000"
+          color: "#000000",
+          outline: "none",
+          border: "none",
+          '& .MuiSelect-select.Mui-focused': { // Target focused state
+            outline: "none",
+          border: "none",
+          },
+          '&:hover .MuiSelect-select': { // Target hover state (optional)
+            outline: "none",
+          border: "none",}
         }
       }
     }
@@ -540,6 +549,22 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           color: "#000000"
+        }
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          color: "#000000",
+          outline: "none",
+          border: "none",
+          '& .MuiSelect-select.Mui-focused': { // Target focused state
+            outline: "none",
+          border: "none",
+          },
+          '&:hover .MuiSelect-select': { // Target hover state (optional)
+            outline: "none",
+          border: "none",}
         }
       }
     }
