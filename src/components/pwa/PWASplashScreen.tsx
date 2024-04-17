@@ -31,7 +31,7 @@ const PWASplashScreen = () => {
                 <Button sx={{
                     width: "80%",
                     paddingY: ".8rem",
-
+                    background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
                 }}>
                     <Typography variant="h3" component="h3" className="w-full" sx={{
                         color: lightTheme.palette.text.primary,
