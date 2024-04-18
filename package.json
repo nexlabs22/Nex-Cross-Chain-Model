@@ -114,6 +114,7 @@
 		"use-query-params": "^2.2.1",
 		"viem": "^1.18.2",
 		"yahoo-finance": "^0.3.8",
+		"yahoo-finance2": "^2.11.2",
 		"zustand": "^4.4.2"
 	},
 	"devDependencies": {

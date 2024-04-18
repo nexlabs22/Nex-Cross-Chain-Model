@@ -1,5 +1,6 @@
 import { getPreviousWeekday } from '@/utils/general'
-import yahooFinance from 'yahoo-finance'
+// import yahooFinance from 'yahoo-finance'
+import yahooFinance from 'yahoo-finance2'
 import { NextResponse } from 'next/server'
 import axios from 'axios'
 
@@ -19,11 +20,19 @@ export async function GET() {
 
 	try {
 		const changes = {}
-		const historicalData = await yahooFinance.historical({
-			symbols: symbols,
-			from: startDate.toISOString(),
-			to: endDate.toISOString(),
-		})
+		const historicalData = {}
+
+		const queryOptions = { period1: startDate };
+
+		for (const symbol of symbols) {
+			try {
+				const result = await yahooFinance.historical(symbol, queryOptions);
+				historicalData[symbol] = result;
+			} catch (error) {
+				console.error(`Error fetching data for ${symbol}: ${error.message}`);
+			}
+		}
+
 
 		if (historicalData) {
 			Object.entries(historicalData).forEach(([key, value]) => {
