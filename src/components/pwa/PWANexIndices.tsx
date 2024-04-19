@@ -1,7 +1,4 @@
 import { Stack, Container, Box, Typography, Button } from "@mui/material";
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import NativeSelect from '@mui/material/NativeSelect';
 import Image from "next/image";
 import Link from "next/link";
 import { lightTheme } from "@/theme/theme";
@@ -9,11 +6,16 @@ import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import { PWAGradientStack } from "@/theme/overrides";
 import { GoPlus } from "react-icons/go";
+import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
+import { Menu, MenuButton, MenuItem } from '@szhsin/react-menu'
+import '@szhsin/react-menu/dist/index.css'
+import '@szhsin/react-menu/dist/transitions/slide.css'
 
 const PWANexIndices = () => {
 
+    const [listType, setListType] = useState<string>("All Nex Indices")
     const Indices = [
         {
             name: "Anti Inflation Index",
@@ -39,15 +41,47 @@ const PWANexIndices = () => {
     ];
 
     return (
-        <Stack width={"100%"} height={"fit-content"} marginTop={3} direction={"column"} alignItems={"center"} justifyContent={"start"}>
-            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={2}>
-
-                <Typography variant="h6" sx={{
-                    color: lightTheme.palette.text.primary,
-                    fontWeight: 700
-                }}>
-                    Favorite Indices
-                </Typography>
+        <Stack id="PWANexIndices" width={"100%"} height={"fit-content"} marginTop={3} direction={"column"} alignItems={"center"} justifyContent={"start"}>
+            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
+                <Menu transition menuButton={
+                    <MenuButton className={"w-fit"}>
+                        <Stack width={"100%"} height={"fit-content"} paddingY={0.5} paddingX={1} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+                            <Typography variant="h6" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 700
+                            }}>
+                                {listType}
+                            </Typography>
+                            <IoIosArrowDown size={22} color={lightTheme.palette.text.primary}></IoIosArrowDown>
+                        </Stack>
+                        
+                    </MenuButton>
+                }>
+                    <MenuItem onClick={()=>{setListType("Favorites")}}>
+                        <Typography variant="body1" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontWeight: 600
+                        }}>
+                            Favorites
+                        </Typography>
+                    </MenuItem>
+                    <MenuItem onClick={()=>{setListType("My Watchlist")}}>
+                        <Typography variant="body1" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontWeight: 600
+                        }}>
+                            Watchlist
+                        </Typography>
+                    </MenuItem>
+                    <MenuItem onClick={()=>{setListType("All Nex Indices")}}>
+                        <Typography variant="body1" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontWeight: 600
+                        }}>
+                            All Nex Indices
+                        </Typography>
+                    </MenuItem>
+                </Menu>
                 <Link href={"/pwa_trade"} className="w-fit h-fit flex flex-row items-center justify-center">
                     <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1} borderRadius={"4rem"} paddingY={"0.5rem"} paddingX={".8rem"} sx={PWAGradientStack}>
                         <GoPlus size={25} strokeWidth={1.2} color={lightTheme.palette.text.primary} className=" bg-white p-[0.2rem] rounded-full aspect-square" style={{
@@ -61,13 +95,11 @@ const PWANexIndices = () => {
                         }}>
                             More
                         </Typography>
-
-
                     </Stack>
                 </Link>
 
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={1} marginY={2}>
+            <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5} marginBottom={2}>
                 {
                     Indices.map((index, key) => {
                         return (

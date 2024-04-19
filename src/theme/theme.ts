@@ -117,49 +117,49 @@ export const darkTheme = createTheme({
       fontWeight: 900,
       fontSize: "3.5rem",
     },
-    h3:{
+    h3: {
       color: "#F2F2F2",
       fontWeight: 700,
       fontSize: "2rem",
     },
-    h4:{
+    h4: {
       color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.8rem",
       width: "70%"
     },
-    h5:{
+    h5: {
       color: "#F2F2F2",
       fontWeight: 900,
       fontSize: "1.7rem",
     },
-    h6:{
+    h6: {
       color: "#F2F2F2",
       fontWeight: 900,
       fontSize: "1.6rem",
     },
-    subtitle1:{
+    subtitle1: {
       color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.2rem",
     },
-    body1:{
+    body1: {
       color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.4rem",
     },
-    body2:{
+    body2: {
       color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.6rem",
       textAlign: "justify"
     },
-    caption:{
+    caption: {
       color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1rem",
     },
-    subtitle2:{
+    subtitle2: {
       color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.1rem",
@@ -177,18 +177,18 @@ export const darkTheme = createTheme({
     background: {
       default: '#070707', // Customize to your preference
     },
-    info: {main: "#FFFFFF00"},
-    nexRed: {main: "#F23645"},
-    nexGreen: {main: "#089981"},
-    nexLightRed: {main: "rgba(242, 54, 69, 0.2)"},
-    nexLightGreen: {main: "rgba(8, 153, 129, 0.2)"},
+    info: { main: "#FFFFFF00" },
+    nexRed: { main: "#F23645" },
+    nexGreen: { main: "#089981" },
+    nexLightRed: { main: "rgba(242, 54, 69, 0.2)" },
+    nexLightGreen: { main: "rgba(8, 153, 129, 0.2)" },
     text: {
       primary: '#F2F2F2', // Customize to your preference
     },
     mobileTitleDot: {
       main: "#F2F2F2"
     },
-    pageBackground:{
+    pageBackground: {
       main: "#000000"
     },
     mediaCardShadow: "0px 0px 6px 1px rgba(91,166,153,0.68)",
@@ -206,7 +206,7 @@ export const darkTheme = createTheme({
     assetChipShadow: "0px 0px 4px 1px rgba(91,166,153,0.68)",
     assetChipBgImg: `url('${mesh1.src}')`
   },
-  
+
   components: {
     MuiButton: {
       variants: [
@@ -246,7 +246,7 @@ export const darkTheme = createTheme({
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent:"center",
+          justifyContent: "center",
           gap: "1rem"
         },
 
@@ -279,7 +279,7 @@ export const darkTheme = createTheme({
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent : "center",
+          justifyContent: "center",
           gap: "0rem",
           position: "fixed",
           bottom: "0"
@@ -289,7 +289,7 @@ export const darkTheme = createTheme({
     MuiTextField: {
       variants: [
         {
-          props: {variant: "outlined"},
+          props: { variant: "outlined" },
           style: {
             backgroundColor: "#F1F6F9",
             boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
@@ -325,16 +325,25 @@ export const darkTheme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
-          color: "#000000",
-          outline: "none",
-          border: "none",
+          color: '#000', // Black text color
+          backgroundColor: 'transparent', // Transparent background
+          border: 'none', // Remove border
+          outline: 'none', // Remove outline
+          boxShadow: 'none', // Remove shadow
           '& .MuiSelect-select.Mui-focused': { // Target focused state
-            outline: "none",
-          border: "none",
+            color: '#000', // Black text color
+            backgroundColor: 'transparent', // Transparent background
+            border: 'none', // Remove border
+            outline: 'none', // Remove outline
+            boxShadow: 'none', // Remove shadow
           },
           '&:hover .MuiSelect-select': { // Target hover state (optional)
-            outline: "none",
-          border: "none",}
+            color: '#000', // Black text color
+            backgroundColor: 'transparent', // Transparent background
+            border: 'none', // Remove border
+            outline: 'none', // Remove outline
+            boxShadow: 'none', // Remove shadow
+          }
         }
       }
     }
@@ -356,50 +365,50 @@ export const lightTheme = createTheme({
       fontSize: "3.5rem",
       marginBottom: "1.2rem"
     },
-    h3:{
+    h3: {
       color: "#2A2A2A",
       fontWeight: 700,
       fontSize: "2rem",
       marginBottom: "1.2rem"
     },
-    h4:{
+    h4: {
       color: "#000000",
       fontWeight: 500,
       fontSize: "1.8rem",
       width: "70%"
     },
-    h5:{
+    h5: {
       color: "#2A2A2A",
       fontWeight: 900,
       fontSize: "1.8rem",
     },
-    h6:{
+    h6: {
       color: "#2A2A2A",
       fontWeight: 900,
       fontSize: "1.6rem",
     },
-    subtitle1:{
+    subtitle1: {
       color: "#2A2A2A",
       fontWeight: 500,
       fontSize: "1.2rem",
     },
-    body1:{
+    body1: {
       color: "#2A2A2A",
       fontWeight: 500,
       fontSize: "1.4rem",
     },
-    body2:{
+    body2: {
       color: "#2A2A2A",
       fontWeight: 500,
       fontSize: "1.6rem",
       textAlign: "justify"
     },
-    caption:{
+    caption: {
       color: "#2A2A2A",
       fontWeight: 500,
       fontSize: "1rem",
     },
-    subtitle2:{
+    subtitle2: {
       color: "#656565",
       fontWeight: 500,
       fontSize: "1.1rem",
@@ -416,18 +425,18 @@ export const lightTheme = createTheme({
     background: {
       default: '#fff', // Customize to your preference      
     },
-    info: {main: "#FFFFFF00"},
-    nexRed: {main: "#F23645"},
-    nexGreen: {main: "#089981"},
-    nexLightRed: {main: "rgba(242, 54, 69, 0.2)"},
-    nexLightGreen: {main: "rgba(8, 153, 129, 0.2)"},
+    info: { main: "#FFFFFF00" },
+    nexRed: { main: "#F23645" },
+    nexGreen: { main: "#089981" },
+    nexLightRed: { main: "rgba(242, 54, 69, 0.2)" },
+    nexLightGreen: { main: "rgba(8, 153, 129, 0.2)" },
     text: {
       primary: '#2A2A2A', // Customize to your preference
     },
     mobileTitleDot: {
       main: "#2A2A2A"
     },
-    pageBackground:{
+    pageBackground: {
       main: "#F2F2F2"
     },
     mediaCardShadow: "none",
@@ -464,8 +473,8 @@ export const lightTheme = createTheme({
             boxShadow: "rgba(0, 0, 0, 0.5) 0px 0px 6px 1px",
             '&:hover': {
               boxShadow: "none",
-            borderColor: "transparent",
-            animation: "none",
+              borderColor: "transparent",
+              animation: "none",
             },
           }
         },
@@ -483,7 +492,7 @@ export const lightTheme = createTheme({
           boxShadow: "rgba(0, 0, 0, 0.5) 0px 0px 6px 1px",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent:"center",
+          justifyContent: "center",
           gap: "1rem"
         }
       }
@@ -511,7 +520,7 @@ export const lightTheme = createTheme({
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent : "center",
+          justifyContent: "center",
           gap: "0rem",
           position: "fixed",
           bottom: "0"
@@ -521,7 +530,7 @@ export const lightTheme = createTheme({
     MuiTextField: {
       variants: [
         {
-          props: {variant: "outlined"},
+          props: { variant: "outlined" },
           style: {
             backgroundColor: "#F1F6F9",
             boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
@@ -555,18 +564,28 @@ export const lightTheme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
-          color: "#000000",
-          outline: "none",
-          border: "none",
+          color: '#000', // Black text color
+          backgroundColor: 'transparent', // Transparent background
+          border: 'none', // Remove border
+          outline: 'none', // Remove outline
+          boxShadow: 'none', // Remove shadow
           '& .MuiSelect-select.Mui-focused': { // Target focused state
-            outline: "none",
-          border: "none",
+            color: '#000', // Black text color
+            backgroundColor: 'transparent', // Transparent background
+            border: 'none', // Remove border
+            outline: 'none', // Remove outline
+            boxShadow: 'none', // Remove shadow
           },
           '&:hover .MuiSelect-select': { // Target hover state (optional)
-            outline: "none",
-          border: "none",}
+            color: '#000', // Black text color
+            backgroundColor: 'transparent', // Transparent background
+            border: 'none', // Remove border
+            outline: 'none', // Remove outline
+            boxShadow: 'none', // Remove shadow
+          }
         }
       }
     }
   },
+
 })

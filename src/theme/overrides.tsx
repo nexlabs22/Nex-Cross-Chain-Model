@@ -37,7 +37,11 @@ export const PWAGradientStack = () => {
   return (
       {
         background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-
+        transition: 'background 0.3s ease-in-out',
+        '&:hover': {
+          background: "linear-gradient(to top left, #5E869B 0%, #8FB8CA 100%)",
+          
+        },
       }
   )
 }

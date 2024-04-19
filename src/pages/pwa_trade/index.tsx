@@ -44,7 +44,7 @@ export default function PWATrade() {
         <Box width={"100vw"} height={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
 
-            <Stack width={"100%"} height={"fit-content"} paddingTop={5} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
+            <Stack width={"100%"} height={"fit-content"} paddingTop={2} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,
                     fontWeight: 700
@@ -58,7 +58,7 @@ export default function PWATrade() {
                     Explore Our Index Products
                 </Typography>
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} marginTop={4} marginBottom={2} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+            <Stack width={"100%"} height={"fit-content"} marginTop={0} marginBottom={2} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
                 <PWADynamicRibbon>
                     <Button sx={{
                         width: "100%",
@@ -92,7 +92,7 @@ export default function PWATrade() {
                     </Typography>
                 </Button>
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} marginTop={'-2.4rem'} direction={"column"} alignItems={"cnter"} justifyContent={"start"} gap={1} sx={{
+            <Stack width={"100%"} height={"fit-content"} marginTop={'-2.4rem'} direction={"column"} alignItems={"cnter"} justifyContent={"start"} gap={0.5} sx={{
                 overflowY: "scroll"
             }}>
                 {

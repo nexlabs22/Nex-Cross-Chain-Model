@@ -34,7 +34,7 @@ const PWAMyAssets = () => {
     ];
 
     return (
-        <Stack width={"100%"} height={"fit-content"} marginY={2}>
+        <Stack width={"100%"} height={"fit-content"} marginTop={2}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={2}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,

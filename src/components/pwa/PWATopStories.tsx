@@ -6,6 +6,7 @@ import { env } from "process";
 import axios from 'axios';
 import { useEffect, useState } from "react";
 import { keysIn } from "lodash";
+import { PWAGradientStack } from "@/theme/overrides";
 
 interface article {
     title: string,
@@ -38,8 +39,8 @@ const PWATopStories = () => {
         getStories()
     }, [])
     return (
-        <Stack width={"100%"} height={"fit-content"} marginTop={3} direction={"column"} alignItems={"center"} justifyContent={"start"}>
-            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={2}>
+        <Stack width={"100%"} height={"fit-content"} marginTop={1} direction={"column"} alignItems={"center"} justifyContent={"start"}>
+            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,
                     fontWeight: 700
@@ -48,18 +49,18 @@ const PWATopStories = () => {
                 </Typography>
 
             </Stack>
-            <Stack width={"100%"} height={"fit-content"}>
+            <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
                 {
                     articles.map((article, key) => {
                         return (
-                            <Stack key={key} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginY={1} gap={2}>
-                                <Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
+                            <Stack key={key} direction={"row"} alignItems={"stretch"} justifyContent={"space-between"} borderRadius={"1.2rem"} gap={1} paddingY={1.5} paddingX={1.5} sx={PWAGradientStack}>
+                                <Stack direction={"column"} alignItems={"start"} justifyContent={"start"} width={"60%"}>
                                     <Typography variant="subtitle1" sx={{
                                         color: lightTheme.palette.text.primary,
                                         fontWeight: 600,
                                         marginBottom: "0.4rem"
                                     }}>
-                                        {article.title.slice(0,50)} ...
+                                        {article.title.slice(0, 40)} ...
                                     </Typography>
                                     <Typography variant="caption" sx={{
                                         color: lightTheme.palette.text.primary,
@@ -70,7 +71,14 @@ const PWATopStories = () => {
                                         {article.creator}
                                     </Typography>
                                 </Stack>
-                                <Image alt={article.title} src={"https://miro.medium.com/v2/resize:fit:6000/1*tZRnVhlr5Ra67LqULE9J3g.png"} width={50} height={50} className=" w-5/12 aspect-video"></Image>
+                                <Stack width={"40%"} flexGrow={1} direction={"row"} alignItems={"center"} justifyContent={"center"}>
+                                    <Stack width={"95%"} height={"80%"} borderRadius={"0.8rem"} sx={{
+                                        backgroundImage: "url('https://miro.medium.com/v2/resize:fit:6000/1*tZRnVhlr5Ra67LqULE9J3g.png')",
+                                        backgroundPosition: "center",
+                                        backgroundSize: "cover",
+                                        backgroundRepeat: "no-repeat"
+                                    }}></Stack>
+                                </Stack>
                             </Stack>
                         )
                     })

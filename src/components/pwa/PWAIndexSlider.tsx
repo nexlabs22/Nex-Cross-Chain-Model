@@ -39,7 +39,7 @@ const PWAIndexSLider = () => {
 
     return (
         <Stack width={"100%"} height={"fit-content"}>
-            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={2}>
+            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,
                     fontWeight: 700

@@ -9,7 +9,8 @@ import cr5Logo from '@assets/images/cr5.png'
 import PWAProfileOverviewHeader from "@/components/pwa/PWAProfileOverviewHeader";
 import PWAPNLChartBox from "@/components/pwa/PWAPNLChartBox";
 import PWAMyAssets from "@/components/pwa/PWAMyAssets";
-
+import PWABanner from "@/components/pwa/PWABanner";
+import dca from "@assets/images/dca.png"
 import logo from "@assets/images/xlogo2.png"
 import { PWAGradientStack, PWAGradientTradeButton } from "@/theme/overrides";
 
@@ -23,6 +24,7 @@ export default function PWAOverview() {
             <PWAProfileOverviewHeader></PWAProfileOverviewHeader>
             <PWAPNLChartBox></PWAPNLChartBox>
             <PWAMyAssets></PWAMyAssets>
+            <PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="" linkText="Learn More"></PWABanner>
             <PWABottomNav></PWABottomNav>
         </Box>
     )

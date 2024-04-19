@@ -219,7 +219,20 @@ body {
   z-index: 100 !important;
 }
 
+#PWANexIndices .szh-menu{
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  border-radius: 0.8rem !important;
+}
 
+#PWAProfileHistory .szh-menu{
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  border-radius: 0.8rem !important;
+}
+
+#PWAPNLChartBox .szh-menu{
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  border-radius: 0.8rem !important;
+}
 
 .darkCCIP{
   background-color: #2A2A2A !important;
