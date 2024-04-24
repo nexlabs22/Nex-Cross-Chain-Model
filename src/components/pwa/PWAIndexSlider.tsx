@@ -143,8 +143,8 @@ const PWAIndexSLider = () => {
                                             index.price
                                         }
                                     </Typography>
-                                    <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1}>
-                                        <GenericGradientAreaChart data={index.data} />
+                                    <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1} bgcolor={"#373737"}>
+                                        
                                     </Stack>
 
                                 </Stack>
