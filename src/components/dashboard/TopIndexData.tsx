@@ -60,7 +60,7 @@ type underlyingAsset = {
 const TopIndexData = () => {
 	const { mode } = useLandingPageStore()
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
-	const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
+	const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore() 
 	const { ethPriceInUsd } = useTradePageStore()
 
 	useEffect(() => {

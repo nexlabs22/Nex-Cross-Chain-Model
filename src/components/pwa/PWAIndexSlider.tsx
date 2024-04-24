@@ -9,10 +9,13 @@ import "slick-carousel/slick/slick-theme.css";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import { PWAGradientStack } from "@/theme/overrides";
+import { useLandingPageStore } from "@/store/store";
+import { useRouter } from "next/router";
 
 
 const PWAIndexSLider = () => {
 
+    const {changeSelectedIndex} = useLandingPageStore()
     const Indices = [
         {
             name: "Anti Inflation Index",
@@ -27,15 +30,9 @@ const PWAIndexSLider = () => {
             logo: cr5Logo,
             price: "784.8",
             change: "N/A"
-        },
-        {
-            name: "AIIndex",
-            symbol: "AII",
-            logo: cr5Logo,
-            price: "826.6",
-            change: "N/A"
-        },
+        }
     ];
+    const router = useRouter();
 
     return (
         <Stack width={"100%"} height={"fit-content"}>
@@ -89,7 +86,10 @@ const PWAIndexSLider = () => {
                     {
                         Indices.map((index, key) => {
                             return (
-                                <Stack key={key} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack}>
+                                <Stack key={key} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={()=>{
+                                    changeSelectedIndex(index.symbol);
+                                    router.push('/pwa_tradeIndex')
+                                }}>
                                     <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
                                     <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
                                         <Typography variant="subtitle1" sx={{

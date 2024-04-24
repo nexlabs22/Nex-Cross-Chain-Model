@@ -12,9 +12,12 @@ const PWADynamicRibbon = dynamic(() => import("@components/pwa/PWADynamicRibbon"
 import logo from "@assets/images/xlogo2.png"
 import { PWAGradientStack, PWAGradientTradeButton } from "@/theme/overrides";
 import dynamic from "next/dynamic";
+import { useLandingPageStore } from "@/store/store";
+import { useRouter } from "next/router";
 
 export default function PWATrade() {
 
+    const {changeSelectedIndex} = useLandingPageStore()
     const Indices = [
         {
             name: "Anti Inflation Index",
@@ -29,16 +32,9 @@ export default function PWATrade() {
             logo: cr5Logo,
             price: "784.8",
             change: "N/A"
-        },
-        {
-            name: "AIIndex",
-            symbol: "AII",
-            logo: cr5Logo,
-            price: "826.6",
-            change: "N/A"
-        },
-
+        }
     ];
+    const router = useRouter();
 
     return (
         <Box width={"100vw"} height={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
@@ -98,8 +94,10 @@ export default function PWATrade() {
                 {
                     Indices.map((index, key) => {
                         return (
-                            <Link href={"/pwa_tradeIndex"} key={key} className="w-full h-fit flex flex-row items-center justify-center">
-                                <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                            <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={()=>{
+                                changeSelectedIndex(index.symbol);
+                                router.push('/pwa_tradeIndex')
+                            }}>
                                     <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
                                         <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
                                         <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
@@ -148,7 +146,6 @@ export default function PWATrade() {
                                         </Typography>
                                     </Stack>
                                 </Stack>
-                            </Link>
                         )
                     })
                 }

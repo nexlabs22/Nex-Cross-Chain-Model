@@ -10,67 +10,83 @@ import { styled } from '@mui/material/styles';
 export const MainStack = () => {
   const { theme } = useLandingPageStore()
   return (
-      {
-          background: theme.palette.mode == "dark" ? "#050505" : theme.palette.text,
-          overflowX: "hidden"
-      }
+    {
+      background: theme.palette.mode == "dark" ? "#050505" : theme.palette.text,
+      overflowX: "hidden"
+    }
   )
 }
 
 export const GradientStack = () => {
   const { theme } = useLandingPageStore()
   return (
-      {
-        
-        background: theme.palette.mode == "dark" ? '' : "linear-gradient(to bottom left, #5E869B 0%, #8FB8CA 100%)",
-        backgroundImage: theme.palette.mode == "dark" ? `url('${mesh1.src }')`: "",
-        backgroundPosition: theme.palette.mode == "dark" ? "center" : "",
-        backgroundRepeat: theme.palette.mode == "dark" ? "no-repeat" : "",
-        backgroundSize: theme.palette.mode == "dark" ? "100% 100%" : "",
-        boxShadow: theme.palette.mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : ""
-      }
+    {
+
+      background: theme.palette.mode == "dark" ? '' : "linear-gradient(to bottom left, #5E869B 0%, #8FB8CA 100%)",
+      backgroundImage: theme.palette.mode == "dark" ? `url('${mesh1.src}')` : "",
+      backgroundPosition: theme.palette.mode == "dark" ? "center" : "",
+      backgroundRepeat: theme.palette.mode == "dark" ? "no-repeat" : "",
+      backgroundSize: theme.palette.mode == "dark" ? "100% 100%" : "",
+      boxShadow: theme.palette.mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : ""
+    }
   )
 }
 
 export const PWAGradientStack = () => {
   const { theme } = useLandingPageStore()
   return (
-      {
-        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-        transition: 'background 0.3s ease-in-out',
-        '&:hover': {
-          background: "linear-gradient(to top left, #5E869B 0%, #8FB8CA 100%)",
-          
-        },
-      }
+    {
+      background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+      transition: 'background 0.3s ease-in-out',
+      '&:hover': {
+        background: "linear-gradient(to top left, #5E869B 0%, #8FB8CA 100%)",
+
+      },
+    }
+  )
+}
+
+export const AssetChips = () => {
+  const { theme } = useLandingPageStore()
+  return (
+    {
+      aspectRatio: 1,
+      boxShadow: "0px 0px 4px 1px rgba(37,37,37,0.5)",
+      background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+      transition: 'background 0.3s ease-in-out',
+      '&:hover': {
+        background: "linear-gradient(to top left, #5E869B 0%, #8FB8CA 100%)",
+
+      },
+    }
   )
 }
 
 export const PWABannerButton = () => {
   const { theme } = useLandingPageStore()
   return (
-      {
-        backgroundColor: "#FFFFFF",
-        borderRadius: "0.8rem", 
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingY: "0.5rem",
-        paddingX: "0.8rem",
-        width: "fit-content",
-      }
+    {
+      backgroundColor: "#FFFFFF",
+      borderRadius: "0.8rem",
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingY: "0.5rem",
+      paddingX: "0.8rem",
+      width: "fit-content",
+    }
   )
 }
 
 export const PWAGradientTradeButton = () => {
   const { theme } = useLandingPageStore()
   return (
-      {
-        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-        width: "50%",
-        paddingY: "2rem"
-      }
+    {
+      background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+      width: "50%",
+      paddingY: "2rem"
+    }
   )
 }
 
@@ -128,21 +144,21 @@ export const IOSSwitch = styled((props: SwitchProps) => (
 export const PWAProfileTextField = () => {
   const { theme } = useLandingPageStore()
   return (
-      {
-        backgroundColor: "#F1F6F9",
-        boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
-        borderRadius: "2rem"
-      }
+    {
+      backgroundColor: "#F1F6F9",
+      boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
+      borderRadius: "2rem"
+    }
   )
 }
 
 export const PWAComparisonChip = () => {
   const { theme } = useLandingPageStore()
   return (
-      {
-        backgroundColor: "#F8F9FA",
-        boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.4)",
-      }
+    {
+      backgroundColor: "#F8F9FA",
+      boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.4)",
+    }
   )
 }
 
@@ -150,37 +166,37 @@ export const PWAComparisonChip = () => {
 export const NormalGradientStack = () => {
   const { theme } = useLandingPageStore()
   return (
-      {
-          background: theme.palette.mode == "dark" ? theme.palette.background.default : "linear-gradient(to bottom left, #5E869B 0%, #8FB8CA 100%)",
-          boxShadow: theme.palette.mode == "dark" ? `1px -2px 5px 0px rgba(91,166,153,0.68)` : " "
-      }
+    {
+      background: theme.palette.mode == "dark" ? theme.palette.background.default : "linear-gradient(to bottom left, #5E869B 0%, #8FB8CA 100%)",
+      boxShadow: theme.palette.mode == "dark" ? `1px -2px 5px 0px rgba(91,166,153,0.68)` : " "
+    }
   )
 }
 
 export const CustomNextArrow: React.FC<CustomArrowProps> = ({
-    onClick,
-    className,
-  }) => {
-    return (
-      <div
-        className="glassy absolute right-5 top-[45%] z-10 aspect-square w-fit cursor-pointer rounded-full border-none p-2 hover:scale-110"
-        onClick={onClick}
-      >
-        <BsChevronCompactRight color="#FFFFFF" size={25} />
-      </div>
-    );
-  };
+  onClick,
+  className,
+}) => {
+  return (
+    <div
+      className="glassy absolute right-5 top-[45%] z-10 aspect-square w-fit cursor-pointer rounded-full border-none p-2 hover:scale-110"
+      onClick={onClick}
+    >
+      <BsChevronCompactRight color="#FFFFFF" size={25} />
+    </div>
+  );
+};
 
-  export const CustomPrevArrow: React.FC<CustomArrowProps> = ({
-    onClick,
-    className,
-  }) => {
-    return (
-      <div
-        className="glassy absolute left-5 top-[45%] z-10 aspect-square w-fit cursor-pointer rounded-full border-none p-2 hover:scale-110"
-        onClick={onClick}
-      >
-        <BsChevronCompactLeft color="#FFFFFF" size={25} />
-      </div>
-    );
-  };
+export const CustomPrevArrow: React.FC<CustomArrowProps> = ({
+  onClick,
+  className,
+}) => {
+  return (
+    <div
+      className="glassy absolute left-5 top-[45%] z-10 aspect-square w-fit cursor-pointer rounded-full border-none p-2 hover:scale-110"
+      onClick={onClick}
+    >
+      <BsChevronCompactLeft color="#FFFFFF" size={25} />
+    </div>
+  );
+};

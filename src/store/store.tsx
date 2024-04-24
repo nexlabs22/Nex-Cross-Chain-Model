@@ -22,6 +22,9 @@ type LandingPageStore = {
 	defaultIndex: string
 	changeDefaultIndex: (index: string) => void
 
+	selectedIndex: string
+	changeSelectedIndex: (index: string) => void
+
 	PWATradeoperation: string
 	changePWATradeoperation: (index: string) => void
 
@@ -50,6 +53,9 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 
 	defaultIndex: 'CRYPTO5',
 	changeDefaultIndex: (index: string) => set((state) => ({ defaultIndex: index })),
+
+	selectedIndex: 'CRYPTO5',
+	changeSelectedIndex: (index: string) => set((state) => ({ selectedIndex: index })),
 
 	PWATradeoperation: '',
 	changePWATradeoperation: (operation: string) => set((state) => ({ PWATradeoperation: operation })),

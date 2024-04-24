@@ -8,14 +8,18 @@ import { PWAGradientStack } from "@/theme/overrides";
 import { GoPlus } from "react-icons/go";
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import { useLandingPageStore } from "@/store/store";
+
 
 import { Menu, MenuButton, MenuItem } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
-
+import { useRouter } from "next/router";
+ 
 const PWANexIndices = () => {
 
     const [listType, setListType] = useState<string>("All Nex Indices")
+    const {changeSelectedIndex} = useLandingPageStore()
     const Indices = [
         {
             name: "Anti Inflation Index",
@@ -30,15 +34,9 @@ const PWANexIndices = () => {
             logo: cr5Logo,
             price: "784.8",
             change: "N/A"
-        },
-        {
-            name: "AIIndex",
-            symbol: "AII",
-            logo: cr5Logo,
-            price: "826.6",
-            change: "N/A"
-        },
+        } 
     ];
+    const router = useRouter();
 
     return (
         <Stack id="PWANexIndices" width={"100%"} height={"fit-content"} marginTop={3} direction={"column"} alignItems={"center"} justifyContent={"start"}>
@@ -103,7 +101,10 @@ const PWANexIndices = () => {
                 {
                     Indices.map((index, key) => {
                         return (
-                            <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
+                            <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={()=>{
+                                changeSelectedIndex(index.symbol);
+                                router.push('/pwa_tradeIndex')
+                            }}>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
                                     <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
                                     <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
