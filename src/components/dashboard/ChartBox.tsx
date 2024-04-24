@@ -551,7 +551,7 @@ const DashboardChartBox = () => {
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 					}}
 				>
-					<TradingViewChart selectedIndices={selectedIndices} index={defaultIndex} page={'dashboard'} />
+					<TradingViewChart selectedIndices={selectedIndices} index={defaultIndex} page={'dashboard'} pwa={false} />
 					{/* <div className="flex flex-row items-start justify-end px-2 mt-2 mb-6">
 						<Menu
 							menuButton={

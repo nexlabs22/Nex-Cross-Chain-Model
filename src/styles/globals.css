@@ -551,6 +551,23 @@ body {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
 }
 
+.tw-connect-wallet.pwaConnectWallet {
+  font-family: 'interBold' !important;
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  box-shadow: 0 1px 2px 1px rgb(0 0 0 / 0.4) !important;
+  color: #000000 !important;
+}
+
+.pwaConnectWallet {
+  font-family: 'interBold' !important;
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  box-shadow: 0 1px 2px 1px rgb(0 0 0 / 0.4) !important;
+  color: #000000 !important;
+}
+
+
+
+
 .disabled {
   cursor: not-allowed;
 }
@@ -890,6 +907,11 @@ body {
   background-position: center !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
+}
+
+.pwaConnectWallet{
+ color:  #000000 !important; 
+ text-shadow: none !important;
 }
 
 .ais-SearchBox-input{

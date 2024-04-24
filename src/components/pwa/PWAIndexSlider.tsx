@@ -9,27 +9,44 @@ import "slick-carousel/slick/slick-theme.css";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import { PWAGradientStack } from "@/theme/overrides";
-import { useLandingPageStore } from "@/store/store";
+import { useChartDataStore, useLandingPageStore } from "@/store/store";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
+import { useEffect } from "react";
+
+
+const GenericGradientAreaChart = dynamic(
+    () => import("@components/pwa/PWAGenericAreaChart"),
+    {
+        ssr: false,
+    }
+);
 
 
 const PWAIndexSLider = () => {
 
-    const {changeSelectedIndex} = useLandingPageStore()
+    useEffect(() => {
+        console.log(ANFIData)
+    }, [])
+
+    const { fetchIndexData, ANFIData, CR5Data } = useChartDataStore();
+    const { changeSelectedIndex } = useLandingPageStore()
     const Indices = [
         {
             name: "Anti Inflation Index",
             symbol: "ANFI",
             logo: anfiLogo,
             price: "2453.4",
-            change: "N/A"
+            change: "N/A",
+            data: ANFIData
         },
         {
             name: "CRYPTO5",
             symbol: "CR5",
             logo: cr5Logo,
             price: "784.8",
-            change: "N/A"
+            change: "N/A",
+            data: CR5Data
         }
     ];
     const router = useRouter();
@@ -86,7 +103,7 @@ const PWAIndexSLider = () => {
                     {
                         Indices.map((index, key) => {
                             return (
-                                <Stack key={key} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={()=>{
+                                <Stack key={key} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
                                     changeSelectedIndex(index.symbol);
                                     router.push('/pwa_tradeIndex')
                                 }}>
@@ -126,7 +143,9 @@ const PWAIndexSLider = () => {
                                             index.price
                                         }
                                     </Typography>
-                                    <Stack width={"100%"} height={100} bgcolor={"#e2e2e2"} borderRadius={'.8rem'} marginTop={1}></Stack>
+                                    <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1}>
+                                        <GenericGradientAreaChart data={index.data} />
+                                    </Stack>
 
                                 </Stack>
                             )
