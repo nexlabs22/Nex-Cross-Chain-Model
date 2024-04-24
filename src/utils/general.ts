@@ -16,7 +16,7 @@ function SwapNumbers(a: number, b: number): [number, number] {
 }
 
 function reduceAddress(address:string){
-    return address.toString().slice(0, 7) + '...' + address.toString().substring(address.toString().length - 7)
+    return address?.toString().slice(0, 7) + '...' + address?.toString().substring(address?.toString().length - 7)
 }
 
 function convertTime(timestamp: number) {
