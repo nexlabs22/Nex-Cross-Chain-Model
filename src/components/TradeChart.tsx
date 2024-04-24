@@ -120,7 +120,7 @@ const TradeChartBox = () => {
 					{/* </div> */}
 					{/* <Chart data={chartData} /> */}
 					<div className="h-[70vh] w-full">
-						<TradingViewChart selectedIndices={[]} index={selectedTradingProduct} page={'trade'} />
+						<TradingViewChart selectedIndices={[]} index={selectedTradingProduct} page={'trade'} pwa={false} />
 					</div>
 				</div>
 			</section>
