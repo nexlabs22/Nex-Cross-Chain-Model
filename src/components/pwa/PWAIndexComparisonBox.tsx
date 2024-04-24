@@ -172,13 +172,12 @@ const PWAIndexComparisonBox = () => {
                             return item.assetClasses.map((assetClass, key) => {
                                 return (
                                     <Stack key={key} width={"30vw"} height={"100%"} direction={"row"} paddingY={0.8} paddingX={0.6} alignItems={"center"} justifyContent={"space-between"} sx={{
-                                        backgroundColor: !selectedIndices.includes(assetClass.colName) ? '#2962FF99' : '#F8F9FA',
-                                        boxShadow: selectedIndices.includes(assetClass.colName) ? `0px 0px 6px 1px #2962FF` : '0px 2px 8px rgba(0, 0, 0, 0.4)',
+                                        backgroundColor: selectedComparisonIndices.includes(assetClass.colName) ? '#2962FF99' : '#F8F9FA',
+                                        boxShadow: selectedComparisonIndices.includes(assetClass.colName) ? `0px 0px 6px 1px #2962FF` : '0px 2px 8px rgba(0, 0, 0, 0.4)',
                                     }} onClick={() => {
-                                        if (!selectedIndices.includes(assetClass.colName)) {
+                                        if (!selectedComparisonIndices.includes(assetClass.colName)) {
                                             // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
                                             setSelectedIndices((prevState) => [...prevState, assetClass.colName])
-                                            
                                             changeSelectedComparisonIndices(selectedIndices)
                                         } else {
                                             // removeIndex(assetClass.colName)
