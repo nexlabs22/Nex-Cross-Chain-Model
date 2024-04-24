@@ -36,7 +36,7 @@ const PWATopStories = () => {
     }
 
     useEffect(() => {
-        //getStories()
+        getStories()
     }, [])
     return (
         <Stack width={"100%"} height={"fit-content"} marginTop={1} direction={"column"} alignItems={"center"} justifyContent={"start"}>
@@ -50,7 +50,7 @@ const PWATopStories = () => {
 
             </Stack>
             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
-                {/*
+                {
                     articles.map((article, key) => {
                         return (
                             <Stack key={key} direction={"row"} alignItems={"stretch"} justifyContent={"space-between"} borderRadius={"1.2rem"} gap={1} paddingY={1.5} paddingX={1.5} sx={PWAGradientStack}>
@@ -82,7 +82,7 @@ const PWATopStories = () => {
                             </Stack>
                         )
                     })
-                */}
+                }
 
             </Stack>
         </Stack>
