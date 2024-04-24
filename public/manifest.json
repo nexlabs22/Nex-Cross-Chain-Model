@@ -10,9 +10,8 @@
 	"apple-mobile-web-app-status-bar-style": "default",
 	"start_url": "/",
 	"icons": [
-		{ "src": "/xlogo_s-192.png", "type": "image/png", "sizes": "192x192" },
-		{ "src": "/xlogo_s-256.png", "type": "image/png", "sizes": "256x256" },
-		{ "src": "/xlogo_s-512.png", "type": "image/png", "sizes": "512x512" },
-		{ "src": "/maskable_icon.png", "type": "image/png", "sizes": "1024x1024", "purpose": "any maskable" }
+		{ "src": "/icon_192.png", "type": "image/png", "sizes": "192x192", "purpose": "maskable" },
+		{ "src": "/icon_256.png", "type": "image/png", "sizes": "256x256", "purpose": "maskable" },
+		{ "src": "/icon_512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
 	]
 }
