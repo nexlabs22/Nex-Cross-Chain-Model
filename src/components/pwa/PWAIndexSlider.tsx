@@ -25,11 +25,8 @@ const GenericGradientAreaChart = dynamic(
 
 const PWAIndexSLider = () => {
 
-    useEffect(() => {
-        console.log(ANFIData)
-    }, [])
 
-    const { fetchIndexData, ANFIData, CR5Data } = useChartDataStore();
+    const { fetchIndexData } = useChartDataStore();
     const { changeSelectedIndex } = useLandingPageStore()
     const Indices = [
         {
@@ -38,7 +35,6 @@ const PWAIndexSLider = () => {
             logo: anfiLogo,
             price: "2453.4",
             change: "N/A",
-            data: ANFIData
         },
         {
             name: "CRYPTO5",
@@ -46,7 +42,6 @@ const PWAIndexSLider = () => {
             logo: cr5Logo,
             price: "784.8",
             change: "N/A",
-            data: CR5Data
         }
     ];
     const router = useRouter();
