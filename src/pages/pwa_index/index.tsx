@@ -16,7 +16,7 @@ export default function PWAIndex(){
             <PWABanner smallText="Welcome NEX User" bigText="Unlock passive investing with our index products" link="/pwa_trade" linkText="Trade Now" image={logo.src}></PWABanner>
             <PWAIndexSLider></PWAIndexSLider>
             <PWANexIndices></PWANexIndices>
-            
+            <PWATopStories></PWATopStories>
             <PWABottomNav></PWABottomNav>
         </Box>
     )
