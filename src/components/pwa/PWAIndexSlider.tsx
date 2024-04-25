@@ -106,10 +106,9 @@ const PWAIndexSLider = () => {
                 >
                     {
                         Indices.map((index, key) => {
-                            {console.log(dataForChart[index.symbol], index, dataForChart)}
                             return (
                                 <Stack key={key} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
-                                    changeSelectedIndex(index.symbol);
+                                    changeSelectedIndex(index.name);
                                     router.push('/pwa_tradeIndex')
                                 }}>
                                     <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
