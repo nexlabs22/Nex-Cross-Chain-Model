@@ -50,7 +50,7 @@ const colNameToSymbol = {
 	stock5: 'STOCK5',
 }
 
-const TradingViewChart = ({ index, selectedIndices, page }) => {
+const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
 	const [wid, setWid] = useState()
 	const chartContainerRef = useRef()
 	const { mode } = useLandingPageStore()
@@ -80,7 +80,7 @@ const TradingViewChart = ({ index, selectedIndices, page }) => {
 			width: chartContainerRef.current.clientWidth,
 			style: '2',
 			fullscreen: false,
-			theme: mode,
+			theme: pwa ? "light" : mode,
 			container: chartContainerRef.current,
 			allow_symbol_change: false,
 			datafeed: Datafeed,
@@ -91,7 +91,7 @@ const TradingViewChart = ({ index, selectedIndices, page }) => {
     //   disabled_features: getDisabledFeatures(page),
 			overrides: {
 				'mainSeriesProperties.style': 2,
-				'paneProperties.background': '#020024',
+				'paneProperties.background': pwa ? "#FFFFFF" : '#020024',
 			},
 			// custom_css_url: 'css/style.css',
 			library_path: '/charting_library/',

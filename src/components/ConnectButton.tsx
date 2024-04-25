@@ -6,25 +6,6 @@ import React, { createContext, useEffect, useState } from 'react';
 
 
 
-interface User {
-  email: string
-  inst_name: string
-  main_wallet: string
-  name: string
-  vatin: string
-  address: string
-  ppLink: string
-  p1: boolean
-  p2: boolean
-  p3: boolean
-  p4: boolean
-  p5: boolean
-  ppType: string
-  creationDate: string
-}
-
-
-
 interface ConnectWalletButton {
   tradeNavbarButton?: boolean
 }
