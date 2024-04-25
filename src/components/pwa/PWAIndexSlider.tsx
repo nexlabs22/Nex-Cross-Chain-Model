@@ -26,7 +26,16 @@ const GenericGradientAreaChart = dynamic(
 const PWAIndexSLider = () => {
 
 
-    const { fetchIndexData } = useChartDataStore();
+    const { fetchIndexData, ANFIData, CR5Data } = useChartDataStore();
+    useEffect(() => {
+        fetchIndexData({ tableName: "histcomp", index: "OurIndex" });
+      }, [fetchIndexData]); 
+
+    const dataForChart:{[key:string]: { time: string | number | Date; value: number }[]} = {
+        ANFI: ANFIData.reverse().slice(30),
+        CR5: CR5Data.reverse().slice(30)
+    }
+    
     const { changeSelectedIndex } = useLandingPageStore()
     const Indices = [
         {
@@ -97,6 +106,7 @@ const PWAIndexSLider = () => {
                 >
                     {
                         Indices.map((index, key) => {
+                            {console.log(dataForChart[index.symbol], index, dataForChart)}
                             return (
                                 <Stack key={key} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
                                     changeSelectedIndex(index.symbol);
@@ -138,8 +148,8 @@ const PWAIndexSLider = () => {
                                             index.price
                                         }
                                     </Typography>
-                                    <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1} bgcolor={"#373737"}>
-                                        
+                                    <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1}>
+                                        <GenericGradientAreaChart data={dataForChart[index.symbol]}/>
                                     </Stack>
 
                                 </Stack>

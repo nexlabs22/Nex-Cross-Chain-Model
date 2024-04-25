@@ -115,6 +115,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	fetchIndexData: async ({ tableName, index }) => {
 		try {
 			set({ loading: true, error: null })
+			const indexData = await fetch('api/getIndexData').then(res => res.json()).catch(err => console.log(err))
 			const response = await fetch(
 				`/api/spotDatabase?indexName=${index}&tableName=${encodeURIComponent(tableName)}`
 			)
@@ -124,8 +125,10 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 
 			set((state) => {
 				if (index === 'OurIndex') {
-					const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
-					const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
+					const anfiIndexPrices = indexData.ANFI;
+					const cr5IndexPrices = indexData.CRYPTO5;
+					// const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
+					// const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
 					const stock5Prices = getIndexData('STOCK5', inputData.data, top5stockmarketcap)
 					return {
 						ANFIData: anfiIndexPrices,

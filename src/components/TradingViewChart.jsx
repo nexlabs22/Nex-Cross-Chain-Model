@@ -80,7 +80,7 @@ const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
 			width: chartContainerRef.current.clientWidth,
 			style: '2',
 			fullscreen: false,
-			theme: pwa ? "light" : mode,
+			theme: pwa ? 'light' : mode,
 			container: chartContainerRef.current,
 			allow_symbol_change: false,
 			datafeed: Datafeed,
@@ -133,9 +133,13 @@ const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
 
 	useEffect(() => {
 		if (wid && wid.changeTheme) {
-			wid.changeTheme(mode)
+			if(pwa){
+				wid.changeTheme('light')
+			}else{
+				wid.changeTheme(mode)
+			}
 		}
-	}, [mode, wid])
+	}, [mode, wid, pwa])
 
 	const [oldSelectedIndices, setOldSelectedIndices] = useState([])
 	const [ids, setIds] = useState({})
