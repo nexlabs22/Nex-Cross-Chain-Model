@@ -126,6 +126,10 @@ function NewHistoryTable() {
 			}
 	)
 
+	useEffect(() => {
+        console.log(dataToShow)
+    }, [dataToShow])
+
 	return (
 		<div className={`w-full h-full overflow-x-auto ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
 			<div className={`h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[400px] ${mode == 'dark' ? 'darkScrollBar' : ''}`}>

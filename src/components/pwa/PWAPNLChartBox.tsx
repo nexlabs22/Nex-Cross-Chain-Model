@@ -177,8 +177,6 @@ const PWA3DChartBox = () => {
         }
     }
 
-
-
     const indexDetails = [
         {
             index: 'ANFI',
@@ -278,9 +276,10 @@ const PWA3DChartBox = () => {
 
 
             </Stack>
-            <Stack width={"100%"} height={"25vh"} borderRadius={"1.2rem"}>
+            <Stack width={"100vw"} height={"25vh"} borderRadius={"1.2rem"} direction={"row"} alignItems={"center"} justifyContent={"center"}>
                 {/*chartType == 'Pie Chart' ? <New3DPieChart data={pieData} /> : <TreemapChart percentage={indexPercent} />*/}
                 <PWA3DPieChart data={pieData} />
+                
             </Stack>
         </Stack>
     )

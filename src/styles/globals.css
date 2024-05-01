@@ -379,6 +379,9 @@ body {
   animation: shake 0.5s ease-in-out infinite;
 }
 
+#PWA3DPieChartBox svg{
+  transform: scale(1);
+}
 
 
 .Toastify__toast-icon div{
