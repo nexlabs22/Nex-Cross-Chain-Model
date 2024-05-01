@@ -383,6 +383,14 @@ body {
   transform: scale(1);
 }
 
+.MuiOutlinedInput-input input{
+  color: #2A2A2A !important;
+
+}
+
+#outlined-basic{
+  color: #2A2A2A !important;
+}
 
 .Toastify__toast-icon div{
   width: fit-content !important;

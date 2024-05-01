@@ -296,15 +296,36 @@ export const darkTheme = createTheme({
             borderRadius: "0.8rem",
             border: "none",
             paddingTop: "0px",
+            color: "#000000",
             paddingBottom: "0px",
             '& .MuiOutlinedInput-root.Mui-focused': {
               border: "none",
               boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
-              outlineColor: "none"
+              outlineColor: "none",
+              color: "#000000"
             }
           }
         }
       ]
+    },
+    MuiInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#F1F6F9",
+          boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
+          borderRadius: "0.8rem",
+          border: "none",
+          paddingTop: "0px",
+          color: "#000000",
+          paddingBottom: "0px",
+          '& .MuiOutlinedInput-root.Mui-focused': {
+            border: "none",
+            boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
+            outlineColor: "none",
+            color: "#000000"
+          }
+        }
+      }
     },
     MuiBottomNavigationAction: {
       styleOverrides: {
@@ -537,15 +558,34 @@ export const lightTheme = createTheme({
             borderRadius: "0.8rem",
             border: "none",
             paddingTop: "0px",
+            color: "#000000",
             paddingBottom: "0px",
             '& .MuiOutlinedInput-root.Mui-focused': {
               border: "none",
               boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
-              outlineColor: "none"
+              outlineColor: "none",
+              color: "#000000"
             }
           }
         }
       ]
+    },
+    MuiInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#F1F6F9",
+          boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
+          borderRadius: "0.8rem",
+          border: "none",
+          paddingTop: "0px",
+          paddingBottom: "0px",
+          '& .MuiOutlinedInput-root.Mui-focused': {
+            border: "none",
+            boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
+            outlineColor: "none"
+          }
+        }
+      }
     },
     MuiBottomNavigationAction: {
       styleOverrides: {

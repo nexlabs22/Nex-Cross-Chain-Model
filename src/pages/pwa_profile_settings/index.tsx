@@ -1,5 +1,5 @@
 import { Stack, Container, Box, Paper, Switch, TextField, Typography, Button, BottomNavigation, BottomNavigationAction } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { lightTheme } from "@/theme/theme";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,12 +8,123 @@ import PWABottomNav from "@/components/pwa/PWABottomNav";
 import PWAProfileHistoryList from "@/components/pwa/PWAProfileHistory";
 import { IOSSwitch, PWAProfileTextField } from "@/theme/overrides";
 import { BsQrCodeScan } from "react-icons/bs";
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { database } from '@/utils/firebase'
+import { useAddress } from "@thirdweb-dev/react";
+import router from "next/router";
 
-
+interface User {
+	email: string
+	isRetailer: boolean
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
+	showTradePopUp: boolean
+}
 
 export default function PWAProfileSettings() {
 
-    const [accountType, setAccountType] = useState<string>("retailer")
+    const address = useAddress()
+    
+
+    const [isCopied, setIsCopied] = useState(false)
+
+	const handleCopy = () => {
+		if (address) {
+			setIsCopied(true)
+			setTimeout(() => setIsCopied(false), 2000) // Reset "copied" state after 2 seconds
+			
+		}
+	}
+
+    const [isRetailerAccount, setIsRetailerAccount] = useState(true)
+
+    const changeType = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if(event.target.checked) setIsRetailerAccount(false)
+        else  setIsRetailerAccount(true)
+    };
+
+    const [option1, setOption1] = useState(false)
+	const [option2, setOption2] = useState(false)
+	const [option3, setOption3] = useState(false)
+	const [option4, setOption4] = useState(false)
+	const [option5, setOption5] = useState(false)
+
+	const [editable1, setEditable1] = useState(false)
+	const [editable2, setEditable2] = useState(false)
+	const [editable3, setEditable3] = useState(false)
+	const [editable4, setEditable4] = useState(false)
+
+    const [name, setName] = useState('')
+	const [instName, setInstName] = useState('')
+	const [email, setEmail] = useState('')
+	const [adr, setAdr] = useState('')
+	const [vatin, setVatin] = useState('')
+	const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	const [chosenPPType, setChosenPPType] = useState('none')
+
+	const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUserId, setConnectedUserId] = useState('')
+
+    useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+                console.log("users : "+users)
+				for (const key in users) {
+					console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setIsRetailerAccount(potentialUser.isRetailer)
+						setConnectedUserId(key)
+						setOption1(potentialUser.p1)
+						setOption2(potentialUser.p2)
+						setOption3(potentialUser.p3)
+						setOption4(potentialUser.p4)
+						setOption5(potentialUser.p5)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
+
+    useEffect(() => {
+		console.log("connected user : "+connectedUser)
+	}, [])
+
+	function saveSettings() {
+		update(ref(database, 'users/' + connectedUserId), {
+			isRetailer: isRetailerAccount != connectedUser?.isRetailer ? isRetailerAccount : connectedUser.isRetailer,
+			name: name != connectedUser?.name && name != '' ? name : connectedUser?.name,
+			email: email != connectedUser?.email && email != '' ? email : connectedUser?.email,
+			address: adr != connectedUser?.address && adr != '' ? adr : connectedUser?.address,
+			vatin: vatin != connectedUser?.vatin && vatin != '' ? vatin : connectedUser?.vatin,
+			inst_name: instName != connectedUser?.inst_name && instName != '' ? instName : connectedUser?.inst_name,
+			p1: option1 != connectedUser?.p1 ? option1 : connectedUser.p1,
+			p2: option2 != connectedUser?.p2 ? option2 : connectedUser.p2,
+			p3: option3 != connectedUser?.p3 ? option3 : connectedUser.p3,
+			p4: option4 != connectedUser?.p4 ? option4 : connectedUser.p4,
+			p5: option5 != connectedUser?.p5 ? option5 : connectedUser.p5,
+			ppLink: uploadedPPLink != 'none' ? uploadedPPLink : connectedUser?.ppLink,
+			ppType: chosenPPType != 'none' && chosenPPType != connectedUser?.ppType ? chosenPPType : connectedUser?.ppType,
+		})
+		
+		router.push('/pwa_profile')
+	}
 
 
     return (
@@ -40,7 +151,7 @@ export default function PWAProfileSettings() {
                     }}>
                         Retailer
                     </Typography>
-                    <IOSSwitch sx={{ m: 1 }} defaultChecked={false} />
+                    <IOSSwitch sx={{ m: 1 }} defaultChecked={false} onChange={changeType} />
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
                         fontWeight: 500,
@@ -58,7 +169,7 @@ export default function PWAProfileSettings() {
                         }}>
                             First Name
                         </Typography>
-                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth sx={{color: lightTheme.palette.text.primary,}} />
                     </Stack>
                     <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
                         <Typography variant="body1" sx={{
@@ -89,19 +200,65 @@ export default function PWAProfileSettings() {
                             Main Wallet
                         </Typography>
                         <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"stretch"} justifyContent={"start"} gap={1}>
-                            <Stack width={"80%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"}>
+                            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"}>
                                 <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
                             </Stack>
-                            <Stack width={"20%"} flexGrow={1} direction={"row"} alignItems={"center"} justifyContent={"center"} sx={{
-                                boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
-                                borderRadius: "0.5rem"
-                            }}>
-                                <BsQrCodeScan size={40} color={lightTheme.palette.text.primary}></BsQrCodeScan>
-                            </Stack>
+                            
                         </Stack>
 
                     </Stack>
                 </Stack>
+                {
+                    !isRetailerAccount ? (
+                        <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.5}>
+                    <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
+                        <Typography variant="body1" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontWeight: 700,
+                            marginTop: "1rem"
+                        }}>
+                            Legal Entity Name
+                        </Typography>
+                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                    </Stack>
+                    <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
+                        <Typography variant="body1" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontWeight: 700,
+                            marginTop: "1rem"
+                        }}>
+                            Address
+                        </Typography>
+                        <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"stretch"} justifyContent={"start"} gap={1}>
+                            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"}>
+                                <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                            </Stack>
+                        </Stack> 
+                    </Stack>
+                    <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
+                        <Typography variant="body1" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontWeight: 700,
+                            marginTop: "1rem"
+                        }}>
+                            VAT (VAT registration number)
+                        </Typography>
+                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                    </Stack>
+                    <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
+                        <Typography variant="body1" sx={{
+                            color: lightTheme.palette.text.primary,
+                            fontWeight: 700,
+                            marginTop: "1rem"
+                        }}>
+                            Number of Commerce Chamber
+                        </Typography>
+                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                    </Stack>
+                    
+                </Stack>
+                    ) : ""
+                }
                 <Stack width={"100%"} height={"fit-content"} paddingTop={5} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
                     <Typography variant="h6" sx={{
                         color: lightTheme.palette.text.primary,
