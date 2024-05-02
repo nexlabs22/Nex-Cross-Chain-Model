@@ -5,6 +5,7 @@ import mesh1 from "@assets/images/mesh1.png";
 import { lightTheme } from "./theme";
 import Switch, { SwitchProps } from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
+import { boxShadow } from "html2canvas/dist/types/css/property-descriptors/box-shadow";
 
 
 export const MainStack = () => {
@@ -40,7 +41,7 @@ export const PWAGradientStack = () => {
       transition: 'background 0.3s ease-in-out',
       '&:hover': {
         background: "linear-gradient(to top left, #5E869B 0%, #8FB8CA 100%)",
-
+        boxShadow: "0px 0px 6px 1px rgba(94, 134, 155, 1)"
       },
     }
   )
