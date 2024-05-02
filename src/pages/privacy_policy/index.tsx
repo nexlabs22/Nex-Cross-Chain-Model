@@ -31,21 +31,23 @@ export default function PrivacyPolicy() {
 
 				<DappNavbar />
 				<section className="w-screen h-fit flex flex-col items-stretch justify-start px-4 lg:px-10 pt-10 pb-12">
-					<h5 className={` text-4xl interBold mb-6 ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Privacy Policy</h5>
+					<h5 className={` text-4xl interBold mb-6 ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Privacy Policy - NEX Labs</h5>
 					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
-						Dear users,
+						This Privacy Policy describes NEXLABS{"'"} practices regarding the collection, use and protection of personal data as part of our decentralized cryptocurrency trading platform.
 					</p>
-                    <p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
-                    Please be advised that, in accordance with international regulations and the laws in force in the United States of America, our European investment and trading platform is not authorized to accept clients resident in the USA. Regulatory provisions, including but not limited to MiFID II and PRIIPs, impose specific restrictions that prevent US users from opening new positions or executing trades via our services.
+					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+						The NEXLABS Protocol operates in a decentralized and permissionless manner, not collecting personal data directly from its users. Although we may collect and process information about users of nexlabs.io or the Interface in accordance with this Privacy Policy, we do not have information on all users of the protocol beyond what is already publicly available and recorded on the blockchain.
 					</p>
-                    <p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
-                    Our platform is committed to fully complying with applicable laws and regulations to ensure maximum transparency and security for all investors. Therefore, we are required to disclaim any form of registration or trading activity by citizens or residents of the United States.
+					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+						This Privacy Policy (the “Privacy Policy”) explains how NEXLABS (“we,” “our,” or “us”) collects, uses and shares information in connection with our Services, and your rights and choices regarding that information. These terms apply to nexlabs.io and to the Interface and any other online locations that link to this Privacy Policy (collectively, the “Services”).
+						By using the Services, you also agree to our collection, use and sharing of your information as described in this Privacy Policy. If you do not agree to the Terms of Use, you should not use or access the Interface or the Services.
+
 					</p>
-                    <p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
-                    For further information or clarification, please contact the relevant financial regulatory authorities in your country of residence.
+					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+						For further information or clarification, please contact the relevant financial regulatory authorities in your country of residence.
 					</p>
-                    <p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
-                    We thank you for your consideration and understand the importance of adhering to these important compliance measures.
+					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+						We thank you for your consideration and understand the importance of adhering to these important compliance measures.
 					</p>
 
 					{/* <div className="w-full xl:w-9/12 flex-grow flex flex-col "></div> */}
