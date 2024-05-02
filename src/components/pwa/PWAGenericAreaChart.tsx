@@ -59,8 +59,8 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			})
 
 			const areaSeries = chartRef.current.addAreaSeries({
-				topColor: 'rgba(146, 210, 204, 0.9)', // Set the top color for the gradient
-				bottomColor: 'rgba(146, 210, 204, 0)', // Set the bottom color for the gradient (transparent)
+				topColor: 'rgba(51, 122, 116, 0.5)', // Set the top color for the gradient
+				bottomColor: 'rgba(35, 158, 154, 0.2)', // Set the bottom color for the gradient (transparent)
 				lineColor: '#79b3ad', // Set the line color
 				lineWidth: 2,
 				priceLineVisible: false,
@@ -112,7 +112,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	return (
 		<div
 			ref={chartContainerRef}
-			className="w-full flex flex-col items-center justify-center bg-gray-300"
+			className="w-full flex flex-col items-center justify-center"
 			style={{
 				width: '100%',
 				height: '100%',

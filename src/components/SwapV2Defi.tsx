@@ -61,6 +61,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { Stack, Container, Box, Paper, Typography, Button, BottomNavigation, BottomNavigationAction } from "@mui/material";
 import { lightTheme } from "@/theme/theme";
 import Link from 'next/link'
+import Sheet from 'react-modal-sheet';
 
 const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean }) => {
 
@@ -137,6 +138,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 		isToCurrencyModalOpen,
 		setFromCurrencyModalOpen,
 		setToCurrencyModalOpen,
+		isFromCurrencySheetOpen,
+		isToCurrencySheetOpen,
+		setFromCurrencySheetOpen,
+		setToCurrencySheetOpen,
 		changeSwapFromCur,
 		changeSwapToCur,
 		swapFromCur,
@@ -486,6 +491,22 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 
 	const closeToCurrencyModal = () => {
 		setToCurrencyModalOpen(false)
+	}
+
+	const openFromCurrencySheet = () => {
+		setFromCurrencySheetOpen(true)
+	}
+
+	const closeFromCurrencySheet = () => {
+		setFromCurrencySheetOpen(false)
+	}
+
+	const openToCurrencySheet = () => {
+		setToCurrencySheetOpen(true)
+	}
+
+	const closeToCurrencySheet = () => {
+		setToCurrencySheetOpen(false)
 	}
 
 	const fetchAllLiFiTokens = async () => {
@@ -865,6 +886,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 			{
 				isStandalone ? (
 					<>
+						<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
 						<Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingBottom={4} paddingX={2} bgcolor={lightTheme.palette.background.default}>
 							<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} >
 								<Stack width={"fit-content"} height={"fit-content"} paddingTop={4} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={8}>
@@ -892,40 +914,58 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 									You Pay
 								</Typography>
 								<Stack width={"80%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={1}>
-									<Typography variant="caption" sx={{
-										color: lightTheme.palette.text.primary,
-										fontWeight: 600,
-										backgroundColor: lightTheme.palette.pageBackground.main,
-										paddingX: "1.2rem",
-										paddingY: "0.4rem",
-										borderRadius: "1rem",
-										border: "solid 1px rgba(37, 37, 37, 0.5)",
-										boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
-									}}>
+									<Typography variant="caption"
+										onClick={() => {
+											if (swapFromCur.address == sepoliaWethAddress) {
+												setFirstInputValue('0.00001')
+											} else setFirstInputValue('1')
+										}}
+										sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 600,
+											backgroundColor: lightTheme.palette.pageBackground.main,
+											paddingX: "1.2rem",
+											paddingY: "0.4rem",
+											borderRadius: "1rem",
+											border: "solid 1px rgba(37, 37, 37, 0.5)",
+											boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+										}}
+									>
 										MIN
 									</Typography>
-									<Typography variant="caption" sx={{
-										color: lightTheme.palette.text.primary,
-										fontWeight: 600,
-										backgroundColor: lightTheme.palette.pageBackground.main,
-										paddingX: "1.2rem",
-										paddingY: "0.4rem",
-										borderRadius: "1rem",
-										border: "solid 1px rgba(37, 37, 37, 0.5)",
-										boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
-									}}>
+									<Typography variant="caption"
+										onClick={() => {
+											setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
+										}}
+										sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 600,
+											backgroundColor: lightTheme.palette.pageBackground.main,
+											paddingX: "1.2rem",
+											paddingY: "0.4rem",
+											borderRadius: "1rem",
+											border: "solid 1px rgba(37, 37, 37, 0.5)",
+											boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+										}}
+									>
 										HALF
 									</Typography>
-									<Typography variant="caption" sx={{
-										color: lightTheme.palette.text.primary,
-										fontWeight: 600,
-										backgroundColor: lightTheme.palette.pageBackground.main,
-										paddingX: "1.2rem",
-										paddingY: "0.4rem",
-										borderRadius: "1rem",
-										border: "solid 1px rgba(37, 37, 37, 0.5)",
-										boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
-									}}>
+									<Typography variant="caption"
+										onClick={() => {
+											console.log(Number(getPrimaryBalance()).toString())
+											setFirstInputValue(Number(getPrimaryBalance()).toString())
+										}}
+										sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 600,
+											backgroundColor: lightTheme.palette.pageBackground.main,
+											paddingX: "1.2rem",
+											paddingY: "0.4rem",
+											borderRadius: "1rem",
+											border: "solid 1px rgba(37, 37, 37, 0.5)",
+											boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+										}}
+									>
 										MAX
 									</Typography>
 								</Stack>
@@ -934,7 +974,13 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								<Stack width={"50%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"}>
 
 
-									<input type="number" className=" bg-transparent border-none w-1/2 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl" placeholder="0.0" />
+									<input
+										type="number"
+										className=" bg-transparent border-none w-1/2 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl"
+										placeholder="0.0"
+										onChange={changeFirstInputValue}
+										value={firstInputValue ? firstInputValue : ''}
+									/>
 									<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingRight={3}>
 										<Typography variant="subtitle1" sx={{
 											color: lightTheme.palette.text.primary,
@@ -950,11 +996,27 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												fontWeight: 600,
 												paddingTop: "1rem"
 											}}>
-												0 USDT
+												{getPrimaryBalance()} {swapFromCur.Symbol}
 											</Typography>
 										</Stack>
 									</Stack>
 								</Stack>
+								<Link href="" onClick={(event) => { event.preventDefault(); openFromCurrencySheet(); }} className='w-fit h-fit flex flex-row items-center justify-center relative z-50'>
+									<Stack
+										height={"12vw"}
+										width={"12vw"}
+										borderRadius={"9999px"}
+										sx={{
+											marginTop: "-2rem",
+											backgroundImage: `url('${swapFromCur.logo}')`,
+											backgroundPosition: "center",
+											backgroundRepeat: "no-repeat",
+											backgroundSize: "cover"
+										}}
+
+									></Stack>
+								</Link>
+
 							</Stack>
 							<Stack width={"100%"} paddingX={1} paddingY={2} direction="row" alignItems={"center"} justifyContent={"center"} className="w-full my-2 px-2 flex flex-row items-center justify-center">
 								<Stack width={"40%"} height={"1px"} bgcolor={lightTheme.palette.text.primary}></Stack>
@@ -982,7 +1044,13 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								<Stack width={"50%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"}>
 
 
-									<input type="number" className=" bg-transparent border-none w-1/2 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl" placeholder="0.0" />
+									<input
+										type="number"
+										className=" bg-transparent border-none w-1/2 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl"
+										placeholder="0.0"
+										onChange={changeSecondInputValue}
+										value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue)) : 0}
+									/>
 									<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingRight={3}>
 										<Typography variant="subtitle1" sx={{
 											color: lightTheme.palette.text.primary,
@@ -998,15 +1066,31 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												fontWeight: 600,
 												paddingTop: "1rem"
 											}}>
-												0 ANFI
+												{getSecondaryBalance()} {swapToCur.Symbol}
 											</Typography>
 										</Stack>
 									</Stack>
 								</Stack>
+								<Link href="" onClick={(event) => { event.preventDefault(); openToCurrencySheet() }} className='w-fit h-fit flex flex-row items-center justify-center'>
+									<Stack
+										height={"12vw"}
+										width={"12vw"}
+										borderRadius={"9999px"}
+										sx={{
+											marginTop: "-2rem",
+											backgroundImage: `url('${swapToCur.logo}')`,
+											backgroundPosition: "center",
+											backgroundRepeat: "no-repeat",
+											backgroundSize: "cover"
+										}}
+
+									></Stack>
+								</Link>
 							</Stack>
+
 							<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingX={1.5} paddingTop={3}>
 								<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={1}>
-									<IOSSwitch sx={{ m: 1 }} checked={false} onChange={() => { console.log("fiat") }} />
+									<IOSSwitch sx={{ m: 1 }} checked={isChecked} onChange={toggleCheckbox} />
 									<Typography variant="caption" sx={{
 										color: lightTheme.palette.text.primary,
 										fontWeight: 500,
@@ -1015,11 +1099,22 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 									</Typography>
 
 								</Stack>
-								<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={1}>
-									<Typography variant="caption" sx={{
-										color: "#5E869B",
-										fontWeight: 500,
-									}}>
+								<Stack
+									direction={"row"}
+									alignItems={"center"}
+									justifyContent={"start"}
+									width={"fit-content"}
+									height={"fit-content"}
+									gap={1}
+									onClick={() => faucet()}
+								>
+									<Typography
+										variant="caption"
+										sx={{
+											color: "#5E869B",
+											fontWeight: 500,
+										}}
+									>
 										Testnet USDT
 									</Typography>
 									<GoArrowUpRight color={"#5E869B"} size={20} />
@@ -1064,6 +1159,211 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								</Typography>
 							</Button>
 						</Box>
+						<Sheet
+							isOpen={isFromCurrencySheetOpen}
+							onClose={() => setFromCurrencySheetOpen(false)}
+							snapPoints={[500, 500, 0, 0]}
+							initialSnap={1}
+						>
+							<Sheet.Container>
+								<Sheet.Header />
+								<Sheet.Content>
+									<Stack direction={"column"} height={"100%"} width={"100%"} alignItems={"center"} justifyContent={"space-between"} paddingX={2} paddingY={2}>
+										<Typography variant="h6" align="center" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 700
+										}}>
+											Swap From
+										</Typography>
+										<Stack direction={"column"} height={"fit-content"} width={"100%"} alignItems={"center"} justifyContent={"end"} gap={1}>
+										<Stack width={"100%"} height={"30vh"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={3} sx={{ overflowY: "scroll", overflowX: "hidden" }}>
+												{
+													mergedCoinList[0].map((item, index) => {
+														return (
+															<Link href="" key={index} className='w-full h-fit flex flex-row items-center justify-center relative z-50' onClick={(event)=>{event.preventDefault(); changeSwapFromCur(item); closeFromCurrencySheet()}}>
+																<Stack key={index} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+																<Stack
+																	height={"12vw"}
+																	width={"12vw"}
+																	borderRadius={"9999px"}
+																	sx={{
+
+																		backgroundImage: `url('${item.logo}')`,
+																		backgroundPosition: "center",
+																		backgroundRepeat: "no-repeat",
+																		backgroundSize: "cover"
+																	}}
+
+																></Stack>
+																<Stack direction="row" alignItems={"center"} justifyContent={"end"} width={"fit-content"} height={"fit-content"} gap={0.5}>
+																	<Typography variant="body1" align="center" sx={{
+																		color: lightTheme.palette.text.primary,
+																		fontWeight: 700
+																	}}>
+																		{item.name}
+																	</Typography>
+																	<Typography variant="caption" align="center" sx={{
+																		color: "#878787",
+																		fontWeight: 500
+																	}}>
+																		({item.Symbol})
+																	</Typography>
+																</Stack>
+															</Stack>
+															</Link>
+														)
+													})
+												}
+											</Stack>
+											<Stack width={"100%"} height={"fit-content"} marginY={1.5} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+												<Button onClick={() => {
+													//changePWATradeoperation("sell")
+													//router.push('/pwa_trade_console_defi')
+													toggleMainnetCheckbox()
+												}}
+													sx={{
+														width: "50%",
+														paddingY: "1rem",
+														background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+														boxShadow: "none"
+													}}>
+													<Typography variant="h3" component="h3" className="w-full" sx={{
+														color: lightTheme.palette.text.primary,
+														fontSize: "1.6rem",
+														textShadow: "none"
+													}} >
+														Mainnet
+													</Typography>
+												</Button>
+												<Button onClick={() => {
+													//changePWATradeoperation("sell")
+													//router.push('/pwa_trade_console_defi')
+													toggleMainnetCheckbox()
+												}}
+													sx={{
+														width: "50%",
+														paddingY: "1rem",
+														background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+														boxShadow: "none"
+													}}>
+													<Typography variant="h3" component="h3" className="w-full" sx={{
+														color: lightTheme.palette.text.primary,
+														fontSize: "1.6rem",
+														textShadow: "none"
+													}} >
+														Testnet
+													</Typography>
+												</Button>
+											</Stack>
+										</Stack>
+									</Stack>
+								</Sheet.Content>
+							</Sheet.Container>
+							<Sheet.Backdrop />
+						</Sheet>
+						<Sheet
+							isOpen={isToCurrencySheetOpen}
+							onClose={() => setToCurrencySheetOpen(false)}
+							snapPoints={[500, 500, 0, 0]}
+							initialSnap={1}
+						>
+							<Sheet.Container>
+								<Sheet.Header />
+								<Sheet.Content>
+									<Stack direction={"column"} height={"100%"} width={"100%"} alignItems={"center"} justifyContent={"space-between"} paddingX={2} paddingY={2}>
+										<Typography variant="h6" align="center" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 700
+										}}>
+											Swap To
+										</Typography>
+										<Stack direction={"column"} height={"fit-content"} width={"100%"} alignItems={"center"} justifyContent={"end"} gap={1}>
+											<Stack width={"100%"} height={"30vh"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={3} sx={{ overflowY: "scroll", overflowX: "hidden" }}>
+												{
+													mergedCoinList[0].map((item, index) => {
+														return (
+															<Link href="" key={index} className='w-full h-fit flex flex-row items-center justify-center relative z-50' onClick={(event)=>{event.preventDefault(); changeSwapToCur(item); closeToCurrencySheet()}}>
+																<Stack key={index} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+																<Stack
+																	height={"12vw"}
+																	width={"12vw"}
+																	borderRadius={"9999px"}
+																	sx={{
+
+																		backgroundImage: `url('${item.logo}')`,
+																		backgroundPosition: "center",
+																		backgroundRepeat: "no-repeat",
+																		backgroundSize: "cover"
+																	}}
+
+																></Stack>
+																<Stack direction="row" alignItems={"center"} justifyContent={"end"} width={"fit-content"} height={"fit-content"} gap={0.5}>
+																	<Typography variant="body1" align="center" sx={{
+																		color: lightTheme.palette.text.primary,
+																		fontWeight: 700
+																	}}>
+																		{item.name}
+																	</Typography>
+																	<Typography variant="caption" align="center" sx={{
+																		color: "#878787",
+																		fontWeight: 500
+																	}}>
+																		({item.Symbol})
+																	</Typography>
+																</Stack>
+															</Stack>
+															</Link>
+														)
+													})
+												}
+											</Stack>
+											<Stack width={"100%"} height={"fit-content"} marginY={1.5} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+												<Button onClick={() => {
+													//changePWATradeoperation("sell")
+													//router.push('/pwa_trade_console_defi')
+													toggleMainnetCheckbox()
+												}}
+													sx={{
+														width: "50%",
+														paddingY: "1rem",
+														background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+														boxShadow: "none"
+													}}>
+													<Typography variant="h3" component="h3" className="w-full" sx={{
+														color: lightTheme.palette.text.primary,
+														fontSize: "1.6rem",
+														textShadow: "none"
+													}} >
+														Mainnet
+													</Typography>
+												</Button>
+												<Button onClick={() => {
+													//changePWATradeoperation("sell")
+													//router.push('/pwa_trade_console_defi')
+													toggleMainnetCheckbox()
+												}}
+													sx={{
+														width: "50%",
+														paddingY: "1rem",
+														background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+														boxShadow: "none"
+													}}>
+													<Typography variant="h3" component="h3" className="w-full" sx={{
+														color: lightTheme.palette.text.primary,
+														fontSize: "1.6rem",
+														textShadow: "none"
+													}} >
+														Testnet
+													</Typography>
+												</Button>
+											</Stack>
+										</Stack>
+									</Stack>
+
+								</Sheet.Content>
+							</Sheet.Container>
+							<Sheet.Backdrop />
+						</Sheet>
 					</>
 				) : (
 					<>
