@@ -1219,7 +1219,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												<Button onClick={() => {
 													//changePWATradeoperation("sell")
 													//router.push('/pwa_trade_console_defi')
-													toggleMainnetCheckbox()
+													setIsmainnet(true)
 												}}
 													sx={{
 														width: "50%",
@@ -1238,7 +1238,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												<Button onClick={() => {
 													//changePWATradeoperation("sell")
 													//router.push('/pwa_trade_console_defi')
-													toggleMainnetCheckbox()
+													setIsmainnet(false)
 												}}
 													sx={{
 														width: "50%",
@@ -1259,7 +1259,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 									</Stack>
 								</Sheet.Content>
 							</Sheet.Container>
-							<Sheet.Backdrop />
+							<Sheet.Backdrop onTap={closeFromCurrencySheet}/>
 						</Sheet>
 						<Sheet
 							isOpen={isToCurrencySheetOpen}
@@ -1321,7 +1321,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												<Button onClick={() => {
 													//changePWATradeoperation("sell")
 													//router.push('/pwa_trade_console_defi')
-													toggleMainnetCheckbox()
+													setIsmainnet(true)
 												}}
 													sx={{
 														width: "50%",
@@ -1340,7 +1340,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												<Button onClick={() => {
 													//changePWATradeoperation("sell")
 													//router.push('/pwa_trade_console_defi')
-													toggleMainnetCheckbox()
+													setIsmainnet(false)
 												}}
 													sx={{
 														width: "50%",
@@ -1362,7 +1362,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 
 								</Sheet.Content>
 							</Sheet.Container>
-							<Sheet.Backdrop />
+							<Sheet.Backdrop onTap={closeToCurrencySheet} />
 						</Sheet>
 					</>
 				) : (

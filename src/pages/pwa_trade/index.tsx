@@ -88,9 +88,7 @@ export default function PWATrade() {
                     </Typography>
                 </Button>
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} marginTop={'-2.4rem'} direction={"column"} alignItems={"cnter"} justifyContent={"start"} gap={0.5} sx={{
-                overflowY: "scroll"
-            }}>
+            <Stack width={"100%"} height={"fit-content"} marginTop={'-2.4rem'} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
                 {
                     Indices.map((index, key) => {
                         return (
