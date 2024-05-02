@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
 	return (
 		<>
 			<Head>
-				<title>Nex Labs - License</title>
+				<title>Nex Labs - Privacy Policy</title>
 				<meta name="description" content="Nex Labs is reinventing trading with the cutting-edge trade page. Seamlessly swap, trade and invest in innovative indices, and access unique products - all integrated with your wallet for smooth trading." />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
 			>
 
 				<DappNavbar />
-				<section className="w-screen h-fit flex flex-col items-stretch justify-start px-2 lg:px-10 pt-10 pb-12">
+				<section className="w-screen h-fit flex flex-col items-stretch justify-start px-4 lg:px-10 pt-10 pb-12">
 					<h5 className={` text-4xl interBold mb-6 ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Privacy Policy</h5>
 					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
 						Dear users,

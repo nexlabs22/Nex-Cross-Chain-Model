@@ -192,6 +192,68 @@ const MobileFooterSection = () => {
               </div>
             </AccordionItemPanel>
           </AccordionItem>
+          <AccordionItem className="w-full border-none bg-transparent px-0 shadow-none">
+            <AccordionItemHeading className="w-full border-none bg-transparent px-0 shadow-none">
+              <AccordionItemButton className="w-full border-none bg-transparent px-0 shadow-none">
+                <div className="my-6 flex h-fit w-full flex-row items-end justify-between border-b-[1.5px] border-b-white pb-5">
+                  <h5 className="interBold text-2xl text-white md:text-3xl">
+                    Terms & Conditions
+                  </h5>
+                  <svg
+                    width="35"
+                    height="21"
+                    viewBox="0 0 25 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="-rotate-45 md:scale-[1.1] "
+                  >
+                    <path
+                      d="M16.5563 0.556335C16.5563 1.29834 17.2893 2.40634 18.0313 3.33634C18.9853 4.53634 20.1253 5.58334 21.4323 6.38234C22.4123 6.98134 23.6003 7.55634 24.5563 7.55634M24.5563 7.55634C23.6003 7.55634 22.4113 8.13134 21.4323 8.73034C20.1253 9.53034 18.9853 10.5773 18.0313 11.7753C17.2893 12.7063 16.5563 13.8163 16.5563 14.5563M24.5563 7.55634L0.556335 7.55634"
+                      stroke="white"
+                      strokeWidth={1.5}
+                    />
+                  </svg>
+                </div>
+              </AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel className="w-full px-2 py-2">
+              <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
+                <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
+                <Link
+                  href={
+                    "/terms_and_conditions"
+                  }
+                  target="_blank"
+                >
+                  <h5 className="interBold text-xl text-white md:text-3xl">
+                    Terms & Conditions
+                  </h5>
+                </Link>
+              </div>
+              <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
+                <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
+                <Link target="_blank" href={"/privacy_policy"}>
+                  <h5 className="interBold text-xl text-white md:text-3xl">
+                    Privacy Policy
+                  </h5>
+                </Link>
+              </div>
+              <div className="mb-4 flex h-fit w-full flex-row items-center justify-start gap-2 md:mb-6">
+                <div className=" h-2 w-2 rounded-full bg-white md:h-3 md:w-3"></div>
+                <Link
+                  href={
+                    "/us_disclaimer"
+                  }
+                  target="_blank"
+                >
+                  <h5 className="interBold text-xl text-white md:text-3xl">
+                    US Disclaimer
+                  </h5>
+                </Link>
+              </div>
+              
+            </AccordionItemPanel>
+          </AccordionItem>
         </Accordion>
 
         <h5 className="interMedium mb-4 mt-20 text-lg text-white text-center md:text-2xl">
