@@ -23,7 +23,10 @@ const PWASplashScreen = () => {
                         color: "#000000",
                         fontSize: "1.8rem",
                         textShadow: "none",
-                        
+                        width: "100%",
+                        paddingY: "1rem",
+                        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+                        boxShadow: "none"
                     }} >
                         Docs
                     </Typography>
