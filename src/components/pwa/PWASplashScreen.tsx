@@ -17,16 +17,15 @@ const PWASplashScreen = () => {
                 <Button className="pwaConnectWallet" sx={{
                     width: "78%",
                     paddingY: "1.3rem",
-                    borderRadius: "1.2rem"
+                    borderRadius: "1.2rem",
+                    background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+                    boxShadow: "none"
                 }}>
                     <Typography variant="h3" component="h3" className="w-full rounded-3xl" sx={{
                         color: "#000000",
                         fontSize: "1.8rem",
                         textShadow: "none",
-                        width: "100%",
-                        paddingY: "1rem",
-                        background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-                        boxShadow: "none"
+
                     }} >
                         Docs
                     </Typography>
