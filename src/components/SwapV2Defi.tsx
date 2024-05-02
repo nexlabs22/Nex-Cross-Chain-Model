@@ -56,8 +56,62 @@ import { sepoliaTokens } from '@/constants/testnetTokens'
 import { Coin } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 
+import { IOSSwitch, PWAProfileTextField } from "@/theme/overrides";
+import { IoIosArrowBack } from "react-icons/io";
+import { Stack, Container, Box, Paper, Typography, Button, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import { lightTheme } from "@/theme/theme";
+import Link from 'next/link'
 
-const SwapV2Defi = () => {
+const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean }) => {
+
+	const [isStandalone, setIsStandalone] = useState(initialStandalone);
+	const [os, setOs] = useState<String>("")
+	const [browser, setBrowser] = useState<String>("")
+
+	function detectMobileBrowserOS() {
+		const userAgent = navigator.userAgent;
+
+		let browser: string | undefined;
+		let os: string | undefined;
+
+		browser = ""
+		os = ""
+		// Check for popular mobile browsers
+		if (/CriOS/i.test(userAgent)) {
+			browser = 'Chrome';
+		} else if (/FxiOS/i.test(userAgent)) {
+			browser = 'Firefox';
+		} else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) {
+			browser = 'Safari';
+		}
+
+		// Check for common mobile operating systems
+		if (/iP(ad|hone|od)/i.test(userAgent)) {
+			os = 'iOS';
+		} else if (/Android/i.test(userAgent)) {
+			os = 'Android';
+		}
+
+		setOs(os.toString());
+		setBrowser(browser.toString())
+	}
+
+	useEffect(() => {
+		detectMobileBrowserOS()
+	}, [])
+
+	useEffect(() => {
+		// Client-side detection using window.matchMedia (optional)
+		if (typeof window !== 'undefined') {
+			const mediaQuery = window.matchMedia('(display-mode: standalone)');
+			const handleChange = (event: MediaQueryListEvent) => setIsStandalone(event.matches);
+			mediaQuery.addEventListener('change', handleChange);
+			setIsStandalone(mediaQuery.matches); // Set initial client-side state
+			//alert(mediaQuery.matches)
+			return () => mediaQuery.removeEventListener('change', handleChange);
+		}
+	}, []);
+
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
 	const [isChecked, setChecked] = useState(false)
 
@@ -107,7 +161,7 @@ const SwapV2Defi = () => {
 		changeSwapToCur(coinDetails[0])
 	}, [])
 
-	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.indexType ==='defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
+	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
 	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
 	const faucetContract: UseContractResult = useContract(sepoliaTokenFaucet, tokenFaucetAbi)
 
@@ -158,7 +212,7 @@ const SwapV2Defi = () => {
 		async function getIssuanceOutput2() {
 			console.log('getIssuanceOutput2******************')
 			try {
-				if (swapToCur.hasOwnProperty('indexType')  && convertedInputValue) {
+				if (swapToCur.hasOwnProperty('indexType') && convertedInputValue) {
 					console.log('INSIDE ISSUANCE IF CLAUSE: ', swapToCur)
 					const currentPortfolioValue = swapToCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(toTokenTotalSupply.data)
@@ -250,21 +304,21 @@ const SwapV2Defi = () => {
 
 	async function fetchData(tokenDetails: Coin, place: string) {
 		try {
-			const price = await convertToUSD({tokenAddress:tokenDetails.address, tokenDecimals:tokenDetails.decimals}, ethPriceInUsd, isMainnet);
+			const price = await convertToUSD({ tokenAddress: tokenDetails.address, tokenDecimals: tokenDetails.decimals }, ethPriceInUsd, isMainnet);
 			return price as number;
 		} catch (err) {
 			console.error(`Error fetching ${place} price:`, err);
 			throw err; // Rethrow the error for consistent error handling
 		}
 	}
-	
+
 	async function fetchTokenPrices() {
 		try {
 			const [fromPrice, toPrice] = await Promise.all([
 				swapFromCur.Symbol !== 'WETH' && swapFromCur.Symbol !== 'ETH' ? fetchData(swapFromCur, 'From') : ethPriceInUsd,
 				swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH' ? fetchData(swapToCur, 'To') : ethPriceInUsd
 			]);
-	
+
 			setFrom1UsdPrice(fromPrice);
 			setTo1UsdPrice(toPrice);
 		} catch (error) {
@@ -272,11 +326,11 @@ const SwapV2Defi = () => {
 			console.error('Error fetching token prices:', error);
 		}
 	}
-	
+
 	// Call fetchTokenPrices when needed
-	useEffect(()=>{
+	useEffect(() => {
 		fetchTokenPrices();
-	},[swapFromCur,swapToCur,ethPriceInUsd, isMainnet])
+	}, [swapFromCur, swapToCur, ethPriceInUsd, isMainnet])
 
 	useEffect(() => {
 		if (approveHook.isSuccess) {
@@ -351,7 +405,7 @@ const SwapV2Defi = () => {
 			GenericToast({
 				type: 'error',
 				message: `Approving Failed!`,
-			})			
+			})
 		}
 	}, [approveHook.isLoading, approveHook.isSuccess, approveHook.isError])
 
@@ -392,7 +446,7 @@ const SwapV2Defi = () => {
 			GenericToast({
 				type: 'success',
 				message: 'Sent Request Successfully!',
-			})		
+			})
 		} else if (burnRequestHook.isError) {
 			toast.dismiss()
 			GenericToast({
@@ -808,402 +862,592 @@ const SwapV2Defi = () => {
 
 	return (
 		<>
-			<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
-			<div
-				className={`h-fit w-full rounded-xl ${mode == 'dark' ? '' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 py-3`}
-				style={{
-					boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-				}}
-			>
-				<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack mb-3 text-center w-full`}>Buy/Sell</h5>
-				<div className="w-full h-fit flex flex-col items-start justify-start">
-					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  w-1/3`}>You pay</p>
-						<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
-							<p
-								onClick={() => {
-									if (swapFromCur.address == sepoliaWethAddress) {
-										setFirstInputValue('0.00001')
-									} else setFirstInputValue('1')
-								}}
-								className={`text-base lg:text-xs  interBold ${
-									mode == 'dark'
-										? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
-										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
-								} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
-								style={{
-									boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
-									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-								}}
-							>
-								MIN
-							</p>
-							<p
-								// onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2e18).toString())}
-								onClick={() => {
-									setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
-								}}
-								className={`text-base lg:text-xs  interBold ${
-									mode == 'dark'
-										? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
-										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
-								} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
-								style={{
-									boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
-									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-								}}
-							>
-								HALF
-							</p>
-							<p
-								onClick={() => {
-									console.log(Number(getPrimaryBalance()).toString())
-									setFirstInputValue(Number(getPrimaryBalance()).toString())
-								}}
-								className={`text-base lg:text-xs  interBold ${
-									mode == 'dark'
-										? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
-										: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
-								} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
-								style={{
-									boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
-									backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-								}}
-							>
-								MAX
-							</p>
-						</div>
-					</div>
-					<div className="w-full h-fit flex flex-row items-center justify-end gap-1">
-						<input
-							type="text"
-							placeholder="0.00"
-							className={`w-1/2 border-none text-2xl ${
-								mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
-							}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
-							onChange={changeFirstInputValue}
-							value={firstInputValue ? firstInputValue : ''}
-						/>
-						<div
-							className="w-fit lg:w-1/2 gap-2 p-2 h-10 flex flex-row items-center justify-end cursor-pointer"
-							onClick={() => {
-								openFromCurrencyModal()
-							}}
-						>
-							<div className="flex flex-row items-center justify-start w-fit">
-								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
-								<h5 className={`text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBlack pt-1`}>{swapFromCur.Symbol}</h5>
-							</div>
-							{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
-						</div>
-					</div>
-					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
-						<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
-							{isMainnet && <>≈ ${fromConvertedPrice ? FormatToViewNumber({ value: fromConvertedPrice, returnType: 'string' }) : '0.00'}</>}
-						</span>
-						<div className="flex flex-row items-center justify-end gap-1">
-							{mode == 'dark' ? <LiaWalletSolid color="#FFFFFF" size={20} strokeWidth={1.2} /> : <LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />}
+			{
+				isStandalone ? (
+					<>
+						<Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingBottom={4} paddingX={2} bgcolor={lightTheme.palette.background.default}>
+							<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} >
+								<Stack width={"fit-content"} height={"fit-content"} paddingTop={4} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={8}>
+									<Link href={"/pwa_tradeIndex"} className="w-fit h-fit flex flex-row items-center justify-center">
+										<IoIosArrowBack size={30} color={lightTheme.palette.text.primary}></IoIosArrowBack>
+										<Typography variant="body1" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 600,
+											textTransform: "capitalize",
+											marginLeft: "0.8rem",
+											whiteSpace: "nowrap"
+										}}>
+											Trading ANFI
+										</Typography>
+									</Link>
+								</Stack>
 
-							<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
-								{getPrimaryBalance()} {swapFromCur.Symbol}
-							</span>
-						</div>
-					</div>
-				</div>
+							</Stack>
+							<Stack width={"100%"} height={"fit-content"} direction="row" alignItems={"center"} justifyContent={"space-between"} paddingTop={4} paddingBottom={3}>
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 500,
+									fontSize: "0.8rem"
+								}}>
+									You Pay
+								</Typography>
+								<Stack width={"80%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={1}>
+									<Typography variant="caption" sx={{
+										color: lightTheme.palette.text.primary,
+										fontWeight: 600,
+										backgroundColor: lightTheme.palette.pageBackground.main,
+										paddingX: "1.2rem",
+										paddingY: "0.4rem",
+										borderRadius: "1rem",
+										border: "solid 1px rgba(37, 37, 37, 0.5)",
+										boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+									}}>
+										MIN
+									</Typography>
+									<Typography variant="caption" sx={{
+										color: lightTheme.palette.text.primary,
+										fontWeight: 600,
+										backgroundColor: lightTheme.palette.pageBackground.main,
+										paddingX: "1.2rem",
+										paddingY: "0.4rem",
+										borderRadius: "1rem",
+										border: "solid 1px rgba(37, 37, 37, 0.5)",
+										boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+									}}>
+										HALF
+									</Typography>
+									<Typography variant="caption" sx={{
+										color: lightTheme.palette.text.primary,
+										fontWeight: 600,
+										backgroundColor: lightTheme.palette.pageBackground.main,
+										paddingX: "1.2rem",
+										paddingY: "0.4rem",
+										borderRadius: "1rem",
+										border: "solid 1px rgba(37, 37, 37, 0.5)",
+										boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+									}}>
+										MAX
+									</Typography>
+								</Stack>
+							</Stack>
+							<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingX={3}>
+								<Stack width={"50%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"}>
 
-				<div className="w-full my-2 px-2 flex flex-row items-center justify-center">
-					<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
-					<div
-						className={`w-fit h-fit rounded-full mx-3 ${mode == 'dark' ? '  bg-transparent border border-whiteText-500' : 'bg-blackText-500'}  p-2 cursor-pointer`}
-						onClick={() => {
-							Switching()
-						}}
-					>
-						<AiOutlineSwap color="#F2F2F2" size={20} className="rotate-90" />
-					</div>
-					<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
-				</div>
-				<div className="w-full h-fit flex flex-col items-start justify-end">
-					<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  pb-1`}>You Recieve</p>
-					<div className="w-full h-fit flex flex-row items-center justify-end gap-2">
-						<input
-							type="text"
-							placeholder="0.00"
-							className={`w-1/2 border-none text-2xl ${
-								mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
-							}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
-							onChange={changeSecondInputValue}
-							value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue)) : 0}
-						/>
-						<div
-							className="w-fit lg:w-1/2 gap-2 p-2 h-10 flex flex-row items-center justify-end  cursor-pointer"
-							onClick={() => {
-								openToCurrencyModal()
-							}}
-						>
-							<div className="flex flex-row items-center justify-end ">
-								<Image src={swapToCur.logo} alt={swapToCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
-								<h5 className={`text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack pt-1`}>{swapToCur.Symbol}</h5>
-							</div>
-							{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
-						</div>
-					</div>
-					<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
-						<span className={`text-sm interMedium ${mode == 'dark' ? 'text-whiteText-500' : 'text-gray-500'}`}>
-							<span className={`text-sm interMedium ${mode == 'dark' ? 'text-whiteText-500' : 'text-gray-500'}`}>
-								{isMainnet && <>≈ ${toConvertedPrice ? FormatToViewNumber({ value: toConvertedPrice, returnType: 'string' }) : '0.00'}</>}
-							</span>
-						</span>
 
-						<div className="flex flex-row items-center justify-end gap-1">
-							{mode == 'dark' ? <LiaWalletSolid color="#FFFFFF" size={20} strokeWidth={1.2} /> : <LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />}
-							<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
-								{getSecondaryBalance()} {swapToCur.Symbol}
-							</span>
-						</div>
-					</div>
-				</div>
-				<div className="pt-8 flex flex-row w-full items-center justify-between">
-					<div className="flex flex-row items-center gap-2">
-						<Switch onChange={toggleCheckbox} checked={isChecked} height={14} width={35} handleDiameter={20} />
-						<div className="flex flex-row items-center justify-start gap-1">
-							<span className={` ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-700'} interMedium text-sm`}>Fiat payment</span>
-							<span>
-								<GenericTooltip
-									color="#5E869B"
-									content={
-										<div>
-											<p className={`${mode == 'dark' ? 'text-whiteText-500' : 'text-blackText-500'} text-sm interBold mb-2`}>No cryptocurrencies in your wallet? No problem!</p>
-											<p className={`${mode == 'dark' ? 'text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
-												Revolutionize your trading experience with Nex Labs – introducing fiat payments for the first time, providing you seamless and convenient transactions in
-												traditional currencies.
-											</p>
-										</div>
-									}
+									<input type="number" className=" bg-transparent border-none w-1/2 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl" placeholder="0.0" />
+									<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingRight={3}>
+										<Typography variant="subtitle1" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 500,
+											marginTop: ".6rem"
+										}}>
+											≈$0.0
+										</Typography>
+										<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={1} paddingX={3}>
+											<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} className="mt-3" />
+											<Typography variant="subtitle1" sx={{
+												color: lightTheme.palette.text.primary,
+												fontWeight: 600,
+												paddingTop: "1rem"
+											}}>
+												0 USDT
+											</Typography>
+										</Stack>
+									</Stack>
+								</Stack>
+							</Stack>
+							<Stack width={"100%"} paddingX={1} paddingY={2} direction="row" alignItems={"center"} justifyContent={"center"} className="w-full my-2 px-2 flex flex-row items-center justify-center">
+								<Stack width={"40%"} height={"1px"} bgcolor={lightTheme.palette.text.primary}></Stack>
+								<Stack
+									width={"fit-content"} height={"fit-content"} borderRadius={"9999px"} marginX={1.5} border={`solid 1px ${lightTheme.palette.text.primary}`} padding={1}
+									onClick={() => {
+										//Switching()
+									}}
 								>
-									<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
-								</GenericTooltip>
-							</span>
-						</div>
-					</div>
-					<div className={`flex flex-row items-center justify-end`}>
-						<span onClick={() => faucet()} className={` ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-700'} interMedium text-sm cursor-pointer`}>
-							Testnet USDT
-						</span>
-						<GoArrowUpRight color={mode == 'dark' ? '#FFFFFF' : '#252525'} size={20} />
-					</div>
-				</div>
-				<div className="h-fit w-full mt-6">
-					<div className={`w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3`}>
-						{swapToCur.hasOwnProperty('indexType') ? (
-							<>
-								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) && swapFromCur.address != sepoliaWethAddress ? (
-									<button
-										onClick={approve}
-										disabled={isButtonDisabled}
-										className={`text-xl titleShadow interBold ${
-											mode == 'dark'
-												? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
-												: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
-										} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${
-											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-										} hover:bg-colorTwo-500/30`}
-										style={{
-											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+									<AiOutlineSwap color={lightTheme.palette.text.primary} size={20} className="rotate-90" />
+								</Stack>
+								<Stack width={"40%"} height={"1px"} bgcolor={lightTheme.palette.text.primary}></Stack>
+							</Stack>
+							<Stack width={"100%"} height={"fit-content"} direction="row" alignItems={"center"} justifyContent={"space-between"} paddingY={1}>
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 500,
+									fontSize: "0.8rem"
+								}}>
+									You Recieve
+								</Typography>
+
+							</Stack>
+							<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingX={3}>
+								<Stack width={"50%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"}>
+
+
+									<input type="number" className=" bg-transparent border-none w-1/2 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl" placeholder="0.0" />
+									<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingRight={3}>
+										<Typography variant="subtitle1" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 500,
+											marginTop: ".6rem"
+										}}>
+											≈$0.0
+										</Typography>
+										<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={1} paddingX={3}>
+											<LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} className="mt-3" />
+											<Typography variant="subtitle1" sx={{
+												color: lightTheme.palette.text.primary,
+												fontWeight: 600,
+												paddingTop: "1rem"
+											}}>
+												0 ANFI
+											</Typography>
+										</Stack>
+									</Stack>
+								</Stack>
+							</Stack>
+							<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingX={1.5} paddingTop={3}>
+								<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={1}>
+									<IOSSwitch sx={{ m: 1 }} checked={false} onChange={() => { console.log("fiat") }} />
+									<Typography variant="caption" sx={{
+										color: lightTheme.palette.text.primary,
+										fontWeight: 500,
+									}}>
+										FIAT Payment
+									</Typography>
+
+								</Stack>
+								<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={1}>
+									<Typography variant="caption" sx={{
+										color: "#5E869B",
+										fontWeight: 500,
+									}}>
+										Testnet USDT
+									</Typography>
+									<GoArrowUpRight color={"#5E869B"} size={20} />
+								</Stack>
+							</Stack>
+							<Stack width={"100vw"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingX={2.5} paddingTop={3}>
+								<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={1}>
+									<Typography variant="subtitle1" sx={{
+										color: lightTheme.palette.text.primary,
+										fontWeight: 500,
+									}}>
+										Platform Fees
+									</Typography>
+
+								</Stack>
+								<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={1}>
+									<Typography variant="subtitle1" sx={{
+										color: lightTheme.palette.text.primary,
+										fontWeight: 500,
+									}}>
+										1%
+									</Typography>
+								</Stack>
+							</Stack>
+							<Button onClick={() => {
+								//changePWATradeoperation("sell")
+								//router.push('/pwa_trade_console_defi')
+							}}
+								sx={{
+									width: "100%",
+									paddingY: "1rem",
+									background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+									boxShadow: "none",
+									marginTop: "2.4rem"
+								}}>
+								<Typography variant="h3" component="h3" className="w-full" sx={{
+									color: lightTheme.palette.text.primary,
+									fontSize: "1.6rem",
+									textShadow: "none"
+								}} >
+									Mint
+								</Typography>
+							</Button>
+						</Box>
+					</>
+				) : (
+					<>
+						<PaymentModal isOpen={isPaymentModalOpen} onClose={closePaymentModal} />
+						<div
+							className={`h-fit w-full rounded-xl ${mode == 'dark' ? '' : 'shadow shadow-blackText-500'} flex flex-col items-start justify-start px-4 py-3`}
+							style={{
+								boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+							}}
+						>
+							<h5 className={`text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack mb-3 text-center w-full`}>Buy/Sell</h5>
+							<div className="w-full h-fit flex flex-col items-start justify-start">
+								<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
+									<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  w-1/3`}>You pay</p>
+									<div className="w-2/3 h-fit flex flex-row items-center justify-end gap-1 px-2">
+										<p
+											onClick={() => {
+												if (swapFromCur.address == sepoliaWethAddress) {
+													setFirstInputValue('0.00001')
+												} else setFirstInputValue('1')
+											}}
+											className={`text-base lg:text-xs  interBold ${mode == 'dark'
+												? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
+												: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
+												} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+											style={{
+												boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
+												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+											}}
+										>
+											MIN
+										</p>
+										<p
+											// onClick={() => setFirstInputValue((Number(getPrimaryBalance()) / 2e18).toString())}
+											onClick={() => {
+												setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
+											}}
+											className={`text-base lg:text-xs  interBold ${mode == 'dark'
+												? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
+												: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
+												} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+											style={{
+												boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
+												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+											}}
+										>
+											HALF
+										</p>
+										<p
+											onClick={() => {
+												console.log(Number(getPrimaryBalance()).toString())
+												setFirstInputValue(Number(getPrimaryBalance()).toString())
+											}}
+											className={`text-base lg:text-xs  interBold ${mode == 'dark'
+												? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
+												: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
+												} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+											style={{
+												boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
+												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+											}}
+										>
+											MAX
+										</p>
+									</div>
+								</div>
+								<div className="w-full h-fit flex flex-row items-center justify-end gap-1">
+									<input
+										type="text"
+										placeholder="0.00"
+										className={`w-1/2 border-none text-2xl ${mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
+											}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
+										onChange={changeFirstInputValue}
+										value={firstInputValue ? firstInputValue : ''}
+									/>
+									<div
+										className="w-fit lg:w-1/2 gap-2 p-2 h-10 flex flex-row items-center justify-end cursor-pointer"
+										onClick={() => {
+											openFromCurrencyModal()
 										}}
 									>
-										Approve
-									</button>
-								) : (
-									<button
-										onClick={mintRequest}
-										disabled={isButtonDisabled}
-										className={`text-xl titleShadow interBold ${
-											mode == 'dark'
-												? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
-												: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
-										}  active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded-lg ${
-											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-										} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
-										style={{
-											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+										<div className="flex flex-row items-center justify-start w-fit">
+											<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
+											<h5 className={`text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBlack pt-1`}>{swapFromCur.Symbol}</h5>
+										</div>
+										{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
+									</div>
+								</div>
+								<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
+									<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
+										{isMainnet && <>≈ ${fromConvertedPrice ? FormatToViewNumber({ value: fromConvertedPrice, returnType: 'string' }) : '0.00'}</>}
+									</span>
+									<div className="flex flex-row items-center justify-end gap-1">
+										{mode == 'dark' ? <LiaWalletSolid color="#FFFFFF" size={20} strokeWidth={1.2} /> : <LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />}
+
+										<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
+											{getPrimaryBalance()} {swapFromCur.Symbol}
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<div className="w-full my-2 px-2 flex flex-row items-center justify-center">
+								<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
+								<div
+									className={`w-fit h-fit rounded-full mx-3 ${mode == 'dark' ? '  bg-transparent border border-whiteText-500' : 'bg-blackText-500'}  p-2 cursor-pointer`}
+									onClick={() => {
+										Switching()
+									}}
+								>
+									<AiOutlineSwap color="#F2F2F2" size={20} className="rotate-90" />
+								</div>
+								<div className={`${mode == 'dark' ? ' bg-whiteText-500' : 'bg-blackText-500'} w-2/5 h-[1px]`}></div>
+							</div>
+							<div className="w-full h-fit flex flex-col items-start justify-end">
+								<p className={`text-base interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'}  pb-1`}>You Recieve</p>
+								<div className="w-full h-fit flex flex-row items-center justify-end gap-2">
+									<input
+										type="text"
+										placeholder="0.00"
+										className={`w-1/2 border-none text-2xl ${mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
+											}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
+										onChange={changeSecondInputValue}
+										value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue)) : 0}
+									/>
+									<div
+										className="w-fit lg:w-1/2 gap-2 p-2 h-10 flex flex-row items-center justify-end  cursor-pointer"
+										onClick={() => {
+											openToCurrencyModal()
 										}}
 									>
-										Mint
-									</button>
-								)}
-							</>
-						) : (
-							<button
-								onClick={burnRequest}
-								disabled={isButtonDisabled}
-								className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${
-									isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-								} hover:bg-colorTwo-500/30`}
-							>
-								Burn
-							</button>
-						)}
-						{/* <p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
+										<div className="flex flex-row items-center justify-end ">
+											<Image src={swapToCur.logo} alt={swapToCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
+											<h5 className={`text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack pt-1`}>{swapToCur.Symbol}</h5>
+										</div>
+										{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
+									</div>
+								</div>
+								<div className="w-full h-fit flex flex-row items-center justify-between pt-3">
+									<span className={`text-sm interMedium ${mode == 'dark' ? 'text-whiteText-500' : 'text-gray-500'}`}>
+										<span className={`text-sm interMedium ${mode == 'dark' ? 'text-whiteText-500' : 'text-gray-500'}`}>
+											{isMainnet && <>≈ ${toConvertedPrice ? FormatToViewNumber({ value: toConvertedPrice, returnType: 'string' }) : '0.00'}</>}
+										</span>
+									</span>
+
+									<div className="flex flex-row items-center justify-end gap-1">
+										{mode == 'dark' ? <LiaWalletSolid color="#FFFFFF" size={20} strokeWidth={1.2} /> : <LiaWalletSolid color="#5E869B" size={20} strokeWidth={1.2} />}
+										<span className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-500'} `}>
+											{getSecondaryBalance()} {swapToCur.Symbol}
+										</span>
+									</div>
+								</div>
+							</div>
+							<div className="pt-8 flex flex-row w-full items-center justify-between">
+								<div className="flex flex-row items-center gap-2">
+									<Switch onChange={toggleCheckbox} checked={isChecked} height={14} width={35} handleDiameter={20} />
+									<div className="flex flex-row items-center justify-start gap-1">
+										<span className={` ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-700'} interMedium text-sm`}>Fiat payment</span>
+										<span>
+											<GenericTooltip
+												color="#5E869B"
+												content={
+													<div>
+														<p className={`${mode == 'dark' ? 'text-whiteText-500' : 'text-blackText-500'} text-sm interBold mb-2`}>No cryptocurrencies in your wallet? No problem!</p>
+														<p className={`${mode == 'dark' ? 'text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
+															Revolutionize your trading experience with Nex Labs – introducing fiat payments for the first time, providing you seamless and convenient transactions in
+															traditional currencies.
+														</p>
+													</div>
+												}
+											>
+												<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
+											</GenericTooltip>
+										</span>
+									</div>
+								</div>
+								<div className={`flex flex-row items-center justify-end`}>
+									<span onClick={() => faucet()} className={` ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-700'} interMedium text-sm cursor-pointer`}>
+										Testnet USDT
+									</span>
+									<GoArrowUpRight color={mode == 'dark' ? '#FFFFFF' : '#252525'} size={20} />
+								</div>
+							</div>
+							<div className="h-fit w-full mt-6">
+								<div className={`w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3`}>
+									{swapToCur.hasOwnProperty('indexType') ? (
+										<>
+											{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) && swapFromCur.address != sepoliaWethAddress ? (
+												<button
+													onClick={approve}
+													disabled={isButtonDisabled}
+													className={`text-xl titleShadow interBold ${mode == 'dark'
+														? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
+														: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+														} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+														} hover:bg-colorTwo-500/30`}
+													style={{
+														boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+														backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+													}}
+												>
+													Approve
+												</button>
+											) : (
+												<button
+													onClick={mintRequest}
+													disabled={isButtonDisabled}
+													className={`text-xl titleShadow interBold ${mode == 'dark'
+														? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
+														: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
+														}  active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded-lg ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+														} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+													style={{
+														boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+														backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+													}}
+												>
+													Mint
+												</button>
+											)}
+										</>
+									) : (
+										<button
+											onClick={burnRequest}
+											disabled={isButtonDisabled}
+											className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+												} hover:bg-colorTwo-500/30`}
+										>
+											Burn
+										</button>
+									)}
+									{/* <p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">HALF</p>
 							<p className="text-xs text-blackText-500 pangramMedium bg-gray-200 px-2 pb-1 rounded cursor-pointer hover:bg-colorTwo-500/30">MAX</p> */}
-					</div>
-					{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
+								</div>
+								{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Gas Fees</p>
 						<p className="text-sm pangramLight text-black/70 pb-2">0.01 ETH</p>
 					</div> */}
-					<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
-						<p className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-black/70'}  pb-2`}>Platform Fees</p>
-						<div className="flex flex-row items-center justify-start gap-2">
-							<p className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-black/70'} `}>
-								{FormatToViewNumber({ value: Number(firstInputValue) * feeRate, returnType: 'string' })} {swapFromCur.Symbol} ({feeRate * 100} %)
-							</p>
-							<GenericTooltip
-								color="#5E869B"
-								content={
-									<div>
-										<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
-											Platform fees support ongoing development and security, ensuring a sustainable and innovative decentralized financial ecosystem.
+								<div className="w-full h-fit flex flex-row items-center justify-between mb-1">
+									<p className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-black/70'}  pb-2`}>Platform Fees</p>
+									<div className="flex flex-row items-center justify-start gap-2">
+										<p className={`text-sm interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-black/70'} `}>
+											{FormatToViewNumber({ value: Number(firstInputValue) * feeRate, returnType: 'string' })} {swapFromCur.Symbol} ({feeRate * 100} %)
 										</p>
+										<GenericTooltip
+											color="#5E869B"
+											content={
+												<div>
+													<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
+														Platform fees support ongoing development and security, ensuring a sustainable and innovative decentralized financial ecosystem.
+													</p>
+												</div>
+											}
+										>
+											<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
+										</GenericTooltip>
 									</div>
-								}
-							>
-								<BsInfoCircle color="#5E869B" size={14} className="cursor-pointer" />
-							</GenericTooltip>
-						</div>
-					</div>
-					{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
+								</div>
+								{/* <div className="w-full h-fit flex flex-row items-center justify-between mb-1">
 						<p className="text-sm pangramMedium text-black/70 pb-2">Total Transaction Cost</p>
 						<p className="text-sm pangramLight text-black/70 pb-2">0.02 ETH</p>
 					</div> */}
-				</div>
-			</div>
-			<GenericModal isOpen={isFromCurrencyModalOpen} onRequestClose={closeFromCurrencyModal}>
-				<div className="w-full h-fit px-2">
-					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
-						<button
-							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								isMainnet
-									? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
-									: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
-							} interBold text-xl`}
-							style={{
-								boxShadow: mode == 'dark' && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-								backgroundImage: mode == 'dark' && isMainnet ? `url('${mesh1.src}')` : '',
-							}}
-						>
-							Mainnet
-						</button>
-						<button
-							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								!isMainnet
-									? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
-									: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
-							} interBold text-xl`}
-							style={{
-								boxShadow: mode == 'dark' && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-								backgroundImage: mode == 'dark' && !isMainnet ? `url('${mesh1.src}')` : '',
-							}}
-						>
-							Testnet
-						</button>
-					</div>
+							</div>
+						</div>
+						<GenericModal isOpen={isFromCurrencyModalOpen} onRequestClose={closeFromCurrencyModal}>
+							<div className="w-full h-fit px-2">
+								<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
+									<button
+										onClick={toggleMainnetCheckbox}
+										className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${isMainnet
+											? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
+											: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
+											} interBold text-xl`}
+										style={{
+											boxShadow: mode == 'dark' && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' && isMainnet ? `url('${mesh1.src}')` : '',
+										}}
+									>
+										Mainnet
+									</button>
+									<button
+										onClick={toggleMainnetCheckbox}
+										className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${!isMainnet
+											? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
+											: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
+											} interBold text-xl`}
+										style={{
+											boxShadow: mode == 'dark' && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' && !isMainnet ? `url('${mesh1.src}')` : '',
+										}}
+									>
+										Testnet
+									</button>
+								</div>
 
-					<ReactSearchAutocomplete items={mergedCoinList[0]} formatResult={formatResult} autoFocus className="relative z-50" />
-					<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'}  overflow-hidden my-4 px-2`}>
-						<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'} overflow-y-auto  py-2`} id="coinsList">
-							{mergedCoinList[0].map((item, index) => {
-								return (
-									<div
-										key={index}
-										className={`flex ${
-											item.Symbol == 'eth' || item.Symbol == 'ETH' ? 'hidden' : ''
-										} flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300`}
-										onClick={() => {
-											changeSwapFromCur(item)
-											closeFromCurrencyModal()
+								<ReactSearchAutocomplete items={mergedCoinList[0]} formatResult={formatResult} autoFocus className="relative z-50" />
+								<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'}  overflow-hidden my-4 px-2`}>
+									<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'} overflow-y-auto  py-2`} id="coinsList">
+										{mergedCoinList[0].map((item, index) => {
+											return (
+												<div
+													key={index}
+													className={`flex ${item.Symbol == 'eth' || item.Symbol == 'ETH' ? 'hidden' : ''
+														} flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300`}
+													onClick={() => {
+														changeSwapFromCur(item)
+														closeFromCurrencyModal()
+													}}
+												>
+													<div className="flex flex-row items-center justify-start gap-3">
+														<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
+														<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
+													</div>
+													<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-300'} inter italic`}>{item.Symbol}</h5>
+												</div>
+											)
+										})}
+									</div>
+								</div>
+							</div>
+						</GenericModal>
+						<GenericModal isOpen={isToCurrencyModalOpen} onRequestClose={closeToCurrencyModal}>
+							<div className="w-full h-fit px-2">
+								<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
+									<button
+										onClick={toggleMainnetCheckbox}
+										className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${isMainnet
+											? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
+											: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
+											} interBold text-xl`}
+										style={{
+											boxShadow: mode == 'dark' && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' && isMainnet ? `url('${mesh1.src}')` : '',
 										}}
 									>
-										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
-										</div>
-										<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-300'} inter italic`}>{item.Symbol}</h5>
-									</div>
-								)
-							})}
-						</div>
-					</div>
-				</div>
-			</GenericModal>
-			<GenericModal isOpen={isToCurrencyModalOpen} onRequestClose={closeToCurrencyModal}>
-				<div className="w-full h-fit px-2">
-					<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
-						<button
-							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								isMainnet
-									? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
-									: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
-							} interBold text-xl`}
-							style={{
-								boxShadow: mode == 'dark' && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-								backgroundImage: mode == 'dark' && isMainnet ? `url('${mesh1.src}')` : '',
-							}}
-						>
-							Mainnet
-						</button>
-						<button
-							onClick={toggleMainnetCheckbox}
-							className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-								!isMainnet
-									? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
-									: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
-							} interBold text-xl`}
-							style={{
-								boxShadow: mode == 'dark' && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-								backgroundImage: mode == 'dark' && !isMainnet ? `url('${mesh1.src}')` : '',
-							}}
-						>
-							Testnet
-						</button>
-					</div>
-					<ReactSearchAutocomplete items={mergedCoinList[1]} formatResult={formatResult} autoFocus className="relative z-50" />
-					<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'}  overflow-hidden my-4 px-2`}>
-						<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'} overflow-y-auto  py-2`} id="coinsList">
-							{mergedCoinList[1].map((item, index) => {
-								return (
-									<div
-										key={index}
-										className={`flex ${item.Symbol == 'eth' || item.Symbol == 'ETH' ? 'hidden' : ''} flex-row items-center justify-between mb-5 cursor-pointer`}
-										onClick={() => {
-											changeSwapToCur(item)
-											closeToCurrencyModal()
+										Mainnet
+									</button>
+									<button
+										onClick={toggleMainnetCheckbox}
+										className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${!isMainnet
+											? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
+											: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
+											} interBold text-xl`}
+										style={{
+											boxShadow: mode == 'dark' && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' && !isMainnet ? `url('${mesh1.src}')` : '',
 										}}
 									>
-										<div className="flex flex-row items-center justify-start gap-3">
-											<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
-											<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
-										</div>
-										<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'ext-gray-300'} t inter italic`}>{item.Symbol}</h5>
+										Testnet
+									</button>
+								</div>
+								<ReactSearchAutocomplete items={mergedCoinList[1]} formatResult={formatResult} autoFocus className="relative z-50" />
+								<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'}  overflow-hidden my-4 px-2`}>
+									<div className={`w-full h-fit max-h-[50vh] ${mode == 'dark' ? ' bg-transparent' : 'bg-white'} overflow-y-auto  py-2`} id="coinsList">
+										{mergedCoinList[1].map((item, index) => {
+											return (
+												<div
+													key={index}
+													className={`flex ${item.Symbol == 'eth' || item.Symbol == 'ETH' ? 'hidden' : ''} flex-row items-center justify-between mb-5 cursor-pointer`}
+													onClick={() => {
+														changeSwapToCur(item)
+														closeToCurrencyModal()
+													}}
+												>
+													<div className="flex flex-row items-center justify-start gap-3">
+														<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
+														<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
+													</div>
+													<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'ext-gray-300'} t inter italic`}>{item.Symbol}</h5>
+												</div>
+											)
+										})}
 									</div>
-								)
-							})}
-						</div>
-					</div>
-				</div>
-			</GenericModal>
-			<GenericModal
-				isOpen={cookingModalVisible}
-				onRequestClose={() => {
-					setCookingModalVisible(false)
-				}}
-			>
-				<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
-					{/*
+								</div>
+							</div>
+						</GenericModal>
+						<GenericModal
+							isOpen={cookingModalVisible}
+							onRequestClose={() => {
+								setCookingModalVisible(false)
+							}}
+						>
+							<div className="w-full h-fit px-2 flex flex-col items-center justify-center">
+								{/*
 						<Lottie
 						animationData={cookingAnimation}
 						loop={true}
@@ -1214,12 +1458,16 @@ const SwapV2Defi = () => {
 						}}
 					/>
 						*/}
-					<h5 className="InterBold text-blackText-500 text-2xl text-center w-full -mt-6">THE MAGIC IS HAPPENING...</h5>
-					<h5 className="interMedium text-blackText-500 text-lg text-center w-9/12 my-2">
-						Your NFT receipt is being minted. Once it is ready, you can find it the {'"'}Receipts{'"'} section.
-					</h5>
-				</div>
-			</GenericModal>
+								<h5 className="InterBold text-blackText-500 text-2xl text-center w-full -mt-6">THE MAGIC IS HAPPENING...</h5>
+								<h5 className="interMedium text-blackText-500 text-lg text-center w-9/12 my-2">
+									Your NFT receipt is being minted. Once it is ready, you can find it the {'"'}Receipts{'"'} section.
+								</h5>
+							</div>
+						</GenericModal>
+					</>
+				)
+			}
+
 		</>
 	)
 }
