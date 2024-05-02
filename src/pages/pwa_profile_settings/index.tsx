@@ -82,9 +82,7 @@ export default function PWAProfileSettings() {
 			const usersRef = ref(database, 'users/')
 			onValue(usersRef, (snapshot) => {
 				const users = snapshot.val()
-                console.log("users : "+users)
 				for (const key in users) {
-					console.log(users[key])
 					const potentialUser: User = users[key]
 					if (address && potentialUser.main_wallet == address) {
 						setConnectedUser(potentialUser)
@@ -103,7 +101,7 @@ export default function PWAProfileSettings() {
 	}, [address])
 
     useEffect(() => {
-		console.log("connected user : "+connectedUser)
+		console.log("connected user : "+connectedUser?.inst_name)
 	}, [])
 
 	function saveSettings() {
@@ -149,7 +147,7 @@ export default function PWAProfileSettings() {
                         color: lightTheme.palette.text.primary,
                         fontWeight: 500,
                     }}>
-                        Retailer
+                        Retailer 
                     </Typography>
                     <IOSSwitch sx={{ m: 1 }} defaultChecked={false} onChange={changeType} />
                     <Typography variant="caption" sx={{
@@ -167,20 +165,11 @@ export default function PWAProfileSettings() {
                             fontWeight: 700,
                             marginTop: "1rem"
                         }}>
-                            First Name
+                            Name
                         </Typography>
-                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth sx={{color: lightTheme.palette.text.primary,}} />
+                        <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.name} onChange={(event)=>{setName(event.target.value)}} fullWidth />
                     </Stack>
-                    <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
-                        <Typography variant="body1" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 700,
-                            marginTop: "1rem"
-                        }}>
-                            Last Name
-                        </Typography>
-                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
-                    </Stack>
+                    
                     <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
                         <Typography variant="body1" sx={{
                             color: lightTheme.palette.text.primary,
@@ -189,7 +178,7 @@ export default function PWAProfileSettings() {
                         }}>
                             Email
                         </Typography>
-                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                        <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.email} onChange={(event)=>{setEmail(event.target.value)}} fullWidth />
                     </Stack>
                     <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
                         <Typography variant="body1" sx={{
@@ -219,7 +208,7 @@ export default function PWAProfileSettings() {
                         }}>
                             Legal Entity Name
                         </Typography>
-                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                        <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.inst_name} onChange={(event)=>{setInstName(event.target.value)}} fullWidth />
                     </Stack>
                     <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
                         <Typography variant="body1" sx={{
@@ -231,7 +220,7 @@ export default function PWAProfileSettings() {
                         </Typography>
                         <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"stretch"} justifyContent={"start"} gap={1}>
                             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"}>
-                                <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                                <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.address} onChange={(event)=>{setAdr(event.target.value)}} fullWidth />
                             </Stack>
                         </Stack> 
                     </Stack>
@@ -243,7 +232,7 @@ export default function PWAProfileSettings() {
                         }}>
                             VAT (VAT registration number)
                         </Typography>
-                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                        <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.vatin} onChange={(event)=>{setVatin(event.target.value)}} fullWidth />
                     </Stack>
                     <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
                         <Typography variant="body1" sx={{
@@ -253,7 +242,7 @@ export default function PWAProfileSettings() {
                         }}>
                             Number of Commerce Chamber
                         </Typography>
-                        <TextField id="outlined-basic" color="info" variant="outlined" fullWidth />
+                        <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.vatin} onChange={(event)=>{setVatin(event.target.value)}} fullWidth />
                     </Stack>
                     
                 </Stack>
