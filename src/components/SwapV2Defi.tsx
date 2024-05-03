@@ -156,10 +156,8 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		async function getIssuanceOutput2() {
-			console.log('getIssuanceOutput2******************')
 			try {
 				if (swapToCur.hasOwnProperty('indexType')  && convertedInputValue) {
-					console.log('INSIDE ISSUANCE IF CLAUSE: ', swapToCur)
 					const currentPortfolioValue = swapToCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(toTokenTotalSupply.data)
 					let inputValue
@@ -213,10 +211,8 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		async function getRedemptionOutput2() {
-			console.log('getRedemptionOutput2------------------------------------')
 			try {
-				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {
-					console.log('INSIDE REDEMPTION IF CLAUSE: ', swapFromCur)
+				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {					
 					let outputValue
 					const currentPortfolioValue = swapFromCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(fromTokenTotalSupply.data)
@@ -334,7 +330,6 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		if (approveHook.isLoading) {
-			console.log()
 			toast.dismiss()
 			GenericToast({
 				type: 'loading',
@@ -370,7 +365,6 @@ const SwapV2Defi = () => {
 			})
 		} else if (mintRequestHook.isError || mintRequestEthHook.isError) {
 			toast.dismiss()
-			console.log(mintRequestHook.error)
 			GenericToast({
 				type: 'error',
 				message: `Sending Request Failed!`,
@@ -380,7 +374,6 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		if (burnRequestHook.isLoading) {
-			console.log()
 			toast.dismiss()
 
 			GenericToast({
@@ -703,10 +696,6 @@ const SwapV2Defi = () => {
 				}
 			}
 		} catch (error) {
-			console.log(parseEther(Number(firstInputValue).toString()))
-			// console.log(parseEther(Number(firstInputValue)))
-			console.log(Number(firstInputValue))
-			console.log(firstInputValue)
 			console.log('mint error', error)
 		}
 	}
@@ -769,8 +758,7 @@ const SwapV2Defi = () => {
 						type: 'error',
 						message: `Please enter amount you want to burn`,
 					})
-				}
-				console.log(swapFromCur)
+				}				
 				if (swapFromCur.indexType === 'defi') {
 					await burnRequestHook.mutateAsync({
 						// args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
@@ -857,7 +845,6 @@ const SwapV2Defi = () => {
 							</p>
 							<p
 								onClick={() => {
-									console.log(Number(getPrimaryBalance()).toString())
 									setFirstInputValue(Number(getPrimaryBalance()).toString())
 								}}
 								className={`text-base lg:text-xs  interBold ${
