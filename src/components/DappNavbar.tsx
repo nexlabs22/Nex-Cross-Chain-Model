@@ -55,7 +55,7 @@ interface User {
 interface DappNavbarProps {
 	lightVersion?: boolean
 	tradeNavbar?: boolean
-}
+} 
 
 const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) => {
 	const { mode, changeMode, setSearchModal, isSearchModalOpen } = useLandingPageStore()
