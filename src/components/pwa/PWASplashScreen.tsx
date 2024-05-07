@@ -30,7 +30,7 @@ const PWASplashScreen = () => {
                             color: "#000000",
                             fontSize: "1.8rem",
                             textShadow: "none",
-
+                            textAlign: "center"
                         }} >
                             Redirecting...
                         </Typography>
