@@ -927,3 +927,13 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+
+@media only screen and (max-width: 480px) {
+  .Toastify__toast-container--bottom-left, .Toastify__toast-container--bottom-center, .Toastify__toast-container--bottom-right {
+      bottom: 2vh !important;
+      transform: translateX(0) !important;
+      width: 90vw !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+  }
+}

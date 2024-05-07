@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 interface ConnectWalletButton {
   tradeNavbarButton?: boolean
 }
-
+ 
 
 const PWAConnectButton: React.FC<ConnectWalletButton> = ({ tradeNavbarButton }) => {
 
@@ -38,9 +38,7 @@ const PWAConnectButton: React.FC<ConnectWalletButton> = ({ tradeNavbarButton }) 
   const { selectedTradingCategory } = useTradePageStore()
   const {mode} = useLandingPageStore()
 
-  useEffect(() => {
-    if(connectionStatus == "connected") router.push("/pwa_index")
-}, [connectionStatus, router])
+  
 
   return (
     <ConnectWallet

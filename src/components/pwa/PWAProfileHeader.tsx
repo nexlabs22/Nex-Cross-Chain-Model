@@ -12,6 +12,10 @@ import { useState, useEffect } from "react";
 import { reduceAddress } from "@/utils/general";
 import GenericAvatar from "../GenericAvatar";
 import PWAGenericAvatar from "./PWAGenericAvatar";
+import { GenericToast } from "../GenericToast";
+import { HiOutlineQrCode } from "react-icons/hi2";
+import Sheet from 'react-modal-sheet';
+import QRCode from 'react-qr-code'
 
 interface User {
 	email: string
@@ -34,27 +38,21 @@ interface User {
 
 const PWAProfileHeader = () => {
 
-    const address = useAddress()
+	const address = useAddress()
 
-    const [isCopied, setIsCopied] = useState(false)
+	const [isCopied, setIsCopied] = useState(false)
+	const [isQRSheetOpen, setIsQRSheetOpen] = useState(false)
+	
 
-	const handleCopy = () => {
-		if (address) {
-			setIsCopied(true)
-			setTimeout(() => setIsCopied(false), 2000) // Reset "copied" state after 2 seconds
-			
-		}
-	}
-
-    const [name, setName] = useState('')
+	const [name, setName] = useState('')
 	const [instName, setInstName] = useState('')
 	const [email, setEmail] = useState('')
-    const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	const [uploadedPPLink, setUploadedPPLink] = useState('none')
 	const [chosenPPType, setChosenPPType] = useState('none')
-    const [connectedUser, setConnectedUser] = useState<User>()
+	const [connectedUser, setConnectedUser] = useState<User>()
 	const [connectedUserId, setConnectedUserId] = useState('')
 
-    useEffect(() => {
+	useEffect(() => {
 		function getUser() {
 			const usersRef = ref(database, 'users/')
 			onValue(usersRef, (snapshot) => {
@@ -72,42 +70,81 @@ const PWAProfileHeader = () => {
 	}, [address])
 
 
-    return (
-        <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"center"} marginY={3} paddingX={2} paddingY={2} borderRadius={"1.2rem"} sx={PWAGradientStack}>
-            {
-                (connectedUser?.ppType == 'identicon' || (connectedUser?.ppType == 'identicon' && connectedUser?.ppLink == 'none') ) && address ? <PWAGenericAvatar walletAddress={address}></PWAGenericAvatar> : ""
-            }
-            {
-                connectedUser?.ppType != "identicon" && connectedUser?.ppLink != "" && connectedUser?.ppLink != " " && connectedUser?.ppLink != "none" ? (
-                    <Avatar alt="user profile image" src={connectedUser?.ppLink} sx={{
-                        height: "20vw",
-                        width: "20vw"
-                    }}></Avatar>
-                ) : ("")
-            }
-            
-            <Typography variant="h6" sx={{
-                color: lightTheme.palette.text.primary,
-                fontWeight: 700,
-                marginY: "0.8rem"
-            }}>
-                {connectedUser?.inst_name && connectedUser?.inst_name != "" && connectedUser?.inst_name != " " && connectedUser?.inst_name != "Nex User" ? connectedUser?.inst_name : connectedUser?.name}
-            </Typography>
-            <Typography variant="caption" sx={{
-                color: lightTheme.palette.text.primary,
-                fontWeight: 600,
-            }}>
-                {connectedUser?.email && connectedUser?.email != "" && connectedUser?.email != " " ? connectedUser?.email : "No Connected Email"}
-            </Typography>
-            <Typography variant="caption" sx={{
-                color: lightTheme.palette.text.primary,
-                fontWeight: 600,
-            }}>
-                { address ? reduceAddress(address.toString()) : ""}
-                
-            </Typography>
-        </Stack>
-    )
+	return (
+		<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginTop={3} paddingX={2} paddingY={2} borderRadius={"1.2rem"} sx={PWAGradientStack}>
+			<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"80%"} height={"fit-content"} gap={2}>
+				{
+					(connectedUser?.ppType == 'identicon' || (connectedUser?.ppType == 'identicon' && connectedUser?.ppLink == 'none')) && address ? <PWAGenericAvatar walletAddress={address}></PWAGenericAvatar> : ""
+				}
+				{
+					connectedUser?.ppType != "identicon" && connectedUser?.ppLink != "" && connectedUser?.ppLink != " " && connectedUser?.ppLink != "none" ? (
+						<Avatar alt="user profile image" src={connectedUser?.ppLink} sx={{
+							height: "20vw",
+							width: "20vw"
+						}}></Avatar>
+					) : ("")
+				}
+				<Stack width={"fit-content"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"}>
+					<Typography variant="body1" sx={{
+						color: lightTheme.palette.text.primary,
+						fontWeight: 700,
+					}}>
+						{connectedUser?.inst_name && connectedUser?.inst_name != "" && connectedUser?.inst_name != " " && connectedUser?.inst_name != "Nex User" ? connectedUser?.inst_name : connectedUser?.name}
+					</Typography>
+					<Typography variant="caption" sx={{
+						color: lightTheme.palette.text.primary,
+						fontSize: "0.9rem",
+						fontWeight: 500,
+					}}>
+						{connectedUser?.email && connectedUser?.email != "" && connectedUser?.email != " " ? connectedUser?.email : "No Connected Email"}
+					</Typography>
+					<Typography variant="caption" sx={{
+						color: lightTheme.palette.text.primary,
+						fontSize: "0.9rem",
+						fontWeight: 500,
+					}}>
+						{address ? reduceAddress(address.toString()) : ""}
+
+					</Typography>
+				</Stack>
+			</Stack>
+			<Stack direction={"row"} alignItems={"center"} justifyContent={"center"} width={"20%"} height={"fit-content"}>
+				<HiOutlineQrCode size={50} color={lightTheme.palette.text.primary} onClick={()=>{setIsQRSheetOpen(true)}} />
+
+			</Stack>
+			<Sheet
+                isOpen={isQRSheetOpen}
+                onClose={() => setIsQRSheetOpen(false)}
+                snapPoints={[500, 500, 0, 0]}
+                initialSnap={1}
+            >
+                <Sheet.Container>
+                    <Sheet.Header />
+                    <Sheet.Content>
+                        <Stack direction={"column"} height={"100%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={2}>
+                            <Typography variant="h6" align="center" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 700,
+								marginBottom: "2rem"
+                            }}>
+                                Share Your Address
+                            </Typography>
+
+                            {
+								address ? (
+									<Stack direction={"row"} alignItems={"center"} justifyContent={"center"} width={"fit-content"} height={"fit-content"} bgcolor={"red"}>
+										<QRCode size={256} style={{ height: 'auto', maxWidth: '100%', width: '100%' }} value={address} viewBox={`0 0 256 256`} />
+									</Stack>
+								) : ""
+							}
+                        </Stack>
+                    </Sheet.Content>
+                </Sheet.Container>
+                <Sheet.Backdrop onTap={()=>{setIsQRSheetOpen(false)}} />
+            </Sheet>
+
+		</Stack>
+	)
 }
 
 export default PWAProfileHeader
