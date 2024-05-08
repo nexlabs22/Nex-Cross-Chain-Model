@@ -15,6 +15,8 @@ import { useAddress } from "@thirdweb-dev/react";
 import { reduceAddress } from "@/utils/general";
 import router from "next/router";
 import { GenericToast } from "@/components/GenericToast";
+import PWATopBarGenericAvatar from "@/components/pwa/PWAGenericTopBarAvatar";
+import Sheet from 'react-modal-sheet';
 
 interface User {
     email: string
@@ -57,6 +59,9 @@ export default function PWAProfileSettings() {
         else setIsRetailerAccount(true)
     };
 
+    const [photoOptionSheetOpen, setPhotoOptionSheetOpen] = useState(false)
+    const [photoUploadSheetOpen, setPhotoUploadSheetOpen] = useState(false)
+
     const [option1, setOption1] = useState(false)
     const [option2, setOption2] = useState(false)
     const [option3, setOption3] = useState(false)
@@ -79,6 +84,13 @@ export default function PWAProfileSettings() {
     const [connectedUser, setConnectedUser] = useState<User>()
     const [connectedUserId, setConnectedUserId] = useState('')
 
+    function switchToIdenticon() {
+        update(ref(database, 'users/' + connectedUserId), {
+
+            ppType: "identicon",
+        })
+    }
+
     useEffect(() => {
         function getUser() {
             const usersRef = ref(database, 'users/')
@@ -87,6 +99,7 @@ export default function PWAProfileSettings() {
                 for (const key in users) {
                     const potentialUser: User = users[key]
                     if (address && potentialUser.main_wallet == address) {
+                        console.log(potentialUser.ppLink)
                         setConnectedUser(potentialUser)
                         setIsRetailerAccount(potentialUser.isRetailer)
                         setConnectedUserId(key)
@@ -120,7 +133,7 @@ export default function PWAProfileSettings() {
             ppLink: uploadedPPLink != 'none' ? uploadedPPLink : connectedUser?.ppLink,
             ppType: chosenPPType != 'none' && chosenPPType != connectedUser?.ppType ? chosenPPType : connectedUser?.ppType,
         })
-        
+
         router.push('/pwa_profile')
     }
 
@@ -128,6 +141,29 @@ export default function PWAProfileSettings() {
     return (
         <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
+            {
+                connectedUser?.ppType == 'identicon' && address ? (
+                    <Link href="" onClick={(e) => { e.preventDefault(); setPhotoOptionSheetOpen(true) }} className="w-fit h-fit flex flex-row items-center justify-center">
+                        <Stack width="fit-content" height="fit-content" direction={"row"} alignItems={"center"} justifyContent={"center"} marginY={12} sx={{ scale: "4" }}><PWATopBarGenericAvatar walletAddress={address}></PWATopBarGenericAvatar></Stack>
+                    </Link>
+                ) : (
+                    <Link href="" onClick={(e) => { e.preventDefault(); setPhotoOptionSheetOpen(true) }} className="w-fit h-fit flex flex-row items-center justify-center">
+                        <Stack
+                            width={"40vw"} height={"40vw"} marginTop={8} borderRadius={"9999px"} sx={{
+                                backgroundPosition: "center",
+                                backgroundSize: "cover",
+                                backgroundRepeat: "no-repeat",
+                                border: "solid 1.5px #252525",
+                                backgroundImage:
+                                    uploadedPPLink != 'none' ? `url('${uploadedPPLink}')` : uploadedPPLink == 'none' && connectedUser?.ppType != 'identicon' ? `url('${connectedUser?.ppLink}')` : '',
+                            }}
+                        >
+                        </Stack>
+                    </Link>
+                )
+            }
+
+
             <Stack width={"100%"} height={"fit-content"} paddingTop={5} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,
@@ -308,7 +344,7 @@ export default function PWAProfileSettings() {
                             marginTop: "1.2rem",
                             marginBottom: "6rem"
                         }}
-                        onClick={()=>{saveSettings()}}
+                        onClick={() => { saveSettings() }}
                     >
                         <Typography variant="h3" component="h3" className="w-full rounded-3xl" sx={{
                             color: "#000000",
@@ -321,6 +357,59 @@ export default function PWAProfileSettings() {
                     </Button>
                 </Stack>
             </Stack>
+            <Sheet
+                isOpen={photoOptionSheetOpen}
+                onClose={() => setPhotoOptionSheetOpen(false)}
+                snapPoints={[250, 250, 0, 0]}
+                initialSnap={1}
+            >
+                <Sheet.Container>
+                    <Sheet.Header />
+                    <Sheet.Content className=" flex flex-col items-center justify-center pt-0">
+                        <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} width={"100%"} height={"fit-content"}>
+                            
+                            <Link href={""} className="flex flex-row items-center justify-center w-fit h-fit" onClick={(e)=>{e.preventDefault(); setPhotoOptionSheetOpen(false); setPhotoUploadSheetOpen(true)}}>
+                            <Typography variant="h6" align="center" sx={{
+                                color: lightTheme.palette.text.primary,
+                                fontWeight: 700,
+                                marginTop: "-2rem"
+                            }}>
+                                Upload A New Photo
+                            </Typography>
+                            </Link>
+                            <Stack width={"40%"} height={"1.5px"} bgcolor={"#808080"} marginX={"auto"} marginY={3}></Stack>
+                            <Link href={""} className="flex flex-row items-center justify-center w-fit h-fit" onClick={(e)=>{e.preventDefault(); switchToIdenticon(); setPhotoOptionSheetOpen(false)}}>
+                                <Typography variant="h6" align="center" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 700
+                                }}
+
+                                >
+                                    Use Identicon
+                                </Typography>
+                            </Link>
+                        </Stack>
+                    </Sheet.Content>
+                </Sheet.Container>
+                <Sheet.Backdrop onTap={() => { setPhotoOptionSheetOpen(false) }} />
+            </Sheet>
+            <Sheet
+                isOpen={photoUploadSheetOpen}
+                onClose={() => setPhotoUploadSheetOpen(false)}
+                snapPoints={[400, 400, 0, 0]}
+                initialSnap={1}
+            >
+                <Sheet.Container>
+                    <Sheet.Header />
+                    <Sheet.Content className=" flex flex-col items-center justify-center pt-0">
+                        <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} width={"100%"} height={"fit-content"}>
+                            
+                            
+                        </Stack>
+                    </Sheet.Content>
+                </Sheet.Container>
+                <Sheet.Backdrop onTap={() => { setPhotoUploadSheetOpen(false) }} />
+            </Sheet>
             <PWABottomNav></PWABottomNav>
         </Box>
     )
