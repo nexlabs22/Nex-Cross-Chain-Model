@@ -144,7 +144,7 @@ export default function Trade() {
 		if (address) {
 			getUser()
 		} else {
-			setIsTradePopUpOpen(true)
+			setIsTradePopUpOpen(false)
 		}
 	}, [address, setGlobalConnectedUser])
 
