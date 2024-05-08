@@ -56,7 +56,7 @@ import { GoArrowRight } from 'react-icons/go'
 import { CiExport } from 'react-icons/ci'
 
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
-import NewHistoryTable from '@/components/NewHistoryTable'
+import {NewHistoryTable} from '@/components/NewHistoryTable'
 
 // Firebase :
 import { getDatabase, ref, onValue, set, update } from 'firebase/database'

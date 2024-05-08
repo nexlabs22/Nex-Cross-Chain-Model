@@ -61,7 +61,7 @@ import TopHolders from '@/components/topHolders'
 import { reduceAddress } from '@/utils/general'
 import { GoArrowRight } from 'react-icons/go'
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
-import NewHistoryTable from '@/components/NewHistoryTable'
+import {NewHistoryTable} from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
 
 // Firebase :

@@ -17,7 +17,7 @@ import { SiBinance, SiRipple, SiTether } from "react-icons/si";
 import { FaEthereum } from "react-icons/fa";
 import { GrBitcoin } from "react-icons/gr";
 import { GiMetalBar } from "react-icons/gi";
-
+import HistoryTable from "@/components/TradeTable";
 import { ReactElement, useEffect, useState } from "react";
 import Sheet from 'react-modal-sheet';
 
@@ -577,6 +577,7 @@ export default function PWATradeIndex() {
                     </Typography>
                 </Stack>
             </Stack>
+            <HistoryTable></HistoryTable>
             <Sheet
                 isOpen={isSheetOpen}
                 onClose={() => setSheetOpen(false)}

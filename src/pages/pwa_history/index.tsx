@@ -5,7 +5,7 @@ import Image from "next/image";
 import PWATopBar from "@/components/pwa/PWATopBar";
 import PWABottomNav from "@/components/pwa/PWABottomNav";
 import PWAProfileHistoryList from "@/components/pwa/PWAProfileHistory";
-import NewHistoryTable from "@/components/NewHistoryTable";
+import {NewHistoryTable} from "@/components/NewHistoryTable";
 
 
 export default function PWAProfileHistory() {
