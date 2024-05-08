@@ -17,6 +17,8 @@ import router from "next/router";
 import { GenericToast } from "@/components/GenericToast";
 import PWATopBarGenericAvatar from "@/components/pwa/PWAGenericTopBarAvatar";
 import Sheet from 'react-modal-sheet';
+import { UploadDropzone } from 'react-uploader'
+import { Uploader } from 'uploader'
 
 interface User {
     email: string
@@ -41,6 +43,11 @@ export default function PWAProfileSettings() {
 
     const address = useAddress()
 
+
+    const uploader = Uploader({
+		apiKey: 'free', // Get production API keys from Bytescale
+	})
+	const ImageUploaderOptions = { multi: false }
 
     const [isCopied, setIsCopied] = useState(false)
 
@@ -89,6 +96,10 @@ export default function PWAProfileSettings() {
 
             ppType: "identicon",
         })
+    }
+
+    function uploadPhoto(){
+
     }
 
     useEffect(() => {
@@ -403,8 +414,24 @@ export default function PWAProfileSettings() {
                     <Sheet.Header />
                     <Sheet.Content className=" flex flex-col items-center justify-center pt-0">
                         <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} width={"100%"} height={"fit-content"}>
-                            
-                            
+                        <UploadDropzone
+							uploader={uploader}
+							options={ImageUploaderOptions}
+							onUpdate={(files) => {
+								update(ref(database, 'users/' + connectedUserId), {
+                                    ppLink: files.map((x) => x.fileUrl).join('\n'),
+                                    ppType: "image",
+                                })
+                                
+								setPhotoUploadSheetOpen(false)
+								GenericToast({
+									type: 'success',
+									message: "Image uploaded succesfully!",
+								})
+							}}
+							width="600px"
+							height="250px"
+						/>
                         </Stack>
                     </Sheet.Content>
                 </Sheet.Container>
