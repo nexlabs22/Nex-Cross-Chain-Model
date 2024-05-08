@@ -58,6 +58,9 @@ function NewHistoryTable() {
 	const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
 	const assetName = searchQuery.split('=')[1]
 
+	const allowedSymbols = sepoliaTokens.filter((token) => token.isNexlabToken).map((token) => token.Symbol)
+	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
+
 	useEffect(() => {
 		const combinedData = positionHistoryDefi.data.concat(positionHistoryCrosschain.history)
 		setPortfolioData(combinedData)
@@ -66,8 +69,11 @@ function NewHistoryTable() {
 	useEffect(() => {
 		if (path === '/tradeIndex') {
 			const data = activeIndexType === 'defi' ? positionHistoryDefi.data : combinedPositionTableData
-			if (JSON.stringify(data) !== JSON.stringify(positionHistoryData)) {
-				setPositionHistoryData(data)
+			const dataToShow = data.filter((data: { indexName: string }) => {
+				return data.indexName === activeTicker[0]
+			})
+			if (JSON.stringify(dataToShow) !== JSON.stringify(positionHistoryData)) {
+				setPositionHistoryData(dataToShow)
 			}
 		} else if (path === '/portfolio' || path === '/history') {
 			const data = positionHistoryCrosschain.history.concat(positionHistoryDefi.data).sort((a, b) => b.timestamp - a.timestamp)
@@ -254,7 +260,7 @@ function NewHistoryTable() {
 									)}
 									<td className={`px-4 text-left py-3 whitespace-nowrap ${position.outputAmount && position.tokenAddress && mode != 'dark' ? 'text-blackText-500' : 'text-[#F2F2F2]'}`}>
 										<div className="flex flex-row items-center justify-start gap-3 ">
-											{(position.indexName === 'ANFI' || position.indexName === 'CRYPTO5') && (
+											{(allowedSymbols.includes(position.indexName) ) && (
 												<Link title={'View in Etherscan'} className="my-auto" target="_blank" href={`https://sepolia.etherscan.io/tx/${position.txHash}`}>
 													<Image src={etherscan.src} alt="etherscan Logo" width={25} height={25} />
 												</Link>

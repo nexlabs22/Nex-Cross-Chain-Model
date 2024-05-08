@@ -20,6 +20,8 @@ export const sepoliaCrypto5V2IndexToken = "0xA16FEC5964aDE6563624C16d0b2EDeC95bE
 export const mumbaiCrypto5V2Vault = "0x53B8876a23C057630c487D5a7B394EF45e64f2fA"
 export const arbitrumSepoliaCrypto5V2Vault = "0x04fddfb8b2EFaEaFc590505ffF0bA67E408d8A01"
 
+export const sepoliaSciV2IndexToken = "0x82166E2Fc8a641725F2Cc9C43ED04Df664065dA9"
+
 export const goerliAnfiFactory = "0x12A1d813f70025366B31B27582af902141b50484";
 export const goerliCrypto5Factory = "0x8a5e84A1B5e8640222A6Ae5A20B2740A060acCf4";
 export const mumbaiCrypto5V2IndexFactory = "0xe0c7EC4711EEa139Eaa5F04f6549C2dc9b5bF5Cf"
@@ -28,6 +30,7 @@ export const goerliAnfiV2Factory = "0xfb5BBb9a17eA7eFf0dA692EF60f961af49345606";
 export const sepoliaAnfiV2Factory = "0x7427E998D4db46E15f831e4Cff0393Ebb277c637";
 // export const sepoliaCrypto5V2Factory = "0x877E48015097aAeEa3307C309dBc3AABed688Eca"
 export const sepoliaCrypto5V2Factory = "0xCd16eDa751CcC77f780E06B7Af9aeD0E90a51586"
+export const sepoliaSciV2Factory = "0xCEA2034a33704821f6BB218217A334dC3B5e15Cf"
 
 export const mumbaiWmaticAddress = "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889";
 export const arbitrumSepoliaWethAddress = "0xE591bf0A0CF924A0674d7792db046B23CEbF5f34";
@@ -59,6 +62,6 @@ export const exchangeAddresses:{[key:string]: string} = {
     bitfinex: "0x0000000000000000000000000000000000000000",
     bybit: "0x0000000000000000000000000000000000000000"
 } 
-export const factoryAddresses =  { 'ANFI': sepoliaAnfiV2Factory, 'CRYPTO5': sepoliaCrypto5V2Factory }
+export const factoryAddresses:{[key:string]: `0x${string}`} =  { 'ANFI': sepoliaAnfiV2Factory, 'CRYPTO5': sepoliaCrypto5V2Factory, 'SCI': sepoliaSciV2Factory }
 export const goerliTokenAddresses:{[key:string]: string} = {'ANFI': goerliAnfiIndexToken,'CRYPTO5': goerliCrypto5IndexToken, 'USDT': goerliUsdtAddress, 'ETH': goerliWethAddress}
-export const sepoliaTokenAddresses:{[key:string]: string} = {'ANFI': sepoliaAnfiV2IndexToken,'CRYPTO5':sepoliaCrypto5V2IndexToken ,'USDT': sepoliaUsdtAddress, 'ETH': sepoliaWethAddress}
+export const sepoliaTokenAddresses:{[key:string]: string} = {'ANFI': sepoliaAnfiV2IndexToken,'CRYPTO5':sepoliaCrypto5V2IndexToken ,'USDT': sepoliaUsdtAddress, 'ETH': sepoliaWethAddress, 'SCI': sepoliaSciV2IndexToken}

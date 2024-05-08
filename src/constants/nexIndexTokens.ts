@@ -1,6 +1,7 @@
-import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken } from "./contractAddresses";
+import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaSciV2IndexToken } from "./contractAddresses";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
+import sciLogo from '@assets/images/sci.png'
 
 export const nexTokens = [
     {
@@ -18,5 +19,13 @@ export const nexTokens = [
         address: sepoliaCrypto5V2IndexToken,
         decimals: 18,
         logo: cr5Logo.src
-    }
+    },
+    // {
+    //     symbol: 'SCI',
+    //     shortName: 'SCI',
+    //     indexType: 'defi',
+    //     address: sepoliaSciV2IndexToken,
+    //     decimals: 18,
+    //     logo: sciLogo.src
+    // },
 ]

@@ -1,6 +1,7 @@
-import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaUsdtAddress, sepoliaWethAddress } from "./contractAddresses";
+import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaSciV2Factory, sepoliaSciV2IndexToken, sepoliaUsdtAddress, sepoliaWethAddress } from "./contractAddresses";
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
+import sciLogo from '@assets/images/sci.png'
 import { Coin } from "@/types/nexTokenData";
 
 export const goerliTokens = [
@@ -67,7 +68,18 @@ export const sepoliaTokens:Coin[] = [
         factoryAddress: sepoliaCrypto5V2Factory,
         decimals: 18,
         indexType: 'crosschain'
-    }
+    },
+    // {
+    //     id: 4,
+    //     logo: sciLogo.src,
+    //     name: 'SCI',
+    //     Symbol: 'SCI',
+    //     isNexlabToken:true,
+    //     address: sepoliaSciV2IndexToken,
+    //     factoryAddress: sepoliaSciV2Factory,
+    //     decimals: 18,
+    //     indexType: 'defi'
+    // }
 ]
 // export const sepoliaTokens = [
 //     {

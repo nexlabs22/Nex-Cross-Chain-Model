@@ -107,8 +107,8 @@ const SwapV2Defi = () => {
 		changeSwapToCur(coinDetails[0])
 	}, [])
 
-	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
-	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.factoryAddress == sepoliaAnfiV2Factory ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
+	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.indexType ==='defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
+	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
 	const faucetContract: UseContractResult = useContract(sepoliaTokenFaucet, tokenFaucetAbi)
 
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
@@ -129,7 +129,7 @@ const SwapV2Defi = () => {
 
 	const curr = swapFromCur.factoryAddress ? swapFromCur : swapToCur
 	const IndexContract: UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
-	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data / 1000
+	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data / 10000
 
 	const { mode } = useLandingPageStore()
 
@@ -212,7 +212,7 @@ const SwapV2Defi = () => {
 	useEffect(() => {
 		async function getRedemptionOutput2() {
 			try {
-				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {
+				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {					
 					let outputValue
 					const currentPortfolioValue = swapFromCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(fromTokenTotalSupply.data)
@@ -330,7 +330,6 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		if (approveHook.isLoading) {
-			console.log()
 			toast.dismiss()
 			GenericToast({
 				type: 'loading',
@@ -353,7 +352,6 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		if (mintRequestHook.isLoading || mintRequestEthHook.isLoading) {
-			console.log()
 			toast.dismiss()
 			GenericToast({
 				type: 'loading',
@@ -376,7 +374,6 @@ const SwapV2Defi = () => {
 
 	useEffect(() => {
 		if (burnRequestHook.isLoading) {
-			console.log()
 			toast.dismiss()
 
 			GenericToast({
@@ -685,7 +682,7 @@ const SwapV2Defi = () => {
 						// args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
 						args: [swapFromCur.address, parseEther(Number(firstInputValue).toString()), '3'],
 						overrides: {
-							gasLimit: 1000000,
+							gasLimit: 2000000,
 						},
 					})
 				} else {
@@ -726,7 +723,7 @@ const SwapV2Defi = () => {
 						// args: [(Number(firstInputValue) * 1e18).toString()],
 						args: [parseEther(Number(firstInputValue).toString())],
 						overrides: {
-							gasLimit: 1000000,
+							gasLimit: 2000000,
 							value: convertedValue,
 						},
 					})
@@ -761,11 +758,14 @@ const SwapV2Defi = () => {
 						type: 'error',
 						message: `Please enter amount you want to burn`,
 					})
-				}
-				if (swapToCur.indexType === 'defi') {
+				}				
+				if (swapFromCur.indexType === 'defi') {
 					await burnRequestHook.mutateAsync({
 						// args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
 						args: [parseEther(Number(firstInputValue).toString()), swapToCur.address, '3'],
+						overrides: {
+							gasLimit: 2000000,
+						},
 					})
 				} else {
 					await burnRequestHook.mutateAsync({
@@ -792,7 +792,7 @@ const SwapV2Defi = () => {
 		}
 	}
 
-	const isButtonDisabled = isMainnet || (swapFromCur.Symbol !== 'ANFI' && swapFromCur.Symbol !== 'CRYPTO5' && swapToCur.Symbol !== 'ANFI' && swapToCur.Symbol !== 'CRYPTO5') ? true : false
+	const isButtonDisabled = isMainnet || (!swapFromCur.isNexlabToken && !swapToCur.isNexlabToken) ? true : false
 
 	return (
 		<>
@@ -845,7 +845,6 @@ const SwapV2Defi = () => {
 							</p>
 							<p
 								onClick={() => {
-									console.log(Number(getPrimaryBalance()).toString())
 									setFirstInputValue(Number(getPrimaryBalance()).toString())
 								}}
 								className={`text-base lg:text-xs  interBold ${
