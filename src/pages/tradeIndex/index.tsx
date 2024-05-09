@@ -5,8 +5,8 @@ import RecieptsBox from '@/components/RecieptsBox'
 import TradeChartBox from '@/components/TradeChart'
 import NFTReceiptBox from '@/components/NFTReceiptBox'
 import TipsBox from '@/components/TipsBox'
-import HistoryTable from '@/components/TradeTable'
-import {NewHistoryTable} from '@/components/NewHistoryTable'
+// import HistoryTable from '@/components/TradeTable'
+import { NewHistoryTable as HistoryTable} from "@/components/NewHistoryTable";
 import useTradePageStore from '@/store/tradeStore'
 import { useAddress } from '@thirdweb-dev/react'
 import { useRouter } from 'next/router';

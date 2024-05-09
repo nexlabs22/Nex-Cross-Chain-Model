@@ -24,17 +24,19 @@ const PWANexIndices = () => {
         {
             name: "Anti Inflation Index",
             symbol: "ANFI",
+            chartName:'ANFI',
             logo: anfiLogo,
             price: "2453.4",
-            change: "N/A"
+            change: "N/A",
         },
         {
             name: "CRYPTO5",
             symbol: "CR5",
+            chartName:'CRYPTO5',
             logo: cr5Logo,
             price: "784.8",
-            change: "N/A"
-        } 
+            change: "N/A",
+        }
     ];
     const router = useRouter();
 
@@ -102,7 +104,7 @@ const PWANexIndices = () => {
                     Indices.map((index, key) => {
                         return (
                             <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={()=>{
-                                changeSelectedIndex(index.symbol);
+                                changeSelectedIndex(index.chartName);
                                 router.push('/pwa_tradeIndex')
                             }}>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
