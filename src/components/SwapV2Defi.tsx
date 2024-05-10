@@ -215,7 +215,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 	useEffect(() => {
 		async function getIssuanceOutput2() {
 			try {
-				if (swapToCur.hasOwnProperty('indexType') && convertedInputValue) {
+				if (swapToCur.hasOwnProperty('indexType')  && convertedInputValue) {
 					const currentPortfolioValue = swapToCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(toTokenTotalSupply.data)
 					let inputValue
