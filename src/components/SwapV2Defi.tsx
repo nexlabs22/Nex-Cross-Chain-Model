@@ -270,7 +270,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 	useEffect(() => {
 		async function getRedemptionOutput2() {
 			try {
-				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {
+				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {					
 					let outputValue
 					const currentPortfolioValue = swapFromCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(fromTokenTotalSupply.data)
@@ -423,7 +423,6 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 			})
 		} else if (mintRequestHook.isError || mintRequestEthHook.isError) {
 			toast.dismiss()
-			console.log(mintRequestHook.error)
 			GenericToast({
 				type: 'error',
 				message: `Sending Request Failed!`,
@@ -834,7 +833,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 						type: 'error',
 						message: `Please enter amount you want to burn`,
 					})
-				}
+				}				
 				if (swapFromCur.indexType === 'defi') {
 					await burnRequestHook.mutateAsync({
 						// args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
