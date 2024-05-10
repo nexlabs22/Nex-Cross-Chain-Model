@@ -829,6 +829,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
 				} else if (Number(firstInputValue) <= 0) {
+					console.log("testing")
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to burn`,
