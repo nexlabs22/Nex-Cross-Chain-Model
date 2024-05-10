@@ -17,7 +17,8 @@ import { SiBinance, SiRipple, SiTether } from "react-icons/si";
 import { FaEthereum } from "react-icons/fa";
 import { GrBitcoin } from "react-icons/gr";
 import { GiMetalBar } from "react-icons/gi";
-import HistoryTable from "@/components/TradeTable";
+// import HistoryTable from "@/components/TradeTable";
+import { NewHistoryTable as HistoryTable} from "@/components/NewHistoryTable";
 import { ReactElement, useEffect, useState } from "react";
 import Sheet from 'react-modal-sheet';
 
@@ -216,7 +217,7 @@ export default function PWATradeIndex() {
         },
     ]
 
-    const defaultIndexObject = IndicesWithDetails.find((o) => o.shortSymbol === selectedIndex)
+    const defaultIndexObject = IndicesWithDetails.find((o) => o.shortSymbol === selectedIndex || o.symbol === selectedIndex)
 
     const IndexContract: UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
     const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
@@ -225,7 +226,6 @@ export default function PWATradeIndex() {
     if (defaultIndexObject) {
         defaultIndexObject.managementFee = feeRate.toFixed(2)
         defaultIndexObject.totalSupply = num(totalSupply.data).toFixed(2)
-        // console.log(num(totalSupply.data) * defaultIndexObject.mktPrice)
         defaultIndexObject.mktCap = num(totalSupply.data) * defaultIndexObject.mktPrice
     }
 

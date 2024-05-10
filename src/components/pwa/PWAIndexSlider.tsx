@@ -41,6 +41,7 @@ const PWAIndexSLider = () => {
         {
             name: "Anti Inflation Index",
             symbol: "ANFI",
+            chartName:'ANFI',
             logo: anfiLogo,
             price: "2453.4",
             change: "N/A",
@@ -48,6 +49,7 @@ const PWAIndexSLider = () => {
         {
             name: "CRYPTO5",
             symbol: "CR5",
+            chartName:'CRYPTO5',
             logo: cr5Logo,
             price: "784.8",
             change: "N/A",
@@ -108,7 +110,7 @@ const PWAIndexSLider = () => {
                         Indices.map((index, key) => {
                             return (
                                 <Stack key={key} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
-                                    changeSelectedIndex(index.name);
+                                    changeSelectedIndex(index.chartName);
                                     router.push('/pwa_tradeIndex')
                                 }}>
                                     <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
