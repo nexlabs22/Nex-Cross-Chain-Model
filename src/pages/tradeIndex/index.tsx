@@ -6,7 +6,7 @@ import TradeChartBox from '@/components/TradeChart'
 import NFTReceiptBox from '@/components/NFTReceiptBox'
 import TipsBox from '@/components/TipsBox'
 // import HistoryTable from '@/components/TradeTable'
-import HistoryTable from '@/components/NewHistoryTable'
+import { NewHistoryTable as HistoryTable} from "@/components/NewHistoryTable";
 import useTradePageStore from '@/store/tradeStore'
 import { useAddress } from '@thirdweb-dev/react'
 import { useRouter } from 'next/router';
@@ -27,6 +27,7 @@ import { database } from '@/utils/firebase'
 import { useLandingPageStore } from '@/store/store'
 import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
+import Link from 'next/link'
 
 interface User {
 	email: string
@@ -44,6 +45,10 @@ interface User {
 	ppType: string
 	creationDate: string
 	showTradePopUp: boolean
+}
+
+interface NominatimAddress {
+	[key: string]: string;
 }
 
 export default function Trade() {
@@ -69,6 +74,7 @@ export default function Trade() {
 		showTradePopUp: true,
 	})
 	const [connectedUserId, setConnectedUserId] = useState('')
+	const [isUSA, setIsUSA] = useState(false)
 	const [userFound, setUserFound] = useState(false)
 	const { globalConnectedUser, setGlobalConnectedUser } = usePortfolioPageStore()
 
@@ -105,12 +111,13 @@ export default function Trade() {
 	}
 
 	const [showAgain, setShowAgain] = useState(false)
+	const [acceptTerms, setAcceptTerms] = useState(false)
 
 	const router = useRouter();
 
 	async function dontShowAgain() {
 		console.log(connectedUser)
-		if (address) {
+		if (address && showAgain == true && acceptTerms == true) {
 			update(ref(database, 'users/' + connectedUserId), {
 				showTradePopUp: false
 			})
@@ -143,9 +150,39 @@ export default function Trade() {
 		if (address) {
 			getUser()
 		} else {
-			setIsTradePopUpOpen(true)
+			setIsTradePopUpOpen(false)
 		}
 	}, [address, setGlobalConnectedUser])
+
+	async function getCountryFromNominatim(lat: number, lng: number): Promise<string | null> {
+		const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+		const response = await fetch(url);
+
+		if (!response.ok) {
+			throw new Error(`Error fetching country from Nominatim: ${response.statusText}`);
+		}
+
+		const data: NominatimAddress = await response.json();
+
+		if ("address" in data) {
+			if (data.address) {
+				console.log(data.address)
+				setIsUSA(true)
+			}
+		}
+
+		return null;
+	}
+
+	useEffect(() => {
+		if ('geolocation' in navigator) {
+			// Retrieve latitude & longitude coordinates from `navigator.geolocation` Web API
+			navigator.geolocation.getCurrentPosition(({ coords }) => {
+				const { latitude, longitude } = coords;
+				getCountryFromNominatim(latitude, longitude)
+			})
+		}
+	}, []);
 
 	return (
 		<>
@@ -170,9 +207,9 @@ export default function Trade() {
 								selectedTradingCategory == "cefi" ? <SwapV2Cefi /> : <SwapV2Defi />
 							}
 							<div className='flex-grow-1'>
-							{/*<NewTradeComponent />*/}
+								{/*<NewTradeComponent />*/}
 							</div>
-							
+
 						</div>
 					</div>
 				</section>
@@ -187,15 +224,20 @@ export default function Trade() {
 			</main>
 			<GenericModal isOpen={isTradePopUpOpen} onRequestClose={closeTradePopUp}>
 				<div className="w-full h-fit px-3">
-					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Terms & Conditions</h5>
+					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, you should now:</h5>
 					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
-						Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto
-						beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi
-						nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam
-						aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum
-						iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+						Before interacting with the Nex Labs application, reading and understanding the official Nex Labs whitepaper and the applicable general terms and conditions is required.
 					</p>
-					<div className="flex flex-row items-center justify-start gap-1 w-fit h-fit mb-8">
+					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+						Our application is a frontend provided solely as an interface for user convenience in accessing certain decentralized smart contracts and does not represent or imply any responsibility for the underlying code and technology accessed. The application is not responsible for the accessed smart contracts’ accuracy, completeness, or reliability. We cannot guarantee the application’s performance or functionality.
+					</p>
+					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+						Our application is fully decentralized which means that Nex Labs does not own the funds of the user and is not responsible for the functioning of the smart contracts accessed via the application. Nex Labs is also not responsible for any loss or damages to the funds of the users or the functioning of the smart contracts of the application and the possible consequences of the (non) functioning of these smart contracts.
+					</p>
+					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+						The user is aware that crypto assets is a volatile asset and that trading in crypto assets or interacting with crypto assets or smart contracts may bring (financial) risks. Any interaction with the smart contracts, whether through the application or directly, is at the user’s own risk.
+					</p>
+					<div className="flex flex-row items-center justify-start gap-1 w-fit h-fit mb-2">
 						<input
 							type="checkbox"
 							name="showAgain"
@@ -207,6 +249,19 @@ export default function Trade() {
 						/>
 						<p className={`text-xs${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium`}>Don{"'"}t show again</p>
 					</div>
+					<div className="flex flex-row items-center justify-start gap-1 w-fit h-fit mb-8">
+						<input
+							type="checkbox"
+							name="showAgain"
+							id=""
+							checked={acceptTerms}
+							onChange={(e) => {
+								setAcceptTerms(!acceptTerms)
+							}}
+						/>
+						<p className={`text-xs${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium`}>I Accept <Link href="/terms_and_conditions" target='_blank' className='w-fit h-fit inline-flex flex-row items-center justify-start text-gray-300 underline'>Terms & Conditions</Link> , {isUSA ? (<Link href="/us_disclaimer" target='_blank' className='w-fit h-fit inline-flex flex-row items-center justify-start text-gray-300 underline'>US Disclaimer</Link>) : ""} and <Link href="/privacy_policy" target='_blank' className='w-fit h-fit inline-flex flex-row items-center justify-start text-gray-300 underline'>Privacy Policy</Link></p>
+					</div>
+
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-2 mb-2 mt-4">
 						<button
 							onClick={() => {

@@ -66,7 +66,7 @@ import { GoArrowRight } from 'react-icons/go'
 import { CiEdit } from 'react-icons/ci'
 
 import { IoMdArrowUp } from 'react-icons/io'
-import NewHistoryTable from '@/components/NewHistoryTable'
+import {NewHistoryTable} from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
 import Switch from 'react-switch'
 

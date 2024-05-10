@@ -215,6 +215,25 @@ body {
   z-index: 100 !important;
 }
 
+#pwaRibbonBox > div > div{
+  z-index: 100 !important;
+}
+
+#PWANexIndices .szh-menu{
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  border-radius: 0.8rem !important;
+}
+
+#PWAProfileHistory .szh-menu{
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  border-radius: 0.8rem !important;
+}
+
+#PWAPNLChartBox .szh-menu{
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  border-radius: 0.8rem !important;
+}
+
 .darkCCIP{
   background-color: #2A2A2A !important;
   color: #ededed !important;
@@ -360,7 +379,18 @@ body {
   animation: shake 0.5s ease-in-out infinite;
 }
 
+#PWA3DPieChartBox svg{
+  transform: scale(1);
+}
 
+.MuiOutlinedInput-input input{
+  color: #2A2A2A !important;
+
+}
+
+#outlined-basic{
+  color: #2A2A2A !important;
+}
 
 .Toastify__toast-icon div{
   width: fit-content !important;
@@ -531,6 +561,16 @@ body {
   color: #FFFFFF !important;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
 }
+
+.tw-connect-wallet.pwaConnectWallet {
+  font-family: 'interBold' !important;
+  background: linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%) !important;
+  box-shadow: 0 1px 2px 1px rgb(0 0 0 / 0.4) !important;
+  color: #000000 !important;
+}
+
+
+
 
 .disabled {
   cursor: not-allowed;
@@ -820,6 +860,34 @@ body {
   color: #FFFFFF !important;
 }
 
+
+
+#PWAIndexComparisonSlider .slick-list {
+  margin: 0 -10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+#PWAIndexComparisonSlider .slick-slide div:first-child {
+  margin: 0 5px;
+  border-radius: 3rem;
+  position: relative !important;
+}
+
+#PWAIndexComparisonSlider .slick-slide div div.MuiStack-root{
+  display: flex !important;
+}
+
+#PWAIndexSlider .slick-list {
+  margin: 0 -10px;
+}
+
+#PWAIndexSlider .slick-slide div:first-child {
+  margin: 0 5px;
+  border-radius: 15px;
+  position: relative !important;
+}
+
 .darkAutoComplete .sc-gEvEer{
   background-color: #050505 !important;
   border-color: #FFFFFF !important;
@@ -845,6 +913,16 @@ body {
   background-repeat: no-repeat !important;
 }
 
+.tw-connected-wallet.defiButton{
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.pwaConnectWallet{
+ color:  #000000 !important; 
+ text-shadow: none !important;
+}
+
 .ais-SearchBox-input{
   width: 500px;
 }
@@ -853,4 +931,14 @@ body {
   /* width: 520px; */
   margin-left: auto;
   margin-right: auto;
+}
+
+@media only screen and (max-width: 480px) {
+  .Toastify__toast-container--bottom-left, .Toastify__toast-container--bottom-center, .Toastify__toast-container--bottom-right {
+      bottom: 2vh !important;
+      transform: translateX(0) !important;
+      width: 90vw !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+  }
 }

@@ -24,7 +24,7 @@ import Head from 'next/head'
 import bg2 from '@assets/images/bg-2.png'
 import { GoArrowRight } from 'react-icons/go'
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
-import NewHistoryTable from '@/components/NewHistoryTable'
+import {NewHistoryTable} from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
 
 // Firebase :

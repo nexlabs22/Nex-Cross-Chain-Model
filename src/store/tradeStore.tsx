@@ -26,6 +26,12 @@ type TradePageStore = {
 	isToCurrencyModalOpen: boolean
 	setToCurrencyModalOpen: (open: boolean) => void
 
+	isFromCurrencySheetOpen: boolean
+	setFromCurrencySheetOpen: (open: boolean) => void
+
+	isToCurrencySheetOpen: boolean
+	setToCurrencySheetOpen: (open: boolean) => void
+
 	selectedPortfolioChartSliceIndex: string
 	setSelectedPortfolioChartSliceIndex: (index: string) => void
 
@@ -93,6 +99,12 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 
 	isToCurrencyModalOpen: false,
 	setToCurrencyModalOpen: (open: boolean) => set((state) => ({ isToCurrencyModalOpen: open })),
+
+	isFromCurrencySheetOpen: false,
+	setFromCurrencySheetOpen: (open: boolean) => set((state) => ({ isFromCurrencySheetOpen: open })),
+
+	isToCurrencySheetOpen: false,
+	setToCurrencySheetOpen: (open: boolean) => set((state) => ({ isToCurrencySheetOpen: open })),
 
 	isMainnet: false,
 	setIsmainnet: (open: boolean) => set((state) => ({ isMainnet: open })),

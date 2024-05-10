@@ -22,6 +22,15 @@ type LandingPageStore = {
 	defaultIndex: string
 	changeDefaultIndex: (index: string) => void
 
+	selectedIndex: string
+	changeSelectedIndex: (index: string) => void
+
+	selectedComparisonIndices: string[],
+	changeSelectedComparisonIndices: (selected: string[]) => void
+
+	PWATradeoperation: string
+	changePWATradeoperation: (index: string) => void
+
 	mode: Mode
 	changeMode: (index: Mode) => void
 
@@ -47,6 +56,17 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 
 	defaultIndex: 'CRYPTO5',
 	changeDefaultIndex: (index: string) => set((state) => ({ defaultIndex: index })),
+
+	selectedIndex: 'CRYPTO5',
+	changeSelectedIndex: (index: string) => set((state) => ({ selectedIndex: index })),
+
+	selectedComparisonIndices: [],
+	changeSelectedComparisonIndices: (selected: string[]) => set((state) => ({ selectedComparisonIndices: selected })),
+
+	PWATradeoperation: '',
+	changePWATradeoperation: (operation: string) => set((state) => ({ PWATradeoperation: operation })),
+
+	
 	
 	isSearchModalOpen: false,
 	setSearchModal: (val: boolean) => set({ isSearchModalOpen: val }),
@@ -95,6 +115,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	fetchIndexData: async ({ tableName, index }) => {
 		try {
 			set({ loading: true, error: null })
+			const indexData = await fetch('api/getIndexData').then(res => res.json()).catch(err => console.log(err))
 			const response = await fetch(
 				`/api/spotDatabase?indexName=${index}&tableName=${encodeURIComponent(tableName)}`
 			)
@@ -104,8 +125,10 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 
 			set((state) => {
 				if (index === 'OurIndex') {
-					const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
-					const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
+					const anfiIndexPrices = indexData.ANFI;
+					const cr5IndexPrices = indexData.CRYPTO5;
+					// const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
+					// const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
 					const stock5Prices = getIndexData('STOCK5', inputData.data, top5stockmarketcap)
 					return {
 						ANFIData: anfiIndexPrices,

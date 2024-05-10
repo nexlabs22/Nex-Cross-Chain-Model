@@ -12,6 +12,7 @@ import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { VscError } from "react-icons/vsc";
 
 import { GoInfo } from 'react-icons/go'
+import { useEffect, useState } from 'react';
 
 type ToastType = 'success' | 'info' | 'warning' | 'error' | 'loading'
 
@@ -25,7 +26,7 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 		case 'success':
 			toast.success(message, {
 				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2', fontWeight: '900' },
+				style: { color: '#F2F2F2', fontWeight: '900',},
 				icon: <IoIosCheckmarkCircleOutline size={20} color="#5E869B"/>,
 			})
 			break
