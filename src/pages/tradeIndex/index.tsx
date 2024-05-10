@@ -259,7 +259,7 @@ export default function Trade() {
 								setAcceptTerms(!acceptTerms)
 							}}
 						/>
-						<p className={`text-xs${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium`}>I Accept <Link href="/terms_and_conditions" className='w-fit h-fit flex flex-row items-center justify-start text-gray-300 underline'>Terms & Conditions</Link> , {isUSA ? (<Link href="/us_disclaimer" className='w-fit h-fit flex flex-row items-center justify-start text-gray-300 underline'>US Disclaimer</Link>) : ""} and <Link href="/privacy_policy" className='w-fit h-fit flex flex-row items-center justify-start text-gray-300 underline'>Privacy Policy</Link></p>
+						<p className={`text-xs${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium`}>I Accept <Link href="/terms_and_conditions" target='_blank' className='w-fit h-fit inline-flex flex-row items-center justify-start text-gray-300 underline'>Terms & Conditions</Link> , {isUSA ? (<Link href="/us_disclaimer" target='_blank' className='w-fit h-fit inline-flex flex-row items-center justify-start text-gray-300 underline'>US Disclaimer</Link>) : ""} and <Link href="/privacy_policy" target='_blank' className='w-fit h-fit inline-flex flex-row items-center justify-start text-gray-300 underline'>Privacy Policy</Link></p>
 					</div>
 
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-2 mb-2 mt-4">
