@@ -6,7 +6,7 @@ import TradeChartBox from '@/components/TradeChart'
 import NFTReceiptBox from '@/components/NFTReceiptBox'
 import TipsBox from '@/components/TipsBox'
 import HistoryTable from '@/components/TradeTable'
-import {NewHistoryTable} from '@/components/NewHistoryTable'
+import { NewHistoryTable } from '@/components/NewHistoryTable'
 import useTradePageStore from '@/store/tradeStore'
 import { useAddress } from '@thirdweb-dev/react'
 import { useRouter } from 'next/router';
@@ -46,6 +46,10 @@ interface User {
 	showTradePopUp: boolean
 }
 
+interface NominatimAddress {
+	[key: string]: string;
+}
+
 export default function Trade() {
 	const { selectedTradingCategory } = useTradePageStore()
 	const { mode } = useLandingPageStore()
@@ -69,6 +73,7 @@ export default function Trade() {
 		showTradePopUp: true,
 	})
 	const [connectedUserId, setConnectedUserId] = useState('')
+	const [isUSA, setIsUSA] = useState(false)
 	const [userFound, setUserFound] = useState(false)
 	const { globalConnectedUser, setGlobalConnectedUser } = usePortfolioPageStore()
 
@@ -148,6 +153,36 @@ export default function Trade() {
 		}
 	}, [address, setGlobalConnectedUser])
 
+	async function getCountryFromNominatim(lat: number, lng: number): Promise<string | null> {
+		const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+		const response = await fetch(url);
+
+		if (!response.ok) {
+			throw new Error(`Error fetching country from Nominatim: ${response.statusText}`);
+		}
+
+		const data: NominatimAddress = await response.json();
+
+		if ("address" in data) {
+			if (data.address) {
+				console.log(data.address)
+				setIsUSA(true)
+			}
+		}
+
+		return null;
+	}
+
+	useEffect(() => {
+		if ('geolocation' in navigator) {
+			// Retrieve latitude & longitude coordinates from `navigator.geolocation` Web API
+			navigator.geolocation.getCurrentPosition(({ coords }) => {
+				const { latitude, longitude } = coords;
+				getCountryFromNominatim(latitude, longitude)
+			})
+		}
+	}, []);
+
 	return (
 		<>
 			<Head>
@@ -171,9 +206,9 @@ export default function Trade() {
 								selectedTradingCategory == "cefi" ? <SwapV2Cefi /> : <SwapV2Defi />
 							}
 							<div className='flex-grow-1'>
-							{/*<NewTradeComponent />*/}
+								{/*<NewTradeComponent />*/}
 							</div>
-							
+
 						</div>
 					</div>
 				</section>
@@ -190,16 +225,16 @@ export default function Trade() {
 				<div className="w-full h-fit px-3">
 					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, you should now:</h5>
 					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
-					Before interacting with the Nex Labs application, reading and understanding the official Nex Labs whitepaper and the applicable general terms and conditions is required.
+						Before interacting with the Nex Labs application, reading and understanding the official Nex Labs whitepaper and the applicable general terms and conditions is required.
 					</p>
 					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
-					Our application is a frontend provided solely as an interface for user convenience in accessing certain decentralized smart contracts and does not represent or imply any responsibility for the underlying code and technology accessed. The application is not responsible for the accessed smart contracts’ accuracy, completeness, or reliability. We cannot guarantee the application’s performance or functionality.
+						Our application is a frontend provided solely as an interface for user convenience in accessing certain decentralized smart contracts and does not represent or imply any responsibility for the underlying code and technology accessed. The application is not responsible for the accessed smart contracts’ accuracy, completeness, or reliability. We cannot guarantee the application’s performance or functionality.
 					</p>
 					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
-					Our application is fully decentralized which means that Nex Labs does not own the funds of the user and is not responsible for the functioning of the smart contracts accessed via the application. Nex Labs is also not responsible for any loss or damages to the funds of the users or the functioning of the smart contracts of the application and the possible consequences of the (non) functioning of these smart contracts.
+						Our application is fully decentralized which means that Nex Labs does not own the funds of the user and is not responsible for the functioning of the smart contracts accessed via the application. Nex Labs is also not responsible for any loss or damages to the funds of the users or the functioning of the smart contracts of the application and the possible consequences of the (non) functioning of these smart contracts.
 					</p>
 					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
-					The user is aware that crypto assets is a volatile asset and that trading in crypto assets or interacting with crypto assets or smart contracts may bring (financial) risks. Any interaction with the smart contracts, whether through the application or directly, is at the user’s own risk.
+						The user is aware that crypto assets is a volatile asset and that trading in crypto assets or interacting with crypto assets or smart contracts may bring (financial) risks. Any interaction with the smart contracts, whether through the application or directly, is at the user’s own risk.
 					</p>
 					<div className="flex flex-row items-center justify-start gap-1 w-fit h-fit mb-2">
 						<input
@@ -223,8 +258,9 @@ export default function Trade() {
 								setAcceptTerms(!acceptTerms)
 							}}
 						/>
-						<p className={`text-xs${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium`}>I Accept Terms & Conditions, US Disclaimer and Privacy Policy</p>
+						<p className={`text-xs${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium`}>I Accept Terms & Conditions, {isUSA ? "US Disclaimer" : ""} and Privacy Policy</p>
 					</div>
+
 					<div className="w-full h-fit flex flex-row items-center justify-end gap-2 mb-2 mt-4">
 						<button
 							onClick={() => {

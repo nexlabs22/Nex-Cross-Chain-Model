@@ -33,7 +33,6 @@ export default function TermsAndConditions() {
 				<section className="w-screen h-fit flex flex-col items-stretch justify-start px-4 lg:px-10 pt-10 pb-12">
 					<h5 className={` text-4xl interBold mb-6 ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Terms & Conditions</h5>
 					
-					<h5 className={` text-4xl interBold mb-4 mt-4  ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>Terms & Conditions</h5>
 					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
 						1. General
 					</p>
