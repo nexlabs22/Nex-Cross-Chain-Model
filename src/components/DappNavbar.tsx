@@ -25,7 +25,7 @@ import xlogo from '@assets/images/xlogo_s.png'
 
 import { Menu, SubMenu, Item } from 'burger-menu'
 import 'burger-menu/lib/index.css'
-import { useConnectionStatus, useAddress } from '@thirdweb-dev/react'
+import { useConnectionStatus, useAddress, useChainId } from '@thirdweb-dev/react'
 
 // Firebase :
 import { getDatabase, ref, onValue, set, update, push, child } from 'firebase/database'
@@ -33,6 +33,9 @@ import Search from './Search'
 import { database } from '@/utils/firebase'
 import GenericModal from './GenericModal'
 import { PoweredBy } from 'react-instantsearch'
+
+import { useSwitchChain } from "@thirdweb-dev/react";
+import { Goerli, Sepolia } from "@thirdweb-dev/chains";
 
 interface User {
 	email: string
@@ -70,7 +73,20 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 	const [subMenuOpen, setSubMenuOpen] = useState(false)
 
 	const connectionStatus = useConnectionStatus()
+	const chainId = useChainId()
 	const address = useAddress()
+
+	const switchChain = useSwitchChain()
+	
+	useEffect(() => {
+		if (address && chainId !== Sepolia.chainId ) {
+			try{
+				switchChain(Sepolia.chainId)
+			}catch(err){
+				console.log(err)
+			}
+		}
+	}, [address, chainId, switchChain])
 
 	const [connectedUser, setConnectedUser] = useState<User>({
 		name: 'null',
