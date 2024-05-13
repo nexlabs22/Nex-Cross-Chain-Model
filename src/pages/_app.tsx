@@ -27,7 +27,6 @@ import { useEffect } from 'react'
 import useTradePageStore from '@/store/tradeStore'
 import { useChartDataStore } from '@/store/store'
 import TimeTracker from '@/components/googleTimeTracking'
-// import { sepolia } from 'viem/chains'
 
 export default function App({ Component, pageProps }: AppProps) {
 	const { setEthPriceInUsd } = useTradePageStore()
@@ -44,6 +43,9 @@ export default function App({ Component, pageProps }: AppProps) {
 			<TimeTracker />
 			<ThirdwebProvider
 				activeChain={Sepolia}
+				autoConnect={true}
+				autoConnectTimeout={25000}
+				supportedChains={[Sepolia]}
 				clientId="5c5689ef3a7061d2ddbfeeff63b4e8e5"
 				supportedWallets={[
 					metamaskWallet({ recommended: true }),
