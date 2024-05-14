@@ -1,0 +1,60 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/test/MockV3Aggregator.sol",
+    "id": 63476,
+    "exportedSymbols": {
+      "AggregatorInterface": [
+        68263
+      ],
+      "AggregatorV2V3Interface": [
+        68215
+      ],
+      "AggregatorV3Interface": [
+        61316
+      ],
+      "MockV3Aggregator": [
+        67173
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "33:93:26",
+    "nodes": [
+      {
+        "id": 63474,
+        "nodeType": "PragmaDirective",
+        "src": "33:23:26",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 63475,
+        "nodeType": "ImportDirective",
+        "src": "60:66:26",
+        "nodes": [],
+        "absolutePath": "node_modules/@chainlink/contracts/src/v0.8/tests/MockV3Aggregator.sol",
+        "file": "@chainlink/contracts/src/v0.8/tests/MockV3Aggregator.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 63476,
+        "sourceUnit": 67174,
+        "symbolAliases": [],
+        "unitAlias": ""
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 26
+}
