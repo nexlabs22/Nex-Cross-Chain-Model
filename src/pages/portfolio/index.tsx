@@ -479,7 +479,7 @@ export default function Portfolio() {
 
 	const PWAMyAssets = () => {
 		return (
-			<Stack width={"100%"} height={"fit-content"} marginTop={8}>
+			<Stack width={"100%"} height={"fit-content"} marginTop={6}>
 				<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
 					<Typography variant="h6" sx={{
 						color: lightTheme.palette.text.primary,
@@ -565,7 +565,7 @@ export default function Portfolio() {
                                         fontSize: "1rem",
                                         width: "90%"
                                     }}>
-										{Number(asset.totalToken?.toFixed(2)).toLocaleString()} {asset.symbol} (≈${
+										{Number(asset.totalToken?.toFixed(2)).toLocaleString()} (≈${
                                             Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()
                                         })
                                         
