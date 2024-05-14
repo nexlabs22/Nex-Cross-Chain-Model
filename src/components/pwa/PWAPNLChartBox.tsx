@@ -236,8 +236,8 @@ const PWA3DChartBox = () => {
             position: 'right', // Set the legend position to the right
             alignment: 'center', // Horizontally center the legend
         },
-    }
-
+    }    
+    
     return (
         <Stack id="PWAPNLChartBox" width={"100%"} height={"fit-content"} marginTop={0} direction={"column"} alignItems={"center"} justifyContent={"start"}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1} paddingY={2}>
@@ -254,7 +254,6 @@ const PWA3DChartBox = () => {
             <Stack width={"100vw"} height={"25vh"} borderRadius={"1.2rem"} direction={"row"} alignItems={"center"} justifyContent={"center"}>
                 {/*chartType == 'Pie Chart' ? <New3DPieChart data={pieData} /> : <TreemapChart percentage={indexPercent} />*/}
                 <PWA3DPieChart data={pieData} />
-
             </Stack>
         </Stack>
     )
