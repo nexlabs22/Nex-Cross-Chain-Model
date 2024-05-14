@@ -31,7 +31,7 @@ const PWABanner = ({ smallText, bigText, image, link, linkText }: PWABannerProps
                     bigText
                 }
             </Typography>
-            <Link href={linkText} className="w-fit h-fit flex flex-row items-center justify-center">
+            <Link href={link}  className="w-fit h-fit flex flex-row items-center justify-center">
                 <Stack marginTop={3} sx={PWABannerButton}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
