@@ -240,10 +240,11 @@ const PWA3DChartBox = () => {
 
     return (
         <Stack id="PWAPNLChartBox" width={"100%"} height={"fit-content"} marginTop={0} direction={"column"} alignItems={"center"} justifyContent={"start"}>
-            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
+            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1} paddingY={2}>
                 <Typography variant="body1" sx={{
                     color: lightTheme.palette.text.primary,
-                    fontWeight: 600
+                    fontWeight: 600,
+                    marginBottom: "1.2rem"
                 }}>
                     Porftolio Distribution
                 </Typography>
