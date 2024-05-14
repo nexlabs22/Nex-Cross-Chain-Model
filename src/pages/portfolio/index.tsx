@@ -1048,12 +1048,12 @@ export default function Portfolio() {
 					</main>
 				) : (
 					<>
-						<Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+						<Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingTop={4} paddingBottom={10} paddingX={3} bgcolor={lightTheme.palette.background.default}>
 							<PWATopBar></PWATopBar>
 							<PWAProfileOverviewHeader></PWAProfileOverviewHeader>
 							<PWA3DCHARTBOX></PWA3DCHARTBOX>
 							<PWAMyAssets></PWAMyAssets>
-							<PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="" linkText="Learn More"></PWABanner>
+							<PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="/dcaCalculator" linkText="Learn More"></PWABanner>
 							<PWABottomNav></PWABottomNav>
 						</Box>
 					</>

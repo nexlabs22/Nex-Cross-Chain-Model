@@ -24,7 +24,7 @@ export default function PWAOverview() {
             <PWAProfileOverviewHeader></PWAProfileOverviewHeader>
             <PWA3DChartBox></PWA3DChartBox>
             <PWAMyAssets></PWAMyAssets>
-            <PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="" linkText="Learn More"></PWABanner>
+            <PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="dcaCalculator" linkText="Learn More"></PWABanner>
             <PWABottomNav></PWABottomNav>
         </Box>
     )
