@@ -6,7 +6,7 @@ import TradeChartBox from '@/components/TradeChart'
 import NFTReceiptBox from '@/components/NFTReceiptBox'
 import TipsBox from '@/components/TipsBox'
 // import HistoryTable from '@/components/TradeTable'
-import { NewHistoryTable as HistoryTable} from "@/components/NewHistoryTable";
+import { NewHistoryTable as HistoryTable } from "@/components/NewHistoryTable";
 import useTradePageStore from '@/store/tradeStore'
 import { useAddress } from '@thirdweb-dev/react'
 import { useRouter } from 'next/router';
@@ -105,10 +105,12 @@ export default function Trade() {
 	}, [reference])
 
 	const [isTradePopUpOpen, setIsTradePopUpOpen] = useState(false)
+	const [isUSPopUpOpen, setIsUSPopUpOpen] = useState(false)
 
 	function closeTradePopUp() {
 		setIsTradePopUpOpen(!isTradePopUpOpen)
 	}
+
 
 	const [showAgain, setShowAgain] = useState(false)
 	const [acceptTerms, setAcceptTerms] = useState(false)
@@ -154,7 +156,7 @@ export default function Trade() {
 		}
 	}, [address, setGlobalConnectedUser])
 
-	
+
 
 	const [userIP, setUserIP] = useState<string | null>(null);
 	const [userCountry, setUserCountry] = useState<string | null>(null);
@@ -172,10 +174,10 @@ export default function Trade() {
 		fetchIP();
 	}, []);
 	useEffect(() => {
-		if(userCountry && userCountry != null ){
+		if (userCountry && userCountry != null) {
 			const c = (JSON.stringify(userCountry).split(",")[0]).split(":")[1]
 			console.log("country is : " + (JSON.stringify(userCountry).split(",")[0]).split(":")[1])
-			if(c == "us" || c == "US" || c == "usa" || c == "USA") setIsUSA(true)
+			if (c == '"ma"' || c == '"MA"' || c == '"usa"' || c == '"USA"') { setIsUSA(true); setIsUSPopUpOpen(true) }
 		}
 	}, [userCountry])
 
@@ -192,10 +194,14 @@ export default function Trade() {
 			<main className={`flex min-h-screen h-fit w-screen  ${mode == "dark" ? "bg-gradient-to-tl from-[#050505] to-[#050505]" : "bg-whiteBackground-500"} flex-col items-center justify-start`}>
 				<DappNavbar tradeNavbar={true} />
 				<section className="w-full h-fit  flex flex-col lg:flex-row items-center lg:items-stretch justify-start gap-2 p-5">
-					<div className="w-full lg:w-9/12  flex-grow">
+					<div className="w-full lg:w-9/12 flex-grow" style={{
+						opacity: isUSA ? "0.05" : "1"
+					}}>
 						<TradeChartBox />
 					</div>
-					<div className="w-full lg:w-3/12 flex-grow flex flex-col items-stretch justify-start gap-2">
+					<div className="w-full lg:w-3/12 flex-grow flex flex-col items-stretch justify-start gap-2" style={{
+						opacity: isUSA ? "0.05" : "1"
+					}}>
 						<div className="w-full h-fit ">
 							{/* <Swap /> */}
 							{
@@ -208,7 +214,9 @@ export default function Trade() {
 						</div>
 					</div>
 				</section>
-				<section className="w-full h-fit flex flex-col lg:flex-row items-stretch justify-start gap-2 px-5 pb-5">
+				<section className="w-full h-fit flex flex-col lg:flex-row items-stretch justify-start gap-2 px-5 pb-5" style={{
+						opacity: isUSA ? "0.05" : "1"
+					}}>
 					<div className="w-full lg:w-9/12 flex-grow ">
 						<HistoryTable />
 					</div>
@@ -217,7 +225,7 @@ export default function Trade() {
 					</div>
 				</section>
 			</main>
-			<GenericModal isOpen={isTradePopUpOpen} onRequestClose={closeTradePopUp}>
+			<GenericModal isOpen={isTradePopUpOpen && !isUSA} onRequestClose={closeTradePopUp}>
 				<div className="w-full h-fit px-3">
 					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, you should now:</h5>
 					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
@@ -282,6 +290,22 @@ export default function Trade() {
 						</button>
 					</div>
 
+				</div>
+			</GenericModal>
+			<GenericModal isOpen={isUSPopUpOpen} onRequestClose={() => { console.log("") }}>
+				<div className="w-full h-fit px-3">
+					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, we are sorry !</h5>
+					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+						Due to legal restrictions, this service is not currently available to users in the United States.
+					</p>
+					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+						We are working to expand our services and hope to be available in the US soon.
+					</p>
+					<div className='w-full h-fit flex flex-row items-center justify-center gap-6 mt-10 mb-2'>
+						<Link href={"/"} className='text-lg interMedium text-blue-600 underline'>Back to Homepage </Link>
+						<Link href={"/us_disclaimer"} className='text-lg interMedium text-blue-600 underline'>See why</Link>
+
+					</div>
 				</div>
 			</GenericModal>
 		</>
