@@ -55,7 +55,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.vers
 // PWA : 
 import PWATopBar from "@/components/pwa/PWATopBar";
 import PWABottomNav from "@/components/pwa/PWABottomNav";
-import { Stack, Container, Box, Paper, Typography,TextField, Button, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import { Stack, Container, Box, Paper, Typography, TextField, Button, BottomNavigation, BottomNavigationAction } from "@mui/material";
 import { lightTheme } from "@/theme/theme";
 import Sheet from 'react-modal-sheet';
 import Link from 'next/link'
@@ -394,6 +394,13 @@ export default function DCACalculator() {
 	const [indexSheetOpen, setIndexSheetOpen] = useState<boolean>(false)
 	const [startMonthSheetOpen, setStartMonthndexSheetOpen] = useState<boolean>(false)
 	const [endMonthSheetOpen, setEndMonthSheetOpen] = useState<boolean>(false)
+	const [startYearSheetOpen, setStartYearSheetOpen] = useState<boolean>(false)
+	const [endYearSheetOpen, setEndYearSheetOpen] = useState<boolean>(false)
+
+	const years: number[] = [];
+	for (let year = 2000; year <= 2099; year++) {
+		years.push(year);
+	}
 
 	return (
 		<>
@@ -405,35 +412,345 @@ export default function DCACalculator() {
 			{
 				isStandalone ? (
 					<>
-						<PWATopBar></PWATopBar>
-						<Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
-							<Typography variant="caption" sx={{
-								color: lightTheme.palette.text.primary,
-								fontWeight: 700
-							}}>
-								Index:
-							</Typography>
-							<Link href="" onClick={(e) => { e.preventDefault() }} className='w-full h-fit flex flex-row items-center justify-center'>
-								<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-									<Typography variant="h6" sx={{
-										color: lightTheme.palette.text.primary,
-										fontWeight: 500
-									}}>
-										{selectedIndex}
-									</Typography>
-									<GoChevronDown color="#F2F2F2" size={20} />
-								</Stack>
-							</Link>
-							<Typography variant="caption" sx={{
-								color: lightTheme.palette.text.primary,
-								fontWeight: 700
-							}}>
-								Initial Investment
-							</Typography>
-							<TextField id="outlined-basic" color="info" variant="outlined" placeholder={initialAmount.toString()} value={initialAmount} onChange={(event) => { setInitialAmount(Number(event.target.value)) }} fullWidth />
 
+						<Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+							<PWATopBar></PWATopBar>
+							<Stack width="100%" height="fit-content" direction="column" alignItems="start" justifyContent={"start"} paddingY={4} paddingX={1}>
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 700
+								}}>
+									Index:
+								</Typography>
+								<Link href="" onClick={(e) => { e.preventDefault(); setIndexSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
+									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+										<Typography variant="body1" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 700
+										}}>
+											{selectedIndex}
+										</Typography>
+										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
+									</Stack>
+								</Link>
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 700,
+									marginTop: "1rem"
+								}}>
+									Initial Investment
+								</Typography>
+								<TextField id="outlined-basic" color="info" variant="outlined" placeholder={initialAmount.toString()} value={initialAmount} onChange={(event) => { setInitialAmount(Number(event.target.value)) }} fullWidth />
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 700,
+									marginTop: "1rem"
+								}}>
+									Monthly Investment
+								</Typography>
+								<TextField id="outlined-basic" color="info" variant="outlined" placeholder={monthlyInvestment.toString()} value={monthlyInvestment} onChange={(event) => { setMonthlyInvestment(Number(event.target.value)) }} fullWidth />
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 700,
+									marginTop: "1rem"
+								}}>
+									Start Month
+								</Typography>
+								<Link href="" onClick={(e) => { e.preventDefault(); setStartMonthndexSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
+									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+										<Typography variant="body1" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 700
+										}}>
+											{selectedStartMonth}
+										</Typography>
+										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
+									</Stack>
+								</Link>
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 700,
+									marginTop: "1rem"
+								}}>
+									Start Year
+								</Typography>
+								<Link href="" onClick={(e) => { e.preventDefault(); setStartYearSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
+									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+										<Typography variant="body1" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 700
+										}}>
+											{selectedStartYear}
+										</Typography>
+										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
+									</Stack>
+								</Link>
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 700,
+									marginTop: "1rem"
+								}}>
+									End Month
+								</Typography>
+								<Link href="" onClick={(e) => { e.preventDefault(); setEndMonthSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
+									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+										<Typography variant="body1" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 700
+										}}>
+											{selectedEndMonth}
+										</Typography>
+										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
+									</Stack>
+								</Link>
+								<Typography variant="caption" sx={{
+									color: lightTheme.palette.text.primary,
+									fontWeight: 700,
+									marginTop: "1rem"
+								}}>
+									End Year
+								</Typography>
+								<Link href="" onClick={(e) => { e.preventDefault(); setEndYearSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
+									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+										<Typography variant="body1" sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 700
+										}}>
+											{selectedEndYear}
+										</Typography>
+										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
+									</Stack>
+								</Link>
+							</Stack>
+							<Button onClick={() => {
+								
+								handleSubmit()
+							}}
+								sx={{
+									width: "100%",
+									paddingY: "1rem",
+									background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+									boxShadow: "none"
+								}}>
+								<Typography variant="h3" component="h3" className="w-full" sx={{
+									color: lightTheme.palette.text.primary,
+									fontSize: "1.6rem",
+									textShadow: "none"
+								}} >
+									Calculate
+								</Typography>
+							</Button>
+							<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1} marginY={0.5}>
+								<Button onClick={() => {
+									//changePWATradeoperation("sell")
+									//router.push('/pwa_trade_console_defi')
+									exportPdf()
+								}}
+									sx={{
+										width: "50%",
+										paddingY: "1rem",
+										background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+										boxShadow: "none"
+									}}>
+									<Typography variant="subtitle1" component="h3" className="w-full" sx={{
+										color: lightTheme.palette.text.primary,
+										fontSize: "1.4rem",
+										textShadow: "none",
+										fontWeight: 700
+									}} >
+										Export PDF
+									</Typography>
+								</Button>
+								<Button onClick={() => {
+									//changePWATradeoperation("sell")
+									//router.push('/pwa_trade_console_defi')
+								}}
+									sx={{
+										width: "50%",
+										paddingY: "1rem",
+										background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+										boxShadow: "none"
+									}}>
+									<CSVLink
+										data={csvData}
+
+										filename={`${fileName}.csv`}
+										onClick={exportCSV}
+									>
+										<Typography variant="subtitle1" component="h3" className="w-full" sx={{
+											color: lightTheme.palette.text.primary,
+											fontSize: "1.4rem",
+											textShadow: "none",
+											fontWeight: 700
+										}} >
+											Export CSV
+										</Typography>
+									</CSVLink>
+
+								</Button>
+							</Stack>
+							<Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} marginY={1.5}>
+								<DCACalculatorChart data={filteredIndexData} />
+							</Stack>
+							<PWABottomNav></PWABottomNav>
 						</Box>
-						<PWABottomNav></PWABottomNav>
+						<Sheet
+							isOpen={indexSheetOpen}
+							onClose={() => setIndexSheetOpen(false)}
+							snapPoints={[230, 230, 0, 0]}
+							initialSnap={1}
+						>
+							<Sheet.Container>
+								<Sheet.Header />
+								<Sheet.Content>
+									<Stack direction={"column"} height={"100%"} width={"100%"} alignItems={"center"} justifyContent={"center"} paddingX={2} paddingY={2} gap={3}>
+										{
+											indices.map((sub, id) => {
+												return (
+													<Link href="" key={id} onClick={(e) => { e.preventDefault(); selectIndex(sub); setIndexSheetOpen(false) }}>
+														<Typography variant="h6" align="center" sx={{
+															color: lightTheme.palette.text.primary,
+															fontWeight: 700
+														}}>
+															{sub}
+														</Typography>
+													</Link>
+												)
+											})
+										}
+
+
+									</Stack>
+								</Sheet.Content>
+							</Sheet.Container>
+							<Sheet.Backdrop onTap={() => { setIndexSheetOpen(false) }} />
+						</Sheet>
+						<Sheet
+							isOpen={startMonthSheetOpen}
+							onClose={() => setStartMonthndexSheetOpen(false)}
+							snapPoints={[400, 400, 0, 0]}
+							initialSnap={1}
+						>
+							<Sheet.Container>
+								<Sheet.Header />
+								<Sheet.Content>
+									<Stack direction={"column"} height={"90%"} maxHeight={"90%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={2} gap={2} sx={{ overflowY: "scroll" }}>
+										{
+											startMonths.map((sub, id) => {
+												return (
+													<Link href="" key={id} onClick={(e) => { e.preventDefault(); selectStartMonth(sub); setStartMonthndexSheetOpen(false) }}>
+														<Typography variant="h6" align="center" sx={{
+															color: lightTheme.palette.text.primary,
+															fontWeight: 700
+														}}>
+															{sub}
+														</Typography>
+													</Link>
+												)
+											})
+										}
+
+
+									</Stack>
+								</Sheet.Content>
+							</Sheet.Container>
+							<Sheet.Backdrop onTap={() => { setStartMonthndexSheetOpen(false) }} />
+						</Sheet>
+						<Sheet
+							isOpen={startYearSheetOpen}
+							onClose={() => setStartYearSheetOpen(false)}
+							snapPoints={[400, 400, 0, 0]}
+							initialSnap={1}
+						>
+							<Sheet.Container>
+								<Sheet.Header />
+								<Sheet.Content>
+									<Stack direction={"column"} height={"90%"} maxHeight={"90%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={2} gap={2} sx={{ overflowY: "scroll" }}>
+										{
+
+											years.map((year, id) => {
+												return (
+													<Link href="" key={id} onClick={(e) => { e.preventDefault(); selectStartYear(year); setStartYearSheetOpen(false) }}>
+														<Typography variant="h6" align="center" sx={{
+															color: lightTheme.palette.text.primary,
+															fontWeight: 700
+														}}>
+															{year}
+														</Typography>
+													</Link>
+												)
+											})
+										}
+
+
+									</Stack>
+								</Sheet.Content>
+							</Sheet.Container>
+							<Sheet.Backdrop onTap={() => { setStartYearSheetOpen(false) }} />
+						</Sheet>
+						<Sheet
+							isOpen={endMonthSheetOpen}
+							onClose={() => setEndMonthSheetOpen(false)}
+							snapPoints={[400, 400, 0, 0]}
+							initialSnap={1}
+						>
+							<Sheet.Container>
+								<Sheet.Header />
+								<Sheet.Content>
+									<Stack direction={"column"} height={"90%"} maxHeight={"90%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={2} gap={2} sx={{ overflowY: "scroll" }}>
+										{
+											endMonths.map((sub, id) => {
+												return (
+													<Link href="" key={id} onClick={(e) => { e.preventDefault(); selectEndMonth(sub); setEndMonthSheetOpen(false) }}>
+														<Typography variant="h6" align="center" sx={{
+															color: lightTheme.palette.text.primary,
+															fontWeight: 700
+														}}>
+															{sub}
+														</Typography>
+													</Link>
+												)
+											})
+										}
+
+
+									</Stack>
+								</Sheet.Content>
+							</Sheet.Container>
+							<Sheet.Backdrop onTap={() => { setEndMonthSheetOpen(false) }} />
+						</Sheet>
+						<Sheet
+							isOpen={endYearSheetOpen}
+							onClose={() => setEndYearSheetOpen(false)}
+							snapPoints={[400, 400, 0, 0]}
+							initialSnap={1}
+						>
+							<Sheet.Container>
+								<Sheet.Header />
+								<Sheet.Content>
+									<Stack direction={"column"} height={"90%"} maxHeight={"90%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={2} gap={2} sx={{ overflowY: "scroll" }}>
+										{
+
+											years.map((year, id) => {
+												return (
+													<Link href="" key={id} onClick={(e) => { e.preventDefault(); selectEndYear(year); setEndYearSheetOpen(false) }}>
+														<Typography variant="h6" align="center" sx={{
+															color: lightTheme.palette.text.primary,
+															fontWeight: 700
+														}}>
+															{year}
+														</Typography>
+													</Link>
+												)
+											})
+										}
+
+
+									</Stack>
+								</Sheet.Content>
+							</Sheet.Container>
+							<Sheet.Backdrop onTap={() => { setEndYearSheetOpen(false) }} />
+						</Sheet>
 					</>
 				) : (
 					<main className={`m-0 min-h-screen h-fit w-screen ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'} p-0 overflow-x-hidden`}>
