@@ -154,35 +154,30 @@ export default function Trade() {
 		}
 	}, [address, setGlobalConnectedUser])
 
-	async function getCountryFromNominatim(lat: number, lng: number): Promise<string | null> {
-		const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
-		const response = await fetch(url);
+	
 
-		if (!response.ok) {
-			throw new Error(`Error fetching country from Nominatim: ${response.statusText}`);
-		}
-
-		const data: NominatimAddress = await response.json();
-
-		if ("address" in data) {
-			if (data.address) {
-				console.log(data.address)
-				setIsUSA(true)
-			}
-		}
-
-		return null;
-	}
+	const [userIP, setUserIP] = useState<string | null>(null);
+	const [userCountry, setUserCountry] = useState<string | null>(null);
 
 	useEffect(() => {
-		if ('geolocation' in navigator) {
-			// Retrieve latitude & longitude coordinates from `navigator.geolocation` Web API
-			navigator.geolocation.getCurrentPosition(({ coords }) => {
-				const { latitude, longitude } = coords;
-				getCountryFromNominatim(latitude, longitude)
-			})
-		}
+		const fetchIP = async () => {
+			const res = await fetch('https://geo.ipify.org/api/v2/country?apiKey=at_TSpuCBozg2Vp8c1hBp3aEOxpSMABf&format=json'); // Fetch IP from external API
+			const data = await res.json();
+			//console.log(data)
+			setUserIP(data.ip || null); // Set IP or null if unavailable
+			setUserCountry(data.location || null)
+			console.log(data.location)
+		};
+
+		fetchIP();
 	}, []);
+	useEffect(() => {
+		if(userCountry && userCountry != null ){
+			const c = (JSON.stringify(userCountry).split(",")[0]).split(":")[1]
+			console.log("country is : " + (JSON.stringify(userCountry).split(",")[0]).split(":")[1])
+			if(c == "us" || c == "US" || c == "usa" || c == "USA") setIsUSA(true)
+		}
+	}, [userCountry])
 
 	return (
 		<>
