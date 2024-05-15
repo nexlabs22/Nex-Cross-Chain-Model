@@ -225,7 +225,7 @@ export default function Trade() {
 					</div>
 				</section>
 			</main>
-			<GenericModal isOpen={isTradePopUpOpen && !isUSA} onRequestClose={closeTradePopUp}>
+			<GenericModal isOpen={isTradePopUpOpen} onRequestClose={closeTradePopUp}>
 				<div className="w-full h-fit px-3">
 					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, you should now:</h5>
 					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>

@@ -911,11 +911,13 @@ body {
   background-position: center !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
+  box-shadow: 0px 0px 2px 1.5px rgba(91,166,153,0.45) !important;
 }
 
 .tw-connected-wallet.defiButton{
   padding-top: 6px !important;
   padding-bottom: 6px !important;
+  box-shadow: 0px 0px 2px 1.5px rgba(91,166,153,0.45) !important;
 }
 
 .pwaConnectWallet{
