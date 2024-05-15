@@ -583,7 +583,6 @@ export default function Portfolio() {
 	}
 
 
-
 	return (
 		<>
 			<Head>

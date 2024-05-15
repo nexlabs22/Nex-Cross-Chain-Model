@@ -177,7 +177,7 @@ export default function Trade() {
 		if (userCountry && userCountry != null) {
 			const c = (JSON.stringify(userCountry).split(",")[0]).split(":")[1]
 			console.log("country is : " + (JSON.stringify(userCountry).split(",")[0]).split(":")[1])
-			if (c == '"ma"' || c == '"MA"' || c == '"usa"' || c == '"USA"') { setIsUSA(true); setIsUSPopUpOpen(true) }
+			if (c == '"us"' || c == '"US"' || c == '"usa"' || c == '"USA"') { setIsUSA(true); setIsUSPopUpOpen(true) }
 		}
 	}, [userCountry])
 
