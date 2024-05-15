@@ -225,21 +225,25 @@ export default function Trade() {
 					</div>
 				</section>
 			</main>
-			<GenericModal isOpen={isTradePopUpOpen} onRequestClose={closeTradePopUp}>
-				<div className="w-full h-fit px-3">
-					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, you should now:</h5>
-					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+			<GenericModal isOpen={isTradePopUpOpen && !isUSA} onRequestClose={closeTradePopUp}>
+				<div className="w-full h-fit px-3 ">
+				<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, you should now:</h5>
+					<div className='px-2 pb-1 pt-2 w-full h-[45vh] overflow-y-scroll mb-4 bg-whiteBackground-500 rounded-lg'>
+					
+					<p className={`text-sm ${mode == "dark" ? " text-blackText-500" : "text-blackText-500"} interMedium mb-4`}>
 						Before interacting with the Nex Labs application, reading and understanding the official Nex Labs whitepaper and the applicable general terms and conditions is required.
 					</p>
-					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+					<p className={`text-sm ${mode == "dark" ? " text-blackText-500" : "text-blackText-500"} interMedium mb-4`}>
 						Our application is a frontend provided solely as an interface for user convenience in accessing certain decentralized smart contracts and does not represent or imply any responsibility for the underlying code and technology accessed. The application is not responsible for the accessed smart contracts’ accuracy, completeness, or reliability. We cannot guarantee the application’s performance or functionality.
 					</p>
-					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+					<p className={`text-sm ${mode == "dark" ? " text-blackText-500" : "text-blackText-500"} interMedium mb-4`}>
 						Our application is fully decentralized which means that Nex Labs does not own the funds of the user and is not responsible for the functioning of the smart contracts accessed via the application. Nex Labs is also not responsible for any loss or damages to the funds of the users or the functioning of the smart contracts of the application and the possible consequences of the (non) functioning of these smart contracts.
 					</p>
-					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+					<p className={`text-sm ${mode == "dark" ? " text-blackText-500" : "text-blackText-500"} interMedium mb-4`}>
 						The user is aware that crypto assets is a volatile asset and that trading in crypto assets or interacting with crypto assets or smart contracts may bring (financial) risks. Any interaction with the smart contracts, whether through the application or directly, is at the user’s own risk.
 					</p>
+					</div>
+					
 					<div className="flex flex-row items-center justify-start gap-1 w-fit h-fit mb-2">
 						<input
 							type="checkbox"
@@ -292,7 +296,7 @@ export default function Trade() {
 
 				</div>
 			</GenericModal>
-			<GenericModal isOpen={isUSPopUpOpen} onRequestClose={() => { console.log("") }}>
+			<GenericModal isOpen={isUSA} onRequestClose={() => { console.log("") }}>
 				<div className="w-full h-fit px-3">
 					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, we are sorry !</h5>
 					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
