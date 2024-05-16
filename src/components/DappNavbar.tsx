@@ -341,6 +341,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 					style={{
 						backgroundImage: mode == 'dark' ? (tradeNavbar && selectedTradingCategory == 'cefi' ? '' : `url('${mesh1.src}')`) : ``,
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+						padding: address ? "0.83rem" : "0.65rem"
 					}}
 				>
 					{mode == 'light' ? <BsSearch color="#F2F2F2" size={25} /> : <BsSearch color="#F2F2F2" size={25} />}
@@ -354,11 +355,12 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 							: tradeNavbar && selectedTradingCategory == 'cefi'
 							? 'shadow shadow-[#71D5E1] bg-gradient-to-bl from-[#71D5E1] to-[#4992E2]'
 							: 'from-colorFour-500 to-colorSeven-500 shadow-blackText-500 active:shadow-black'
-					} p-3 shadow-sm  active:translate-y-[1px]`}
+					} shadow-sm  active:translate-y-[1px]`}
 					onClick={toggleMode}
 					style={{
 						backgroundImage: mode == 'dark' ? (tradeNavbar && selectedTradingCategory == 'cefi' ? '' : `url('${mesh1.src}')`) : ``,
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+						padding: address ? "0.83rem" : "0.65rem"
 					}}
 				>
 					{mode == 'light' ? <IoSunnyOutline color="#F2F2F2" size={25} /> : <IoMoonOutline color="#F2F2F2" size={25} />}

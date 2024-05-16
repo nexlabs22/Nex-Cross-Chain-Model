@@ -19,6 +19,7 @@ import { Stack, Box, Typography, Button } from "@mui/material";
 import { MainStack } from '@/theme/overrides'
 import PWASplashScreen from '@/components/pwa/PWASplashScreen'
 import { lightTheme } from '@/theme/theme'
+import { useRouter } from 'next/router';
 
 function isStandaloneFromUserAgent(userAgent: string): boolean {
 	// You can check for specific keywords or patterns in the user agent string
@@ -26,23 +27,29 @@ function isStandaloneFromUserAgent(userAgent: string): boolean {
 	return userAgent.includes('(standalone)') || userAgent.includes('(iPhone; standalone)');
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const { req } = context; // Access request object
-	const isStandalone = context.req?.headers['user-agent']; // Get user agent from request headers
 
-	// Implement logic to check for standalone mode based on user agent (might not be foolproof)
-	//const isStandalone = isStandaloneFromUserAgent(userAgent);
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+	const { req } = context;
+	const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	const geo = req; // Assuming geo object is populated by middleware
+
+	//const country = geo?.country || 'US'; // Set default if geo is missing
 
 	return {
 		props: {
-			isStandalone,
+			userIP,
+			//country,
 		},
 	};
 }
 
-const Dashboard: NextPage = ({ initialStandalone = false }: { initialStandalone?: boolean }) => {
+
+
+
+const Dashboard: NextPage = (props) => {
+	
 	const { mode, theme, setTheme } = useLandingPageStore()
-	const [isStandalone, setIsStandalone] = useState(initialStandalone);
+	const [isStandalone, setIsStandalone] = useState(false);
 	const [os, setOs] = useState<String>("")
 	const [browser, setBrowser] = useState<String>("")
 
@@ -104,9 +111,9 @@ const Dashboard: NextPage = ({ initialStandalone = false }: { initialStandalone?
 			{
 				isStandalone ? (
 					<>
-						
+
 						<PWASplashScreen></PWASplashScreen>
-						
+
 					</>
 				) : (
 					<>

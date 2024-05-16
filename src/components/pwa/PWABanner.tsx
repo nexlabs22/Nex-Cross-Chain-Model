@@ -25,22 +25,24 @@ const PWABanner = ({ smallText, bigText, image, link, linkText }: PWABannerProps
             <Typography variant="body1" width={"95%"} sx={{
                 color: lightTheme.palette.text.primary,
                 fontWeight: 600,
-                
+
             }}>
                 {
                     bigText
                 }
             </Typography>
-            <Stack marginTop={3} sx={PWABannerButton}>
-                <Typography variant="caption" sx={{
-                    color: lightTheme.palette.text.primary,
-                    fontWeight: 600
-                }}>
-                    {
-                        linkText
-                    }
-                </Typography>
-            </Stack>
+            <Link href={link}  className="w-fit h-fit flex flex-row items-center justify-center">
+                <Stack marginTop={3} sx={PWABannerButton}>
+                    <Typography variant="caption" sx={{
+                        color: lightTheme.palette.text.primary,
+                        fontWeight: 600
+                    }}>
+                        {
+                            linkText
+                        }
+                    </Typography>
+                </Stack>
+            </Link>
             <Image alt="banner image nex" src={image} className="absolute -bottom-10 -right-5" width={150} height={150}></Image>
         </Stack>
     )

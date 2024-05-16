@@ -22,7 +22,7 @@ import TopHolders from '@/components/topHolders'
 import { reduceAddress } from '@/utils/general'
 import { GoArrowRight, GoChevronDown } from 'react-icons/go'
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
-import {NewHistoryTable} from '@/components/NewHistoryTable'
+import { NewHistoryTable } from '@/components/NewHistoryTable'
 import { useSearchParams } from 'next/navigation'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import { nexTokenDataType } from '@/types/nexTokenData'
@@ -236,50 +236,24 @@ const PWA3DChartBox = () => {
             position: 'right', // Set the legend position to the right
             alignment: 'center', // Horizontally center the legend
         },
-    }
-
+    }    
+    
     return (
         <Stack id="PWAPNLChartBox" width={"100%"} height={"fit-content"} marginTop={0} direction={"column"} alignItems={"center"} justifyContent={"start"}>
-            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
-                <Menu transition menuButton={
-                    <MenuButton className={"w-fit relative z-[100] "}>
-                        <Stack width={"100%"} height={"fit-content"} paddingY={0.5} paddingX={1} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-                            <Typography variant="h6" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 700
-                            }}>
-                                {chartType}
-                            </Typography>
-                            <IoIosArrowDown size={22} color={lightTheme.palette.text.primary}></IoIosArrowDown>
-                        </Stack>
-
-                    </MenuButton>
-                }>
-                    <MenuItem onClick={() => { setChartType("Pie Chart") }}>
-                        <Typography variant="body1" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600
-                        }}>
-                            Pie Chart
-                        </Typography>
-                    </MenuItem>
-                    <MenuItem onClick={() => { setChartType("Treemap") }}>
-                        <Typography variant="body1" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600
-                        }}>
-                            Treemap
-                        </Typography>
-                    </MenuItem>
-
-                </Menu>
+            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1} paddingY={2}>
+                <Typography variant="body1" sx={{
+                    color: lightTheme.palette.text.primary,
+                    fontWeight: 600,
+                    marginBottom: "1.2rem"
+                }}>
+                    Porftolio Distribution
+                </Typography>
 
 
             </Stack>
             <Stack width={"100vw"} height={"25vh"} borderRadius={"1.2rem"} direction={"row"} alignItems={"center"} justifyContent={"center"}>
                 {/*chartType == 'Pie Chart' ? <New3DPieChart data={pieData} /> : <TreemapChart percentage={indexPercent} />*/}
                 <PWA3DPieChart data={pieData} />
-                
             </Stack>
         </Stack>
     )

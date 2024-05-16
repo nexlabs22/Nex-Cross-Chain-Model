@@ -6,7 +6,7 @@ import TradeChartBox from '@/components/TradeChart'
 import NFTReceiptBox from '@/components/NFTReceiptBox'
 import TipsBox from '@/components/TipsBox'
 // import HistoryTable from '@/components/TradeTable'
-import { NewHistoryTable as HistoryTable} from "@/components/NewHistoryTable";
+import { NewHistoryTable as HistoryTable } from "@/components/NewHistoryTable";
 import useTradePageStore from '@/store/tradeStore'
 import { useAddress } from '@thirdweb-dev/react'
 import { useRouter } from 'next/router';
@@ -105,10 +105,12 @@ export default function Trade() {
 	}, [reference])
 
 	const [isTradePopUpOpen, setIsTradePopUpOpen] = useState(false)
+	const [isUSPopUpOpen, setIsUSPopUpOpen] = useState(false)
 
 	function closeTradePopUp() {
 		setIsTradePopUpOpen(!isTradePopUpOpen)
 	}
+
 
 	const [showAgain, setShowAgain] = useState(false)
 	const [acceptTerms, setAcceptTerms] = useState(false)
@@ -154,35 +156,30 @@ export default function Trade() {
 		}
 	}, [address, setGlobalConnectedUser])
 
-	async function getCountryFromNominatim(lat: number, lng: number): Promise<string | null> {
-		const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
-		const response = await fetch(url);
 
-		if (!response.ok) {
-			throw new Error(`Error fetching country from Nominatim: ${response.statusText}`);
-		}
 
-		const data: NominatimAddress = await response.json();
-
-		if ("address" in data) {
-			if (data.address) {
-				console.log(data.address)
-				setIsUSA(true)
-			}
-		}
-
-		return null;
-	}
+	const [userIP, setUserIP] = useState<string | null>(null);
+	const [userCountry, setUserCountry] = useState<string | null>(null);
 
 	useEffect(() => {
-		if ('geolocation' in navigator) {
-			// Retrieve latitude & longitude coordinates from `navigator.geolocation` Web API
-			navigator.geolocation.getCurrentPosition(({ coords }) => {
-				const { latitude, longitude } = coords;
-				getCountryFromNominatim(latitude, longitude)
-			})
-		}
+		const fetchIP = async () => {
+			const res = await fetch('https://geo.ipify.org/api/v2/country?apiKey=at_TSpuCBozg2Vp8c1hBp3aEOxpSMABf&format=json'); // Fetch IP from external API
+			const data = await res.json();
+			//console.log(data)
+			setUserIP(data.ip || null); // Set IP or null if unavailable
+			setUserCountry(data.location || null)
+			console.log(data.location)
+		};
+
+		fetchIP();
 	}, []);
+	useEffect(() => {
+		if (userCountry && userCountry != null) {
+			const c = (JSON.stringify(userCountry).split(",")[0]).split(":")[1]
+			console.log("country is : " + (JSON.stringify(userCountry).split(",")[0]).split(":")[1])
+			if (c == '"us"' || c == '"US"' || c == '"usa"' || c == '"USA"') { setIsUSA(true); setIsUSPopUpOpen(true) }
+		}
+	}, [userCountry])
 
 	return (
 		<>
@@ -197,10 +194,14 @@ export default function Trade() {
 			<main className={`flex min-h-screen h-fit w-screen  ${mode == "dark" ? "bg-gradient-to-tl from-[#050505] to-[#050505]" : "bg-whiteBackground-500"} flex-col items-center justify-start`}>
 				<DappNavbar tradeNavbar={true} />
 				<section className="w-full h-fit  flex flex-col lg:flex-row items-center lg:items-stretch justify-start gap-2 p-5">
-					<div className="w-full lg:w-9/12  flex-grow">
+					<div className="w-full lg:w-9/12 flex-grow" style={{
+						opacity: isUSA ? "0.05" : "1"
+					}}>
 						<TradeChartBox />
 					</div>
-					<div className="w-full lg:w-3/12 flex-grow flex flex-col items-stretch justify-start gap-2">
+					<div className="w-full lg:w-3/12 flex-grow flex flex-col items-stretch justify-start gap-2" style={{
+						opacity: isUSA ? "0.05" : "1"
+					}}>
 						<div className="w-full h-fit ">
 							{/* <Swap /> */}
 							{
@@ -213,7 +214,9 @@ export default function Trade() {
 						</div>
 					</div>
 				</section>
-				<section className="w-full h-fit flex flex-col lg:flex-row items-stretch justify-start gap-2 px-5 pb-5">
+				<section className="w-full h-fit flex flex-col lg:flex-row items-stretch justify-start gap-2 px-5 pb-5" style={{
+						opacity: isUSA ? "0.05" : "1"
+					}}>
 					<div className="w-full lg:w-9/12 flex-grow ">
 						<HistoryTable />
 					</div>
@@ -222,21 +225,25 @@ export default function Trade() {
 					</div>
 				</section>
 			</main>
-			<GenericModal isOpen={isTradePopUpOpen} onRequestClose={closeTradePopUp}>
-				<div className="w-full h-fit px-3">
-					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, you should now:</h5>
-					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+			<GenericModal isOpen={isTradePopUpOpen && !isUSA} onRequestClose={closeTradePopUp}>
+				<div className="w-full h-fit px-3 ">
+				<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, you should now:</h5>
+					<div className='px-2 pb-1 pt-2 w-full h-[45vh] overflow-y-scroll mb-4 bg-whiteBackground-500 rounded-lg'>
+					
+					<p className={`text-sm ${mode == "dark" ? " text-blackText-500" : "text-blackText-500"} interMedium mb-4`}>
 						Before interacting with the Nex Labs application, reading and understanding the official Nex Labs whitepaper and the applicable general terms and conditions is required.
 					</p>
-					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+					<p className={`text-sm ${mode == "dark" ? " text-blackText-500" : "text-blackText-500"} interMedium mb-4`}>
 						Our application is a frontend provided solely as an interface for user convenience in accessing certain decentralized smart contracts and does not represent or imply any responsibility for the underlying code and technology accessed. The application is not responsible for the accessed smart contracts’ accuracy, completeness, or reliability. We cannot guarantee the application’s performance or functionality.
 					</p>
-					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+					<p className={`text-sm ${mode == "dark" ? " text-blackText-500" : "text-blackText-500"} interMedium mb-4`}>
 						Our application is fully decentralized which means that Nex Labs does not own the funds of the user and is not responsible for the functioning of the smart contracts accessed via the application. Nex Labs is also not responsible for any loss or damages to the funds of the users or the functioning of the smart contracts of the application and the possible consequences of the (non) functioning of these smart contracts.
 					</p>
-					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+					<p className={`text-sm ${mode == "dark" ? " text-blackText-500" : "text-blackText-500"} interMedium mb-4`}>
 						The user is aware that crypto assets is a volatile asset and that trading in crypto assets or interacting with crypto assets or smart contracts may bring (financial) risks. Any interaction with the smart contracts, whether through the application or directly, is at the user’s own risk.
 					</p>
+					</div>
+					
 					<div className="flex flex-row items-center justify-start gap-1 w-fit h-fit mb-2">
 						<input
 							type="checkbox"
@@ -287,6 +294,22 @@ export default function Trade() {
 						</button>
 					</div>
 
+				</div>
+			</GenericModal>
+			<GenericModal isOpen={isUSA} onRequestClose={() => { console.log("") }}>
+				<div className="w-full h-fit px-3">
+					<h5 className={`text-xl ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interBold mb-4`}>Dear trader, we are sorry !</h5>
+					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+						Due to legal restrictions, this service is not currently available to users in the United States.
+					</p>
+					<p className={`text-sm ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500"} interMedium mb-4`}>
+						We are working to expand our services and hope to be available in the US soon.
+					</p>
+					<div className='w-full h-fit flex flex-row items-center justify-center gap-6 mt-10 mb-2'>
+						<Link href={"/"} className='text-lg interMedium text-blue-600 underline'>Back to Homepage </Link>
+						<Link href={"/us_disclaimer"} className='text-lg interMedium text-blue-600 underline'>See why</Link>
+
+					</div>
 				</div>
 			</GenericModal>
 		</>
