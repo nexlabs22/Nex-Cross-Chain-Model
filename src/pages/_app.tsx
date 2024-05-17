@@ -28,6 +28,7 @@ import useTradePageStore from '@/store/tradeStore'
 import { useChartDataStore } from '@/store/store'
 import TimeTracker from '@/components/googleTimeTracking'
 // import { sepolia } from 'viem/chains'
+import { PortfolioProvider } from '@/providers/PortfolioProvider'
 
 export default function App({ Component, pageProps }: AppProps) {
 	const { setEthPriceInUsd } = useTradePageStore()
@@ -64,7 +65,9 @@ export default function App({ Component, pageProps }: AppProps) {
 			>
 				<ApolloProvider client={apolloClient}>
 					<ThemeProvider theme={theme}>
-						<Component {...pageProps} />
+						<PortfolioProvider>
+							<Component {...pageProps} />
+						</PortfolioProvider>
 					</ThemeProvider>
 				</ApolloProvider>
 			</ThirdwebProvider>
