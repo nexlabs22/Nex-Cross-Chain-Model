@@ -1,129 +1,66 @@
 'use client'
-import { usePortfolio, PortfolioProvider, PortfolioContext } from "@/providers/PortfolioProvider";
-import { Stack, Container, Box, Paper, Typography, Button, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import { usePortfolio } from "@/providers/PortfolioProvider";
+import { Stack, Box, Typography } from "@mui/material";
 import { lightTheme } from "@/theme/theme";
 import Image from 'next/image'
 import DappNavbar from '@/components/DappNavbar'
 import dynamic from 'next/dynamic'
 import Footer from '@/components/newFooter'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import 'react-tabs/style/react-tabs.css'
-import { useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
+import { useAddress } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
-import { useContext, useEffect, useState } from 'react'
-import useTradePageStore from '@/store/tradeStore'
+import { useState } from 'react'
 import TipsBox2 from '@/components/TipsBox'
 import ProgressBar from '@ramonak/react-progress-bar'
 import New3DPieChart from '@/components/new3DPieChart'
 import mesh1 from '@assets/images/mesh1.png'
-import mesh2 from '@assets/images/mesh2.png'
-
-import bg from '@assets/images/3d hologram.png'
-import anfiLogo from '@assets/images/anfi.png'
-import cr5Logo from '@assets/images/cr5.png'
 import { useRouter } from 'next/navigation'
-import btc from '@assets/images/btc.png'
-import { MdOutlineDangerous } from 'react-icons/md'
 const PNLChart = dynamic(() => import('@/components/portfolioPNLChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 const TreemapChart = dynamic(() => import('@/components/GenericTreemapChart'), { loading: () => <p>Loading ...</p>, ssr: false })
 import { BiCopy } from 'react-icons/bi'
 import { PiQrCodeDuotone } from 'react-icons/pi'
-import { BsCalendar4 } from 'react-icons/bs'
 import { Shimmer } from 'react-shimmer'
-import {
-	goerliAnfiIndexToken,
-	goerliCrypto5IndexToken,
-	crypto5PoolAddress,
-	goerlianfiPoolAddress,
-	zeroAddress,
-	goerliAnfiV2IndexToken,
-	goerliUsdtAddress,
-	goerliLinkAddress,
-	goerliLinkWethPoolAddress,
-	sepoliaAnfiV2IndexToken,
-	sepoliaCrypto5V2IndexToken,
-	goerliCR5PoolAddress,
-} from '@/constants/contractAddresses'
-import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { GenericToast } from '@/components/GenericToast'
-import AccountRebalancingSection from '@/components/AccountRebalancingSection'
 import GenericModal from '@/components/GenericModal'
 import QRCode from 'react-qr-code'
-
-import GenericPieChart from '@/components/GenericPieChart'
 import Link from 'next/link'
 import Head from 'next/head'
-
-import { useQuery } from '@apollo/client'
-import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
-import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
-
 import bg2 from '@assets/images/bg-2.png'
-import HistoryTable from '@/components/TradeTable'
-import TopHolders from '@/components/topHolders'
 import { reduceAddress } from '@/utils/general'
 import { GoArrowRight, GoChevronDown } from 'react-icons/go'
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io'
 import { NewHistoryTable } from '@/components/NewHistoryTable'
-import { useSearchParams } from 'next/navigation'
-import { nexTokens } from '@/constants/nexIndexTokens'
-import { nexTokenDataType } from '@/types/nexTokenData'
-import convertToUSD from '@/utils/convertToUsd'
 import usePortfolioPageStore from '@/store/portfolioStore'
-
-// Firebase :
-import { getDatabase, ref, onValue, set, update } from 'firebase/database'
-import { database } from '@/utils/firebase'
 import 'react-image-upload/dist/index.css'
 import { Menu, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import ConnectButton from '@/components/ConnectButton'
-import { PositionType } from '@/types/tradeTableTypes'
 import MobileFooterSection from '@/components/mobileFooter'
-import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
-import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
 import { emptyData } from '@/constants/emptyChartData'
+
+// PWA : 
+import PWAProfileOverviewHeader from "@/components/pwa/PWAProfileOverviewHeader";
+import PWA3DPieChart from "@/components/pwa/PWA3DPieChart";
+import PWAPortfolioMyAssets from "@/components/pwa/PWAPortfolioMyAssets";
 
 // PWA : 
 import PWABanner from "@/components/pwa/PWABanner";
 import dca from "@assets/images/dca.png"
 import logo from "@assets/images/xlogo2.png"
-import { PWAGradientStack, PWAGradientTradeButton } from "@/theme/overrides";
+import { PWAGradientStack } from "@/theme/overrides";
 import PWATopBar from "@/components/pwa/PWATopBar";
 import PWABottomNav from "@/components/pwa/PWABottomNav";
 import PWAPNLChart from "@/components/pwa/PWAPNLChart";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useChartDataStore, useLandingPageStore } from "@/store/store";
+import { useLandingPageStore } from "@/store/store";
 
 
-const GenericGradientAreaChart = dynamic(
-	() => import("@components/pwa/PWAGenericAreaChart"),
-	{
-		ssr: false,
-	}
-);
 
-interface User {
-	email: string
-	inst_name: string
-	main_wallet: string
-	name: string
-	vatin: string
-	address: string
-	ppLink: string
-	p1: boolean
-	p2: boolean
-	p3: boolean
-	p4: boolean
-	p5: boolean
-	ppType: string
-	creationDate: string
-}
 
 export default function Portfolio() {
 	const address = useAddress()
@@ -165,183 +102,6 @@ export default function Portfolio() {
 	const [chartType, setChartType] = useState('pie')
 	const { mode } = useLandingPageStore()
 	const { changeSelectedIndex } = useLandingPageStore()
-	
-	
-	
-
-	
-
-	
-
-	const PWAProfileOverviewHeader = () => {
-		return (
-			<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"stretch"} justifyContent={"space-between"} position={"relative"} overflow={"hidden"} marginTop={3} marginBottom={1} paddingX={2} paddingY={2} borderRadius={"1.2rem"} sx={PWAGradientStack}>
-				<Stack direction={"column"} alignItems={"start"} justifyContent={"center"} width={"fit-content"} minWidth={"50%"} height={"fit-content"} >
-					<Typography variant="caption" marginBottom={1} sx={{
-						color: lightTheme.palette.text.primary
-					}}>
-						My Portfolio
-					</Typography>
-					<Typography variant="body1" width={"95%"} sx={{
-						color: lightTheme.palette.text.primary,
-						fontWeight: 600,
-
-					}}>
-						$
-						{showPortfolioData && totalPortfolioBalance
-							? totalPortfolioBalance < 0.01 && totalPortfolioBalance > 0
-								? '≈ 0.00 '
-								: FormatToViewNumber({ value: totalPortfolioBalance, returnType: 'string' })
-							: '0.00'}
-					</Typography>
-					<Typography variant="caption" width={"95%"} sx={{
-						color: portfolio24hChange > 0 ? lightTheme.palette.nexGreen.main : portfolio24hChange < 0 ? lightTheme.palette.nexRed.main : lightTheme.palette.text.primary,
-						fontWeight: 400,
-
-					}}>
-						{portfolio24hChange < 0 ? "-" : "+"}
-						$
-						{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
-							? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
-							: '0.00'}
-					</Typography>
-				</Stack>
-				<Stack width={"45%"} maxWidth={"45%"} flexGrow={1} borderRadius={"0.8rem"}>
-					<PWAPNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChange : 0} />
-				</Stack>
-			</Stack>
-		)
-	}
-
-	const PWA3DCHARTBOX = () => {
-		return (
-			<Stack id="PWAPNLChartBox" width={"100%"} height={"fit-content"} marginTop={0} direction={"column"} alignItems={"center"} justifyContent={"start"}>
-				<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1} paddingY={2}>
-					<Typography variant="body1" sx={{
-						color: lightTheme.palette.text.primary,
-						fontWeight: 600,
-						marginBottom: "1.2rem"
-					}}>
-						Porftolio Distribution
-					</Typography>
-
-
-				</Stack>
-				<Stack width={"100vw"} height={"25vh"} borderRadius={"1.2rem"} direction={"row"} alignItems={"center"} justifyContent={"center"} >
-					{/*chartType == 'Pie Chart' ? <New3DPieChart data={pieData} /> : <TreemapChart percentage={indexPercent} />*/}
-					<New3DPieChart data={pieData} />
-				</Stack>
-			</Stack>
-		)
-	}
-	
-
-	const PWAMyAssets = () => {
-		return (
-			<Stack width={"100%"} height={"fit-content"} marginTop={6}>
-				<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
-					<Typography variant="h6" sx={{
-						color: lightTheme.palette.text.primary,
-						fontWeight: 700
-					}}>
-						My Assets
-					</Typography>
-				</Stack>
-				<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} id="PWAIndexSlider">
-					<Slider
-						dots={false}
-						infinite={false}
-						speed={500}
-						slidesToShow={4}
-						slidesToScroll={4}
-						autoplay={false}
-						centerMode={false}
-						arrows={false}
-						className="relative m-0 h-full w-full p-0"
-						responsive={[
-							{
-								breakpoint: 1024,
-								settings: {
-									slidesToShow: 3,
-									slidesToScroll: 3,
-									infinite: true,
-									dots: true,
-								},
-							},
-							{
-								breakpoint: 600,
-								settings: {
-									slidesToShow: 2,
-									slidesToScroll: 2,
-									initialSlide: 2,
-								},
-							},
-							{
-								breakpoint: 480,
-								settings: {
-									slidesToShow: 2,
-									slidesToScroll: 1,
-								},
-							},
-						]}
-					>
-						{
-							nexTokenAssetData.map((asset) => {
-								return (
-									<Stack key={asset.symbol} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
-										changeSelectedIndex(asset.shortName);
-										router.push('/pwa_tradeIndex')
-									}}>
-										<Image alt="index logo" src={asset.logo} width={40} height={40} className="rounded-full mb-2"></Image>
-										<Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
-											<Typography variant="subtitle1" sx={{
-												color: lightTheme.palette.text.primary,
-												fontWeight: 600,
-											}}>
-												{
-													asset.symbol
-												}
-											</Typography>
-											<Typography variant="caption" sx={{
-												color: lightTheme.palette.nexGreen.main,
-												fontWeight: 600,
-												fontSize: ".8rem",
-												backgroundColor: lightTheme.palette.pageBackground.main,
-												paddingX: "0.8rem",
-												paddingY: "0.2rem",
-												borderRadius: "1rem",
-												border: "solid 1px rgba(37, 37, 37, 0.5)",
-												boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
-											}}>
-												{
-													asset.percentage
-												}%
-											</Typography>
-										</Stack>
-										<Typography variant="subtitle1" sx={{
-											color: lightTheme.palette.text.primary,
-											fontWeight: 600,
-											fontSize: "1rem",
-											width: "90%"
-										}}>
-											{Number(asset.totalToken?.toFixed(2)).toLocaleString()} (≈${
-												Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()
-											})
-
-										</Typography>
-
-
-									</Stack>
-								)
-							})
-						}
-					</Slider>
-				</Stack>
-			</Stack>
-		)
-	}
-
-	
 
 	return (
 		<>
@@ -356,7 +116,6 @@ export default function Portfolio() {
 			{
 				!isStandalone ? (
 					<>
-						
 							<main className={`min-h-screen overflow-x-hidden h-fit w-screen ${mode == 'dark' ? 'bg-gradient-to-tl from-[#050505] to-[#050505]' : 'bg-whiteBackground-500'}`}>
 								<section className="h-full w-fit overflow-x-hidde">
 									<DappNavbar />
@@ -801,16 +560,14 @@ export default function Portfolio() {
 									</div>
 								</GenericModal>
 							</main>
-						
-
 					</>
 				) : (
 					<>
 						<Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingTop={4} paddingBottom={10} paddingX={3} bgcolor={lightTheme.palette.background.default}>
 							<PWATopBar></PWATopBar>
 							<PWAProfileOverviewHeader></PWAProfileOverviewHeader>
-							<PWA3DCHARTBOX></PWA3DCHARTBOX>
-							<PWAMyAssets></PWAMyAssets>
+							<PWA3DPieChart data={pieData}></PWA3DPieChart>
+							<PWAPortfolioMyAssets></PWAPortfolioMyAssets>
 							<PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="/dcaCalculator" linkText="Learn More"></PWABanner>
 							<PWABottomNav></PWABottomNav>
 						</Box>
