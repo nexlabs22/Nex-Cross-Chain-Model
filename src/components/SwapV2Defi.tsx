@@ -62,76 +62,12 @@ import { Stack, Container, Box, Paper, Typography, Button, BottomNavigation, Bot
 import { lightTheme } from '@/theme/theme'
 import Link from 'next/link'
 import Sheet from 'react-modal-sheet'
+import { usePWA } from '@/providers/PWAProvider'
+import { useDeFiSwap } from '@/providers/DefiSwapProvider'
 
-const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean }) => {
-	const [isStandalone, setIsStandalone] = useState(initialStandalone)
-	const [os, setOs] = useState<String>('')
-	const [browser, setBrowser] = useState<String>('')
+const SwapV2Defi = () => {
 
-	function detectMobileBrowserOS() {
-		const userAgent = navigator.userAgent
-
-		let browser: string | undefined
-		let os: string | undefined
-
-		browser = ''
-		os = ''
-		// Check for popular mobile browsers
-		if (/CriOS/i.test(userAgent)) {
-			browser = 'Chrome'
-		} else if (/FxiOS/i.test(userAgent)) {
-			browser = 'Firefox'
-		} else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) {
-			browser = 'Safari'
-		}
-
-		// Check for common mobile operating systems
-		if (/iP(ad|hone|od)/i.test(userAgent)) {
-			os = 'iOS'
-		} else if (/Android/i.test(userAgent)) {
-			os = 'Android'
-		}
-
-		setOs(os.toString())
-		setBrowser(browser.toString())
-	}
-
-	useEffect(() => {
-		detectMobileBrowserOS()
-	}, [])
-
-	useEffect(() => {
-		// Client-side detection using window.matchMedia (optional)
-		if (typeof window !== 'undefined') {
-			const mediaQuery = window.matchMedia('(display-mode: standalone)')
-			const handleChange = (event: MediaQueryListEvent) => setIsStandalone(event.matches)
-			mediaQuery.addEventListener('change', handleChange)
-			setIsStandalone(mediaQuery.matches) // Set initial client-side state
-			//alert(mediaQuery.matches)
-			return () => mediaQuery.removeEventListener('change', handleChange)
-		}
-	}, [])
-
-	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
-	const [isChecked, setChecked] = useState(false)
-
-	const [firstInputValue, setFirstInputValue] = useState('0')
-	const [secondInputValue, setSecondInputValue] = useState('0')
-
-	const [cookingModalVisible, setCookingModalVisible] = useState(false)
-	const [userEthBalance, setUserEthBalance] = useState(0)
-
-	const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
-	const [fromConvertedPrice, setFromConvertedPrice] = useState(0)
-
-	const [to1UsdPrice, setTo1UsdPrice] = useState(0)
-	const [toConvertedPrice, setToConvertedPrice] = useState(0)
-
-	const [coinsList, setCoinsList] = useState<Coin[]>([])
-	const [loadingTokens, setLoadingTokens] = useState(true)
-	const [currentArrayId, setCurrentArrayId] = useState(0)
-	const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([[], []])
-
+	const {isStandalone, browser, os} = usePWA()
 	const {
 		isFromCurrencyModalOpen,
 		isToCurrencyModalOpen,
@@ -151,723 +87,73 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 		isMainnet,
 		setIsmainnet,
 	} = useTradePageStore()
-
-	const address = useAddress()
-	const signer = useSigner()
-	const router = useRouter()
-	const query = router.query
-
-	useEffect(() => {
-		const selectedCoin = query.index || 'ANFI'
-		const coinDetails = sepoliaTokens.filter((coin: Coin) => {
-			return coin.Symbol === selectedCoin
-		})
-		changeSwapToCur(coinDetails[0])
-	}, [])
-
-	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
-	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
-	const faucetContract: UseContractResult = useContract(sepoliaTokenFaucet, tokenFaucetAbi)
-
-	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
-	const toTokenContract = useContract(swapToCur.address, tokenAbi)
-
-	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
-	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
-	const fromTokenTotalSupply = useContractRead(fromTokenContract.contract, 'totalSupply', [])
-	const toTokenTotalSupply = useContractRead(toTokenContract.contract, 'totalSupply', [])
-	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
-	const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
-
-	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
-	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
-	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
-	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
-	const faucetHook = useContractWrite(faucetContract.contract, 'getToken')
-
-	const curr = swapFromCur.factoryAddress ? swapFromCur : swapToCur
-	const IndexContract: UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
-	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data / 10000
-
-	const { mode } = useLandingPageStore()
-
-	const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
-	const defiPortfolioValue = GetDefiPortfolioBalance()
-
-	// useEffect(() => {
-	// 	async function getIssuanceOutput() {
-	// 		try {
-	// 			if (swapToCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
-	// 				// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
-	// 				const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
-	// 				const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
-	// 				const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
-
-	// 				setSecondInputValue(num(output).toString())
-	// 			}
-	// 		} catch (error) {
-	// 			// console.log('getIssuanceOutput error:', error)
-	// 		}
-	// 	}
-	// 	// getIssuanceOutput()
-	// }, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
-
-	useEffect(() => {
-		async function getIssuanceOutput2() {
-			try {
-				if (swapToCur.hasOwnProperty('indexType')  && convertedInputValue) {
-					const currentPortfolioValue = swapToCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
-					const currentTotalSupply = Number(toTokenTotalSupply.data)
-					let inputValue
-					if (swapFromCur.address == sepoliaWethAddress) {
-						inputValue = Number(firstInputValue) * 1e18
-					} else {
-						const sepoliaPublicClient = createPublicClient({
-							chain: sepolia,
-							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-						})
-						const inputEthValue = await sepoliaPublicClient.readContract({
-							address: sepoliaCrypto5V2Factory,
-							abi: crossChainIndexFactoryV2Abi,
-							functionName: 'getAmountOut',
-							args: [swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3],
-						})
-						inputValue = Number(inputEthValue)
-					}
-					let newPortfolioValue: number = 0
-					if (swapToCur.indexType === 'crosschain') {
-						newPortfolioValue = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
-					} else {
-						newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
-					}
-					const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
-					const amountToMint = newTotalSupply - currentTotalSupply
-					setSecondInputValue(num(amountToMint).toString())
-				}
-			} catch (error) {
-				console.log('getIssuanceOutput error:', error)
-			}
-		}
-		getIssuanceOutput2()
-	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
-
-	// useEffect(() => {
-	// 	async function getRedemptionOutput() {
-	// 		try {
-	// 			if (swapFromCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
-	// 				const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
-	// 				const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
-	// 				const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
-	// 				setSecondInputValue(num(output).toString())
-	// 			}
-	// 		} catch (error) {
-	// 			console.log('getRedemptionOutput error:', error)
-	// 		}
-	// 	}
-	// 	// getRedemptionOutput()
-	// }, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
-
-	useEffect(() => {
-		async function getRedemptionOutput2() {
-			try {
-				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {
-					let outputValue
-					const currentPortfolioValue = swapFromCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
-					const currentTotalSupply = Number(fromTokenTotalSupply.data)
-					const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
-					const newPortfolioValue = (Number(currentPortfolioValue) * newTotalSupply) / currentTotalSupply
-					const ethAmountOut = (Number(currentPortfolioValue) - newPortfolioValue) * 0.999
-					if (swapToCur.address == sepoliaWethAddress) {
-						outputValue = ethAmountOut
-					} else {
-						const sepoliaPublicClient = createPublicClient({
-							chain: sepolia,
-							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-						})
-						const outPutTokenValue = await sepoliaPublicClient.readContract({
-							address: sepoliaCrypto5V2Factory,
-							abi: crossChainIndexFactoryV2Abi,
-							functionName: 'getAmountOut',
-							args: [sepoliaWethAddress, swapToCur.address, ethAmountOut.toFixed(0), 3],
-						})
-						outputValue = Number(outPutTokenValue)
-					}
-					setSecondInputValue(num(outputValue).toString())
-				}
-			} catch (error) {
-				console.log('getRedemptionOutput error:', error)
-			}
-		}
-		getRedemptionOutput2()
-	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
-
-	async function fetchData(tokenDetails: Coin, place: string) {
-		try {
-			const price = await convertToUSD({ tokenAddress: tokenDetails.address, tokenDecimals: tokenDetails.decimals }, ethPriceInUsd, isMainnet)
-			return price as number
-		} catch (err) {
-			console.error(`Error fetching ${place} price:`, err)
-			throw err // Rethrow the error for consistent error handling
-		}
-	}
-
-	async function fetchTokenPrices() {
-		try {
-			const [fromPrice, toPrice] = await Promise.all([
-				swapFromCur.Symbol !== 'WETH' && swapFromCur.Symbol !== 'ETH' ? fetchData(swapFromCur, 'From') : ethPriceInUsd,
-				swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH' ? fetchData(swapToCur, 'To') : ethPriceInUsd,
-			])
-
-			setFrom1UsdPrice(fromPrice)
-			setTo1UsdPrice(toPrice)
-		} catch (error) {
-			// Handle errors if needed
-			console.error('Error fetching token prices:', error)
-		}
-	}
-
-	// Call fetchTokenPrices when needed
-	useEffect(() => {
-		fetchTokenPrices()
-	}, [swapFromCur, swapToCur, ethPriceInUsd, isMainnet])
-
-	useEffect(() => {
-		if (approveHook.isSuccess) {
-			fromTokenAllowance.refetch()
-			approveHook.reset()
-		}
-	}, [approveHook.isSuccess, approveHook, fromTokenAllowance])
-
-	useEffect(() => {
-		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess || mintRequestEthHook.isSuccess || mintRequestEthHook.isSuccess) {
-			fromTokenBalance.refetch()
-			toTokenBalance.refetch()
-			fromTokenAllowance.refetch()
-			mintRequestHook.reset()
-			mintRequestEthHook.reset()
-			burnRequestHook.reset()
-			setTradeTableReload(true)
-		}
-	}, [
-		mintRequestHook.isSuccess,
-		mintRequestEthHook.isSuccess,
-		burnRequestHook.isSuccess,
+	const {mode} = useLandingPageStore()
+	const {
+		testValue,
+		isPaymentModalOpen,
+		isChecked,
+		firstInputValue,
+		secondInputValue,
+		cookingModalVisible,
+		userEthBalance,
+		from1UsdPrice,
+		fromConvertedPrice,
+		to1UsdPrice,
+		toConvertedPrice,
+		coinsList,
+		loadingTokens,
+		currentArrayId,
+		mergedCoinList,
+		mintFactoryContract,
+		burnFactoryContract,
+		faucetContract,
+		fromTokenContract,
+		toTokenContract,
+		fromTokenBalance,
+		toTokenBalance,
+		fromTokenTotalSupply,
+		toTokenTotalSupply,
+		fromTokenAllowance,
+		convertedInputValue,
+		approveHook,
 		mintRequestHook,
 		mintRequestEthHook,
 		burnRequestHook,
-		fromTokenBalance,
-		toTokenBalance,
-		fromTokenAllowance,
-		setTradeTableReload,
-		swapToCur,
 		faucetHook,
-	])
+		curr,
+		IndexContract,
+		feeRate,
+		setFirstInputValue,
+		setSecondInputValue,
+		setCookingModalVisible,
+		toggleCheckbox,
+		toggleMainnetCheckbox,
+		openPaymentModal,
+		closePaymentModal,
+		openFromCurrencyModal,
+		closeFromCurrencyModal,
+		openToCurrencyModal,
+		closeToCurrencyModal,
+		openFromCurrencySheet,
+		closeFromCurrencySheet,
+		openToCurrencySheet,
+		closeToCurrencySheet,
+		fetchAllLiFiTokens,
+		Switching,
+		formatResult,
+		changeFirstInputValue,
+		changeSecondInputValue,
+		getPrimaryBalance,
+		getSecondaryBalance,
+		approve,
+		mintRequest,
+		mintRequestTokens,
+		mintRequestEth,
+		burnRequest,
+		faucet
+	} = useDeFiSwap()
 
-	useEffect(() => {
-		if (faucetHook.isLoading) {
-			toast.dismiss()
-			GenericToast({
-				type: 'loading',
-				message: 'Receiving usdt...',
-			})
-		} else if (faucetHook.isSuccess) {
-			toast.dismiss()
-			GenericToast({
-				type: 'success',
-				message: 'You received 1000 usdt Successfully!',
-			})
-		} else if (faucetHook.isError) {
-			toast.dismiss()
-			GenericToast({
-				type: 'error',
-				message: `Receiving Failed!`,
-			})
-		}
-	}, [faucetHook.isLoading, faucetHook.isSuccess, faucetHook.isError])
-
-	useEffect(() => {
-		if (approveHook.isLoading) {
-			toast.dismiss()
-			GenericToast({
-				type: 'loading',
-				message: 'Approving...',
-			})
-		} else if (approveHook.isSuccess) {
-			toast.dismiss()
-			GenericToast({
-				type: 'success',
-				message: 'Approved Successfully!',
-			})
-		} else if (approveHook.isError) {
-			toast.dismiss()
-			GenericToast({
-				type: 'error',
-				message: `Approving Failed!`,
-			})
-		}
-	}, [approveHook.isLoading, approveHook.isSuccess, approveHook.isError])
-
-	useEffect(() => {
-		if (mintRequestHook.isLoading || mintRequestEthHook.isLoading) {
-			toast.dismiss()
-			GenericToast({
-				type: 'loading',
-				message: 'Sending Request ...',
-			})
-		} else if (mintRequestHook.isSuccess || mintRequestEthHook.isSuccess) {
-			toast.dismiss()
-			GenericToast({
-				type: 'success',
-				message: 'Sent Request Successfully!',
-			})
-		} else if (mintRequestHook.isError || mintRequestEthHook.isError) {
-			toast.dismiss()
-			console.log(mintRequestHook.error)
-			GenericToast({
-				type: 'error',
-				message: `Sending Request Failed!`,
-			})
-		}
-	}, [mintRequestHook.isLoading, mintRequestEthHook.isLoading, mintRequestHook.isSuccess, mintRequestEthHook.isSuccess, mintRequestHook.isError, mintRequestEthHook.isError])
-
-	useEffect(() => {
-		if (burnRequestHook.isLoading) {
-			toast.dismiss()
-
-			GenericToast({
-				type: 'loading',
-				message: 'Sending Request ...',
-			})
-		} else if (burnRequestHook.isSuccess) {
-			toast.dismiss()
-			GenericToast({
-				type: 'success',
-				message: 'Sent Request Successfully!',
-			})
-		} else if (burnRequestHook.isError) {
-			toast.dismiss()
-			GenericToast({
-				type: 'error',
-				message: 'Sending Request Failed!',
-			})
-		}
-	}, [burnRequestHook.isLoading, burnRequestHook.isSuccess, burnRequestHook.isError])
-
-	const toggleCheckbox = () => {
-		setChecked(!isChecked)
-	}
-
-	const toggleMainnetCheckbox = () => {
-		setIsmainnet(!isMainnet)
-	}
-
-	const openPaymentModal = () => {
-		setPaymentModalOpen(true)
-	}
-
-	const closePaymentModal = () => {
-		setPaymentModalOpen(false)
-	}
-
-	const openFromCurrencyModal = () => {
-		setFromCurrencyModalOpen(true)
-	}
-
-	const closeFromCurrencyModal = () => {
-		setFromCurrencyModalOpen(false)
-	}
-
-	const openToCurrencyModal = () => {
-		setToCurrencyModalOpen(true)
-	}
-
-	const closeToCurrencyModal = () => {
-		setToCurrencyModalOpen(false)
-	}
-
-	const openFromCurrencySheet = () => {
-		setFromCurrencySheetOpen(true)
-	}
-
-	const closeFromCurrencySheet = () => {
-		setFromCurrencySheetOpen(false)
-	}
-
-	const openToCurrencySheet = () => {
-		setToCurrencySheetOpen(true)
-	}
-
-	const closeToCurrencySheet = () => {
-		setToCurrencySheetOpen(false)
-	}
-
-	const fetchAllLiFiTokens = async () => {
-		const options = {
-			method: 'GET',
-			headers: { accept: 'application/json' },
-		}
-
-		try {
-			const response = await fetch(`https://li.quest/v1/tokens`, options)
-			const data = await response.json()
-
-			const tokenSets = data.tokens
-			const coins: Coin[] = Object.keys(tokenSets).flatMap((key) => {
-				const tokenSet = tokenSets[key]
-				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any; decimals: any }) => ({
-					id: coin.address,
-					logo: coin.logoURI && coin.logoURI != '' ? coin.logoURI : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU',
-					name: coin.name,
-					Symbol: coin.symbol,
-					address: coin.address,
-					factoryAddress: '',
-					decimals: coin.decimals,
-				}))
-			})
-
-			return coins
-		} catch (error) {
-			console.error(error)
-			return [] // Ensure a value is returned even in case of an error
-		}
-	}
-
-	function chunkArray<T>(array: T[], chunkSize: number): T[][] {
-		const chunks: T[][] = []
-		for (let i = 0; i < array.length; i += chunkSize) {
-			chunks.push(array.slice(i, i + chunkSize))
-		}
-		return chunks
-	}
-
-	useEffect(() => {
-		const fetchData = async () => {
-			const initialCoins = await fetchAllLiFiTokens()
-			const dividedArrays = chunkArray(initialCoins, 100)
-			// setAllCoinsList(dividedArrays)
-			setCoinsList(dividedArrays[currentArrayId])
-			setLoadingTokens(false)
-		}
-
-		fetchData()
-	}, [currentArrayId])
-
-	// function Switch() {
-	// 	let switchReserve: Coin = swapFromCur
-	// 	changeSwapFromCur(swapToCur)
-	// 	changeSwapToCur(switchReserve)
-	// }
-
-	// const finalCoinList = isMainnet ? coinsList : testnetCoinsList[0]
-	// const OurIndexCoinList: Coin[] = finalCoinList.filter(coin => OurIndexCoins.includes(coin.Symbol));
-	// const OtherCoinList: Coin[] = finalCoinList.filter(coin => !OurIndexCoins.includes(coin.Symbol));
-	// const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([OurIndexCoinList, OtherCoinList])
-
-	useEffect(() => {
-		const finalCoinList = isMainnet ? coinsList : (sepoliaTokens as Coin[])
-		const OurIndexCoinList: Coin[] = finalCoinList.filter((coin) => coin.isNexlabToken)
-		const OtherCoinList: Coin[] = finalCoinList.filter((coin) => !coin.isNexlabToken)
-		setMergedCoinList([OtherCoinList, OurIndexCoinList])
-	}, [isMainnet])
-
-	function Switching() {
-		let switchReserve: Coin = swapFromCur
-		changeSwapFromCur(swapToCur)
-		changeSwapToCur(switchReserve)
-
-		if (switchReserve.isNexlabToken) {
-			if (mergedCoinList[0].some((obj) => obj.isNexlabToken)) {
-				const newArray = [mergedCoinList[1], mergedCoinList[0]]
-				setMergedCoinList(newArray)
-			} else {
-				const newArray = [mergedCoinList[0], mergedCoinList[1]]
-				setMergedCoinList(newArray)
-			}
-		} else {
-			if (mergedCoinList[0].some((obj) => obj.isNexlabToken)) {
-				const newArray = [mergedCoinList[0], mergedCoinList[1]]
-				setMergedCoinList(newArray)
-			} else {
-				const newArray = [mergedCoinList[1], mergedCoinList[0]]
-				setMergedCoinList(newArray)
-			}
-		}
-
-		setSecondInputValue(firstInputValue)
-	}
-
-	const formatResult = (item: Coin) => {
-		return (
-			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1" key={item.id}>
-				<div className="flex flex-row items-center justify-start gap-2">
-					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150"></Image>
-					<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
-				</div>
-				<h5 className="text-base text-gray-300 montrealBoldItalic">{item.Symbol}</h5>
-			</div>
-		)
-	}
-
-	const changeFirstInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const enteredValue = e?.target?.value
-		if (Number(enteredValue) != 0 && Number(enteredValue) < 0.00001) {
-			GenericToast({
-				type: 'error',
-				message: 'Please enter the input value greater than this value...',
-			})
-			return
-		}
-		setFirstInputValue(e?.target?.value)
-	}
-
-	useEffect(() => {
-		const fromNewPrice = Number(firstInputValue) * Number(from1UsdPrice)
-		setFromConvertedPrice(fromNewPrice)
-	}, [from1UsdPrice, firstInputValue, secondInputValue, to1UsdPrice])
-
-	useEffect(() => {
-		const toNewPrice = Number(secondInputValue) * Number(to1UsdPrice)
-		setToConvertedPrice(toNewPrice)
-	}, [secondInputValue, to1UsdPrice])
-
-	useEffect(() => {
-		const convertedAmout = (Number(from1UsdPrice) / Number(to1UsdPrice)) * Number(firstInputValue)
-		if (isMainnet) {
-			setSecondInputValue(convertedAmout.toString())
-		}
-	}, [from1UsdPrice, to1UsdPrice, firstInputValue, isMainnet])
-
-	const changeSecondInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSecondInputValue(e?.target?.value)
-	}
-
-	function getPrimaryBalance() {
-		if (swapFromCur.address == sepoliaWethAddress) {
-			// return (Number(userEthBalance) / 1e18).toFixed(2)
-			if (!userEthBalance) {
-				return 0
-			} else
-				return FormatToViewNumber({
-					// value: Number((userEthBalance))/1e18,
-					value: Number(ethers.utils.formatEther(userEthBalance.toString())) as number,
-					returnType: 'string',
-				})
-		} else {
-			if (!fromTokenBalance.data) {
-				return 0
-			} else {
-				const bal = FormatToViewNumber({
-					value: Number(ethers.utils.formatEther(fromTokenBalance.data)) as number,
-					returnType: 'string',
-				}).toString()
-				const balWithoutComma = bal.includes(',') ? bal.split(',').join('') : bal
-				return balWithoutComma
-			}
-		}
-	}
-
-	function getSecondaryBalance() {
-		if (swapToCur.address == sepoliaWethAddress) {
-			// return (Number(userEthBalance) / 1e18).toFixed(2)
-			if (!userEthBalance) {
-				return 0
-			} else
-				return FormatToViewNumber({
-					// value: Number((userEthBalance))/1e18,
-					value: parseFloat(ethers.utils.formatEther(userEthBalance.toString())) as number,
-					returnType: 'string',
-				})
-		} else {
-			// return (Number(toTokenBalance.data) / 1e18).toFixed(2)
-			if (!toTokenBalance.data) {
-				return 0
-			} else
-				return FormatToViewNumber({
-					// value: Number((userEthBalance))/1e18,
-					value: parseFloat(ethers.utils.formatEther(toTokenBalance.data)) as number,
-					returnType: 'string',
-				})
-		}
-	}
-
-	useEffect(() => {
-		const getEtherBalance = async () => {
-			if (address && signer) {
-				const balance = await signer?.provider?.getBalance(address as string)
-				const convertedBalance = ethers.utils.formatEther(balance as BigNumber)
-				// console.log('Balance converted', convertedBalance)
-				setUserEthBalance(Number(balance))
-			}
-		}
-		getEtherBalance()
-	}, [signer, address])
-
-	async function approve() {
-		const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
-		// const convertedValue = BigNumber.from(3*1001/1000)
-		try {
-			if (isChecked) {
-				openPaymentModal()
-			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
-					return GenericToast({
-						type: 'error',
-						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
-					})
-				} else if (Number(firstInputValue) <= 0) {
-					return GenericToast({
-						type: 'error',
-						message: `Please enter amount you want to approve`,
-					})
-				}
-				await approveHook.mutateAsync({ args: [swapToCur.factoryAddress, convertedValue] })
-			}
-		} catch (error) {
-			console.log('approve error', error)
-		}
-	}
-
-	async function mintRequest() {
-		if (swapFromCur.address == sepoliaWethAddress) {
-			mintRequestEth()
-		} else {
-			mintRequestTokens()
-		}
-	}
-
-	async function mintRequestTokens() {
-		try {
-			if (isChecked) {
-				openPaymentModal()
-			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
-					return GenericToast({
-						type: 'error',
-						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
-					})
-				} else if (Number(firstInputValue) <= 0) {
-					return GenericToast({
-						type: 'error',
-						message: `Please enter amount you want to mint`,
-					})
-				}
-				if (swapToCur.indexType === 'defi') {
-					await mintRequestHook.mutateAsync({
-						// args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
-						args: [swapFromCur.address, parseEther(Number(firstInputValue).toString()), '3'],
-						overrides: {
-							gasLimit: 2000000,
-						},
-					})
-				} else {
-					await mintRequestHook.mutateAsync({
-						// args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
-						args: [swapFromCur.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
-						overrides: {
-							gasLimit: 3000000,
-						},
-					})
-				}
-			}
-		} catch (error) {
-			console.log('mint error', error)
-		}
-	}
-
-	async function mintRequestEth() {
-		try {
-			const firstConvertedValue = parseEther(Number(firstInputValue).toString() as string)
-			const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000).toString() as string)
-			if (isChecked) {
-				openPaymentModal()
-			} else {
-				if (num(userEthBalance) < Number(firstInputValue)) {
-					return GenericToast({
-						type: 'error',
-						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
-					})
-				} else if (Number(firstInputValue) <= 0) {
-					return GenericToast({
-						type: 'error',
-						message: `Please enter amount you want to mint`,
-					})
-				}
-				if (swapToCur.indexType === 'defi') {
-					await mintRequestEthHook.mutateAsync({
-						// args: [(Number(firstInputValue) * 1e18).toString()],
-						args: [parseEther(Number(firstInputValue).toString())],
-						overrides: {
-							gasLimit: 2000000,
-							value: convertedValue,
-						},
-					})
-				} else {
-					await mintRequestEthHook.mutateAsync({
-						// args: [(Number(firstInputValue) * 1e18).toString(), '0'],
-						args: [parseEther(Number(firstInputValue).toString()), '0'],
-						overrides: {
-							gasLimit: 3000000,
-							value: convertedValue,
-						},
-					})
-				}
-			}
-		} catch (error) {
-			console.log('mint error', error)
-		}
-	}
-
-	async function burnRequest() {
-		try {
-			if (isChecked) {
-				openPaymentModal()
-			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
-					return GenericToast({
-						type: 'error',
-						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
-					})
-				} else if (Number(firstInputValue) <= 0) {
-					console.log("testing")
-					return GenericToast({
-						type: 'error',
-						message: `Please enter amount you want to burn`,
-					})
-				}
-				if (swapFromCur.indexType === 'defi') {
-					await burnRequestHook.mutateAsync({
-						// args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
-						args: [parseEther(Number(firstInputValue).toString()), swapToCur.address, '3'],
-						overrides: {
-							gasLimit: 2000000,
-						},
-					})
-				} else {
-					await burnRequestHook.mutateAsync({
-						// args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
-						args: [parseEther(Number(firstInputValue).toString()), '0', swapToCur.address, '3'],
-						overrides: {
-							gasLimit: 3000000,
-						},
-					})
-				}
-			}
-		} catch (error) {
-			console.log('burn error', error)
-		}
-	}
-
-	async function faucet() {
-		if (address) {
-			try {
-				await faucetHook.mutateAsync({ args: [sepoliaUsdtAddress] })
-			} catch (error) {
-				console.log('faucet error', error)
-			}
-		}
-	}
-
+	
 	const isButtonDisabled = isMainnet || (!swapFromCur.isNexlabToken && !swapToCur.isNexlabToken) ? true : false
 
 	return (

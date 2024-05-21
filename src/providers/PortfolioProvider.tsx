@@ -1,20 +1,12 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { GetServerSidePropsContext } from 'next'; // Import for SSR context
+import React, { createContext, useState, useEffect, useContext } from 'react'; 
 import { SmartContract, UseContractResult, useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
 import useTradePageStore from '@/store/tradeStore'
 import {
-    goerliAnfiIndexToken,
-    goerliCrypto5IndexToken,
-    crypto5PoolAddress,
     goerlianfiPoolAddress,
     zeroAddress,
-    goerliAnfiV2IndexToken,
-    goerliUsdtAddress,
-    goerliLinkAddress,
     goerliLinkWethPoolAddress,
     sepoliaAnfiV2IndexToken,
     sepoliaCrypto5V2IndexToken,
-    goerliCR5PoolAddress,
 } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
@@ -26,12 +18,11 @@ import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 
 // Firebase : 
-import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { ref, onValue } from 'firebase/database'
 import { database } from '@/utils/firebase'
 import { PositionType } from '@/types/tradeTableTypes'
 import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
-import { emptyData } from '@/constants/emptyChartData'
 import { useChartDataStore, useLandingPageStore } from "@/store/store";
 import usePortfolioPageStore from '@/store/portfolioStore';
 import { BaseContract } from 'ethers';
@@ -79,10 +70,6 @@ interface PortfolioContextProps {
     indexDetailsMap: Map<string, any>
     uploadedPPLink: string
     chosenPPType: string
-    testValue: string | null
-    isStandalone: boolean
-    os: String
-    browser: String
     handleCopyFunction: () => void
     handleCopyIndexDetailsFunction: () => void
 }
@@ -112,10 +99,6 @@ const PortfolioContext = createContext<PortfolioContextProps>({
     indexDetailsMap: new Map(),
     uploadedPPLink: "none",
     chosenPPType: "none",
-    testValue: null,
-    isStandalone: false,
-    os: "",
-    browser: "",
     handleCopyFunction: () => { },
     handleCopyIndexDetailsFunction: () => { },
 });
@@ -351,57 +334,6 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [t, setT] = useState<string>("kkkkkk");
 
-    const [isStandalone, setIsStandalone] = useState(false)
-    const [os, setOs] = useState<String>('')
-    const [browser, setBrowser] = useState<String>('')
-
-    function detectMobileBrowserOS() {
-        const userAgent = navigator.userAgent
-
-        let browser: string
-        let os: string
-
-        browser = ''
-        os = ''
-        // Check for popular mobile browsers
-        if (/CriOS/i.test(userAgent)) {
-            browser = 'Chrome'
-        } else if (/FxiOS/i.test(userAgent)) {
-            browser = 'Firefox'
-        } else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) {
-            browser = 'Safari'
-        }
-
-        // Check for common mobile operating systems
-        if (/iP(ad|hone|od)/i.test(userAgent)) {
-            os = 'iOS'
-        } else if (/Android/i.test(userAgent)) {
-            os = 'Android'
-        }
-
-        setOs(os.toString())
-        setBrowser(browser.toString())
-    }
-
-    useEffect(() => {
-        detectMobileBrowserOS()
-    }, [])
-
-    useEffect(() => {
-        // Client-side detection using window.matchMedia (optional)
-        if (typeof window !== 'undefined') {
-            const mediaQuery = window.matchMedia('(display-mode: standalone)')
-            const handleChange = (event: MediaQueryListEvent) => setIsStandalone(event.matches)
-            mediaQuery.addEventListener('change', handleChange)
-            setIsStandalone(mediaQuery.matches) // Set initial client-side state
-            //alert(mediaQuery.matches)
-            return () => mediaQuery.removeEventListener('change', handleChange)
-        }
-    }, [])
-
-
-
-
     const contextValue = {
         user: connectedUser,
         showPortfolioData: showPortfolioData,
@@ -427,10 +359,6 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
         indexDetailsMap: indexDetailsMap,
         uploadedPPLink: uploadedPPLink,
         chosenPPType: chosenPPType,
-        testValue: t,
-        isStandalone: isStandalone,
-        os: os,
-        browser: browser,
         handleCopyFunction: handleCopy,
         handleCopyIndexDetailsFunction: handleCopyIndexDetails
     };

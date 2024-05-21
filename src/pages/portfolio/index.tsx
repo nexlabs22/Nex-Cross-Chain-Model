@@ -1,4 +1,5 @@
 'use client'
+import { usePWA } from "@/providers/PWAProvider";
 import { usePortfolio } from "@/providers/PortfolioProvider";
 import { Box } from "@mui/material";
 import { lightTheme } from "@/theme/theme";
@@ -57,9 +58,9 @@ import { useLandingPageStore } from "@/store/store";
 
 
 export default function Portfolio() {
+	
 	const address = useAddress()
 	const {
-		testValue,
 		user,
 		showPortfolioData,
 		chartArr,
@@ -84,9 +85,6 @@ export default function Portfolio() {
 		indexDetailsMap,
 		uploadedPPLink,
 		chosenPPType,
-		isStandalone,
-		browser,
-		os,
 		handleCopyFunction,
 		handleCopyIndexDetailsFunction
 	} = usePortfolio()
@@ -96,6 +94,7 @@ export default function Portfolio() {
 	const [chartType, setChartType] = useState('pie')
 	const { mode } = useLandingPageStore()
 	const { changeSelectedIndex } = useLandingPageStore()
+	const {isStandalone} = usePWA()
 
 	return (
 		<>
