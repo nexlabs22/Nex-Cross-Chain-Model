@@ -1,52 +1,32 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 // Store
 import useTradePageStore from '@/store/tradeStore'
-import { useLandingPageStore } from '@/store/store'
-
-import { UseContractResult, toWei, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
+import { UseContractResult, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
 import {
-	sepoliaCrypto5V2IndexToken,
 	sepoliaCrypto5V2Factory,
 	sepoliaUsdtAddress,
 	sepoliaWethAddress,
-	sepoliaAnfiV2IndexToken,
-	sepoliaAnfiV2Factory,
 	sepoliaTokenFaucet,
 } from '@/constants/contractAddresses'
-import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi, tokenFaucetAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
+import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi, tokenFaucetAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
-import PaymentModal from '@/components/PaymentModal';
-import { SmartContract, ThirdwebSDK } from '@thirdweb-dev/sdk'
-
+import { SmartContract } from '@thirdweb-dev/sdk'
 import { BigNumber } from 'alchemy-sdk'
-
-import { BsInfoCircle } from 'react-icons/bs'
 import { GenericToast } from '@/components/GenericToast';
 import { createPublicClient, http, parseEther } from 'viem'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
 import { ethers } from 'ethers'
-import { LiaWalletSolid } from 'react-icons/lia'
-import Switch from 'react-switch'
-import GenericTooltip from '@/components/GenericTooltip';
 import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
 import { sepolia } from 'viem/chains'
 import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
 import { getNewCrossChainPortfolioBalance } from '@/hooks/getNewCrossChainPortfolioBalance'
 import { useRouter } from 'next/router'
-import { GoArrowUpRight } from 'react-icons/go'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { Coin } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
-import { IOSSwitch, PWAProfileTextField } from '@/theme/overrides'
-import { IoIosArrowBack } from 'react-icons/io'
-import { Stack, Container, Box, Paper, Typography, Button, BottomNavigation, BottomNavigationAction } from '@mui/material'
-import { lightTheme } from '@/theme/theme'
-import Sheet from 'react-modal-sheet'
 
 interface DeFiSwapContextProps {
-	testValue: string
 	isPaymentModalOpen: boolean
 	isChecked: boolean
 	firstInputValue: string
@@ -111,7 +91,6 @@ interface DeFiSwapContextProps {
 }
 
 const DeFiSwapContext = createContext<DeFiSwapContextProps>({
-	testValue: "",
 	isPaymentModalOpen: false,
 	isChecked: false,
 	firstInputValue: "0",
@@ -193,24 +172,18 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
 	const [isChecked, setChecked] = useState(false)
-
 	const [firstInputValue, setFirstInputValue] = useState('0')
 	const [secondInputValue, setSecondInputValue] = useState('0')
-
 	const [cookingModalVisible, setCookingModalVisible] = useState(false)
 	const [userEthBalance, setUserEthBalance] = useState(0)
-
 	const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
 	const [fromConvertedPrice, setFromConvertedPrice] = useState(0)
-
 	const [to1UsdPrice, setTo1UsdPrice] = useState(0)
 	const [toConvertedPrice, setToConvertedPrice] = useState(0)
-
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
 	const [loadingTokens, setLoadingTokens] = useState(true)
 	const [currentArrayId, setCurrentArrayId] = useState(0)
 	const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([[], []])
-
 	const {
 		isFromCurrencyModalOpen,
 		isToCurrencyModalOpen,
@@ -230,7 +203,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		isMainnet,
 		setIsmainnet,
 	} = useTradePageStore()
-
 	const address = useAddress()
 	const signer = useSigner()
 	const router = useRouter()
@@ -243,33 +215,28 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		})
 		changeSwapToCur(coinDetails[0])
 	}, [])
-
+	
 	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
 	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
 	const faucetContract: UseContractResult = useContract(sepoliaTokenFaucet, tokenFaucetAbi)
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
 	const toTokenContract = useContract(swapToCur.address, tokenAbi)
-
 	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
 	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
 	const fromTokenTotalSupply = useContractRead(fromTokenContract.contract, 'totalSupply', [])
 	const toTokenTotalSupply = useContractRead(toTokenContract.contract, 'totalSupply', [])
 	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
 	const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
-
 	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
 	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
 	const faucetHook = useContractWrite(faucetContract.contract, 'getToken')
-
 	const curr = swapFromCur.factoryAddress ? swapFromCur : swapToCur
 	const IndexContract: UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
 	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data / 10000
-
 	const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
 	const defiPortfolioValue = GetDefiPortfolioBalance()
-
 	// useEffect(() => {
 	// 	async function getIssuanceOutput() {
 	// 		try {
@@ -278,7 +245,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	// 				const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 	// 				const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
 	// 				const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
-
 	// 				setSecondInputValue(num(output).toString())
 	// 			}
 	// 		} catch (error) {
@@ -287,7 +253,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	// 	}
 	// 	// getIssuanceOutput()
 	// }, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
-
 	useEffect(() => {
 		async function getIssuanceOutput2() {
 			try {
@@ -326,7 +291,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 		getIssuanceOutput2()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
-
 	// useEffect(() => {
 	// 	async function getRedemptionOutput() {
 	// 		try {
@@ -342,7 +306,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	// 	}
 	// 	// getRedemptionOutput()
 	// }, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
-
 	useEffect(() => {
 		async function getRedemptionOutput2() {
 			try {
@@ -377,7 +340,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 		getRedemptionOutput2()
 	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
-
+	
 	async function fetchData(tokenDetails: Coin, place: string) {
 		try {
 			const price = await convertToUSD({ tokenAddress: tokenDetails.address, tokenDecimals: tokenDetails.decimals }, ethPriceInUsd, isMainnet)
@@ -394,7 +357,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 				swapFromCur.Symbol !== 'WETH' && swapFromCur.Symbol !== 'ETH' ? fetchData(swapFromCur, 'From') : ethPriceInUsd,
 				swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH' ? fetchData(swapToCur, 'To') : ethPriceInUsd,
 			])
-
 			setFrom1UsdPrice(fromPrice)
 			setTo1UsdPrice(toPrice)
 		} catch (error) {
@@ -558,7 +520,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			method: 'GET',
 			headers: { accept: 'application/json' },
 		}
-
 		try {
 			const response = await fetch(`https://li.quest/v1/tokens`, options)
 			const data = await response.json()
@@ -576,7 +537,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					decimals: coin.decimals,
 				}))
 			})
-
 			return coins
 		} catch (error) {
 			console.error(error)
@@ -615,7 +575,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		let switchReserve: Coin = swapFromCur
 		changeSwapFromCur(swapToCur)
 		changeSwapToCur(switchReserve)
-
 		if (switchReserve.isNexlabToken) {
 			if (mergedCoinList[0].some((obj) => obj.isNexlabToken)) {
 				const newArray = [mergedCoinList[1], mergedCoinList[0]]
@@ -633,7 +592,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 				setMergedCoinList(newArray)
 			}
 		}
-
 		setSecondInputValue(firstInputValue)
 	}
 
@@ -908,12 +866,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}
 
-
-
-	const t = "hello world"
-
 	const contextValue = {
-		testValue: t,
 		isPaymentModalOpen: isPaymentModalOpen,
 		isChecked: isChecked,
 		firstInputValue: firstInputValue,

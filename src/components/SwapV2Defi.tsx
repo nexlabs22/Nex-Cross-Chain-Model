@@ -4,8 +4,6 @@
 
 // basics :
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
-
 // icons :
 import { BiSolidChevronDown } from 'react-icons/bi'
 import { AiOutlineSwap } from 'react-icons/ai'
@@ -20,41 +18,17 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
 // Assets:
 import mesh1 from '@assets/images/mesh1.png'
-import { UseContractResult, toWei, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
 import {
-	sepoliaCrypto5V2IndexToken,
-	sepoliaCrypto5V2Factory,
-	sepoliaUsdtAddress,
 	sepoliaWethAddress,
-	sepoliaAnfiV2IndexToken,
-	sepoliaAnfiV2Factory,
-	sepoliaTokenFaucet,
 } from '@/constants/contractAddresses'
-import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi, tokenFaucetAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
-import { toast } from 'react-toastify'
 import PaymentModal from './PaymentModal'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-
-import { BigNumber } from 'alchemy-sdk'
-
 import { BsInfoCircle } from 'react-icons/bs'
-
-import { GenericToast } from './GenericToast'
-import { createPublicClient, http, parseEther } from 'viem'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
-import { ethers } from 'ethers'
 import { LiaWalletSolid } from 'react-icons/lia'
 import Switch from 'react-switch'
 import GenericTooltip from './GenericTooltip'
-import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
-import { sepolia } from 'viem/chains'
-import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
-import { getNewCrossChainPortfolioBalance } from '@/hooks/getNewCrossChainPortfolioBalance'
-import { useRouter } from 'next/router'
 import { GoArrowUpRight } from 'react-icons/go'
-import { sepoliaTokens } from '@/constants/testnetTokens'
-import { Coin } from '@/types/nexTokenData'
-import convertToUSD from '@/utils/convertToUsd'
+
 
 import { IOSSwitch, PWAProfileTextField } from '@/theme/overrides'
 import { IoIosArrowBack } from 'react-icons/io'
@@ -67,7 +41,7 @@ import { useDeFiSwap } from '@/providers/DefiSwapProvider'
 
 const SwapV2Defi = () => {
 
-	const {isStandalone, browser, os} = usePWA()
+	const {isStandalone} = usePWA()
 	const {
 		isFromCurrencyModalOpen,
 		isToCurrencyModalOpen,
@@ -89,7 +63,6 @@ const SwapV2Defi = () => {
 	} = useTradePageStore()
 	const {mode} = useLandingPageStore()
 	const {
-		testValue,
 		isPaymentModalOpen,
 		isChecked,
 		firstInputValue,
