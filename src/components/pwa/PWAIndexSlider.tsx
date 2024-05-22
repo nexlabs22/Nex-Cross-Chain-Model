@@ -120,7 +120,7 @@ const PWAIndexSLider = () => {
                                         fontWeight: 600,
                                     }}>
                                         {
-                                            defaultIndexObject.symbol
+                                            defaultIndexObject.shortSymbol
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
@@ -169,7 +169,7 @@ const PWAIndexSLider = () => {
                                         fontWeight: 600,
                                     }}>
                                         {
-                                            othertIndexObject.symbol
+                                            othertIndexObject.shortSymbol
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
