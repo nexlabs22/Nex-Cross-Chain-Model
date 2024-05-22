@@ -13,7 +13,8 @@ import { useChartDataStore, useLandingPageStore } from "@/store/store";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-
+import { useDashboard } from "@/providers/DashboardProvider";
+import { FormatToViewNumber, num } from '@/hooks/math'
 
 const GenericGradientAreaChart = dynamic(
     () => import("@components/pwa/PWAGenericAreaChart"),
@@ -25,7 +26,7 @@ const GenericGradientAreaChart = dynamic(
 
 const PWAIndexSLider = () => {
 
-
+    const { defaultIndexObject, othertIndexObject } = useDashboard()
     const { fetchIndexData, ANFIData, CR5Data } = useChartDataStore();
     useEffect(() => {
         fetchIndexData({ tableName: "histcomp", index: "OurIndex" });
@@ -107,55 +108,102 @@ const PWAIndexSLider = () => {
                     ]}
                 >
                     {
-                        Indices.map((index, key) => {
-                            return (
-                                <Stack key={key} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
-                                    changeSelectedIndex(index.chartName);
-                                    router.push('/pwa_tradeIndex')
-                                }}>
-                                    <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
-                                    <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
-                                        <Typography variant="subtitle1" sx={{
-                                            color: lightTheme.palette.text.primary,
-                                            fontWeight: 600,
-                                        }}>
-                                            {
-                                                index.symbol
-                                            }
-                                        </Typography>
-                                        <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.nexGreen.main,
-                                            fontWeight: 600,
-                                            fontSize: ".8rem",
-                                            backgroundColor: lightTheme.palette.pageBackground.main,
-                                            paddingX: "0.8rem",
-                                            paddingY: "0.2rem",
-                                            borderRadius: "1rem",
-                                            border: "solid 1px rgba(37, 37, 37, 0.5)",
-                                            boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
-                                        }}>
-                                            {
-                                                index.change
-                                            }
-                                        </Typography>
-                                    </Stack>
+                        defaultIndexObject ? (
+                            <Stack width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
+                                changeSelectedIndex(defaultIndexObject.name);
+                                router.push('/pwa_tradeIndex')
+                            }}>
+                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
                                     <Typography variant="subtitle1" sx={{
                                         color: lightTheme.palette.text.primary,
                                         fontWeight: 600,
-                                        fontSize: "1rem",
-                                        width: "90%"
                                     }}>
-                                        ${
-                                            index.price
+                                        {
+                                            defaultIndexObject.symbol
                                         }
                                     </Typography>
-                                    <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1}>
-                                        <GenericGradientAreaChart data={dataForChart[index.symbol]}/>
-                                    </Stack>
-
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.nexGreen.main,
+                                        fontWeight: 600,
+                                        fontSize: ".8rem",
+                                        backgroundColor: lightTheme.palette.pageBackground.main,
+                                        paddingX: "0.8rem",
+                                        paddingY: "0.2rem",
+                                        borderRadius: "1rem",
+                                        border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                        boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                    }}>
+                                        {
+                                            defaultIndexObject.chg24h
+                                        }%
+                                    </Typography>
                                 </Stack>
-                            )
-                        })
+                                <Typography variant="subtitle1" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                    fontSize: "1rem",
+                                    width: "90%"
+                                }}>
+                                    ${
+                                        FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })
+                                    }
+                                </Typography>
+                                <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1}>
+                                    <GenericGradientAreaChart data={dataForChart[defaultIndexObject.shortSymbol]}/>
+                                </Stack>
+
+                            </Stack>
+                        ) : ("")
+                    }
+                    {
+                        othertIndexObject ? (
+                            <Stack width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
+                                changeSelectedIndex(othertIndexObject.name);
+                                router.push('/pwa_tradeIndex')
+                            }}>
+                                <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
+                                    <Typography variant="subtitle1" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 600,
+                                    }}>
+                                        {
+                                            othertIndexObject.symbol
+                                        }
+                                    </Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.nexGreen.main,
+                                        fontWeight: 600,
+                                        fontSize: ".8rem",
+                                        backgroundColor: lightTheme.palette.pageBackground.main,
+                                        paddingX: "0.8rem",
+                                        paddingY: "0.2rem",
+                                        borderRadius: "1rem",
+                                        border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                        boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                    }}>
+                                        {
+                                            othertIndexObject.chg24h
+                                        }%
+                                    </Typography>
+                                </Stack>
+                                <Typography variant="subtitle1" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                    fontSize: "1rem",
+                                    width: "90%"
+                                }}>
+                                    ${
+                                        FormatToViewNumber({ value: Number(othertIndexObject?.mktPrice), returnType: 'string' })
+                                    }
+                                </Typography>
+                                <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1}>
+                                    <GenericGradientAreaChart data={dataForChart[othertIndexObject.shortSymbol]}/>
+                                </Stack>
+
+                            </Stack>
+                        ) : ("")
                     }
                 </Slider>
             </Stack>

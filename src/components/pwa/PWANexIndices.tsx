@@ -16,6 +16,7 @@ import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import { useRouter } from "next/router";
 import { useDashboard } from "@/providers/DashboardProvider";
+import { FormatToViewNumber, num } from '@/hooks/math'
 
 const PWANexIndices = () => {
 
@@ -53,7 +54,7 @@ const PWANexIndices = () => {
                                 fontWeight: 700
                             }}>
                                 {
-                                    defaultIndexObject?.mktPrice
+                                    listType
                                 }
                             </Typography>
                             <IoIosArrowDown size={22} color={lightTheme.palette.text.primary}></IoIosArrowDown>
@@ -139,7 +140,7 @@ const PWANexIndices = () => {
                                     fontWeight: 600,
                                 }}>
                                     ${
-                                        defaultIndexObject?.mktPrice
+                                        FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })
                                     }
                                 </Typography>
                                 <Typography variant="caption" sx={{
@@ -155,7 +156,7 @@ const PWANexIndices = () => {
                                 }}>
                                     {
                                         defaultIndexObject?.chg24h
-                                    }
+                                    }%
                                 </Typography>
                             </Stack>
                         </Stack>
@@ -169,7 +170,7 @@ const PWANexIndices = () => {
                             router.push('/pwa_tradeIndex')
                         }}>
                             <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"></Image>
                                 <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                     <Typography variant="caption" sx={{
                                         color: lightTheme.palette.text.primary,
@@ -196,7 +197,7 @@ const PWANexIndices = () => {
                                     fontWeight: 600,
                                 }}>
                                     ${
-                                        othertIndexObject?.mktPrice
+                                        FormatToViewNumber({ value: Number(othertIndexObject?.mktPrice), returnType: 'string' })
                                     }
                                 </Typography>
                                 <Typography variant="caption" sx={{
@@ -212,7 +213,7 @@ const PWANexIndices = () => {
                                 }}>
                                     {
                                         othertIndexObject?.chg24h
-                                    }
+                                    }%
                                 </Typography>
                             </Stack>
                         </Stack>
