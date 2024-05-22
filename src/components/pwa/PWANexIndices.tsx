@@ -15,16 +15,18 @@ import { Menu, MenuButton, MenuItem } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import { useRouter } from "next/router";
- 
+import { useDashboard } from "@/providers/DashboardProvider";
+
 const PWANexIndices = () => {
 
+    const { defaultIndexObject, othertIndexObject } = useDashboard()
     const [listType, setListType] = useState<string>("All Nex Indices")
-    const {changeSelectedIndex} = useLandingPageStore()
+    const { changeSelectedIndex } = useLandingPageStore()
     const Indices = [
         {
             name: "Anti Inflation Index",
             symbol: "ANFI",
-            chartName:'ANFI',
+            chartName: 'ANFI',
             logo: anfiLogo,
             price: "2453.4",
             change: "N/A",
@@ -32,7 +34,7 @@ const PWANexIndices = () => {
         {
             name: "CRYPTO5",
             symbol: "CR5",
-            chartName:'CRYPTO5',
+            chartName: 'CRYPTO5',
             logo: cr5Logo,
             price: "784.8",
             change: "N/A",
@@ -50,14 +52,16 @@ const PWANexIndices = () => {
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 700
                             }}>
-                                {listType}
+                                {
+                                    defaultIndexObject?.mktPrice
+                                }
                             </Typography>
                             <IoIosArrowDown size={22} color={lightTheme.palette.text.primary}></IoIosArrowDown>
                         </Stack>
-                        
+
                     </MenuButton>
                 }>
-                    <MenuItem onClick={()=>{setListType("Favorites")}}>
+                    <MenuItem onClick={() => { setListType("Favorites") }}>
                         <Typography variant="body1" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 600
@@ -65,7 +69,7 @@ const PWANexIndices = () => {
                             Favorites
                         </Typography>
                     </MenuItem>
-                    <MenuItem onClick={()=>{setListType("My Watchlist")}}>
+                    <MenuItem onClick={() => { setListType("My Watchlist") }}>
                         <Typography variant="body1" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 600
@@ -73,7 +77,7 @@ const PWANexIndices = () => {
                             Watchlist
                         </Typography>
                     </MenuItem>
-                    <MenuItem onClick={()=>{setListType("All Nex Indices")}}>
+                    <MenuItem onClick={() => { setListType("All Nex Indices") }}>
                         <Typography variant="body1" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 600
@@ -101,62 +105,118 @@ const PWANexIndices = () => {
             </Stack>
             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5} marginBottom={2}>
                 {
-                    Indices.map((index, key) => {
-                        return (
-                            <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={()=>{
-                                changeSelectedIndex(index.chartName);
-                                router.push('/pwa_tradeIndex')
-                            }}>
-                                <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                    <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
-                                    <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
-                                        <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.text.primary,
-                                            fontWeight: 600,
-                                        }}>
-                                            {
-                                                index.name
-                                            }
-                                        </Typography>
-                                        <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.text.primary,
-                                            fontWeight: 500,
-                                        }}>
-                                            {
-                                                index.symbol
-                                            }
-                                        </Typography>
-                                    </Stack>
-
-                                </Stack>
-                                <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                    defaultIndexObject ? (
+                        <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={() => {
+                            if (defaultIndexObject) changeSelectedIndex(defaultIndexObject?.name);
+                            else changeSelectedIndex("CRYPTO5")
+                            router.push('/pwa_tradeIndex')
+                        }}>
+                            <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                     <Typography variant="caption" sx={{
                                         color: lightTheme.palette.text.primary,
                                         fontWeight: 600,
                                     }}>
-                                        ${
-                                            index.price
+                                        {
+                                            defaultIndexObject.name
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: lightTheme.palette.nexGreen.main,
-                                        fontWeight: 600,
-                                        fontSize: ".8rem",
-                                        backgroundColor: lightTheme.palette.pageBackground.main,
-                                        paddingX: "0.8rem",
-                                        paddingY: "0.2rem",
-                                        borderRadius: "1rem",
-                                        border: "solid 1px rgba(37, 37, 37, 0.5)",
-                                        boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 500,
                                     }}>
                                         {
-                                            index.change
+                                            defaultIndexObject.symbol
                                         }
                                     </Typography>
                                 </Stack>
+
                             </Stack>
-                        )
-                    })
+                            <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ${
+                                        defaultIndexObject?.mktPrice
+                                    }
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.nexGreen.main,
+                                    fontWeight: 600,
+                                    fontSize: ".8rem",
+                                    backgroundColor: lightTheme.palette.pageBackground.main,
+                                    paddingX: "0.8rem",
+                                    paddingY: "0.2rem",
+                                    borderRadius: "1rem",
+                                    border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                    boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                }}>
+                                    {
+                                        defaultIndexObject?.chg24h
+                                    }
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                    ) : ("")
+                }
+                {
+                    othertIndexObject ? (
+                        <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={() => {
+                            if (othertIndexObject) changeSelectedIndex(othertIndexObject?.name);
+                            else changeSelectedIndex("CRYPTO5")
+                            router.push('/pwa_tradeIndex')
+                        }}>
+                            <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 600,
+                                    }}>
+                                        {
+                                            othertIndexObject.name
+                                        }
+                                    </Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 500,
+                                    }}>
+                                        {
+                                            othertIndexObject.symbol
+                                        }
+                                    </Typography>
+                                </Stack>
+
+                            </Stack>
+                            <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ${
+                                        othertIndexObject?.mktPrice
+                                    }
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.nexGreen.main,
+                                    fontWeight: 600,
+                                    fontSize: ".8rem",
+                                    backgroundColor: lightTheme.palette.pageBackground.main,
+                                    paddingX: "0.8rem",
+                                    paddingY: "0.2rem",
+                                    borderRadius: "1rem",
+                                    border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                    boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                }}>
+                                    {
+                                        othertIndexObject?.chg24h
+                                    }
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                    ) : ("")
                 }
             </Stack>
         </Stack>

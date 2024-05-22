@@ -12,35 +12,10 @@ import { emptyData } from '@/constants/emptyChartData'
 const PWAProfileOverviewHeader = () => {
     const address = useAddress()
 	const {  
-		user, 
 		showPortfolioData, 
 		chartArr,
-		indexPercent, 
-		todayPortfolioPrice, 
-		yesterdayPortfolioPrice, 
 		portfolio24hChange,
-		anfiTokenContract,
-		crypto5TokenContract,
-		anfiTokenBalance,
-		crypto5TokenBalance,
-		anfiPercent,
-		crypto5Percent,
-		pieData,
-		nexTokenAssetData,
 		totalPortfolioBalance,
-		positionHistoryDefi,
-		positionHistoryCrosschain,
-		combinedData,
-		latestObjectsMap,
-		indexDetails,
-		indexDetailsMap,
-		uploadedPPLink,
-        chosenPPType,
-		isStandalone,
-		browser,
-		os,
-		handleCopyFunction,
-		handleCopyIndexDetailsFunction
 	} = usePortfolio()
 
 
