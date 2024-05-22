@@ -11,8 +11,7 @@ import { emptyData } from '@/constants/emptyChartData'
 
 const PWAProfileOverviewHeader = () => {
     const address = useAddress()
-	const { 
-		testValue, 
+	const {  
 		user, 
 		showPortfolioData, 
 		chartArr,
