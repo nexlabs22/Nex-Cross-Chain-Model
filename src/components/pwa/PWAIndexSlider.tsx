@@ -150,7 +150,7 @@ const PWAIndexSLider = () => {
                                     }
                                 </Typography>
                                 <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1}>
-                                    <GenericGradientAreaChart data={dataForChart[defaultIndexObject.shortSymbol]}/>
+                                    <GenericGradientAreaChart data={dataForChart[defaultIndexObject.name]}/>
                                 </Stack>
 
                             </Stack>
@@ -199,7 +199,7 @@ const PWAIndexSLider = () => {
                                     }
                                 </Typography>
                                 <Stack width={"100%"} height={100} borderRadius={'.8rem'} marginTop={1}>
-                                    <GenericGradientAreaChart data={dataForChart[othertIndexObject.shortSymbol]}/>
+                                    <GenericGradientAreaChart data={dataForChart[othertIndexObject.name]}/>
                                 </Stack>
 
                             </Stack>
