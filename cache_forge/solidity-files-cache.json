@@ -657,8 +657,8 @@
       }
     },
     "contracts/factory/IndexFactory.sol": {
-      "lastModificationDate": 1711959447995,
-      "contentHash": "fdd6d6ec8b2c7a3f218ac4d4c39c10d4",
+      "lastModificationDate": 1716494438855,
+      "contentHash": "d676e279cfe822ad165df3a661117eb2",
       "sourceName": "contracts/factory/IndexFactory.sol",
       "solcConfig": {
         "settings": {
@@ -2115,7 +2115,7 @@
       "versionRequirement": "^0.8.0",
       "artifacts": {
         "MockV3Aggregator": {
-          "0.8.17+commit.8df45f5f.Windows.msvc": "test\\MockV3Aggregator.sol\\MockV3Aggregator.0.8.17.json"
+          "0.8.17+commit.8df45f5f.Windows.msvc": "MockV3Aggregator.sol\\MockV3Aggregator.0.8.17.json"
         }
       }
     },
@@ -2876,8 +2876,8 @@
       }
     },
     "contracts/vault/CrossChainFactory.sol": {
-      "lastModificationDate": 1711624337289,
-      "contentHash": "bd457d739556e7e6f0590ff0d4b31354",
+      "lastModificationDate": 1716494233944,
+      "contentHash": "b4f1759d92851b9bab81a499fae4880d",
       "sourceName": "contracts/vault/CrossChainFactory.sol",
       "solcConfig": {
         "settings": {
@@ -4920,7 +4920,7 @@
       "versionRequirement": "^0.8.0",
       "artifacts": {
         "Ownable": {
-          "0.8.17+commit.8df45f5f.Windows.msvc": "Ownable.sol\\Ownable.0.8.17.json"
+          "0.8.17+commit.8df45f5f.Windows.msvc": "Ownable.sol\\Ownable.json"
         }
       }
     },
@@ -6367,8 +6367,8 @@
       }
     },
     "test/foundry/ContractDeployer.sol": {
-      "lastModificationDate": 1715718879704,
-      "contentHash": "4c0c10ef4188e86006a9d57458216135",
+      "lastModificationDate": 1716491152767,
+      "contentHash": "4771f3b58861ae3cdfc700d11282dada",
       "sourceName": "test/foundry/ContractDeployer.sol",
       "solcConfig": {
         "settings": {
@@ -6498,6 +6498,142 @@
       "artifacts": {
         "ContractDeployer": {
           "0.8.7+commit.e28d00a7.Windows.msvc": "ContractDeployer.sol\\ContractDeployer.json"
+        }
+      }
+    },
+    "test/foundry/IndexFactory.t.sol": {
+      "lastModificationDate": 1716496047753,
+      "contentHash": "7c218654afe6ce2a31708cdd25590b47",
+      "sourceName": "test/foundry/IndexFactory.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "london",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "contracts\\Swap.sol",
+        "contracts\\ccip\\CCIPReceiver.sol",
+        "contracts\\chainlink\\ChainlinkClient.sol",
+        "contracts\\factory\\IndexFactory.sol",
+        "contracts\\factory\\IndexFactoryStorage.sol",
+        "contracts\\interfaces\\IUniswapV2Factory.sol",
+        "contracts\\interfaces\\IUniswapV2Router01.sol",
+        "contracts\\interfaces\\IUniswapV2Router02.sol",
+        "contracts\\interfaces\\IUniswapV3Factory2.sol",
+        "contracts\\interfaces\\IUniswapV3Pool.sol",
+        "contracts\\interfaces\\IWETH.sol",
+        "contracts\\interfaces\\pool\\IUniswapV3PoolActions.sol",
+        "contracts\\interfaces\\pool\\IUniswapV3PoolDerivedState.sol",
+        "contracts\\interfaces\\pool\\IUniswapV3PoolErrors.sol",
+        "contracts\\interfaces\\pool\\IUniswapV3PoolEvents.sol",
+        "contracts\\interfaces\\pool\\IUniswapV3PoolImmutables.sol",
+        "contracts\\interfaces\\pool\\IUniswapV3PoolOwnerActions.sol",
+        "contracts\\interfaces\\pool\\IUniswapV3PoolState.sol",
+        "contracts\\libraries\\FullMath.sol",
+        "contracts\\libraries\\OracleLibrary.sol",
+        "contracts\\libraries\\TickMath.sol",
+        "contracts\\proposable\\ProposableOwnableUpgradeable.sol",
+        "contracts\\test\\LinkToken.sol",
+        "contracts\\test\\MockApiOracle.sol",
+        "contracts\\test\\MockRouter.sol",
+        "contracts\\test\\MockV3Aggregator.sol",
+        "contracts\\test\\TestSwap.sol",
+        "contracts\\test\\UniswapFactoryByteCode.sol",
+        "contracts\\test\\UniswapPositionManagerByteCode.sol",
+        "contracts\\test\\UniswapRouterByteCode.sol",
+        "contracts\\test\\UniswapWETHByteCode.sol",
+        "contracts\\test\\libs\\LinkTokenReceiver.sol",
+        "contracts\\test\\libs\\SafeMathChainlink.sol",
+        "contracts\\token\\IndexToken.sol",
+        "contracts\\token\\TokenInterface.sol",
+        "contracts\\uniswap\\INonfungiblePositionManager.sol",
+        "contracts\\uniswap\\Token.sol",
+        "contracts\\vault\\CrossChainFactory.sol",
+        "contracts\\vault\\CrossChainVault.sol",
+        "lib/forge-std/lib/ds-test/src\\test.sol",
+        "lib/forge-std/src/Base.sol",
+        "lib/forge-std/src/StdAssertions.sol",
+        "lib/forge-std/src/StdChains.sol",
+        "lib/forge-std/src/StdCheats.sol",
+        "lib/forge-std/src/StdError.sol",
+        "lib/forge-std/src/StdInvariant.sol",
+        "lib/forge-std/src/StdJson.sol",
+        "lib/forge-std/src/StdMath.sol",
+        "lib/forge-std/src/StdStorage.sol",
+        "lib/forge-std/src/StdStyle.sol",
+        "lib/forge-std/src/StdUtils.sol",
+        "lib/forge-std/src\\Test.sol",
+        "lib/forge-std/src/Vm.sol",
+        "lib/forge-std/src/console.sol",
+        "lib/forge-std/src/console2.sol",
+        "lib/forge-std/src/interfaces/IMulticall3.sol",
+        "lib/forge-std/src/mocks/MockERC20.sol",
+        "lib/forge-std/src/mocks/MockERC721.sol",
+        "lib/forge-std/src/safeconsole.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/Chainlink.sol",
+        "node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorInterface.sol",
+        "node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorV2V3Interface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/interfaces/ChainlinkRequestInterface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/interfaces/ENSInterface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/interfaces/LinkTokenInterface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/interfaces/OperatorInterface.sol",
+        "node_modules/@chainlink/contracts/src/v0.8/interfaces/OracleInterface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/interfaces/PointerInterface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/tests/MockV3Aggregator.sol",
+        "node_modules/@chainlink/contracts/src/v0.8/vendor/BufferChainlink.sol",
+        "node_modules/@chainlink/contracts/src/v0.8/vendor/CBORChainlink.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/vendor/ENSResolver.sol",
+        "node_modules/@chainlink\\contracts-ccip/src/v0.8/ccip/interfaces/IAny2EVMMessageReceiver.sol",
+        "node_modules/@chainlink\\contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol",
+        "node_modules/@chainlink\\contracts-ccip/src/v0.8/ccip/libraries/Client.sol",
+        "node_modules/@chainlink\\contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/utils/introspection/IERC165.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/ERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+        "node_modules/@openzeppelin/contracts/utils/Context.sol",
+        "node_modules/@openzeppelin\\contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "node_modules/@openzeppelin\\contracts-upgradeable/proxy/utils/Initializable.sol",
+        "node_modules/@openzeppelin\\contracts-upgradeable/security/PausableUpgradeable.sol",
+        "node_modules/@openzeppelin\\contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
+        "node_modules/@uniswap\\v3-core/contracts/interfaces/IUniswapV3Factory.sol",
+        "node_modules/@uniswap\\v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol",
+        "node_modules/@uniswap\\v3-periphery/contracts/interfaces/IQuoter.sol",
+        "node_modules/@uniswap\\v3-periphery/contracts/interfaces/ISwapRouter.sol",
+        "node_modules/@uniswap\\v3-periphery/contracts/libraries/TransferHelper.sol",
+        "test\\foundry\\ContractDeployer.sol"
+      ],
+      "versionRequirement": "^0.8.7",
+      "artifacts": {
+        "CounterTest": {
+          "0.8.7+commit.e28d00a7.Windows.msvc": "IndexFactory.t.sol\\CounterTest.json"
         }
       }
     },

@@ -585,7 +585,7 @@ contract CrossChainIndexFactory is
                 targetVersions[i]
             );
             }
-            uint newTokenValue = oldTokenValue + vars.wethAmount;
+            uint newTokenValue = oldTokenValue + wethToSwap;
             vars.oldTokenValues[i] = convertEthToUsd(oldTokenValue);
             vars.newTokenValues[i] = convertEthToUsd(newTokenValue);
         }

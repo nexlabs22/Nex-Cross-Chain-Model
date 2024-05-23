@@ -576,23 +576,23 @@
   },
   "ast": {
     "absolutePath": "node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorV2V3Interface.sol",
-    "id": 68675,
+    "id": 69811,
     "exportedSymbols": {
       "AggregatorInterface": [
-        68722
+        69858
       ],
       "AggregatorV2V3Interface": [
-        68674
+        69810
       ],
       "AggregatorV3Interface": [
-        61513
+        62649
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:183:67",
     "nodes": [
       {
-        "id": 68667,
+        "id": 69803,
         "nodeType": "PragmaDirective",
         "src": "32:23:67",
         "nodes": [],
@@ -604,33 +604,33 @@
         ]
       },
       {
-        "id": 68668,
+        "id": 69804,
         "nodeType": "ImportDirective",
         "src": "57:35:67",
         "nodes": [],
         "absolutePath": "node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorInterface.sol",
         "file": "./AggregatorInterface.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 68675,
-        "sourceUnit": 68723,
+        "scope": 69811,
+        "sourceUnit": 69859,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 68669,
+        "id": 69805,
         "nodeType": "ImportDirective",
         "src": "93:37:67",
         "nodes": [],
         "absolutePath": "node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
         "file": "./AggregatorV3Interface.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 68675,
-        "sourceUnit": 61514,
+        "scope": 69811,
+        "sourceUnit": 62650,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 68674,
+        "id": 69810,
         "nodeType": "ContractDefinition",
         "src": "132:82:67",
         "nodes": [],
@@ -638,25 +638,25 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 68670,
+              "id": 69806,
               "name": "AggregatorInterface",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 68722,
+              "referencedDeclaration": 69858,
               "src": "169:19:67"
             },
-            "id": 68671,
+            "id": 69807,
             "nodeType": "InheritanceSpecifier",
             "src": "169:19:67"
           },
           {
             "baseName": {
-              "id": 68672,
+              "id": 69808,
               "name": "AggregatorV3Interface",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 61513,
+              "referencedDeclaration": 62649,
               "src": "190:21:67"
             },
-            "id": 68673,
+            "id": 69809,
             "nodeType": "InheritanceSpecifier",
             "src": "190:21:67"
           }
@@ -665,13 +665,13 @@
         "contractKind": "interface",
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          68674,
-          61513,
-          68722
+          69810,
+          62649,
+          69858
         ],
         "name": "AggregatorV2V3Interface",
         "nameLocation": "142:23:67",
-        "scope": 68675,
+        "scope": 69811,
         "usedErrors": []
       }
     ],

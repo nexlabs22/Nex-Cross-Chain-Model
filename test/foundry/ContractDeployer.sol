@@ -80,7 +80,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
 
     Token usdt;
 
-    Token crossChainToken;
+    // Token crossChainToken;
 
     address factoryAddress;
     address wethAddress;
@@ -94,7 +94,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
     CrossChainIndexFactory public crossChainIndexFactory;
     CrossChainVault public crossChainVault;
     IndexFactoryStorage public indexFactoryStorage;
-    CrossChainToken public crossChainToken;
+    Token public crossChainToken;
     TestSwap public testSwap;
     MockV3Aggregator public ethPriceOracle;
     ERC20 public dai;
@@ -105,7 +105,8 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         IUniswapV3Factory(factoryAddress);
     ISwapRouter public swapRouter =
         ISwapRouter(router);
-
+    MockRouter mockRouter;
+    
     function getMinTick(int24 tickSpacing) public pure returns (int24) {
         return int24((int256(-887272) / int256(tickSpacing) + 1) * int256(tickSpacing));
     }
@@ -132,15 +133,11 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             z = 1;
         }
     }
-
-    function deployContracts() public returns(
+    function deployInternalContracts() public returns(
         LinkToken,
         MockApiOracle,
-        IndexToken,
-        MockV3Aggregator,
-        IndexFactory,
-        TestSwap
-    ) {
+        MockV3Aggregator
+    ){
         LinkToken link = new LinkToken();
         MockApiOracle oracle = new MockApiOracle(address(link));
 
@@ -148,6 +145,34 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             18, //decimals
             2000e18   //initial data
         );
+
+        return (
+            link,
+            oracle,
+            ethPriceOracle
+        );
+    }
+    function deployContracts() public returns(
+        // LinkToken,
+        // MockApiOracle,
+        IndexToken,
+        // MockV3Aggregator,
+        TestSwap,
+        MockRouter,
+        CrossChainVault,
+        CrossChainIndexFactory,
+        IndexFactoryStorage,
+        IndexFactory
+    ) {
+    //     LinkToken link = new LinkToken();
+    //     MockApiOracle oracle = new MockApiOracle(address(link));
+
+    //    MockApiOracle oracle = new MockV3Aggregator(
+    //         18, //decimals
+    //         2000e18   //initial data
+    //     );
+
+        // (LinkToken link, MockApiOracle oracle, MockV3Aggregator ethPriceOracle) = deployInternalContracts();
 
         dai = ERC20(DAI);
         quoter = IQuoter(QUOTER);
@@ -211,7 +236,6 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             factoryAddress
         );
 
-
         IndexFactory indexFactory = new IndexFactory();
         indexFactory.initialize(
             1,
@@ -226,25 +250,30 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), 3);
         indexFactoryStorage.setCrossChainFactory(address(crossChainIndexFactory), 2);
         indexFactoryStorage.setIndexFactory(address(indexFactory));
+        indexFactory.setIndexFactoryStorage(address(indexFactoryStorage));
         crossChainIndexFactory.setCrossChainToken(1, address(crossChainToken), 3);
         crossChainVault.setFactory(address(crossChainIndexFactory));
         
-        
+        mockRouter.setFactoryChainSelector(1, address(indexFactory));
+        mockRouter.setFactoryChainSelector(2, address(crossChainIndexFactory));
+
+        link.transfer(address(indexFactory), 10e18);
+        link.transfer(address(crossChainIndexFactory), 10e18);
 
         TestSwap testSwap = new TestSwap();
         
         
         return (
-            link,
-            oracle,
+            // link,
+            // oracle,
             indexToken,
-            ethPriceOracle,
-            indexFactory,
+            // ethPriceOracle,
             testSwap,
-            crossChainIndexFactory,
+            mockRouter,
             crossChainVault,
+            crossChainIndexFactory,
             indexFactoryStorage,
-            crossChainToken
+            indexFactory
         );
 
     }
@@ -288,7 +317,20 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         factoryV3 = IUniswapV3Factory(factoryAddress);
         swapRouter = ISwapRouter(router);
         weth = IWETH(wethAddress);
-        (link, oracle, indexToken, ethPriceOracle, factory, testSwap, crossChainIndexFactory, crossChainVault, indexFactoryStorage, crossChainToken) = deployContracts();
+        // (link, oracle, indexToken, ethPriceOracle, factory, testSwap, crossChainIndexFactory, crossChainVault, indexFactoryStorage, crossChainToken) = deployContracts();
+        (link, oracle, ethPriceOracle) = deployInternalContracts();
+        (
+            // link,
+            // oracle,
+            indexToken,
+            // ethPriceOracle,
+            testSwap,
+            mockRouter,
+            crossChainVault,
+            crossChainIndexFactory,
+            indexFactoryStorage,
+            factory
+        ) = deployContracts();
     }
 
     function deployByteCode(bytes memory bytecode) public returns(address){

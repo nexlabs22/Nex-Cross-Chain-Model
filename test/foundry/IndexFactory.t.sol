@@ -29,7 +29,7 @@ contract CounterTest is Test, ContractDeployer {
 
     
 
-    string MAINNET_RPC_URL = vm.envString("MAINNET_RPC_URL");
+    // string MAINNET_RPC_URL = vm.envString("MAINNET_RPC_URL");
 
     
 
@@ -51,6 +51,7 @@ contract CounterTest is Test, ContractDeployer {
         addLiquidityETH(positionManager, factoryAddress, token2, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, token3, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, token4, wethAddress, 1000e18, 1e18);
+        addLiquidityETH(positionManager, factoryAddress, crossChainToken, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, usdt, wethAddress, 1000e18, 1e18);
         
     }
@@ -92,143 +93,131 @@ contract CounterTest is Test, ContractDeployer {
         swapVersions[2] = 3;
         swapVersions[3] = 3;
         swapVersions[4] = 3;
+
+
+        uint64[] memory chains = new uint64[](5);
+        chains[0] = 1;
+        chains[1] = 1;
+        chains[2] = 1;
+        chains[3] = 1;
+        chains[4] = 2;
         
         link.transfer(address(indexFactoryStorage), 1e17);
         bytes32 requestId = indexFactoryStorage.requestAssetsData();
-        oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapVersions);
+        oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapVersions, chains);
     }
     function testOracleList() public {
         updateOracleList();
         // token  oracle list
-        assertEq(factory.oracleList(0), address(token0));
-        assertEq(factory.oracleList(1), address(token1));
-        assertEq(factory.oracleList(2), address(token2));
-        assertEq(factory.oracleList(3), address(token3));
-        assertEq(factory.oracleList(4), address(token4));
+        assertEq(indexFactoryStorage.oracleList(0), address(token0));
+        assertEq(indexFactoryStorage.oracleList(1), address(token1));
+        assertEq(indexFactoryStorage.oracleList(2), address(token2));
+        assertEq(indexFactoryStorage.oracleList(3), address(token3));
+        assertEq(indexFactoryStorage.oracleList(4), address(token4));
         // token current list
-        assertEq(factory.currentList(0), address(token0));
-        assertEq(factory.currentList(1), address(token1));
-        assertEq(factory.currentList(2), address(token2));
-        assertEq(factory.currentList(3), address(token3));
-        assertEq(factory.currentList(4), address(token4));
+        assertEq(indexFactoryStorage.currentList(0), address(token0));
+        assertEq(indexFactoryStorage.currentList(1), address(token1));
+        assertEq(indexFactoryStorage.currentList(2), address(token2));
+        assertEq(indexFactoryStorage.currentList(3), address(token3));
+        assertEq(indexFactoryStorage.currentList(4), address(token4));
         // token shares
-        assertEq(factory.tokenOracleMarketShare(address(token0)), 20e18);
-        assertEq(factory.tokenOracleMarketShare(address(token1)), 20e18);
-        assertEq(factory.tokenOracleMarketShare(address(token2)), 20e18);
-        assertEq(factory.tokenOracleMarketShare(address(token3)), 20e18);
-        assertEq(factory.tokenOracleMarketShare(address(token4)), 20e18);
+        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token0)), 20e18);
+        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token1)), 20e18);
+        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token2)), 20e18);
+        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token3)), 20e18);
+        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token4)), 20e18);
         
         // token shares
-        assertEq(factory.tokenSwapVersion(address(token0)), 3);
-        assertEq(factory.tokenSwapVersion(address(token1)), 3);
-        assertEq(factory.tokenSwapVersion(address(token2)), 3);
-        assertEq(factory.tokenSwapVersion(address(token3)), 3);
-        assertEq(factory.tokenSwapVersion(address(token4)), 3);
+        assertEq(indexFactoryStorage.tokenSwapVersion(address(token0)), 3);
+        assertEq(indexFactoryStorage.tokenSwapVersion(address(token1)), 3);
+        assertEq(indexFactoryStorage.tokenSwapVersion(address(token2)), 3);
+        assertEq(indexFactoryStorage.tokenSwapVersion(address(token3)), 3);
+        assertEq(indexFactoryStorage.tokenSwapVersion(address(token4)), 3);
         
     }
 
+    function testIssuanceWithEth() public {
+        uint startAmount = 1e14;
+        
+
+        updateOracleList();
+        
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        payable(add1).transfer(11e18);
+        vm.startPrank(add1);
+        
+        console.log(indexToken.balanceOf(add1));
+        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
+        console.log(indexToken.balanceOf(add1));
+    }
+
+    function testRedemptionWithEth() public {
+        uint startAmount = 1e14;
+        
+
+        updateOracleList();
+        
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        payable(add1).transfer(11e18);
+        vm.startPrank(add1);
+        
+        console.log(indexToken.balanceOf(add1));
+        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
+        console.log(indexToken.balanceOf(add1));
+        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), 3);
+        console.log(indexToken.balanceOf(add1));
+    }
+
+    function testIssuanceWithUsdc() public {
+        uint startAmount = 1e14;
+        
+
+        updateOracleList();
+        
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        payable(add1).transfer(11e18);
+        usdt.transfer(add1, 1001e18);
+        vm.startPrank(add1);
+        
+        console.log(indexToken.balanceOf(add1));
+        usdt.approve(address(factory), 1001e18);
+        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3);
+        console.log(indexToken.balanceOf(add1));
+    }
+
+    function testRedemptionWithUsdc() public {
+        uint startAmount = 1e14;
+        
+
+        updateOracleList();
+        
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        payable(add1).transfer(11e18);
+        usdt.transfer(add1, 1001e18);
+        vm.startPrank(add1);
+        
+        console.log(indexToken.balanceOf(add1));
+        usdt.approve(address(factory), 1001e18);
+        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3);
+        console.log(indexToken.balanceOf(add1));
+        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), 3);
+        console.log(indexToken.balanceOf(add1));
+    }
+
+
     
-    // function testIssuanceWithEth() public {
-    //     uint startAmount = 1e14;
-        
-
-    //     updateOracleList();
-        
-    //     factory.proposeOwner(owner);
-    //     vm.startPrank(owner);
-    //     factory.transferOwnership(owner);
-    //     vm.stopPrank();
-    //     payable(add1).transfer(11e18);
-    //     vm.startPrank(add1);
-    //     // console.log("FLOKI", IERC20(FLOKI).balanceOf(address(factory)));
-        
-    //     factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18);
-    //     factory.redemption(indexToken.balanceOf(address(add1)), address(weth), 3);
-    // }
-
-
-    // function testIssuanceWithTokens() public {
-    //     uint startAmount = 1e14;
-        
-    //     updateOracleList();
-        
-    //     factory.proposeOwner(owner);
-    //     vm.startPrank(owner);
-    //     factory.transferOwnership(owner);
-    //     vm.stopPrank();
-    //     usdt.transfer(add1, 1001e18);
-    //     vm.startPrank(add1);
-        
-    //     usdt.approve(address(factory), 1001e18);
-    //     factory.issuanceIndexTokens(address(usdt), 1000e18, 3);
-    //     factory.redemption(indexToken.balanceOf(address(add1)), address(weth), 3);
-    // }
-
-
-    // function testIssuanceWithTokensOutput() public {
-    //     uint startAmount = 1e14;
-        
-       
-    //     updateOracleList();
-        
-    //     factory.proposeOwner(owner);
-    //     vm.startPrank(owner);
-    //     factory.transferOwnership(owner);
-    //     vm.stopPrank();
-    //     usdt.transfer(add1, 1001e18);
-    //     vm.startPrank(add1);
-    //     usdt.approve(address(factory), 1001e18);
-    //     factory.issuanceIndexTokens(address(usdt), 1000e18, 3);
-    //     console.log("index token balance after isssuance", indexToken.balanceOf(address(add1)));
-    //     console.log("portfolio value after issuance", factory.getPortfolioBalance());
-    //     uint reallOut = factory.redemption(indexToken.balanceOf(address(add1)), address(usdt), 3);
-    //     console.log("index token balance after redemption", indexToken.balanceOf(address(add1)));
-    //     console.log("portfolio value after redemption", factory.getPortfolioBalance());
-    //     console.log("real out", reallOut);
-    //     console.log("usdt after redemption", usdt.balanceOf(add1));
-    // }
-    
-
-    
-
-    // function testGetPrice() public {
-        
-    //     address pool = factoryV3.getPool(
-    //         wethAddress,
-    //         address(token0),
-    //         3000
-    //     );
-        
-    //    (
-    //         uint160 sqrtPriceX96,
-    //         int24 tick,
-    //         uint16 observationIndex,
-    //         uint16 observationCardinality,
-    //         uint16 observationCardinalityNext,
-    //         uint8 feeProtocol,
-    //         bool unlocked
-    //     ) = IUniswapV3Pool(pool).slot0();
-    //     //swap
-    //     weth.deposit{value:1e16}();
-    //     weth.approve(address(swapRouter), 1e16);
-    //     ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
-    //     .ExactInputSingleParams({
-    //         tokenIn: wethAddress,
-    //         tokenOut: address(token0),
-    //         // pool fee 0.3%
-    //         fee: 3000,
-    //         recipient: address(this),
-    //         deadline: block.timestamp,
-    //         amountIn: 1e16,
-    //         amountOutMinimum: 0,
-    //         // NOTE: In production, this value can be used to set the limit
-    //         // for the price the swap will push the pool to,
-    //         // which can help protect against price impact
-    //         sqrtPriceLimitX96: 0
-    //     });
-    //     uint finalAmountOut = swapRouter.exactInputSingle(params);
-
-    // }
 
 
     

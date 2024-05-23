@@ -467,10 +467,7 @@ contract IndexFactory is
                 totalOldVaules -
                 indexToken.totalSupply();
         } else {
-            // uint price = priceInWei();
-            // uint price = priceInWei();
-            // amountToMint = (totalNewVaules * price) / 1e16;
-            amountToMint = (totalNewVaules) / 100;
+            amountToMint = (totalNewVaules) * 100;
         }
         indexToken.mint(issuanceNonceRequester[_issuanceNonce], amountToMint);
         emit Issuanced(_messageId, _issuanceNonce, issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);
