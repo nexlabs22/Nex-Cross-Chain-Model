@@ -38,24 +38,7 @@ const PWAIndexSLider = () => {
     }
     
     const { changeSelectedIndex } = useLandingPageStore()
-    const Indices = [
-        {
-            name: "Anti Inflation Index",
-            symbol: "ANFI",
-            chartName:'ANFI',
-            logo: anfiLogo,
-            price: "2453.4",
-            change: "N/A",
-        },
-        {
-            name: "CRYPTO5",
-            symbol: "CR5",
-            chartName:'CRYPTO5',
-            logo: cr5Logo,
-            price: "784.8",
-            change: "N/A",
-        }
-    ];
+   
     const router = useRouter();
 
     return (
@@ -113,7 +96,7 @@ const PWAIndexSLider = () => {
                                 changeSelectedIndex(defaultIndexObject.name);
                                 router.push('/pwa_tradeIndex')
                             }}>
-                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"></Image>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
                                     <Typography variant="subtitle1" sx={{
                                         color: lightTheme.palette.text.primary,
@@ -162,7 +145,7 @@ const PWAIndexSLider = () => {
                                 changeSelectedIndex(othertIndexObject.name);
                                 router.push('/pwa_tradeIndex')
                             }}>
-                                <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
                                     <Typography variant="subtitle1" sx={{
                                         color: lightTheme.palette.text.primary,

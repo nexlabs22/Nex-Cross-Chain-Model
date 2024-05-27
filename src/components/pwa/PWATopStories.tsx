@@ -39,7 +39,7 @@ const PWATopStories = () => {
         getStories()
     }, [])
     return (
-        <Stack width={"100%"} height={"fit-content"} marginTop={1} direction={"column"} alignItems={"center"} justifyContent={"start"}>
+        <Stack width={"100%"} height={"fit-content"} marginTop={1} paddingBottom={"4.8rem"} direction={"column"} alignItems={"center"} justifyContent={"start"}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,

@@ -57,7 +57,7 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 	defaultIndex: 'CRYPTO5',
 	changeDefaultIndex: (index: string) => set((state) => ({ defaultIndex: index })),
 
-	selectedIndex: 'CRYPTO5',
+	selectedIndex: 'CR5',
 	changeSelectedIndex: (index: string) => set((state) => ({ selectedIndex: index })),
 
 	selectedComparisonIndices: [],

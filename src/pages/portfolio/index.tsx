@@ -546,6 +546,7 @@ export default function Portfolio() {
 							<PWA3DPieChart data={pieData}></PWA3DPieChart>
 							<PWAPortfolioMyAssets></PWAPortfolioMyAssets>
 							<PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="/dcaCalculator" linkText="Learn More"></PWABanner>
+							<Box id="bottom seperator" width={"100vw"} height={"1rem"}></Box>
 							<PWABottomNav></PWABottomNav>
 						</Box>
 					</>

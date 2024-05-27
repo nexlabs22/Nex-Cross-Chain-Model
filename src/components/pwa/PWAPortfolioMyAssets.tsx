@@ -18,9 +18,9 @@ export default function PWAPortfolioMyAssets() {
     return (
         <Stack width={"100%"} height={"fit-content"} marginTop={6}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
-                <Typography variant="h6" sx={{
+                <Typography variant="body1" sx={{
                     color: lightTheme.palette.text.primary,
-                    fontWeight: 700
+					fontWeight: 600,
                 }}>
                     My Assets
                 </Typography>
@@ -98,7 +98,7 @@ export default function PWAPortfolioMyAssets() {
                                     </Stack>
                                     <Typography variant="subtitle1" sx={{
                                         color: lightTheme.palette.text.primary,
-                                        fontWeight: 600,
+                                        fontWeight: 500,
                                         fontSize: "1rem",
                                         width: "90%"
                                     }}>

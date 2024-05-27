@@ -37,12 +37,13 @@ const PWASplashScreen = () => {
                     ) : (
                         <>
                             <PWAConnectButton />
-                            <Button className="pwaConnectWallet" sx={{
-                                width: "78%",
-                                paddingY: "1.3rem",
+                            <Button id="pwaSplashDocs" className="" sx={{
+                                width: "77%",
+                                paddingY: "1.05rem",
                                 borderRadius: "1.2rem",
-                                background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-                                boxShadow: "none"
+                                backgroundColor: "none",
+                                background: "linear-gradient(to top right, #5E869B 100%, #8FB8CA 100%)",
+                                boxShadow: "0 1px 2px 1px rgb(0 0 0 / 0.4)"
                             }}>
                                 <Typography variant="h3" component="h3" className="w-full rounded-3xl" sx={{
                                     color: "#000000",

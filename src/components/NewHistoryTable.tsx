@@ -221,15 +221,13 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 					{ text: side, bold: true, color: 'white', alignment: 'center', fillColor: side.toLowerCase() === 'mint' ? '#089981' : '#F23645' },
 					{
 						text: [
-							`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${
-								side.toLowerCase() === 'mint' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+							`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${side.toLowerCase() === 'mint' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
 							}`,
 						],
 					},
 					{
 						text: [
-							`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${
-								side.toLowerCase() === 'burn' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+							`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${side.toLowerCase() === 'burn' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
 							}`,
 						],
 					},
@@ -253,11 +251,9 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 				convertTime(position.timestamp) || '', // Using empty string if date is undefined
 				position.indexName || '',
 				position.side.split(' ')[0] || '',
-				`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${
-					position.side.toLowerCase() === 'mint request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+				`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${position.side.toLowerCase() === 'mint request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
 				}` || '',
-				`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${
-					position.side.toLowerCase() === 'burn request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+				`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${position.side.toLowerCase() === 'burn request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
 				}` || '',
 				position.txHash || '',
 			]),
@@ -273,7 +269,7 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 
 	return isStandalone ? (
 		<>
-			<Stack id="PWAProfileHistory" width={'100%'} height={'fit-content'} minHeight={'100vh'} marginTop={1} direction={'column'} alignItems={'center'} justifyContent={'start'}>
+			<Stack id="PWAProfileHistory" width={'100%'} height={'fit-content'} minHeight={'50vh'} marginBottom={"6srem"} marginTop={1} direction={'column'} alignItems={'center'} justifyContent={'start'}>
 				<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'} marginBottom={1}>
 					<Typography
 						variant="h6"
@@ -326,12 +322,14 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 				{address ? (
 					<Stack
 						width={'100%'}
-						height={'fit-content'}
+						height={'50vh'}
 						direction={'column'}
 						alignItems={'center'}
 						justifyContent={'start'}
 						gap={1}
 						marginY={2}
+						paddingX={"0.6rem"}
+
 						sx={{
 							overflowY: 'scroll',
 						}}
@@ -346,7 +344,8 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 									alignItems={'center'}
 									justifyContent={'start'}
 									borderRadius={'1.2rem'}
-									paddingY={1}
+									paddingBottom={1}
+									paddingTop={2}
 									paddingX={1.5}
 									sx={PWAGradientStack}
 								>
@@ -367,12 +366,13 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 													variant="caption"
 													sx={{
 														color: lightTheme.palette.text.primary,
-														fontWeight: 500,
+														fontWeight: 600,
 													}}
 												>
 													{position.outputAmount && position.tokenAddress ? (
 														<>
-															{FormatToViewNumber({ value: Number(position.outputAmount), returnType: 'string' })}{' '}
+														<span className='italic' style={{ fontWeight: "500" }}>{FormatToViewNumber({ value: Number(position.outputAmount), returnType: 'string' })}{' '}</span>
+															
 															{position.side === 'Burn Request'
 																? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
 																: position?.indexName}{' '}
@@ -399,11 +399,13 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 													variant="caption"
 													sx={{
 														color: lightTheme.palette.text.primary,
-														fontWeight: 500,
+														fontWeight: 600,
 													}}
 												>
-													Fees: 1%
+
+													Fees: <span style={{fontWeight: "500"}}>1%</span>
 												</Typography>
+
 											</Stack>
 										</Stack>
 										<Stack paddingRight={1} direction={'column'} width={'fit-content'} height={'fit-content'} gap={1} alignItems={'end'} justifyContent={'center'}>
@@ -412,12 +414,24 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 												sx={{
 													color: lightTheme.palette.text.primary,
 													fontWeight: 600,
+													opacity: 0
 												}}
 											>
-												Total:{' '}
+												test
+
+											</Typography>
+											<Typography
+												variant="caption"
+												sx={{
+													color: lightTheme.palette.text.primary,
+													fontWeight: 500,
+												}}
+											>
+
 												{position.inputAmount && position.tokenAddress ? (
 													<>
-														{FormatToViewNumber({ value: Number(position.inputAmount), returnType: 'string' })}{' '}
+														<span className='italic' style={{ fontWeight: "500" }}>{FormatToViewNumber({ value: Number(position.inputAmount), returnType: 'string' })}{' '}</span>
+														<span style={{ fontWeight: "600" }}>
 														{position.side === 'Mint Request'
 															? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
 															: position?.indexName}{' '}
@@ -435,6 +449,8 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 																</div>{' '}
 															</>
 														)}
+														</span>
+														
 													</>
 												) : (
 													'-'
@@ -443,23 +459,28 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 											<Typography
 												variant="caption"
 												sx={{
-													color: lightTheme.palette.text.primary,
-													fontWeight: 500,
-												}}
-											>
-												{position.timestamp ? convertTime(position.timestamp) : '-'}
-											</Typography>
-											<Typography
-												variant="caption"
-												sx={{
 													color: position.side ? (position.side === 'Mint Request' ? lightTheme.palette.nexGreen.main : lightTheme.palette.nexRed.main) : lightTheme.palette.nexGreen.main,
-													fontWeight: 500,
+													fontWeight: 600,
+
+													textAlign: "right"
 												}}
 											>
 												{position.side ? position.side : '-'}
 											</Typography>
 										</Stack>
 									</Stack>
+									<Typography
+										variant="caption"
+										sx={{
+											color: lightTheme.palette.text.primary,
+											fontWeight: 500,
+											width: "100%",
+											textAlign: "center",
+											marginTop: "0.6rem"
+										}}
+									>
+										{position.timestamp ? convertTime(position.timestamp) : '-'}
+									</Typography>
 									<Stack
 										width={'100%'}
 										height={'fit-content'}
@@ -563,13 +584,12 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 										<td className="px-4 text-left py-3">
 											<div
 												className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}  
-										${
-											position.side === 'Mint Request'
-												? 'bg-nexLightGreen-500 text-whiteText-500'
-												: position.side === 'Burn Request'
-												? 'bg-nexLightRed-500 text-whiteText-500'
-												: 'bg-transparent'
-										} flex flex-row items-center justify-center`}
+										${position.side === 'Mint Request'
+														? 'bg-nexLightGreen-500 text-whiteText-500'
+														: position.side === 'Burn Request'
+															? 'bg-nexLightRed-500 text-whiteText-500'
+															: 'bg-transparent'
+													} flex flex-row items-center justify-center`}
 											>
 												{position.side ? position.side.toString().split(' ')[0] : '-'}
 											</div>
@@ -625,28 +645,26 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 										{path === '/tradeIndex' && activeIndexType === 'crosschain' && (
 											<>
 												<td
-													className={`px-4 text-left py-3 whitespace-nowrap ${
-														position.sendStatus
-															? position.sendStatus === 'SUCCESS'
-																? 'text-nexLightGreen-500'
-																: 'text-[#FFFAA0]'
-															: mode === 'dark'
+													className={`px-4 text-left py-3 whitespace-nowrap ${position.sendStatus
+														? position.sendStatus === 'SUCCESS'
+															? 'text-nexLightGreen-500'
+															: 'text-[#FFFAA0]'
+														: mode === 'dark'
 															? 'text-[#101010]'
 															: 'text-[#E5E7EB]'
-													}`}
+														}`}
 												>
 													{position.sendStatus ? position.sendStatus : '-'}
 												</td>
 												<td
-													className={`px-4 text-left py-3 whitespace-nowrap ${
-														position.receiveStatus
-															? position.receiveStatus === 'SUCCESS'
-																? 'text-nexLightGreen-500'
-																: 'text-[#FFFAA0]'
-															: mode === 'dark'
+													className={`px-4 text-left py-3 whitespace-nowrap ${position.receiveStatus
+														? position.receiveStatus === 'SUCCESS'
+															? 'text-nexLightGreen-500'
+															: 'text-[#FFFAA0]'
+														: mode === 'dark'
 															? 'text-[#101010]'
 															: 'text-[#E5E7EB]'
-													}`}
+														}`}
 												>
 													{position.receiveStatus ? position.receiveStatus : '-'}
 												</td>
@@ -1112,13 +1130,12 @@ function PWATradeIndexHistoryTable({ initialStandalone = false }: { initialStand
 										<td className="px-4 text-left py-3">
 											<div
 												className={`h-fit w-fit rounded-lg  px-3 py-1 capitalize ${position.side ? 'interBold titleShadow' : mode === 'dark' ? 'text-[#101010]' : 'text-[#E5E7EB]'}  
-										${
-											position.side === 'Mint Request'
-												? 'bg-nexLightGreen-500 text-whiteText-500'
-												: position.side === 'Burn Request'
-												? 'bg-nexLightRed-500 text-whiteText-500'
-												: 'bg-transparent'
-										} flex flex-row items-center justify-center`}
+										${position.side === 'Mint Request'
+														? 'bg-nexLightGreen-500 text-whiteText-500'
+														: position.side === 'Burn Request'
+															? 'bg-nexLightRed-500 text-whiteText-500'
+															: 'bg-transparent'
+													} flex flex-row items-center justify-center`}
 											>
 												{position.side ? position.side.toString().split(' ')[0] : '-'}
 											</div>
@@ -1174,28 +1191,26 @@ function PWATradeIndexHistoryTable({ initialStandalone = false }: { initialStand
 										{path === '/tradeIndex' && activeIndexType === 'crosschain' && (
 											<>
 												<td
-													className={`px-4 text-left py-3 whitespace-nowrap ${
-														position.sendStatus
-															? position.sendStatus === 'SUCCESS'
-																? 'text-nexLightGreen-500'
-																: 'text-[#FFFAA0]'
-															: mode === 'dark'
+													className={`px-4 text-left py-3 whitespace-nowrap ${position.sendStatus
+														? position.sendStatus === 'SUCCESS'
+															? 'text-nexLightGreen-500'
+															: 'text-[#FFFAA0]'
+														: mode === 'dark'
 															? 'text-[#101010]'
 															: 'text-[#E5E7EB]'
-													}`}
+														}`}
 												>
 													{position.sendStatus ? position.sendStatus : '-'}
 												</td>
 												<td
-													className={`px-4 text-left py-3 whitespace-nowrap ${
-														position.receiveStatus
-															? position.receiveStatus === 'SUCCESS'
-																? 'text-nexLightGreen-500'
-																: 'text-[#FFFAA0]'
-															: mode === 'dark'
+													className={`px-4 text-left py-3 whitespace-nowrap ${position.receiveStatus
+														? position.receiveStatus === 'SUCCESS'
+															? 'text-nexLightGreen-500'
+															: 'text-[#FFFAA0]'
+														: mode === 'dark'
 															? 'text-[#101010]'
 															: 'text-[#E5E7EB]'
-													}`}
+														}`}
 												>
 													{position.receiveStatus ? position.receiveStatus : '-'}
 												</td>

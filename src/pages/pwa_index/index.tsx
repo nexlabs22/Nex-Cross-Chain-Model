@@ -13,7 +13,7 @@ export default function PWAIndex(){
     return(
         <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
-            <PWABanner smallText="Welcome NEX User" bigText="Unlock passive investing with our index products" link="/pwa_trade" linkText="Trade Now" image={logo.src}></PWABanner>
+            <PWABanner smallText="Welcome NEX User" bigText="Unlock passive investing with our index products" link="/pwa_trade" linkText="Trade Now" image={logo.src} imgWidth="30vw" imgHeight="30vw"></PWABanner>
             <PWAIndexSLider></PWAIndexSLider>
             <PWANexIndices></PWANexIndices>
             <PWATopStories></PWATopStories>

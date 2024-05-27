@@ -205,8 +205,8 @@ const PWATopBar = () => {
 					{
 						connectedUser?.ppType != "identicon" && connectedUser?.ppLink != "" && connectedUser?.ppLink != " " && connectedUser?.ppLink != "none" ? (
 							<Avatar alt="user profile image" src={connectedUser?.ppLink} sx={{
-								height: "2.6rem",
-								width: "2.6rem"
+								height: "2.4rem",
+								width: "2.4rem"
 							}}></Avatar>
 						) : ("")
 					}

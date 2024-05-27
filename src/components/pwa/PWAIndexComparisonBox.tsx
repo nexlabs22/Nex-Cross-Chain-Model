@@ -79,7 +79,7 @@ const PWAIndexComparisonBox = () => {
             ],
         },
         {
-            index: 'CR5',
+            index: 'CRYPTO 5',
             assetClasses: [
 
                 {

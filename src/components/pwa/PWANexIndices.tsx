@@ -23,24 +23,6 @@ const PWANexIndices = () => {
     const { defaultIndexObject, othertIndexObject } = useDashboard()
     const [listType, setListType] = useState<string>("All Nex Indices")
     const { changeSelectedIndex } = useLandingPageStore()
-    const Indices = [
-        {
-            name: "Anti Inflation Index",
-            symbol: "ANFI",
-            chartName: 'ANFI',
-            logo: anfiLogo,
-            price: "2453.4",
-            change: "N/A",
-        },
-        {
-            name: "CRYPTO5",
-            symbol: "CR5",
-            chartName: 'CRYPTO5',
-            logo: cr5Logo,
-            price: "784.8",
-            change: "N/A",
-        }
-    ];
     const router = useRouter();
 
     return (
@@ -62,14 +44,6 @@ const PWANexIndices = () => {
 
                     </MenuButton>
                 }>
-                    <MenuItem onClick={() => { setListType("Favorites") }}>
-                        <Typography variant="body1" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600
-                        }}>
-                            Favorites
-                        </Typography>
-                    </MenuItem>
                     <MenuItem onClick={() => { setListType("My Watchlist") }}>
                         <Typography variant="body1" sx={{
                             color: lightTheme.palette.text.primary,
@@ -113,7 +87,7 @@ const PWANexIndices = () => {
                             router.push('/pwa_tradeIndex')
                         }}>
                             <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"></Image>
                                 <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                     <Typography variant="caption" sx={{
                                         color: lightTheme.palette.text.primary,
@@ -170,7 +144,7 @@ const PWANexIndices = () => {
                             router.push('/pwa_tradeIndex')
                         }}>
                             <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
                                 <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                     <Typography variant="caption" sx={{
                                         color: lightTheme.palette.text.primary,

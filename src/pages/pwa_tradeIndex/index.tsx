@@ -7,6 +7,7 @@ import PWAIndexComparisonBox from "@/components/pwa/PWAIndexComparisonBox";
 import { useChartDataStore, useLandingPageStore } from "@/store/store";
 import { CgArrowsExchangeAlt } from "react-icons/cg";
 import { CiStar } from "react-icons/ci";
+import { IoChevronDownOutline, IoChevronUpOutline } from "react-icons/io5";
 import { MdOutlineStarBorder } from "react-icons/md";
 import { MdOutlineStar } from "react-icons/md";
 import anfiLogo from '@assets/images/anfi.png'
@@ -16,9 +17,10 @@ import { TbCurrencySolana } from "react-icons/tb";
 import { SiBinance, SiRipple, SiTether } from "react-icons/si";
 import { FaEthereum } from "react-icons/fa";
 import { GrBitcoin } from "react-icons/gr";
+import { MdMoreHoriz } from "react-icons/md";
 import { GiMetalBar } from "react-icons/gi";
 // import HistoryTable from "@/components/TradeTable";
-import { NewHistoryTable as HistoryTable} from "@/components/NewHistoryTable";
+import { NewHistoryTable as HistoryTable } from "@/components/NewHistoryTable";
 import { ReactElement, useEffect, useState } from "react";
 import Sheet from 'react-modal-sheet';
 
@@ -39,9 +41,11 @@ import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import getPoolAddress from '@/utils/getPoolAddress'
-import { AssetChips } from "@/theme/overrides";
+import { AssetChips, PWAGradientStack } from "@/theme/overrides";
 import Link from "next/link";
 import { GoPlus } from "react-icons/go";
+import Divider from '@mui/material/Divider';
+
 
 
 type underlyingAsset = {
@@ -55,6 +59,7 @@ type underlyingAsset = {
 export default function PWATradeIndex() {
 
     const [isSheetOpen, setSheetOpen] = useState<boolean>(false);
+    const [isReadMore, setIsReadMore] = useState<boolean>(true)
     const { changePWATradeoperation, selectedIndex } = useLandingPageStore()
     const [isFavorite, setIsFavorite] = useState<boolean>(false)
     const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
@@ -217,7 +222,7 @@ export default function PWATradeIndex() {
         },
     ]
 
-    const defaultIndexObject = IndicesWithDetails.find((o) => o.shortSymbol === selectedIndex || o.symbol === selectedIndex)
+    const defaultIndexObject = IndicesWithDetails.find((o) => o.shortSymbol === selectedIndex || o.symbol === selectedIndex || o.name === selectedIndex)
 
     const IndexContract: UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
     const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
@@ -374,8 +379,10 @@ export default function PWATradeIndex() {
         getCR5Weights()
     }, [])
 
+    
+
     return (
-        <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={5} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+        <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingTop={5} paddingBottom={2} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
             <Stack width={"100%"} height={"fit-content"} paddingTop={2} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
 
@@ -432,11 +439,7 @@ export default function PWATradeIndex() {
                                 )
                             }
                         </Stack>
-                        <GoPlus size={25} strokeWidth={1.2} color={"#FFFFFF"} className=" bg-[#5e869b] p-[0.2rem] rounded-full aspect-square" style={{
-                            border: "solid 1px rgba(255, 255, 255, 0.5)",
-                            boxShadow: "0px 1px 1px 1px rgba(0, 0, 0, 0.3)",
-
-                        }} onClick={() => { setSheetOpen(true) }} />
+                        <MdMoreHoriz size={25} color={lightTheme.palette.text.primary} onClick={() => { setSheetOpen(true) }} />
                     </Stack>
                     {
                         isFavorite ?
@@ -498,11 +501,48 @@ export default function PWATradeIndex() {
                     color: lightTheme.palette.text.primary,
                     fontWeight: 500
                 }}>
-                    {defaultIndexObject?.description}
+                    {
+                        isReadMore ? defaultIndexObject?.description.slice(0, 100) + "..." : defaultIndexObject?.description
+                    }
+
                 </Typography>
+                <Link className="w-full h-fit flex flex-row items-center justify-center" href="" onClick={(e) => { e.preventDefault(); setIsReadMore(!isReadMore) }}>
+                    {
+                        isReadMore ? (
+                            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={0.5} padding={0} marginTop={"0.6rem"}>
+                                <Typography variant="subtitle1" sx={{
+                                    color: lightTheme.palette.gradientHeroBg,
+                                    fontWeight: 700,
+                                }}>
+                                    Show More
+                                </Typography>
+                                <IoChevronDownOutline color={lightTheme.palette.gradientHeroBg} size={20} />
+                            </Stack>
+                        ) : (
+                            <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={0.5}>
+                                <Typography variant="subtitle1" sx={{
+                                    color: lightTheme.palette.gradientHeroBg,
+                                    fontWeight: 700,
+                                }}>
+                                    Show Less
+                                </Typography>
+                                <IoChevronUpOutline color={lightTheme.palette.gradientHeroBg} size={20} />
+                            </Stack>
+                        )
+                    }
+                </Link>
 
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} marginY={2} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={1}>
+
+            <Stack width={"100%"} height={"fit-content"} marginY={2} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={1} paddingY={"1rem"} paddingX={"0.8rem"} borderRadius={"1.2rem"} marginTop={"1.4rem"} sx={PWAGradientStack}>
+                <Typography variant="h6" sx={{
+                    color: lightTheme.palette.text.primary,
+                    fontWeight: 700,
+                    width: "100%",
+                    textAlign: "left",
+                }}>
+                    Details
+                </Typography>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="body1" sx={{
                         color: lightTheme.palette.text.primary,
@@ -510,9 +550,9 @@ export default function PWATradeIndex() {
                     }}>
                         Market Cap
                     </Typography>
-                    <Typography variant="body1" sx={{
-                        color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                    <Typography variant="caption" sx={{
+                        color: "#374952",
+                        fontWeight: 600
                     }}>
                         {FormatToViewNumber({ value: Number(defaultIndexObject?.mktCap), returnType: 'string' }) + ' ' + defaultIndexObject?.shortSymbol}
                     </Typography>
@@ -524,9 +564,9 @@ export default function PWATradeIndex() {
                     }}>
                         Market Price
                     </Typography>
-                    <Typography variant="body1" sx={{
-                        color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                    <Typography variant="caption" sx={{
+                        color: "#374952",
+                        fontWeight: 600
                     }}>
                         ${FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })}
                     </Typography>
@@ -538,9 +578,9 @@ export default function PWATradeIndex() {
                     }}>
                         24h Change
                     </Typography>
-                    <Typography variant="body1" sx={{
-                        color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                    <Typography variant="caption" sx={{
+                        color: "#374952",
+                        fontWeight: 600
                     }}>
                         {defaultIndexObject?.chg24h}%
                     </Typography>
@@ -553,9 +593,9 @@ export default function PWATradeIndex() {
                         Token Address
                     </Typography>
                     <Link target="_blank" href={`https://sepolia.etherscan.io/token/${defaultIndexObject?.tokenAddress}`}>
-                        <Typography variant="subtitle1" sx={{
-                            color: lightTheme.palette.gradientHeroBg,
-                            fontWeight: 700,
+                        <Typography variant="caption" sx={{
+                            color: "#374952",
+                            fontWeight: 600,
                         }}>
                             {reduceAddress(defaultIndexObject?.tokenAddress as string)}
                         </Typography>
@@ -569,9 +609,9 @@ export default function PWATradeIndex() {
                     }}>
                         Managment Fees
                     </Typography>
-                    <Typography variant="body1" sx={{
-                        color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                    <Typography variant="caption" sx={{
+                        color: "#374952",
+                        fontWeight: 600
                     }}>
                         {defaultIndexObject?.managementFee} %
                     </Typography>
@@ -581,13 +621,13 @@ export default function PWATradeIndex() {
             <Sheet
                 isOpen={isSheetOpen}
                 onClose={() => setSheetOpen(false)}
-                snapPoints={[500, 500, 0, 0]}
+                snapPoints={selectedIndex == "ANFI" ? [250, 250, 0, 0] : [370, 370, 0, 0]}
                 initialSnap={1}
             >
                 <Sheet.Container>
                     <Sheet.Header />
                     <Sheet.Content>
-                        <Stack direction={"column"} height={"100%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={2}>
+                        <Stack direction={"column"} height={"100%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={1}>
                             <Typography variant="h6" align="center" sx={{
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 700
@@ -595,69 +635,39 @@ export default function PWATradeIndex() {
                                 {defaultIndexObject?.symbol} Composition
                             </Typography>
 
-                            <Stack direction="row" alignItems="center" justifyContent="start" marginY={2} sx={{
-                                scale: "1.5"
-                            }}>
+                            
+                            <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} marginY={3} id="haha" >
                                 {
                                     selectedIndex == "ANFI" ? (
-                                        <Stack direction="row" alignItems="center" justifyContent="start">
-                                            {[...ANFIUnderLyingAssets].sort((a, b) => b.percentage - a.percentage).map((asset, key) => {
-                                                return (
-                                                    <Stack
-                                                        key={key}
-                                                        padding={"4px"}
-                                                        marginLeft={`${(key * -1 * 3) / 2}px`}
-                                                        zIndex={key * 10}
-                                                        width={"fit-content"}
-                                                        borderRadius={"0.5rem"}
-                                                        sx={AssetChips}
-                                                    >
-                                                        <span className={`text-whiteText-500`}>
-                                                            {asset.logo}
-                                                        </span>
-                                                    </Stack>
-                                                );
-                                            })}
-                                        </Stack>
-                                    ) : (
-                                        <Stack direction="row" alignItems="center" justifyContent="start">
-                                            {[...CR5UnderLyingAssets].sort((a, b) => b.percentage - a.percentage).map((asset, key) => {
-                                                return (
-                                                    <Stack
-                                                        key={key}
-                                                        padding={"4px"}
-                                                        marginLeft={`${(key * -1 * 3) / 2}px`}
-                                                        zIndex={key * 10}
-                                                        width={"fit-content"}
-                                                        borderRadius={"0.5rem"}
-                                                        sx={AssetChips}
-                                                    >
-                                                        <span className={`text-whiteText-500`}>
-                                                            {asset.logo}
-                                                        </span>
-                                                    </Stack>
-                                                );
-                                            })}
-                                        </Stack>
-                                    )
-                                }
-                            </Stack>
-                            <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} marginY={3}>
-                                {
-                                    selectedIndex == "ANFI" ? (
-                                        <Stack direction="column" alignItems="center" justifyContent="start" width={"100%"} gap={1.5}>
+                                        <Stack direction="column" alignItems="center" justifyContent="start" width={"100%"} gap={1.5} >
                                             {[...ANFIUnderLyingAssets].sort((a, b) => b.percentage - a.percentage).map((asset, key) => {
                                                 return (
                                                     <Stack key={key} direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"}>
+                                                        <Stack width={"fit-content"} height={"fit-content"} direction="row" alignItems={"center"} justifyContent={"center"} gap={1}>
+                                                            <Stack
+                                                                key={key}
+                                                                padding={"4px"}
+                                                                marginLeft={`${(key * -1 * 3) / 2}px`}
+                                                                zIndex={key * 10}
+                                                                width={"fit-content"}
+                                                                borderRadius={"0.5rem"}
+                                                                sx={AssetChips}
+                                                            >
+                                                                <span className={`text-whiteText-500`}>
+                                                                    {asset.logo}
+                                                                </span>
+                                                            </Stack>
+                                                            <Typography variant="body1" sx={{
+                                                                color: lightTheme.palette.text.primary,
+                                                                fontWeight: 700
+                                                            }}>
+                                                                {asset.name}
+                                                            </Typography>
+                                                        </Stack>
+
                                                         <Typography variant="body1" sx={{
-                                                            color: lightTheme.palette.text.primary,
-                                                            fontWeight: 700
-                                                        }}>
-                                                            {asset.name}
-                                                        </Typography>
-                                                        <Typography variant="body1" sx={{
-                                                            color: lightTheme.palette.text.primary,
-                                                            fontWeight: 700
+                                                            color: lightTheme.palette.gradientHeroBg,
+                                                            fontWeight: 600
                                                         }}>
                                                             {asset.percentage}%
                                                         </Typography>
@@ -670,15 +680,30 @@ export default function PWATradeIndex() {
                                             {[...CR5UnderLyingAssets].sort((a, b) => b.percentage - a.percentage).map((asset, key) => {
                                                 return (
                                                     <Stack key={key} direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"}>
+                                                        <Stack width={"fit-content"} height={"fit-content"} direction="row" alignItems={"center"} justifyContent={"center"} gap={1}>
+                                                            <Stack
+                                                                key={key}
+                                                                padding={"4px"}
+                                                                marginLeft={`${(key * -1 * 3) / 2}px`}
+                                                                zIndex={key * 10}
+                                                                width={"fit-content"}
+                                                                borderRadius={"0.5rem"}
+                                                                sx={AssetChips}
+                                                            >
+                                                                <span className={`text-whiteText-500`}>
+                                                                    {asset.logo}
+                                                                </span>
+                                                            </Stack>
+                                                            <Typography variant="body1" sx={{
+                                                                color: lightTheme.palette.text.primary,
+                                                                fontWeight: 700
+                                                            }}>
+                                                                {asset.name}
+                                                            </Typography>
+                                                        </Stack>
                                                         <Typography variant="body1" sx={{
-                                                            color: lightTheme.palette.text.primary,
-                                                            fontWeight: 700
-                                                        }}>
-                                                            {asset.name}
-                                                        </Typography>
-                                                        <Typography variant="body1" sx={{
-                                                            color: lightTheme.palette.text.primary,
-                                                            fontWeight: 700
+                                                            color: lightTheme.palette.gradientHeroBg,
+                                                            fontWeight: 600
                                                         }}>
                                                             {asset.percentage}%
                                                         </Typography>
@@ -693,7 +718,7 @@ export default function PWATradeIndex() {
                         </Stack>
                     </Sheet.Content>
                 </Sheet.Container>
-                <Sheet.Backdrop />
+                <Sheet.Backdrop onTap={() => { setSheetOpen(false) }} />
             </Sheet>
             <PWABottomNav></PWABottomNav>
         </Box>

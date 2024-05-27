@@ -206,15 +206,13 @@ const PWAChartBox = () => {
 	return (
 		<>
 			<section className="h-fit w-full">
-
-
 				<div
 					className={`h-[60vh] w-full my-2 py-2 px-1 rounded-2xl `}
 					style={{
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(37,37,37,0.3)` : '',
 					}}
 				>
-					<TradingViewChart selectedIndices={selectedComparisonIndices} index={selectedIndex} page={'dashboard'} pwa={true} />
+					<TradingViewChart selectedIndices={selectedComparisonIndices} index={selectedIndex ==  "CR5" || selectedIndex == "CRYPTO 5" || selectedIndex == "CRYPTO5" ? "CRYPTO5" : selectedIndex} page={'dashboard'} pwa={true} />
 
 				</div>
 
