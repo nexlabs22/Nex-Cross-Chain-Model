@@ -269,7 +269,7 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 
 	return isStandalone ? (
 		<>
-			<Stack id="PWAProfileHistory" width={'100%'} height={'fit-content'} minHeight={'50vh'} marginBottom={"6srem"} marginTop={1} direction={'column'} alignItems={'center'} justifyContent={'start'}>
+			<Stack id="PWAProfileHistory" width={'100%'} height={'fit-content'} minHeight={'50vh'} marginBottom={"6rem"} marginTop={1} direction={'column'} alignItems={'center'} justifyContent={'start'}>
 				<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'} marginBottom={1}>
 					<Typography
 						variant="h6"
@@ -335,61 +335,123 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 						}}
 					>
 						{dataToShow.map((position: PositionType, i: React.Key | null | undefined) => {
-							return (
-								<Stack
-									key={i}
-									width={'100%'}
-									height={'fit-content'}
-									direction={'column'}
-									alignItems={'center'}
-									justifyContent={'start'}
-									borderRadius={'1.2rem'}
-									paddingBottom={1}
-									paddingTop={2}
-									paddingX={1.5}
-									sx={PWAGradientStack}
-								>
-									<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-										<Stack direction={'row'} alignItems={'center'} justifyContent={'start'} width={'fit-content'} height={'fit-content'} gap={2}>
-											<Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
-											<Stack direction={'column'} width={'fit-content'} height={'fit-content'} gap={1}>
+							if (position.inputAmount && position.outputAmount) {
+								return (
+									<Stack
+										key={i}
+										width={'100%'}
+										height={'fit-content'}
+										direction={'column'}
+										alignItems={'center'}
+										justifyContent={'start'}
+										borderRadius={'1.2rem'}
+										paddingBottom={1}
+										paddingTop={2}
+										paddingX={1.5}
+										sx={PWAGradientStack}
+									>
+										<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+											<Stack direction={'row'} alignItems={'center'} justifyContent={'start'} width={'fit-content'} height={'fit-content'} gap={2}>
+												<Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+												<Stack direction={'column'} width={'fit-content'} height={'fit-content'} gap={1}>
+													<Typography
+														variant="caption"
+														sx={{
+															color: lightTheme.palette.text.primary,
+															fontWeight: 600,
+														}}
+													>
+														{position.indexName ? position.indexName : '-'}
+													</Typography>
+													<Typography
+														variant="caption"
+														sx={{
+															color: lightTheme.palette.text.primary,
+															fontWeight: 600,
+														}}
+													>
+														{position.outputAmount && position.tokenAddress ? (
+															<>
+																<span className='italic' style={{ fontWeight: "500" }}>{FormatToViewNumber({ value: Number(position.outputAmount), returnType: 'string' })}{' '}</span>
+
+																{position.side === 'Burn Request'
+																	? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
+																	: position?.indexName}{' '}
+																{isMainnet && (
+																	<>
+																		<div className="text-slate-500">
+																			<em>
+																				≈ $
+																				{usdPrices
+																					? position.side === 'Burn Request'
+																						? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
+																						: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																					: 0}{' '}
+																			</em>
+																		</div>{' '}
+																	</>
+																)}
+															</>
+														) : (
+															'-'
+														)}
+													</Typography>
+													<Typography
+														variant="caption"
+														sx={{
+															color: lightTheme.palette.text.primary,
+															fontWeight: 600,
+														}}
+													>
+
+														Fees: <span style={{ fontWeight: "500" }}>1%</span>
+													</Typography>
+
+												</Stack>
+											</Stack>
+											<Stack paddingRight={1} direction={'column'} width={'fit-content'} height={'fit-content'} gap={1} alignItems={'end'} justifyContent={'center'}>
 												<Typography
 													variant="caption"
 													sx={{
 														color: lightTheme.palette.text.primary,
 														fontWeight: 600,
+														opacity: 0
 													}}
 												>
-													{position.indexName ? position.indexName : '-'}
+													test
+
 												</Typography>
 												<Typography
 													variant="caption"
 													sx={{
 														color: lightTheme.palette.text.primary,
-														fontWeight: 600,
+														fontWeight: 500,
 													}}
 												>
-													{position.outputAmount && position.tokenAddress ? (
+
+													{position.inputAmount && position.tokenAddress ? (
 														<>
-														<span className='italic' style={{ fontWeight: "500" }}>{FormatToViewNumber({ value: Number(position.outputAmount), returnType: 'string' })}{' '}</span>
-															
-															{position.side === 'Burn Request'
-																? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
-																: position?.indexName}{' '}
-															{isMainnet && (
-																<>
-																	<div className="text-slate-500">
-																		<em>
-																			≈ $
-																			{usdPrices
-																				? position.side === 'Burn Request'
-																					? formatNumber(position.outputAmount * usdPrices[position.tokenAddress])
-																					: formatNumber(position.outputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-																				: 0}{' '}
-																		</em>
-																	</div>{' '}
-																</>
-															)}
+															<span className='italic' style={{ fontWeight: "500" }}>{FormatToViewNumber({ value: Number(position.inputAmount), returnType: 'string' })}{' '}</span>
+															<span style={{ fontWeight: "600" }}>
+																{position.side === 'Mint Request'
+																	? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
+																	: position?.indexName}{' '}
+																{isMainnet && (
+																	<>
+																		<div className="text-slate-500">
+																			<em>
+																				≈ $
+																				{usdPrices
+																					? position.side === 'Mint Request'
+																						? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
+																						: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
+																					: 0}{' '}
+																			</em>
+																		</div>{' '}
+																	</>
+																)}
+															</span>
+
 														</>
 													) : (
 														'-'
@@ -398,120 +460,44 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 												<Typography
 													variant="caption"
 													sx={{
-														color: lightTheme.palette.text.primary,
+														color: position.side ? (position.side === 'Mint Request' ? lightTheme.palette.nexGreen.main : lightTheme.palette.nexRed.main) : lightTheme.palette.nexGreen.main,
 														fontWeight: 600,
+
+														textAlign: "right"
 													}}
 												>
-
-													Fees: <span style={{fontWeight: "500"}}>1%</span>
+													{position.side ? position.side : '-'}
 												</Typography>
-
 											</Stack>
 										</Stack>
-										<Stack paddingRight={1} direction={'column'} width={'fit-content'} height={'fit-content'} gap={1} alignItems={'end'} justifyContent={'center'}>
-											<Typography
-												variant="caption"
-												sx={{
-													color: lightTheme.palette.text.primary,
-													fontWeight: 600,
-													opacity: 0
-												}}
-											>
-												test
-
-											</Typography>
-											<Typography
-												variant="caption"
-												sx={{
-													color: lightTheme.palette.text.primary,
-													fontWeight: 500,
-												}}
-											>
-
-												{position.inputAmount && position.tokenAddress ? (
-													<>
-														<span className='italic' style={{ fontWeight: "500" }}>{FormatToViewNumber({ value: Number(position.inputAmount), returnType: 'string' })}{' '}</span>
-														<span style={{ fontWeight: "600" }}>
-														{position.side === 'Mint Request'
-															? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress)
-															: position?.indexName}{' '}
-														{isMainnet && (
-															<>
-																<div className="text-slate-500">
-																	<em>
-																		≈ $
-																		{usdPrices
-																			? position.side === 'Mint Request'
-																				? formatNumber(position.inputAmount * usdPrices[position.tokenAddress])
-																				: formatNumber(position.inputAmount * usdPrices[sepoliaTokenAddresses[position?.indexName as string]])
-																			: 0}{' '}
-																	</em>
-																</div>{' '}
-															</>
-														)}
-														</span>
-														
-													</>
-												) : (
-													'-'
-												)}
-											</Typography>
-											<Typography
-												variant="caption"
-												sx={{
-													color: position.side ? (position.side === 'Mint Request' ? lightTheme.palette.nexGreen.main : lightTheme.palette.nexRed.main) : lightTheme.palette.nexGreen.main,
-													fontWeight: 600,
-
-													textAlign: "right"
-												}}
-											>
-												{position.side ? position.side : '-'}
-											</Typography>
-										</Stack>
-									</Stack>
-									<Typography
-										variant="caption"
-										sx={{
-											color: lightTheme.palette.text.primary,
-											fontWeight: 500,
-											width: "100%",
-											textAlign: "center",
-											marginTop: "0.6rem"
-										}}
-									>
-										{position.timestamp ? convertTime(position.timestamp) : '-'}
-									</Typography>
-									<Stack
-										width={'100%'}
-										height={'fit-content'}
-										borderTop={'solid 1px #252525'}
-										marginTop={2}
-										paddingTop={2}
-										paddingBottom={1}
-										direction={'row'}
-										alignItems={'center'}
-										justifyContent={'center'}
-										divider={<Divider orientation="vertical" sx={{ backgroundColor: lightTheme.palette.text.primary }} flexItem />}
-										gap={2}
-									>
-										<Stack width={'50%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1}>
-											<IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
-											<Link href={`https://sepolia.etherscan.io/tx/${position.txHash}`} target="_blank">
-												<Typography
-													variant="caption"
-													sx={{
-														color: lightTheme.palette.text.primary,
-														fontWeight: 600,
-													}}
-												>
-													Etherscan
-												</Typography>
-											</Link>
-										</Stack>
-										{position.messageId && (
+										<Typography
+											variant="caption"
+											sx={{
+												color: lightTheme.palette.text.primary,
+												fontWeight: 500,
+												width: "100%",
+												textAlign: "center",
+												marginTop: "0.6rem"
+											}}
+										>
+											{position.timestamp ? convertTime(position.timestamp) : '-'}
+										</Typography>
+										<Stack
+											width={'100%'}
+											height={'fit-content'}
+											borderTop={'solid 1px #252525'}
+											marginTop={2}
+											paddingTop={2}
+											paddingBottom={1}
+											direction={'row'}
+											alignItems={'center'}
+											justifyContent={'center'}
+											divider={<Divider orientation="vertical" sx={{ backgroundColor: lightTheme.palette.text.primary }} flexItem />}
+											gap={2}
+										>
 											<Stack width={'50%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1}>
 												<IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
-												<Link href={`https://ccip.chain.link/msg/${position.recieveSideMessageId ? position.recieveSideMessageId : position.messageId}`} target="_blank">
+												<Link href={`https://sepolia.etherscan.io/tx/${position.txHash}`} target="_blank">
 													<Typography
 														variant="caption"
 														sx={{
@@ -519,14 +505,33 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 															fontWeight: 600,
 														}}
 													>
-														CCIP
+														Etherscan
 													</Typography>
 												</Link>
 											</Stack>
-										)}
+											{position.messageId && (
+												<Stack width={'50%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1}>
+													<IoMdLink size={30} color={lightTheme.palette.text.primary}></IoMdLink>
+													<Link href={`https://ccip.chain.link/msg/${position.recieveSideMessageId ? position.recieveSideMessageId : position.messageId}`} target="_blank">
+														<Typography
+															variant="caption"
+															sx={{
+																color: lightTheme.palette.text.primary,
+																fontWeight: 600,
+															}}
+														>
+															CCIP
+														</Typography>
+													</Link>
+												</Stack>
+											)}
+										</Stack>
 									</Stack>
-								</Stack>
-							)
+								)
+							}
+							else {
+								return ("")
+							}
 						})}
 					</Stack>
 				) : (
