@@ -561,6 +561,7 @@ export const lightTheme = createTheme({
             border: "none",
             paddingTop: "0px",
             color: "#000000",
+            fontSize: "1rem",
             paddingBottom: "0px",
             '& .MuiOutlinedInput-root.Mui-focused': {
               border: "none",

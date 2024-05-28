@@ -59,7 +59,7 @@ const PWAProfileMenu = () => {
                     <IoIosArrowForward size={30} color={lightTheme.palette.text.primary}></IoIosArrowForward>
                 </Stack>
             </Link>
-            <Link href={"https://nex-labs.gitbook.io/nex-dex/micar-compliance/disclaimers"} target="_blank" className="w-full h-fit flex flex-row items-center justify-center">
+            <Link href={"https://app.nexlabs.io/terms_and_conditions"} target="_blank" className="w-full h-fit flex flex-row items-center justify-center">
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingBottom={2}>
                     <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1.5}>
                         <LiaFileContractSolid size={30} color={lightTheme.palette.text.primary}></LiaFileContractSolid>

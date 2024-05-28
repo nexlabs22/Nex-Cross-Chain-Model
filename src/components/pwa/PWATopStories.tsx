@@ -1,92 +1,149 @@
-import { Stack, Container, Box, Typography, Button } from "@mui/material";
-import Image from "next/image";
 import Link from "next/link";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
+import { useLandingPageStore } from "@/store/store";
+import { IoIosArrowRoundForward, IoIosArrowRoundBack, IoMdArrowForward } from "react-icons/io";
+import mediaBG from "@assets/images/NEX_media_bg.webp";
+import { Stack, Box, Typography } from "@mui/material";
 import { lightTheme } from "@/theme/theme";
-import { env } from "process";
-import axios from 'axios';
-import { useEffect, useState } from "react";
-import { keysIn } from "lodash";
-import { PWAGradientStack } from "@/theme/overrides";
-
-interface article {
-    title: string,
-    link: string,
-    imgUrl: string,
-    creator: string
-}
 
 const PWATopStories = () => {
-
-    const [articles, setArticles] = useState<article[]>([])
-
-    async function getStories() {
-        const response = await axios.get('https://newsdata.io/api/1/news?apikey=pub_421568b0f1807dfbee4623c8ed5f99360cd9e&q=defi,crypto&image=1&language=en');
-
-        if (response) {
-            //console.log(response.data.results)
-            const fetchedArticles = response.data.results.slice(0, 3).map((articleData: { title: string; link: string; image_url: string; creator: string; }) => ({
-                title: articleData.title,
-                link: articleData.link,
-                imgUrl: articleData.image_url,
-                creator: articleData.creator,
-            }));
-            console.log(fetchedArticles)
-            setArticles(fetchedArticles);
-        }
+    const { selectedSlideIndex, changeSelectedSlideIndex, theme } =
+        useLandingPageStore();
+    const articles = [
+        {
+            title: "Maximize Your Investment Strategy with Indices",
+            source: "Medium - NexLabs",
+            link: "https://nexlabs.medium.com/maximize-your-investment-strategy-with-indices-18c53defb0e7",
+            image: mediaBG.src,
+        },
+        {
+            title: "Introducing Nex Labs: A Decentralized Exchange of Indices",
+            source: "Medium - NexLabs",
+            link: "https://nexlabs.medium.com/introducing-nex-labs-a-decentralized-exchange-on-polygon-a339659bfd7b",
+            image: mediaBG.src,
+        },
+        {
+            title: "Maximize Your Investment Strategy with Indices",
+            source: "Medium - NexLabs",
+            link: "https://nexlabs.medium.com/maximize-your-investment-strategy-with-indices-18c53defb0e7",
+            image: mediaBG.src,
+        },
+        {
+            title: "Introducing Nex Labs: A Decentralized Exchange of Indices",
+            source: "Medium - NexLabs",
+            link: "https://nexlabs.medium.com/introducing-nex-labs-a-decentralized-exchange-on-polygon-a339659bfd7b",
+            image: mediaBG.src,
+        },
+        {
+            title: "Maximize Your Investment Strategy with Indices",
+            source: "Medium - NexLabs",
+            link: "https://nexlabs.medium.com/maximize-your-investment-strategy-with-indices-18c53defb0e7",
+            image: mediaBG.src,
+        },
+        {
+            title: "Introducing Nex Labs: A Decentralized Exchange of Indices",
+            source: "Medium - NexLabs",
+            link: "https://nexlabs.medium.com/introducing-nex-labs-a-decentralized-exchange-on-polygon-a339659bfd7b",
+            image: mediaBG.src,
+        },
+        {
+            title: "Maximize Your Investment Strategy with Indices",
+            source: "Medium - NexLabs",
+            link: "https://nexlabs.medium.com/maximize-your-investment-strategy-with-indices-18c53defb0e7",
+            image: mediaBG.src,
+        },
+        {
+            title: "Introducing Nex Labs: A Decentralized Exchange of Indices",
+            source: "Medium - NexLabs",
+            link: "https://nexlabs.medium.com/introducing-nex-labs-a-decentralized-exchange-on-polygon-a339659bfd7b",
+            image: mediaBG.src,
+        },
+    ];
+    function nextArticle() {
+        if (selectedSlideIndex < articles.length) changeSelectedSlideIndex(selectedSlideIndex + 1)
     }
-
-    useEffect(() => {
-        getStories()
-    }, [])
+    function prevArticle() {
+        if (selectedSlideIndex > 0) changeSelectedSlideIndex(selectedSlideIndex - 1)
+    }
     return (
-        <Stack width={"100%"} height={"fit-content"} marginTop={1} paddingBottom={"4.8rem"} direction={"column"} alignItems={"center"} justifyContent={"start"}>
+        <Stack width={"100%"} height={"fit-content"} marginBottom={"5rem"}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,
                     fontWeight: 700
                 }}>
-                    Top Stories
+                    Top stories
                 </Typography>
-
+                <IoMdArrowForward size={30} color={lightTheme.palette.text.primary} />
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
-                {
-                    articles.map((article, key) => {
-                        return (
-                            <Stack key={key} direction={"row"} alignItems={"stretch"} justifyContent={"space-between"} borderRadius={"1.2rem"} gap={1} paddingY={1.5} paddingX={1.5} sx={PWAGradientStack}>
-                                <Stack direction={"column"} alignItems={"start"} justifyContent={"start"} width={"60%"}>
-                                    <Typography variant="subtitle1" sx={{
-                                        color: lightTheme.palette.text.primary,
-                                        fontWeight: 600,
-                                        marginBottom: "0.4rem"
-                                    }}>
-                                        {article.title.slice(0, 40)} ...
-                                    </Typography>
-                                    <Typography variant="caption" sx={{
-                                        color: lightTheme.palette.text.primary,
-                                        fontWeight: 500,
-                                        fontSize: "0.8rem",
-                                        marginBottom: "0.8rem"
-                                    }}>
-                                        {article.creator}
-                                    </Typography>
-                                </Stack>
-                                <Stack width={"40%"} flexGrow={1} direction={"row"} alignItems={"center"} justifyContent={"center"}>
-                                    <Stack width={"95%"} height={"80%"} borderRadius={"0.8rem"} sx={{
-                                        backgroundImage: "url('https://miro.medium.com/v2/resize:fit:6000/1*tZRnVhlr5Ra67LqULE9J3g.png')",
-                                        backgroundPosition: "center",
-                                        backgroundSize: "cover",
-                                        backgroundRepeat: "no-repeat"
-                                    }}></Stack>
-                                </Stack>
-                            </Stack>
-                        )
-                    })
-                }
 
+            <Stack width={"100%"}>
+                <Carousel
+                    className="m-0 h-full w-full p-0"
+                    infiniteLoop={true}
+                    showIndicators={false}
+                    autoPlay={true}
+                    interval={8000}
+                    showStatus={false}
+                    showArrows={false}
+                    showThumbs={false}
+                    swipeable={true}
+                    selectedItem={selectedSlideIndex}
+                    preventMovementUntilSwipeScrollTolerance={true}
+                    swipeScrollTolerance={50}
+                    onChange={(item, index) => {
+                        changeSelectedSlideIndex(item);
+                    }}
+                >
+                    {articles.map((item, id) => {
+                        return (
+                            <Stack
+                                key={id}
+                                height={"30vh"} width={"100%"} direction={"column"} alignItems={"start"} justifyContent={"end"} gap={1.5} borderRadius={"1.2rem"} padding={{ xs: 2, md: 4 }}
+                                className=""
+                                sx={{
+                                    backgroundImage: `url('${mediaBG.src}')`,
+                                    boxShadow:
+                                        theme.palette.mode == "dark"
+                                            ? `0px 0px 6px 1px rgba(91,166,153,0.68)`
+                                            : "",
+                                    backgroundPosition: "center",
+                                    backgroundSize: "100% 100%",
+                                    backgroundRepeat: "no-repeat"
+                                }}
+                            >
+                                <Typography variant="caption">{item.source}</Typography>
+                                <Link href={item.link} target="_blank">
+                                    <Typography variant="subtitle1" align="left" sx={{fontWeight: 700}}>{item.title}</Typography>
+                                </Link>
+                            </Stack>
+                        );
+                    })}
+                </Carousel>
+            </Stack>
+            <Stack direction={"row"} alignItems={"center"} justifyContent={"center"} height={"fit-content"} width={"100%"} gap={1}>
+                <IoIosArrowRoundBack size={34} color="#5E869B" onClick={() => { prevArticle() }} />
+                <Stack marginY={2} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={0.5}>
+                    {articles.map((item, id) => {
+                        return id == selectedSlideIndex ? (
+                            <Stack key={id} onClick={() => { changeSelectedSlideIndex(id) }} height={{ xs: "0.5rem", md: "1rem" }} width={{ xs: "2rem", md: "3rem" }} borderRadius={"30px"} bgcolor={"#5E869B"}></Stack>
+                        ) : (
+                            <Stack
+                                key={id}
+                                onClick={() => { changeSelectedSlideIndex(id) }}
+                                className={`h-2 w-3 rounded-full md:h-4 md:w-6 ${theme.palette.mode == "dark" ? " bg-[#5E869B] " : "bg-slate-400" 
+                                    }`}
+                            >
+                                <Stack key={id} onClick={() => { changeSelectedSlideIndex(id) }} height={{ xs: "0.5rem", md: "1rem" }} width={{ xs: "0.75rem", md: "1.5rem" }} borderRadius={"30px"} bgcolor={"slategray"}></Stack>
+                            </Stack>
+                        );
+                    })}
+                </Stack>
+                <IoIosArrowRoundForward size={34} color="#5E869B" onClick={() => { nextArticle() }} />
             </Stack>
         </Stack>
-    )
-}
+    );
+};
 
-export default PWATopStories
+export default PWATopStories;
