@@ -39,8 +39,12 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     let indexFactoryBalancer : IndexFactoryBalancer
     let crossChainVault : CrossChainVault
     let crossChainVault2 : CrossChainVault
+    let crossChainVault3 : CrossChainVault
+    let crossChainVault4 : CrossChainVault
     let crossChainIndexFactory : CrossChainIndexFactory
     let crossChainIndexFactory2 : CrossChainIndexFactory
+    let crossChainIndexFactory3 : CrossChainIndexFactory
+    let crossChainIndexFactory4 : CrossChainIndexFactory
     let oracle : MockApiOracle
     let ethPriceOracle: MockV3Aggregator
     let ethPriceOracle2: MockV3Aggregator
@@ -109,7 +113,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       )
       
       const CrossChainVault = await ethers.getContractFactory("CrossChainVault");
-      crossChainVault = await CrossChainVault.deploy()
+      crossChainVault = await CrossChainVault.deploy({gasLimit: 5000000})
       await crossChainVault.initialize(
             ethers.constants.AddressZero,
             //swap addresses
@@ -119,18 +123,40 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             v3Factory.address,
             v3Router.address, //router v2
             v3Factory.address //factory v2
-      )
-      // crossChainVault2 = await CrossChainVault.deploy()
-      // await crossChainVault2.initialize(
-      //       ethers.constants.AddressZero,
-      //       //swap addresses
-      //       weth9.address,
-      //       v3Router.address,//quoter
-      //       v3Router.address,
-      //       v3Factory.address,
-      //       v3Router.address, //router v2
-      //       v3Factory.address //factory v2
-      // )
+      );
+      crossChainVault2 = await CrossChainVault.deploy({gasLimit: 5000000})
+      await crossChainVault2.initialize(
+            ethers.constants.AddressZero,
+            //swap addresses
+            weth9.address,
+            v3Router.address,//quoter
+            v3Router.address,
+            v3Factory.address,
+            v3Router.address, //router v2
+            v3Factory.address //factory v2
+      );
+      crossChainVault3 = await CrossChainVault.deploy({gasLimit: 5000000})
+      await crossChainVault3.initialize(
+            ethers.constants.AddressZero,
+            //swap addresses
+            weth9.address,
+            v3Router.address,//quoter
+            v3Router.address,
+            v3Factory.address,
+            v3Router.address, //router v2
+            v3Factory.address //factory v2
+      );
+      crossChainVault4 = await CrossChainVault.deploy({gasLimit: 5000000})
+      await crossChainVault4.initialize(
+            ethers.constants.AddressZero,
+            //swap addresses
+            weth9.address,
+            v3Router.address,//quoter
+            v3Router.address,
+            v3Factory.address,
+            v3Router.address, //router v2
+            v3Factory.address //factory v2
+      );
 
       const jobId = ethers.utils.toUtf8Bytes("29fa9aa13bf1468788b7cc4a500a45b8"); //test job id
       const fee = "100000000000000000" // fee = 0.1 linkToken
@@ -138,7 +164,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
 
       const CrossChainIndexFactory = await ethers.getContractFactory("CrossChainIndexFactory");
       crossChainIndexFactory = await CrossChainIndexFactory.deploy()
-
+      
       await crossChainIndexFactory.initialize(
             "2",
             crossChainVault.address,
@@ -151,23 +177,51 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
             v3Router.address, //v2
             v3Factory.address, //v2
             ethPriceOracle2.address
-      )
+      );
 
-
-      // crossChainIndexFactory2 = await CrossChainIndexFactory.deploy({gasLimit: 3000000})
-
-      // await crossChainIndexFactory2.initialize(
-      //       "3",
-      //       crossChainVault.address,
-      //       linkToken.address,
-      //       mockRouter.address,
-      //       //swap addresses
-      //       weth9.address,
-      //       v3Router.address,
-      //       v3Factory.address,
-      //       v3Router.address, //v2
-      //       v3Factory.address //v2
-      // )
+      await ethers.provider.send("evm_mine", []);
+      crossChainIndexFactory2 = await CrossChainIndexFactory.deploy({gasLimit: 5000000})
+      await crossChainIndexFactory2.initialize(
+        "3",
+        crossChainVault2.address,
+        linkToken.address,
+        mockRouter.address,
+        //swap addresses
+        weth9.address,
+        v3Router.address,
+        v3Factory.address,
+        v3Router.address, //v2
+        v3Factory.address, //v2
+        ethPriceOracle2.address
+      );
+      crossChainIndexFactory3 = await CrossChainIndexFactory.deploy({gasLimit: 5000000})
+      await crossChainIndexFactory3.initialize(
+        "4",
+        crossChainVault3.address,
+        linkToken.address,
+        mockRouter.address,
+        //swap addresses
+        weth9.address,
+        v3Router.address,
+        v3Factory.address,
+        v3Router.address, //v2
+        v3Factory.address, //v2
+        ethPriceOracle2.address
+      );
+      crossChainIndexFactory4 = await CrossChainIndexFactory.deploy({gasLimit: 5000000})
+      await crossChainIndexFactory4.initialize(
+        "5",
+        crossChainVault4.address,
+        linkToken.address,
+        mockRouter.address,
+        //swap addresses
+        weth9.address,
+        v3Router.address,
+        v3Factory.address,
+        v3Router.address, //v2
+        v3Factory.address, //v2
+        ethPriceOracle2.address
+      );
       
 
       const IndexFactoryStorage = await ethers.getContractFactory("IndexFactoryStorage");
@@ -187,7 +241,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         v3Factory.address,
         v3Router.address, //v2
         v3Factory.address //v2
-      )
+      );
 
 
       const IndexFactory = await ethers.getContractFactory("IndexFactory");
@@ -222,17 +276,37 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       //set minter
       await indexToken.setMinter(indexFactory.address, true)
       await indexToken.setMinter(indexFactoryBalancer.address, true)
-      await indexFactoryStorage.setCrossChainToken("2", crossChainToken.address, "3")
+      //set cross chain tokens
+      await indexFactoryStorage.setCrossChainToken("2", crossChainToken.address, "3");
+      await indexFactoryStorage.setCrossChainToken("3", crossChainToken.address, "3");
+      await indexFactoryStorage.setCrossChainToken("4", crossChainToken.address, "3");
+      await indexFactoryStorage.setCrossChainToken("5", crossChainToken.address, "3");
+      //set cross chain factories
       await indexFactoryStorage.setCrossChainFactory(crossChainIndexFactory.address, "2");
+      await indexFactoryStorage.setCrossChainFactory(crossChainIndexFactory2.address, "3");
+      await indexFactoryStorage.setCrossChainFactory(crossChainIndexFactory3.address, "4");
+      await indexFactoryStorage.setCrossChainFactory(crossChainIndexFactory4.address, "5");
+      //set factories
       await indexFactoryStorage.setIndexFactory(indexFactory.address);
       await indexFactoryStorage.setIndexFactoryBalancer(indexFactoryBalancer.address);
-      await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address)
-      await crossChainIndexFactory.setCrossChainToken("1", crossChainToken.address, "3")
+      await indexFactory.setIndexFactoryStorage(indexFactoryStorage.address);
+      // set cross chain tokens
+      await crossChainIndexFactory.setCrossChainToken("1", crossChainToken.address, "3");
+      await crossChainIndexFactory2.setCrossChainToken("1", crossChainToken.address, "3");
+      await crossChainIndexFactory3.setCrossChainToken("1", crossChainToken.address, "3");
+      await crossChainIndexFactory4.setCrossChainToken("1", crossChainToken.address, "3");
+      //set factory for vault
       await crossChainVault.setFactory(crossChainIndexFactory.address);
+      await crossChainVault2.setFactory(crossChainIndexFactory2.address);
+      await crossChainVault3.setFactory(crossChainIndexFactory3.address);
+      await crossChainVault4.setFactory(crossChainIndexFactory4.address);
       
       //router mock
       await mockRouter.setFactoryChainSelector("1", indexFactory.address)
-      await mockRouter.setFactoryChainSelector("2", crossChainIndexFactory.address)
+      await mockRouter.setFactoryChainSelector("2", crossChainIndexFactory.address);
+      await mockRouter.setFactoryChainSelector("3", crossChainIndexFactory2.address);
+      await mockRouter.setFactoryChainSelector("4", crossChainIndexFactory3.address);
+      await mockRouter.setFactoryChainSelector("5", crossChainIndexFactory4.address);
       //return vaiables
       return {
         mockRouter,
@@ -259,7 +333,13 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
         indexFactory,
         indexFactoryBalancer,
         crossChainVault,
+        crossChainVault2,
+        crossChainVault3,
+        crossChainVault4,
         crossChainIndexFactory,
+        crossChainIndexFactory2,
+        crossChainIndexFactory3,
+        crossChainIndexFactory4,
         oracle,
         ethPriceOracle
         }
