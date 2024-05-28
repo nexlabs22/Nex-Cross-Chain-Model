@@ -269,7 +269,7 @@ function NewHistoryTable({ initialStandalone = false }: { initialStandalone?: bo
 
 	return isStandalone ? (
 		<>
-			<Stack id="PWAProfileHistory" width={'100%'} height={'fit-content'} minHeight={'50vh'} marginBottom={"6rem"} marginTop={1} direction={'column'} alignItems={'center'} justifyContent={'start'}>
+			<Stack id="PWAProfileHistory" width={'100%'} height={'fit-content'} minHeight={'0vh'} marginBottom={"6rem"} marginTop={1} direction={'column'} alignItems={'center'} justifyContent={'start'}>
 				<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'} marginBottom={1}>
 					<Typography
 						variant="h6"

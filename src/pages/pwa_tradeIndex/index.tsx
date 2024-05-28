@@ -541,18 +541,18 @@ export default function PWATradeIndex() {
                     width: "100%",
                     textAlign: "left",
                 }}>
-                    Details
+                    Key Information
                 </Typography>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="body1" sx={{
                         color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                        fontWeight: 600
                     }}>
                         Market Cap
                     </Typography>
                     <Typography variant="caption" sx={{
                         color: "#374952",
-                        fontWeight: 600
+                        fontWeight: 500
                     }}>
                         {FormatToViewNumber({ value: Number(defaultIndexObject?.mktCap), returnType: 'string' }) + ' ' + defaultIndexObject?.shortSymbol}
                     </Typography>
@@ -560,13 +560,13 @@ export default function PWATradeIndex() {
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="body1" sx={{
                         color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                        fontWeight: 600
                     }}>
                         Market Price
                     </Typography>
                     <Typography variant="caption" sx={{
                         color: "#374952",
-                        fontWeight: 600
+                        fontWeight: 500
                     }}>
                         ${FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })}
                     </Typography>
@@ -574,13 +574,13 @@ export default function PWATradeIndex() {
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="body1" sx={{
                         color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                        fontWeight: 600
                     }}>
                         24h Change
                     </Typography>
                     <Typography variant="caption" sx={{
                         color: "#374952",
-                        fontWeight: 600
+                        fontWeight: 500
                     }}>
                         {defaultIndexObject?.chg24h}%
                     </Typography>
@@ -588,14 +588,14 @@ export default function PWATradeIndex() {
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="body1" sx={{
                         color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                        fontWeight: 600
                     }}>
                         Token Address
                     </Typography>
                     <Link target="_blank" href={`https://sepolia.etherscan.io/token/${defaultIndexObject?.tokenAddress}`}>
                         <Typography variant="caption" sx={{
                             color: "#374952",
-                            fontWeight: 600,
+                            fontWeight: 500,
                         }}>
                             {reduceAddress(defaultIndexObject?.tokenAddress as string)}
                         </Typography>
@@ -605,13 +605,13 @@ export default function PWATradeIndex() {
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="body1" sx={{
                         color: lightTheme.palette.text.primary,
-                        fontWeight: 700
+                        fontWeight: 600
                     }}>
                         Managment Fees
                     </Typography>
                     <Typography variant="caption" sx={{
                         color: "#374952",
-                        fontWeight: 600
+                        fontWeight: 500
                     }}>
                         {defaultIndexObject?.managementFee} %
                     </Typography>
