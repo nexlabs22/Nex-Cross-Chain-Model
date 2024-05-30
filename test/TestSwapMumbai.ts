@@ -71,20 +71,7 @@ import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol
       const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
       const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
 
-      // const block = new Block()
-      const liquidityParams = {
-      token0: tokens[0],
-      token1: tokens[1],
-      fee: "3000",
-      tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      recipient: await deploymentObj.owner.getAddress(),
-      amount0Desired: ethers.utils.parseEther("1000"),
-      amount1Desired: ethers.utils.parseEther("1000"),
-      amount0Min: 0,
-      amount1Min: 0,
-      deadline: unlockTime,
-      }
+      
       
       await deploymentObj.nft.mint(liquidityParams)
       */

@@ -31,16 +31,7 @@ import { arbitrumSepoliaTestRippleAddress, CrossChainTokenAddresses, FactoryV3Ad
     const v3Fctory = new ethers.Contract(FactoryV3Addresses['arbitrumSepolia'], UniswapV3Factory.abi) as IUniswapV3Factory
     const v3Router = new ethers.Contract(RouterV3Addresses['arbitrumSepolia'], SwapRouter.abi) as ISwapRouter
     const token = new ethers.Contract(CrossChainTokenAddresses['arbitrumSepolia'], WETH9.abi) as IWETH
-    //   const weth9 = res["weth9"] as IWETH
-    //   const v3Fctory = res["factory"] as IUniswapV3Factory
-    //   const v3Router = res["router"] as ISwapRouter
-    //   const nft = res["positionManager"] as INonfungiblePositionManager
-    //token
-    // const Token = await ethers.getContractFactory("Token");
-    // const token0 = await Token.deploy(ethers.utils.parseEther("100000"));
-    // const token1 = await Token.deploy(ethers.utils.parseEther("100000"));
-    // const token0Address = await token0.getAddress()
-    // const token1Address = await token1.getAddress()
+   
 
       //flash swap
       // const FlashSwap = await ethers.getContractFactory("SwapExamples");
@@ -55,44 +46,7 @@ import { arbitrumSepoliaTestRippleAddress, CrossChainTokenAddresses, FactoryV3Ad
 
         const amountIn = "0.4"
         
-        // console.log(
-        //   deploymentObj.token0.address,
-        //   deploymentObj.token1.address,
-        // )
-        /**
-        let tokens = [];
-        tokens[0] = deploymentObj.token0.address < deploymentObj.token1.address ? deploymentObj.token0.address : deploymentObj.token1.address
-        tokens[1] = deploymentObj.token0.address > deploymentObj.token1.address ? deploymentObj.token0.address : deploymentObj.token1.address
-        await deploymentObj.nft.createAndInitializePoolIfNecessary(
-          tokens[0],
-          tokens[1],
-          "3000",
-          encodePriceSqrt(1, 1)
-        )
-      await deploymentObj.token0.approve(deploymentObj.nft.address, ethers.utils.parseEther("1000"));
-      await deploymentObj.token1.approve(deploymentObj.nft.address, ethers.utils.parseEther("1000"));
-      
-      const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-      const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
-      const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
-
-      // const block = new Block()
-      const liquidityParams = {
-      token0: tokens[0],
-      token1: tokens[1],
-      fee: "3000",
-      tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      recipient: await deploymentObj.owner.getAddress(),
-      amount0Desired: ethers.utils.parseEther("1000"),
-      amount1Desired: ethers.utils.parseEther("1000"),
-      amount0Min: 0,
-      amount1Min: 0,
-      deadline: unlockTime,
-      }
-      
-      await deploymentObj.nft.mint(liquidityParams)
-      */
+        
       const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
     //   const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
       const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
