@@ -161,6 +161,8 @@ export default function DCACalculator() {
 	}
 	const indices = ['ANFI', 'CRYPTO5']
 	const data = selectedIndex === 'ANFI' ? filterFirstOfMonth(ANFIData) : filterFirstOfMonth(CR5Data)
+	console.log({data})
+	data.sort((a,b)=> a.time-b.time)
 	const validationDates = {
 		minMonth: data && data[0] && data[0].date ? new Date(data[0].date).getMonth() : -1,
 		minYear: data && data[0] && data[0] ? Number(data[0].date?.split(' ')[3]) : -1,
