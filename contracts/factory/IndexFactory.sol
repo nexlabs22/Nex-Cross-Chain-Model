@@ -228,7 +228,7 @@ contract IndexFactory is
         uint amountIn,
         address _recipient,
         uint _swapVersion
-    ) public returns (uint) {
+    ) internal returns (uint) {
         IERC20(tokenIn).transfer(address(indexFactoryStorage), amountIn);
         uint amountOut = indexFactoryStorage.swap(
             tokenIn,
@@ -245,7 +245,7 @@ contract IndexFactory is
         uint _inputAmount,
         uint _crossChainFee,
         uint _tokenInSwapVersion
-    ) public payable {
+    ) public {
         uint feeAmount = (_inputAmount * feeRate) / 10000;
         uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
         //transfer fee to the owner
@@ -289,16 +289,7 @@ contract IndexFactory is
     ) internal {
         
         weth.transfer(address(indexToken), _inputAmount);
-        if (_crossChainFee > 0) {
-            //swap ccip fee from eth to link
-            uint ccipLinkFee = swap(
-                address(weth),
-                i_link,
-                _crossChainFee,
-                address(this),
-                3
-            );
-        }
+        
         uint wethAmount = _inputAmount;
         
         //swap to underlying assets on all chain
@@ -346,7 +337,6 @@ contract IndexFactory is
         uint latestCount
     ) internal {
         for (uint i = 0; i < chainSelectorTokensCount; i++) {
-            // address tokenAddress = indexFactoryStorage.currentList(i);
             address tokenAddress = indexFactoryStorage.currentChainSelectorTokens(latestCount, chainSelector, i);
             uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
             uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
@@ -479,8 +469,7 @@ contract IndexFactory is
         uint _crossChainFee,
         address _tokenOut,
         uint _tokenOutSwapVersion
-    ) public payable returns (uint) {
-        require(msg.value >= _crossChainFee, "lower than required amount");
+    ) public returns (uint) {
         uint burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         redemptionNonce += 1;
         redemptionNonceRequester[redemptionNonce] = msg.sender;
@@ -491,20 +480,8 @@ contract IndexFactory is
 
         indexToken.burn(msg.sender, amountIn);
 
-        // if (_crossChainFee > 0) {
-        //     weth.deposit{value: _crossChainFee}();
-        //     //swap ccip fee from eth to link
-        //     uint ccipLinkFee = swap(
-        //         address(weth),
-        //         i_link,
-        //         _crossChainFee,
-        //         address(this),
-        //         3
-        //     );
-        // }
-        // uint outputAmount;
+        
         //swap
-        // uint totalCrossChainShares;
         uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
         uint latestCount = indexFactoryStorage.currentFilledCount();
         for(uint i = 0; i < totalChains; i++){
@@ -630,7 +607,7 @@ contract IndexFactory is
         emit Redemption(_messageId, nonce, requester, outputToken, redemptionInputAmount[nonce], reallOut, block.timestamp);
         }
     }
-    // }
+    
 
     function getAmountOut(
         address tokenIn,

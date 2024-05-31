@@ -1,7 +1,7 @@
 
 import { ContractReceipt, ContractTransaction, Signer, constants } from "ethers";
 import { ethers, network } from "hardhat";
-import { BasicMessageReceiver, BasicTokenSender, CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexFactoryBalancer, IndexFactoryStorage, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
+import {CrossChainIndexFactory, INonfungiblePositionManager, ISwapRouter, IUniswapV3Factory, IWETH, IndexFactory, IndexFactoryBalancer, IndexFactoryStorage, IndexToken, LinkToken, MockApiOracle, MockRouter, MockV3Aggregator, Token } from "../typechain-types";
 import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { expect } from 'chai';
 import { BasicMessageSender } from "../typechain-types/contracts/ccip";
@@ -16,9 +16,9 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
     // and reset Hardhat Network to that snapshot in every test.
     let mockRouter: MockRouter
     let linkToken : LinkToken
-    let basicMessageSender :BasicMessageSender
-    let basicTokenSender : BasicTokenSender
-    let basicMessageReceiver : BasicMessageReceiver
+    // let basicMessageSender :BasicMessageSender
+    // let basicTokenSender : BasicTokenSender
+    // let basicMessageReceiver : BasicMessageReceiver
     let owner : any
     let otherAccount : any
     let usdc : Token
@@ -71,14 +71,14 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       token5 = await Token.deploy(ethers.utils.parseEther("100000"));
       crossChainToken = await Token.deploy(ethers.utils.parseEther("100000"));
 
-      const BasicMessageSender = await ethers.getContractFactory("BasicMessageSender");
-      basicMessageSender = await BasicMessageSender.deploy(mockRouter.address, linkToken.address);
+      // const BasicMessageSender = await ethers.getContractFactory("BasicMessageSender");
+      // basicMessageSender = await BasicMessageSender.deploy(mockRouter.address, linkToken.address);
 
-      const BasicTokenSender = await ethers.getContractFactory("BasicTokenSender");
-      basicTokenSender = await BasicTokenSender.deploy(mockRouter.address, linkToken.address);
+      // const BasicTokenSender = await ethers.getContractFactory("BasicTokenSender");
+      // basicTokenSender = await BasicTokenSender.deploy(mockRouter.address, linkToken.address);
 
-      const BasicMessageReceiver = await ethers.getContractFactory("BasicMessageReceiver");
-      basicMessageReceiver = await BasicMessageReceiver.deploy(mockRouter.address);
+      // const BasicMessageReceiver = await ethers.getContractFactory("BasicMessageReceiver");
+      // basicMessageReceiver = await BasicMessageReceiver.deploy(mockRouter.address);
       
       const res = await UniswapV3Deployer.deploy(owner);
       // return
@@ -311,9 +311,9 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
       return {
         mockRouter,
         linkToken,
-        basicMessageSender,
-        basicTokenSender,
-        basicMessageReceiver,
+        // basicMessageSender,
+        // basicTokenSender,
+        // basicMessageReceiver,
         owner,
         otherAccount,
         usdc,
