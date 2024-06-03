@@ -193,17 +193,17 @@
   },
   "ast": {
     "absolutePath": "contracts/interfaces/pool/IUniswapV3PoolErrors.sol",
-    "id": 66429,
+    "id": 67995,
     "exportedSymbols": {
       "IUniswapV3PoolErrors": [
-        66428
+        67994
       ]
     },
     "nodeType": "SourceUnit",
     "src": "46:361:14",
     "nodes": [
       {
-        "id": 66402,
+        "id": 67968,
         "nodeType": "PragmaDirective",
         "src": "46:24:14",
         "nodes": [],
@@ -215,173 +215,173 @@
         ]
       },
       {
-        "id": 66428,
+        "id": 67994,
         "nodeType": "ContractDefinition",
         "src": "164:243:14",
         "nodes": [
           {
-            "id": 66405,
+            "id": 67971,
             "nodeType": "ErrorDefinition",
             "src": "202:12:14",
             "nodes": [],
             "name": "LOK",
             "nameLocation": "208:3:14",
             "parameters": {
-              "id": 66404,
+              "id": 67970,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "211:2:14"
             }
           },
           {
-            "id": 66407,
+            "id": 67973,
             "nodeType": "ErrorDefinition",
             "src": "220:12:14",
             "nodes": [],
             "name": "TLU",
             "nameLocation": "226:3:14",
             "parameters": {
-              "id": 66406,
+              "id": 67972,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "229:2:14"
             }
           },
           {
-            "id": 66409,
+            "id": 67975,
             "nodeType": "ErrorDefinition",
             "src": "238:12:14",
             "nodes": [],
             "name": "TLM",
             "nameLocation": "244:3:14",
             "parameters": {
-              "id": 66408,
+              "id": 67974,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "247:2:14"
             }
           },
           {
-            "id": 66411,
+            "id": 67977,
             "nodeType": "ErrorDefinition",
             "src": "256:12:14",
             "nodes": [],
             "name": "TUM",
             "nameLocation": "262:3:14",
             "parameters": {
-              "id": 66410,
+              "id": 67976,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "265:2:14"
             }
           },
           {
-            "id": 66413,
+            "id": 67979,
             "nodeType": "ErrorDefinition",
             "src": "274:11:14",
             "nodes": [],
             "name": "AI",
             "nameLocation": "280:2:14",
             "parameters": {
-              "id": 66412,
+              "id": 67978,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "282:2:14"
             }
           },
           {
-            "id": 66415,
+            "id": 67981,
             "nodeType": "ErrorDefinition",
             "src": "291:11:14",
             "nodes": [],
             "name": "M0",
             "nameLocation": "297:2:14",
             "parameters": {
-              "id": 66414,
+              "id": 67980,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "299:2:14"
             }
           },
           {
-            "id": 66417,
+            "id": 67983,
             "nodeType": "ErrorDefinition",
             "src": "308:11:14",
             "nodes": [],
             "name": "M1",
             "nameLocation": "314:2:14",
             "parameters": {
-              "id": 66416,
+              "id": 67982,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "316:2:14"
             }
           },
           {
-            "id": 66419,
+            "id": 67985,
             "nodeType": "ErrorDefinition",
             "src": "325:11:14",
             "nodes": [],
             "name": "AS",
             "nameLocation": "331:2:14",
             "parameters": {
-              "id": 66418,
+              "id": 67984,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "333:2:14"
             }
           },
           {
-            "id": 66421,
+            "id": 67987,
             "nodeType": "ErrorDefinition",
             "src": "342:12:14",
             "nodes": [],
             "name": "IIA",
             "nameLocation": "348:3:14",
             "parameters": {
-              "id": 66420,
+              "id": 67986,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "351:2:14"
             }
           },
           {
-            "id": 66423,
+            "id": 67989,
             "nodeType": "ErrorDefinition",
             "src": "360:10:14",
             "nodes": [],
             "name": "L",
             "nameLocation": "366:1:14",
             "parameters": {
-              "id": 66422,
+              "id": 67988,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "367:2:14"
             }
           },
           {
-            "id": 66425,
+            "id": 67991,
             "nodeType": "ErrorDefinition",
             "src": "376:11:14",
             "nodes": [],
             "name": "F0",
             "nameLocation": "382:2:14",
             "parameters": {
-              "id": 66424,
+              "id": 67990,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "384:2:14"
             }
           },
           {
-            "id": 66427,
+            "id": 67993,
             "nodeType": "ErrorDefinition",
             "src": "393:11:14",
             "nodes": [],
             "name": "F1",
             "nameLocation": "399:2:14",
             "parameters": {
-              "id": 66426,
+              "id": 67992,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "401:2:14"
@@ -393,31 +393,31 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 66403,
+          "id": 67969,
           "nodeType": "StructuredDocumentation",
           "src": "74:90:14",
           "text": "@title Errors emitted by a pool\n @notice Contains all events emitted by the pool"
         },
         "fullyImplemented": true,
         "linearizedBaseContracts": [
-          66428
+          67994
         ],
         "name": "IUniswapV3PoolErrors",
         "nameLocation": "174:20:14",
-        "scope": 66429,
+        "scope": 67995,
         "usedErrors": [
-          66405,
-          66407,
-          66409,
-          66411,
-          66413,
-          66415,
-          66417,
-          66419,
-          66421,
-          66423,
-          66425,
-          66427
+          67971,
+          67973,
+          67975,
+          67977,
+          67979,
+          67981,
+          67983,
+          67985,
+          67987,
+          67989,
+          67991,
+          67993
         ]
       }
     ],

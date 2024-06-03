@@ -317,17 +317,17 @@
   },
   "ast": {
     "absolutePath": "lib/forge-std/src/StdError.sol",
-    "id": 17995,
+    "id": 17966,
     "exportedSymbols": {
       "stdError": [
-        17994
+        17965
       ]
     },
     "nodeType": "SourceUnit",
     "src": "131:897:46",
     "nodes": [
       {
-        "id": 17930,
+        "id": 17901,
         "nodeType": "PragmaDirective",
         "src": "131:31:46",
         "nodes": [],
@@ -342,12 +342,12 @@
         ]
       },
       {
-        "id": 17994,
+        "id": 17965,
         "nodeType": "ContractDefinition",
         "src": "166:860:46",
         "nodes": [
           {
-            "id": 17937,
+            "id": 17908,
             "nodeType": "VariableDeclaration",
             "src": "190:86:46",
             "nodes": [],
@@ -356,7 +356,7 @@
             "mutability": "constant",
             "name": "assertionError",
             "nameLocation": "212:14:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -364,7 +364,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17931,
+              "id": 17902,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "190:5:46",
@@ -377,7 +377,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17934,
+                  "id": 17905,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -393,7 +393,7 @@
                 },
                 {
                   "hexValue": "30783031",
-                  "id": 17935,
+                  "id": 17906,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -420,7 +420,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17932,
+                  "id": 17903,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -431,7 +431,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17933,
+                "id": 17904,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -444,7 +444,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17936,
+              "id": 17907,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -462,7 +462,7 @@
             "visibility": "public"
           },
           {
-            "id": 17944,
+            "id": 17915,
             "nodeType": "VariableDeclaration",
             "src": "283:87:46",
             "nodes": [],
@@ -471,7 +471,7 @@
             "mutability": "constant",
             "name": "arithmeticError",
             "nameLocation": "305:15:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -479,7 +479,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17938,
+              "id": 17909,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "283:5:46",
@@ -492,7 +492,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17941,
+                  "id": 17912,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -508,7 +508,7 @@
                 },
                 {
                   "hexValue": "30783131",
-                  "id": 17942,
+                  "id": 17913,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -535,7 +535,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17939,
+                  "id": 17910,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -546,7 +546,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17940,
+                "id": 17911,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -559,7 +559,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17943,
+              "id": 17914,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -577,7 +577,7 @@
             "visibility": "public"
           },
           {
-            "id": 17951,
+            "id": 17922,
             "nodeType": "VariableDeclaration",
             "src": "377:85:46",
             "nodes": [],
@@ -586,7 +586,7 @@
             "mutability": "constant",
             "name": "divisionError",
             "nameLocation": "399:13:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -594,7 +594,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17945,
+              "id": 17916,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "377:5:46",
@@ -607,7 +607,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17948,
+                  "id": 17919,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -623,7 +623,7 @@
                 },
                 {
                   "hexValue": "30783132",
-                  "id": 17949,
+                  "id": 17920,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -650,7 +650,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17946,
+                  "id": 17917,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -661,7 +661,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17947,
+                "id": 17918,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -674,7 +674,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17950,
+              "id": 17921,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -692,7 +692,7 @@
             "visibility": "public"
           },
           {
-            "id": 17958,
+            "id": 17929,
             "nodeType": "VariableDeclaration",
             "src": "469:91:46",
             "nodes": [],
@@ -701,7 +701,7 @@
             "mutability": "constant",
             "name": "enumConversionError",
             "nameLocation": "491:19:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -709,7 +709,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17952,
+              "id": 17923,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "469:5:46",
@@ -722,7 +722,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17955,
+                  "id": 17926,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -738,7 +738,7 @@
                 },
                 {
                   "hexValue": "30783231",
-                  "id": 17956,
+                  "id": 17927,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -765,7 +765,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17953,
+                  "id": 17924,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -776,7 +776,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17954,
+                "id": 17925,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -789,7 +789,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17957,
+              "id": 17928,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -807,7 +807,7 @@
             "visibility": "public"
           },
           {
-            "id": 17965,
+            "id": 17936,
             "nodeType": "VariableDeclaration",
             "src": "567:90:46",
             "nodes": [],
@@ -816,7 +816,7 @@
             "mutability": "constant",
             "name": "encodeStorageError",
             "nameLocation": "589:18:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -824,7 +824,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17959,
+              "id": 17930,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "567:5:46",
@@ -837,7 +837,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17962,
+                  "id": 17933,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -853,7 +853,7 @@
                 },
                 {
                   "hexValue": "30783232",
-                  "id": 17963,
+                  "id": 17934,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -880,7 +880,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17960,
+                  "id": 17931,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -891,7 +891,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17961,
+                "id": 17932,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -904,7 +904,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17964,
+              "id": 17935,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -922,7 +922,7 @@
             "visibility": "public"
           },
           {
-            "id": 17972,
+            "id": 17943,
             "nodeType": "VariableDeclaration",
             "src": "664:80:46",
             "nodes": [],
@@ -931,7 +931,7 @@
             "mutability": "constant",
             "name": "popError",
             "nameLocation": "686:8:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -939,7 +939,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17966,
+              "id": 17937,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "664:5:46",
@@ -952,7 +952,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17969,
+                  "id": 17940,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -968,7 +968,7 @@
                 },
                 {
                   "hexValue": "30783331",
-                  "id": 17970,
+                  "id": 17941,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -995,7 +995,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17967,
+                  "id": 17938,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -1006,7 +1006,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17968,
+                "id": 17939,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -1019,7 +1019,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17971,
+              "id": 17942,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -1037,7 +1037,7 @@
             "visibility": "public"
           },
           {
-            "id": 17979,
+            "id": 17950,
             "nodeType": "VariableDeclaration",
             "src": "751:85:46",
             "nodes": [],
@@ -1046,7 +1046,7 @@
             "mutability": "constant",
             "name": "indexOOBError",
             "nameLocation": "773:13:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1054,7 +1054,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17973,
+              "id": 17944,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "751:5:46",
@@ -1067,7 +1067,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17976,
+                  "id": 17947,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -1083,7 +1083,7 @@
                 },
                 {
                   "hexValue": "30783332",
-                  "id": 17977,
+                  "id": 17948,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -1110,7 +1110,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17974,
+                  "id": 17945,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -1121,7 +1121,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17975,
+                "id": 17946,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -1134,7 +1134,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17978,
+              "id": 17949,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -1152,7 +1152,7 @@
             "visibility": "public"
           },
           {
-            "id": 17986,
+            "id": 17957,
             "nodeType": "VariableDeclaration",
             "src": "843:88:46",
             "nodes": [],
@@ -1161,7 +1161,7 @@
             "mutability": "constant",
             "name": "memOverflowError",
             "nameLocation": "865:16:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1169,7 +1169,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17980,
+              "id": 17951,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "843:5:46",
@@ -1182,7 +1182,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17983,
+                  "id": 17954,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -1198,7 +1198,7 @@
                 },
                 {
                   "hexValue": "30783431",
-                  "id": 17984,
+                  "id": 17955,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -1225,7 +1225,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17981,
+                  "id": 17952,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -1236,7 +1236,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17982,
+                "id": 17953,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -1249,7 +1249,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17985,
+              "id": 17956,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -1267,7 +1267,7 @@
             "visibility": "public"
           },
           {
-            "id": 17993,
+            "id": 17964,
             "nodeType": "VariableDeclaration",
             "src": "938:84:46",
             "nodes": [],
@@ -1276,7 +1276,7 @@
             "mutability": "constant",
             "name": "zeroVarError",
             "nameLocation": "960:12:46",
-            "scope": 17994,
+            "scope": 17965,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1284,7 +1284,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 17987,
+              "id": 17958,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "938:5:46",
@@ -1297,7 +1297,7 @@
               "arguments": [
                 {
                   "hexValue": "50616e69632875696e7432353629",
-                  "id": 17990,
+                  "id": 17961,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -1313,7 +1313,7 @@
                 },
                 {
                   "hexValue": "30783531",
-                  "id": 17991,
+                  "id": 17962,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -1340,7 +1340,7 @@
                   }
                 ],
                 "expression": {
-                  "id": 17988,
+                  "id": 17959,
                   "name": "abi",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -1351,7 +1351,7 @@
                     "typeString": "abi"
                   }
                 },
-                "id": 17989,
+                "id": 17960,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -1364,7 +1364,7 @@
                   "typeString": "function (string memory) pure returns (bytes memory)"
                 }
               },
-              "id": 17992,
+              "id": 17963,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -1388,11 +1388,11 @@
         "contractKind": "library",
         "fullyImplemented": true,
         "linearizedBaseContracts": [
-          17994
+          17965
         ],
         "name": "stdError",
         "nameLocation": "174:8:46",
-        "scope": 17995,
+        "scope": 17966,
         "usedErrors": []
       }
     ],

@@ -540,17 +540,17 @@
   },
   "ast": {
     "absolutePath": "contracts/interfaces/IUniswapV3Factory2.sol",
-    "id": 62339,
+    "id": 63643,
     "exportedSymbols": {
       "IUniswapV3Factory2": [
-        62338
+        63642
       ]
     },
     "nodeType": "SourceUnit",
     "src": "46:4073:9",
     "nodes": [
       {
-        "id": 62257,
+        "id": 63561,
         "nodeType": "PragmaDirective",
         "src": "46:24:9",
         "nodes": [],
@@ -562,18 +562,18 @@
         ]
       },
       {
-        "id": 62338,
+        "id": 63642,
         "nodeType": "ContractDefinition",
         "src": "239:3878:9",
         "nodes": [
           {
-            "id": 62265,
+            "id": 63569,
             "nodeType": "EventDefinition",
             "src": "468:71:9",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 62259,
+              "id": 63563,
               "nodeType": "StructuredDocumentation",
               "src": "275:187:9",
               "text": "@notice Emitted when the owner of the factory is changed\n @param oldOwner The owner before the owner was changed\n @param newOwner The owner after the owner was changed"
@@ -581,18 +581,18 @@
             "name": "OwnerChanged",
             "nameLocation": "474:12:9",
             "parameters": {
-              "id": 62264,
+              "id": 63568,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62261,
+                  "id": 63565,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "oldOwner",
                   "nameLocation": "503:8:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62265,
+                  "scope": 63569,
                   "src": "487:24:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -601,7 +601,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62260,
+                    "id": 63564,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "487:7:9",
@@ -615,13 +615,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 62263,
+                  "id": 63567,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "newOwner",
                   "nameLocation": "529:8:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62265,
+                  "scope": 63569,
                   "src": "513:24:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -630,7 +630,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62262,
+                    "id": 63566,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "513:7:9",
@@ -647,13 +647,13 @@
             }
           },
           {
-            "id": 62278,
+            "id": 63582,
             "nodeType": "EventDefinition",
             "src": "979:171:9",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 62266,
+              "id": 63570,
               "nodeType": "StructuredDocumentation",
               "src": "547:426:9",
               "text": "@notice Emitted when a pool is created\n @param token0 The first token of the pool by address sort order\n @param token1 The second token of the pool by address sort order\n @param fee The fee collected upon every swap in the pool, denominated in hundredths of a bip\n @param tickSpacing The minimum number of ticks between initialized ticks\n @param pool The address of the created pool"
@@ -661,18 +661,18 @@
             "name": "PoolCreated",
             "nameLocation": "985:11:9",
             "parameters": {
-              "id": 62277,
+              "id": 63581,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62268,
+                  "id": 63572,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "token0",
                   "nameLocation": "1023:6:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62278,
+                  "scope": 63582,
                   "src": "1007:22:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -681,7 +681,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62267,
+                    "id": 63571,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1007:7:9",
@@ -695,13 +695,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 62270,
+                  "id": 63574,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "token1",
                   "nameLocation": "1056:6:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62278,
+                  "scope": 63582,
                   "src": "1040:22:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -710,7 +710,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62269,
+                    "id": 63573,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1040:7:9",
@@ -724,13 +724,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 62272,
+                  "id": 63576,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "fee",
                   "nameLocation": "1088:3:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62278,
+                  "scope": 63582,
                   "src": "1073:18:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -739,7 +739,7 @@
                     "typeString": "uint24"
                   },
                   "typeName": {
-                    "id": 62271,
+                    "id": 63575,
                     "name": "uint24",
                     "nodeType": "ElementaryTypeName",
                     "src": "1073:6:9",
@@ -752,13 +752,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 62274,
+                  "id": 63578,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "tickSpacing",
                   "nameLocation": "1108:11:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62278,
+                  "scope": 63582,
                   "src": "1102:17:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -767,7 +767,7 @@
                     "typeString": "int24"
                   },
                   "typeName": {
-                    "id": 62273,
+                    "id": 63577,
                     "name": "int24",
                     "nodeType": "ElementaryTypeName",
                     "src": "1102:5:9",
@@ -780,13 +780,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 62276,
+                  "id": 63580,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "pool",
                   "nameLocation": "1138:4:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62278,
+                  "scope": 63582,
                   "src": "1130:12:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -795,7 +795,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62275,
+                    "id": 63579,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1130:7:9",
@@ -812,13 +812,13 @@
             }
           },
           {
-            "id": 62285,
+            "id": 63589,
             "nodeType": "EventDefinition",
             "src": "1441:70:9",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 62279,
+              "id": 63583,
               "nodeType": "StructuredDocumentation",
               "src": "1158:277:9",
               "text": "@notice Emitted when a new fee amount is enabled for pool creation via the factory\n @param fee The enabled fee, denominated in hundredths of a bip\n @param tickSpacing The minimum number of ticks between initialized ticks for pools created with the given fee"
@@ -826,18 +826,18 @@
             "name": "FeeAmountEnabled",
             "nameLocation": "1447:16:9",
             "parameters": {
-              "id": 62284,
+              "id": 63588,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62281,
+                  "id": 63585,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "fee",
                   "nameLocation": "1479:3:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62285,
+                  "scope": 63589,
                   "src": "1464:18:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -846,7 +846,7 @@
                     "typeString": "uint24"
                   },
                   "typeName": {
-                    "id": 62280,
+                    "id": 63584,
                     "name": "uint24",
                     "nodeType": "ElementaryTypeName",
                     "src": "1464:6:9",
@@ -859,13 +859,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 62283,
+                  "id": 63587,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "tickSpacing",
                   "nameLocation": "1498:11:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62285,
+                  "scope": 63589,
                   "src": "1484:25:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -874,7 +874,7 @@
                     "typeString": "int24"
                   },
                   "typeName": {
-                    "id": 62282,
+                    "id": 63586,
                     "name": "int24",
                     "nodeType": "ElementaryTypeName",
                     "src": "1484:5:9",
@@ -890,12 +890,12 @@
             }
           },
           {
-            "id": 62291,
+            "id": 63595,
             "nodeType": "FunctionDefinition",
             "src": "1690:49:9",
             "nodes": [],
             "documentation": {
-              "id": 62286,
+              "id": 63590,
               "nodeType": "StructuredDocumentation",
               "src": "1519:165:9",
               "text": "@notice Returns the current owner of the factory\n @dev Can be changed by the current owner via setOwner\n @return The address of the factory owner"
@@ -907,23 +907,23 @@
             "name": "owner",
             "nameLocation": "1699:5:9",
             "parameters": {
-              "id": 62287,
+              "id": 63591,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1704:2:9"
             },
             "returnParameters": {
-              "id": 62290,
+              "id": 63594,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62289,
+                  "id": 63593,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62291,
+                  "scope": 63595,
                   "src": "1730:7:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -932,7 +932,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62288,
+                    "id": 63592,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1730:7:9",
@@ -947,18 +947,18 @@
               ],
               "src": "1729:9:9"
             },
-            "scope": 62338,
+            "scope": 63642,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 62299,
+            "id": 63603,
             "nodeType": "FunctionDefinition",
             "src": "2104:72:9",
             "nodes": [],
             "documentation": {
-              "id": 62292,
+              "id": 63596,
               "nodeType": "StructuredDocumentation",
               "src": "1747:351:9",
               "text": "@notice Returns the tick spacing for a given fee amount, if enabled, or 0 if not enabled\n @dev A fee amount can never be removed, so this value should be hard coded or cached in the calling context\n @param fee The enabled fee, denominated in hundredths of a bip. Returns 0 in case of unenabled fee\n @return The tick spacing"
@@ -970,17 +970,17 @@
             "name": "feeAmountTickSpacing",
             "nameLocation": "2113:20:9",
             "parameters": {
-              "id": 62295,
+              "id": 63599,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62294,
+                  "id": 63598,
                   "mutability": "mutable",
                   "name": "fee",
                   "nameLocation": "2141:3:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62299,
+                  "scope": 63603,
                   "src": "2134:10:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -989,7 +989,7 @@
                     "typeString": "uint24"
                   },
                   "typeName": {
-                    "id": 62293,
+                    "id": 63597,
                     "name": "uint24",
                     "nodeType": "ElementaryTypeName",
                     "src": "2134:6:9",
@@ -1004,17 +1004,17 @@
               "src": "2133:12:9"
             },
             "returnParameters": {
-              "id": 62298,
+              "id": 63602,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62297,
+                  "id": 63601,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62299,
+                  "scope": 63603,
                   "src": "2169:5:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1023,7 +1023,7 @@
                     "typeString": "int24"
                   },
                   "typeName": {
-                    "id": 62296,
+                    "id": 63600,
                     "name": "int24",
                     "nodeType": "ElementaryTypeName",
                     "src": "2169:5:9",
@@ -1037,18 +1037,18 @@
               ],
               "src": "2168:7:9"
             },
-            "scope": 62338,
+            "scope": 63642,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 62311,
+            "id": 63615,
             "nodeType": "FunctionDefinition",
             "src": "2666:132:9",
             "nodes": [],
             "documentation": {
-              "id": 62300,
+              "id": 63604,
               "nodeType": "StructuredDocumentation",
               "src": "2184:476:9",
               "text": "@notice Returns the pool address for a given pair of tokens and a fee, or address 0 if it does not exist\n @dev tokenA and tokenB may be passed in either token0/token1 or token1/token0 order\n @param tokenA The contract address of either token0 or token1\n @param tokenB The contract address of the other token\n @param fee The fee collected upon every swap in the pool, denominated in hundredths of a bip\n @return pool The pool address"
@@ -1060,17 +1060,17 @@
             "name": "getPool",
             "nameLocation": "2675:7:9",
             "parameters": {
-              "id": 62307,
+              "id": 63611,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62302,
+                  "id": 63606,
                   "mutability": "mutable",
                   "name": "tokenA",
                   "nameLocation": "2701:6:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62311,
+                  "scope": 63615,
                   "src": "2693:14:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1079,7 +1079,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62301,
+                    "id": 63605,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2693:7:9",
@@ -1093,12 +1093,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 62304,
+                  "id": 63608,
                   "mutability": "mutable",
                   "name": "tokenB",
                   "nameLocation": "2726:6:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62311,
+                  "scope": 63615,
                   "src": "2718:14:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1107,7 +1107,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62303,
+                    "id": 63607,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2718:7:9",
@@ -1121,12 +1121,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 62306,
+                  "id": 63610,
                   "mutability": "mutable",
                   "name": "fee",
                   "nameLocation": "2750:3:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62311,
+                  "scope": 63615,
                   "src": "2743:10:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1135,7 +1135,7 @@
                     "typeString": "uint24"
                   },
                   "typeName": {
-                    "id": 62305,
+                    "id": 63609,
                     "name": "uint24",
                     "nodeType": "ElementaryTypeName",
                     "src": "2743:6:9",
@@ -1150,17 +1150,17 @@
               "src": "2682:78:9"
             },
             "returnParameters": {
-              "id": 62310,
+              "id": 63614,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62309,
+                  "id": 63613,
                   "mutability": "mutable",
                   "name": "pool",
                   "nameLocation": "2792:4:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62311,
+                  "scope": 63615,
                   "src": "2784:12:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1169,7 +1169,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62308,
+                    "id": 63612,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2784:7:9",
@@ -1184,18 +1184,18 @@
               ],
               "src": "2783:14:9"
             },
-            "scope": 62338,
+            "scope": 63642,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 62323,
+            "id": 63627,
             "nodeType": "FunctionDefinition",
             "src": "3373:130:9",
             "nodes": [],
             "documentation": {
-              "id": 62312,
+              "id": 63616,
               "nodeType": "StructuredDocumentation",
               "src": "2806:561:9",
               "text": "@notice Creates a pool for the given two tokens and fee\n @param tokenA One of the two tokens in the desired pool\n @param tokenB The other of the two tokens in the desired pool\n @param fee The desired fee for the pool\n @dev tokenA and tokenB may be passed in either order: token0/token1 or token1/token0. tickSpacing is retrieved\n from the fee. The call will revert if the pool already exists, the fee is invalid, or the token arguments\n are invalid.\n @return pool The address of the newly created pool"
@@ -1207,17 +1207,17 @@
             "name": "createPool",
             "nameLocation": "3382:10:9",
             "parameters": {
-              "id": 62319,
+              "id": 63623,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62314,
+                  "id": 63618,
                   "mutability": "mutable",
                   "name": "tokenA",
                   "nameLocation": "3411:6:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62323,
+                  "scope": 63627,
                   "src": "3403:14:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1226,7 +1226,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62313,
+                    "id": 63617,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3403:7:9",
@@ -1240,12 +1240,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 62316,
+                  "id": 63620,
                   "mutability": "mutable",
                   "name": "tokenB",
                   "nameLocation": "3436:6:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62323,
+                  "scope": 63627,
                   "src": "3428:14:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1254,7 +1254,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62315,
+                    "id": 63619,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3428:7:9",
@@ -1268,12 +1268,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 62318,
+                  "id": 63622,
                   "mutability": "mutable",
                   "name": "fee",
                   "nameLocation": "3460:3:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62323,
+                  "scope": 63627,
                   "src": "3453:10:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1282,7 +1282,7 @@
                     "typeString": "uint24"
                   },
                   "typeName": {
-                    "id": 62317,
+                    "id": 63621,
                     "name": "uint24",
                     "nodeType": "ElementaryTypeName",
                     "src": "3453:6:9",
@@ -1297,17 +1297,17 @@
               "src": "3392:78:9"
             },
             "returnParameters": {
-              "id": 62322,
+              "id": 63626,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62321,
+                  "id": 63625,
                   "mutability": "mutable",
                   "name": "pool",
                   "nameLocation": "3497:4:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62323,
+                  "scope": 63627,
                   "src": "3489:12:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1316,7 +1316,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62320,
+                    "id": 63624,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3489:7:9",
@@ -1331,18 +1331,18 @@
               ],
               "src": "3488:14:9"
             },
-            "scope": 62338,
+            "scope": 63642,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 62329,
+            "id": 63633,
             "nodeType": "FunctionDefinition",
             "src": "3663:43:9",
             "nodes": [],
             "documentation": {
-              "id": 62324,
+              "id": 63628,
               "nodeType": "StructuredDocumentation",
               "src": "3511:146:9",
               "text": "@notice Updates the owner of the factory\n @dev Must be called by the current owner\n @param _owner The new owner of the factory"
@@ -1354,17 +1354,17 @@
             "name": "setOwner",
             "nameLocation": "3672:8:9",
             "parameters": {
-              "id": 62327,
+              "id": 63631,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62326,
+                  "id": 63630,
                   "mutability": "mutable",
                   "name": "_owner",
                   "nameLocation": "3689:6:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62329,
+                  "scope": 63633,
                   "src": "3681:14:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1373,7 +1373,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 62325,
+                    "id": 63629,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3681:7:9",
@@ -1389,23 +1389,23 @@
               "src": "3680:16:9"
             },
             "returnParameters": {
-              "id": 62328,
+              "id": 63632,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "3705:0:9"
             },
-            "scope": 62338,
+            "scope": 63642,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 62337,
+            "id": 63641,
             "nodeType": "FunctionDefinition",
             "src": "4049:65:9",
             "nodes": [],
             "documentation": {
-              "id": 62330,
+              "id": 63634,
               "nodeType": "StructuredDocumentation",
               "src": "3714:329:9",
               "text": "@notice Enables a fee amount with the given tickSpacing\n @dev Fee amounts may never be removed once enabled\n @param fee The fee amount to enable, denominated in hundredths of a bip (i.e. 1e-6)\n @param tickSpacing The spacing between ticks to be enforced for all pools created with the given fee amount"
@@ -1417,17 +1417,17 @@
             "name": "enableFeeAmount",
             "nameLocation": "4058:15:9",
             "parameters": {
-              "id": 62335,
+              "id": 63639,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 62332,
+                  "id": 63636,
                   "mutability": "mutable",
                   "name": "fee",
                   "nameLocation": "4081:3:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62337,
+                  "scope": 63641,
                   "src": "4074:10:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1436,7 +1436,7 @@
                     "typeString": "uint24"
                   },
                   "typeName": {
-                    "id": 62331,
+                    "id": 63635,
                     "name": "uint24",
                     "nodeType": "ElementaryTypeName",
                     "src": "4074:6:9",
@@ -1449,12 +1449,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 62334,
+                  "id": 63638,
                   "mutability": "mutable",
                   "name": "tickSpacing",
                   "nameLocation": "4092:11:9",
                   "nodeType": "VariableDeclaration",
-                  "scope": 62337,
+                  "scope": 63641,
                   "src": "4086:17:9",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1463,7 +1463,7 @@
                     "typeString": "int24"
                   },
                   "typeName": {
-                    "id": 62333,
+                    "id": 63637,
                     "name": "int24",
                     "nodeType": "ElementaryTypeName",
                     "src": "4086:5:9",
@@ -1478,12 +1478,12 @@
               "src": "4073:31:9"
             },
             "returnParameters": {
-              "id": 62336,
+              "id": 63640,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "4113:0:9"
             },
-            "scope": 62338,
+            "scope": 63642,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -1494,18 +1494,18 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 62258,
+          "id": 63562,
           "nodeType": "StructuredDocumentation",
           "src": "74:165:9",
           "text": "@title The interface for the Uniswap V3 Factory\n @notice The Uniswap V3 Factory facilitates creation of Uniswap V3 pools and control over the protocol fees"
         },
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          62338
+          63642
         ],
         "name": "IUniswapV3Factory2",
         "nameLocation": "249:18:9",
-        "scope": 62339,
+        "scope": 63643,
         "usedErrors": []
       }
     ],

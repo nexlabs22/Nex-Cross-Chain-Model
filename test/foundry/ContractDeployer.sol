@@ -18,7 +18,7 @@ import "../../contracts/factory/IndexFactoryStorage.sol";
 import "../../contracts/vault/CrossChainVault.sol";
 import "../../contracts/vault/CrossChainFactory.sol";
 import "../../contracts/test/TestSwap.sol";
-import "../../contracts/uniswap/Token.sol";
+import "../../contracts/test/Token.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";

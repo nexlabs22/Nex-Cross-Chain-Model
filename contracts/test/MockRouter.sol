@@ -25,18 +25,22 @@ contract MockRouter {
   /// @notice Checks if the given chain ID is supported for sending/receiving.
   /// @param chainSelector The chain to check.
   /// @return supported is true if it is supported, false if not.
-  function isChainSupported(uint64 chainSelector) external view returns (bool supported){
+  function isChainSupported(uint64 chainSelector) external pure returns (bool supported){
+    if(chainSelector >= 0 && chainSelector <= 1000e18){
     supported = true;
+    }
   }
 
   /// @notice Gets a list of all supported tokens which can be sent or received
   /// to/from a given chain id.
   /// @param chainSelector The chainSelector.
   /// @return tokens The addresses of all tokens that are supported.
-  function getSupportedTokens(uint64 chainSelector) external view returns (address[] memory tokens){
+  function getSupportedTokens(uint64 chainSelector) external pure returns (address[] memory tokens){
+    if(chainSelector >= 0 && chainSelector <= 1000e18){
     address[] memory addresses;
     addresses[0] = address(0);
     tokens = addresses;
+    }
   }
 
   /// @param destinationChainSelector The destination chainSelector
@@ -49,19 +53,20 @@ contract MockRouter {
     Client.EVM2AnyMessage memory message
   ) external view returns (uint256 fee){
     // return 0;
+    uint selector = destinationChainSelector;
+    Client.EVM2AnyMessage memory localMessage = message;
     fee = testFee;
   }
 
   /// @notice Request a message to be sent to the destination chain
   /// @param destinationChainSelector The destination chain ID
   /// @param message The cross-chain CCIP message including data and/or tokens
-  /// @return messageId The message ID
   /// @dev Note if msg.value is larger than the required fee (from getFee) we accept
   /// the overpayment with no refund.
   function ccipSend(
     uint64 destinationChainSelector,
     Client.EVM2AnyMessage calldata message
-  ) external payable returns (bytes32){
+  ) external payable returns (bytes32 returnByte){
     address targetAddress =bytesToAddress(message.receiver);
 
     IERC20(linkAddress).transferFrom(msg.sender, address(this), testFee);

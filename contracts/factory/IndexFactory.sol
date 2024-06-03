@@ -163,8 +163,8 @@ contract IndexFactory is
         return indexFactoryStorage.crossChainToken(_chainSelector);
     }
     function crossChainTokenSwapVersion(uint64 _chainSelector) public view returns(uint){
-        address crossChainToken = crossChainToken(_chainSelector);
-        return indexFactoryStorage.crossChainTokenSwapVersion(_chainSelector, crossChainToken);
+        address crossChainTokenAddress = crossChainToken(_chainSelector);
+        return indexFactoryStorage.crossChainTokenSwapVersion(_chainSelector, crossChainTokenAddress);
     }
 
     function priceInWei() public view returns (uint256) {
@@ -330,21 +330,21 @@ contract IndexFactory is
 
 
     function _issuanceSwapsCurrentChain(
-        uint wethAmount,
-        uint issuanceNonce,
-        uint chainSelectorTokensCount,
-        uint64 chainSelector,
-        uint latestCount
+        uint _wethAmount,
+        uint _issuanceNonce,
+        uint _chainSelectorTokensCount,
+        uint64 _chainSelector,
+        uint _latestCount
     ) internal {
-        for (uint i = 0; i < chainSelectorTokensCount; i++) {
-            address tokenAddress = indexFactoryStorage.currentChainSelectorTokens(latestCount, chainSelector, i);
+        for (uint i = 0; i < _chainSelectorTokensCount; i++) {
+            address tokenAddress = indexFactoryStorage.currentChainSelectorTokens(_latestCount, _chainSelector, i);
             uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
             uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
             if(tokenAddress == address(weth)){
-            issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
+            issuanceTokenOldAndNewValues[_issuanceNonce][tokenAddress]
             .oldTokenValue = convertEthToUsd(IERC20(tokenAddress).balanceOf(address(indexToken)));
             }else{
-            issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
+            issuanceTokenOldAndNewValues[_issuanceNonce][tokenAddress]
             .oldTokenValue = convertEthToUsd(getAmountOut(
             tokenAddress,
             address(weth),
@@ -357,18 +357,18 @@ contract IndexFactory is
         _swapSingle(
             address(weth),
             tokenAddress,
-            (wethAmount * tokenMarketShare) /
+            (_wethAmount * tokenMarketShare) /
                 100e18,
             address(indexToken),
             tokenSwapVersion
         );
         }
-        issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
+        issuanceTokenOldAndNewValues[_issuanceNonce][tokenAddress]
             .newTokenValue =
-            issuanceTokenOldAndNewValues[issuanceNonce][tokenAddress]
+            issuanceTokenOldAndNewValues[_issuanceNonce][tokenAddress]
                 .oldTokenValue +
-            convertEthToUsd((wethAmount * tokenMarketShare)/100e18);
-        issuanceCompletedTokensCount[issuanceNonce] += 1;
+            convertEthToUsd((_wethAmount * tokenMarketShare)/100e18);
+        issuanceCompletedTokensCount[_issuanceNonce] += 1;
         }
     }
 
@@ -381,30 +381,30 @@ contract IndexFactory is
     }
 
     function _issuanceSwapsOtherChains(
-        uint wethAmount,
-        uint issuanceNonce,
-        uint chainSelectorTokensCount,
-        uint64 chainSelector,
-        uint latestCount
+        uint _wethAmount,
+        uint _issuanceNonce,
+        uint _chainSelectorTokensCount,
+        uint64 _chainSelector,
+        uint _latestCount
     ) internal {
         IssuanceSendLocalVars memory localVars;
 
         uint[] memory totalSharesArr = new uint[](1);
-        totalSharesArr[0] = indexFactoryStorage.currentChainSelectorTotalShares(latestCount, chainSelector);
+        totalSharesArr[0] = indexFactoryStorage.currentChainSelectorTotalShares(_latestCount, _chainSelector);
         uint crossChainTokenAmount = _swapSingle(
         address(weth),
-        crossChainToken(chainSelector),
-        (wethAmount*totalSharesArr[0])/100e18,
+        crossChainToken(_chainSelector),
+        (_wethAmount*totalSharesArr[0])/100e18,
         address(this),
-        crossChainTokenSwapVersion(chainSelector)
+        crossChainTokenSwapVersion(_chainSelector)
         );
         address crossChainIndexFactory = crossChainFactoryBySelector(
-        chainSelector
+        _chainSelector
         );
         
-        localVars.tokenAddresses = indexFactoryStorage.allCurrentChainSelectorTokens(chainSelector);
-        localVars.tokenVersions = indexFactoryStorage.allCurrentChainSelectorVersions(chainSelector);
-        localVars.tokenShares = indexFactoryStorage.allCurrentChainSelectorTokenShares(chainSelector);
+        localVars.tokenAddresses = indexFactoryStorage.allCurrentChainSelectorTokens(_chainSelector);
+        localVars.tokenVersions = indexFactoryStorage.allCurrentChainSelectorVersions(_chainSelector);
+        localVars.tokenShares = indexFactoryStorage.allCurrentChainSelectorTokenShares(_chainSelector);
         localVars.zeroAddresses = new address[](0);
         localVars.zeroNumbers = new uint[](0);
         //fee
@@ -412,7 +412,7 @@ contract IndexFactory is
             memory tokensToSendArray = new Client.EVMTokenAmount[](
                 1
             );
-        tokensToSendArray[0].token = crossChainToken(chainSelector);
+        tokensToSendArray[0].token = crossChainToken(_chainSelector);
         tokensToSendArray[0].amount = crossChainTokenAmount;
         
         bytes memory data = abi.encode(
@@ -421,13 +421,13 @@ contract IndexFactory is
             localVars.zeroAddresses,
             localVars.tokenVersions,
             localVars.zeroNumbers,
-            issuanceNonce,
+            _issuanceNonce,
             localVars.tokenShares,
             totalSharesArr
         );
     
         bytes32 messageId = sendToken(
-                                chainSelector,
+                                _chainSelector,
                                 data,
                                 crossChainIndexFactory,
                                 tokensToSendArray,
@@ -516,16 +516,16 @@ contract IndexFactory is
     }
 
     function _redemptionSwapsCurrentChain(
-        uint burnPercent,
-        uint redemptionNonce,
-        uint chainSelectorTokensCount
+        uint _burnPercent,
+        uint _redemptionNonce,
+        uint _chainSelectorTokensCount
     ) internal {
-        for (uint i = 0; i < chainSelectorTokensCount; i++) {
+        for (uint i = 0; i < _chainSelectorTokensCount; i++) {
                     address tokenAddress = indexFactoryStorage.currentList(i);
                     uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
                     uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
                     //
-                    uint swapAmount = (burnPercent *
+                    uint swapAmount = (_burnPercent *
                     IERC20(tokenAddress).balanceOf(address(indexToken))) /
                     1e18;
                     uint swapAmountOut;
@@ -544,29 +544,29 @@ contract IndexFactory is
                         tokenSwapVersion
                     );
                     }
-                    redemptionNonceTotalValue[redemptionNonce] += swapAmountOut;
-                    redemptionCompletedTokensCount[redemptionNonce] += 1;
+                    redemptionNonceTotalValue[_redemptionNonce] += swapAmountOut;
+                    redemptionCompletedTokensCount[_redemptionNonce] += 1;
                 }
     }
 
     function _redemptionSwapsOtherChains(
-        uint burnPercent,
-        uint redemptionNonce,
-        uint chainSelectorTokensCount,
-        uint64 chainSelector
+        uint _burnPercent,
+        uint _redemptionNonce,
+        uint _chainSelectorTokensCount,
+        uint64 _chainSelector
     ) internal {
         address crossChainIndexFactory = crossChainFactoryBySelector(
-                chainSelector
+                _chainSelector
                 );
           
-        address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelectorTokens(chainSelector);
-        uint[] memory tokenVersions = indexFactoryStorage.allCurrentChainSelectorVersions(chainSelector);
-        uint[] memory tokenShares = indexFactoryStorage.allCurrentChainSelectorTokenShares(chainSelector);
+        address[] memory tokenAddresses = indexFactoryStorage.allCurrentChainSelectorTokens(_chainSelector);
+        uint[] memory tokenVersions = indexFactoryStorage.allCurrentChainSelectorVersions(_chainSelector);
+        uint[] memory tokenShares = indexFactoryStorage.allCurrentChainSelectorTokenShares(_chainSelector);
         address[] memory zeroAddresses = new address[](0);
         uint[] memory zeroNumbers = new uint[](0);
         uint[] memory burnPercentages = new uint[](1);
 
-        burnPercentages[0] = burnPercent;
+        burnPercentages[0] = _burnPercent;
 
         bytes memory data = abi.encode(
             1,
@@ -574,17 +574,17 @@ contract IndexFactory is
             zeroAddresses,
             tokenVersions,
             zeroNumbers,
-            redemptionNonce,
+            _redemptionNonce,
             tokenShares,
             burnPercentages
         );
         bytes32 messageId = sendMessage(
-            chainSelector,
+            _chainSelector,
             crossChainIndexFactory,
             data,
             PayFeesIn.LINK
         );
-        redemptionMessageIdByNonce[redemptionNonce] = messageId;
+        redemptionMessageIdByNonce[_redemptionNonce] = messageId;
     }
 
     function completeRedemptionRequest(uint nonce, bytes32 _messageId) internal {

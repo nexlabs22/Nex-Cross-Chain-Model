@@ -442,7 +442,7 @@ contract IndexFactoryStorage is
 
    
    
-    function getAmountOut(address tokenIn, address tokenOut, uint amountIn, uint _swapVersion) public view returns(uint finalAmountOut) {
+    function getAmountOut(address tokenIn, address tokenOut, uint amountIn, uint _swapVersion) public view returns(uint finalAmountOutValue) {
         uint finalAmountOut;
         if(amountIn > 0){
         if(_swapVersion == 3){
@@ -455,7 +455,7 @@ contract IndexFactoryStorage is
             finalAmountOut = v2amountOut[1];
         }
         }
-        return finalAmountOut;
+        finalAmountOutValue = finalAmountOut;
     }
 
 

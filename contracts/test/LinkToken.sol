@@ -659,7 +659,7 @@ contract LinkToken is LinkERC20, ERC677Token {
   string private constant SYMBOL = "LINK";
 
   constructor() ERC20(NAME, SYMBOL)
-    public
+    // public
   {
     _onCreate();
   }

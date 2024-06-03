@@ -503,20 +503,20 @@
   },
   "ast": {
     "absolutePath": "node_modules/@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol",
-    "id": 61072,
+    "id": 55438,
     "exportedSymbols": {
       "Client": [
-        61128
+        61099
       ],
       "IRouterClient": [
-        61071
+        55437
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:1800:62",
     "nodes": [
       {
-        "id": 61021,
+        "id": 55387,
         "nodeType": "PragmaDirective",
         "src": "32:23:62",
         "nodes": [],
@@ -528,19 +528,19 @@
         ]
       },
       {
-        "id": 61023,
+        "id": 55389,
         "nodeType": "ImportDirective",
         "src": "57:47:62",
         "nodes": [],
         "absolutePath": "node_modules/@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol",
         "file": "../libraries/Client.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 61072,
-        "sourceUnit": 61129,
+        "scope": 55438,
+        "sourceUnit": 61100,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 61022,
+              "id": 55388,
               "name": "Client",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
@@ -553,29 +553,29 @@
         "unitAlias": ""
       },
       {
-        "id": 61071,
+        "id": 55437,
         "nodeType": "ContractDefinition",
         "src": "106:1725:62",
         "nodes": [
           {
-            "id": 61027,
+            "id": 55393,
             "nodeType": "ErrorDefinition",
             "src": "134:60:62",
             "nodes": [],
             "name": "UnsupportedDestinationChain",
             "nameLocation": "140:27:62",
             "parameters": {
-              "id": 61026,
+              "id": 55392,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61025,
+                  "id": 55391,
                   "mutability": "mutable",
                   "name": "destChainSelector",
                   "nameLocation": "175:17:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61027,
+                  "scope": 55393,
                   "src": "168:24:62",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -584,7 +584,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 61024,
+                    "id": 55390,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "168:6:62",
@@ -600,40 +600,40 @@
             }
           },
           {
-            "id": 61029,
+            "id": 55395,
             "nodeType": "ErrorDefinition",
             "src": "197:35:62",
             "nodes": [],
             "name": "InsufficientFeeTokenAmount",
             "nameLocation": "203:26:62",
             "parameters": {
-              "id": 61028,
+              "id": 55394,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "229:2:62"
             }
           },
           {
-            "id": 61031,
+            "id": 55397,
             "nodeType": "ErrorDefinition",
             "src": "235:24:62",
             "nodes": [],
             "name": "InvalidMsgValue",
             "nameLocation": "241:15:62",
             "parameters": {
-              "id": 61030,
+              "id": 55396,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "256:2:62"
             }
           },
           {
-            "id": 61039,
+            "id": 55405,
             "nodeType": "FunctionDefinition",
             "src": "455:87:62",
             "nodes": [],
             "documentation": {
-              "id": 61032,
+              "id": 55398,
               "nodeType": "StructuredDocumentation",
               "src": "263:189:62",
               "text": "@notice Checks if the given chain ID is supported for sending/receiving.\n @param chainSelector The chain to check.\n @return supported is true if it is supported, false if not."
@@ -645,17 +645,17 @@
             "name": "isChainSupported",
             "nameLocation": "464:16:62",
             "parameters": {
-              "id": 61035,
+              "id": 55401,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61034,
+                  "id": 55400,
                   "mutability": "mutable",
                   "name": "chainSelector",
                   "nameLocation": "488:13:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61039,
+                  "scope": 55405,
                   "src": "481:20:62",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -664,7 +664,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 61033,
+                    "id": 55399,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "481:6:62",
@@ -679,17 +679,17 @@
               "src": "480:22:62"
             },
             "returnParameters": {
-              "id": 61038,
+              "id": 55404,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61037,
+                  "id": 55403,
                   "mutability": "mutable",
                   "name": "supported",
                   "nameLocation": "531:9:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61039,
+                  "scope": 55405,
                   "src": "526:14:62",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -698,7 +698,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 61036,
+                    "id": 55402,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "526:4:62",
@@ -712,18 +712,18 @@
               ],
               "src": "525:16:62"
             },
-            "scope": 61071,
+            "scope": 55437,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 61048,
+            "id": 55414,
             "nodeType": "FunctionDefinition",
             "src": "773:98:62",
             "nodes": [],
             "documentation": {
-              "id": 61040,
+              "id": 55406,
               "nodeType": "StructuredDocumentation",
               "src": "546:224:62",
               "text": "@notice Gets a list of all supported tokens which can be sent or received\n to/from a given chain id.\n @param chainSelector The chainSelector.\n @return tokens The addresses of all tokens that are supported."
@@ -735,17 +735,17 @@
             "name": "getSupportedTokens",
             "nameLocation": "782:18:62",
             "parameters": {
-              "id": 61043,
+              "id": 55409,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61042,
+                  "id": 55408,
                   "mutability": "mutable",
                   "name": "chainSelector",
                   "nameLocation": "808:13:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61048,
+                  "scope": 55414,
                   "src": "801:20:62",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -754,7 +754,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 61041,
+                    "id": 55407,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "801:6:62",
@@ -769,17 +769,17 @@
               "src": "800:22:62"
             },
             "returnParameters": {
-              "id": 61047,
+              "id": 55413,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61046,
+                  "id": 55412,
                   "mutability": "mutable",
                   "name": "tokens",
                   "nameLocation": "863:6:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61048,
+                  "scope": 55414,
                   "src": "846:23:62",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -789,7 +789,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 61044,
+                      "id": 55410,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "846:7:62",
@@ -799,7 +799,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 61045,
+                    "id": 55411,
                     "nodeType": "ArrayTypeName",
                     "src": "846:9:62",
                     "typeDescriptions": {
@@ -812,18 +812,18 @@
               ],
               "src": "845:25:62"
             },
-            "scope": 61071,
+            "scope": 55437,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 61059,
+            "id": 55425,
             "nodeType": "FunctionDefinition",
             "src": "1180:135:62",
             "nodes": [],
             "documentation": {
-              "id": 61049,
+              "id": 55415,
               "nodeType": "StructuredDocumentation",
               "src": "875:302:62",
               "text": "@param destinationChainSelector The destination chainSelector\n @param message The cross-chain CCIP message including data and/or tokens\n @return fee returns guaranteed execution fee for the specified message\n delivery to destination chain\n @dev returns 0 fee on invalid message."
@@ -835,17 +835,17 @@
             "name": "getFee",
             "nameLocation": "1189:6:62",
             "parameters": {
-              "id": 61055,
+              "id": 55421,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61051,
+                  "id": 55417,
                   "mutability": "mutable",
                   "name": "destinationChainSelector",
                   "nameLocation": "1208:24:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61059,
+                  "scope": 55425,
                   "src": "1201:31:62",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -854,7 +854,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 61050,
+                    "id": 55416,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "1201:6:62",
@@ -867,33 +867,33 @@
                 },
                 {
                   "constant": false,
-                  "id": 61054,
+                  "id": 55420,
                   "mutability": "mutable",
                   "name": "message",
                   "nameLocation": "1267:7:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61059,
+                  "scope": 55425,
                   "src": "1238:36:62",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_EVM2AnyMessage_$61104_memory_ptr",
+                    "typeIdentifier": "t_struct$_EVM2AnyMessage_$61075_memory_ptr",
                     "typeString": "struct Client.EVM2AnyMessage"
                   },
                   "typeName": {
-                    "id": 61053,
+                    "id": 55419,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 61052,
+                      "id": 55418,
                       "name": "Client.EVM2AnyMessage",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 61104,
+                      "referencedDeclaration": 61075,
                       "src": "1238:21:62"
                     },
-                    "referencedDeclaration": 61104,
+                    "referencedDeclaration": 61075,
                     "src": "1238:21:62",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_EVM2AnyMessage_$61104_storage_ptr",
+                      "typeIdentifier": "t_struct$_EVM2AnyMessage_$61075_storage_ptr",
                       "typeString": "struct Client.EVM2AnyMessage"
                     }
                   },
@@ -903,17 +903,17 @@
               "src": "1195:83:62"
             },
             "returnParameters": {
-              "id": 61058,
+              "id": 55424,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61057,
+                  "id": 55423,
                   "mutability": "mutable",
                   "name": "fee",
                   "nameLocation": "1310:3:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61059,
+                  "scope": 55425,
                   "src": "1302:11:62",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -922,7 +922,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 61056,
+                    "id": 55422,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1302:7:62",
@@ -936,18 +936,18 @@
               ],
               "src": "1301:13:62"
             },
-            "scope": 61071,
+            "scope": 55437,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 61070,
+            "id": 55436,
             "nodeType": "FunctionDefinition",
             "src": "1691:138:62",
             "nodes": [],
             "documentation": {
-              "id": 61060,
+              "id": 55426,
               "nodeType": "StructuredDocumentation",
               "src": "1319:369:62",
               "text": "@notice Request a message to be sent to the destination chain\n @param destinationChainSelector The destination chain ID\n @param message The cross-chain CCIP message including data and/or tokens\n @return messageId The message ID\n @dev Note if msg.value is larger than the required fee (from getFee) we accept\n the overpayment with no refund."
@@ -959,17 +959,17 @@
             "name": "ccipSend",
             "nameLocation": "1700:8:62",
             "parameters": {
-              "id": 61066,
+              "id": 55432,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61062,
+                  "id": 55428,
                   "mutability": "mutable",
                   "name": "destinationChainSelector",
                   "nameLocation": "1721:24:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61070,
+                  "scope": 55436,
                   "src": "1714:31:62",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -978,7 +978,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 61061,
+                    "id": 55427,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "1714:6:62",
@@ -991,33 +991,33 @@
                 },
                 {
                   "constant": false,
-                  "id": 61065,
+                  "id": 55431,
                   "mutability": "mutable",
                   "name": "message",
                   "nameLocation": "1782:7:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61070,
+                  "scope": 55436,
                   "src": "1751:38:62",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_EVM2AnyMessage_$61104_calldata_ptr",
+                    "typeIdentifier": "t_struct$_EVM2AnyMessage_$61075_calldata_ptr",
                     "typeString": "struct Client.EVM2AnyMessage"
                   },
                   "typeName": {
-                    "id": 61064,
+                    "id": 55430,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 61063,
+                      "id": 55429,
                       "name": "Client.EVM2AnyMessage",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 61104,
+                      "referencedDeclaration": 61075,
                       "src": "1751:21:62"
                     },
-                    "referencedDeclaration": 61104,
+                    "referencedDeclaration": 61075,
                     "src": "1751:21:62",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_EVM2AnyMessage_$61104_storage_ptr",
+                      "typeIdentifier": "t_struct$_EVM2AnyMessage_$61075_storage_ptr",
                       "typeString": "struct Client.EVM2AnyMessage"
                     }
                   },
@@ -1027,17 +1027,17 @@
               "src": "1708:85:62"
             },
             "returnParameters": {
-              "id": 61069,
+              "id": 55435,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61068,
+                  "id": 55434,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 61070,
+                  "scope": 55436,
                   "src": "1820:7:62",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1046,7 +1046,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 61067,
+                    "id": 55433,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1820:7:62",
@@ -1060,7 +1060,7 @@
               ],
               "src": "1819:9:62"
             },
-            "scope": 61071,
+            "scope": 55437,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
@@ -1072,15 +1072,15 @@
         "contractKind": "interface",
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          61071
+          55437
         ],
         "name": "IRouterClient",
         "nameLocation": "116:13:62",
-        "scope": 61072,
+        "scope": 55438,
         "usedErrors": [
-          61027,
-          61029,
-          61031
+          55393,
+          55395,
+          55397
         ]
       }
     ],

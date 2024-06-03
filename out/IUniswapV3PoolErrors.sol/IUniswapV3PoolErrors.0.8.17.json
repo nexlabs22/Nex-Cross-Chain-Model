@@ -193,19 +193,19 @@
   },
   "ast": {
     "absolutePath": "contracts/interfaces/pool/IUniswapV3PoolErrors.sol",
-    "id": 3387,
+    "id": 1915,
     "exportedSymbols": {
       "IUniswapV3PoolErrors": [
-        3386
+        1914
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "46:361:25",
+    "src": "46:361:16",
     "nodes": [
       {
-        "id": 3360,
+        "id": 1888,
         "nodeType": "PragmaDirective",
-        "src": "46:24:25",
+        "src": "46:24:16",
         "nodes": [],
         "literals": [
           "solidity",
@@ -215,188 +215,188 @@
         ]
       },
       {
-        "id": 3386,
+        "id": 1914,
         "nodeType": "ContractDefinition",
-        "src": "164:243:25",
+        "src": "164:243:16",
         "nodes": [
           {
-            "id": 3363,
+            "id": 1891,
             "nodeType": "ErrorDefinition",
-            "src": "202:12:25",
+            "src": "202:12:16",
             "nodes": [],
             "errorSelector": "a1bf7886",
             "name": "LOK",
-            "nameLocation": "208:3:25",
+            "nameLocation": "208:3:16",
             "parameters": {
-              "id": 3362,
+              "id": 1890,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "211:2:25"
+              "src": "211:2:16"
             }
           },
           {
-            "id": 3365,
+            "id": 1893,
             "nodeType": "ErrorDefinition",
-            "src": "220:12:25",
+            "src": "220:12:16",
             "nodes": [],
             "errorSelector": "2fe0284f",
             "name": "TLU",
-            "nameLocation": "226:3:25",
+            "nameLocation": "226:3:16",
             "parameters": {
-              "id": 3364,
+              "id": 1892,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "229:2:25"
+              "src": "229:2:16"
             }
           },
           {
-            "id": 3367,
+            "id": 1895,
             "nodeType": "ErrorDefinition",
-            "src": "238:12:25",
+            "src": "238:12:16",
             "nodes": [],
             "errorSelector": "9ad612e8",
             "name": "TLM",
-            "nameLocation": "244:3:25",
+            "nameLocation": "244:3:16",
             "parameters": {
-              "id": 3366,
+              "id": 1894,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "247:2:25"
+              "src": "247:2:16"
             }
           },
           {
-            "id": 3369,
+            "id": 1897,
             "nodeType": "ErrorDefinition",
-            "src": "256:12:25",
+            "src": "256:12:16",
             "nodes": [],
             "errorSelector": "d7b54ab1",
             "name": "TUM",
-            "nameLocation": "262:3:25",
+            "nameLocation": "262:3:16",
             "parameters": {
-              "id": 3368,
+              "id": 1896,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "265:2:25"
+              "src": "265:2:16"
             }
           },
           {
-            "id": 3371,
+            "id": 1899,
             "nodeType": "ErrorDefinition",
-            "src": "274:11:25",
+            "src": "274:11:16",
             "nodes": [],
             "errorSelector": "9cc0b7f8",
             "name": "AI",
-            "nameLocation": "280:2:25",
+            "nameLocation": "280:2:16",
             "parameters": {
-              "id": 3370,
+              "id": 1898,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "282:2:25"
+              "src": "282:2:16"
             }
           },
           {
-            "id": 3373,
+            "id": 1901,
             "nodeType": "ErrorDefinition",
-            "src": "291:11:25",
+            "src": "291:11:16",
             "nodes": [],
             "errorSelector": "748800af",
             "name": "M0",
-            "nameLocation": "297:2:25",
+            "nameLocation": "297:2:16",
             "parameters": {
-              "id": 3372,
+              "id": 1900,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "299:2:25"
+              "src": "299:2:16"
             }
           },
           {
-            "id": 3375,
+            "id": 1903,
             "nodeType": "ErrorDefinition",
-            "src": "308:11:25",
+            "src": "308:11:16",
             "nodes": [],
             "errorSelector": "20e5672e",
             "name": "M1",
-            "nameLocation": "314:2:25",
+            "nameLocation": "314:2:16",
             "parameters": {
-              "id": 3374,
+              "id": 1902,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "316:2:25"
+              "src": "316:2:16"
             }
           },
           {
-            "id": 3377,
+            "id": 1905,
             "nodeType": "ErrorDefinition",
-            "src": "325:11:25",
+            "src": "325:11:16",
             "nodes": [],
             "errorSelector": "03fff018",
             "name": "AS",
-            "nameLocation": "331:2:25",
+            "nameLocation": "331:2:16",
             "parameters": {
-              "id": 3376,
+              "id": 1904,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "333:2:25"
+              "src": "333:2:16"
             }
           },
           {
-            "id": 3379,
+            "id": 1907,
             "nodeType": "ErrorDefinition",
-            "src": "342:12:25",
+            "src": "342:12:16",
             "nodes": [],
             "errorSelector": "ba0b951e",
             "name": "IIA",
-            "nameLocation": "348:3:25",
+            "nameLocation": "348:3:16",
             "parameters": {
-              "id": 3378,
+              "id": 1906,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "351:2:25"
+              "src": "351:2:16"
             }
           },
           {
-            "id": 3381,
+            "id": 1909,
             "nodeType": "ErrorDefinition",
-            "src": "360:10:25",
+            "src": "360:10:16",
             "nodes": [],
             "errorSelector": "9f13f76d",
             "name": "L",
-            "nameLocation": "366:1:25",
+            "nameLocation": "366:1:16",
             "parameters": {
-              "id": 3380,
+              "id": 1908,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "367:2:25"
+              "src": "367:2:16"
             }
           },
           {
-            "id": 3383,
+            "id": 1911,
             "nodeType": "ErrorDefinition",
-            "src": "376:11:25",
+            "src": "376:11:16",
             "nodes": [],
             "errorSelector": "f704e899",
             "name": "F0",
-            "nameLocation": "382:2:25",
+            "nameLocation": "382:2:16",
             "parameters": {
-              "id": 3382,
+              "id": 1910,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "384:2:25"
+              "src": "384:2:16"
             }
           },
           {
-            "id": 3385,
+            "id": 1913,
             "nodeType": "ErrorDefinition",
-            "src": "393:11:25",
+            "src": "393:11:16",
             "nodes": [],
             "errorSelector": "e90c3493",
             "name": "F1",
-            "nameLocation": "399:2:25",
+            "nameLocation": "399:2:16",
             "parameters": {
-              "id": 3384,
+              "id": 1912,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "401:2:25"
+              "src": "401:2:16"
             }
           }
         ],
@@ -406,35 +406,35 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 3361,
+          "id": 1889,
           "nodeType": "StructuredDocumentation",
-          "src": "74:90:25",
+          "src": "74:90:16",
           "text": "@title Errors emitted by a pool\n @notice Contains all events emitted by the pool"
         },
         "fullyImplemented": true,
         "linearizedBaseContracts": [
-          3386
+          1914
         ],
         "name": "IUniswapV3PoolErrors",
-        "nameLocation": "174:20:25",
-        "scope": 3387,
+        "nameLocation": "174:20:16",
+        "scope": 1915,
         "usedErrors": [
-          3363,
-          3365,
-          3367,
-          3369,
-          3371,
-          3373,
-          3375,
-          3377,
-          3379,
-          3381,
-          3383,
-          3385
+          1891,
+          1893,
+          1895,
+          1897,
+          1899,
+          1901,
+          1903,
+          1905,
+          1907,
+          1909,
+          1911,
+          1913
         ]
       }
     ],
     "license": "GPL-2.0-or-later"
   },
-  "id": 25
+  "id": 16
 }
