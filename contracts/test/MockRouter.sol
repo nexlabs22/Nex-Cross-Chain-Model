@@ -55,7 +55,9 @@ contract MockRouter {
     // return 0;
     uint selector = destinationChainSelector;
     Client.EVM2AnyMessage memory localMessage = message;
+    if( selector >= 0 && selector <= 1000e18 && localMessage.tokenAmounts.length >= 0){
     fee = testFee;
+    }
   }
 
   /// @notice Request a message to be sent to the destination chain
@@ -66,12 +68,12 @@ contract MockRouter {
   function ccipSend(
     uint64 destinationChainSelector,
     Client.EVM2AnyMessage calldata message
-  ) external payable returns (bytes32 returnByte){
+  ) external payable {
     address targetAddress =bytesToAddress(message.receiver);
 
     IERC20(linkAddress).transferFrom(msg.sender, address(this), testFee);
     
-    if(message.tokenAmounts.length > 0){
+    if(message.tokenAmounts.length > 0 && destinationChainSelector >= 0){
         for(uint i = 0; i < message.tokenAmounts.length; i++){
             IERC20(message.tokenAmounts[i].token).transferFrom(msg.sender, targetAddress, message.tokenAmounts[i].amount);
         }

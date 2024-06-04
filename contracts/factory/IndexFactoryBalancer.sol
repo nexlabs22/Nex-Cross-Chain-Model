@@ -200,13 +200,12 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint amountIn,
         uint _swapVersion
     ) public view returns (uint finalAmountOut) {
-        uint finalAmountOut = indexFactoryStorage.getAmountOut(
+        finalAmountOut = indexFactoryStorage.getAmountOut(
             tokenIn,
             tokenOut,
             amountIn,
             _swapVersion
         );
-        return finalAmountOut;
     }
 
     function getPortfolioBalance() public view returns (uint) {

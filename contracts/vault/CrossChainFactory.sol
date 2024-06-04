@@ -332,7 +332,6 @@ contract CrossChainIndexFactory is
         uint amountIn,
         uint _swapVersion
     ) public view returns (uint finalAmountOut) {
-        uint finalAmountOut;
         if (amountIn > 0) {
             if (_swapVersion == 3) {
                 finalAmountOut = estimateAmountOut(
@@ -352,7 +351,6 @@ contract CrossChainIndexFactory is
                 finalAmountOut = v2amountOut[1];
             }
         }
-        return finalAmountOut;
     }
 
     function estimateAmountOut(
@@ -408,7 +406,7 @@ contract CrossChainIndexFactory is
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 
-        uint256 fee = IRouterClient(i_router).getFee(
+        uint256 ccipFee = IRouterClient(i_router).getFee(
             destinationChainSelector,
             message
         );
@@ -416,13 +414,13 @@ contract CrossChainIndexFactory is
         bytes32 messageId;
 
         if (payFeesIn == PayFeesIn.LINK) {
-            // LinkTokenInterface(i_link).approve(i_router, fee);
+            // LinkTokenInterface(i_link).approve(i_router, ccipFee);
             messageId = IRouterClient(i_router).ccipSend(
                 destinationChainSelector,
                 message
             );
         } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
+            messageId = IRouterClient(i_router).ccipSend{value: ccipFee}(
                 destinationChainSelector,
                 message
             );

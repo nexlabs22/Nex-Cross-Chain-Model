@@ -599,8 +599,8 @@ contract IndexFactory is
         if(outputToken == address(weth)){
         // weth.transfer(requester, wethAmount - fee);
         weth.withdraw(wethAmount - fee);
-        (bool _ownerSuccess, ) = requester.call{value: wethAmount - fee}("");
-        require(_ownerSuccess, "transfer eth to the requester failed");
+        (bool _requesterSuccess, ) = requester.call{value: wethAmount - fee}("");
+        require(_requesterSuccess, "transfer eth to the requester failed");
         emit Redemption(_messageId, nonce, requester, outputToken,  redemptionInputAmount[nonce], wethAmount - fee, block.timestamp);
         }else{
         uint reallOut = swap(address(weth), outputToken, wethAmount - fee, requester, outputTokenSwapVersion);
@@ -615,13 +615,12 @@ contract IndexFactory is
         uint amountIn,
         uint _swapVersion
     ) public view returns (uint finalAmountOut) {
-        uint finalAmountOut = indexFactoryStorage.getAmountOut(
+        finalAmountOut = indexFactoryStorage.getAmountOut(
             tokenIn,
             tokenOut,
             amountIn,
             _swapVersion
         );
-        return finalAmountOut;
     }
 
     function getPortfolioBalance() public view returns (uint) {
@@ -814,21 +813,21 @@ contract IndexFactory is
         uint totalCurrentList,
         bytes32 _messageId
         ) private {
-        uint issuanceNonce = nonce;
+        uint requestIssuanceNonce = nonce;
         for (uint i; i < tokenAddresses.length; i++) {
             uint oldTokenValue = value1[i];
             uint newTokenValue = value2[i];
-            issuanceTokenOldAndNewValues[issuanceNonce][tokenAddresses[i]]
+            issuanceTokenOldAndNewValues[requestIssuanceNonce][tokenAddresses[i]]
                 .oldTokenValue = oldTokenValue;
-            issuanceTokenOldAndNewValues[issuanceNonce][tokenAddresses[i]]
+            issuanceTokenOldAndNewValues[requestIssuanceNonce][tokenAddresses[i]]
                 .newTokenValue = newTokenValue;
-            issuanceCompletedTokensCount[issuanceNonce] += 1;
+            issuanceCompletedTokensCount[requestIssuanceNonce] += 1;
         }
         if (
-            issuanceCompletedTokensCount[issuanceNonce] ==
+            issuanceCompletedTokensCount[requestIssuanceNonce] ==
             totalCurrentList
         ) {
-            completeIssuanceRequest(issuanceNonce, _messageId);
+            completeIssuanceRequest(requestIssuanceNonce, _messageId);
         }
     }
 
@@ -840,7 +839,7 @@ contract IndexFactory is
         uint64 sourceChainSelector,
         bytes32 _messageId
     ) private {
-        uint redemptionNonce = nonce;
+        uint requestRedemptionNonce = nonce;
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
             .destTokenAmounts;
         address token = tokenAmounts[0].token;
@@ -852,13 +851,13 @@ contract IndexFactory is
             address(this),
             3
         );
-        redemptionNonceTotalValue[redemptionNonce] += wethAmount;
-        redemptionCompletedTokensCount[redemptionNonce] += tokenAddresses.length;
+        redemptionNonceTotalValue[requestRedemptionNonce] += wethAmount;
+        redemptionCompletedTokensCount[requestRedemptionNonce] += tokenAddresses.length;
         if (
-            redemptionCompletedTokensCount[redemptionNonce] ==
+            redemptionCompletedTokensCount[requestRedemptionNonce] ==
             totalCurrentList
         ) {
-            completeRedemptionRequest(redemptionNonce, _messageId);
+            completeRedemptionRequest(requestRedemptionNonce, _messageId);
         }
 }
 
