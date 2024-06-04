@@ -76,6 +76,7 @@
 		"rc-switch": "^4.1.0",
 		"react": "latest",
 		"react-accessible-accordion": "^5.0.0",
+		"react-accordion-ts": "^1.3.0",
 		"react-apexcharts": "^1.4.1",
 		"react-burger-menu": "^3.0.9",
 		"react-color": "^2.19.3",

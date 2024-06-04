@@ -16,7 +16,7 @@ export default function PWAProfileHistory() {
         <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
             <Stack width={"100%"} height={"fit-content"} paddingTop={2} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
-                <NewHistoryTable></NewHistoryTable>
+                <NewHistoryTable maxPWAHeight={true}></NewHistoryTable>
                 
             </Stack>
             <PWABottomNav></PWABottomNav>

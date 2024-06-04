@@ -76,6 +76,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 	const chainId = useChainId()
 	const address = useAddress()
 
+	// Function for auto switching to the right chain
 	const switchChain = useSwitchChain()
 	
 	useEffect(() => {
@@ -87,6 +88,8 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 			}
 		}
 	}, [address, chainId, switchChain])
+
+	// !Function for auto switching to the right chain
 
 	const [connectedUser, setConnectedUser] = useState<User>({
 		name: 'null',

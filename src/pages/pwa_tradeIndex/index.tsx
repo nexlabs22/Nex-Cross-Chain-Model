@@ -617,7 +617,7 @@ export default function PWATradeIndex() {
                     </Typography>
                 </Stack>
             </Stack>
-            <HistoryTable></HistoryTable>
+            <HistoryTable maxPWAHeight={false}></HistoryTable>
             <Sheet
                 isOpen={isSheetOpen}
                 onClose={() => setSheetOpen(false)}

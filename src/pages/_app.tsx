@@ -31,6 +31,7 @@ import { PWAProvider } from '@/providers/PWAProvider'
 import { PortfolioProvider } from '@/providers/PortfolioProvider'
 import { DashboardProvider } from '@/providers/DashboardProvider'
 import { DeFiSwapProvider } from '@/providers/DefiSwapProvider'
+import { HistoryProvider } from '@/providers/HistoryProvider'
 
 export default function App({ Component, pageProps }: AppProps) {
 	const { setEthPriceInUsd } = useTradePageStore()
@@ -74,7 +75,9 @@ export default function App({ Component, pageProps }: AppProps) {
 							<DashboardProvider>
 								<PortfolioProvider>
 									<DeFiSwapProvider>
-										<Component {...pageProps} />
+										<HistoryProvider>
+											<Component {...pageProps} />
+										</HistoryProvider>
 									</DeFiSwapProvider>
 								</PortfolioProvider>
 							</DashboardProvider>

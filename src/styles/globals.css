@@ -393,6 +393,14 @@ body {
   font-size: 1rem;
 }
 
+.css-1awxww7-MuiPaper-root-MuiAccordion-root:first-of-type{
+  border-radius: 2rem !important;
+}
+
+.MuiAccordion-rounded:first-of-type{
+  border-radius: 1rem !important;
+}
+
 .Toastify__toast-icon div{
   width: fit-content !important;
   overflow: unset !important;
