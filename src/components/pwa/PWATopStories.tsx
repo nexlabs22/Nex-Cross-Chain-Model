@@ -12,6 +12,12 @@ const PWATopStories = () => {
         useLandingPageStore();
     const articles = [
         {
+            title: "NEX Joins Chainlink BUILD", 
+            source: "Mirror.xyz - NexLabs",
+            link: "https://mirror.xyz/0xdd1ab1748180823cC8C4b0085B69723094aB2c9a/wxicrxLtCeD508d_uVg-WRgMYEJ1JV5Ndru1H_rDEjU",
+            image: "https://images.mirror-media.xyz/publication-images/5XkeFZlY1Wh_BF8TTlSuh.jpeg?height=640&width=1280",
+        },
+        {
             title: "Maximize Your Investment Strategy with Indices",
             source: "Medium - NexLabs",
             link: "https://nexlabs.medium.com/maximize-your-investment-strategy-with-indices-18c53defb0e7",
