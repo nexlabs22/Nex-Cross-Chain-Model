@@ -170,7 +170,6 @@ contract CrossChainIndexFactory is
 
         //set addresses
         weth = IWETH(_weth);
-        // quoter = IQuoter(_quoter);
         swapRouterV3 = ISwapRouter(_swapRouterV3);
         factoryV3 = IUniswapV3Factory(_factoryV3);
         swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
@@ -239,23 +238,7 @@ contract CrossChainIndexFactory is
         address _recipient,
         uint _swapVersion
     ) internal returns (uint) {
-        // uint amountOut = getAmountOut(
-        //     tokenIn,
-        //     tokenOut,
-        //     amountIn,
-        //     _swapVersion
-        // );
-        // uint amountOut;
-        // uint swapAmountOut;
-        // if (amountOut > 0) {
-            // swapAmountOut = crossChainVault.swapSingle(
-            //     tokenIn,
-            //     tokenOut,
-            //     amountIn,
-            //     _recipient,
-            //     _swapVersion
-            // );
-        // }
+        
         if (_swapVersion == 3) {
             uint swapAmountOut = crossChainVault.swapSingle(
                 tokenIn,
@@ -431,8 +414,6 @@ contract CrossChainIndexFactory is
         return messageId;
     }
 
-    // address public targetAddressF;
-    // uint64 public sourceChainSelectorF;
 
     /// handle a received message
     function _ccipReceive(
@@ -543,8 +524,7 @@ contract CrossChainIndexFactory is
         uint[] memory percentages,
         uint[] memory extraValues
     ) private {
-        // Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
-        //     .destTokenAmounts;
+        
         HandleIssuanceLocalVars memory vars;
 
         vars.wethAmount = swap(
@@ -961,7 +941,7 @@ contract CrossChainIndexFactory is
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 
-        uint256 fee = IRouterClient(i_router).getFee(
+        uint256 ccipFee = IRouterClient(i_router).getFee(
             destinationChainSelector,
             message
         );
@@ -969,13 +949,13 @@ contract CrossChainIndexFactory is
         bytes32 messageId;
 
         if (payFeesIn == PayFeesIn.LINK) {
-            // LinkTokenInterface(i_link).approve(i_router, fee);
+            // LinkTokenInterface(i_link).approve(i_router, ccipFee);
             messageId = IRouterClient(i_router).ccipSend(
                 destinationChainSelector,
                 message
             );
         } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
+            messageId = IRouterClient(i_router).ccipSend{value: ccipFee}(
                 destinationChainSelector,
                 message
             );

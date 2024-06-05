@@ -12,6 +12,7 @@ import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import "../ccip/CCIPReceiver.sol";
 import "./IndexFactoryStorage.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
@@ -20,7 +21,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 contract IndexFactory is
     Initializable,
     CCIPReceiver,
-    ProposableOwnableUpgradeable
+    ProposableOwnableUpgradeable,
+    ReentrancyGuard
 {
     enum PayFeesIn {
         Native,
@@ -247,7 +249,7 @@ contract IndexFactory is
         uint _tokenInSwapVersion
     ) public {
         uint feeAmount = (_inputAmount * feeRate) / 10000;
-        uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
+        
         //transfer fee to the owner
         IERC20(_tokenIn).transferFrom(msg.sender, address(indexToken), _inputAmount);
         IERC20(_tokenIn).transferFrom(msg.sender, owner(), feeAmount);
@@ -264,7 +266,7 @@ contract IndexFactory is
     function issuanceIndexTokensWithEth(
         uint _inputAmount,
         uint _crossChainFee
-    ) public payable {
+    ) public payable nonReentrant {
         uint feeAmount = (_inputAmount * feeRate) / 10000;
         uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
         require(msg.value >= finalAmount, "lower than required amount");
@@ -311,7 +313,6 @@ contract IndexFactory is
                 _issuanceSwapsOtherChains(
                     wethAmount,
                     issuanceNonce,
-                    chainSelectorTokensCount,
                     chainSelector,
                     latestCount
                 );
@@ -383,7 +384,6 @@ contract IndexFactory is
     function _issuanceSwapsOtherChains(
         uint _wethAmount,
         uint _issuanceNonce,
-        uint _chainSelectorTokensCount,
         uint64 _chainSelector,
         uint _latestCount
     ) internal {
@@ -469,7 +469,7 @@ contract IndexFactory is
         uint _crossChainFee,
         address _tokenOut,
         uint _tokenOutSwapVersion
-    ) public returns (uint) {
+    ) public {
         uint burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         redemptionNonce += 1;
         redemptionNonceRequester[redemptionNonce] = msg.sender;
@@ -498,7 +498,6 @@ contract IndexFactory is
                 _redemptionSwapsOtherChains(
                     burnPercent,
                     redemptionNonce,
-                    chainSelectorTokensCount,
                     chainSelector
                 );
                 
@@ -523,7 +522,6 @@ contract IndexFactory is
         for (uint i = 0; i < _chainSelectorTokensCount; i++) {
                     address tokenAddress = indexFactoryStorage.currentList(i);
                     uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
-                    uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
                     //
                     uint swapAmount = (_burnPercent *
                     IERC20(tokenAddress).balanceOf(address(indexToken))) /
@@ -552,7 +550,6 @@ contract IndexFactory is
     function _redemptionSwapsOtherChains(
         uint _burnPercent,
         uint _redemptionNonce,
-        uint _chainSelectorTokensCount,
         uint64 _chainSelector
     ) internal {
         address crossChainIndexFactory = crossChainFactoryBySelector(
@@ -650,14 +647,12 @@ contract IndexFactory is
     function estimateAmountOut(
         address tokenIn,
         address tokenOut,
-        uint128 amountIn,
-        uint32 secondsAgo
+        uint128 amountIn
     ) public view returns (uint amountOut) {
         amountOut = indexFactoryStorage.estimateAmountOut(
             tokenIn,
             tokenOut,
-            amountIn,
-            secondsAgo
+            amountIn
         );
     }
 
@@ -667,7 +662,7 @@ contract IndexFactory is
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         PayFeesIn payFeesIn
-    ) internal returns(bytes32) {
+    ) internal nonReentrant returns(bytes32) {
         uint256 length = tokensToSendDetails.length;
         require(
             length <= i_maxTokensLength,
@@ -769,7 +764,6 @@ contract IndexFactory is
     ) internal override {
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
-        address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
         uint totalCurrentList = indexFactoryStorage.totalCurrentList();
         (
             uint actionType,

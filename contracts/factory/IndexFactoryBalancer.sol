@@ -235,14 +235,12 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
     function estimateAmountOut(
         address tokenIn,
         address tokenOut,
-        uint128 amountIn,
-        uint32 secondsAgo
+        uint128 amountIn
     ) public view returns (uint amountOut) {
         amountOut = indexFactoryStorage.estimateAmountOut(
             tokenIn,
             tokenOut,
-            amountIn,
-            secondsAgo
+            amountIn
         );
     }
 
@@ -350,7 +348,6 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
-        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
         (
             uint actionType,
             address[] memory tokenAddresses,
@@ -405,13 +402,11 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             // uint chainSelectorTokensCount = indexFactoryStorage
             //     .oracleChainSelectorTokensCount(chainSelector);
             if (chainSelector == currentChainSelector) {
-                for (uint i = 0; i < chainSelectorTokensCount; i++) {
+                for (uint j = 0; j < chainSelectorTokensCount; j++) {
                     // address tokenAddress = indexFactoryStorage.currentList(i);
-                    address tokenAddress = indexFactoryStorage.currentChainSelectorTokens(latestCount, chainSelector, i);
+                    address tokenAddress = indexFactoryStorage.currentChainSelectorTokens(latestCount, chainSelector, j);
                     uint tokenSwapVersion = indexFactoryStorage
                         .tokenSwapVersion(tokenAddress);
-                    uint tokenMarketShare = indexFactoryStorage
-                        .tokenCurrentMarketShare(tokenAddress);
                     uint value;
                     if(tokenAddress == address(weth)){
                         value = IERC20(tokenAddress).balanceOf(address(indexToken));
@@ -688,8 +683,6 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
 
         uint totalChains = indexFactoryStorage.oracleChainSelectorsCount();
-        // uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
-        uint latestCurrentCount = indexFactoryStorage.currentFilledCount();
         uint latestOracleCount = indexFactoryStorage.oracleFilledCount();
 
         for (uint i = 0; i < totalChains; i++) {
@@ -697,10 +690,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
                 latestOracleCount,
                 i
             );
-            // uint64 chainSelector = indexFactoryStorage.currentChainSelectors(
-            //     latestCurrentCount,
-            //     i
-            // );
+            
             uint chainSelectorCurrentTokensCount = indexFactoryStorage
                 .currentChainSelectorTokensCount(chainSelector);
             uint chainSelectorOracleTokensCount = indexFactoryStorage

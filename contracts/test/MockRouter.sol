@@ -68,7 +68,7 @@ contract MockRouter {
   function ccipSend(
     uint64 destinationChainSelector,
     Client.EVM2AnyMessage calldata message
-  ) external payable {
+  ) external payable returns (bytes32){
     address targetAddress =bytesToAddress(message.receiver);
 
     IERC20(linkAddress).transferFrom(msg.sender, address(this), testFee);
@@ -89,6 +89,7 @@ contract MockRouter {
       abi.encodeWithSelector(this.ccipReceive.selector, finalMessage)
     ); // solhint-disable-line avoid-low-level-calls
     require(success, "mock router delegate call failed");
+    return bytes32(0);
   }
   
   function getFunctionSelector() public pure returns (bytes4) {

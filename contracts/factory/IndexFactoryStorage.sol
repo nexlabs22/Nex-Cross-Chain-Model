@@ -446,7 +446,7 @@ contract IndexFactoryStorage is
         uint finalAmountOut;
         if(amountIn > 0){
         if(_swapVersion == 3){
-           finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn), 1);
+           finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn));
         }else {
             address[] memory path = new address[](2);
             path[0] = tokenIn;
@@ -474,8 +474,7 @@ contract IndexFactoryStorage is
     function estimateAmountOut(
         address tokenIn,
         address tokenOut,
-        uint128 amountIn,
-        uint32 secondsAgo
+        uint128 amountIn
     ) public view returns (uint amountOut) {
         
         address _pool = factoryV3.getPool(
@@ -483,9 +482,9 @@ contract IndexFactoryStorage is
             tokenOut,
             3000
         );
-        // uint32 lastUpdateSecond = OracleLibrary.getOldestObservationSecondsAgo(_pool);
+        
         (int24 tick ) = OracleLibrary.getLatestTick(_pool);
-        // (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
+        
         amountOut = OracleLibrary.getQuoteAtTick(
             tick,
             amountIn,
