@@ -61,7 +61,7 @@ const SwapV2Defi = () => {
 		isMainnet,
 		setIsmainnet,
 	} = useTradePageStore()
-	const { mode } = useLandingPageStore()
+	const { selectedIndex, mode } = useLandingPageStore()
 	const {
 		isPaymentModalOpen,
 		isChecked,
@@ -165,7 +165,7 @@ const SwapV2Defi = () => {
 											whiteSpace: 'nowrap',
 										}}
 									>
-										Trading ANFI
+										Trading {selectedIndex}
 									</Typography>
 								</Link>
 							</Stack>

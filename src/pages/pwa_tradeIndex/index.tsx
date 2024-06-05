@@ -43,9 +43,8 @@ import { sepoliaTokens } from '@/constants/testnetTokens'
 import getPoolAddress from '@/utils/getPoolAddress'
 import { AssetChips, PWAGradientStack } from "@/theme/overrides";
 import Link from "next/link";
-import { GoPlus } from "react-icons/go";
-import Divider from '@mui/material/Divider';
-
+import { Shimmer } from 'react-shimmer'
+import Skeleton from '@mui/material/Skeleton';
 
 
 type underlyingAsset = {
@@ -60,10 +59,10 @@ export default function PWATradeIndex() {
 
     const [isSheetOpen, setSheetOpen] = useState<boolean>(false);
     const [isReadMore, setIsReadMore] = useState<boolean>(true)
-    const { changePWATradeoperation, selectedIndex } = useLandingPageStore()
+    const { changePWATradeoperation, selectedIndex, changeSelectedIndex } = useLandingPageStore()
     const [isFavorite, setIsFavorite] = useState<boolean>(false)
     const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
-    const { ethPriceInUsd } = useTradePageStore()
+    const { ethPriceInUsd, changeDefaultIndex } = useTradePageStore()
     useEffect(() => {
         fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
     }, [fetchIndexData])
@@ -379,7 +378,7 @@ export default function PWATradeIndex() {
         getCR5Weights()
     }, [])
 
-    
+
 
     return (
         <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingTop={5} paddingBottom={2} paddingX={3} bgcolor={lightTheme.palette.background.default}>
@@ -472,7 +471,11 @@ export default function PWATradeIndex() {
             <PWAIndexChartBox></PWAIndexChartBox>
             <Stack width={"100%"} height={"fit-content"} marginY={1} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
                 <Button onClick={() => {
-                    //changePWATradeoperation("sell")
+                    //changePWATradeoperation("sell") 
+                    if (defaultIndexObject?.shortDescription) {
+                        changeDefaultIndex(defaultIndexObject.shortSymbol.toString())
+                        changeSelectedIndex(defaultIndexObject.symbol.toString())
+                    }
                     router.push('/pwa_trade_console_defi')
                 }}
                     sx={{
@@ -544,7 +547,7 @@ export default function PWATradeIndex() {
                     Key Information
                 </Typography>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-                    <Typography variant="body1" sx={{
+                    <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
                         fontWeight: 600
                     }}>
@@ -554,11 +557,23 @@ export default function PWATradeIndex() {
                         color: "#374952",
                         fontWeight: 500
                     }}>
-                        {FormatToViewNumber({ value: Number(defaultIndexObject?.mktCap), returnType: 'string' }) + ' ' + defaultIndexObject?.shortSymbol}
+                        {
+                            defaultIndexObject?.mktCap ? (
+                                <>
+                                    {FormatToViewNumber({ value: Number(defaultIndexObject?.mktCap), returnType: 'string' }) + ' ' + defaultIndexObject?.shortSymbol}
+                                </>
+                            ) : (
+                                <>
+                                    <Skeleton variant="rounded" width={100} height={12} sx={{ bgcolor: "#D4D4D4" }} />
+                                </>
+                            )
+                        }
+
+
                     </Typography>
                 </Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-                    <Typography variant="body1" sx={{
+                    <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
                         fontWeight: 600
                     }}>
@@ -568,11 +583,22 @@ export default function PWATradeIndex() {
                         color: "#374952",
                         fontWeight: 500
                     }}>
-                        ${FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })}
+                        {
+                            defaultIndexObject?.mktPrice ? (
+                                <>
+                                    ${FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })}
+                                </>
+                            ) : (
+                                <>
+                                    <Skeleton variant="rounded" width={100} height={12} sx={{ bgcolor: "#D4D4D4" }} />
+                                </>
+                            )
+                        }
+
                     </Typography>
                 </Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-                    <Typography variant="body1" sx={{
+                    <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
                         fontWeight: 600
                     }}>
@@ -582,11 +608,22 @@ export default function PWATradeIndex() {
                         color: "#374952",
                         fontWeight: 500
                     }}>
-                        {defaultIndexObject?.chg24h}%
+                        {
+                            defaultIndexObject?.chg24h ? (
+                                <>
+                                    {defaultIndexObject?.chg24h}%
+                                </>
+                            ) : (
+                                <>
+                                    <Skeleton variant="rounded" width={100} height={12} sx={{ bgcolor: "#D4D4D4" }} />
+                                </>
+                            )
+                        }
+
                     </Typography>
                 </Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-                    <Typography variant="body1" sx={{
+                    <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
                         fontWeight: 600
                     }}>
@@ -597,13 +634,24 @@ export default function PWATradeIndex() {
                             color: "#374952",
                             fontWeight: 500,
                         }}>
-                            {reduceAddress(defaultIndexObject?.tokenAddress as string)}
+                            {
+                                defaultIndexObject?.tokenAddress ? (
+                                    <>
+                                        {reduceAddress(defaultIndexObject?.tokenAddress as string)}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Skeleton variant="rounded" width={100} height={12} sx={{ bgcolor: "#D4D4D4" }} />
+                                    </>
+                                )
+                            }
+
                         </Typography>
                     </Link>
 
                 </Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-                    <Typography variant="body1" sx={{
+                    <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
                         fontWeight: 600
                     }}>
@@ -613,7 +661,18 @@ export default function PWATradeIndex() {
                         color: "#374952",
                         fontWeight: 500
                     }}>
-                        {defaultIndexObject?.managementFee} %
+                        {
+                            defaultIndexObject?.managementFee ? (
+                                <>
+                                    {defaultIndexObject?.managementFee} %
+                                </>
+                            ) : (
+                                <>
+                                    <Skeleton variant="rounded" width={100} height={12} sx={{ bgcolor: "#D4D4D4" }} />
+                                </>
+                            )
+                        }
+
                     </Typography>
                 </Stack>
             </Stack>
@@ -635,7 +694,7 @@ export default function PWATradeIndex() {
                                 {defaultIndexObject?.symbol} Composition
                             </Typography>
 
-                            
+
                             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} marginY={3} id="haha" >
                                 {
                                     selectedIndex == "ANFI" ? (

@@ -1,18 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Stack, Container, Box, Typography, Button } from "@mui/material";
+import { Stack, Typography, Button } from "@mui/material";
 import PWAIcon from '@assets/images/PWAIcon.png'
 import logo from '@assets/images/xlogo_s.png'
 import { lightTheme } from "@/theme/theme";
 import { useLandingPageStore } from "@/store/store";
 import PWAConnectButton from "./PWAConnectWallet";
-import { useConnectionStatus, useSetIsWalletModalOpen, useAddress } from "@thirdweb-dev/react";
+import { useConnectionStatus, useSetIsWalletModalOpen, useAddress, useChainId } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useSwitchChain } from "@thirdweb-dev/react";
+import { Goerli, Sepolia } from "@thirdweb-dev/chains";
 
 const PWASplashScreen = () => {
 
     const address = useAddress()
+    const chainId = useChainId()
     const router = useRouter()
     const connectionStatus = useConnectionStatus();
     const setIsWalletModalOpen = useSetIsWalletModalOpen();
@@ -20,6 +23,21 @@ const PWASplashScreen = () => {
     useEffect(() => {
         if (connectionStatus == "connected") router.push("/pwa_index")
     }, [connectionStatus, router])
+
+    // Function for auto switching to the right chain
+	const switchChain = useSwitchChain()
+	
+	useEffect(() => {
+		if (address && chainId !== Sepolia.chainId ) {
+			try{
+				switchChain(Sepolia.chainId)
+			}catch(err){
+				console.log(err)
+			}
+		}
+	}, [address, chainId, switchChain])
+
+	// !Function for auto switching to the right chain
     return (
         <Stack height={"100vh"} width={"100vw"} paddingBottom={6} direction={"column"} alignItems={"center"} justifyContent={"end"} bgcolor={"#FFFFFF"} paddingX={2}>
             <Image src={logo} alt="pwa" className="w-6/12 h-auto mb-56"></Image>

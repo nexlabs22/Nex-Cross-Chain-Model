@@ -9,9 +9,10 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useLandingPageStore } from "@/store/store";
+import { FormatToViewNumber } from "@/hooks/math";
 
 export default function PWAPortfolioMyAssets() {
-    const {nexTokenAssetData} = usePortfolio()
+    const { nexTokenAssetData } = usePortfolio()
     const router = useRouter()
     const { changeSelectedIndex } = useLandingPageStore()
 
@@ -20,7 +21,7 @@ export default function PWAPortfolioMyAssets() {
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
                 <Typography variant="body1" sx={{
                     color: lightTheme.palette.text.primary,
-					fontWeight: 600,
+                    fontWeight: 600,
                 }}>
                     My Assets
                 </Typography>
@@ -77,7 +78,7 @@ export default function PWAPortfolioMyAssets() {
                                             fontWeight: 600,
                                         }}>
                                             {
-                                                asset.symbol
+                                                asset.shortName
                                             }
                                         </Typography>
                                         <Typography variant="caption" sx={{
@@ -92,7 +93,7 @@ export default function PWAPortfolioMyAssets() {
                                             boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
                                         }}>
                                             {
-                                                asset.percentage
+                                                FormatToViewNumber({ value: Number(asset.percentage), returnType: 'string' })
                                             }%
                                         </Typography>
                                     </Stack>
@@ -103,7 +104,8 @@ export default function PWAPortfolioMyAssets() {
                                         width: "90%"
                                     }}>
                                         {Number(asset.totalToken?.toFixed(2)).toLocaleString()} (≈${
-                                            Number(asset.totalTokenUsd?.toFixed(2)).toLocaleString()
+                                            FormatToViewNumber({ value: Number(asset.totalTokenUsd?.toFixed(2)), returnType: 'string' })
+                                            
                                         })
 
                                     </Typography>

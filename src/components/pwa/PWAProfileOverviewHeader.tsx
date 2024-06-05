@@ -55,7 +55,8 @@ const PWAProfileOverviewHeader = () => {
 					{portfolio24hChange < 0 ? "-" : "+"}
 					$
 					{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
-						? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
+					
+						? FormatToViewNumber({ value: Number(Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)), returnType: 'string' })
 						: '0.00'}
 				</Typography>
 			</Stack>

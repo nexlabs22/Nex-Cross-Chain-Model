@@ -45,15 +45,19 @@ const PWANexIndices = () => {
                     </MenuButton>
                 }>
                     <MenuItem onClick={() => { setListType("My Watchlist") }}>
-                        <Typography variant="body1" sx={{
+                        <Typography variant="subtitle1" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 600
                         }}>
                             Watchlist
                         </Typography>
                     </MenuItem>
+                    <MenuItem disabled >
+                        <Stack width={"90%"} height={"1.5px"} sx={{ backgroundColor: "#252525" }}></Stack>
+                    </MenuItem>
+
                     <MenuItem onClick={() => { setListType("All Nex Indices") }}>
-                        <Typography variant="body1" sx={{
+                        <Typography variant="subtitle1" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 600
                         }}>
