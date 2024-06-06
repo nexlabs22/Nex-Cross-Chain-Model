@@ -386,7 +386,7 @@ export default function PWATradeIndex() {
             <Stack width={"100%"} height={"fit-content"} paddingTop={2} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
 
                 <Stack direction={"row"} width={"100%"} height={"fit-content"} alignItems={"center"} justifyContent={"space-between"}>
-                    <Stack direction={"row"} alignItems={"end"} justifyContent={"start"} width={"fit-content"} height={"fit-content"}>
+                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"}>
                         <Typography variant="h6" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 700
@@ -438,7 +438,7 @@ export default function PWATradeIndex() {
                                 )
                             }
                         </Stack>
-                        <MdMoreHoriz size={25} color={lightTheme.palette.text.primary} onClick={() => { setSheetOpen(true) }} />
+                        <MdMoreHoriz size={25} color={lightTheme.palette.text.primary} className=" align-bottom" onClick={() => { setSheetOpen(true) }} />
                     </Stack>
                     {
                         isFavorite ?

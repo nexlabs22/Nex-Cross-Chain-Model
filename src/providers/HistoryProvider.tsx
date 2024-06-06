@@ -37,70 +37,70 @@ import { GenericToast } from "@components/GenericToast"
 import { CSVLink } from 'react-csv'
 
 interface HistoryContextProps {
-    test: String,
-    positionHistoryDefi: {
-        data: PositionType[] | null;
-        reload: () => Promise<void>;
-    },
-    positionHistoryCrosschain: {
-        history: PositionType[] | null;
-        requests: PositionType[] | null;
-        reload: () => void;
-    },
-    positionHistoryData: PositionType[],
-    combinedPositionTableData: PositionType[],
-    usdPrices: {
-        [key: string]: number;
-    },
-    activeIndexType: string | "defi" | "crosschain",
-    path: string,
-    searchQuery: string,
-    assetName: string,
-    allowedSymbols: any,
-    activeTicker: string[],
-    dataToShow: PositionType[],
-    handleExportPDF: () => void,
-    timestampstring: string,
-    fileName: string,
-    csvData: any[][],
-    handleExportCSV: () => void
+	test: String,
+	positionHistoryDefi: {
+		data: PositionType[] | null;
+		reload: () => Promise<void>;
+	},
+	positionHistoryCrosschain: {
+		history: PositionType[] | null;
+		requests: PositionType[] | null;
+		reload: () => void;
+	},
+	positionHistoryData: PositionType[],
+	combinedPositionTableData: PositionType[],
+	usdPrices: {
+		[key: string]: number;
+	},
+	activeIndexType: string | "defi" | "crosschain",
+	path: string,
+	searchQuery: string,
+	assetName: string,
+	allowedSymbols: any,
+	activeTicker: string[],
+	dataToShow: PositionType[],
+	handleExportPDF: () => void,
+	timestampstring: string,
+	fileName: string,
+	csvData: any[][],
+	handleExportCSV: () => void
 }
 
 const HistoryContext = createContext<HistoryContextProps>({
-    test: "",
-    positionHistoryDefi: {
-        data: null,
-        reload: () => Promise.resolve()
-    },
-    positionHistoryCrosschain: {
-        history: null,
-        requests: null,
-        reload: () => Promise.resolve()
-    },
-    positionHistoryData: [],
-    combinedPositionTableData: [],
-    usdPrices: {},
-    activeIndexType: "defi",
-    path: "",
-    searchQuery: "",
-    assetName: "",
-    allowedSymbols: null,
-    activeTicker: [],
-    dataToShow: [],
-    handleExportPDF: () => {},
-    timestampstring: "",
-    fileName: "",
-    csvData: [],
-    handleExportCSV: () => {}
+	test: "",
+	positionHistoryDefi: {
+		data: null,
+		reload: () => Promise.resolve()
+	},
+	positionHistoryCrosschain: {
+		history: null,
+		requests: null,
+		reload: () => Promise.resolve()
+	},
+	positionHistoryData: [],
+	combinedPositionTableData: [],
+	usdPrices: {},
+	activeIndexType: "defi",
+	path: "",
+	searchQuery: "",
+	assetName: "",
+	allowedSymbols: null,
+	activeTicker: [],
+	dataToShow: [],
+	handleExportPDF: () => { },
+	timestampstring: "",
+	fileName: "",
+	csvData: [],
+	handleExportCSV: () => { }
 })
 
 const useHistory = () => {
-    return(useContext(HistoryContext))
+	return (useContext(HistoryContext))
 }
 
 const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const address = useAddress()
+	const address = useAddress()
 	const { mode, selectedIndex } = useLandingPageStore()
 	const { swapFromCur, swapToCur, setTradeTableReload, tradeTableReload, crosschainTableReload, setEthPriceInUsd, ethPriceInUsd, isMainnet } = useTradePageStore()
 	const { ownedAssetInActivity, setPortfolioData } = usePortfolioPageStore()
@@ -114,7 +114,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const activeIndexType = swapFromCur?.indexType === 'defi' || swapToCur?.indexType === 'defi' ? 'defi' : 'crosschain'
 
-    useEffect(() => {
+	useEffect(() => {
 		const crossChainRequests = positionHistoryCrosschain.requests
 		const crossChainHistory = positionHistoryCrosschain.history
 
@@ -132,14 +132,14 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}, [positionHistoryCrosschain])
 
-    const path = typeof window !== 'undefined' ? window.location.pathname : '/'
+	const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 	const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
 	const assetName = searchQuery.split('=')[1]
 
 	const allowedSymbols = sepoliaTokens.filter((token) => token.isNexlabToken).map((token) => token.Symbol)
 	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
 
-    useEffect(() => {
+	useEffect(() => {
 		const combinedData = positionHistoryDefi.data.concat(positionHistoryCrosschain.history)
 		setPortfolioData(combinedData)
 	}, [setEthPriceInUsd, setPortfolioData, positionHistoryDefi.data, positionHistoryCrosschain.history])
@@ -155,8 +155,14 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 			}
 		} else if (path === '/pwa_tradeIndex') {
 			const dataTotal = combinedPositionTableData.concat(positionHistoryDefi.data).sort((a, b) => b.timestamp - a.timestamp)
+
 			const data = dataTotal.filter((data) => {
-				return selectedIndex.toUpperCase() === data.indexName
+				if (selectedIndex == "CRYPTO5" || selectedIndex == "CRYPTO 5" || selectedIndex == "CR5") {
+					return "CRYPTO5" === data.indexName
+				}
+				else {
+					return selectedIndex.toUpperCase() === data.indexName
+				}
 			})
 
 			setPositionHistoryData(data)
@@ -173,7 +179,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}, [path, positionHistoryDefi.data, assetName, swapFromCur.Symbol, swapToCur.Symbol, ownedAssetInActivity, combinedPositionTableData])
 
-    useEffect(() => {
+	useEffect(() => {
 		if (tradeTableReload) {
 			activeIndexType === 'defi' ? positionHistoryDefi.reload() : positionHistoryCrosschain.reload()
 			setTradeTableReload(false)
@@ -196,7 +202,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		getUsdPrices()
 	}, [ethPriceInUsd, usdPrices])
 
-    const dataToShow: PositionType[] = Array.from(
+	const dataToShow: PositionType[] = Array.from(
 		{ length: Math.max(5, positionHistoryData.length) },
 		(_, index) =>
 			positionHistoryData[index] || {
@@ -211,11 +217,11 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 			}
 	)
 
-    useEffect(() => {
+	useEffect(() => {
 		console.log(dataToShow)
 	}, [dataToShow])
 
-    const handleExportPDF = () => {
+	const handleExportPDF = () => {
 		toast.dismiss()
 		GenericToast({
 			type: 'loading',
@@ -255,10 +261,10 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		exportPDF(tableData, 'landscape', address as string)
 	}
 
-    const timestampstring = new Date().toISOString().replace(/[-:]/g, '').split('.')[0].split('T').join('')
+	const timestampstring = new Date().toISOString().replace(/[-:]/g, '').split('.')[0].split('T').join('')
 	const fileName = `NEX-TX-HISTORY-${timestampstring}`
 
-    const csvData: any[][] = [
+	const csvData: any[][] = [
 		['Time', 'Pair', 'Request Side', 'Input Amount', 'Output Amount', 'Transaction hash'],
 		...positionHistoryData
 			.sort((a, b) => b.timestamp - a.timestamp)
@@ -274,7 +280,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 			]),
 	]
 
-    const handleExportCSV = () => {
+	const handleExportCSV = () => {
 		toast.dismiss()
 		GenericToast({
 			type: 'success',
@@ -282,37 +288,37 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		})
 	}
 
-    
 
-    const t = "test"
 
-    const contextValue = {
-        test: t,
-        positionHistoryDefi: positionHistoryDefi,
-        positionHistoryCrosschain: positionHistoryCrosschain,
-        positionHistoryData: positionHistoryData,
-        combinedPositionTableData: combinedPositionTableData,
-        usdPrices: usdPrices,
-        activeIndexType: activeIndexType,
-        path: path,
-        searchQuery: searchQuery,
-        assetName: assetName,
-        allowedSymbols: allowedSymbols,
-        activeTicker: activeTicker,
-        dataToShow: dataToShow,
-        handleExportPDF: handleExportPDF,
-        timestampstring: timestampstring,
-        fileName: fileName,
-        csvData: csvData,
-        handleExportCSV: handleExportCSV
-    }
+	const t = "test"
 
-    return(
-        <HistoryContext.Provider value={contextValue}>
-            {children}
-        </HistoryContext.Provider>
-    )
+	const contextValue = {
+		test: t,
+		positionHistoryDefi: positionHistoryDefi,
+		positionHistoryCrosschain: positionHistoryCrosschain,
+		positionHistoryData: positionHistoryData,
+		combinedPositionTableData: combinedPositionTableData,
+		usdPrices: usdPrices,
+		activeIndexType: activeIndexType,
+		path: path,
+		searchQuery: searchQuery,
+		assetName: assetName,
+		allowedSymbols: allowedSymbols,
+		activeTicker: activeTicker,
+		dataToShow: dataToShow,
+		handleExportPDF: handleExportPDF,
+		timestampstring: timestampstring,
+		fileName: fileName,
+		csvData: csvData,
+		handleExportCSV: handleExportCSV
+	}
+
+	return (
+		<HistoryContext.Provider value={contextValue}>
+			{children}
+		</HistoryContext.Provider>
+	)
 
 }
 
-export { HistoryProvider, HistoryContext, useHistory}
+export { HistoryProvider, HistoryContext, useHistory }
