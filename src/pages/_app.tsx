@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app'
 import '../styles/globals.css'
+import { Analytics } from '@vercel/analytics/react'
 import { ThirdwebProvider } from '@components/ThirdwebProvider'
 import {
 	ConnectWallet,
@@ -17,7 +18,7 @@ import {
 	phantomWallet,
 } from '@thirdweb-dev/react'
 import { Goerli, Ethereum, Sepolia } from '@thirdweb-dev/chains'
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { useLandingPageStore } from '@/store/store'
 import { Theme, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -77,6 +78,7 @@ export default function App({ Component, pageProps }: AppProps) {
 									<DeFiSwapProvider>
 										<HistoryProvider>
 											<Component {...pageProps} />
+						<Analytics />
 										</HistoryProvider>
 									</DeFiSwapProvider>
 								</PortfolioProvider>
