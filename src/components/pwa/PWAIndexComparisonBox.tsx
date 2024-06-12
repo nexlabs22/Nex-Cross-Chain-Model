@@ -241,6 +241,7 @@ const PWAIndexComparisonBox = () => {
                                                     // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
                                                     setSelectedIndices((prevState) => [...prevState, assetClass.colName])
                                                     changeSelectedComparisonIndices(selectedIndices)
+                                                    changeSelectedComparisonIndices(selectedIndices)
                                                 } else {
                                                     // removeIndex(assetClass.colName)
                                                     setSelectedIndices((prevState) =>
@@ -249,11 +250,11 @@ const PWAIndexComparisonBox = () => {
                                                         })
                                                     )
                                                     changeSelectedComparisonIndices(selectedIndices)
+                                                    changeSelectedComparisonIndices(selectedIndices)
                                                 }
                                             }
 
-                                            change()
-                                            change()
+                                            change();
                                         }}>
                                             <Stack width={"3rem"} sx={{
                                                 aspectRatio: "1",
@@ -293,7 +294,7 @@ const PWAIndexComparisonBox = () => {
                                     if (item.index == selectedIndex) {
                                         return item.assetClasses.map((assetClass, key) => {
                                             return (
-                                                <Link key={key} href={""} className="w-full h-fit flex flex-row"  onClick={(e) => {
+                                                <Link key={key} href={""} className="w-full h-fit flex flex-row" onTouchStart={(e) => {
                                                     e.preventDefault();
                                                     
                                                     function change(){
@@ -301,6 +302,7 @@ const PWAIndexComparisonBox = () => {
                                                             // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
                                                             setSelectedIndices((prevState) => [...prevState, assetClass.colName])
                                                             changeSelectedComparisonIndices(selectedIndices)
+                                                            //changeSelectedComparisonIndices(selectedIndices)
                                                         } else {
                                                             // removeIndex(assetClass.colName)
                                                             setSelectedIndices((prevState) =>
@@ -309,11 +311,11 @@ const PWAIndexComparisonBox = () => {
                                                                 })
                                                             )
                                                             changeSelectedComparisonIndices(selectedIndices)
+                                                            //changeSelectedComparisonIndices(selectedIndices)
                                                         }
-                                                        alert("dd")
+                                                        
                                                     }
 
-                                                    change()
                                                     change()
                                                 }}>
                                                     <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
