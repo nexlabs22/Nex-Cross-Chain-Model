@@ -49,6 +49,7 @@ import { useState, useEffect } from "react";
 import { useChartDataStore, useLandingPageStore } from "@/store/store";
 import { CgArrowsExchangeAlt } from "react-icons/cg";
 import Link from "next/link";
+import { Asset } from "next/font/google";
 
 const PWAIndexComparisonBox = () => {
 
@@ -164,42 +165,87 @@ const PWAIndexComparisonBox = () => {
                         Compared to:
                     </Typography>
                     {
-                    selectedComparisonIndices.length == 0 ? (
-                        <Link href="" onClick={(e) => { e.preventDefault(); setIsAssetsSheetOpen(true) }} className="w-full h-fit flex flex-col">
-                            <Stack direction={"row"} alignItems={"center"} justifyContent={"end"} width={"100%"} height={"fit-content"} gap={0.5}>
-                                <Typography variant="caption" sx={{
-                                    color: lightTheme.palette.text.primary,
-                                    fontWeight: 500,
-                                    fontSize: "1rem",
-                                    whiteSpace: "nowrap"
-                                }}>
-                                    Add assets
-                                </Typography>
-                                <IoChevronDown color={lightTheme.palette.text.primary} size={20} />
-                            </Stack>
-                        </Link>
-                    ) :
-                        (
-                            selectedComparisonIndices.length == 1 ? (
-                                <Link href="" onClick={(e) => { e.preventDefault(); setIsAssetsSheetOpen(true) }} className="w-full h-fit flex flex-col">
-                                    <Stack direction={"row"} alignItems={"center"} justifyContent={"end"} width={"100%"} height={"fit-content"} gap={0.5}>
-                                        <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.text.primary,
-                                        }}>
-                                            {selectedComparisonIndices[0]}
-                                        </Typography>
-                                        <IoChevronDown color={lightTheme.palette.text.primary} size={20} />
-                                    </Stack>
-                                </Link>
-                            ) : (
-                                <Stack >
-                                    {selectedComparisonIndices.length}
+                        selectedComparisonIndices.length == 0 ? (
+                            <Link href="" onClick={(e) => { e.preventDefault(); setIsAssetsSheetOpen(true) }} className="w-full h-fit flex flex-col">
+                                <Stack direction={"row"} alignItems={"center"} justifyContent={"end"} width={"100%"} height={"fit-content"} gap={0.5}>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 500,
+                                        fontSize: "1rem",
+                                        whiteSpace: "nowrap"
+                                    }}>
+                                        Add assets
+                                    </Typography>
+                                    <IoChevronDown color={lightTheme.palette.text.primary} size={20} />
                                 </Stack>
+                            </Link>
+                        ) :
+                            (
+                                selectedComparisonIndices.length == 1 ? (
+                                    <Link href="" onClick={(e) => { e.preventDefault(); setIsAssetsSheetOpen(true) }} className="w-full h-fit flex flex-col">
+                                        <Stack direction={"row"} alignItems={"center"} justifyContent={"end"} width={"100%"} height={"fit-content"} gap={0.5}>
+                                            <Stack
+                                                width={25}
+                                                height={25}
+                                                sx={{
+                                                    backgroundColor: "#C7C7C7",
+                                                    backgroundImage: `url('${priorityAssetClasses.flatMap(category => category.assetClasses).find(assetClass => assetClass.colName === selectedComparisonIndices[0])?.logo || "Not found"}')`,
+                                                    backgroundPosition: "center",
+                                                    backgroundSize: "cover",
+                                                    backgroundRepeat: "no-repeat",
+                                                    borderRadius:"9999px",
+                                                    border:"solid 0.5px rgba(37, 37, 37, 0.4)",
+                                                    boxShadow:"0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                                }}
+                                            ></Stack>
+                                            <Typography variant="caption" sx={{
+                                                color: lightTheme.palette.text.primary,
+                                            }}>
+                                                {priorityAssetClasses.flatMap(category => category.assetClasses)
+                                                    .find(assetClass => assetClass.colName === selectedComparisonIndices[0])?.name || "Not found"}
+                                            </Typography>
+                                            <IoChevronDown color={lightTheme.palette.text.primary} size={20} />
+                                        </Stack>
+                                    </Link>
+                                ) : (
+                                    <Link href="" onClick={(e) => { e.preventDefault(); setIsAssetsSheetOpen(true) }} className="w-full h-fit flex flex-row items-center justify-end">
+                                        <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={1}>
+                                            <Stack width="fit-content" height={"fit-content"} direction={"row"} alignItems="center" justifyContent="end">
+                                                {
+                                                    [...new Set(selectedComparisonIndices)].map((asset, key) => {
+                                                        const logo = priorityAssetClasses.flatMap(category => category.assetClasses).find(assetClass => assetClass.colName === asset)?.logo || "Not found"
+                                                        return (
+                                                            <Stack
+                                                                key={key}
+                                                                marginLeft={`${(key * -1 * 8) / key}px`}
+                                                                zIndex={key * 10}
+                                                                width={25}
+                                                                height={25}
+                                                                borderRadius={"9999px"}
+                                                                border={"solid 0.5px rgba(37, 37, 37, 0.4)"}
+                                                                boxShadow={"0px 1px 1px 1px rgba(37, 37, 37, 0.3)"}
+                                                                sx={{
+                                                                    backgroundColor: "#FFFFFF",
+                                                                    backgroundImage: `url('${logo}')`,
+                                                                    backgroundPosition: "center",
+                                                                    backgroundSize: "cover",
+                                                                    backgroundRepeat: "no-repeat"
+                                                                }}
+                                                            >
+
+                                                            </Stack>
+                                                        )
+                                                    })
+                                                }
+                                            </Stack>
+                                            <IoChevronDown color={lightTheme.palette.text.primary} size={20} />
+                                        </Stack>
+                                    </Link>
+                                )
                             )
-                        )
-                }
+                    }
                 </Stack>
-                
+
 
             </Stack>
             <Stack display={"none"} width={"100%"} height={"fit-content"} direction={"row"} marginTop={0.5} alignItems={"center"} justifyContent={"start"} id="PWAIndexComparisonSlider">
