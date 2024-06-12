@@ -151,7 +151,7 @@ const PWAIndexComparisonBox = () => {
                         fontSize: "1.1rem",
                         whiteSpace: "nowrap"
                     }}>
-                        Wold{"'"}s Best Assets {selectedIndices.length}
+                        Wold{"'"}s Best Assets
                     </Typography>
                 </Stack>
                 {
@@ -290,21 +290,26 @@ const PWAIndexComparisonBox = () => {
                                             return (
                                                 <Link key={key} href={""} className="w-full h-fit flex flex-row"  onClick={(e) => {
                                                     e.preventDefault();
-                                                    if (!selectedIndices.includes(assetClass.colName)) {
-                                                        // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
-                                                        setSelectedIndices((prevState) => [...prevState, assetClass.colName])
-                                                        changeSelectedComparisonIndices(selectedIndices)
-                                                        console.log("comparison: "+selectedIndices)
-                                                    } else {
-                                                        // removeIndex(assetClass.colName)
-                                                        setSelectedIndices((prevState) =>
-                                                            prevState.filter((i) => {
-                                                                return i != assetClass.colName
-                                                            })
-                                                        )
-                                                        changeSelectedComparisonIndices(selectedIndices)
-                                                        console.log("comparison: "+selectedIndices)
+                                                    
+                                                    function change(){
+                                                        if (!selectedComparisonIndices.includes(assetClass.colName)) {
+                                                            // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
+                                                            setSelectedIndices((prevState) => [...prevState, assetClass.colName])
+                                                            changeSelectedComparisonIndices(selectedIndices)
+                                                        } else {
+                                                            // removeIndex(assetClass.colName)
+                                                            setSelectedIndices((prevState) =>
+                                                                prevState.filter((i) => {
+                                                                    return i != assetClass.colName
+                                                                })
+                                                            )
+                                                            changeSelectedComparisonIndices(selectedIndices)
+                                                        }
+                                                        alert("dd")
                                                     }
+
+                                                    change()
+                                                    change()
                                                 }}>
                                                     <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                                                         <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
@@ -326,7 +331,7 @@ const PWAIndexComparisonBox = () => {
                                                             </Typography>
                                                         </Stack>
                                                         {
-                                                            selectedIndices.includes(assetClass.colName) ? (
+                                                            selectedComparisonIndices.includes(assetClass.colName) ? (
                                                                 <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} borderRadius={"9999px"} sx={{ backgroundColor: "#1C96E8" }} padding={0.5}>
                                                                     <IoMdCheckmark size={16} color="#FFFFFF" />
                                                                 </Stack>
