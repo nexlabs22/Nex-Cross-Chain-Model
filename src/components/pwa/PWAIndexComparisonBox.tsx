@@ -258,7 +258,7 @@ const PWAIndexComparisonBox = () => {
                                                 backgroundImage: `url('${assetClass.logo}')`
                                             }}></Stack>
                                             <Typography variant="caption" sx={{
-                                                color: selectedIndices.includes(assetClass.colName) ? '#FFFFFF' : '#000000',
+                                                color: selectedComparisonIndices.includes(assetClass.colName) ? '#FFFFFF' : '#000000',
                                                 fontWeight: 700,
                                                 marginRight: "0.3rem"
                                             }}>
