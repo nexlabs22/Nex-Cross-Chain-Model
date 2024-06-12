@@ -157,7 +157,7 @@ export default function PWAProfileSettings() {
                         <Stack width="fit-content" height="fit-content" position={"relative"} direction={"row"} alignItems={"center"} justifyContent={"center"} marginY={12} sx={{ scale: "4" }}>
                             <PWATopBarGenericAvatar walletAddress={address}></PWATopBarGenericAvatar>
                             <Stack width={"fit-content"} height={"fit-content"} bgcolor={"#FFFFFF"} position={"absolute"} zIndex={999} borderRadius={"999px"} bottom={"15%"} right={"3%"} border={"solid 0.2px #C0C0C0"} direction={"row"} alignItems={"center"} justifyContent={"center"} padding={"0.5px"}>
-                                <MdEdit color={lightTheme.palette.text.primary} size={4} className=" rotate-[90deg] "/>
+                                <MdEdit color={lightTheme.palette.text.primary} size={4} className=" rotate-[90deg] " />
                             </Stack>
                         </Stack>
                     </Link>
@@ -188,7 +188,7 @@ export default function PWAProfileSettings() {
                 </Typography>
                 <Typography variant="caption" sx={{
                     color: lightTheme.palette.text.primary,
-                    fontWeight: 500,
+                    fontWeight: 700,
                     marginTop: "1rem"
                 }}>
                     Account Type
@@ -352,8 +352,8 @@ export default function PWAProfileSettings() {
                     </Stack>
                     <Button className="pwaConnectWallet"
                         sx={{
-                            width: "95%",
-                            paddingY: "1.3rem",
+                            width: "90%",
+                            paddingY: "1rem",
                             borderRadius: "1.2rem",
                             marginX: "auto",
                             marginTop: "1.2rem",
@@ -365,7 +365,7 @@ export default function PWAProfileSettings() {
                     >
                         <Typography variant="h3" component="h3" className="w-full rounded-3xl" sx={{
                             color: "#000000",
-                            fontSize: "1.8rem",
+                            fontSize: "1.2rem",
                             textShadow: "none",
 
                         }} >

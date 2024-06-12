@@ -17,7 +17,7 @@ export default function PWAPortfolioMyAssets() {
     const { changeSelectedIndex } = useLandingPageStore()
 
     return (
-        <Stack width={"100%"} height={"fit-content"} marginTop={6}>
+        <Stack width={"100%"} height={"fit-content"} marginTop={12}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
                 <Typography variant="body1" sx={{
                     color: lightTheme.palette.text.primary,
@@ -82,7 +82,7 @@ export default function PWAPortfolioMyAssets() {
                                             }
                                         </Typography>
                                         <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.nexGreen.main,
+                                            color: asset.percentage && Number(asset.percentage) < 0 ? "#F23645" : "#089981",
                                             fontWeight: 600,
                                             fontSize: ".8rem",
                                             backgroundColor: lightTheme.palette.pageBackground.main,
@@ -103,9 +103,19 @@ export default function PWAPortfolioMyAssets() {
                                         fontSize: "1rem",
                                         width: "90%"
                                     }}>
-                                        {Number(asset.totalToken?.toFixed(2)).toLocaleString()} (≈${
+                                        {
+                                            Number(asset.totalToken?.toFixed(2)).toLocaleString()
+                                        }
+
+                                    </Typography>
+                                    <Typography variant="subtitle1" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 500,
+                                        fontSize: "1rem",
+                                        width: "90%"
+                                    }}>
+                                        (${
                                             FormatToViewNumber({ value: Number(asset.totalTokenUsd?.toFixed(2)), returnType: 'string' })
-                                            
                                         })
 
                                     </Typography>

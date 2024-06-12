@@ -62,7 +62,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 
 	return isStandalone ? (
 		<>
-			<Stack id="PWAProfileHistory" width={'100%'} height={'fit-content'} maxHeight={maxPWAHeight ? "fit-content" : "30vh"}  marginBottom={"6rem"} marginTop={1} direction={'column'} alignItems={'center'} justifyContent={'start'}>
+			<Stack id="PWAProfileHistory" width={'100%'} height={'fit-content'} maxHeight={maxPWAHeight ? "fit-content" : "30vh"} marginBottom={"6rem"} marginTop={1} direction={'column'} alignItems={'center'} justifyContent={'start'}>
 				<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'} marginBottom={1}>
 					<Typography
 						variant="h6"
@@ -124,8 +124,8 @@ function NewHistoryTable(props: HistoryTableProps) {
 						justifyContent={'start'}
 						gap={0.3}
 						marginY={2}
-						
-						paddingX={"0.6rem"}
+
+						paddingX={"0.3rem"}
 						sx={{
 							overflowY: 'scroll',
 						}}
@@ -148,18 +148,30 @@ function NewHistoryTable(props: HistoryTableProps) {
 												aria-controls={`${position.txHash.toString()}-content`}
 												id={`${position.txHash.toString()}-header`}
 											>
-												<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-													<Image alt="index logo" src={position.indexName == "ANFI" || "anfi" ? anfiLogo : cr5Logo} width={40} height={40} className="rounded-full mb-2"></Image>
+												<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} gap={1}>
+													<Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} gap={1}>
+														<Image alt="index logo" src={position.indexName == "ANFI" || "anfi" ? anfiLogo : cr5Logo} width={40} height={40} className="rounded-full mb-2"></Image>
+														<Typography
+															variant="caption"
+															sx={{
+																color: lightTheme.palette.text.primary,
+																fontWeight: 600,
+															}}
+														>
+															{FormatToViewNumber({ value: Number(position.inputAmount), returnType: 'string' })}&nbsp;
+															{position.indexName ? position.indexName : '-'}
+														</Typography>
+													</Stack>
 													<Typography
-														variant="caption"
-														sx={{
-															color: lightTheme.palette.text.primary,
-															fontWeight: 600,
-														}}
-													>
-														{FormatToViewNumber({ value: Number(position.inputAmount), returnType: 'string' })}&nbsp;
-														{position.indexName ? position.indexName : '-'}
-													</Typography>
+															variant="caption"
+															sx={{
+																color: lightTheme.palette.text.primary,
+																fontWeight: 500,
+																marginRight: "0.6rem"
+															}}
+														>
+															{position.timestamp ? convertTime(position.timestamp).toString().split(" ")[0] : '-'}
+														</Typography>
 												</Stack>
 											</AccordionSummary>
 											<AccordionDetails>

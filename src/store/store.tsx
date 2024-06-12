@@ -61,10 +61,10 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 	changeSelectedIndex: (index: string) => set((state) => ({ selectedIndex: index })),
 
 	selectedComparisonIndices: [],
-	changeSelectedComparisonIndices: (selected: string[]) => set((state) => ({ selectedComparisonIndices: selected })),
+	changeSelectedComparisonIndices: (selected: string[]) => {set((state)=>({selectedComparisonIndices: []})); set((state) => ({ selectedComparisonIndices: selected }))},
 
 	PWATradeoperation: '',
-	changePWATradeoperation: (operation: string) => set((state) => ({ PWATradeoperation: operation })),
+	changePWATradeoperation: (operation: string) => {set((state) => ({ PWATradeoperation: operation }))},
 
 	
 	

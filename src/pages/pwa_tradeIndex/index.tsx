@@ -438,7 +438,7 @@ export default function PWATradeIndex() {
                                 )
                             }
                         </Stack>
-                        <MdMoreHoriz size={25} color={lightTheme.palette.text.primary} className=" align-bottom" onClick={() => { setSheetOpen(true) }} />
+                        <MdMoreHoriz size={25} color={lightTheme.palette.text.primary} className=" mt-4" onClick={() => { setSheetOpen(true) }} />
                     </Stack>
                     {
                         isFavorite ?
@@ -447,25 +447,6 @@ export default function PWATradeIndex() {
                     }
 
                 </Stack>
-                <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginTop={2}>
-                    <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"100%"} height={"fit-content"}>
-                        <Typography variant="subtitle1" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500
-                        }}>
-                            {defaultIndexObject?.symbol}
-                        </Typography>
-                        <CgArrowsExchangeAlt size={30} color={lightTheme.palette.gradientHeroBg}></CgArrowsExchangeAlt>
-                        <Typography variant="subtitle1" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 500
-                        }}>
-                            Wold{"'"}s Best Assets
-                        </Typography>
-                    </Stack>
-                    <IoMdArrowForward size={30} color={lightTheme.palette.text.primary} />
-                </Stack>
-
             </Stack>
             <PWAIndexComparisonBox></PWAIndexComparisonBox>
             <PWAIndexChartBox></PWAIndexChartBox>
@@ -537,12 +518,13 @@ export default function PWATradeIndex() {
 
             </Stack>
 
-            <Stack width={"100%"} height={"fit-content"} marginY={2} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={1} paddingY={"1rem"} paddingX={"0.8rem"} borderRadius={"1.2rem"} marginTop={"1.4rem"} sx={PWAGradientStack}>
+            <Stack width={"100%"} height={"fit-content"} marginY={2} direction={"column"} alignItems={"center"} justifyContent={"start"} paddingY={"1rem"} paddingX={"0.8rem"} borderRadius={"1.2rem"} marginTop={"1.4rem"} sx={PWAGradientStack}>
                 <Typography variant="h6" sx={{
                     color: lightTheme.palette.text.primary,
                     fontWeight: 700,
                     width: "100%",
                     textAlign: "left",
+                    marginBottom: "1rem"
                 }}>
                     Key Information
                 </Typography>
@@ -572,6 +554,7 @@ export default function PWATradeIndex() {
 
                     </Typography>
                 </Stack>
+                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}></Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
@@ -597,6 +580,7 @@ export default function PWATradeIndex() {
 
                     </Typography>
                 </Stack>
+                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}></Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
@@ -605,8 +589,16 @@ export default function PWATradeIndex() {
                         24h Change
                     </Typography>
                     <Typography variant="caption" sx={{
-                        color: "#374952",
-                        fontWeight: 500
+                        color: defaultIndexObject?.chg24h && Number(defaultIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
+                        fontWeight: 600,
+                        fontSize: ".8rem",
+                        backgroundColor: lightTheme.palette.pageBackground.main,
+                        paddingX: "0.8rem",
+                        paddingY: "0.2rem",
+                        borderRadius: "1rem",
+                        border: "solid 1px rgba(37, 37, 37, 0.5)",
+                        boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+
                     }}>
                         {
                             defaultIndexObject?.chg24h ? (
@@ -622,6 +614,7 @@ export default function PWATradeIndex() {
 
                     </Typography>
                 </Stack>
+                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}></Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
@@ -650,6 +643,7 @@ export default function PWATradeIndex() {
                     </Link>
 
                 </Stack>
+                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}></Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,

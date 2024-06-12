@@ -122,7 +122,7 @@ const PWANexIndices = () => {
                                     }
                                 </Typography>
                                 <Typography variant="caption" sx={{
-                                    color: lightTheme.palette.nexGreen.main,
+                                    color: defaultIndexObject?.chg24h && Number(defaultIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
                                     fontWeight: 600,
                                     fontSize: ".8rem",
                                     backgroundColor: lightTheme.palette.pageBackground.main,

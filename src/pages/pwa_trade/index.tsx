@@ -121,17 +121,18 @@ export default function PWATrade() {
                                     </Stack>
 
                                 </Stack>
-                                <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
                                     <Typography variant="caption" sx={{
                                         color: lightTheme.palette.text.primary,
                                         fontWeight: 600,
+                                        marginRight: "0.2rem"
                                     }}>
                                         ${
                                             FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: lightTheme.palette.nexGreen.main,
+                                        color: defaultIndexObject?.chg24h && Number(defaultIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
                                         fontWeight: 600,
                                         fontSize: ".8rem",
                                         backgroundColor: lightTheme.palette.pageBackground.main,
@@ -178,17 +179,18 @@ export default function PWATrade() {
                                     </Stack>
 
                                 </Stack>
-                                <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
                                     <Typography variant="caption" sx={{
                                         color: lightTheme.palette.text.primary,
                                         fontWeight: 600,
+                                        marginRight: "0.2rem"
                                     }}>
                                         ${
                                             FormatToViewNumber({ value: Number(othertIndexObject?.mktPrice), returnType: 'string' })
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: lightTheme.palette.nexGreen.main,
+                                        color: othertIndexObject?.chg24h && Number(othertIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
                                         fontWeight: 600,
                                         fontSize: ".8rem",
                                         backgroundColor: lightTheme.palette.pageBackground.main,
