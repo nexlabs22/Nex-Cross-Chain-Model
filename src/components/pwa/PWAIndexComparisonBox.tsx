@@ -135,33 +135,45 @@ const PWAIndexComparisonBox = () => {
 
     return (
         <>
-            <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginTop={2} marginBottom={4}>
-                <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"100%"} height={"fit-content"}>
-                    <Typography variant="caption" sx={{
+            <Stack direction={"column"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginTop={2} marginBottom={1}>
+                <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"100%"} height={"fit-content"} marginBottom={"1rem"}>
+                    <Typography variant="subtitle1" sx={{
                         color: lightTheme.palette.text.primary,
-                        fontWeight: 500,
-                        fontSize: "1.1rem"
+                        fontWeight: 600,
+                        whiteSpace: "nowrap"
                     }}>
                         {selectedIndex}
                     </Typography>
                     <CgArrowsExchangeAlt size={28} color={lightTheme.palette.gradientHeroBg}></CgArrowsExchangeAlt>
-                    <Typography variant="caption" sx={{
+                    <Typography variant="subtitle1" sx={{
                         color: lightTheme.palette.text.primary,
-                        fontWeight: 500,
-                        fontSize: "1.1rem",
+                        fontWeight: 600,
                         whiteSpace: "nowrap"
                     }}>
                         Wold{"'"}s Best Assets
                     </Typography>
                 </Stack>
-                {
+                <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"}>
+
+                    <Typography variant="caption" sx={{
+                        color: lightTheme.palette.text.primary,
+                        fontWeight: 500,
+                        fontSize: "1rem",
+                        whiteSpace: "nowrap"
+                    }}>
+                        Compared to:
+                    </Typography>
+                    {
                     selectedComparisonIndices.length == 0 ? (
                         <Link href="" onClick={(e) => { e.preventDefault(); setIsAssetsSheetOpen(true) }} className="w-full h-fit flex flex-col">
                             <Stack direction={"row"} alignItems={"center"} justifyContent={"end"} width={"100%"} height={"fit-content"} gap={0.5}>
                                 <Typography variant="caption" sx={{
                                     color: lightTheme.palette.text.primary,
+                                    fontWeight: 500,
+                                    fontSize: "1rem",
+                                    whiteSpace: "nowrap"
                                 }}>
-                                    Add assets 
+                                    Add assets
                                 </Typography>
                                 <IoChevronDown color={lightTheme.palette.text.primary} size={20} />
                             </Stack>
@@ -181,14 +193,16 @@ const PWAIndexComparisonBox = () => {
                                 </Link>
                             ) : (
                                 <Stack >
-                                    {selectedIndices.length}
+                                    {selectedComparisonIndices.length}
                                 </Stack>
                             )
                         )
                 }
+                </Stack>
+                
 
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} direction={"row"} marginTop={0.5} alignItems={"center"} justifyContent={"start"} id="PWAIndexComparisonSlider">
+            <Stack display={"none"} width={"100%"} height={"fit-content"} direction={"row"} marginTop={0.5} alignItems={"center"} justifyContent={"start"} id="PWAIndexComparisonSlider">
                 <Slider
                     dots={false}
                     infinite={false}
@@ -236,7 +250,7 @@ const PWAIndexComparisonBox = () => {
                                             backgroundColor: selectedComparisonIndices.includes(assetClass.colName) ? '#2962FF99' : '#F8F9FA',
                                             boxShadow: selectedComparisonIndices.includes(assetClass.colName) ? `0px 0px 6px 1px #2962FF` : '0px 2px 8px rgba(0, 0, 0, 0.4)',
                                         }} onClick={() => {
-                                            function change(){
+                                            function change() {
                                                 if (!selectedComparisonIndices.includes(assetClass.colName)) {
                                                     // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
                                                     setSelectedIndices((prevState) => [...prevState, assetClass.colName])
@@ -287,73 +301,82 @@ const PWAIndexComparisonBox = () => {
                 <Sheet.Container>
                     <Sheet.Header />
                     <Sheet.Content>
-                        <Stack direction={"column"} height={"100%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={1} gap={2.5}>
-                            {
-                                priorityAssetClasses.map((item, id) => {
+                        <Stack width={"100%"} height={"100%"} maxHeight={"100%"} paddingBottom={"1.6rem"} sx={{ overflowY: "scroll" }}>
+                            <Typography variant="subtitle1" align="center" sx={{ color: lightTheme.palette.text.primary }}>
+                                Top assets
+                            </Typography>
+                            <Typography variant="caption" align="center" marginBottom={"1rem"} sx={{ color: lightTheme.palette.text.primary }}>
+                                Double-click to add/remove
+                            </Typography>
+                            <Stack direction={"column"} height={"100%"} width={"100%"} alignItems={"center"} justifyContent={"start"} paddingX={2} paddingY={1} gap={2.5}>
+                                {
+                                    priorityAssetClasses.map((item, id) => {
 
-                                    if (item.index == selectedIndex) {
-                                        return item.assetClasses.map((assetClass, key) => {
-                                            return (
-                                                <Link key={key} href={""} className="w-full h-fit flex flex-row" onTouchStart={(e) => {
-                                                    e.preventDefault();
-                                                    
-                                                    function change(){
-                                                        if (!selectedComparisonIndices.includes(assetClass.colName)) {
-                                                            // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
-                                                            setSelectedIndices((prevState) => [...prevState, assetClass.colName])
-                                                            changeSelectedComparisonIndices(selectedIndices)
-                                                            //changeSelectedComparisonIndices(selectedIndices)
-                                                        } else {
-                                                            // removeIndex(assetClass.colName)
-                                                            setSelectedIndices((prevState) =>
-                                                                prevState.filter((i) => {
-                                                                    return i != assetClass.colName
-                                                                })
-                                                            )
-                                                            changeSelectedComparisonIndices(selectedIndices)
-                                                            //changeSelectedComparisonIndices(selectedIndices)
+                                        if (item.index == selectedIndex) {
+                                            return item.assetClasses.map((assetClass, key) => {
+                                                return (
+                                                    <Link key={key} href={""} className="w-full h-fit flex flex-row" onTouchStart={(e) => {
+                                                        e.preventDefault();
+
+                                                        function change() {
+                                                            if (!selectedComparisonIndices.includes(assetClass.colName)) {
+                                                                // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
+                                                                setSelectedIndices((prevState) => [...prevState, assetClass.colName])
+                                                                changeSelectedComparisonIndices(selectedIndices)
+                                                                //changeSelectedComparisonIndices(selectedIndices)
+                                                            } else {
+                                                                // removeIndex(assetClass.colName)
+                                                                setSelectedIndices((prevState) =>
+                                                                    prevState.filter((i) => {
+                                                                        return i != assetClass.colName
+                                                                    })
+                                                                )
+                                                                changeSelectedComparisonIndices(selectedIndices)
+                                                                //changeSelectedComparisonIndices(selectedIndices)
+                                                            }
+
                                                         }
-                                                        
-                                                    }
 
-                                                    change()
-                                                }}>
-                                                    <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-                                                        <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-                                                            <Stack width={35} height={35} sx={{
-                                                                borderRadius: "99999px",
-                                                                backgroundColor: "none",
-                                                                backgroundSize: "cover",
-                                                                backgroundRepeat: "no-repeat",
-                                                                backgroundImage: `url('${assetClass.logo}')`,
-                                                                border: "solid 0.5px #C7C7C7",
-                                                                boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
-                                                            }}></Stack>
-                                                            <Typography variant="subtitle1" sx={{
-                                                                color: lightTheme.palette.text.primary,
-                                                                fontWeight: 700,
-                                                                marginRight: "0.3rem"
-                                                            }}>
-                                                                {assetClass.name.toString().toUpperCase()}
-                                                            </Typography>
+                                                        change()
+                                                    }}>
+                                                        <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                                                            <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+                                                                <Stack width={35} height={35} sx={{
+                                                                    borderRadius: "99999px",
+                                                                    backgroundColor: "none",
+                                                                    backgroundSize: "cover",
+                                                                    backgroundRepeat: "no-repeat",
+                                                                    backgroundImage: `url('${assetClass.logo}')`,
+                                                                    border: "solid 0.5px #C7C7C7",
+                                                                    boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                                                }}></Stack>
+                                                                <Typography variant="subtitle1" sx={{
+                                                                    color: lightTheme.palette.text.primary,
+                                                                    fontWeight: 700,
+                                                                    marginRight: "0.3rem"
+                                                                }}>
+                                                                    {assetClass.name.toString().toUpperCase()}
+                                                                </Typography>
+                                                            </Stack>
+                                                            {
+                                                                selectedComparisonIndices.includes(assetClass.colName) ? (
+                                                                    <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} borderRadius={"9999px"} sx={{ backgroundColor: "#1C96E8" }} padding={0.5}>
+                                                                        <IoMdCheckmark size={16} color="#FFFFFF" />
+                                                                    </Stack>
+                                                                ) : ("")
+                                                            }
+
+
                                                         </Stack>
-                                                        {
-                                                            selectedComparisonIndices.includes(assetClass.colName) ? (
-                                                                <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"center"} borderRadius={"9999px"} sx={{ backgroundColor: "#1C96E8" }} padding={0.5}>
-                                                                    <IoMdCheckmark size={16} color="#FFFFFF" />
-                                                                </Stack>
-                                                            ) : ("")
-                                                        }
-
-
-                                                    </Stack>
-                                                </Link>
-                                            )
-                                        })
-                                    }
-                                })
-                            }
+                                                    </Link>
+                                                )
+                                            })
+                                        }
+                                    })
+                                }
+                            </Stack>
                         </Stack>
+
                     </Sheet.Content>
                 </Sheet.Container>
                 <Sheet.Backdrop onTap={() => { setIsAssetsSheetOpen(false) }} />
