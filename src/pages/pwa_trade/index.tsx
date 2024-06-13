@@ -16,11 +16,13 @@ import { useLandingPageStore } from "@/store/store";
 import { useRouter } from "next/router";
 import { useDashboard } from "@/providers/DashboardProvider";
 import { FormatToViewNumber, num } from '@/hooks/math'
+import { useMediaQuery } from '@mui/material';
 
 export default function PWATrade() {
 
     const { defaultIndexObject, othertIndexObject } = useDashboard()
     const {changeSelectedIndex} = useLandingPageStore()
+    const isLandscape = useMediaQuery('(orientation: landscape)');
     const Indices = [
         {
             name: "Anti Inflation Index",
@@ -37,10 +39,10 @@ export default function PWATrade() {
             change: "N/A"
         }
     ];
-    const router = useRouter();
+    const router = useRouter(); 
 
     return (
-        <Box width={"100vw"} height={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+        <Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
 
             <Stack width={"100%"} height={"fit-content"} paddingTop={2} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
@@ -57,7 +59,7 @@ export default function PWATrade() {
                     Explore Our Index Products
                 </Typography>
             </Stack>
-            <Stack width={"100%"} height={"fit-content"} marginTop={0} marginBottom={2} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
+            <Stack width={"100%"} height={"fit-content"} marginTop={isLandscape ? "-5%" : 0} marginBottom={2} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
                 <PWADynamicRibbon>
                     <Button sx={{
                         width: "100%",
@@ -80,7 +82,8 @@ export default function PWATrade() {
                     width: "50%",
                     paddingY: "0.8rem",
                     background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
-                    boxShadow: "none"
+                    boxShadow: "none",
+                    marginTop: {sm: "none", md: "6.5%"}
                 }}>
                     <Typography variant="h3" component="h3" className="w-full" sx={{
                         color: lightTheme.palette.text.primary,

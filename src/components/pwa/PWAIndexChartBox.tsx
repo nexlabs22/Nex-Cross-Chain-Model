@@ -61,10 +61,11 @@ import { GoTriangleDown } from 'react-icons/go'
 import mesh1 from '@assets/images/mesh1.png'
 import mesh2 from '@assets/images/mesh2.png'
 import { CiCircleCheck } from 'react-icons/ci'
+import { useMediaQuery } from '@mui/material';
 
 const PWAChartBox = () => {
 	const { defaultIndex, mode, selectedIndex, selectedComparisonIndices } = useLandingPageStore()
-
+	const isLandscape = useMediaQuery('(orientation: landscape)'); 
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
 	const { fetchIndexData, removeIndex, clearChartData, selectedDuration, selectDuration, loading, dayChange, STOCK5Data, CR5Data, chartData, comparisionIndices, setComparisonIndices } =
 		useChartDataStore()
@@ -207,7 +208,7 @@ const PWAChartBox = () => {
 		<>
 			<section className="h-fit w-full">
 				<div
-					className={`h-[60vh] w-full my-2 py-2 px-1 rounded-2xl `}
+					className={` ${isLandscape ? "h-[100vh]" : "h-[60vh]"} w-full my-2 py-2 px-1 rounded-2xl `}
 					style={{
 						boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(37,37,37,0.3)` : '',
 					}}

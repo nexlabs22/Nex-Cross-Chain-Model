@@ -6,13 +6,15 @@ import { IoIosArrowRoundForward, IoIosArrowRoundBack, IoMdArrowForward } from "r
 import mediaBG from "@assets/images/NEX_media_bg.webp";
 import { Stack, Box, Typography } from "@mui/material";
 import { lightTheme } from "@/theme/theme";
+import { useMediaQuery } from '@mui/material';
 
 const PWATopStories = () => {
     const { selectedSlideIndex, changeSelectedSlideIndex, theme } =
         useLandingPageStore();
+    const isLandscape = useMediaQuery('(orientation: landscape)'); 
     const articles = [
         {
-            title: "NEX Joins Chainlink BUILD", 
+            title: "NEX Joins Chainlink BUILD",
             source: "Mirror.xyz - NexLabs",
             link: "https://mirror.xyz/0xdd1ab1748180823cC8C4b0085B69723094aB2c9a/wxicrxLtCeD508d_uVg-WRgMYEJ1JV5Ndru1H_rDEjU",
             image: "https://images.mirror-media.xyz/publication-images/5XkeFZlY1Wh_BF8TTlSuh.jpeg?height=640&width=1280",
@@ -106,7 +108,7 @@ const PWATopStories = () => {
                         return (
                             <Stack
                                 key={id}
-                                height={"30vh"} width={"100%"} direction={"column"} alignItems={"start"} justifyContent={"end"} gap={1.5} borderRadius={"1.2rem"} padding={{ xs: 2, md: 4 }}
+                                height={isLandscape ? "60vh" : "30vh"} width={"100%"} direction={"column"} alignItems={"start"} justifyContent={"end"} gap={1.5} borderRadius={"1.2rem"} padding={{ xs: 2, md: 4 }}
                                 className=""
                                 sx={{
                                     backgroundImage: `url('${mediaBG.src}')`,
@@ -121,7 +123,7 @@ const PWATopStories = () => {
                             >
                                 <Typography variant="caption">{item.source}</Typography>
                                 <Link href={item.link} target="_blank">
-                                    <Typography variant="subtitle1" align="left" sx={{fontWeight: 700}}>{item.title}</Typography>
+                                    <Typography variant="subtitle1" align="left" sx={{ fontWeight: 700 }}>{item.title}</Typography>
                                 </Link>
                             </Stack>
                         );
@@ -138,7 +140,7 @@ const PWATopStories = () => {
                             <Stack
                                 key={id}
                                 onClick={() => { changeSelectedSlideIndex(id) }}
-                                className={`h-2 w-3 rounded-full md:h-4 md:w-6 ${theme.palette.mode == "dark" ? " bg-[#5E869B] " : "bg-slate-400" 
+                                className={`h-2 w-3 rounded-full md:h-4 md:w-6 ${theme.palette.mode == "dark" ? " bg-[#5E869B] " : "bg-slate-400"
                                     }`}
                             >
                                 <Stack key={id} onClick={() => { changeSelectedSlideIndex(id) }} height={{ xs: "0.5rem", md: "1rem" }} width={{ xs: "0.75rem", md: "1.5rem" }} borderRadius={"30px"} bgcolor={"slategray"}></Stack>

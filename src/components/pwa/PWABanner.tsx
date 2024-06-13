@@ -19,6 +19,7 @@ const PWABanner = ({ smallText, bigText, image, link, linkText, imgWidth, imgHei
         <Stack width={"100%"} height={"fit-content"} position={"relative"} overflow={"hidden"} marginY={3} paddingX={2} paddingY={2} borderRadius={"1.2rem"} sx={PWAGradientStack}>
             <Typography variant="caption" marginBottom={1} sx={{
                 color: lightTheme.palette.text.primary
+                
             }}>
                 {
                     smallText
@@ -45,7 +46,7 @@ const PWABanner = ({ smallText, bigText, image, link, linkText, imgWidth, imgHei
                     </Typography>
                 </Stack>
             </Link>
-            <Image alt="banner image nex" src={image} className={`absolute -bottom-12 -right-5 w-[${imgWidth}] h-[${imgHeight}] aspect-square`} width={150} height={150}></Image>
+            <Image alt="banner image nex" src={image} className={`absolute -bottom-12 md:-bottom-15 -right-5 w-[${imgWidth}] h-[${imgHeight}] aspect-square`} width={150} height={150}></Image>
         </Stack>
     )
 } 

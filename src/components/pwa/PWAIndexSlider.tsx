@@ -62,7 +62,7 @@ const PWAIndexSLider = () => {
                     autoplay={false}
                     centerMode={false}
                     arrows={false}
-                    className="relative m-0 h-full w-full p-0"
+                    className="relative m-0 h-full w-full p-0 flex flex-row"
                     responsive={[
                         {
                             breakpoint: 1024,
@@ -74,11 +74,10 @@ const PWAIndexSLider = () => {
                             },
                         },
                         {
-                            breakpoint: 600,
+                            breakpoint: 800,
                             settings: {
-                                slidesToShow: 2,
+                                slidesToShow: 3,
                                 slidesToScroll: 2,
-                                initialSlide: 2,
                             },
                         },
                         {
@@ -92,7 +91,7 @@ const PWAIndexSLider = () => {
                 >
                     {
                         defaultIndexObject ? (
-                            <Stack width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
+                            <Stack width={"50vw"} minWidth={{md: "45vw"}} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
                                 changeSelectedIndex(defaultIndexObject.name);
                                 router.push('/pwa_tradeIndex')
                             }}>
@@ -141,7 +140,7 @@ const PWAIndexSLider = () => {
                     }
                     {
                         othertIndexObject ? (
-                            <Stack width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
+                            <Stack width={"50vw"} minWidth={{md: "45vw"}} marginLeft={{sm: 1, md: "5vw"}} marginRight={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
                                 changeSelectedIndex(othertIndexObject.name);
                                 router.push('/pwa_tradeIndex')
                             }}>

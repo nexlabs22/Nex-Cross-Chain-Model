@@ -87,12 +87,12 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
               </div>
               <div className='w-fit h-fit flex flex-row items-center justify-start gap-1'>
                 <div className='w-4 aspect-square border border-slate-900 bg-[#B7D1D3] '></div>
-                <span>
+                <span className=' text-black'>
                   {
                     data[2][0]
                   }
                 </span>
-                <span>
+                <span className=' text-black'>
                   (
                   {
                     Number(data[2][1]).toFixed(2)

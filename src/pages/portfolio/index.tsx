@@ -53,13 +53,14 @@ import PWABottomNav from "@/components/pwa/PWABottomNav";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useLandingPageStore } from "@/store/store";
-
+import { useMediaQuery } from '@mui/material';
 
 
 
 export default function Portfolio() {
 	
 	const address = useAddress()
+	const isLandscape = useMediaQuery('(orientation: landscape)'); 
 	const {
 		user,
 		showPortfolioData,
@@ -540,7 +541,7 @@ export default function Portfolio() {
 					</>
 				) : (
 					<>
-						<Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingTop={4} paddingBottom={10} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+						<Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingTop={4} paddingBottom={10} paddingX={3} bgcolor={lightTheme.palette.background.default}>
 							<PWATopBar></PWATopBar>
 							<PWAProfileOverviewHeader></PWAProfileOverviewHeader>
 							<PWA3DPieChart data={pieData}></PWA3DPieChart>

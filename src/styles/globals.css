@@ -904,6 +904,28 @@ body {
   position: relative !important;
 }
 
+@media only screen and (min-width: 800px) {
+  #PWAIndexSlider .slick-track{
+    width: 100vw !important;
+    height: "fit-content" !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+  }
+
+  #PWAIndexSlider .slick-list {
+    margin: 0 0px;
+  }
+
+  #PWAIndexSlider .slick-slide:nth-child(2) {
+    margin: 0 15% !important;
+    border-radius: 15px;
+    position: relative !important;
+  }
+}
+
+
+
 .darkAutoComplete .sc-gEvEer{
   background-color: #050505 !important;
   border-color: #FFFFFF !important;
