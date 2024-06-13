@@ -1,6 +1,7 @@
-import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaSciV2Factory, sepoliaSciV2IndexToken, sepoliaUsdtAddress, sepoliaWethAddress } from "./contractAddresses";
+import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaSciV2Factory, sepoliaSciV2IndexToken, sepoliaUsdtAddress, sepoliaWethAddress, zeroAddress } from "./contractAddresses";
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
+import mag7 from '@assets/images/MAG7.jpg'
 import sciLogo from '@assets/images/sci.png'
 import { Coin } from "@/types/nexTokenData";
 
@@ -66,6 +67,17 @@ export const sepoliaTokens:Coin[] = [
         isNexlabToken:true,
         address: sepoliaCrypto5V2IndexToken,
         factoryAddress: sepoliaCrypto5V2Factory,
+        decimals: 18,
+        indexType: 'crosschain'
+    },
+    {
+        id: 4,
+        logo: mag7.src,
+        name: 'MAG7',
+        Symbol: 'MAG7',
+        isNexlabToken:true,
+        address: zeroAddress,
+        factoryAddress: zeroAddress,
         decimals: 18,
         indexType: 'crosschain'
     },

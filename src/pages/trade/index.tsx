@@ -21,6 +21,7 @@ import mesh2 from '@assets/images/mesh2.png'
 // assets :
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
+import mag7Logo from '@assets/images/MAG7.jpg'
 import cefi from '@assets/images/CeFi_1c.png'
 import defi from '@assets/images/DeFi_1a.png'
 import hybrid from '@assets/images/hybrid.png'
@@ -32,7 +33,7 @@ import bg2 from '@assets/images/bg-2.png'
 import Head from 'next/head'
 import UseAnimations from 'react-useanimations'
 import { useLandingPageStore } from '@/store/store'
-import { sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken } from '@/constants/contractAddresses'
+import { sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, zeroAddress } from '@/constants/contractAddresses'
 import { reduceAddress } from '@/utils/general'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
 import { indexTokenV2Abi } from '@/constants/abi'
@@ -125,6 +126,24 @@ export default function Explore() {
 			address: reduceAddress(sepoliaAnfiV2IndexToken),
 			totalSupply: FormatToViewNumber({value: num(totalSupplyAnfi.data), returnType:'string'}) +' '+ 'ANFI',
 			category: 'cefi',
+			subcategory: 'sub1',
+		},
+		{
+			name: 'Magnificent 7 Index',
+			symbol: 'MAG7',
+			logo: mag7Logo.src,
+			address: reduceAddress(zeroAddress),
+			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'MAG7',
+			category: 'cefi',
+			subcategory: 'sub1',
+		},
+		{
+			name: 'Magnificent 7 Index',
+			symbol: 'MAG7',
+			logo: mag7Logo.src,
+			address: reduceAddress(zeroAddress),
+			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'MAG7',
+			category: 'defi',
 			subcategory: 'sub1',
 		},
 	]
@@ -328,7 +347,7 @@ export default function Explore() {
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-2">
-													<Image src={selectedSubCategory.logo} width={30} height={30} alt={selectedSubCategory.name} className={`${selectedTradingCategory == "cefi" ? " " : ""}`}></Image>
+													<Image src={selectedSubCategory.logo} width={30} height={30} alt={selectedSubCategory.name} className={`${selectedTradingCategory == "cefi" ? " " : ""} rounded-full` }></Image>
 													<h5 className={`text-sm ${mode == "dark" ? "text-whiteBackground-500" : " text-blackText-500"} titleShadow interBold uppercase`}>{selectedSubCategory.name}</h5>
 												</div>
 												<GoChevronDown color="#F2F2F2" size={20} />
@@ -387,7 +406,7 @@ export default function Explore() {
 															alt={product.name}
 															width={30}
 															height={30}
-															className="cursor-pointer"
+															className="cursor-pointer rounded-full"
 															onClick={(e) => {
 																e.preventDefault()
 																changeDefaultIndex(product.symbol)
@@ -453,7 +472,7 @@ export default function Explore() {
 															alt={product.name}
 															width={35}
 															height={35}
-															className="cursor-pointer"
+															className="cursor-pointer rounded-full"
 															onClick={(e) => {
 																e.preventDefault()
 																changeDefaultIndex(product.symbol.toUpperCase())
