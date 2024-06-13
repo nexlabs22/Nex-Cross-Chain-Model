@@ -361,7 +361,7 @@ const PWAIndexComparisonBox = () => {
                                         if (item.index == selectedIndex) {
                                             return item.assetClasses.map((assetClass, key) => {
                                                 return (
-                                                    <Link key={key} href={""} className="w-full h-fit flex flex-row" onTouchStart={(e) => {
+                                                    <Link key={key} href={""} className="w-full h-fit flex flex-row" onClick={(e) => {
                                                         e.preventDefault();
 
                                                         function change() {
