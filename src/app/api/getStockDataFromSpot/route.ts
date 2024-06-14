@@ -4,7 +4,7 @@ import connectToSpotDb from '@/utils/connectToSpotDb';
 export async function GET() {
     const client = await connectToSpotDb()
     try {
-        const queryHistcomp = 'SELECT stampsec AS time,microsoft,apple,nvidia,alphabet,amazon FROM histcomp order by stampsec'
+        const queryHistcomp = 'SELECT stampsec AS time, msft, aapl, nvda, goog, amzn, tsla, meta FROM stocks_data order by stampsec'
         const indexDataHistcomp = await client.query(queryHistcomp)
         const inputArrayHistcomp = indexDataHistcomp.rows
         return NextResponse.json(inputArrayHistcomp, { status: 200 })
@@ -15,6 +15,5 @@ export async function GET() {
     } finally {
         await client.end()
     }
-
 
 }

@@ -68,6 +68,7 @@ export async function GET() {
 
             const CRYPTO5: OHLC[] = [];
             const ANFI: OHLC[] = [];
+            const MAG7: OHLC[] = [];
 
             inputArray.forEach(item => {
                 const time = parseInt(item.stampsec, 10);
@@ -87,6 +88,16 @@ export async function GET() {
                         high: parseFloat(item.anfi),
                         low: parseFloat(item.anfi),
                         close: parseFloat(item.anfi),
+                    });
+                }
+
+                if (item.mag7 !== null) {
+                    MAG7.push({
+                        time: time,
+                        open: parseFloat(item.mag7),
+                        high: parseFloat(item.mag7),
+                        low: parseFloat(item.mag7),
+                        close: parseFloat(item.mag7),
                     });
                 }
             });
@@ -119,6 +130,7 @@ export async function GET() {
 
             data.CRYPTO5 = CRYPTO5
             data.ANFI = ANFI
+            data.MAG7 = MAG7
 
             return NextResponse.json(data, { status: 200 })
         }

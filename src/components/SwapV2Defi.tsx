@@ -1851,7 +1851,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-3">
-													<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
+													<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1 rounded-full"></Image>
 													<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
 												</div>
 												<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-300'} inter italic`}>{item.Symbol}</h5>
@@ -1908,7 +1908,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-3">
-													<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1"></Image>
+													<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1 rounded-full"></Image>
 													<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
 												</div>
 												<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'ext-gray-300'} t inter italic`}>{item.Symbol}</h5>

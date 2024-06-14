@@ -375,7 +375,8 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 
 
 		data = data.filter(obj => Number(obj.time) >= 1548997200) // After this timestamp we have the market cap data
-		data = data.filter(obj => obj.microsoft !== null && obj.apple !== null && obj.amazon !== null && obj.nvidia !== null && obj.alphabet !== null);
+		data = data.filter(obj => obj.msft !== null && obj.aapl !== null && obj.amzn !== null && obj.nvda !== null && obj.goog !== null && obj.tsla !== null && obj.meta !== null);
+
 
 		data.forEach((list,index) => {
 			top5.forEach((top) => {
@@ -393,7 +394,7 @@ export default function getIndexData(index: string, data: dataFromDatabasetype[]
 					const sum = top5Arr.reduce((total, obj) => total + obj.marketCap, 0);
 
 					top5Arr.map((data) => {
-						const tokenName = data.token.includes('-') ? data.token.split('-').join('') : data.token
+						const tokenName = data.token.includes('-') ? data.token.split('-').join('').toLowerCase() : data.token.toLowerCase()
 						const obj: {
 							date: string
 							weight: number

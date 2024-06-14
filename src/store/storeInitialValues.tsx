@@ -5,6 +5,7 @@ export const dayChangeInitial = {
 	nyse: 0,
 	oil: 0,
 	gold: 0,
-	bitcoin: 0
+	bitcoin: 0,
+	mag7: 0
 
 }

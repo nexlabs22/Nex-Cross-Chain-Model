@@ -11,6 +11,7 @@ export default async function getChartData() {
 
             const CRYPTO5: { time: number, value: number }[] = [];
             const ANFI: { time: number, value: number }[] = [];
+            const MAG7: { time: number, value: number }[] = [];
 
             inputArray.forEach(item => {
                 const time = parseInt(item.stampsec, 10);
@@ -26,9 +27,15 @@ export default async function getChartData() {
                         value: parseFloat(item.anfi),
                     });
                 }
+                if (item.mag7 !== null) {
+                    MAG7.push({
+                        time: time,
+                        value: parseFloat(item.mag7),
+                    });
+                }
             });
 
-            return { CRYPTO5, ANFI }
+            return { CRYPTO5, ANFI, MAG7 }
 
     } catch (err) {
         console.log(err)

@@ -29,6 +29,7 @@ import dow from '@assets/images/dow.png'
 import nasdaq from '@assets/images/nasdaq.jpg'
 import nyse from '@assets/images/nyse.png'
 import stock5 from '@assets/images/STOCK5.png'
+import mag7 from '@assets/images/MAG7.jpg'
 import microsoft from '@assets/images/microsoft.png'
 import paypal from '@assets/images/paypal.png'
 import asml from '@assets/images/asml.png'
@@ -66,7 +67,7 @@ const DashboardChartBox = () => {
 	const { defaultIndex, mode } = useLandingPageStore()
 
 	const [selectedIndices, setSelectedIndices] = useState<string[]>([])
-	const { fetchIndexData, removeIndex, clearChartData, selectedDuration, selectDuration, loading, dayChange, STOCK5Data, CR5Data, chartData, comparisionIndices, setComparisonIndices } =
+	const { fetchIndexData, removeIndex, clearChartData, selectedDuration, selectDuration, loading, dayChange, STOCK5Data, MAG7Data, CR5Data, chartData, comparisionIndices, setComparisonIndices } =
 		useChartDataStore()
 	const [classesModalOpen, setClassesModalOpen] = useState(false)
 	const [classesCategory, setClassesCategory] = useState('indices')
@@ -84,16 +85,21 @@ const DashboardChartBox = () => {
 		setClassesModalOpen(false)
 	}
 
-	const [stc5DayChange, setStc5DayChange] = useState(0)
+	const [indexDayChange, setIndexDayChange] = useState<{ [key: string]: number }>({mag7:0})
 	useEffect(() => {
-		const stock5 = STOCK5Data.sort((a, b) => b.time - a.time)
-		if (stock5.length > 2) {
-			const currentPrice = stock5[0].value
-			const previousPrice = stock5[1].value
+		const mag7 = MAG7Data.sort((a, b) => b.time - a.time)
+		if (mag7.length > 2) {
+			const currentPrice = mag7[0].value
+			const previousPrice = mag7[1].value
 			const change = ((currentPrice - previousPrice) / previousPrice) * 100
-			setStc5DayChange(Number(change.toFixed(2)))
+			
+			setIndexDayChange((prev) => ({
+				...prev,
+				mag7: Number(change.toFixed(2)),
+			}))
 		}
-	}, [STOCK5Data])
+	}, [MAG7Data])
+
 
 	const PrevArrow = ({ onClick }: { onClick: () => void }) => (
 		<div
@@ -143,9 +149,9 @@ const DashboardChartBox = () => {
 			index: 'ANFI',
 			assetClasses: [
 				{
-					name: 'STOCK5',
-					colName: 'stock5',
-					logo: stock5.src,
+					name: 'MAG 7',
+					colName: 'mag7',
+					logo: mag7.src,
 				},
 				{
 					name: 'btc',
@@ -171,9 +177,9 @@ const DashboardChartBox = () => {
 			index: 'CRYPTO5',
 			assetClasses: [
 				{
-					name: 'STOCK5',
-					colName: 'stock5',
-					logo: stock5.src,
+					name: 'MAG 7',
+					colName: 'mag7',
+					logo: mag7.src,
 				},
 				{
 					name: 'GSPC',
@@ -261,13 +267,15 @@ const DashboardChartBox = () => {
 											</div>
 											<h5
 												className={`pangramCompact ${selectedIndices.includes(assetClass.colName) ? ' bg-whiteText-500 p-1 rounded-full border border-gray-400' : ''} text-sm ${
-													(assetClass.name === 'STOCK5' ? stc5DayChange : Number(dayChange[assetClass.colName])) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'
+													(indexDayChange[assetClass.colName] !== undefined ? Number(indexDayChange[assetClass.colName]) : Number(dayChange[assetClass.colName])) > 0
+														? 'text-nexLightGreen-500'
+														: 'text-nexLightRed-500'
 												}`}
 											>{`${
-												(assetClass.name === 'STOCK5' ? stc5DayChange : Number(dayChange[assetClass.colName])) > 0
-													? '+' + (assetClass.name === 'STOCK5' ? stc5DayChange : dayChange[assetClass.colName])
-													: assetClass.name === 'STOCK5'
-													? stc5DayChange
+												(indexDayChange[assetClass.colName] !== undefined ? Number(indexDayChange[assetClass.colName]) : Number(dayChange[assetClass.colName])) > 0
+													? '+' + (indexDayChange[assetClass.colName]!== undefined ? Number(indexDayChange[assetClass.colName]) : dayChange[assetClass.colName])
+													: indexDayChange[assetClass.colName]!== undefined
+													? Number(indexDayChange[assetClass.colName])
 													: dayChange[assetClass.colName]
 											}`}</h5>
 										</div>
