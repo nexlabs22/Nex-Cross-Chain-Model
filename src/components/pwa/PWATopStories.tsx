@@ -7,7 +7,7 @@ import mediaBG from "@assets/images/NEX_media_bg.webp";
 import { Stack, Box, Typography } from "@mui/material";
 import { lightTheme } from "@/theme/theme";
 import { useMediaQuery } from '@mui/material';
-
+ 
 const PWATopStories = () => {
     const { selectedSlideIndex, changeSelectedSlideIndex, theme } =
         useLandingPageStore();

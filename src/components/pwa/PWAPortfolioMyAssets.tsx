@@ -10,14 +10,16 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useLandingPageStore } from "@/store/store";
 import { FormatToViewNumber } from "@/hooks/math";
+import { useMediaQuery } from '@mui/material';
 
 export default function PWAPortfolioMyAssets() {
     const { nexTokenAssetData } = usePortfolio()
     const router = useRouter()
     const { changeSelectedIndex } = useLandingPageStore()
+    const isLandscape = useMediaQuery('(orientation: landscape)'); 
 
     return (
-        <Stack width={"100%"} height={"fit-content"} marginTop={12}>
+        <Stack width={"100%"} height={"fit-content"} marginTop={isLandscape ? "100vh" : 12}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1}>
                 <Typography variant="body1" sx={{
                     color: lightTheme.palette.text.primary,
@@ -67,7 +69,7 @@ export default function PWAPortfolioMyAssets() {
                     {
                         nexTokenAssetData.map((asset) => {
                             return (
-                                <Stack key={asset.symbol} width={"50vw"} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
+                                <Stack key={asset.symbol} width={"50vw"} minWidth={{md: "46vw"}} marginX={1} height={"fit-content"} paddingY={2} paddingX={1.5} borderRadius={"1rem"} sx={PWAGradientStack} onClick={() => {
                                     changeSelectedIndex(asset.shortName);
                                     router.push('/pwa_tradeIndex')
                                 }}>

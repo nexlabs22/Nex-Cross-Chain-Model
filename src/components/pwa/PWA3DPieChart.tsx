@@ -3,6 +3,7 @@ import { usePortfolio } from "@/providers/PortfolioProvider";
 import { Stack, Typography } from "@mui/material";
 import { lightTheme } from "@/theme/theme";
 import New3DPieChart from '@/components/new3DPieChart'
+import { useMediaQuery } from '@mui/material';
 
 interface PieChart3DProps {
 	data: (string | number)[][]
@@ -10,6 +11,7 @@ interface PieChart3DProps {
 
 const PWA3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 	const { pieData } = usePortfolio()
+	const isLandscape = useMediaQuery('(orientation: landscape)'); 
 	return (
 		<Stack id="PWAPNLChartBox" width={"100%"} height={"fit-content"} marginTop={0} direction={"column"} alignItems={"center"} justifyContent={"start"}>
 			<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1} paddingY={2}>
@@ -23,7 +25,7 @@ const PWA3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 
 
 			</Stack>
-			<Stack width={"100vw"} height={"25vh"} borderRadius={"1.2rem"} direction={"row"} alignItems={"center"} justifyContent={"center"} >
+			<Stack width={"100vw"} height={"25vh"} marginTop={isLandscape ? 6 : 0} borderRadius={"1.2rem"} direction={"row"} alignItems={"center"} justifyContent={"center"} >
 				{/*chartType == 'Pie Chart' ? <New3DPieChart data={pieData} /> : <TreemapChart percentage={indexPercent} />*/}
 				<New3DPieChart data={pieData} />
 			</Stack>

@@ -38,10 +38,12 @@ import Link from 'next/link'
 import Sheet from 'react-modal-sheet'
 import { usePWA } from '@/providers/PWAProvider'
 import { useDeFiSwap } from '@/providers/DefiSwapProvider'
+import { useMediaQuery } from '@mui/material';
 
 const SwapV2Defi = () => {
 
 	const { isStandalone } = usePWA()
+	const isLandscape = useMediaQuery('(orientation: landscape)');
 	const {
 		isFromCurrencyModalOpen,
 		isToCurrencyModalOpen,
@@ -286,8 +288,8 @@ const SwapV2Defi = () => {
 								className="w-fit h-fit flex flex-row items-center justify-center relative z-50"
 							>
 								<Stack
-									height={'12vw'}
-									width={'12vw'}
+									height={isLandscape ? '6vw' :'12vw'}
+									width={isLandscape ? '6vw' :'12vw'}
 									borderRadius={'9999px'}
 									sx={{
 										marginTop: '-2rem',
@@ -388,8 +390,8 @@ const SwapV2Defi = () => {
 								className="w-fit h-fit flex flex-row items-center justify-center"
 							>
 								<Stack
-									height={'12vw'}
-									width={'12vw'}
+									height={isLandscape ? '6vw' :'12vw'}
+									width={isLandscape ? '6vw' :'12vw'}
 									borderRadius={'9999px'}
 									sx={{
 										marginTop: '-2rem',

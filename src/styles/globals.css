@@ -904,6 +904,15 @@ body {
   position: relative !important;
 }
 
+.MuiBottomNavigation-root{
+  transition: opacity 250ms ease-in-out, height 250ms ease-in-out !important;
+}
+
+.MuiBottomNavigation-root.hiddenBottomNav{
+  opacity: 0 !important;
+  height: 0px !important;
+}
+
 @media only screen and (min-width: 800px) {
   #PWAIndexSlider .slick-track{
     width: 100vw !important;

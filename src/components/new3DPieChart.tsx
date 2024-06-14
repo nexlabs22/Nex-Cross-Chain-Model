@@ -3,6 +3,7 @@ import { Chart } from 'react-google-charts'
 import { usePWA } from '@/providers/PWAProvider';
 import { useEffect } from 'react';
 import { FormatToViewNumber } from '@/hooks/math';
+import { useMediaQuery } from '@mui/material';
 
 
 interface PieChart3DProps {
@@ -13,6 +14,7 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 
   const { isStandalone } = usePWA()
   const { setIndexSelectedInPie } = usePortfolioPageStore();
+  const isLandscape = useMediaQuery('(orientation: landscape)'); 
 
   const handleSliceClick = (slice: any) => {
     const index = slice.value[slice.row + 1][0]
@@ -34,7 +36,9 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
   }
   return (
     <div className='w-full h-fit flex flex-col relative'>
-      <div className="w-full h-fit min-h-[400px] p-0 flx xl:-mt-16 xl:-mb-16 flex-row items-center justify-center" id="3DPieChartBox">
+      <div className="w-full h-fit min-h-[400px] p-0 flex xl:-mt-16 xl:-mb-16 flex-row items-center justify-center" id="3DPieChartBox" style={{
+        marginTop: isLandscape ? "60vh" : "auto"
+      }}>
         <Chart
           chartType="PieChart"
           className="flex flex-row items-center justify-center p-0 h-fit"
@@ -67,7 +71,7 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
       {
         isStandalone ? (
           <>
-            <div className='w-full h-10 absolute bottom-[27%] z-50 flex flex-row items-center justify-center gap-4'>
+            <div className={`w-full h-10 absolute ${isLandscape ? "bottom-[8%]" : "bottom-[27%]"} z-50 flex flex-row items-center justify-center gap-4`}>
               <div className='w-fit h-fit flex flex-row items-center justify-start gap-1'>
                 <div className='w-4 aspect-square border border-slate-900 bg-[#91AC9A] '></div>
                 <span className=' text-black'>

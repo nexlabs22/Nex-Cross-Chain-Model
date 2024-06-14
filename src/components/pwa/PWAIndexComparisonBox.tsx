@@ -162,7 +162,7 @@ const PWAIndexComparisonBox = () => {
                         fontSize: "1rem",
                         whiteSpace: "nowrap"
                     }}>
-                        Compared to:
+                        Featured Comparison Assets:
                     </Typography>
                     {
                         selectedComparisonIndices.length == 0 ? (
@@ -248,96 +248,7 @@ const PWAIndexComparisonBox = () => {
 
 
             </Stack>
-            <Stack display={"none"} width={"100%"} height={"fit-content"} direction={"row"} marginTop={0.5} alignItems={"center"} justifyContent={"start"} id="PWAIndexComparisonSlider">
-                <Slider
-                    dots={false}
-                    infinite={false}
-                    speed={500}
-                    slidesToShow={4}
-                    slidesToScroll={4}
-                    autoplay={false}
-                    centerMode={false}
-                    arrows={false}
-                    className="relative m-0 h-full w-full p-0"
-                    responsive={[
-                        {
-                            breakpoint: 1024,
-                            settings: {
-                                slidesToShow: 3,
-                                slidesToScroll: 3,
-                                infinite: true,
-                                dots: true,
-                            },
-                        },
-                        {
-                            breakpoint: 600,
-                            settings: {
-                                slidesToShow: 2,
-                                slidesToScroll: 2,
-                                initialSlide: 2,
-                            },
-                        },
-                        {
-                            breakpoint: 480,
-                            settings: {
-                                slidesToShow: 3,
-                                slidesToScroll: 3,
-                            },
-                        },
-                    ]}
-                >
-                    {
-                        priorityAssetClasses.map((item, id) => {
-
-                            if (item.index == selectedIndex) {
-                                return item.assetClasses.map((assetClass, key) => {
-                                    return (
-                                        <Stack key={key} width={"30vw"} height={"100%"} direction={"row"} paddingY={0.8} paddingX={0.6} alignItems={"center"} justifyContent={"space-between"} sx={{
-                                            backgroundColor: selectedComparisonIndices.includes(assetClass.colName) ? '#2962FF99' : '#F8F9FA',
-                                            boxShadow: selectedComparisonIndices.includes(assetClass.colName) ? `0px 0px 6px 1px #2962FF` : '0px 2px 8px rgba(0, 0, 0, 0.4)',
-                                        }} onClick={() => {
-                                            function change() {
-                                                if (!selectedComparisonIndices.includes(assetClass.colName)) {
-                                                    // fetchIndexData({ tableName: 'histcomp', index: assetClass.colName })
-                                                    setSelectedIndices((prevState) => [...prevState, assetClass.colName])
-                                                    changeSelectedComparisonIndices(selectedIndices)
-                                                    changeSelectedComparisonIndices(selectedIndices)
-                                                } else {
-                                                    // removeIndex(assetClass.colName)
-                                                    setSelectedIndices((prevState) =>
-                                                        prevState.filter((i) => {
-                                                            return i != assetClass.colName
-                                                        })
-                                                    )
-                                                    changeSelectedComparisonIndices(selectedIndices)
-                                                    changeSelectedComparisonIndices(selectedIndices)
-                                                }
-                                            }
-
-                                            change();
-                                        }}>
-                                            <Stack width={"3rem"} sx={{
-                                                aspectRatio: "1",
-                                                backgroundPosition: "center",
-                                                backgroundRepeat: "no-repeat",
-                                                backgroundSize: "cover",
-                                                backgroundImage: `url('${assetClass.logo}')`
-                                            }}></Stack>
-                                            <Typography variant="caption" sx={{
-                                                color: selectedComparisonIndices.includes(assetClass.colName) ? '#FFFFFF' : '#000000',
-                                                fontWeight: 700,
-                                                marginRight: "0.3rem"
-                                            }}>
-                                                {assetClass.name.toString().toUpperCase()}
-                                            </Typography>
-                                        </Stack>
-                                    )
-                                })
-                            }
-                        })
-                    }
-                </Slider>
-            </Stack>
+            
             <Sheet
                 isOpen={isAssetsSheetOpen}
                 onClose={() => setIsAssetsSheetOpen(false)}
