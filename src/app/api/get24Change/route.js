@@ -3,6 +3,7 @@ import { getPreviousWeekday } from '@/utils/general'
 import yahooFinance from 'yahoo-finance2'
 import { NextResponse } from 'next/server'
 import axios from 'axios'
+import { dayChangeInitial } from '@/store/storeInitialValues'
 
 export async function GET() {
 	const symbols = ['^GSPC', '^IXIC', '^DJI', '^NYA', 'GC=F', 'CL=F']
@@ -74,15 +75,7 @@ export async function GET() {
 		return NextResponse.json(
 			{
 				message: `Error fetching historical prices: ${err}`,
-				changes: {
-					sandp: 0,
-					dow: 0,
-					nasdaq: 0,
-					nyse: 0,
-					oil: 0,
-					gold: 0,
-					bitcoin: 0,
-				},
+				changes: dayChangeInitial,
 			},
 			{ status: 400 }
 		)

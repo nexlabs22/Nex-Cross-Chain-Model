@@ -19,6 +19,7 @@ import dow from '@assets/images/dow.png'
 import nasdaq from '@assets/images/nasdaq.jpg'
 import nyse from '@assets/images/nyse.png'
 import stock5 from '@assets/images/STOCK5.png'
+import mag7 from '@assets/images/MAG7.jpg'
 import microsoft from '@assets/images/microsoft.png'
 import paypal from '@assets/images/paypal.png'
 import asml from '@assets/images/asml.png'
@@ -79,10 +80,10 @@ const PWAIndexComparisonBox = () => {
                     selectionColor: comparisonIndices.find((index) => index.columnName === 'oil')?.selectionColor,
                 },
                 {
-                    name: 'STK5',
-                    colName: 'stock5',
-                    logo: stock5.src,
-                },
+					name: 'MAG7',
+					colName: 'mag7',
+					logo: mag7.src,
+				},
             ],
         },
         {
@@ -114,10 +115,10 @@ const PWAIndexComparisonBox = () => {
                     selectionColor: comparisonIndices.find((index) => index.columnName === 'nyse')?.selectionColor,
                 },
                 {
-                    name: 'STK5',
-                    colName: 'stock5',
-                    logo: stock5.src,
-                },
+					name: 'MAG7',
+					colName: 'mag7',
+					logo: mag7.src,
+				},
             ],
         },
     ]

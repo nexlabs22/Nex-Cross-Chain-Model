@@ -30,7 +30,7 @@ function combineMarketCapData(data: MarketCapData[][]): { timestamp: string; top
     // Assuming each symbol has the same number of data points
     for (let i = 0; i < data[0].length; i++) {
         const timestamp = data[0][i].date;
-        const top5 = data.map((symbolData, index) => `${symbolToColName[symbolData[i].symbol]}:${symbolData[i].marketCap}`).join(',');
+        const top5 = data.map((symbolData, index) => `${symbolData[i].symbol}:${symbolData[i].marketCap}`).join(',');
         combinedData.push({ timestamp, top5 });
     }
 
@@ -55,7 +55,7 @@ function filterFirstEntryOfEachMonth(data:CombinedMarketCapData[]) {
 export async function GET() {
 
     try{
-        const symbols = ['AAPL', 'AMZN', 'GOOG', 'NVDA', 'MSFT'];
+        const symbols = ['AAPL', 'AMZN', 'GOOG', 'NVDA', 'MSFT','TSLA','META'];
         const marketCapData = await fetchMarketCapData(symbols);
         const combinedData = combineMarketCapData(marketCapData);
         const filteredData = filterFirstEntryOfEachMonth(combinedData)

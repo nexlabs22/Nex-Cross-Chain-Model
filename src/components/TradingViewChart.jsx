@@ -47,7 +47,7 @@ const colNameToSymbol = {
 	copper: 'COPPER',
 	silver: 'SILVER',
 	bitcoin: 'BTC',
-	stock5: 'STOCK5',
+	mag7: 'MAG7',
 }
 
 const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
@@ -125,7 +125,7 @@ const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
 
 	useEffect(() => {
 		if (wid && wid.setSymbol && location === '/tradeIndex') {
-			const allowedSymbols = ['ANFI', 'CRYPTO5']
+			const allowedSymbols = ['ANFI', 'CRYPTO5','MAG7']
 			const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
 			wid.setSymbol(`Nexlabs:${activeTicker[0]}/USD`, 'D')
 		}

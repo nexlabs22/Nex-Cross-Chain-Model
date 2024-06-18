@@ -29,6 +29,7 @@ import dow from '@assets/images/dow.png'
 import nasdaq from '@assets/images/nasdaq.jpg'
 import nyse from '@assets/images/nyse.png'
 import stock5 from '@assets/images/STOCK5.png'
+import mag7 from '@assets/images/MAG7.jpg'
 import microsoft from '@assets/images/microsoft.png'
 import paypal from '@assets/images/paypal.png'
 import asml from '@assets/images/asml.png'
@@ -85,16 +86,6 @@ const PWAChartBox = () => {
 		setClassesModalOpen(false)
 	}
 
-	const [stc5DayChange, setStc5DayChange] = useState(0)
-	useEffect(() => {
-		const stock5 = STOCK5Data.sort((a, b) => b.time - a.time)
-		if (stock5.length > 2) {
-			const currentPrice = stock5[0].value
-			const previousPrice = stock5[1].value
-			const change = ((currentPrice - previousPrice) / previousPrice) * 100
-			setStc5DayChange(Number(change.toFixed(2)))
-		}
-	}, [STOCK5Data])
 
 	const PrevArrow = ({ onClick }: { onClick: () => void }) => (
 		<div
@@ -144,9 +135,9 @@ const PWAChartBox = () => {
 			index: 'ANFI',
 			assetClasses: [
 				{
-					name: 'STOCK5',
-					colName: 'stock5',
-					logo: stock5.src,
+					name: 'MAG7',
+					colName: 'mag7',
+					logo: mag7.src,
 				},
 				{
 					name: 'btc',
@@ -172,9 +163,9 @@ const PWAChartBox = () => {
 			index: 'CRYPTO5',
 			assetClasses: [
 				{
-					name: 'STOCK5',
-					colName: 'stock5',
-					logo: stock5.src,
+					name: 'MAG7',
+					colName: 'mag7',
+					logo: mag7.src,
 				},
 				{
 					name: 'GSPC',

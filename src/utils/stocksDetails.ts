@@ -1,7 +1,8 @@
 export const stockDetails = {
     'ANFI': ['anfi', 'Anti Inflation Index'],
     'CRYPTO5': ['crypto5', 'Crypto 5'],
-    'STOCK5': ['stock5', 'Stock5'],
+    // 'STOCK5': ['stock5', 'Stock5'],
+    'MAG7': ['mag7', 'Magnificient 7'],
     'V': ['visa', 'Visa'],
     'GSPC': ['sandp', 'S&P 500'],
     'DJI': ['dow', 'Dow Jones Industrial Average'],

@@ -82,6 +82,7 @@ interface chartDataStoreType {
 	ANFIData: { time: number, value: number }[],
 	CR5Data: { time: number, value: number }[],
 	STOCK5Data: { time: number, value: number }[],
+	MAG7Data: { time: number, value: number }[],
 	selectedIndex: { time: number, open: number, high: number, low: number, close: number }[],
 	ANFIWeightage: { time: number, btc: number, gold: number }[],
 	dayChange: dayChangeType,
@@ -105,6 +106,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	ANFIData: [],
 	CR5Data: [],
 	STOCK5Data: [],
+	MAG7Data: [],
 	selectedIndex: [],
 	ANFIWeightage: [],
 	dayChange: dayChangeInitial,
@@ -127,13 +129,15 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 				if (index === 'OurIndex') {
 					const anfiIndexPrices = indexData.ANFI;
 					const cr5IndexPrices = indexData.CRYPTO5;
+					const mag7IndexPrices = indexData.MAG7;
 					// const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
 					// const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
-					const stock5Prices = getIndexData('STOCK5', inputData.data, top5stockmarketcap)
+					// const stock5Prices = getIndexData('STOCK5', inputData.data, top5stockmarketcap)
 					return {
 						ANFIData: anfiIndexPrices,
 						CR5Data: cr5IndexPrices,
-						STOCK5Data: stock5Prices,
+						MAG7Data:mag7IndexPrices,
+						// STOCK5Data: stock5Prices,
 						loading: false
 					}
 				} else {
