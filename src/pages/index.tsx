@@ -19,6 +19,7 @@ import { Stack, Box, Typography, Button } from "@mui/material";
 import { MainStack } from '@/theme/overrides'
 import PWASplashScreen from '@/components/pwa/PWASplashScreen'
 import { lightTheme } from '@/theme/theme'
+
 import { useRouter } from 'next/router';
 import { usePWA } from '@/providers/PWAProvider'
 
@@ -47,7 +48,7 @@ const Dashboard: NextPage = (props) => {
 				) : (
 					<>
 
-						<Box margin={0} height={"100vh"} width={"100vw"} padding={0} sx={MainStack} display={{ xs: "none", lg: "block" }}>
+						<Box margin={0} height={"100vh"} bgcolor={theme.palette.pageBackground.main} width={"100vw"} padding={0} sx={MainStack} display={{ xs: "none", lg: "block" }}>
 							<DappNavbar />
 							<TopIndexData />
 							<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10 md:pb-2 xl:pb-10">

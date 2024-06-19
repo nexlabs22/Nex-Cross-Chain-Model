@@ -36,9 +36,7 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
   }
   return (
     <div className='w-full h-fit flex flex-col relative'>
-      <div className="w-full h-fit min-h-[400px] p-0 flex xl:-mt-16 xl:-mb-16 flex-row items-center justify-center" id="3DPieChartBox" style={{
-        marginTop: isLandscape ? "60vh" : "auto"
-      }}>
+      <div className={`w-full h-fit min-h-[400px] p-0 flex xl:-mb-16 flex-row items-center justify-center ${isLandscape ? "mt-[60vh]" : "mt-auto xl:-mt-16"}`} id="3DPieChartBox">
         <Chart
           chartType="PieChart"
           className="flex flex-row items-center justify-center p-0 h-fit"

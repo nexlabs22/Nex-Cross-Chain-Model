@@ -12,6 +12,11 @@ import { reduceAddress } from '@/utils/general'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { usePWA } from '@/providers/PWAProvider'
 import { useDashboard } from '@/providers/DashboardProvider'
+import "react-responsive-carousel/lib/styles/carousel.min.css"
+import { Carousel } from 'react-responsive-carousel'
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 // Store
 import { useLandingPageStore } from '@/store/store'
@@ -19,184 +24,306 @@ import { useLandingPageStore } from '@/store/store'
 
 // Logos and icons :
 
-import { BsInfoCircle } from 'react-icons/bs'
+import { BsChevronCompactLeft, BsChevronCompactRight, BsInfoCircle } from 'react-icons/bs'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { CiGlobe, CiStreamOn } from 'react-icons/ci'
 import { CgArrowsExchange } from 'react-icons/cg'
 import managment from '@assets/images/managment.png'
 import mesh1 from '@assets/images/mesh1.png'
 import { GoArrowRight } from 'react-icons/go'
+import mag7 from '@assets/images/mag7.png'
+import React from 'react'
+import { CustomArrowProps } from "react-slick";
+import { Stack, Box } from "@mui/material";
+
+const CustomNextArrow: React.FC<CustomArrowProps> = ({
+	onClick,
+	className,
+}) => {
+	return (
+		<Stack className="glassy" position={"absolute"} right={"1.25rem"} top={"45%"} zIndex={20} width={"fit-content"} borderRadius={"9999px"} border={"none"} padding={1} sx={{
+			aspectRatio: "1",
+			cursor: "pointer"
+		}}
+			onClick={onClick}
+		>
+			<BsChevronCompactRight color="#FFFFFF" size={25} />
+		</Stack>
+	);
+};
+
+const CustomPrevArrow: React.FC<CustomArrowProps> = ({
+	onClick,
+	className,
+}) => {
+	return (
+		<Stack className="glassy" position={"absolute"} left={"1.25rem"} top={"45%"} zIndex={20} width={"fit-content"} borderRadius={"9999px"} border={"none"} padding={1} sx={{
+			aspectRatio: "1",
+			cursor: "pointer"
+		}}
+			onClick={onClick}
+		>
+			<BsChevronCompactLeft color="#FFFFFF" size={25} />
+		</Stack>
+	);
+};
 
 const TopIndexData = () => {
 
-	
-	const { 
-		defaultIndexObject, 
+
+	const {
+		defaultIndexObject,
 		othertIndexObject,
 		CR5UnderLyingAssets,
 		ANFIUnderLyingAssets,
 	} = useDashboard();
-	const {isStandalone} = usePWA()
+	const { isStandalone } = usePWA()
 	const { mode } = useLandingPageStore()
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
-	
+	const sliderRef = React.useRef<Slider | null>(null);
+
 	return (
 		<>
 			{
 				isStandalone ? (
 					<>
-					
+
 					</>
 				) : (
 					<>
 						<section className="px-2 h-fit lg:px-10 py-6 xl:pt-16">
-							<div className="flex h-fit xl:h-fit flex-row items-stretch justify-between gap-1 xl:gap-4 mb-6">
-								<div
-									className={`w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50'
-										} `}
-									style={{
-										boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-										backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-									}}
+							<div className="w-full overflow-x-hidden flex h-fit xl:h-fit flex-row items-stretch justify-between gap-1 xl:gap-4 mb-2" id="TopDataSectionCarousel">
+								<Slider
+									prevArrow={
+										<CustomPrevArrow
+											className="glassy"
+											onClick={() => sliderRef.current?.slickPrev()}
+										/>
+									}
+									nextArrow={
+										<CustomNextArrow
+											className="glassy"
+											onClick={() => sliderRef.current?.slickNext()}
+										/>
+									}
+									dots={false}
+									infinite={false}
+									speed={500}
+									slidesToShow={1}
+									autoplay={false}
+									arrows
+									className="relative m-0 h-full w-full p-0"
+									ref={sliderRef}
+									
 								>
-									<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
-										<div className="flex flex-row items-center justify-start">
-											<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-											<h5 className={`interBlack mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.name}</h5>
+									<div
+										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50'
+											} `}
+										style={{
+											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : `url('${mesh1.src}')`,
+											backgroundColor: mode == 'dark' ? `green` : '',
+										}}
+									>
+										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
+											<div className="flex flex-row items-center justify-start">
+												<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
+												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.name}</h5>
+											</div>
 										</div>
-									</div>
-									<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-										{defaultIndexObject?.symbol == 'ANFI' ? (
-											<div className="flex flex-row items-center justify-start">
-												{[...ANFIUnderLyingAssets]
-													.sort((a, b) => b.percentage - a.percentage)
-													.map((asset, i) => {
-														const zindex = i * 10
-														return (
-															<div
-																key={i}
-																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																	}  p-[4px] `}
-																style={{
-																	zIndex: `'${zindex}'`,
-																	marginLeft: '-2%',
-																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																}}
-															>
-																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-															</div>
-														)
-													})}
-											</div>
-										) : (
-											<div className="flex flex-row items-center justify-start">
-												{[...CR5UnderLyingAssets]
-													.sort((a, b) => b.percentage - a.percentage)
-													.map((asset, i) => {
-														const zindex = i * 10
-														return (
-															<div
-																key={i}
-																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																	}  p-[4px] `}
-																style={{
-																	zIndex: `'${zindex}'`,
-																	marginLeft: '-2%',
-																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																}}
-															>
-																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-															</div>
-														)
-													})}
-											</div>
-										)}
-									</div>
-									<div className={`hidden xl:block w-full h-[1px] ${mode == 'dark' ? 'bg-gray-300' : 'bg-blackText-500'}  my-4`}></div>
-									<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.description}</h5>
-								</div>
-								<div
-									className={`w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
-										} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
-									onClick={() => {
-										if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
-											changeDefaultIndex('ANFI')
-										} else {
-											changeDefaultIndex('CRYPTO5')
-										}
-									}}
-								>
-									<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
-										<div className="flex flex-row items-center justify-start">
-											<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-											<h5 className={`interBlack mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.name} </h5>
+										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
+											{defaultIndexObject?.symbol == 'ANFI' ? (
+												<div className="flex flex-row items-center justify-start">
+													{[...ANFIUnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											) : (
+												<div className="flex flex-row items-center justify-start">
+													{[...CR5UnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											)}
 										</div>
-										<div
-											className={`hidden xl:flex flex-row items-center justify-center gap-1 ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
-												} active:translate-y-[1px] active:shadow-black  py-2 px-4 rounded-full`}
-											style={{
-												boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-												backgroundSize: mode == 'dark' ? '120%' : '',
-											}}
-										>
-											<h5 className="text-sm interMedium text-whiteText-500">See {othertIndexObject?.name}</h5>
+										<div className={`hidden xl:block w-full h-[1px] ${mode == 'dark' ? 'bg-gray-300' : 'bg-blackText-500'}  my-4`}></div>
+										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.description}</h5>
+									</div>
+									<div
+										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
+											} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
+										onClick={() => {
+											if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
+												changeDefaultIndex('ANFI')
+											} else {
+												changeDefaultIndex('CRYPTO5')
+											}
+										}}
+									>
+										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
+											<div className="flex flex-row items-center justify-start">
+												<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
+												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.name} </h5>
+											</div>
+											
 										</div>
+										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
+											{othertIndexObject?.symbol == 'ANFI' ? (
+												<div className="flex flex-row items-center justify-start">
+													{[...ANFIUnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											) : (
+												<div className="flex flex-row items-center justify-start">
+													{[...CR5UnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											)}
+										</div>
+										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
+										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.description}</h5>
 									</div>
-									<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-										{othertIndexObject?.symbol == 'ANFI' ? (
+									<div
+										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
+											} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
+										onClick={() => {
+											
+										}}
+									>
+										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 											<div className="flex flex-row items-center justify-start">
-												{[...ANFIUnderLyingAssets]
-													.sort((a, b) => b.percentage - a.percentage)
-													.map((asset, i) => {
-														const zindex = i * 10
-														return (
-															<div
-																key={i}
-																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																	}  p-[4px] `}
-																style={{
-																	zIndex: `'${zindex}'`,
-																	marginLeft: '-2%',
-																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																}}
-															>
-																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-															</div>
-														)
-													})}
+												<Image src={mag7} alt="" height={35} width={35} className="mr-2"></Image>
+												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>MAG7</h5>
 											</div>
-										) : (
-											<div className="flex flex-row items-center justify-start">
-												{[...CR5UnderLyingAssets]
-													.sort((a, b) => b.percentage - a.percentage)
-													.map((asset, i) => {
-														const zindex = i * 10
-														return (
-															<div
-																key={i}
-																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																	}  p-[4px] `}
-																style={{
-																	zIndex: `'${zindex}'`,
-																	marginLeft: '-2%',
-																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																}}
-															>
-																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-															</div>
-														)
-													})}
-											</div>
-										)}
+											
+										</div>
+										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
+											{othertIndexObject?.symbol == 'ANFI' ? (
+												<div className="flex flex-row items-center justify-start">
+													{[...ANFIUnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											) : (
+												<div className="flex flex-row items-center justify-start">
+													{[...CR5UnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											)}
+										</div>
+										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
+										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
+										Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+										</h5>
 									</div>
-									<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
-									<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.description}</h5>
-								</div>
+								</Slider>
+
+
 							</div>
 							<div className="flex w-full flex-row items-center justify-center">
 								<div className={`h-[1px] w-full ${mode == 'dark' ? ' bg-whiteBackground-500/80' : 'bg-blackText-500/20'} `}></div>

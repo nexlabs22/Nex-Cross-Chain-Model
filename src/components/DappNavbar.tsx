@@ -26,6 +26,7 @@ import xlogo from '@assets/images/xlogo_s.png'
 import { Menu, SubMenu, Item } from 'burger-menu'
 import 'burger-menu/lib/index.css'
 import { useConnectionStatus, useAddress, useChainId } from '@thirdweb-dev/react'
+import {lightTheme, darkTheme} from '@theme/theme'
 
 // Firebase :
 import { getDatabase, ref, onValue, set, update, push, child } from 'firebase/database'
@@ -61,11 +62,18 @@ interface DappNavbarProps {
 } 
 
 const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) => {
-	const { mode, changeMode, setSearchModal, isSearchModalOpen } = useLandingPageStore()
+	const { mode, changeMode, setSearchModal, isSearchModalOpen, theme, setTheme } = useLandingPageStore()
 
 	function toggleMode() {
-		if (mode == 'dark') changeMode('light')
-		if (mode == 'light') changeMode('dark')
+		if (mode == 'dark') {
+			changeMode('light')
+			setTheme(lightTheme)
+		}
+		else if (mode == 'light'){
+			changeMode('dark')
+			setTheme(darkTheme)
+		}
+
 	}
 
 	const { globalConnectedUser, setGlobalConnectedUser } = usePortfolioPageStore()

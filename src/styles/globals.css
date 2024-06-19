@@ -501,6 +501,15 @@ body {
   background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
+.glassy {
+  border: 1px solid rgba(255, 255, 255, 0.01) !important;
+
+  background: rgba(255, 255, 255, 0.41) !important;
+
+
+  box-shadow: 0px 3px 5px 0px rgba(94, 134, 155, 0.80) !important;
+  backdrop-filter: blur(11.199999809265137px) !important;
+}
 /*
 .MuiScopedCssBaseline-root{
   border: 1px solid rgba(255, 255, 255, 0.01) !important;
@@ -911,6 +920,32 @@ body {
 .MuiBottomNavigation-root.hiddenBottomNav{
   opacity: 0 !important;
   height: 0px !important;
+}
+
+
+
+#TopDataSectionCarousel .slick-arrow::before{
+  display: none !important;
+}
+
+#TopDataSectionCarousel .slick-list{
+  height: 47vh !important;
+}
+
+#TopDataSectionCarousel .slick-slide{
+  width: 50vw !important;
+  margin-right: .8rem !important;
+  height: 47vh !important;
+}
+
+#TopDataSectionCarousel .slick-track{
+  max-width: fit-content !important;
+  width: fit-content !important;
+  display: flex !important;
+}
+
+#TopDataSectionCarousel > div > div.slick-list > div > div.slick-slide > div{
+  height: 45.5vh !important;
 }
 
 @media only screen and (min-width: 800px) {

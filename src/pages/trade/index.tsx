@@ -21,7 +21,7 @@ import mesh2 from '@assets/images/mesh2.png'
 // assets :
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
-import mag7Logo from '@assets/images/MAG7.jpg'
+import mag7Logo from '@assets/images/mag7.png'
 import cefi from '@assets/images/CeFi_1c.png'
 import defi from '@assets/images/DeFi_1a.png'
 import hybrid from '@assets/images/hybrid.png'
