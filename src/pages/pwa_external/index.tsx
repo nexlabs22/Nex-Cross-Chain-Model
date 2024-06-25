@@ -42,7 +42,7 @@ export default function PWAExternal() {
             <PWATopBar></PWATopBar>
             <PWAExternalMenu></PWAExternalMenu>
             <PWABanner smallText="Welcome NEX User" bigText="Unlock passive investing with our index products" link="/pwa_trade" linkText="Trade Now" image={logo.src}></PWABanner>
-
+            <Stack width={"100%"} height="4rem"></Stack>
             <PWABottomNav></PWABottomNav>
         </Box>
     )

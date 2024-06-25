@@ -1,7 +1,7 @@
 import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaSciV2Factory, sepoliaSciV2IndexToken, sepoliaUsdtAddress, sepoliaWethAddress, zeroAddress } from "./contractAddresses";
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
-import mag7 from '@assets/images/MAG7.jpg'
+import mag7 from '@assets/images/mag7.png'
 import sciLogo from '@assets/images/sci.png'
 import { Coin } from "@/types/nexTokenData";
 

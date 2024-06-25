@@ -57,14 +57,14 @@ const useLandingPageStore = create<LandingPageStore>()((set) => ({
 	defaultIndex: 'CRYPTO5',
 	changeDefaultIndex: (index: string) => set((state) => ({ defaultIndex: index })),
 
-	selectedIndex: 'CRYPTO5',
+	selectedIndex: 'CR5',
 	changeSelectedIndex: (index: string) => set((state) => ({ selectedIndex: index })),
 
 	selectedComparisonIndices: [],
-	changeSelectedComparisonIndices: (selected: string[]) => set((state) => ({ selectedComparisonIndices: selected })),
+	changeSelectedComparisonIndices: (selected: string[]) => {set((state)=>({selectedComparisonIndices: []})); set((state) => ({ selectedComparisonIndices: selected }))},
 
 	PWATradeoperation: '',
-	changePWATradeoperation: (operation: string) => set((state) => ({ PWATradeoperation: operation })),
+	changePWATradeoperation: (operation: string) => {set((state) => ({ PWATradeoperation: operation }))},
 
 	
 	

@@ -4,8 +4,6 @@
 
 // basics :
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
-
 // icons :
 import { BiSolidChevronDown } from 'react-icons/bi'
 import { AiOutlineSwap } from 'react-icons/ai'
@@ -20,41 +18,17 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
 // Assets:
 import mesh1 from '@assets/images/mesh1.png'
-import { UseContractResult, toWei, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
 import {
-	sepoliaCrypto5V2IndexToken,
-	sepoliaCrypto5V2Factory,
-	sepoliaUsdtAddress,
 	sepoliaWethAddress,
-	sepoliaAnfiV2IndexToken,
-	sepoliaAnfiV2Factory,
-	sepoliaTokenFaucet,
 } from '@/constants/contractAddresses'
-import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi, tokenFaucetAbi, uniswapV3PoolContractAbi } from '@/constants/abi'
-import { toast } from 'react-toastify'
 import PaymentModal from './PaymentModal'
-import { ThirdwebSDK } from '@thirdweb-dev/sdk'
-
-import { BigNumber } from 'alchemy-sdk'
-
 import { BsInfoCircle } from 'react-icons/bs'
-
-import { GenericToast } from './GenericToast'
-import { createPublicClient, http, parseEther } from 'viem'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
-import { ethers } from 'ethers'
 import { LiaWalletSolid } from 'react-icons/lia'
 import Switch from 'react-switch'
 import GenericTooltip from './GenericTooltip'
-import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
-import { sepolia } from 'viem/chains'
-import { GetDefiPortfolioBalance } from '@/hooks/getDefiPortfolioBalance'
-import { getNewCrossChainPortfolioBalance } from '@/hooks/getNewCrossChainPortfolioBalance'
-import { useRouter } from 'next/router'
 import { GoArrowUpRight } from 'react-icons/go'
-import { sepoliaTokens } from '@/constants/testnetTokens'
-import { Coin } from '@/types/nexTokenData'
-import convertToUSD from '@/utils/convertToUsd'
+
 
 import { IOSSwitch, PWAProfileTextField } from '@/theme/overrides'
 import { IoIosArrowBack } from 'react-icons/io'
@@ -62,76 +36,14 @@ import { Stack, Container, Box, Paper, Typography, Button, BottomNavigation, Bot
 import { lightTheme } from '@/theme/theme'
 import Link from 'next/link'
 import Sheet from 'react-modal-sheet'
+import { usePWA } from '@/providers/PWAProvider'
+import { useDeFiSwap } from '@/providers/DefiSwapProvider'
+import { useMediaQuery } from '@mui/material';
 
-const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean }) => {
-	const [isStandalone, setIsStandalone] = useState(initialStandalone)
-	const [os, setOs] = useState<String>('')
-	const [browser, setBrowser] = useState<String>('')
+const SwapV2Defi = () => {
 
-	function detectMobileBrowserOS() {
-		const userAgent = navigator.userAgent
-
-		let browser: string | undefined
-		let os: string | undefined
-
-		browser = ''
-		os = ''
-		// Check for popular mobile browsers
-		if (/CriOS/i.test(userAgent)) {
-			browser = 'Chrome'
-		} else if (/FxiOS/i.test(userAgent)) {
-			browser = 'Firefox'
-		} else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) {
-			browser = 'Safari'
-		}
-
-		// Check for common mobile operating systems
-		if (/iP(ad|hone|od)/i.test(userAgent)) {
-			os = 'iOS'
-		} else if (/Android/i.test(userAgent)) {
-			os = 'Android'
-		}
-
-		setOs(os.toString())
-		setBrowser(browser.toString())
-	}
-
-	useEffect(() => {
-		detectMobileBrowserOS()
-	}, [])
-
-	useEffect(() => {
-		// Client-side detection using window.matchMedia (optional)
-		if (typeof window !== 'undefined') {
-			const mediaQuery = window.matchMedia('(display-mode: standalone)')
-			const handleChange = (event: MediaQueryListEvent) => setIsStandalone(event.matches)
-			mediaQuery.addEventListener('change', handleChange)
-			setIsStandalone(mediaQuery.matches) // Set initial client-side state
-			//alert(mediaQuery.matches)
-			return () => mediaQuery.removeEventListener('change', handleChange)
-		}
-	}, [])
-
-	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
-	const [isChecked, setChecked] = useState(false)
-
-	const [firstInputValue, setFirstInputValue] = useState('0')
-	const [secondInputValue, setSecondInputValue] = useState('0')
-
-	const [cookingModalVisible, setCookingModalVisible] = useState(false)
-	const [userEthBalance, setUserEthBalance] = useState(0)
-
-	const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
-	const [fromConvertedPrice, setFromConvertedPrice] = useState(0)
-
-	const [to1UsdPrice, setTo1UsdPrice] = useState(0)
-	const [toConvertedPrice, setToConvertedPrice] = useState(0)
-
-	const [coinsList, setCoinsList] = useState<Coin[]>([])
-	const [loadingTokens, setLoadingTokens] = useState(true)
-	const [currentArrayId, setCurrentArrayId] = useState(0)
-	const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([[], []])
-
+	const { isStandalone } = usePWA()
+	const isLandscape = useMediaQuery('(orientation: landscape)');
 	const {
 		isFromCurrencyModalOpen,
 		isToCurrencyModalOpen,
@@ -151,722 +63,71 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 		isMainnet,
 		setIsmainnet,
 	} = useTradePageStore()
-
-	const address = useAddress()
-	const signer = useSigner()
-	const router = useRouter()
-	const query = router.query
-
-	useEffect(() => {
-		const selectedCoin = query.index || 'ANFI'
-		const coinDetails = sepoliaTokens.filter((coin: Coin) => {
-			return coin.Symbol === selectedCoin
-		})
-		changeSwapToCur(coinDetails[0])
-	}, [])
-
-	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
-	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
-	const faucetContract: UseContractResult = useContract(sepoliaTokenFaucet, tokenFaucetAbi)
-
-	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
-	const toTokenContract = useContract(swapToCur.address, tokenAbi)
-
-	const fromTokenBalance = useContractRead(fromTokenContract.contract, 'balanceOf', [address])
-	const toTokenBalance = useContractRead(toTokenContract.contract, 'balanceOf', [address])
-	const fromTokenTotalSupply = useContractRead(fromTokenContract.contract, 'totalSupply', [])
-	const toTokenTotalSupply = useContractRead(toTokenContract.contract, 'totalSupply', [])
-	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
-	const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
-
-	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
-	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
-	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
-	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
-	const faucetHook = useContractWrite(faucetContract.contract, 'getToken')
-
-	const curr = swapFromCur.factoryAddress ? swapFromCur : swapToCur
-	const IndexContract: UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
-	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data / 10000
-
-	const { mode } = useLandingPageStore()
-
-	const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
-	const defiPortfolioValue = GetDefiPortfolioBalance()
-
-	// useEffect(() => {
-	// 	async function getIssuanceOutput() {
-	// 		try {
-	// 			if (swapToCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
-	// 				// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
-	// 				const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
-	// 				const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
-	// 				const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
-
-	// 				setSecondInputValue(num(output).toString())
-	// 			}
-	// 		} catch (error) {
-	// 			// console.log('getIssuanceOutput error:', error)
-	// 		}
-	// 	}
-	// 	// getIssuanceOutput()
-	// }, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
-
-	useEffect(() => {
-		async function getIssuanceOutput2() {
-			try {
-				if (swapToCur.hasOwnProperty('indexType')  && convertedInputValue) {
-					const currentPortfolioValue = swapToCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
-					const currentTotalSupply = Number(toTokenTotalSupply.data)
-					let inputValue
-					if (swapFromCur.address == sepoliaWethAddress) {
-						inputValue = Number(firstInputValue) * 1e18
-					} else {
-						const sepoliaPublicClient = createPublicClient({
-							chain: sepolia,
-							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-						})
-						const inputEthValue = await sepoliaPublicClient.readContract({
-							address: sepoliaCrypto5V2Factory,
-							abi: crossChainIndexFactoryV2Abi,
-							functionName: 'getAmountOut',
-							args: [swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3],
-						})
-						inputValue = Number(inputEthValue)
-					}
-					let newPortfolioValue: number = 0
-					if (swapToCur.indexType === 'crosschain') {
-						newPortfolioValue = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
-					} else {
-						newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
-					}
-					const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
-					const amountToMint = newTotalSupply - currentTotalSupply
-					setSecondInputValue(num(amountToMint).toString())
-				}
-			} catch (error) {
-				console.log('getIssuanceOutput error:', error)
-			}
-		}
-		getIssuanceOutput2()
-	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
-
-	// useEffect(() => {
-	// 	async function getRedemptionOutput() {
-	// 		try {
-	// 			if (swapFromCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
-	// 				const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
-	// 				const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
-	// 				const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
-	// 				setSecondInputValue(num(output).toString())
-	// 			}
-	// 		} catch (error) {
-	// 			console.log('getRedemptionOutput error:', error)
-	// 		}
-	// 	}
-	// 	// getRedemptionOutput()
-	// }, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
-
-	useEffect(() => {
-		async function getRedemptionOutput2() {
-			try {
-				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {
-					let outputValue
-					const currentPortfolioValue = swapFromCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
-					const currentTotalSupply = Number(fromTokenTotalSupply.data)
-					const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
-					const newPortfolioValue = (Number(currentPortfolioValue) * newTotalSupply) / currentTotalSupply
-					const ethAmountOut = (Number(currentPortfolioValue) - newPortfolioValue) * 0.999
-					if (swapToCur.address == sepoliaWethAddress) {
-						outputValue = ethAmountOut
-					} else {
-						const sepoliaPublicClient = createPublicClient({
-							chain: sepolia,
-							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-						})
-						const outPutTokenValue = await sepoliaPublicClient.readContract({
-							address: sepoliaCrypto5V2Factory,
-							abi: crossChainIndexFactoryV2Abi,
-							functionName: 'getAmountOut',
-							args: [sepoliaWethAddress, swapToCur.address, ethAmountOut.toFixed(0), 3],
-						})
-						outputValue = Number(outPutTokenValue)
-					}
-					setSecondInputValue(num(outputValue).toString())
-				}
-			} catch (error) {
-				console.log('getRedemptionOutput error:', error)
-			}
-		}
-		getRedemptionOutput2()
-	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
-
-	async function fetchData(tokenDetails: Coin, place: string) {
-		try {
-			const price = await convertToUSD({ tokenAddress: tokenDetails.address, tokenDecimals: tokenDetails.decimals }, ethPriceInUsd, isMainnet)
-			return price as number
-		} catch (err) {
-			console.error(`Error fetching ${place} price:`, err)
-			throw err // Rethrow the error for consistent error handling
-		}
-	}
-
-	async function fetchTokenPrices() {
-		try {
-			const [fromPrice, toPrice] = await Promise.all([
-				swapFromCur.Symbol !== 'WETH' && swapFromCur.Symbol !== 'ETH' ? fetchData(swapFromCur, 'From') : ethPriceInUsd,
-				swapToCur.Symbol !== 'WETH' && swapToCur.Symbol !== 'ETH' ? fetchData(swapToCur, 'To') : ethPriceInUsd,
-			])
-
-			setFrom1UsdPrice(fromPrice)
-			setTo1UsdPrice(toPrice)
-		} catch (error) {
-			// Handle errors if needed
-			console.error('Error fetching token prices:', error)
-		}
-	}
-
-	// Call fetchTokenPrices when needed
-	useEffect(() => {
-		fetchTokenPrices()
-	}, [swapFromCur, swapToCur, ethPriceInUsd, isMainnet])
-
-	useEffect(() => {
-		if (approveHook.isSuccess) {
-			fromTokenAllowance.refetch()
-			approveHook.reset()
-		}
-	}, [approveHook.isSuccess, approveHook, fromTokenAllowance])
-
-	useEffect(() => {
-		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess || mintRequestEthHook.isSuccess || mintRequestEthHook.isSuccess) {
-			fromTokenBalance.refetch()
-			toTokenBalance.refetch()
-			fromTokenAllowance.refetch()
-			mintRequestHook.reset()
-			mintRequestEthHook.reset()
-			burnRequestHook.reset()
-			setTradeTableReload(true)
-		}
-	}, [
-		mintRequestHook.isSuccess,
-		mintRequestEthHook.isSuccess,
-		burnRequestHook.isSuccess,
+	const { selectedIndex, mode } = useLandingPageStore()
+	const {
+		isPaymentModalOpen,
+		isChecked,
+		firstInputValue,
+		secondInputValue,
+		cookingModalVisible,
+		userEthBalance,
+		from1UsdPrice,
+		fromConvertedPrice,
+		to1UsdPrice,
+		toConvertedPrice,
+		coinsList,
+		loadingTokens,
+		currentArrayId,
+		mergedCoinList,
+		mintFactoryContract,
+		burnFactoryContract,
+		faucetContract,
+		fromTokenContract,
+		toTokenContract,
+		fromTokenBalance,
+		toTokenBalance,
+		fromTokenTotalSupply,
+		toTokenTotalSupply,
+		fromTokenAllowance,
+		convertedInputValue,
+		approveHook,
 		mintRequestHook,
 		mintRequestEthHook,
 		burnRequestHook,
-		fromTokenBalance,
-		toTokenBalance,
-		fromTokenAllowance,
-		setTradeTableReload,
-		swapToCur,
 		faucetHook,
-	])
+		curr,
+		IndexContract,
+		feeRate,
+		setFirstInputValue,
+		setSecondInputValue,
+		setCookingModalVisible,
+		toggleCheckbox,
+		toggleMainnetCheckbox,
+		openPaymentModal,
+		closePaymentModal,
+		openFromCurrencyModal,
+		closeFromCurrencyModal,
+		openToCurrencyModal,
+		closeToCurrencyModal,
+		openFromCurrencySheet,
+		closeFromCurrencySheet,
+		openToCurrencySheet,
+		closeToCurrencySheet,
+		fetchAllLiFiTokens,
+		Switching,
+		formatResult,
+		changeFirstInputValue,
+		changeSecondInputValue,
+		getPrimaryBalance,
+		getSecondaryBalance,
+		approve,
+		mintRequest,
+		mintRequestTokens,
+		mintRequestEth,
+		burnRequest,
+		faucet
+	} = useDeFiSwap()
 
-	useEffect(() => {
-		if (faucetHook.isLoading) {
-			toast.dismiss()
-			GenericToast({
-				type: 'loading',
-				message: 'Receiving usdt...',
-			})
-		} else if (faucetHook.isSuccess) {
-			toast.dismiss()
-			GenericToast({
-				type: 'success',
-				message: 'You received 1000 usdt Successfully!',
-			})
-		} else if (faucetHook.isError) {
-			toast.dismiss()
-			GenericToast({
-				type: 'error',
-				message: `Receiving Failed!`,
-			})
-		}
-	}, [faucetHook.isLoading, faucetHook.isSuccess, faucetHook.isError])
-
-	useEffect(() => {
-		if (approveHook.isLoading) {
-			toast.dismiss()
-			GenericToast({
-				type: 'loading',
-				message: 'Approving...',
-			})
-		} else if (approveHook.isSuccess) {
-			toast.dismiss()
-			GenericToast({
-				type: 'success',
-				message: 'Approved Successfully!',
-			})
-		} else if (approveHook.isError) {
-			toast.dismiss()
-			GenericToast({
-				type: 'error',
-				message: `Approving Failed!`,
-			})
-		}
-	}, [approveHook.isLoading, approveHook.isSuccess, approveHook.isError])
-
-	useEffect(() => {
-		if (mintRequestHook.isLoading || mintRequestEthHook.isLoading) {
-			toast.dismiss()
-			GenericToast({
-				type: 'loading',
-				message: 'Sending Request ...',
-			})
-		} else if (mintRequestHook.isSuccess || mintRequestEthHook.isSuccess) {
-			toast.dismiss()
-			GenericToast({
-				type: 'success',
-				message: 'Sent Request Successfully!',
-			})
-		} else if (mintRequestHook.isError || mintRequestEthHook.isError) {
-			toast.dismiss()
-			console.log(mintRequestHook.error)
-			GenericToast({
-				type: 'error',
-				message: `Sending Request Failed!`,
-			})
-		}
-	}, [mintRequestHook.isLoading, mintRequestEthHook.isLoading, mintRequestHook.isSuccess, mintRequestEthHook.isSuccess, mintRequestHook.isError, mintRequestEthHook.isError])
-
-	useEffect(() => {
-		if (burnRequestHook.isLoading) {
-			toast.dismiss()
-
-			GenericToast({
-				type: 'loading',
-				message: 'Sending Request ...',
-			})
-		} else if (burnRequestHook.isSuccess) {
-			toast.dismiss()
-			GenericToast({
-				type: 'success',
-				message: 'Sent Request Successfully!',
-			})
-		} else if (burnRequestHook.isError) {
-			toast.dismiss()
-			GenericToast({
-				type: 'error',
-				message: 'Sending Request Failed!',
-			})
-		}
-	}, [burnRequestHook.isLoading, burnRequestHook.isSuccess, burnRequestHook.isError])
-
-	const toggleCheckbox = () => {
-		setChecked(!isChecked)
-	}
-
-	const toggleMainnetCheckbox = () => {
-		setIsmainnet(!isMainnet)
-	}
-
-	const openPaymentModal = () => {
-		setPaymentModalOpen(true)
-	}
-
-	const closePaymentModal = () => {
-		setPaymentModalOpen(false)
-	}
-
-	const openFromCurrencyModal = () => {
-		setFromCurrencyModalOpen(true)
-	}
-
-	const closeFromCurrencyModal = () => {
-		setFromCurrencyModalOpen(false)
-	}
-
-	const openToCurrencyModal = () => {
-		setToCurrencyModalOpen(true)
-	}
-
-	const closeToCurrencyModal = () => {
-		setToCurrencyModalOpen(false)
-	}
-
-	const openFromCurrencySheet = () => {
-		setFromCurrencySheetOpen(true)
-	}
-
-	const closeFromCurrencySheet = () => {
-		setFromCurrencySheetOpen(false)
-	}
-
-	const openToCurrencySheet = () => {
-		setToCurrencySheetOpen(true)
-	}
-
-	const closeToCurrencySheet = () => {
-		setToCurrencySheetOpen(false)
-	}
-
-	const fetchAllLiFiTokens = async () => {
-		const options = {
-			method: 'GET',
-			headers: { accept: 'application/json' },
-		}
-
-		try {
-			const response = await fetch(`https://li.quest/v1/tokens`, options)
-			const data = await response.json()
-
-			const tokenSets = data.tokens
-			const coins: Coin[] = Object.keys(tokenSets).flatMap((key) => {
-				const tokenSet = tokenSets[key]
-				return tokenSet.map((coin: { address: any; logoURI: any; name: any; symbol: any; decimals: any }) => ({
-					id: coin.address,
-					logo: coin.logoURI && coin.logoURI != '' ? coin.logoURI : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU',
-					name: coin.name,
-					Symbol: coin.symbol,
-					address: coin.address,
-					factoryAddress: '',
-					decimals: coin.decimals,
-				}))
-			})
-
-			return coins
-		} catch (error) {
-			console.error(error)
-			return [] // Ensure a value is returned even in case of an error
-		}
-	}
-
-	function chunkArray<T>(array: T[], chunkSize: number): T[][] {
-		const chunks: T[][] = []
-		for (let i = 0; i < array.length; i += chunkSize) {
-			chunks.push(array.slice(i, i + chunkSize))
-		}
-		return chunks
-	}
-
-	useEffect(() => {
-		const fetchData = async () => {
-			const initialCoins = await fetchAllLiFiTokens()
-			const dividedArrays = chunkArray(initialCoins, 100)
-			// setAllCoinsList(dividedArrays)
-			setCoinsList(dividedArrays[currentArrayId])
-			setLoadingTokens(false)
-		}
-
-		fetchData()
-	}, [currentArrayId])
-
-	// function Switch() {
-	// 	let switchReserve: Coin = swapFromCur
-	// 	changeSwapFromCur(swapToCur)
-	// 	changeSwapToCur(switchReserve)
-	// }
-
-	// const finalCoinList = isMainnet ? coinsList : testnetCoinsList[0]
-	// const OurIndexCoinList: Coin[] = finalCoinList.filter(coin => OurIndexCoins.includes(coin.Symbol));
-	// const OtherCoinList: Coin[] = finalCoinList.filter(coin => !OurIndexCoins.includes(coin.Symbol));
-	// const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([OurIndexCoinList, OtherCoinList])
-
-	useEffect(() => {
-		const finalCoinList = isMainnet ? coinsList : (sepoliaTokens as Coin[])
-		const OurIndexCoinList: Coin[] = finalCoinList.filter((coin) => coin.isNexlabToken)
-		const OtherCoinList: Coin[] = finalCoinList.filter((coin) => !coin.isNexlabToken)
-		setMergedCoinList([OtherCoinList, OurIndexCoinList])
-	}, [isMainnet])
-
-	function Switching() {
-		let switchReserve: Coin = swapFromCur
-		changeSwapFromCur(swapToCur)
-		changeSwapToCur(switchReserve)
-
-		if (switchReserve.isNexlabToken) {
-			if (mergedCoinList[0].some((obj) => obj.isNexlabToken)) {
-				const newArray = [mergedCoinList[1], mergedCoinList[0]]
-				setMergedCoinList(newArray)
-			} else {
-				const newArray = [mergedCoinList[0], mergedCoinList[1]]
-				setMergedCoinList(newArray)
-			}
-		} else {
-			if (mergedCoinList[0].some((obj) => obj.isNexlabToken)) {
-				const newArray = [mergedCoinList[0], mergedCoinList[1]]
-				setMergedCoinList(newArray)
-			} else {
-				const newArray = [mergedCoinList[1], mergedCoinList[0]]
-				setMergedCoinList(newArray)
-			}
-		}
-
-		setSecondInputValue(firstInputValue)
-	}
-
-	const formatResult = (item: Coin) => {
-		return (
-			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1" key={item.id}>
-				<div className="flex flex-row items-center justify-start gap-2">
-					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150"></Image>
-					<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
-				</div>
-				<h5 className="text-base text-gray-300 montrealBoldItalic">{item.Symbol}</h5>
-			</div>
-		)
-	}
-
-	const changeFirstInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const enteredValue = e?.target?.value
-		if (Number(enteredValue) != 0 && Number(enteredValue) < 0.00001) {
-			GenericToast({
-				type: 'error',
-				message: 'Please enter the input value greater than this value...',
-			})
-			return
-		}
-		setFirstInputValue(e?.target?.value)
-	}
-
-	useEffect(() => {
-		const fromNewPrice = Number(firstInputValue) * Number(from1UsdPrice)
-		setFromConvertedPrice(fromNewPrice)
-	}, [from1UsdPrice, firstInputValue, secondInputValue, to1UsdPrice])
-
-	useEffect(() => {
-		const toNewPrice = Number(secondInputValue) * Number(to1UsdPrice)
-		setToConvertedPrice(toNewPrice)
-	}, [secondInputValue, to1UsdPrice])
-
-	useEffect(() => {
-		const convertedAmout = (Number(from1UsdPrice) / Number(to1UsdPrice)) * Number(firstInputValue)
-		if (isMainnet) {
-			setSecondInputValue(convertedAmout.toString())
-		}
-	}, [from1UsdPrice, to1UsdPrice, firstInputValue, isMainnet])
-
-	const changeSecondInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSecondInputValue(e?.target?.value)
-	}
-
-	function getPrimaryBalance() {
-		if (swapFromCur.address == sepoliaWethAddress) {
-			// return (Number(userEthBalance) / 1e18).toFixed(2)
-			if (!userEthBalance) {
-				return 0
-			} else
-				return FormatToViewNumber({
-					// value: Number((userEthBalance))/1e18,
-					value: Number(ethers.utils.formatEther(userEthBalance.toString())) as number,
-					returnType: 'string',
-				})
-		} else {
-			if (!fromTokenBalance.data) {
-				return 0
-			} else {
-				const bal = FormatToViewNumber({
-					value: Number(ethers.utils.formatEther(fromTokenBalance.data)) as number,
-					returnType: 'string',
-				}).toString()
-				const balWithoutComma = bal.includes(',') ? bal.split(',').join('') : bal
-				return balWithoutComma
-			}
-		}
-	}
-
-	function getSecondaryBalance() {
-		if (swapToCur.address == sepoliaWethAddress) {
-			// return (Number(userEthBalance) / 1e18).toFixed(2)
-			if (!userEthBalance) {
-				return 0
-			} else
-				return FormatToViewNumber({
-					// value: Number((userEthBalance))/1e18,
-					value: parseFloat(ethers.utils.formatEther(userEthBalance.toString())) as number,
-					returnType: 'string',
-				})
-		} else {
-			// return (Number(toTokenBalance.data) / 1e18).toFixed(2)
-			if (!toTokenBalance.data) {
-				return 0
-			} else
-				return FormatToViewNumber({
-					// value: Number((userEthBalance))/1e18,
-					value: parseFloat(ethers.utils.formatEther(toTokenBalance.data)) as number,
-					returnType: 'string',
-				})
-		}
-	}
-
-	useEffect(() => {
-		const getEtherBalance = async () => {
-			if (address && signer) {
-				const balance = await signer?.provider?.getBalance(address as string)
-				const convertedBalance = ethers.utils.formatEther(balance as BigNumber)
-				// console.log('Balance converted', convertedBalance)
-				setUserEthBalance(Number(balance))
-			}
-		}
-		getEtherBalance()
-	}, [signer, address])
-
-	async function approve() {
-		const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
-		// const convertedValue = BigNumber.from(3*1001/1000)
-		try {
-			if (isChecked) {
-				openPaymentModal()
-			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
-					return GenericToast({
-						type: 'error',
-						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
-					})
-				} else if (Number(firstInputValue) <= 0) {
-					return GenericToast({
-						type: 'error',
-						message: `Please enter amount you want to approve`,
-					})
-				}
-				await approveHook.mutateAsync({ args: [swapToCur.factoryAddress, convertedValue] })
-			}
-		} catch (error) {
-			console.log('approve error', error)
-		}
-	}
-
-	async function mintRequest() {
-		if (swapFromCur.address == sepoliaWethAddress) {
-			mintRequestEth()
-		} else {
-			mintRequestTokens()
-		}
-	}
-
-	async function mintRequestTokens() {
-		try {
-			if (isChecked) {
-				openPaymentModal()
-			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
-					return GenericToast({
-						type: 'error',
-						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
-					})
-				} else if (Number(firstInputValue) <= 0) {
-					return GenericToast({
-						type: 'error',
-						message: `Please enter amount you want to mint`,
-					})
-				}
-				if (swapToCur.indexType === 'defi') {
-					await mintRequestHook.mutateAsync({
-						// args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
-						args: [swapFromCur.address, parseEther(Number(firstInputValue).toString()), '3'],
-						overrides: {
-							gasLimit: 2000000,
-						},
-					})
-				} else {
-					await mintRequestHook.mutateAsync({
-						// args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '0', '3'],
-						args: [swapFromCur.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
-						overrides: {
-							gasLimit: 3000000,
-						},
-					})
-				}
-			}
-		} catch (error) {
-			console.log('mint error', error)
-		}
-	}
-
-	async function mintRequestEth() {
-		try {
-			const firstConvertedValue = parseEther(Number(firstInputValue).toString() as string)
-			const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000).toString() as string)
-			if (isChecked) {
-				openPaymentModal()
-			} else {
-				if (num(userEthBalance) < Number(firstInputValue)) {
-					return GenericToast({
-						type: 'error',
-						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
-					})
-				} else if (Number(firstInputValue) <= 0) {
-					return GenericToast({
-						type: 'error',
-						message: `Please enter amount you want to mint`,
-					})
-				}
-				if (swapToCur.indexType === 'defi') {
-					await mintRequestEthHook.mutateAsync({
-						// args: [(Number(firstInputValue) * 1e18).toString()],
-						args: [parseEther(Number(firstInputValue).toString())],
-						overrides: {
-							gasLimit: 2000000,
-							value: convertedValue,
-						},
-					})
-				} else {
-					await mintRequestEthHook.mutateAsync({
-						// args: [(Number(firstInputValue) * 1e18).toString(), '0'],
-						args: [parseEther(Number(firstInputValue).toString()), '0'],
-						overrides: {
-							gasLimit: 3000000,
-							value: convertedValue,
-						},
-					})
-				}
-			}
-		} catch (error) {
-			console.log('mint error', error)
-		}
-	}
-
-	async function burnRequest() {
-		try {
-			if (isChecked) {
-				openPaymentModal()
-			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
-					return GenericToast({
-						type: 'error',
-						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
-					})
-				} else if (Number(firstInputValue) <= 0) {
-					console.log("testing")
-					return GenericToast({
-						type: 'error',
-						message: `Please enter amount you want to burn`,
-					})
-				}
-				if (swapFromCur.indexType === 'defi') {
-					await burnRequestHook.mutateAsync({
-						// args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
-						args: [parseEther(Number(firstInputValue).toString()), swapToCur.address, '3'],
-						overrides: {
-							gasLimit: 2000000,
-						},
-					})
-				} else {
-					await burnRequestHook.mutateAsync({
-						// args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
-						args: [parseEther(Number(firstInputValue).toString()), '0', swapToCur.address, '3'],
-						overrides: {
-							gasLimit: 3000000,
-						},
-					})
-				}
-			}
-		} catch (error) {
-			console.log('burn error', error)
-		}
-	}
-
-	async function faucet() {
-		if (address) {
-			try {
-				await faucetHook.mutateAsync({ args: [sepoliaUsdtAddress] })
-			} catch (error) {
-				console.log('faucet error', error)
-			}
-		}
-	}
 
 	const isButtonDisabled = isMainnet || (!swapFromCur.isNexlabToken && !swapToCur.isNexlabToken) ? true : false
 
@@ -879,6 +140,8 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 						width={'100vw'}
 						height={'fit-content'}
 						minHeight={'100vh'}
+						minWidth={'100vw'}
+						
 						display={'flex'}
 						flexDirection={'column'}
 						alignItems={'center'}
@@ -886,6 +149,9 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 						paddingBottom={4}
 						paddingX={2}
 						bgcolor={lightTheme.palette.background.default}
+						sx={{
+							overflowX: "hidden"
+						}}
 					>
 						<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
 							<Stack width={'fit-content'} height={'fit-content'} paddingTop={4} direction={'row'} alignItems={'center'} justifyContent={'start'} gap={8}>
@@ -901,18 +167,18 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 											whiteSpace: 'nowrap',
 										}}
 									>
-										Trading ANFI
+										Trading {selectedIndex}
 									</Typography>
 								</Link>
 							</Stack>
 						</Stack>
 						<Stack width={'100%'} height={'fit-content'} direction="row" alignItems={'center'} justifyContent={'space-between'} paddingTop={4} paddingBottom={3}>
 							<Typography
-								variant="caption"
+								variant="subtitle1"
 								sx={{
-									color: lightTheme.palette.text.primary,
-									fontWeight: 500,
-									fontSize: '0.8rem',
+									color: "#484848",
+									fontWeight: 600,
+
 								}}
 							>
 								You Pay
@@ -929,9 +195,9 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 										color: lightTheme.palette.text.primary,
 										fontWeight: 600,
 										backgroundColor: lightTheme.palette.pageBackground.main,
-										paddingX: '1.2rem',
-										paddingY: '0.4rem',
-										borderRadius: '1rem',
+										paddingX: '0.8rem',
+										paddingY: '0.2rem',
+										borderRadius: '0.6rem',
 										border: 'solid 1px rgba(37, 37, 37, 0.5)',
 										boxShadow: '0px 1px 1px 1px rgba(37, 37, 37, 0.3)',
 									}}
@@ -947,9 +213,9 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 										color: lightTheme.palette.text.primary,
 										fontWeight: 600,
 										backgroundColor: lightTheme.palette.pageBackground.main,
-										paddingX: '1.2rem',
-										paddingY: '0.4rem',
-										borderRadius: '1rem',
+										paddingX: '0.8rem',
+										paddingY: '0.2rem',
+										borderRadius: '0.6rem',
 										border: 'solid 1px rgba(37, 37, 37, 0.5)',
 										boxShadow: '0px 1px 1px 1px rgba(37, 37, 37, 0.3)',
 									}}
@@ -965,9 +231,9 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 										color: lightTheme.palette.text.primary,
 										fontWeight: 600,
 										backgroundColor: lightTheme.palette.pageBackground.main,
-										paddingX: '1.2rem',
-										paddingY: '0.4rem',
-										borderRadius: '1rem',
+										paddingX: '0.8rem',
+										paddingY: '0.2rem',
+										borderRadius: '0.6rem',
 										border: 'solid 1px rgba(37, 37, 37, 0.5)',
 										boxShadow: '0px 1px 1px 1px rgba(37, 37, 37, 0.3)',
 									}}
@@ -980,7 +246,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 							<Stack width={'50%'} height={'fit-content'} direction={'column'} alignItems={'start'} justifyContent={'start'}>
 								<input
 									type="number"
-									className=" bg-transparent border-none w-1/2 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl"
+									className=" bg-transparent border-none w-10/12 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl"
 									placeholder="0.0"
 									onChange={changeFirstInputValue}
 									value={firstInputValue ? firstInputValue : ''}
@@ -1022,8 +288,8 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								className="w-fit h-fit flex flex-row items-center justify-center relative z-50"
 							>
 								<Stack
-									height={'12vw'}
-									width={'12vw'}
+									height={isLandscape ? '6vw' :'12vw'}
+									width={isLandscape ? '6vw' :'12vw'}
 									borderRadius={'9999px'}
 									sx={{
 										marginTop: '-2rem',
@@ -1052,23 +318,27 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								marginX={1.5}
 								border={`solid 1px ${lightTheme.palette.text.primary}`}
 								padding={1}
+
 								onClick={() => {
 									//Switching()
 								}}
 							>
-								<Box onClick={() => Switching()}>
-									<AiOutlineSwap color={lightTheme.palette.text.primary} size={20} className="rotate-90" />
-								</Box>
+								<Link href={""} onClick={(e) => { e.preventDefault(); Switching() }} className='w-fit h-fit flex flex-row items-center justify-center'>
+									<Box >
+										<AiOutlineSwap color={lightTheme.palette.text.primary} size={20} className="rotate-90" />
+									</Box>
+								</Link>
+
 							</Stack>
 							<Stack width={'40%'} height={'1px'} bgcolor={lightTheme.palette.text.primary}></Stack>
 						</Stack>
 						<Stack width={'100%'} height={'fit-content'} direction="row" alignItems={'center'} justifyContent={'space-between'} paddingY={1}>
 							<Typography
-								variant="caption"
+								variant="subtitle1"
 								sx={{
-									color: lightTheme.palette.text.primary,
-									fontWeight: 500,
-									fontSize: '0.8rem',
+									color: "#484848",
+									fontWeight: 600,
+									
 								}}
 							>
 								You Recieve
@@ -1078,7 +348,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 							<Stack width={'50%'} height={'fit-content'} direction={'column'} alignItems={'start'} justifyContent={'start'}>
 								<input
 									type="number"
-									className=" bg-transparent border-none w-1/2 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl"
+									className=" bg-transparent border-none w-10/12 h-fit pt-4 pb-2 interMedium outline-none text-black text-4xl"
 									placeholder="0.0"
 									onChange={changeSecondInputValue}
 									value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue)) : 0}
@@ -1120,8 +390,8 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								className="w-fit h-fit flex flex-row items-center justify-center"
 							>
 								<Stack
-									height={'12vw'}
-									width={'12vw'}
+									height={isLandscape ? '6vw' :'12vw'}
+									width={isLandscape ? '6vw' :'12vw'}
 									borderRadius={'9999px'}
 									sx={{
 										marginTop: '-2rem',
@@ -1138,10 +408,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 							<Stack direction={'row'} alignItems={'center'} justifyContent={'start'} width={'fit-content'} height={'fit-content'} gap={1}>
 								<IOSSwitch sx={{ m: 1 }} checked={isChecked} onChange={toggleCheckbox} />
 								<Typography
-									variant="caption"
+									variant="subtitle1"
 									sx={{
-										color: lightTheme.palette.text.primary,
-										fontWeight: 500,
+										color: "#484848",
+										fontWeight: 600,
 									}}
 								>
 									FIAT Payment
@@ -1149,10 +419,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 							</Stack>
 							<Stack direction={'row'} alignItems={'center'} justifyContent={'start'} width={'fit-content'} height={'fit-content'} gap={1} onClick={() => faucet()}>
 								<Typography
-									variant="caption"
+									variant="subtitle1"
 									sx={{
 										color: '#5E869B',
-										fontWeight: 500,
+										fontWeight: 600,
 									}}
 								>
 									Testnet USDT
@@ -1166,7 +436,7 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 									variant="subtitle1"
 									sx={{
 										color: lightTheme.palette.text.primary,
-										fontWeight: 500,
+										fontWeight: 600,
 									}}
 								>
 									Platform Fees
@@ -1550,11 +820,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 												setFirstInputValue('0.00001')
 											} else setFirstInputValue('1')
 										}}
-										className={`text-base lg:text-xs  interBold ${
-											mode == 'dark'
+										className={`text-base lg:text-xs  interBold ${mode == 'dark'
 												? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
 												: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
-										} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+											} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
 										style={{
 											boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
 											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -1567,11 +836,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 										onClick={() => {
 											setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
 										}}
-										className={`text-base lg:text-xs  interBold ${
-											mode == 'dark'
+										className={`text-base lg:text-xs  interBold ${mode == 'dark'
 												? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
 												: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
-										} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+											} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
 										style={{
 											boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
 											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -1583,11 +851,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 										onClick={() => {
 											setFirstInputValue(Number(getPrimaryBalance()).toString())
 										}}
-										className={`text-base lg:text-xs  interBold ${
-											mode == 'dark'
+										className={`text-base lg:text-xs  interBold ${mode == 'dark'
 												? ' bg-cover border-transparent bg-center bg-no-repeat text-whiteText-500'
 												: 'text-blackText-500 bg-gradient-to-tr from-gray-300 to-gray-200 hover:to-gray-100 shadow-blackText-500'
-										} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
+											} active:translate-y-[1px] active:shadow-black px-2 py-1 rounded cursor-pointer shadow-sm`}
 										style={{
 											boxShadow: mode == 'dark' ? `0px 0px 2px 1px rgba(91,166,153,0.68)` : '',
 											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -1601,9 +868,8 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								<input
 									type="text"
 									placeholder="0.00"
-									className={`w-1/2 border-none text-2xl ${
-										mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
-									}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
+									className={`w-1/2 border-none text-2xl ${mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
+										}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
 									onChange={changeFirstInputValue}
 									value={firstInputValue ? firstInputValue : ''}
 								/>
@@ -1652,9 +918,8 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								<input
 									type="text"
 									placeholder="0.00"
-									className={`w-1/2 border-none text-2xl ${
-										mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
-									}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
+									className={`w-1/2 border-none text-2xl ${mode == 'dark' ? ' text-whiteText-500 placeholder:text-whiteText-500' : 'text-blackText-500 placeholder:text-gray-400'
+										}  interMedium placeholder:text-2xl  placeholder:interMedium bg-transparent active:border-none outline-none focus:border-none p-2`}
 									onChange={changeSecondInputValue}
 									value={secondInputValue && secondInputValue !== 'NaN' ? formatNumber(Number(secondInputValue)) : 0}
 								/>
@@ -1724,13 +989,11 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 											<button
 												onClick={approve}
 												disabled={isButtonDisabled}
-												className={`text-xl titleShadow interBold ${
-													mode == 'dark'
+												className={`text-xl titleShadow interBold ${mode == 'dark'
 														? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
 														: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
-												} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${
-													isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-												} hover:bg-colorTwo-500/30`}
+													} active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+													} hover:bg-colorTwo-500/30`}
 												style={{
 													boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 													backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -1742,13 +1005,11 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 											<button
 												onClick={mintRequest}
 												disabled={isButtonDisabled}
-												className={`text-xl titleShadow interBold ${
-													mode == 'dark'
+												className={`text-xl titleShadow interBold ${mode == 'dark'
 														? ' text-whiteText-500 bg-cover border-transparent bg-center bg-no-repeat'
 														: ' text-blackText-500 bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
-												}  active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded-lg ${
-													isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-												} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
+													}  active:translate-y-[1px] active:shadow-black w-full px-2 py-3 rounded-lg ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+													} hover:from-colorFour-500 hover:to-colorSeven-500/90`}
 												style={{
 													boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 													backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
@@ -1762,9 +1023,8 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 									<button
 										onClick={burnRequest}
 										disabled={isButtonDisabled}
-										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${
-											isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-										} hover:bg-colorTwo-500/30`}
+										className={`text-xl text-white titleShadow interBold bg-gradient-to-tl from-nexLightRed-500 to-nexLightRed-500/80 active:translate-y-[1px] active:shadow-black shadow-sm shadow-blackText-500 w-full px-2 py-3 rounded ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+											} hover:bg-colorTwo-500/30`}
 									>
 										Burn
 									</button>
@@ -1807,11 +1067,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 							<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
 								<button
 									onClick={toggleMainnetCheckbox}
-									className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-										isMainnet
+									className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${isMainnet
 											? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
 											: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
-									} interBold text-xl`}
+										} interBold text-xl`}
 									style={{
 										boxShadow: mode == 'dark' && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 										backgroundImage: mode == 'dark' && isMainnet ? `url('${mesh1.src}')` : '',
@@ -1821,11 +1080,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								</button>
 								<button
 									onClick={toggleMainnetCheckbox}
-									className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-										!isMainnet
+									className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${!isMainnet
 											? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
 											: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
-									} interBold text-xl`}
+										} interBold text-xl`}
 									style={{
 										boxShadow: mode == 'dark' && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 										backgroundImage: mode == 'dark' && !isMainnet ? `url('${mesh1.src}')` : '',
@@ -1842,9 +1100,8 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 										return (
 											<div
 												key={index}
-												className={`flex ${
-													item.Symbol == 'eth' || item.Symbol == 'ETH' ? 'hidden' : ''
-												} flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300`}
+												className={`flex ${item.Symbol == 'eth' || item.Symbol == 'ETH' ? 'hidden' : ''
+													} flex-row items-center justify-between mb-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-slate-300`}
 												onClick={() => {
 													changeSwapFromCur(item)
 													closeFromCurrencyModal()
@@ -1867,11 +1124,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 							<div className="w-full h-fit flex flex-row items-center justify-between gap-1 my-4">
 								<button
 									onClick={toggleMainnetCheckbox}
-									className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-										isMainnet
+									className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${isMainnet
 											? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
 											: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
-									} interBold text-xl`}
+										} interBold text-xl`}
 									style={{
 										boxShadow: mode == 'dark' && isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 										backgroundImage: mode == 'dark' && isMainnet ? `url('${mesh1.src}')` : '',
@@ -1881,11 +1137,10 @@ const SwapV2Defi = ({ initialStandalone = false }: { initialStandalone?: boolean
 								</button>
 								<button
 									onClick={toggleMainnetCheckbox}
-									className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${
-										!isMainnet
+									className={`w-1/2 flex flex-row items-center justify-center py-2 cursor-pointer rounded-xl ${!isMainnet
 											? ` ${mode == 'dark' ? ' bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'}  text-white titleShadow`
 											: ` ${mode == 'dark' ? ' bg-transparent border border-gray-300' : 'bg-gradient-to-tl from-gray-200 to-gray-100'}  text-gray-300`
-									} interBold text-xl`}
+										} interBold text-xl`}
 									style={{
 										boxShadow: mode == 'dark' && !isMainnet ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
 										backgroundImage: mode == 'dark' && !isMainnet ? `url('${mesh1.src}')` : '',

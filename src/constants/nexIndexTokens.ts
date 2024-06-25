@@ -1,7 +1,7 @@
 import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaSciV2IndexToken, zeroAddress } from "./contractAddresses";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
-import mag7 from '@assets/images/MAG7.jpg'
+import mag7 from '@assets/images/mag7.png'
 import sciLogo from '@assets/images/sci.png'
 
 export const nexTokens = [

@@ -42,6 +42,10 @@ const nextConfig = {
 			},
 			{
 				protocol: 'https',
+				hostname: 'images.mirror-media.xyz'
+			},
+			{
+				protocol: 'https',
 				hostname: 'www.cryptotimes.io/**',
 			},
 			{

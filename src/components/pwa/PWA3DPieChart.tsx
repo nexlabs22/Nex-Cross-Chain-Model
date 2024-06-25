@@ -1,41 +1,35 @@
-import usePortfolioPageStore from '@/store/portfolioStore';
-import { Chart } from 'react-google-charts'
-
+'use client'
+import { usePortfolio } from "@/providers/PortfolioProvider";
+import { Stack, Typography } from "@mui/material";
+import { lightTheme } from "@/theme/theme";
+import New3DPieChart from '@/components/new3DPieChart'
+import { useMediaQuery } from '@mui/material';
 
 interface PieChart3DProps {
 	data: (string | number)[][]
 }
 
 const PWA3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
-
-    const {setIndexSelectedInPie} = usePortfolioPageStore();
-
-    const handleSliceClick = (slice: any) => {
-        const index = slice.value[slice.row+1][0]
-        setIndexSelectedInPie(index)
-      };
-
-
-
-	const options = {
-		title: '',
-		legend: { position: 'none' },
-		is3D: true,
-		backgroundColor: 'transparent',
-		colors: ['#91AC9A', '#B7D1D3', '#878787', '#A6C3CE', '#86afbf'],
-	}
+	const { pieData } = usePortfolio()
+	const isLandscape = useMediaQuery('(orientation: landscape)'); 
 	return (
-		<div className="w-full h-fit p-0 m-0 flex flex-row items-center justify-center " id='PWA3DPieChartBox'>
-			<Chart
-                chartType="PieChart"
-                className="flex flex-row items-center justify-center p-0 w-full m-0 h-fit relative z-[99]"
-                data={data}
-                options={options}
-                width={"100%"}
-                height={"500px"}
-            />
-			{/* <Chart chartType="ScatterChart" data={data} options={options} graphID="ScatterChart" width="100%" height="400px" chartEvents={()=>{cb}} /> */}
-		</div>
+		<Stack id="PWAPNLChartBox" width={"100%"} height={"fit-content"} marginTop={0} direction={"column"} alignItems={"center"} justifyContent={"start"}>
+			<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} marginBottom={1} paddingY={2}>
+				<Typography variant="body1" sx={{
+					color: lightTheme.palette.text.primary,
+					fontWeight: 600,
+					marginBottom: "1.2rem"
+				}}>
+					Porftolio Distribution
+				</Typography>
+
+
+			</Stack>
+			<Stack width={"100vw"} height={"25vh"} marginTop={isLandscape ? 6 : 0} borderRadius={"1.2rem"} direction={"row"} alignItems={"center"} justifyContent={"center"} >
+				{/*chartType == 'Pie Chart' ? <New3DPieChart data={pieData} /> : <TreemapChart percentage={indexPercent} />*/}
+				<New3DPieChart data={pieData} />
+			</Stack>
+		</Stack>
 	)
 }
 

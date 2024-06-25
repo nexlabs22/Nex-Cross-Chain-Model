@@ -19,84 +19,14 @@ import { Stack, Box, Typography, Button } from "@mui/material";
 import { MainStack } from '@/theme/overrides'
 import PWASplashScreen from '@/components/pwa/PWASplashScreen'
 import { lightTheme } from '@/theme/theme'
+
 import { useRouter } from 'next/router';
-
-function isStandaloneFromUserAgent(userAgent: string): boolean {
-	// You can check for specific keywords or patterns in the user agent string
-	// This is a basic example, consider improving the logic for better accuracy
-	return userAgent.includes('(standalone)') || userAgent.includes('(iPhone; standalone)');
-}
-
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const { req } = context;
-	const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	const geo = req; // Assuming geo object is populated by middleware
-
-	//const country = geo?.country || 'US'; // Set default if geo is missing
-
-	return {
-		props: {
-			userIP,
-			//country,
-		},
-	};
-}
-
-
-
+import { usePWA } from '@/providers/PWAProvider'
 
 const Dashboard: NextPage = (props) => {
 	
 	const { mode, theme, setTheme } = useLandingPageStore()
-	const [isStandalone, setIsStandalone] = useState(false);
-	const [os, setOs] = useState<String>("")
-	const [browser, setBrowser] = useState<String>("")
-
-	function detectMobileBrowserOS() {
-		const userAgent = navigator.userAgent;
-
-		let browser: string | undefined;
-		let os: string | undefined;
-
-		browser = ""
-		os = ""
-		// Check for popular mobile browsers
-		if (/CriOS/i.test(userAgent)) {
-			browser = 'Chrome';
-		} else if (/FxiOS/i.test(userAgent)) {
-			browser = 'Firefox';
-		} else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) {
-			browser = 'Safari';
-		}
-
-		// Check for common mobile operating systems
-		if (/iP(ad|hone|od)/i.test(userAgent)) {
-			os = 'iOS';
-		} else if (/Android/i.test(userAgent)) {
-			os = 'Android';
-		}
-
-		setOs(os.toString());
-		setBrowser(browser.toString())
-	}
-
-	useEffect(() => {
-		detectMobileBrowserOS()
-	}, [])
-
-	useEffect(() => {
-		// Client-side detection using window.matchMedia (optional)
-		if (typeof window !== 'undefined') {
-			const mediaQuery = window.matchMedia('(display-mode: standalone)');
-			const handleChange = (event: MediaQueryListEvent) => setIsStandalone(event.matches);
-			mediaQuery.addEventListener('change', handleChange);
-			setIsStandalone(mediaQuery.matches); // Set initial client-side state
-			//alert(mediaQuery.matches)
-			return () => mediaQuery.removeEventListener('change', handleChange);
-		}
-	}, []);
-
+	const {isStandalone, browser, os} = usePWA()
 	return (
 		<>
 			<Head>
@@ -118,7 +48,7 @@ const Dashboard: NextPage = (props) => {
 				) : (
 					<>
 
-						<Box margin={0} height={"100vh"} width={"100vw"} padding={0} sx={MainStack} display={{ xs: "none", lg: "block" }}>
+						<Box margin={0} height={"100vh"} bgcolor={theme.palette.pageBackground.main} width={"100vw"} padding={0} sx={MainStack} display={{ xs: "none", lg: "block" }}>
 							<DappNavbar />
 							<TopIndexData />
 							<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10 md:pb-2 xl:pb-10">

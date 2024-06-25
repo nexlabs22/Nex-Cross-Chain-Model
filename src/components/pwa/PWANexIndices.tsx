@@ -15,29 +15,14 @@ import { Menu, MenuButton, MenuItem } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
 import { useRouter } from "next/router";
- 
+import { useDashboard } from "@/providers/DashboardProvider";
+import { FormatToViewNumber, num } from '@/hooks/math'
+
 const PWANexIndices = () => {
 
+    const { defaultIndexObject, othertIndexObject } = useDashboard()
     const [listType, setListType] = useState<string>("All Nex Indices")
-    const {changeSelectedIndex} = useLandingPageStore()
-    const Indices = [
-        {
-            name: "Anti Inflation Index",
-            symbol: "ANFI",
-            chartName:'ANFI',
-            logo: anfiLogo,
-            price: "2453.4",
-            change: "N/A",
-        },
-        {
-            name: "CRYPTO5",
-            symbol: "CR5",
-            chartName:'CRYPTO5',
-            logo: cr5Logo,
-            price: "784.8",
-            change: "N/A",
-        }
-    ];
+    const { changeSelectedIndex } = useLandingPageStore()
     const router = useRouter();
 
     return (
@@ -50,31 +35,29 @@ const PWANexIndices = () => {
                                 color: lightTheme.palette.text.primary,
                                 fontWeight: 700
                             }}>
-                                {listType}
+                                {
+                                    listType
+                                }
                             </Typography>
                             <IoIosArrowDown size={22} color={lightTheme.palette.text.primary}></IoIosArrowDown>
                         </Stack>
-                        
+
                     </MenuButton>
                 }>
-                    <MenuItem onClick={()=>{setListType("Favorites")}}>
-                        <Typography variant="body1" sx={{
-                            color: lightTheme.palette.text.primary,
-                            fontWeight: 600
-                        }}>
-                            Favorites
-                        </Typography>
-                    </MenuItem>
-                    <MenuItem onClick={()=>{setListType("My Watchlist")}}>
-                        <Typography variant="body1" sx={{
+                    <MenuItem onClick={() => { setListType("My Watchlist") }}>
+                        <Typography variant="subtitle1" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 600
                         }}>
                             Watchlist
                         </Typography>
                     </MenuItem>
-                    <MenuItem onClick={()=>{setListType("All Nex Indices")}}>
-                        <Typography variant="body1" sx={{
+                    <MenuItem disabled >
+                        <Stack width={"90%"} height={"1.5px"} sx={{ backgroundColor: "#252525" }}></Stack>
+                    </MenuItem>
+
+                    <MenuItem onClick={() => { setListType("All Nex Indices") }}>
+                        <Typography variant="subtitle1" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 600
                         }}>
@@ -101,62 +84,118 @@ const PWANexIndices = () => {
             </Stack>
             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5} marginBottom={2}>
                 {
-                    Indices.map((index, key) => {
-                        return (
-                            <Stack key={key} width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={()=>{
-                                changeSelectedIndex(index.chartName);
-                                router.push('/pwa_tradeIndex')
-                            }}>
-                                <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                    <Image alt="index logo" src={index.logo} width={40} height={40} className="rounded-full mb-2"></Image>
-                                    <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
-                                        <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.text.primary,
-                                            fontWeight: 600,
-                                        }}>
-                                            {
-                                                index.name
-                                            }
-                                        </Typography>
-                                        <Typography variant="caption" sx={{
-                                            color: lightTheme.palette.text.primary,
-                                            fontWeight: 500,
-                                        }}>
-                                            {
-                                                index.symbol
-                                            }
-                                        </Typography>
-                                    </Stack>
-
-                                </Stack>
-                                <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                    defaultIndexObject ? (
+                        <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={() => {
+                            if (defaultIndexObject) changeSelectedIndex(defaultIndexObject?.name);
+                            else changeSelectedIndex("CRYPTO5")
+                            router.push('/pwa_tradeIndex')
+                        }}>
+                            <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                                <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                     <Typography variant="caption" sx={{
                                         color: lightTheme.palette.text.primary,
                                         fontWeight: 600,
                                     }}>
-                                        ${
-                                            index.price
+                                        {
+                                            defaultIndexObject.name
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: lightTheme.palette.nexGreen.main,
-                                        fontWeight: 600,
-                                        fontSize: ".8rem",
-                                        backgroundColor: lightTheme.palette.pageBackground.main,
-                                        paddingX: "0.8rem",
-                                        paddingY: "0.2rem",
-                                        borderRadius: "1rem",
-                                        border: "solid 1px rgba(37, 37, 37, 0.5)",
-                                        boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 500,
                                     }}>
                                         {
-                                            index.change
+                                            defaultIndexObject.symbol
                                         }
                                     </Typography>
                                 </Stack>
+
                             </Stack>
-                        )
-                    })
+                            <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ${
+                                        FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })
+                                    }
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: defaultIndexObject?.chg24h && Number(defaultIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
+                                    fontWeight: 600,
+                                    fontSize: ".8rem",
+                                    backgroundColor: lightTheme.palette.pageBackground.main,
+                                    paddingX: "0.8rem",
+                                    paddingY: "0.2rem",
+                                    borderRadius: "1rem",
+                                    border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                    boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                }}>
+                                    {
+                                        defaultIndexObject?.chg24h
+                                    }%
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                    ) : ("")
+                }
+                {
+                    othertIndexObject ? (
+                        <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={() => {
+                            if (othertIndexObject) changeSelectedIndex(othertIndexObject?.name);
+                            else changeSelectedIndex("CRYPTO5")
+                            router.push('/pwa_tradeIndex')
+                        }}>
+                            <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 600,
+                                    }}>
+                                        {
+                                            othertIndexObject.name
+                                        }
+                                    </Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 500,
+                                    }}>
+                                        {
+                                            othertIndexObject.symbol
+                                        }
+                                    </Typography>
+                                </Stack>
+
+                            </Stack>
+                            <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ${
+                                        FormatToViewNumber({ value: Number(othertIndexObject?.mktPrice), returnType: 'string' })
+                                    }
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.nexGreen.main,
+                                    fontWeight: 600,
+                                    fontSize: ".8rem",
+                                    backgroundColor: lightTheme.palette.pageBackground.main,
+                                    paddingX: "0.8rem",
+                                    paddingY: "0.2rem",
+                                    borderRadius: "1rem",
+                                    border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                    boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                }}>
+                                    {
+                                        othertIndexObject?.chg24h
+                                    }%
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                    ) : ("")
                 }
             </Stack>
         </Stack>

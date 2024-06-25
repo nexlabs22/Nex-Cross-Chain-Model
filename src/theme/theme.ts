@@ -1,3 +1,5 @@
+
+
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 // Font :
@@ -272,10 +274,10 @@ export const darkTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#FFFFFF",
-          borderRadius: "99px",
+          borderRadius: "0px",
           boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.5)",
-          marginBottom: "3rem",
-          width: "fit-content",
+          marginBottom: "0rem",
+          width: "100vw",
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
@@ -534,10 +536,10 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#FFFFFF",
-          borderRadius: "99px",
+          borderRadius: "0px",
           boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.5)",
-          marginBottom: "3rem",
-          width: "fit-content",
+          marginBottom: "0rem",
+          width: "100vw",
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
@@ -559,6 +561,7 @@ export const lightTheme = createTheme({
             border: "none",
             paddingTop: "0px",
             color: "#000000",
+            fontSize: "1rem",
             paddingBottom: "0px",
             '& .MuiOutlinedInput-root.Mui-focused': {
               border: "none",

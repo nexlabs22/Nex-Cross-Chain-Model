@@ -161,6 +161,8 @@ export default function DCACalculator() {
 	}
 	const indices = ['ANFI', 'CRYPTO5']
 	const data = selectedIndex === 'ANFI' ? filterFirstOfMonth(ANFIData) : filterFirstOfMonth(CR5Data)
+	console.log({ data })
+	data.sort((a, b) => a.time - b.time)
 	const validationDates = {
 		minMonth: data && data[0] && data[0].date ? new Date(data[0].date).getMonth() : -1,
 		minYear: data && data[0] && data[0] ? Number(data[0].date?.split(' ')[3]) : -1,
@@ -413,12 +415,13 @@ export default function DCACalculator() {
 				isStandalone ? (
 					<>
 
-						<Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+						<Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
 							<PWATopBar></PWATopBar>
 							<Stack width="100%" height="fit-content" direction="column" alignItems="start" justifyContent={"start"} paddingY={4} paddingX={1}>
 								<Typography variant="caption" sx={{
 									color: lightTheme.palette.text.primary,
-									fontWeight: 700
+									fontWeight: 700,
+									marginTop: "1rem"
 								}}>
 									Index:
 								</Typography>
@@ -454,46 +457,42 @@ export default function DCACalculator() {
 									fontWeight: 700,
 									marginTop: "1rem"
 								}}>
-									Start Month
+									Start Date
 								</Typography>
-								<Link href="" onClick={(e) => { e.preventDefault(); setStartMonthndexSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
-									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-										<Typography variant="body1" sx={{
-											color: lightTheme.palette.text.primary,
-											fontWeight: 700
-										}}>
-											{selectedStartMonth}
-										</Typography>
-										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
-									</Stack>
-								</Link>
+								<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} gap={3}>
+									<Link href="" onClick={(e) => { e.preventDefault(); setStartMonthndexSheetOpen(true) }} className='w-6/12 h-fit flex flex-row items-center justify-center'>
+										<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={2}>
+											<Typography variant="body1" sx={{
+												color: lightTheme.palette.text.primary,
+												fontWeight: 700
+											}}>
+												{selectedStartMonth}
+											</Typography>
+											<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
+										</Stack>
+									</Link>
+									<Link href="" onClick={(e) => { e.preventDefault(); setStartYearSheetOpen(true) }} className='w-6/12 h-fit flex flex-row items-center justify-center'>
+										<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={2}>
+											<Typography variant="body1" sx={{
+												color: lightTheme.palette.text.primary,
+												fontWeight: 700
+											}}>
+												{selectedStartYear}
+											</Typography>
+											<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
+										</Stack>
+									</Link>
+								</Stack>
 								<Typography variant="caption" sx={{
 									color: lightTheme.palette.text.primary,
 									fontWeight: 700,
 									marginTop: "1rem"
 								}}>
-									Start Year
+									End Date
 								</Typography>
-								<Link href="" onClick={(e) => { e.preventDefault(); setStartYearSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
-									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-										<Typography variant="body1" sx={{
-											color: lightTheme.palette.text.primary,
-											fontWeight: 700
-										}}>
-											{selectedStartYear}
-										</Typography>
-										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
-									</Stack>
-								</Link>
-								<Typography variant="caption" sx={{
-									color: lightTheme.palette.text.primary,
-									fontWeight: 700,
-									marginTop: "1rem"
-								}}>
-									End Month
-								</Typography>
-								<Link href="" onClick={(e) => { e.preventDefault(); setEndMonthSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
-									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+								<Stack  width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} gap={3}>
+								<Link href="" onClick={(e) => { e.preventDefault(); setEndMonthSheetOpen(true) }} className='w-6/12 h-fit flex flex-row items-center justify-center'>
+									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={2}>
 										<Typography variant="body1" sx={{
 											color: lightTheme.palette.text.primary,
 											fontWeight: 700
@@ -503,15 +502,8 @@ export default function DCACalculator() {
 										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
 									</Stack>
 								</Link>
-								<Typography variant="caption" sx={{
-									color: lightTheme.palette.text.primary,
-									fontWeight: 700,
-									marginTop: "1rem"
-								}}>
-									End Year
-								</Typography>
-								<Link href="" onClick={(e) => { e.preventDefault(); setEndYearSheetOpen(true) }} className='w-full h-fit flex flex-row items-center justify-center'>
-									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+								<Link href="" onClick={(e) => { e.preventDefault(); setEndYearSheetOpen(true) }} className='w-4/12 h-fit flex flex-row items-center justify-center'>
+									<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={2}>
 										<Typography variant="body1" sx={{
 											color: lightTheme.palette.text.primary,
 											fontWeight: 700
@@ -521,9 +513,10 @@ export default function DCACalculator() {
 										<GoChevronDown color={lightTheme.palette.text.primary} size={26} />
 									</Stack>
 								</Link>
+								</Stack>
 							</Stack>
 							<Button onClick={() => {
-								
+
 								handleSubmit()
 							}}
 								sx={{

@@ -1,15 +1,14 @@
-import { Stack, Container, Box, Paper, Switch, TextField, Typography, Button, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import { Stack, Box, TextField, Typography, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { lightTheme } from "@/theme/theme";
 import Link from "next/link";
-import Image from "next/image";
 import PWATopBar from "@/components/pwa/PWATopBar";
 import PWABottomNav from "@/components/pwa/PWABottomNav";
-import PWAProfileHistoryList from "@/components/pwa/PWAProfileHistory";
-import { IOSSwitch, PWAProfileTextField } from "@/theme/overrides";
-import { BsQrCodeScan } from "react-icons/bs";
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
-import { getDatabase, ref, onValue, set, update } from 'firebase/database'
+import { IOSSwitch } from "@/theme/overrides";
+import { MdEdit } from "react-icons/md";
+
+import { MdOutlineModeEdit } from "react-icons/md";
+import { ref, onValue, update } from 'firebase/database'
 import { database } from '@/utils/firebase'
 import { useAddress } from "@thirdweb-dev/react";
 import { reduceAddress } from "@/utils/general";
@@ -45,9 +44,9 @@ export default function PWAProfileSettings() {
 
 
     const uploader = Uploader({
-		apiKey: 'free', // Get production API keys from Bytescale
-	})
-	const ImageUploaderOptions = { multi: false }
+        apiKey: 'free', // Get production API keys from Bytescale
+    })
+    const ImageUploaderOptions = { multi: false }
 
     const [isCopied, setIsCopied] = useState(false)
 
@@ -98,7 +97,7 @@ export default function PWAProfileSettings() {
         })
     }
 
-    function uploadPhoto(){
+    function uploadPhoto() {
 
     }
 
@@ -150,12 +149,17 @@ export default function PWAProfileSettings() {
 
 
     return (
-        <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+        <Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
             {
                 connectedUser?.ppType == 'identicon' && address ? (
                     <Link href="" onClick={(e) => { e.preventDefault(); setPhotoOptionSheetOpen(true) }} className="w-fit h-fit flex flex-row items-center justify-center">
-                        <Stack width="fit-content" height="fit-content" direction={"row"} alignItems={"center"} justifyContent={"center"} marginY={12} sx={{ scale: "4" }}><PWATopBarGenericAvatar walletAddress={address}></PWATopBarGenericAvatar></Stack>
+                        <Stack width="fit-content" height="fit-content" position={"relative"} direction={"row"} alignItems={"center"} justifyContent={"center"} marginY={12} sx={{ scale: "4" }}>
+                            <PWATopBarGenericAvatar walletAddress={address}></PWATopBarGenericAvatar>
+                            <Stack width={"fit-content"} height={"fit-content"} bgcolor={"#FFFFFF"} position={"absolute"} zIndex={999} borderRadius={"999px"} bottom={"15%"} right={"3%"} border={"solid 0.2px #C0C0C0"} direction={"row"} alignItems={"center"} justifyContent={"center"} padding={"0.5px"}>
+                                <MdEdit color={lightTheme.palette.text.primary} size={4} className=" rotate-[90deg] " />
+                            </Stack>
+                        </Stack>
                     </Link>
                 ) : (
                     <Link href="" onClick={(e) => { e.preventDefault(); setPhotoOptionSheetOpen(true) }} className="w-fit h-fit flex flex-row items-center justify-center">
@@ -176,15 +180,15 @@ export default function PWAProfileSettings() {
 
 
             <Stack width={"100%"} height={"fit-content"} paddingTop={5} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
-                <Typography variant="h6" sx={{
+                <Typography variant="body1" sx={{
                     color: lightTheme.palette.text.primary,
                     fontWeight: 700
                 }}>
                     Account Info
                 </Typography>
-                <Typography variant="body1" sx={{
+                <Typography variant="caption" sx={{
                     color: lightTheme.palette.text.primary,
-                    fontWeight: 500,
+                    fontWeight: 700,
                     marginTop: "1rem"
                 }}>
                     Account Type
@@ -207,18 +211,18 @@ export default function PWAProfileSettings() {
                 </Stack>
                 <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.5}>
                     <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
-                        <Typography variant="body1" sx={{
+                        <Typography variant="caption" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 700,
                             marginTop: "1rem"
                         }}>
                             Name
                         </Typography>
-                        <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.name} onChange={(event) => { setName(event.target.value) }} fullWidth />
+                        <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.name} onChange={(event) => { setName(event.target.value) }} fullWidth sx={{ fontSize: "1rem" }} />
                     </Stack>
 
                     <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
-                        <Typography variant="body1" sx={{
+                        <Typography variant="caption" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 700,
                             marginTop: "1rem"
@@ -228,7 +232,7 @@ export default function PWAProfileSettings() {
                         <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.email && connectedUser?.email != "" && connectedUser?.email != "" ? connectedUser?.email : "No Connected Email"} onChange={(event) => { setEmail(event.target.value) }} fullWidth />
                     </Stack>
                     <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
-                        <Typography variant="body1" sx={{
+                        <Typography variant="caption" sx={{
                             color: lightTheme.palette.text.primary,
                             fontWeight: 700,
                             marginTop: "1rem"
@@ -248,7 +252,7 @@ export default function PWAProfileSettings() {
                     !isRetailerAccount ? (
                         <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.5}>
                             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
-                                <Typography variant="body1" sx={{
+                                <Typography variant="caption" sx={{
                                     color: lightTheme.palette.text.primary,
                                     fontWeight: 700,
                                     marginTop: "1rem"
@@ -258,7 +262,7 @@ export default function PWAProfileSettings() {
                                 <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.inst_name} onChange={(event) => { setInstName(event.target.value) }} fullWidth />
                             </Stack>
                             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
-                                <Typography variant="body1" sx={{
+                                <Typography variant="caption" sx={{
                                     color: lightTheme.palette.text.primary,
                                     fontWeight: 700,
                                     marginTop: "1rem"
@@ -272,7 +276,7 @@ export default function PWAProfileSettings() {
                                 </Stack>
                             </Stack>
                             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
-                                <Typography variant="body1" sx={{
+                                <Typography variant="caption" sx={{
                                     color: lightTheme.palette.text.primary,
                                     fontWeight: 700,
                                     marginTop: "1rem"
@@ -282,7 +286,7 @@ export default function PWAProfileSettings() {
                                 <TextField id="outlined-basic" color="info" variant="outlined" placeholder={connectedUser?.vatin && connectedUser?.vatin != "" && connectedUser?.vatin != "" ? connectedUser?.vatin : "No Specified VAT"} onChange={(event) => { setVatin(event.target.value) }} fullWidth />
                             </Stack>
                             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={1}>
-                                <Typography variant="body1" sx={{
+                                <Typography variant="caption" sx={{
                                     color: lightTheme.palette.text.primary,
                                     fontWeight: 700,
                                     marginTop: "1rem"
@@ -296,7 +300,7 @@ export default function PWAProfileSettings() {
                     ) : ""
                 }
                 <Stack width={"100%"} height={"fit-content"} paddingTop={5} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
-                    <Typography variant="h6" sx={{
+                    <Typography variant="body1" sx={{
                         color: lightTheme.palette.text.primary,
                         fontWeight: 700
                     }}>
@@ -348,18 +352,20 @@ export default function PWAProfileSettings() {
                     </Stack>
                     <Button className="pwaConnectWallet"
                         sx={{
-                            width: "95%",
-                            paddingY: "1.3rem",
+                            width: "90%",
+                            paddingY: "1rem",
                             borderRadius: "1.2rem",
                             marginX: "auto",
                             marginTop: "1.2rem",
-                            marginBottom: "6rem"
+                            marginBottom: "6rem",
+                            background: "linear-gradient(to top right, #5E869B 0%, #8FB8CA 100%)",
+                            boxShadow: "none"
                         }}
                         onClick={() => { saveSettings() }}
                     >
                         <Typography variant="h3" component="h3" className="w-full rounded-3xl" sx={{
                             color: "#000000",
-                            fontSize: "1.8rem",
+                            fontSize: "1.2rem",
                             textShadow: "none",
 
                         }} >
@@ -371,25 +377,25 @@ export default function PWAProfileSettings() {
             <Sheet
                 isOpen={photoOptionSheetOpen}
                 onClose={() => setPhotoOptionSheetOpen(false)}
-                snapPoints={[250, 250, 0, 0]}
+                snapPoints={[200, 200, 0, 0]}
                 initialSnap={1}
             >
                 <Sheet.Container>
                     <Sheet.Header />
                     <Sheet.Content className=" flex flex-col items-center justify-center pt-0">
                         <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} width={"100%"} height={"fit-content"}>
-                            
-                            <Link href={""} className="flex flex-row items-center justify-center w-fit h-fit" onClick={(e)=>{e.preventDefault(); setPhotoOptionSheetOpen(false); setPhotoUploadSheetOpen(true)}}>
-                            <Typography variant="h6" align="center" sx={{
-                                color: lightTheme.palette.text.primary,
-                                fontWeight: 700,
-                                marginTop: "-2rem"
-                            }}>
-                                Upload A New Photo
-                            </Typography>
+
+                            <Link href={""} className="flex flex-row items-center justify-center w-fit h-fit" onClick={(e) => { e.preventDefault(); setPhotoOptionSheetOpen(false); setPhotoUploadSheetOpen(true) }}>
+                                <Typography variant="h6" align="center" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 700,
+                                    marginTop: "-2rem"
+                                }}>
+                                    Upload A New Photo
+                                </Typography>
                             </Link>
-                            <Stack width={"40%"} height={"1.5px"} bgcolor={"#808080"} marginX={"auto"} marginY={3}></Stack>
-                            <Link href={""} className="flex flex-row items-center justify-center w-fit h-fit" onClick={(e)=>{e.preventDefault(); switchToIdenticon(); setPhotoOptionSheetOpen(false)}}>
+                            <Stack width={"40%"} height={"1.5px"} bgcolor={"#808080"} marginX={"auto"} marginY={1.5}></Stack>
+                            <Link href={""} className="flex flex-row items-center justify-center w-fit h-fit" onClick={(e) => { e.preventDefault(); switchToIdenticon(); setPhotoOptionSheetOpen(false) }}>
                                 <Typography variant="h6" align="center" sx={{
                                     color: lightTheme.palette.text.primary,
                                     fontWeight: 700
@@ -407,31 +413,31 @@ export default function PWAProfileSettings() {
             <Sheet
                 isOpen={photoUploadSheetOpen}
                 onClose={() => setPhotoUploadSheetOpen(false)}
-                snapPoints={[400, 400, 0, 0]}
+                snapPoints={[310, 310, 0, 0]}
                 initialSnap={1}
             >
                 <Sheet.Container>
                     <Sheet.Header />
                     <Sheet.Content className=" flex flex-col items-center justify-center pt-0">
                         <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} width={"100%"} height={"fit-content"}>
-                        <UploadDropzone
-							uploader={uploader}
-							options={ImageUploaderOptions}
-							onUpdate={(files) => {
-								update(ref(database, 'users/' + connectedUserId), {
-                                    ppLink: files.map((x) => x.fileUrl).join('\n'),
-                                    ppType: "image",
-                                })
-                                
-								setPhotoUploadSheetOpen(false)
-								GenericToast({
-									type: 'success',
-									message: "Image uploaded succesfully!",
-								})
-							}}
-							width="600px"
-							height="250px"
-						/>
+                            <UploadDropzone
+                                uploader={uploader}
+                                options={ImageUploaderOptions}
+                                onUpdate={(files) => {
+                                    update(ref(database, 'users/' + connectedUserId), {
+                                        ppLink: files.map((x) => x.fileUrl).join('\n'),
+                                        ppType: "image",
+                                    })
+
+                                    setPhotoUploadSheetOpen(false)
+                                    GenericToast({
+                                        type: 'success',
+                                        message: "Image uploaded succesfully!",
+                                    })
+                                }}
+                                width="600px"
+                                height="250px"
+                            />
                         </Stack>
                     </Sheet.Content>
                 </Sheet.Container>

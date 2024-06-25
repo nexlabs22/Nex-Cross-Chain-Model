@@ -16,13 +16,13 @@ const ConnectButton: React.FC<ConnectWalletButton> = ({ tradeNavbarButton }) => 
   const [theme, setTheme] = useState({
     fontFamily: "Inter, sans-serif",
     colors: {
-      modalBg: "#7335CA",
+      modalBg: "#5E869B",
       // accentButtonBg: "#91AC9A",
       //primaryButtonBg: "#5E869B",
 
       // secondaryButtonBg: "#91AC9A",
       //connectedButtonBg: "#5E869B",
-      dropdownBg: "#7335CA",
+      dropdownBg: "#5E869B", 
       //connectedButtonBgHover: "white",
       accentText: "black",
       secondaryText: "#000000",

@@ -8,14 +8,14 @@ import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import PWAProfileHeader from "@/components/pwa/PWAProfileHeader";
 import PWAProfileMenu from "@/components/pwa/PWAProfileMenu";
-
+import { useMediaQuery } from '@mui/material';
 import { PWAGradientStack } from "@/theme/overrides";
 
 export default function PWAProfile() {
 
-
+    const isLandscape = useMediaQuery('(orientation: landscape)'); 
     return (
-        <Box width={"100vw"} height={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
+        <Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
             <PWATopBar></PWATopBar>
             <PWAProfileHeader></PWAProfileHeader>
             <PWAProfileMenu></PWAProfileMenu>

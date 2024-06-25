@@ -10,13 +10,14 @@ import { BsClockHistory } from "react-icons/bs";
 import { BiCog } from "react-icons/bi";
 import { IoIosArrowForward } from "react-icons/io";
 import { LiaFileContractSolid } from "react-icons/lia";
-
+import { useMediaQuery } from '@mui/material';
 
 
 
 const PWAProfileMenu = () => {
+    const isLandscape = useMediaQuery('(orientation: landscape)'); 
     return (
-        <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} marginY={3} paddingX={2} paddingY={2} gap={4}>
+        <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} marginTop={3} marginBottom={isLandscape ? 10 : 3} paddingX={2} paddingY={2} gap={4}>
             <Link href={"/portfolio"} className="w-full h-fit flex flex-row items-center justify-center">
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingBottom={3} borderBottom={"solid 2px #2A2A2A"}>
                     <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1.5}>
@@ -59,7 +60,7 @@ const PWAProfileMenu = () => {
                     <IoIosArrowForward size={30} color={lightTheme.palette.text.primary}></IoIosArrowForward>
                 </Stack>
             </Link>
-            <Link href={"https://nex-labs.gitbook.io/nex-dex/micar-compliance/disclaimers"} target="_blank" className="w-full h-fit flex flex-row items-center justify-center">
+            <Link href={"https://app.nexlabs.io/terms_and_conditions"} target="_blank" className="w-full h-fit flex flex-row items-center justify-center">
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} paddingBottom={2}>
                     <Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1.5}>
                         <LiaFileContractSolid size={30} color={lightTheme.palette.text.primary}></LiaFileContractSolid>

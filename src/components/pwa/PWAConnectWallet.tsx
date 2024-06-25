@@ -46,7 +46,8 @@ const PWAConnectButton: React.FC<ConnectWalletButton> = ({ tradeNavbarButton }) 
       className={"rounded-3xl text-black pwaConnectWallet"}
       style={{
         color: "#000000",
-        scale: "0.9"
+        scale: "0.9",
+        borderRadius: "1.2rem"
       }}
     />
 

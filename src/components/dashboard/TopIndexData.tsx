@@ -1,645 +1,329 @@
 'use client'
-
+import { ReactElement, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 //Components
 import DashboardChartBox from './ChartBox'
-import { Accordion, AccordionItem } from '@szhsin/react-accordion'
 import GenericAddressTooltip from '../GenericAddressTooltip'
-import TradingViewChart from '@/components/TradingViewChart'
-
-// Store
-import { useChartDataStore, useLandingPageStore } from '@/store/store'
-
-// Logos and icons :
-import { GrBitcoin, GrFormClose } from 'react-icons/gr'
-import { BsInfoCircle } from 'react-icons/bs'
-import { FaEthereum } from 'react-icons/fa'
-import { SiTether, SiBinance, SiRipple } from 'react-icons/si'
-import { AiOutlinePlus } from 'react-icons/ai'
-import { CiGlobe, CiStreamOn } from 'react-icons/ci'
-import { IoCopyOutline, IoClose } from 'react-icons/io5'
-import { IoIosArrowDown } from 'react-icons/io'
-import { CgArrowsExchange } from 'react-icons/cg'
-import { TbCurrencySolana } from 'react-icons/tb'
-import { ReactElement, useEffect, useState } from 'react'
-import anfiLogo from '@assets/images/anfi.png'
-import cr5Logo from '@assets/images/cr5.png'
-import etherscanLogo from '@assets/images/etherscan.png'
-import managment from '@assets/images/managment.png'
 import GenericTooltip from '../GenericTooltip'
-import { goerliAnfiV2IndexToken, goerliCR5PoolAddress, goerliCrypto5IndexToken, goerlianfiPoolAddress, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaWethAddress } from '@/constants/contractAddresses'
-import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
-import { indexTokenV2Abi } from '@/constants/abi'
-import mesh1 from '@assets/images/mesh1.png'
-import mesh2 from '@assets/images/mesh2.png'
-import getANFIWeights from '@/utils/anfiWeights'
-
-import { GoArrowRight } from 'react-icons/go'
-import { stringify } from 'querystring'
-
-import axios from 'axios'
+import { Accordion, AccordionItem } from '@szhsin/react-accordion'
 import { reduceAddress } from '@/utils/general'
 import { FormatToViewNumber, num } from '@/hooks/math'
-import convertToUSD from '@/utils/convertToUsd'
-import useTradePageStore from '@/store/tradeStore'
-import { useQuery } from '@apollo/client'
-import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
-import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
-import { sepoliaTokens } from '@/constants/testnetTokens'
-import getPoolAddress from '@/utils/getPoolAddress'
+import { usePWA } from '@/providers/PWAProvider'
+import { useDashboard } from '@/providers/DashboardProvider'
+import "react-responsive-carousel/lib/styles/carousel.min.css"
+import { Carousel } from 'react-responsive-carousel'
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-type underlyingAsset = {
-	name: string
-	percentage: number
-	symbol: string
-	logo: ReactElement
-}
+// Store
+import { useLandingPageStore } from '@/store/store'
+
+
+// Logos and icons :
+
+import { BsChevronCompactLeft, BsChevronCompactRight, BsInfoCircle } from 'react-icons/bs'
+import { AiOutlinePlus } from 'react-icons/ai'
+import { CiGlobe, CiStreamOn } from 'react-icons/ci'
+import { CgArrowsExchange } from 'react-icons/cg'
+import managment from '@assets/images/managment.png'
+import mesh1 from '@assets/images/mesh1.png'
+import { GoArrowRight } from 'react-icons/go'
+import mag7 from '@assets/images/mag7.png'
+import React from 'react'
+import { CustomArrowProps } from "react-slick";
+import { Stack, Box } from "@mui/material";
+
+const CustomNextArrow: React.FC<CustomArrowProps> = ({
+	onClick,
+	className,
+}) => {
+	return (
+		<Stack className="glassy" position={"absolute"} right={"1.25rem"} top={"45%"} zIndex={20} width={"fit-content"} borderRadius={"9999px"} border={"none"} padding={1} sx={{
+			aspectRatio: "1",
+			cursor: "pointer"
+		}}
+			onClick={onClick}
+		>
+			<BsChevronCompactRight color="#FFFFFF" size={25} />
+		</Stack>
+	);
+};
+
+const CustomPrevArrow: React.FC<CustomArrowProps> = ({
+	onClick,
+	className,
+}) => {
+	return (
+		<Stack className="glassy" position={"absolute"} left={"1.25rem"} top={"45%"} zIndex={20} width={"fit-content"} borderRadius={"9999px"} border={"none"} padding={1} sx={{
+			aspectRatio: "1",
+			cursor: "pointer"
+		}}
+			onClick={onClick}
+		>
+			<BsChevronCompactLeft color="#FFFFFF" size={25} />
+		</Stack>
+	);
+};
 
 const TopIndexData = () => {
 
-	const [isStandalone, setIsStandalone] = useState(false)
-	const [os, setOs] = useState<String>('')
-	const [browser, setBrowser] = useState<String>('')
 
-	function detectMobileBrowserOS() {
-		const userAgent = navigator.userAgent
-
-		let browser: string | undefined
-		let os: string | undefined
-
-		browser = ''
-		os = ''
-		// Check for popular mobile browsers
-		if (/CriOS/i.test(userAgent)) {
-			browser = 'Chrome'
-		} else if (/FxiOS/i.test(userAgent)) {
-			browser = 'Firefox'
-		} else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) {
-			browser = 'Safari'
-		}
-
-		// Check for common mobile operating systems
-		if (/iP(ad|hone|od)/i.test(userAgent)) {
-			os = 'iOS'
-		} else if (/Android/i.test(userAgent)) {
-			os = 'Android'
-		}
-
-		setOs(os.toString())
-		setBrowser(browser.toString())
-	}
-
-	useEffect(() => {
-		detectMobileBrowserOS()
-	}, [])
-
-	useEffect(() => {
-		// Client-side detection using window.matchMedia (optional)
-		if (typeof window !== 'undefined') {
-			const mediaQuery = window.matchMedia('(display-mode: standalone)')
-			const handleChange = (event: MediaQueryListEvent) => setIsStandalone(event.matches)
-			mediaQuery.addEventListener('change', handleChange)
-			setIsStandalone(mediaQuery.matches) // Set initial client-side state
-			//alert(mediaQuery.matches)
-			return () => mediaQuery.removeEventListener('change', handleChange)
-		}
-	}, [])
-
+	const {
+		defaultIndexObject,
+		othertIndexObject,
+		CR5UnderLyingAssets,
+		ANFIUnderLyingAssets,
+	} = useDashboard();
+	const { isStandalone } = usePWA()
 	const { mode } = useLandingPageStore()
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
-	const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
-	const { ethPriceInUsd } = useTradePageStore()
-
-	useEffect(() => {
-		fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
-	}, [fetchIndexData])
-
-	useEffect(() => {
-		setDayChangePer()
-		// setANFIWeightage()
-	}, [setDayChangePer])
-
-	const [mktPrice, setMktPrice] = useState({ anfi: 0, cr5: 0 })
-	const [dayChange, setDayChange] = useState({ anfi: '0.00', cr5: '0.00' })
-	const {
-		loading: loadingAnfi,
-		error: errorAnfi,
-		data: dataAnfi,
-	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-	})
-
-	const {
-		loading: loadingCR5,
-		error: errorCR5,
-		data: dataCR5,
-	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerliCR5PoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-	})
-
-	useEffect(() => {
-		async function get24hDayChangePer() {
-			if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi) {
-				const ANFIData = dataAnfi.poolDayDatas
-				const CR5Data = dataCR5.poolDayDatas
-
-				const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price || 0
-				const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price || 0
-				const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
-
-				const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price || 0
-				const yesterdayCR5Price = CR5Data[CR5Data.length - 2]?.token0Price || 0
-				const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
-
-				// setDayChange({ anfi: todayANFIPrice - yesterdayANFIPrice, cr5: todayCR5Price - yesterdayCR5Price })
-				setDayChange({ anfi: anfi24hChng.toFixed(2), cr5: cr524hChng.toFixed(2) })
-			}
-		}
-
-		get24hDayChangePer()
-	}, [loadingCR5, loadingAnfi, errorCR5, errorAnfi])
-
-	useEffect(() => {
-		async function getPrice() {
-			const anfiTokenData = sepoliaTokens.find((d) => d.address === sepoliaAnfiV2IndexToken) as { address: string, decimals: number }
-			const cr5TokenData = sepoliaTokens.find((d) => d.address === sepoliaCrypto5V2IndexToken) as { address: string, decimals: number }
-
-			const marketPriceANFIUSD = await convertToUSD({ tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals }, ethPriceInUsd, false)
-			const marketPriceCR5USD = await convertToUSD({ tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals }, ethPriceInUsd, false)
-
-			setMktPrice({ anfi: marketPriceANFIUSD as number, cr5: marketPriceCR5USD as number })
-		}
-
-		getPrice()
-	}, [ethPriceInUsd])
-
-	// useEffect(() => {
-	// 	async function getPrice() {
-	// 		try {
-	// 			const anfiTokenData = sepoliaTokens.find((d) => d.address === sepoliaAnfiV2IndexToken) as { address: string, decimals: number };
-	// 			const cr5TokenData = sepoliaTokens.find((d) => d.address === sepoliaCrypto5V2IndexToken) as { address: string, decimals: number };
-
-	// 			console.log("anfiTokenData:", anfiTokenData);
-	// 			console.log("anfiTokenData:", { tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals });
-	// 			console.log("cr5TokenData:", cr5TokenData);
-	// 			console.log("cr5TokenData:", { tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals });
-
-	// 			if (!anfiTokenData || !cr5TokenData) {
-	// 				console.error("Token data not found.");
-	// 				return;
-	// 			}
-
-	// 			const marketPriceANFIUSD = await convertToUSD({ tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals }, ethPriceInUsd, false) as number
-	// 			const marketPriceCR5USD = await convertToUSD({ tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals }, ethPriceInUsd, false) as number
-
-	// 			console.log("marketPriceANFIUSD:", marketPriceANFIUSD);
-	// 			console.log("marketPriceCR5USD:", marketPriceCR5USD);
-
-	// 			if (isNaN(marketPriceANFIUSD) || isNaN(marketPriceCR5USD)) {
-	// 				console.error("Invalid market price data.");
-	// 				return;
-	// 			}
-
-	// 			setMktPrice({ anfi: marketPriceANFIUSD, cr5: marketPriceCR5USD });
-	// 		} catch (error) {
-	// 			console.error("Error fetching market prices:", error);
-	// 		}
-	// 	}
-
-	// 	getPrice();
-	// }, [ethPriceInUsd, sepoliaTokens, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken]);
-
-
-	const IndicesWithDetails = [
-		{
-			name: 'ANFI',
-			logo: anfiLogo,
-			symbol: 'ANFI',
-			shortSymbol: 'ANFI',
-			shortDescription:
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
-			description:
-				"The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.\nGold has traditionally been a reliable investment. Nevertheless, it's worth considering that Bitcoin, often referred to as 'digital gold,' has the potential to assume a prominent role in everyday life in the future.",
-			mktCap: 0,
-			mktPrice: mktPrice.anfi,
-			chg24h: dayChange.anfi,
-			tokenAddress: sepoliaAnfiV2IndexToken,
-			managementFee: '1.00',
-			totalSupply: '78622.32',
-			underlyingAssets: [
-				{
-					symbol: 'XAUT',
-					name: 'gold',
-					percentage: 70,
-					bgColor: '#A9C3B6',
-					hoverColor: '#D4B460',
-					logo: <SiTether size={20} color="#F2F2F2" />,
-				},
-				{
-					symbol: 'BTC',
-					name: 'bitcoin',
-					percentage: 30,
-					bgColor: '#BBC8C2',
-					hoverColor: '#F7931A',
-					logo: <GrBitcoin color="#F2F2F2" size={20} />,
-				},
-			],
-		},
-		{
-			name: 'CRYPTO 5',
-			logo: cr5Logo,
-			symbol: 'CRYPTO5',
-			shortSymbol: 'CR5',
-			shortDescription:
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
-			description:
-				'The "Crypto 5 Index" represents a meticulously curated basket of assets designed to provide investors with a secure and diversified entry into the digital assets industry. It not only offers stability through its carefully selected assets but also presents substantial growth potential. This makes it an ideal choice for crypto investors seeking a balanced and reliable investment option in the ever-evolving cryptocurrency landscape.',
-			mktCap: 0,
-			mktPrice: mktPrice.cr5,
-			chg24h: dayChange.cr5,
-			tokenAddress: sepoliaCrypto5V2IndexToken,
-			managementFee: '1.00',
-			totalSupply: '78622.32',
-			underlyingAssets: [
-				{
-					symbol: 'BTC',
-					name: 'bitcoin',
-					percentage: 50,
-					bgColor: '#A9C3B6',
-					hoverColor: '#F7931A',
-					logo: <GrBitcoin color="#F2F2F2" size={20} />,
-				},
-				{
-					symbol: 'ETH',
-					name: 'ethereum',
-					percentage: 25,
-					bgColor: '#BBC8C2',
-					hoverColor: '#627EEA',
-					logo: <FaEthereum color="#F2F2F2" size={19} />,
-				},
-				{
-					symbol: 'BNB',
-					name: 'binancecoin',
-					percentage: 8,
-					bgColor: '#C7CECA',
-					hoverColor: '#FCD535',
-					logo: <SiBinance color="#F2F2F2" size={19} />,
-				},
-				{
-					symbol: 'XRP',
-					name: 'riplle',
-					percentage: 12,
-					bgColor: '#C7CECA',
-					hoverColor: '#009393',
-					logo: <SiRipple color="#F2F2F2" size={19} />,
-				},
-
-				{
-					symbol: 'SOL',
-					name: 'solana',
-					percentage: 5,
-					bgColor: '#C7CECA',
-					hoverColor: '#2775CA',
-					logo: <TbCurrencySolana color="#F2F2F2" size={19} />,
-				},
-			],
-		},
-	]
-
-	const defaultIndexObject = IndicesWithDetails.find((o) => o.symbol === defaultIndex)
-	const othertIndexObject = IndicesWithDetails.find((o) => o.symbol != defaultIndex)
-
-	const IndexContract: UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
-	const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
-	const totalSupply = useContractRead(IndexContract.contract, 'totalSupply')
-	// console.log(num(totalSupply.data))
-
-	if (defaultIndexObject) {
-		defaultIndexObject.managementFee = feeRate.toFixed(2)
-		defaultIndexObject.totalSupply = num(totalSupply.data).toFixed(2)
-		// console.log(num(totalSupply.data) * defaultIndexObject.mktPrice)
-		defaultIndexObject.mktCap = num(totalSupply.data) * defaultIndexObject.mktPrice
-	}
-	const [CR5UnderLyingAssets, setCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
-	const [ANFIUnderLyingAssets, setANFIUnderLyingAssets] = useState<underlyingAsset[]>([])
-
-	const [SmallCR5UnderLyingAssets, setSmallCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
-	const [SmallANFIUnderLyingAssets, setSmallANFIUnderLyingAssets] = useState<underlyingAsset[]>([])
-
-	async function getANFIWeights() {
-		try {
-			const response = await axios.get('/api/getWeights')
-			const RawANFIUnderlyingAssets = response.data.anfi
-
-			// Big logos for POR section :
-
-			setANFIUnderLyingAssets([])
-
-			const assets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
-				const Asset: underlyingAsset = {
-					name: underLyingAssetData.name === 'bitcoin' ? 'Bitcoin' : 'Gold',
-					logo: underLyingAssetData.name === 'bitcoin' ? <GrBitcoin color="#FFFFFF" size={20} /> : <SiTether color="#FFFFFF" size={20} />,
-					symbol: underLyingAssetData.name === 'bitcoin' ? 'BTC' : 'XAUT',
-					percentage: underLyingAssetData.weight,
-				}
-				return Asset
-			})
-
-			setANFIUnderLyingAssets(assets)
-
-			// Small Logos for chart box card :
-			setSmallANFIUnderLyingAssets([])
-			const Smallassets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
-				const SmallAsset: underlyingAsset = {
-					name: underLyingAssetData.name === 'bitcoin' ? 'Bitcoin' : 'Gold',
-					logo: underLyingAssetData.name === 'bitcoin' ? <GrBitcoin color="#FFFFFF" size={22} /> : <SiTether color="#FFFFFF" size={22} />,
-					symbol: underLyingAssetData.name === 'bitcoin' ? 'BTC' : 'XAUT',
-					percentage: underLyingAssetData.weight,
-				}
-				return SmallAsset
-			})
-
-			setSmallANFIUnderLyingAssets(Smallassets)
-		} catch (error) {
-			console.error('Error fetching ANFI weights:', error)
-		}
-	}
-	async function getCR5Weights() {
-		try {
-			const response = await axios.get('/api/getWeights')
-			const RawCR5UnderlyingAssets = response.data.cr5
-
-			//Big logos for POR section :
-			setCR5UnderLyingAssets([])
-
-			const assets = RawCR5UnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
-				const Asset: underlyingAsset = {
-					name:
-						underLyingAssetData.name === 'bitcoin'
-							? 'Bitcoin'
-							: underLyingAssetData.name === 'ethereum'
-								? 'Ethereum'
-								: underLyingAssetData.name === 'binancecoin'
-									? 'Binance Coin'
-									: underLyingAssetData.name === 'ripple'
-										? 'Ripple XRP'
-										: 'Solana',
-					logo:
-						underLyingAssetData.name === 'bitcoin' ? (
-							<GrBitcoin color="#FFFFFF" size={20} />
-						) : underLyingAssetData.name === 'ethereum' ? (
-							<FaEthereum color="#FFFFFF" size={20} />
-						) : underLyingAssetData.name === 'binancecoin' ? (
-							<SiBinance color="#FFFFFF" size={20} />
-						) : underLyingAssetData.name === 'ripple' ? (
-							<SiRipple color="#FFFFFF" size={20} />
-						) : (
-							<TbCurrencySolana color="#FFFFFF" size={20} />
-						),
-					symbol:
-						underLyingAssetData.name === 'bitcoin'
-							? 'BTC'
-							: underLyingAssetData.name === 'ethereum'
-								? 'ETH'
-								: underLyingAssetData.name === 'binancecoin'
-									? 'BNB'
-									: underLyingAssetData.name === 'ripple'
-										? 'XRP'
-										: 'SOL',
-					percentage: underLyingAssetData.weight,
-				}
-				return Asset
-			})
-
-			setCR5UnderLyingAssets(assets)
-
-			// SMall logos for chart box card :
-			setSmallCR5UnderLyingAssets([])
-			const Smallassets = RawCR5UnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
-				const SmallAsset: underlyingAsset = {
-					name:
-						underLyingAssetData.name === 'bitcoin'
-							? 'Bitcoin'
-							: underLyingAssetData.name === 'ethereum'
-								? 'Ethereum'
-								: underLyingAssetData.name === 'binancecoin'
-									? 'Binance Coin'
-									: underLyingAssetData.name === 'ripple'
-										? 'Ripple XRP'
-										: 'Solana',
-					logo:
-						underLyingAssetData.name === 'bitcoin' ? (
-							<GrBitcoin color="#FFFFFF" size={22} />
-						) : underLyingAssetData.name === 'ethereum' ? (
-							<FaEthereum color="#FFFFFF" size={22} />
-						) : underLyingAssetData.name === 'binancecoin' ? (
-							<SiBinance color="#FFFFFF" size={22} />
-						) : underLyingAssetData.name === 'ripple' ? (
-							<SiRipple color="#FFFFFF" size={22} />
-						) : (
-							<TbCurrencySolana color="#FFFFFF" size={22} />
-						),
-					symbol:
-						underLyingAssetData.name === 'bitcoin'
-							? 'BTC'
-							: underLyingAssetData.name === 'ethereum'
-								? 'ETH'
-								: underLyingAssetData.name === 'binancecoin'
-									? 'BNB'
-									: underLyingAssetData.name === 'ripple'
-										? 'XRP'
-										: 'SOL',
-					percentage: underLyingAssetData.weight,
-				}
-				return SmallAsset
-			})
-
-			setSmallCR5UnderLyingAssets(Smallassets)
-		} catch (error) {
-			console.error('Error fetching CR5 weights:', error)
-		}
-	}
-
-	useEffect(() => {
-		getANFIWeights()
-		getCR5Weights()
-	}, [])
-
-	// useEffect(() => {
-	// 	console.log('CR5 : ', CR5UnderLyingAssets)
-	// }, [CR5UnderLyingAssets])
-
-	// useEffect(() => {
-	// 	console.log('CR5 : ', SmallCR5UnderLyingAssets)
-	// }, [SmallCR5UnderLyingAssets])
-
-	// useEffect(() => {
-	// 	console.log('ANFI :', ANFIUnderLyingAssets)
-	// }, [ANFIUnderLyingAssets])
-
-	// useEffect(() => {
-	// 	console.log('ANFI :', SmallANFIUnderLyingAssets)
-	// }, [SmallANFIUnderLyingAssets])
+	const sliderRef = React.useRef<Slider | null>(null);
 
 	return (
 		<>
 			{
 				isStandalone ? (
 					<>
-					
+
 					</>
 				) : (
 					<>
 						<section className="px-2 h-fit lg:px-10 py-6 xl:pt-16">
-							<div className="flex h-fit xl:h-fit flex-row items-stretch justify-between gap-1 xl:gap-4 mb-6">
-								<div
-									className={`w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50'
-										} `}
-									style={{
-										boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-										backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-									}}
+							<div className="w-full overflow-x-hidden flex h-fit xl:h-fit flex-row items-stretch justify-between gap-1 xl:gap-4 mb-2" id="TopDataSectionCarousel">
+								<Slider
+									prevArrow={
+										<CustomPrevArrow
+											className="glassy"
+											onClick={() => sliderRef.current?.slickPrev()}
+										/>
+									}
+									nextArrow={
+										<CustomNextArrow
+											className="glassy"
+											onClick={() => sliderRef.current?.slickNext()}
+										/>
+									}
+									dots={false}
+									infinite={false}
+									speed={500}
+									slidesToShow={1}
+									autoplay={false}
+									arrows
+									className="relative m-0 h-full w-full p-0"
+									ref={sliderRef}
+									
 								>
-									<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
-										<div className="flex flex-row items-center justify-start">
-											<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-											<h5 className={`interBlack mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.name}</h5>
+									<div
+										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50'
+											} `}
+										style={{
+											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : `url('${mesh1.src}')`,
+											backgroundColor: mode == 'dark' ? `green` : '',
+										}}
+									>
+										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
+											<div className="flex flex-row items-center justify-start">
+												<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
+												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.name}</h5>
+											</div>
 										</div>
-									</div>
-									<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-										{defaultIndexObject?.symbol == 'ANFI' ? (
-											<div className="flex flex-row items-center justify-start">
-												{[...ANFIUnderLyingAssets]
-													.sort((a, b) => b.percentage - a.percentage)
-													.map((asset, i) => {
-														const zindex = i * 10
-														return (
-															<div
-																key={i}
-																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																	}  p-[4px] `}
-																style={{
-																	zIndex: `'${zindex}'`,
-																	marginLeft: '-2%',
-																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																}}
-															>
-																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-															</div>
-														)
-													})}
-											</div>
-										) : (
-											<div className="flex flex-row items-center justify-start">
-												{[...CR5UnderLyingAssets]
-													.sort((a, b) => b.percentage - a.percentage)
-													.map((asset, i) => {
-														const zindex = i * 10
-														return (
-															<div
-																key={i}
-																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																	}  p-[4px] `}
-																style={{
-																	zIndex: `'${zindex}'`,
-																	marginLeft: '-2%',
-																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																}}
-															>
-																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-															</div>
-														)
-													})}
-											</div>
-										)}
-									</div>
-									<div className={`hidden xl:block w-full h-[1px] ${mode == 'dark' ? 'bg-gray-300' : 'bg-blackText-500'}  my-4`}></div>
-									<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.description}</h5>
-								</div>
-								<div
-									className={`w-full lg:w-1/2 xl:flex-grow xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
-										} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
-									onClick={() => {
-										if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
-											changeDefaultIndex('ANFI')
-										} else {
-											changeDefaultIndex('CRYPTO5')
-										}
-									}}
-								>
-									<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
-										<div className="flex flex-row items-center justify-start">
-											<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-											<h5 className={`interBlack mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.name} </h5>
+										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
+											{defaultIndexObject?.symbol == 'ANFI' ? (
+												<div className="flex flex-row items-center justify-start">
+													{[...ANFIUnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											) : (
+												<div className="flex flex-row items-center justify-start">
+													{[...CR5UnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											)}
 										</div>
-										<div
-											className={`hidden xl:flex flex-row items-center justify-center gap-1 ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
-												} active:translate-y-[1px] active:shadow-black  py-2 px-4 rounded-full`}
-											style={{
-												boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-												backgroundSize: mode == 'dark' ? '120%' : '',
-											}}
-										>
-											<h5 className="text-sm interMedium text-whiteText-500">See {othertIndexObject?.name}</h5>
+										<div className={`hidden xl:block w-full h-[1px] ${mode == 'dark' ? 'bg-gray-300' : 'bg-blackText-500'}  my-4`}></div>
+										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.description}</h5>
+									</div>
+									<div
+										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
+											} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
+										onClick={() => {
+											if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
+												changeDefaultIndex('ANFI')
+											} else {
+												changeDefaultIndex('CRYPTO5')
+											}
+										}}
+									>
+										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
+											<div className="flex flex-row items-center justify-start">
+												<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
+												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.name} </h5>
+											</div>
+											
 										</div>
+										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
+											{othertIndexObject?.symbol == 'ANFI' ? (
+												<div className="flex flex-row items-center justify-start">
+													{[...ANFIUnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											) : (
+												<div className="flex flex-row items-center justify-start">
+													{[...CR5UnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											)}
+										</div>
+										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
+										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.description}</h5>
 									</div>
-									<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-										{othertIndexObject?.symbol == 'ANFI' ? (
+									<div
+										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
+											} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
+										onClick={() => {
+											
+										}}
+									>
+										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 											<div className="flex flex-row items-center justify-start">
-												{[...ANFIUnderLyingAssets]
-													.sort((a, b) => b.percentage - a.percentage)
-													.map((asset, i) => {
-														const zindex = i * 10
-														return (
-															<div
-																key={i}
-																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																	}  p-[4px] `}
-																style={{
-																	zIndex: `'${zindex}'`,
-																	marginLeft: '-2%',
-																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																}}
-															>
-																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-															</div>
-														)
-													})}
+												<Image src={mag7} alt="" height={35} width={35} className="mr-2"></Image>
+												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>MAG7</h5>
 											</div>
-										) : (
-											<div className="flex flex-row items-center justify-start">
-												{[...CR5UnderLyingAssets]
-													.sort((a, b) => b.percentage - a.percentage)
-													.map((asset, i) => {
-														const zindex = i * 10
-														return (
-															<div
-																key={i}
-																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																	}  p-[4px] `}
-																style={{
-																	zIndex: `'${zindex}'`,
-																	marginLeft: '-2%',
-																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																}}
-															>
-																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-															</div>
-														)
-													})}
-											</div>
-										)}
+											
+										</div>
+										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
+											{othertIndexObject?.symbol == 'ANFI' ? (
+												<div className="flex flex-row items-center justify-start">
+													{[...ANFIUnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											) : (
+												<div className="flex flex-row items-center justify-start">
+													{[...CR5UnderLyingAssets]
+														.sort((a, b) => b.percentage - a.percentage)
+														.map((asset, i) => {
+															const zindex = i * 10
+															return (
+																<div
+																	key={i}
+																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																		}  p-[4px] `}
+																	style={{
+																		zIndex: `'${zindex}'`,
+																		marginLeft: '-2%',
+																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																	}}
+																>
+																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+																</div>
+															)
+														})}
+												</div>
+											)}
+										</div>
+										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
+										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
+										Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+										</h5>
 									</div>
-									<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
-									<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.description}</h5>
-								</div>
+								</Slider>
+
+
 							</div>
 							<div className="flex w-full flex-row items-center justify-center">
 								<div className={`h-[1px] w-full ${mode == 'dark' ? ' bg-whiteBackground-500/80' : 'bg-blackText-500/20'} `}></div>

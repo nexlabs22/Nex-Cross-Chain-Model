@@ -32,19 +32,19 @@ export default function USDisclaimer() {
 				<DappNavbar />
 				<section className="w-screen h-fit flex flex-col items-stretch justify-start px-4 lg:px-10 pt-10 pb-12">
 					<h5 className={` text-4xl interBold mb-6 ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>US Disclaimer</h5>
-					<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+					<p className={` text-sm leading-normal mt-4 xl:w-full lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
 						Dear users,
 					</p>
-                    <p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+                    <p className={` text-sm leading-normal mt-4 xl:w-full lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
                     Please be advised that, in accordance with international regulations and the laws in force in the United States of America, our European investment and trading platform is not authorized to accept clients resident in the USA. Regulatory provisions, including but not limited to MiFID II and PRIIPs, impose specific restrictions that prevent US users from opening new positions or executing trades via our services.
 					</p>
-                    <p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+                    <p className={` text-sm leading-normal mt-4 xl:w-full lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
                     Our platform is committed to fully complying with applicable laws and regulations to ensure maximum transparency and security for all investors. Therefore, we are required to disclaim any form of registration or trading activity by citizens or residents of the United States.
 					</p>
-                    <p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+                    <p className={` text-sm leading-normal mt-4 xl:w-full lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
                     For further information or clarification, please contact the relevant financial regulatory authorities in your country of residence.
 					</p>
-                    <p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
+                    <p className={` text-sm leading-normal mt-4 xl:w-full lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
                     We thank you for your consideration and understand the importance of adhering to these important compliance measures.
 					</p>
 

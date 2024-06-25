@@ -218,7 +218,7 @@ export default function Trade() {
 						opacity: isUSA ? "0.05" : "1"
 					}}>
 					<div className="w-full lg:w-9/12 flex-grow ">
-						<HistoryTable />
+						<HistoryTable maxPWAHeight={false}/>
 					</div>
 					<div className="w-full flex-grow lg:w-3/12 flex flex-col items-center justify-start gap-2">
 						{selectedTradingCategory == 'cefi' ? <TipsBox /> : <TipsBox />}

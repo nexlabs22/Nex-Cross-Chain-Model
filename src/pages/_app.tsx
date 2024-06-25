@@ -28,6 +28,11 @@ import { useEffect } from 'react'
 import useTradePageStore from '@/store/tradeStore'
 import { useChartDataStore } from '@/store/store'
 import TimeTracker from '@/components/googleTimeTracking'
+import { PWAProvider } from '@/providers/PWAProvider'
+import { PortfolioProvider } from '@/providers/PortfolioProvider'
+import { DashboardProvider } from '@/providers/DashboardProvider'
+import { DeFiSwapProvider } from '@/providers/DefiSwapProvider'
+import { HistoryProvider } from '@/providers/HistoryProvider'
 
 export default function App({ Component, pageProps }: AppProps) {
 	const { setEthPriceInUsd } = useTradePageStore()
@@ -67,8 +72,18 @@ export default function App({ Component, pageProps }: AppProps) {
 			>
 				<ApolloProvider client={apolloClient}>
 					<ThemeProvider theme={theme}>
-						<Component {...pageProps} />
+						<PWAProvider>
+							<DashboardProvider>
+								<PortfolioProvider>
+									<DeFiSwapProvider>
+										<HistoryProvider>
+											<Component {...pageProps} />
 						<Analytics />
+										</HistoryProvider>
+									</DeFiSwapProvider>
+								</PortfolioProvider>
+							</DashboardProvider>
+						</PWAProvider>
 					</ThemeProvider>
 				</ApolloProvider>
 			</ThirdwebProvider>
