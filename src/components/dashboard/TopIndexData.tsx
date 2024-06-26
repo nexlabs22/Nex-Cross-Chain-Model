@@ -76,6 +76,7 @@ const TopIndexData = () => {
 		othertIndexObject,
 		CR5UnderLyingAssets,
 		ANFIUnderLyingAssets,
+		MAG7UnderLyingAssets
 	} = useDashboard();
 	const { isStandalone } = usePWA()
 	const { mode } = useLandingPageStore()
@@ -114,7 +115,7 @@ const TopIndexData = () => {
 									arrows
 									className="relative m-0 h-full w-full p-0"
 									ref={sliderRef}
-									
+
 								>
 									<div
 										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50'
@@ -199,7 +200,7 @@ const TopIndexData = () => {
 												<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
 												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.name} </h5>
 											</div>
-											
+
 										</div>
 										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
 											{othertIndexObject?.symbol == 'ANFI' ? (
@@ -257,7 +258,7 @@ const TopIndexData = () => {
 										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
 											} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
 										onClick={() => {
-											
+
 										}}
 									>
 										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
@@ -265,60 +266,35 @@ const TopIndexData = () => {
 												<Image src={mag7} alt="" height={35} width={35} className="mr-2"></Image>
 												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>MAG7</h5>
 											</div>
-											
+
 										</div>
 										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-											{othertIndexObject?.symbol == 'ANFI' ? (
-												<div className="flex flex-row items-center justify-start">
-													{[...ANFIUnderLyingAssets]
-														.sort((a, b) => b.percentage - a.percentage)
-														.map((asset, i) => {
-															const zindex = i * 10
-															return (
-																<div
-																	key={i}
-																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																		}  p-[4px] `}
-																	style={{
-																		zIndex: `'${zindex}'`,
-																		marginLeft: '-2%',
-																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																	}}
-																>
-																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-																</div>
-															)
-														})}
-												</div>
-											) : (
-												<div className="flex flex-row items-center justify-start">
-													{[...CR5UnderLyingAssets]
-														.sort((a, b) => b.percentage - a.percentage)
-														.map((asset, i) => {
-															const zindex = i * 10
-															return (
-																<div
-																	key={i}
-																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																		}  p-[4px] `}
-																	style={{
-																		zIndex: `'${zindex}'`,
-																		marginLeft: '-2%',
-																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																	}}
-																>
-																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-																</div>
-															)
-														})}
-												</div>
-											)}
+											<div className="flex flex-row items-center justify-start">
+												{[...MAG7UnderLyingAssets]
+													.sort((a, b) => b.percentage - a.percentage)
+													.map((asset, i) => {
+														const zindex = i * 10
+														return (
+															<div
+																key={i}
+																className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
+																	}  p-[4px] `}
+																style={{
+																	zIndex: `'${zindex}'`,
+																	marginLeft: '-2%',
+																	boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
+																	backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
+																}}
+															>
+																<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
+															</div>
+														)
+													})}
+											</div>
 										</div>
 										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
 										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
-										Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+										The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.
 										</h5>
 									</div>
 								</Slider>

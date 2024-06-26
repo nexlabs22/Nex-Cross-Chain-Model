@@ -26,9 +26,11 @@ import { useChartDataStore, useLandingPageStore } from '@/store/store'
 // Media && Icons : 
 import managment from '@assets/images/managment.png'
 import { GrBitcoin, GrFormClose } from 'react-icons/gr'
-import { BsInfoCircle } from 'react-icons/bs'
-import { FaEthereum } from 'react-icons/fa'
-import { SiTether, SiBinance, SiRipple } from 'react-icons/si'
+import { BsInfoCircle, BsNvidia } from 'react-icons/bs'
+import { FaAmazon, FaApple, FaEthereum, FaGoogle } from 'react-icons/fa'
+import { SiTether, SiBinance, SiRipple, SiTesla } from 'react-icons/si'
+import { TfiMicrosoftAlt } from "react-icons/tfi";
+
 import { AiOutlinePlus } from 'react-icons/ai'
 import { CiGlobe, CiStreamOn } from 'react-icons/ci'
 import { CgArrowsExchange } from 'react-icons/cg'
@@ -37,6 +39,7 @@ import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import { GoArrowRight } from 'react-icons/go'
 import mesh1 from '@assets/images/mesh1.png'
+import { FaMeta } from 'react-icons/fa6';
 
 type underlyingAsset = {
     name: string
@@ -104,10 +107,13 @@ interface DashboardContextProps {
     totalSupply: any
     CR5UnderLyingAssets: underlyingAsset[];
     ANFIUnderLyingAssets: underlyingAsset[];
+    MAG7UnderLyingAssets: underlyingAsset[];
     SmallCR5UnderLyingAssets: underlyingAsset[];
     SmallANFIUnderLyingAssets: underlyingAsset[];
+    SmallMAG7UnderLyingAssets: underlyingAsset[];
     getANFIWeights(): Promise<void>
     getCR5Weights(): Promise<void>
+    getMAG7Weights(): Promise<void>
 }
 
 
@@ -151,10 +157,13 @@ const DashboardContext = createContext<DashboardContextProps>({
     totalSupply: null,
     CR5UnderLyingAssets: [],
     ANFIUnderLyingAssets: [],
+    MAG7UnderLyingAssets: [],
     SmallCR5UnderLyingAssets: [],
     SmallANFIUnderLyingAssets: [],
+    SmallMAG7UnderLyingAssets: [],
     getANFIWeights: () => Promise.resolve(),
     getCR5Weights: () => Promise.resolve(),
+    getMAG7Weights: () => Promise.resolve(),
 })
 
 const useDashboard = () => {
@@ -380,148 +389,194 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [CR5UnderLyingAssets, setCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
     const [ANFIUnderLyingAssets, setANFIUnderLyingAssets] = useState<underlyingAsset[]>([])
+    const [MAG7UnderLyingAssets, setMAG7UnderLyingAssets] = useState<underlyingAsset[]>([])
 
     const [SmallCR5UnderLyingAssets, setSmallCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
     const [SmallANFIUnderLyingAssets, setSmallANFIUnderLyingAssets] = useState<underlyingAsset[]>([])
+    const [SmallMAG7UnderLyingAssets, setSmallMAG7UnderLyingAssets] = useState<underlyingAsset[]>([])
 
     async function getANFIWeights() {
-		try {
-			const response = await axios.get('/api/getWeights')
-			const RawANFIUnderlyingAssets = response.data.anfi
+        try {
+            const response = await axios.get('/api/getWeights')
+            const RawANFIUnderlyingAssets = response.data.anfi
 
-			// Big logos for POR section :
+            // Big logos for POR section :
 
-			setANFIUnderLyingAssets([])
+            setANFIUnderLyingAssets([])
 
-			const assets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
-				const Asset: underlyingAsset = {
-					name: underLyingAssetData.name === 'bitcoin' ? 'Bitcoin' : 'Gold',
-					logo: underLyingAssetData.name === 'bitcoin' ? <GrBitcoin color="#FFFFFF" size={20} /> : <SiTether color="#FFFFFF" size={20} />,
-					symbol: underLyingAssetData.name === 'bitcoin' ? 'BTC' : 'XAUT',
-					percentage: underLyingAssetData.weight,
-				}
-				return Asset
-			})
+            const assets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
+                const Asset: underlyingAsset = {
+                    name: underLyingAssetData.name === 'bitcoin' ? 'Bitcoin' : 'Gold',
+                    logo: underLyingAssetData.name === 'bitcoin' ? <GrBitcoin color="#FFFFFF" size={20} /> : <SiTether color="#FFFFFF" size={20} />,
+                    symbol: underLyingAssetData.name === 'bitcoin' ? 'BTC' : 'XAUT',
+                    percentage: underLyingAssetData.weight,
+                }
+                return Asset
+            })
 
-			setANFIUnderLyingAssets(assets)
+            setANFIUnderLyingAssets(assets)
 
-			// Small Logos for chart box card :
-			setSmallANFIUnderLyingAssets([])
-			const Smallassets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
-				const SmallAsset: underlyingAsset = {
-					name: underLyingAssetData.name === 'bitcoin' ? 'Bitcoin' : 'Gold',
-					logo: underLyingAssetData.name === 'bitcoin' ? <GrBitcoin color="#FFFFFF" size={22} /> : <SiTether color="#FFFFFF" size={22} />,
-					symbol: underLyingAssetData.name === 'bitcoin' ? 'BTC' : 'XAUT',
-					percentage: underLyingAssetData.weight,
-				}
-				return SmallAsset
-			})
+            // Small Logos for chart box card :
+            setSmallANFIUnderLyingAssets([])
+            const Smallassets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
+                const SmallAsset: underlyingAsset = {
+                    name: underLyingAssetData.name === 'bitcoin' ? 'Bitcoin' : 'Gold',
+                    logo: underLyingAssetData.name === 'bitcoin' ? <GrBitcoin color="#FFFFFF" size={22} /> : <SiTether color="#FFFFFF" size={22} />,
+                    symbol: underLyingAssetData.name === 'bitcoin' ? 'BTC' : 'XAUT',
+                    percentage: underLyingAssetData.weight,
+                }
+                return SmallAsset
+            })
 
-			setSmallANFIUnderLyingAssets(Smallassets)
-		} catch (error) {
-			console.error('Error fetching ANFI weights:', error)
-		}
-	}
-	async function getCR5Weights() {
-		try {
-			const response = await axios.get('/api/getWeights')
-			const RawCR5UnderlyingAssets = response.data.cr5
+            setSmallANFIUnderLyingAssets(Smallassets)
+        } catch (error) {
+            console.error('Error fetching ANFI weights:', error)
+        }
+    }
 
-			//Big logos for POR section :
-			setCR5UnderLyingAssets([])
+    async function getCR5Weights() {
+        try {
+            const response = await axios.get('/api/getWeights')
+            const RawCR5UnderlyingAssets = response.data.cr5
 
-			const assets = RawCR5UnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
-				const Asset: underlyingAsset = {
-					name:
-						underLyingAssetData.name === 'bitcoin'
-							? 'Bitcoin'
-							: underLyingAssetData.name === 'ethereum'
-								? 'Ethereum'
-								: underLyingAssetData.name === 'binancecoin'
-									? 'Binance Coin'
-									: underLyingAssetData.name === 'ripple'
-										? 'Ripple XRP'
-										: 'Solana',
-					logo:
-						underLyingAssetData.name === 'bitcoin' ? (
-							<GrBitcoin color="#FFFFFF" size={20} />
-						) : underLyingAssetData.name === 'ethereum' ? (
-							<FaEthereum color="#FFFFFF" size={20} />
-						) : underLyingAssetData.name === 'binancecoin' ? (
-							<SiBinance color="#FFFFFF" size={20} />
-						) : underLyingAssetData.name === 'ripple' ? (
-							<SiRipple color="#FFFFFF" size={20} />
-						) : (
-							<TbCurrencySolana color="#FFFFFF" size={20} />
-						),
-					symbol:
-						underLyingAssetData.name === 'bitcoin'
-							? 'BTC'
-							: underLyingAssetData.name === 'ethereum'
-								? 'ETH'
-								: underLyingAssetData.name === 'binancecoin'
-									? 'BNB'
-									: underLyingAssetData.name === 'ripple'
-										? 'XRP'
-										: 'SOL',
-					percentage: underLyingAssetData.weight,
-				}
-				return Asset
-			})
+            //Big logos for POR section :
+            setCR5UnderLyingAssets([])
 
-			setCR5UnderLyingAssets(assets)
+            const assets = RawCR5UnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
+                const Asset: underlyingAsset = {
+                    name:
+                        underLyingAssetData.name === 'bitcoin'
+                            ? 'Bitcoin'
+                            : underLyingAssetData.name === 'ethereum'
+                                ? 'Ethereum'
+                                : underLyingAssetData.name === 'binancecoin'
+                                    ? 'Binance Coin'
+                                    : underLyingAssetData.name === 'ripple'
+                                        ? 'Ripple XRP'
+                                        : 'Solana',
+                    logo:
+                        underLyingAssetData.name === 'bitcoin' ? (
+                            <GrBitcoin color="#FFFFFF" size={20} />
+                        ) : underLyingAssetData.name === 'ethereum' ? (
+                            <FaEthereum color="#FFFFFF" size={20} />
+                        ) : underLyingAssetData.name === 'binancecoin' ? (
+                            <SiBinance color="#FFFFFF" size={20} />
+                        ) : underLyingAssetData.name === 'ripple' ? (
+                            <SiRipple color="#FFFFFF" size={20} />
+                        ) : (
+                            <TbCurrencySolana color="#FFFFFF" size={20} />
+                        ),
+                    symbol:
+                        underLyingAssetData.name === 'bitcoin'
+                            ? 'BTC'
+                            : underLyingAssetData.name === 'ethereum'
+                                ? 'ETH'
+                                : underLyingAssetData.name === 'binancecoin'
+                                    ? 'BNB'
+                                    : underLyingAssetData.name === 'ripple'
+                                        ? 'XRP'
+                                        : 'SOL',
+                    percentage: underLyingAssetData.weight,
+                }
+                return Asset
+            })
 
-			// SMall logos for chart box card :
-			setSmallCR5UnderLyingAssets([])
-			const Smallassets = RawCR5UnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
-				const SmallAsset: underlyingAsset = {
-					name:
-						underLyingAssetData.name === 'bitcoin'
-							? 'Bitcoin'
-							: underLyingAssetData.name === 'ethereum'
-								? 'Ethereum'
-								: underLyingAssetData.name === 'binancecoin'
-									? 'Binance Coin'
-									: underLyingAssetData.name === 'ripple'
-										? 'Ripple XRP'
-										: 'Solana',
-					logo:
-						underLyingAssetData.name === 'bitcoin' ? (
-							<GrBitcoin color="#FFFFFF" size={22} />
-						) : underLyingAssetData.name === 'ethereum' ? (
-							<FaEthereum color="#FFFFFF" size={22} />
-						) : underLyingAssetData.name === 'binancecoin' ? (
-							<SiBinance color="#FFFFFF" size={22} />
-						) : underLyingAssetData.name === 'ripple' ? (
-							<SiRipple color="#FFFFFF" size={22} />
-						) : (
-							<TbCurrencySolana color="#FFFFFF" size={22} />
-						),
-					symbol:
-						underLyingAssetData.name === 'bitcoin'
-							? 'BTC'
-							: underLyingAssetData.name === 'ethereum'
-								? 'ETH'
-								: underLyingAssetData.name === 'binancecoin'
-									? 'BNB'
-									: underLyingAssetData.name === 'ripple'
-										? 'XRP'
-										: 'SOL',
-					percentage: underLyingAssetData.weight,
-				}
-				return SmallAsset
-			})
+            setCR5UnderLyingAssets(assets)
 
-			setSmallCR5UnderLyingAssets(Smallassets)
-		} catch (error) {
-			console.error('Error fetching CR5 weights:', error)
-		}
-	}
+            // SMall logos for chart box card :
+            setSmallCR5UnderLyingAssets([])
+            const Smallassets = RawCR5UnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
+                const SmallAsset: underlyingAsset = {
+                    name:
+                        underLyingAssetData.name === 'bitcoin'
+                            ? 'Bitcoin'
+                            : underLyingAssetData.name === 'ethereum'
+                                ? 'Ethereum'
+                                : underLyingAssetData.name === 'binancecoin'
+                                    ? 'Binance Coin'
+                                    : underLyingAssetData.name === 'ripple'
+                                        ? 'Ripple XRP'
+                                        : 'Solana',
+                    logo:
+                        underLyingAssetData.name === 'bitcoin' ? (
+                            <GrBitcoin color="#FFFFFF" size={22} />
+                        ) : underLyingAssetData.name === 'ethereum' ? (
+                            <FaEthereum color="#FFFFFF" size={22} />
+                        ) : underLyingAssetData.name === 'binancecoin' ? (
+                            <SiBinance color="#FFFFFF" size={22} />
+                        ) : underLyingAssetData.name === 'ripple' ? (
+                            <SiRipple color="#FFFFFF" size={22} />
+                        ) : (
+                            <TbCurrencySolana color="#FFFFFF" size={22} />
+                        ),
+                    symbol:
+                        underLyingAssetData.name === 'bitcoin'
+                            ? 'BTC'
+                            : underLyingAssetData.name === 'ethereum'
+                                ? 'ETH'
+                                : underLyingAssetData.name === 'binancecoin'
+                                    ? 'BNB'
+                                    : underLyingAssetData.name === 'ripple'
+                                        ? 'XRP'
+                                        : 'SOL',
+                    percentage: underLyingAssetData.weight,
+                }
+                return SmallAsset
+            })
 
-	useEffect(() => {
-		getANFIWeights()
-		getCR5Weights()
-	}, [])
+            setSmallCR5UnderLyingAssets(Smallassets)
+        } catch (error) {
+            console.error('Error fetching CR5 weights:', error)
+        }
+    }
+
+    async function getMAG7Weights() {
+        try {
+            const response = await axios.get('https://vercel-cron-xi.vercel.app/api/getMag7Weights')
+            console.log("response: "+response)
+            const RawMAG7UnderlyingAssets = response.data.data.allocations
+            console.log("weights: "+ RawMAG7UnderlyingAssets)
+
+            setMAG7UnderLyingAssets([])
+
+            const assets = RawMAG7UnderlyingAssets.map((underLyingAssetData: { symbol: string; weight: any }) => {
+                const Asset: underlyingAsset = {
+                    name: underLyingAssetData.symbol.toUpperCase(),
+                    // eslint-disable-next-line react/jsx-no-undef
+                    logo: underLyingAssetData.symbol === 'AAPL' ? <FaApple color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'GOOG' ? <FaGoogle color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'MSFT' ? <TfiMicrosoftAlt color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'NVDA' ? <BsNvidia color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'AMZN' ? <FaAmazon color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'META' ? <FaMeta color="#FFFFFF" size={20} /> : <SiTesla color="#FFFFFF" size={18} />,
+                    symbol: underLyingAssetData.symbol,
+                    percentage: underLyingAssetData.weight,
+                }
+                return Asset
+            })
+
+            setMAG7UnderLyingAssets(assets)
+
+            setSmallMAG7UnderLyingAssets([])
+            const smallAssets = RawMAG7UnderlyingAssets.map((underLyingAssetData: { symbol: string; weight: any }) => {
+                const SmallAsset: underlyingAsset = {
+                    name: underLyingAssetData.symbol.toUpperCase(),
+                    // eslint-disable-next-line react/jsx-no-undef
+                    logo: underLyingAssetData.symbol === 'AAPL' ? <FaApple color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'GOOG' ? <FaGoogle color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'MSFT' ? <TfiMicrosoftAlt color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'NVDA' ? <BsNvidia color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'AMZN' ? <FaAmazon color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'META' ? <FaMeta color="#FFFFFF" size={22} /> : <SiTesla color="#FFFFFF" size={22} />,
+                    symbol: underLyingAssetData.symbol,
+                    percentage: underLyingAssetData.weight,
+                }
+                return SmallAsset
+            })
+
+            setSmallMAG7UnderLyingAssets(smallAssets)
+        } catch (error) {
+            console.error('Error fetching MAG7 weights:', error)
+        }
+
+
+    }
+
+    useEffect(() => {
+        getANFIWeights()
+        getCR5Weights()
+        getMAG7Weights()
+    }, [])
 
     const contextValue = {
         mktPrice: mktPrice,
@@ -534,10 +589,13 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
         totalSupply: totalSupply,
         CR5UnderLyingAssets: CR5UnderLyingAssets,
         ANFIUnderLyingAssets: ANFIUnderLyingAssets,
+        MAG7UnderLyingAssets: MAG7UnderLyingAssets,
         SmallCR5UnderLyingAssets: SmallCR5UnderLyingAssets,
         SmallANFIUnderLyingAssets: SmallANFIUnderLyingAssets,
+        SmallMAG7UnderLyingAssets: SmallANFIUnderLyingAssets,
         getANFIWeights: getANFIWeights,
         getCR5Weights: getCR5Weights,
+        getMAG7Weights: getMAG7Weights,
     }
     return (
         <DashboardContext.Provider value={contextValue}>
