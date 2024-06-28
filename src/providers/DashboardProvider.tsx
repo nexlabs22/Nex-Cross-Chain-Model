@@ -72,7 +72,7 @@ interface DashboardContextProps {
         totalSupply: string;
         underlyingAssets: underlyingAsset[];
     }[];
-    defaultIndexObject: {
+    anfiIndexObject: {
         name: string;
         logo: StaticImageData | null;
         symbol: string;
@@ -87,7 +87,22 @@ interface DashboardContextProps {
         totalSupply: string;
         underlyingAssets: underlyingAsset[]
     } | undefined;
-    othertIndexObject: {
+    cr5IndexObject: {
+        name: string;
+        logo: StaticImageData | null;
+        symbol: string;
+        shortSymbol: string;
+        shortDescription: string;
+        description: string;
+        mktCap: number;
+        mktPrice: number;
+        chg24h: string;
+        tokenAddress: string;
+        managementFee: string;
+        totalSupply: string;
+        underlyingAssets: underlyingAsset[]
+    } | undefined;
+    mag7IndexObject: {
         name: string;
         logo: StaticImageData | null;
         symbol: string;
@@ -122,7 +137,7 @@ const DashboardContext = createContext<DashboardContextProps>({
     mktPrice: { anfi: 0, cr5: 0 },
     dayChange: { anfi: "0.00", cr5: "0.00" },
     IndicesWithDetails: [],
-    defaultIndexObject: {
+    anfiIndexObject: {
         name: "",
         logo: null,
         symbol: "",
@@ -137,7 +152,22 @@ const DashboardContext = createContext<DashboardContextProps>({
         totalSupply: "",
         underlyingAssets: [],
     },
-    othertIndexObject: {
+    cr5IndexObject: {
+        name: "",
+        logo: null,
+        symbol: "",
+        shortSymbol: "",
+        shortDescription: "",
+        description: "",
+        mktCap: 0,
+        mktPrice: 0,
+        chg24h: "",
+        tokenAddress: "",
+        managementFee: "",
+        totalSupply: "",
+        underlyingAssets: [],
+    },
+    mag7IndexObject: {
         name: "",
         logo: null,
         symbol: "",
@@ -277,114 +307,178 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
     // 	getPrice();
     // }, [ethPriceInUsd, sepoliaTokens, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken]);
 
-    const IndicesWithDetails = [
-        {
-            name: 'ANFI',
-            logo: anfiLogo,
-            symbol: 'ANFI',
-            shortSymbol: 'ANFI',
-            shortDescription:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
-            description:
-                "The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.\nGold has traditionally been a reliable investment. Nevertheless, it's worth considering that Bitcoin, often referred to as 'digital gold,' has the potential to assume a prominent role in everyday life in the future.",
-            mktCap: 0,
-            mktPrice: mktPrice.anfi,
-            chg24h: dayChange.anfi,
-            tokenAddress: sepoliaAnfiV2IndexToken,
-            managementFee: '1.00',
-            totalSupply: '78622.32',
-            underlyingAssets: [
-                {
-                    symbol: 'XAUT',
-                    name: 'gold',
-                    percentage: 70,
-                    bgColor: '#A9C3B6',
-                    hoverColor: '#D4B460',
-                    logo: <SiTether size={20} color="#F2F2F2" />,
-                },
-                {
-                    symbol: 'BTC',
-                    name: 'bitcoin',
-                    percentage: 30,
-                    bgColor: '#BBC8C2',
-                    hoverColor: '#F7931A',
-                    logo: <GrBitcoin color="#F2F2F2" size={20} />,
-                },
-            ],
-        },
-        {
-            name: 'CRYPTO 5',
-            logo: cr5Logo,
-            symbol: 'CRYPTO5',
-            shortSymbol: 'CR5',
-            shortDescription:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
-            description:
-                'The "Crypto 5 Index" represents a meticulously curated basket of assets designed to provide investors with a secure and diversified entry into the digital assets industry. It not only offers stability through its carefully selected assets but also presents substantial growth potential. This makes it an ideal choice for crypto investors seeking a balanced and reliable investment option in the ever-evolving cryptocurrency landscape.',
-            mktCap: 0,
-            mktPrice: mktPrice.cr5,
-            chg24h: dayChange.cr5,
-            tokenAddress: sepoliaCrypto5V2IndexToken,
-            managementFee: '1.00',
-            totalSupply: '78622.32',
-            underlyingAssets: [
-                {
-                    symbol: 'BTC',
-                    name: 'bitcoin',
-                    percentage: 50,
-                    bgColor: '#A9C3B6',
-                    hoverColor: '#F7931A',
-                    logo: <GrBitcoin color="#F2F2F2" size={20} />,
-                },
-                {
-                    symbol: 'ETH',
-                    name: 'ethereum',
-                    percentage: 25,
-                    bgColor: '#BBC8C2',
-                    hoverColor: '#627EEA',
-                    logo: <FaEthereum color="#F2F2F2" size={19} />,
-                },
-                {
-                    symbol: 'BNB',
-                    name: 'binancecoin',
-                    percentage: 8,
-                    bgColor: '#C7CECA',
-                    hoverColor: '#FCD535',
-                    logo: <SiBinance color="#F2F2F2" size={19} />,
-                },
-                {
-                    symbol: 'XRP',
-                    name: 'riplle',
-                    percentage: 12,
-                    bgColor: '#C7CECA',
-                    hoverColor: '#009393',
-                    logo: <SiRipple color="#F2F2F2" size={19} />,
-                },
+    // here you go
+    const [IndicesWithDetails, setIndicesWithDetails] = useState(
+        [
+            {
+                name: 'ANFI',
+                logo: anfiLogo,
+                symbol: 'ANFI',
+                shortSymbol: 'ANFI',
+                shortDescription:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
+                description:
+                    "The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.\nGold has traditionally been a reliable investment. Nevertheless, it's worth considering that Bitcoin, often referred to as 'digital gold,' has the potential to assume a prominent role in everyday life in the future.",
+                mktCap: 0,
+                mktPrice: mktPrice.anfi,
+                chg24h: dayChange.anfi,
+                tokenAddress: sepoliaAnfiV2IndexToken,
+                managementFee: '1.00',
+                totalSupply: '78622.32',
+                underlyingAssets: [
+                    {
+                        symbol: 'XAUT',
+                        name: 'gold',
+                        percentage: 70,
+                        bgColor: '#A9C3B6',
+                        hoverColor: '#D4B460',
+                        logo: <SiTether size={20} color="#F2F2F2" />,
+                    },
+                    {
+                        symbol: 'BTC',
+                        name: 'bitcoin',
+                        percentage: 30,
+                        bgColor: '#BBC8C2',
+                        hoverColor: '#F7931A',
+                        logo: <GrBitcoin color="#F2F2F2" size={20} />,
+                    },
+                ],
+            },
+            {
+                name: 'CRYPTO 5',
+                logo: cr5Logo,
+                symbol: 'CRYPTO5',
+                shortSymbol: 'CR5',
+                shortDescription:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
+                description:
+                    'The "Crypto 5 Index" represents a meticulously curated basket of assets designed to provide investors with a secure and diversified entry into the digital assets industry. It not only offers stability through its carefully selected assets but also presents substantial growth potential. This makes it an ideal choice for crypto investors seeking a balanced and reliable investment option in the ever-evolving cryptocurrency landscape.',
+                mktCap: 0,
+                mktPrice: mktPrice.cr5,
+                chg24h: dayChange.cr5,
+                tokenAddress: sepoliaCrypto5V2IndexToken,
+                managementFee: '1.00',
+                totalSupply: '78622.32',
+                underlyingAssets: [
+                    {
+                        symbol: 'BTC',
+                        name: 'bitcoin',
+                        percentage: 50,
+                        bgColor: '#A9C3B6',
+                        hoverColor: '#F7931A',
+                        logo: <GrBitcoin color="#F2F2F2" size={20} />,
+                    },
+                    {
+                        symbol: 'ETH',
+                        name: 'ethereum',
+                        percentage: 25,
+                        bgColor: '#BBC8C2',
+                        hoverColor: '#627EEA',
+                        logo: <FaEthereum color="#F2F2F2" size={19} />,
+                    },
+                    {
+                        symbol: 'BNB',
+                        name: 'binancecoin',
+                        percentage: 8,
+                        bgColor: '#C7CECA',
+                        hoverColor: '#FCD535',
+                        logo: <SiBinance color="#F2F2F2" size={19} />,
+                    },
+                    {
+                        symbol: 'XRP',
+                        name: 'riplle',
+                        percentage: 12,
+                        bgColor: '#C7CECA',
+                        hoverColor: '#009393',
+                        logo: <SiRipple color="#F2F2F2" size={19} />,
+                    },
+    
+                    {
+                        symbol: 'SOL',
+                        name: 'solana',
+                        percentage: 5,
+                        bgColor: '#C7CECA',
+                        hoverColor: '#2775CA',
+                        logo: <TbCurrencySolana color="#F2F2F2" size={19} />,
+                    },
+                ],
+            },
+            {
+                name: 'Magnificent 7 Index',
+                logo: cr5Logo,
+                symbol: 'MAG7',
+                shortSymbol: 'MAG7',
+                shortDescription:
+                    'The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.',
+                description:
+                    'The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.',
+                mktCap: 0,
+                mktPrice: mktPrice.cr5,
+                chg24h: dayChange.cr5,
+                tokenAddress: sepoliaCrypto5V2IndexToken,
+                managementFee: '1.00',
+                totalSupply: '78622.32',
+                underlyingAssets: [
+                    {
+                        symbol: 'BTC',
+                        name: 'bitcoin',
+                        percentage: 50,
+                        bgColor: '#A9C3B6',
+                        hoverColor: '#F7931A',
+                        logo: <GrBitcoin color="#F2F2F2" size={20} />,
+                    },
+                    {
+                        symbol: 'ETH',
+                        name: 'ethereum',
+                        percentage: 25,
+                        bgColor: '#BBC8C2',
+                        hoverColor: '#627EEA',
+                        logo: <FaEthereum color="#F2F2F2" size={19} />,
+                    },
+                    {
+                        symbol: 'BNB',
+                        name: 'binancecoin',
+                        percentage: 8,
+                        bgColor: '#C7CECA',
+                        hoverColor: '#FCD535',
+                        logo: <SiBinance color="#F2F2F2" size={19} />,
+                    },
+                    {
+                        symbol: 'XRP',
+                        name: 'riplle',
+                        percentage: 12,
+                        bgColor: '#C7CECA',
+                        hoverColor: '#009393',
+                        logo: <SiRipple color="#F2F2F2" size={19} />,
+                    },
+    
+                    {
+                        symbol: 'SOL',
+                        name: 'solana',
+                        percentage: 5,
+                        bgColor: '#C7CECA',
+                        hoverColor: '#2775CA',
+                        logo: <TbCurrencySolana color="#F2F2F2" size={19} />,
+                    },
+                ],
+            },
+        ]
+    )
+    
 
-                {
-                    symbol: 'SOL',
-                    name: 'solana',
-                    percentage: 5,
-                    bgColor: '#C7CECA',
-                    hoverColor: '#2775CA',
-                    logo: <TbCurrencySolana color="#F2F2F2" size={19} />,
-                },
-            ],
-        },
-    ]
+    const anfiIndexObject = IndicesWithDetails.find((o) => o.symbol === 'ANFI')
+    const cr5IndexObject = IndicesWithDetails.find((o) => o.symbol === 'CRYPTO5')
+    const mag7IndexObject = IndicesWithDetails.find((o) => o.symbol === 'MAG7')
 
-    const defaultIndexObject = IndicesWithDetails.find((o) => o.symbol === defaultIndex)
-    const othertIndexObject = IndicesWithDetails.find((o) => o.symbol != defaultIndex)
-
-    const IndexContract: UseContractResult = useContract(defaultIndexObject?.tokenAddress, indexTokenV2Abi)
+    const IndexContract: UseContractResult = useContract(anfiIndexObject?.tokenAddress, indexTokenV2Abi)
     const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
     const totalSupply = useContractRead(IndexContract.contract, 'totalSupply')
 
-    if (defaultIndexObject) {
-        defaultIndexObject.managementFee = feeRate.toFixed(2)
-        defaultIndexObject.totalSupply = num(totalSupply.data).toFixed(2)
-        // console.log(num(totalSupply.data) * defaultIndexObject.mktPrice)
-        defaultIndexObject.mktCap = num(totalSupply.data) * defaultIndexObject.mktPrice
+    if (anfiIndexObject) {
+        anfiIndexObject.managementFee = feeRate.toFixed(2)
+        anfiIndexObject.totalSupply = num(totalSupply.data).toFixed(2)
+        // console.log(num(totalSupply.data) * anfiIndexObject.mktPrice)
+        anfiIndexObject.mktCap = num(totalSupply.data) * anfiIndexObject.mktPrice
     }
 
     const [CR5UnderLyingAssets, setCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
@@ -530,12 +624,13 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+
     async function getMAG7Weights() {
         try {
             const response = await axios.get('https://vercel-cron-xi.vercel.app/api/getMag7Weights')
-            console.log("response: "+response)
+            console.log("response: " + response)
             const RawMAG7UnderlyingAssets = response.data.data.allocations
-            console.log("weights: "+ RawMAG7UnderlyingAssets)
+            console.log("weights: " + RawMAG7UnderlyingAssets)
 
             setMAG7UnderLyingAssets([])
 
@@ -565,6 +660,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             })
 
             setSmallMAG7UnderLyingAssets(smallAssets)
+            
         } catch (error) {
             console.error('Error fetching MAG7 weights:', error)
         }
@@ -576,14 +672,16 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
         getANFIWeights()
         getCR5Weights()
         getMAG7Weights()
+        //setIndicesWithDetails((prevState)=>[...new Set(IndicesWithDetails)]);
     }, [])
 
     const contextValue = {
         mktPrice: mktPrice,
         dayChange: dayChange,
         IndicesWithDetails: IndicesWithDetails,
-        defaultIndexObject: defaultIndexObject,
-        othertIndexObject: othertIndexObject,
+        anfiIndexObject: anfiIndexObject,
+        cr5IndexObject: cr5IndexObject,
+        mag7IndexObject: mag7IndexObject,
         IndexContract: IndexContract,
         feeRate: feeRate,
         totalSupply: totalSupply,
