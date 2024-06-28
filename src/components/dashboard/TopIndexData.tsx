@@ -34,7 +34,9 @@ import { GoArrowRight } from 'react-icons/go'
 import mag7 from '@assets/images/mag7.png'
 import React from 'react'
 import { CustomArrowProps } from "react-slick";
-import { Stack, Box } from "@mui/material";
+import { Stack, Box, Typography, Button } from "@mui/material";
+import Divider from '@mui/material/Divider';
+
 
 const CustomNextArrow: React.FC<CustomArrowProps> = ({
 	onClick,
@@ -72,16 +74,26 @@ const TopIndexData = () => {
 
 
 	const {
-		defaultIndexObject,
-		othertIndexObject,
+		anfiIndexObject,
+		cr5IndexObject,
+		mag7IndexObject,
 		CR5UnderLyingAssets,
 		ANFIUnderLyingAssets,
-		MAG7UnderLyingAssets
+		MAG7UnderLyingAssets,
+		IndicesWithDetails
 	} = useDashboard();
 	const { isStandalone } = usePWA()
 	const { mode } = useLandingPageStore()
 	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
 	const sliderRef = React.useRef<Slider | null>(null);
+
+	const [selectedIndex, setSelectedIndex] = useState(defaultIndex == "ANFI" ? anfiIndexObject : defaultIndex == "CRYPTO5" ? cr5IndexObject : mag7IndexObject)
+	const selectedIndexWeights = defaultIndex == "ANFI" ? ANFIUnderLyingAssets : defaultIndex == "CRYPTO5" ? CR5UnderLyingAssets : MAG7UnderLyingAssets
+
+	useEffect(() => {
+		setSelectedIndex(defaultIndex == "ANFI" ? anfiIndexObject : defaultIndex == "CRYPTO5" ? cr5IndexObject : mag7IndexObject)
+	}, [anfiIndexObject, cr5IndexObject, defaultIndex, mag7IndexObject])
+
 
 	return (
 		<>
@@ -92,7 +104,23 @@ const TopIndexData = () => {
 					</>
 				) : (
 					<>
-						<section className="px-2 h-fit lg:px-10 py-6 xl:pt-16">
+						<section className="px-2 h-fit lg:px-10 pb-6 pt-3 xl:pb-16 xl:pt-8">
+							<Stack width={"100%"} height={400} marginBottom={4} borderRadius={4} direction={"row"} gap={0.5} alignItems={"start"} justifyContent={"start"} divider={<Divider orientation="vertical" variant='middle' flexItem />} sx={{
+								backgroundColor: 'red'
+							}}>
+								<Stack width={"35%"} height={"fit-content"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+									<Stack direction={"row"} alignItems={"center"} justifyContent={"start"}>
+										<Image src={selectedIndex && selectedIndex.logo ? selectedIndex?.logo : ""} alt="" height={35} width={35} className="mr-2"></Image>
+										<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{selectedIndex?.name}</h5>
+									</Stack>
+									<h5 className={`interMedium hidden xl:block pt-4 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
+										{
+											selectedIndex?.description
+										}
+									</h5>
+								</Stack>
+								<Stack width={"30%"} height={"fit-content"} sx={{backgroundColor: "green"}}></Stack>
+							</Stack>
 							<div className="w-full overflow-x-hidden flex h-fit xl:h-fit flex-row items-stretch justify-between gap-1 xl:gap-4 mb-2" id="TopDataSectionCarousel">
 								<Slider
 									prevArrow={
@@ -128,12 +156,12 @@ const TopIndexData = () => {
 									>
 										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 											<div className="flex flex-row items-center justify-start">
-												<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.name}</h5>
+												<Image src={anfiIndexObject?.logo ? anfiIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
+												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{anfiIndexObject?.name}</h5>
 											</div>
 										</div>
 										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-											{defaultIndexObject?.symbol == 'ANFI' ? (
+											{anfiIndexObject?.symbol == 'ANFI' ? (
 												<div className="flex flex-row items-center justify-start">
 													{[...ANFIUnderLyingAssets]
 														.sort((a, b) => b.percentage - a.percentage)
@@ -182,13 +210,13 @@ const TopIndexData = () => {
 											)}
 										</div>
 										<div className={`hidden xl:block w-full h-[1px] ${mode == 'dark' ? 'bg-gray-300' : 'bg-blackText-500'}  my-4`}></div>
-										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.description}</h5>
+										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{anfiIndexObject?.description}</h5>
 									</div>
 									<div
 										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
 											} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
 										onClick={() => {
-											if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
+											if (anfiIndexObject && anfiIndexObject.symbol == 'CRYPTO5') {
 												changeDefaultIndex('ANFI')
 											} else {
 												changeDefaultIndex('CRYPTO5')
@@ -197,13 +225,13 @@ const TopIndexData = () => {
 									>
 										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
 											<div className="flex flex-row items-center justify-start">
-												<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.name} </h5>
+												<Image src={cr5IndexObject?.logo ? cr5IndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
+												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{cr5IndexObject?.name} </h5>
 											</div>
 
 										</div>
 										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-											{othertIndexObject?.symbol == 'ANFI' ? (
+											{cr5IndexObject?.symbol == 'ANFI' ? (
 												<div className="flex flex-row items-center justify-start">
 													{[...ANFIUnderLyingAssets]
 														.sort((a, b) => b.percentage - a.percentage)
@@ -252,7 +280,7 @@ const TopIndexData = () => {
 											)}
 										</div>
 										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
-										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.description}</h5>
+										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{cr5IndexObject?.description}</h5>
 									</div>
 									<div
 										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
@@ -294,13 +322,14 @@ const TopIndexData = () => {
 										</div>
 										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
 										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
-										The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.
+											The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.
 										</h5>
 									</div>
 								</Slider>
 
 
 							</div>
+
 							<div className="flex w-full flex-row items-center justify-center">
 								<div className={`h-[1px] w-full ${mode == 'dark' ? ' bg-whiteBackground-500/80' : 'bg-blackText-500/20'} `}></div>
 							</div>
@@ -328,7 +357,7 @@ const TopIndexData = () => {
 										</div>
 
 										<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
-											{FormatToViewNumber({ value: Number(defaultIndexObject?.mktCap), returnType: 'string' }) + ' ' + defaultIndexObject?.shortSymbol}
+											{FormatToViewNumber({ value: Number(anfiIndexObject?.mktCap), returnType: 'string' }) + ' ' + anfiIndexObject?.shortSymbol}
 										</h5>
 									</div>
 									<div>
@@ -351,7 +380,7 @@ const TopIndexData = () => {
 											</span>
 										</div>
 										<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
-											${FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })}
+											${FormatToViewNumber({ value: Number(anfiIndexObject?.mktPrice), returnType: 'string' })}
 										</h5>
 									</div>
 									<div>
@@ -373,8 +402,8 @@ const TopIndexData = () => {
 												</GenericTooltip>
 											</span>
 										</div>
-										<h5 className={`interMedium text-base  ${defaultIndexObject?.chg24h && Number(defaultIndexObject?.chg24h) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'}`}>
-											{defaultIndexObject?.chg24h}%
+										<h5 className={`interMedium text-base  ${anfiIndexObject?.chg24h && Number(anfiIndexObject?.chg24h) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'}`}>
+											{anfiIndexObject?.chg24h}%
 										</h5>
 									</div>
 								</div>
@@ -386,12 +415,12 @@ const TopIndexData = () => {
 												<h5 className={`interExtraBold text-base ${mode == 'dark' ? ' text-gray-100' : ' text-blackText-500'} `}>Token address</h5>
 											</div>
 											<div className="flex flex-row items-center justify-between gap-1">
-												<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} `}>{reduceAddress(defaultIndexObject?.tokenAddress as string)}</h5>
+												<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} `}>{reduceAddress(anfiIndexObject?.tokenAddress as string)}</h5>
 												<GenericAddressTooltip
 													color="#5E869B"
-													address={defaultIndexObject?.tokenAddress as string}
-													totalSupply={defaultIndexObject?.totalSupply as string}
-													name={defaultIndexObject?.name as string}
+													address={anfiIndexObject?.tokenAddress as string}
+													totalSupply={anfiIndexObject?.totalSupply as string}
+													name={anfiIndexObject?.name as string}
 												>
 													<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
 												</GenericAddressTooltip>
@@ -403,7 +432,7 @@ const TopIndexData = () => {
 												<h5 className={`interExtraBold text-base ${mode == 'dark' ? ' text-gray-100' : 'text-blackText-500'} `}>Management Fees</h5>
 											</div>
 											<div className="flex flex-row items-center justify-between gap-1">
-												<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{defaultIndexObject?.managementFee} %</h5>
+												<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{anfiIndexObject?.managementFee} %</h5>
 												<GenericTooltip
 													color="#5E869B"
 													content={
@@ -457,30 +486,30 @@ const TopIndexData = () => {
 									<AccordionItem
 										header={
 											<div className="w-full h-fit flex flex-row items-center justify-between px-2">
-												<h5 className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-xl interBlack`}>{'More About ' + defaultIndexObject?.name.toString()}</h5>
+												<h5 className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-xl interBlack`}>{'More About ' + anfiIndexObject?.name.toString()}</h5>
 												{mode == 'dark' ? <AiOutlinePlus color="#FFFFFF" size={25}></AiOutlinePlus> : <AiOutlinePlus color="#000000" size={25}></AiOutlinePlus>}
 											</div>
 										}
 									>
 										<div className="w-full h-fit flex flex-col items-start justify-start gap-2 px-2 py-3">
-											<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-xl`}>{defaultIndexObject?.description}</h5>
+											<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-xl`}>{anfiIndexObject?.description}</h5>
 										</div>
 										<div className="grid grid-cols-2 grid-rows-2 grid-col gap-y-5 lg:hidden px-2 py-5">
 											<div className="flex flex-col items-center justify-center">
 												<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>Market Cap</h5>
-												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
+												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*anfiIndexObject?.mktCap*/}</h5>
 											</div>
 											<div className="flex flex-col items-center justify-center">
 												<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>Market Price</h5>
-												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
+												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*anfiIndexObject?.mktCap*/}</h5>
 											</div>
 											<div className="flex flex-col items-center justify-center">
 												<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>24h Change</h5>
-												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
+												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*anfiIndexObject?.mktCap*/}</h5>
 											</div>
 											<div className="flex flex-col items-center justify-center">
 												<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>Managment Fees</h5>
-												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
+												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*anfiIndexObject?.mktCap*/}</h5>
 											</div>
 										</div>
 										<div className="flex flex-row items-center justify-center gap-1 lg:hidden px-2">
@@ -503,7 +532,7 @@ const TopIndexData = () => {
 							<div>
 								<div className="w-full h-fit flex flex-row items-center justify-between">
 									<div className="mt-6 xl:mt-10 mb-5 flex flex-row items-center justify-center lg:justify-start">
-										<h5 className={`interBlack  text-xl lg:text-2xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{defaultIndexObject?.symbol}</h5>
+										<h5 className={`interBlack  text-xl lg:text-2xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{anfiIndexObject?.symbol}</h5>
 										{mode == 'dark' ? <CgArrowsExchange color="#FFFFFF" size={35} className="mx-2" /> : <CgArrowsExchange color="#5E869B" size={35} className="mx-2" />}
 
 										<h5 className={`interBlack  text-xl lg:text-2xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>World{"'"}s best assets</h5>
@@ -515,7 +544,7 @@ const TopIndexData = () => {
 												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
 											}}
 										>
-											<h5 className={`text-sm interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>{defaultIndexObject?.name}</h5>
+											<h5 className={`text-sm interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>{anfiIndexObject?.name}</h5>
 										</div>
 									</div>
 								</div>
