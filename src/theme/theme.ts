@@ -369,6 +369,17 @@ export const darkTheme = createTheme({
           }
         }
       }
+    },
+    MuiDivider:{
+      styleOverrides:{
+        root:{
+          color: "#FFFFFF",
+          border: "solid 0.5px #FFFFFFAA",
+          height: "80%",
+          marginTop: "auto",
+          marginBottom: "auto"
+        }
+      }
     }
   },
 })
@@ -626,6 +637,17 @@ export const lightTheme = createTheme({
             outline: 'none', // Remove outline
             boxShadow: 'none', // Remove shadow
           }
+        }
+      }
+    },
+    MuiDivider:{
+      styleOverrides:{
+        root:{
+          color: "#000000",
+          border: "solid 0.5px #000000AA",
+          height: "80%",
+          marginTop: "auto",
+          marginBottom: "auto"
         }
       }
     }

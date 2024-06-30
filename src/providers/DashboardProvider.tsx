@@ -37,6 +37,7 @@ import { CgArrowsExchange } from 'react-icons/cg'
 import { TbCurrencySolana } from 'react-icons/tb'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
+import mag7Logo from '@assets/images/mag7.png'
 import { GoArrowRight } from 'react-icons/go'
 import mesh1 from '@assets/images/mesh1.png'
 import { FaMeta } from 'react-icons/fa6';
@@ -405,7 +406,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             },
             {
                 name: 'Magnificent 7 Index',
-                logo: cr5Logo,
+                logo: mag7Logo,
                 symbol: 'MAG7',
                 shortSymbol: 'MAG7',
                 shortDescription:
@@ -640,7 +641,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                     // eslint-disable-next-line react/jsx-no-undef
                     logo: underLyingAssetData.symbol === 'AAPL' ? <FaApple color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'GOOG' ? <FaGoogle color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'MSFT' ? <TfiMicrosoftAlt color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'NVDA' ? <BsNvidia color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'AMZN' ? <FaAmazon color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'META' ? <FaMeta color="#FFFFFF" size={20} /> : <SiTesla color="#FFFFFF" size={18} />,
                     symbol: underLyingAssetData.symbol,
-                    percentage: underLyingAssetData.weight,
+                    percentage: underLyingAssetData.weight * 100,
                 }
                 return Asset
             })

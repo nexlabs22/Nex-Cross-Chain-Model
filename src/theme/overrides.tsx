@@ -2,6 +2,7 @@ import { CustomArrowProps } from "react-slick";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
 import { useLandingPageStore } from "@/store/store";
 import mesh1 from "@assets/images/mesh1.png";
+import mesh2 from "@assets/images/mesh2.png";
 import { lightTheme } from "./theme";
 import Switch, { SwitchProps } from '@mui/material/Switch';
 import { styled } from '@mui/material/styles';
@@ -24,10 +25,10 @@ export const GradientStack = () => {
     {
 
       background: theme.palette.mode == "dark" ? '' : "linear-gradient(to bottom left, #5E869B 0%, #8FB8CA 100%)",
-      backgroundImage: theme.palette.mode == "dark" ? `url('${mesh1.src}')` : "",
+      backgroundImage: theme.palette.mode == "dark" ? `url('${mesh2.src}')` : "",
       backgroundPosition: theme.palette.mode == "dark" ? "center" : "",
       backgroundRepeat: theme.palette.mode == "dark" ? "no-repeat" : "",
-      backgroundSize: theme.palette.mode == "dark" ? "100% 100%" : "",
+      backgroundSize: theme.palette.mode == "dark" ? "cover" : "",
       boxShadow: theme.palette.mode == "dark" ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : ""
     }
   )
