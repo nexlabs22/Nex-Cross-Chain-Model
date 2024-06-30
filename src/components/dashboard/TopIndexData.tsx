@@ -32,10 +32,12 @@ import managment from '@assets/images/managment.png'
 import mesh1 from '@assets/images/mesh1.png'
 import { GoArrowRight } from 'react-icons/go'
 import mag7 from '@assets/images/mag7.png'
+import arbLogo from '@assets/images/arb.png'
 import React from 'react'
 import { CustomArrowProps } from "react-slick";
 import { Stack, Box, Typography, Button, Grid } from "@mui/material";
 import Divider from '@mui/material/Divider';
+import { GenericToast } from '../GenericToast'
 import { GradientStack } from '@/theme/overrides'
 
 
@@ -344,6 +346,31 @@ const TopIndexData = () => {
 											</Link>
 										) : ("")
 									}
+									<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { 
+										e.preventDefault(); 
+										GenericToast({
+											type: 'loading',
+											message: 'ARB Index will be available soon, come back in few days!',
+										})
+										}}>
+										<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+											<Image src={anfiIndexObject && anfiIndexObject.logo ? arbLogo : ""} alt="" height={60} width={60} className="mr-2 border border-[#152C4E] rounded-full "></Image>
+											<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
+												<Typography variant="subtitle1" component="h6" sx={{
+													fontWeight: 600
+												}}>
+													ARB Index
+												</Typography>
+												<Typography variant="caption" component="h6" sx={{
+													fontWeight: 500,
+													fontStyle: "italic"
+												}}>
+													Coming Soon
+												</Typography>
+											</Stack>
+
+										</Stack>
+									</Link>
 								</Stack>
 							</Stack>
 
@@ -357,7 +384,7 @@ const TopIndexData = () => {
 							<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
 								<Stack marginTop={{ xs: 3, xl: 5 }} marginBottom={1} direction={"row"} alignItems={"center"} justifyContent={{ xs: "center", xl: "start" }}>
 									<Typography variant="h6" component={"h6"} sx={{
-										
+
 										fontWeight: "600"
 									}}>
 										{selectedIndex?.symbol}
