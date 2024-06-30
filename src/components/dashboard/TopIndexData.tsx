@@ -350,7 +350,7 @@ const TopIndexData = () => {
 										e.preventDefault(); 
 										GenericToast({
 											type: 'loading',
-											message: 'ARB Index will be available soon, come back in few days!',
+											message: 'ARBIn Index will be available soon, come back in few days!',
 										})
 										}}>
 										<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
@@ -359,7 +359,7 @@ const TopIndexData = () => {
 												<Typography variant="subtitle1" component="h6" sx={{
 													fontWeight: 600
 												}}>
-													ARB Index
+													ARBIn Index
 												</Typography>
 												<Typography variant="caption" component="h6" sx={{
 													fontWeight: 500,
