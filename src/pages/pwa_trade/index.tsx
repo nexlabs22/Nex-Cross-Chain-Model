@@ -20,7 +20,7 @@ import { useMediaQuery } from '@mui/material';
 
 export default function PWATrade() {
 
-    const { defaultIndexObject, othertIndexObject } = useDashboard()
+    const { anfiIndexObject, cr5IndexObject, mag7IndexObject } = useDashboard()
     const {changeSelectedIndex} = useLandingPageStore()
     const isLandscape = useMediaQuery('(orientation: landscape)');
     const Indices = [
@@ -96,10 +96,10 @@ export default function PWATrade() {
             </Stack>
             <Stack width={"100%"} height={"fit-content"} marginTop={'-2.4rem'} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
                 {
-                    defaultIndexObject? (
+                    anfiIndexObject? (
                         <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={()=>{
-                            if (defaultIndexObject) changeSelectedIndex(defaultIndexObject?.name);
-                            else changeSelectedIndex("CRYPTO5")
+                            
+                            changeSelectedIndex("ANFI")
                             router.push('/pwa_tradeIndex')
                         }}>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
@@ -110,7 +110,7 @@ export default function PWATrade() {
                                             fontWeight: 600,
                                         }}>
                                             {
-                                                defaultIndexObject.name
+                                                anfiIndexObject.name
                                             }
                                         </Typography>
                                         <Typography variant="caption" sx={{
@@ -118,7 +118,7 @@ export default function PWATrade() {
                                             fontWeight: 500,
                                         }}>
                                             {
-                                                defaultIndexObject.symbol
+                                                anfiIndexObject.symbol
                                             }
                                         </Typography>
                                     </Stack>
@@ -131,11 +131,11 @@ export default function PWATrade() {
                                         marginRight: "0.2rem"
                                     }}>
                                         ${
-                                            FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })
+                                            FormatToViewNumber({ value: Number(anfiIndexObject?.mktPrice), returnType: 'string' })
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: defaultIndexObject?.chg24h && Number(defaultIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
+                                        color: anfiIndexObject?.chg24h && Number(anfiIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
                                         fontWeight: 600,
                                         fontSize: ".8rem",
                                         backgroundColor: lightTheme.palette.pageBackground.main,
@@ -146,7 +146,7 @@ export default function PWATrade() {
                                         boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
                                     }}>
                                         {
-                                            defaultIndexObject.chg24h
+                                            anfiIndexObject.chg24h
                                         }%
                                     </Typography>
                                 </Stack>
@@ -154,10 +154,10 @@ export default function PWATrade() {
                     ) : ("")
                 }
                 {
-                    othertIndexObject? (
+                    cr5IndexObject? (
                         <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={()=>{
-                            if (othertIndexObject) changeSelectedIndex(othertIndexObject?.name);
-                            else changeSelectedIndex("CRYPTO5")
+                            
+                            changeSelectedIndex("CRYPTO5")
                             router.push('/pwa_tradeIndex')
                         }}>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
@@ -168,7 +168,7 @@ export default function PWATrade() {
                                             fontWeight: 600,
                                         }}>
                                             {
-                                                othertIndexObject.name
+                                                cr5IndexObject.name
                                             }
                                         </Typography>
                                         <Typography variant="caption" sx={{
@@ -176,7 +176,7 @@ export default function PWATrade() {
                                             fontWeight: 500,
                                         }}>
                                             {
-                                                othertIndexObject.symbol
+                                                cr5IndexObject.symbol
                                             }
                                         </Typography>
                                     </Stack>
@@ -189,11 +189,11 @@ export default function PWATrade() {
                                         marginRight: "0.2rem"
                                     }}>
                                         ${
-                                            FormatToViewNumber({ value: Number(othertIndexObject?.mktPrice), returnType: 'string' })
+                                            FormatToViewNumber({ value: Number(cr5IndexObject?.mktPrice), returnType: 'string' })
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: othertIndexObject?.chg24h && Number(othertIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
+                                        color: cr5IndexObject?.chg24h && Number(cr5IndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
                                         fontWeight: 600,
                                         fontSize: ".8rem",
                                         backgroundColor: lightTheme.palette.pageBackground.main,
@@ -204,7 +204,65 @@ export default function PWATrade() {
                                         boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
                                     }}>
                                         {
-                                            othertIndexObject.chg24h
+                                            cr5IndexObject.chg24h
+                                        }%
+                                    </Typography>
+                                </Stack>
+                            </Stack>
+                    ) : ("")
+                }
+                {
+                    mag7IndexObject? (
+                        <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={()=>{
+                            
+                            changeSelectedIndex("MAG7")
+                            router.push('/pwa_tradeIndex')
+                        }}>
+                                <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                                    <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                    <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                        <Typography variant="caption" sx={{
+                                            color: lightTheme.palette.text.primary,
+                                            fontWeight: 600,
+                                        }}>
+                                            {
+                                                mag7IndexObject.name
+                                            }
+                                        </Typography>
+                                        <Typography variant="caption" sx={{
+                                            color: lightTheme.palette.text.primary,
+                                            fontWeight: 500,
+                                        }}>
+                                            {
+                                                mag7IndexObject.symbol
+                                            }
+                                        </Typography>
+                                    </Stack>
+
+                                </Stack>
+                                <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 600,
+                                        marginRight: "0.2rem"
+                                    }}>
+                                        ${
+                                            FormatToViewNumber({ value: Number(mag7IndexObject?.mktPrice), returnType: 'string' })
+                                        }
+                                    </Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: mag7IndexObject?.chg24h && Number(mag7IndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
+                                        fontWeight: 600,
+                                        fontSize: ".8rem",
+                                        backgroundColor: lightTheme.palette.pageBackground.main,
+                                        paddingX: "0.8rem",
+                                        paddingY: "0.2rem",
+                                        borderRadius: "1rem",
+                                        border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                        boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                    }}>
+                                        {
+                                            mag7IndexObject?.chg24h
                                         }%
                                     </Typography>
                                 </Stack>

@@ -20,7 +20,7 @@ import { FormatToViewNumber, num } from '@/hooks/math'
 
 const PWANexIndices = () => {
 
-    const { defaultIndexObject, othertIndexObject } = useDashboard()
+    const { anfiIndexObject, cr5IndexObject, mag7IndexObject } = useDashboard()
     const [listType, setListType] = useState<string>("All Nex Indices")
     const { changeSelectedIndex } = useLandingPageStore()
     const router = useRouter();
@@ -84,10 +84,10 @@ const PWANexIndices = () => {
             </Stack>
             <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} gap={0.5} marginBottom={2}>
                 {
-                    defaultIndexObject ? (
+                    anfiIndexObject ? (
                         <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={() => {
-                            if (defaultIndexObject) changeSelectedIndex(defaultIndexObject?.name);
-                            else changeSelectedIndex("CRYPTO5")
+                            
+                            changeSelectedIndex("ANFI")
                             router.push('/pwa_tradeIndex')
                         }}>
                             <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
@@ -98,7 +98,7 @@ const PWANexIndices = () => {
                                         fontWeight: 600,
                                     }}>
                                         {
-                                            defaultIndexObject.name
+                                            anfiIndexObject.name
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
@@ -106,7 +106,7 @@ const PWANexIndices = () => {
                                         fontWeight: 500,
                                     }}>
                                         {
-                                            defaultIndexObject.symbol
+                                            anfiIndexObject.symbol
                                         }
                                     </Typography>
                                 </Stack>
@@ -118,11 +118,11 @@ const PWANexIndices = () => {
                                     fontWeight: 600,
                                 }}>
                                     ${
-                                        FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })
+                                        FormatToViewNumber({ value: Number(anfiIndexObject?.mktPrice), returnType: 'string' })
                                     }
                                 </Typography>
                                 <Typography variant="caption" sx={{
-                                    color: defaultIndexObject?.chg24h && Number(defaultIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
+                                    color: anfiIndexObject?.chg24h && Number(anfiIndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
                                     fontWeight: 600,
                                     fontSize: ".8rem",
                                     backgroundColor: lightTheme.palette.pageBackground.main,
@@ -133,7 +133,7 @@ const PWANexIndices = () => {
                                     boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
                                 }}>
                                     {
-                                        defaultIndexObject?.chg24h
+                                        anfiIndexObject?.chg24h
                                     }%
                                 </Typography>
                             </Stack>
@@ -141,10 +141,10 @@ const PWANexIndices = () => {
                     ) : ("")
                 }
                 {
-                    othertIndexObject ? (
+                    cr5IndexObject ? (
                         <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={() => {
-                            if (othertIndexObject) changeSelectedIndex(othertIndexObject?.name);
-                            else changeSelectedIndex("CRYPTO5")
+                            
+                            changeSelectedIndex("CRYPTO5")
                             router.push('/pwa_tradeIndex')
                         }}>
                             <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
@@ -155,7 +155,7 @@ const PWANexIndices = () => {
                                         fontWeight: 600,
                                     }}>
                                         {
-                                            othertIndexObject.name
+                                            cr5IndexObject.name
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
@@ -163,7 +163,7 @@ const PWANexIndices = () => {
                                         fontWeight: 500,
                                     }}>
                                         {
-                                            othertIndexObject.symbol
+                                            cr5IndexObject.symbol
                                         }
                                     </Typography>
                                 </Stack>
@@ -175,11 +175,11 @@ const PWANexIndices = () => {
                                     fontWeight: 600,
                                 }}>
                                     ${
-                                        FormatToViewNumber({ value: Number(othertIndexObject?.mktPrice), returnType: 'string' })
+                                        FormatToViewNumber({ value: Number(cr5IndexObject?.mktPrice), returnType: 'string' })
                                     }
                                 </Typography>
                                 <Typography variant="caption" sx={{
-                                    color: lightTheme.palette.nexGreen.main,
+                                    color: cr5IndexObject?.chg24h && Number(cr5IndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
                                     fontWeight: 600,
                                     fontSize: ".8rem",
                                     backgroundColor: lightTheme.palette.pageBackground.main,
@@ -190,7 +190,64 @@ const PWANexIndices = () => {
                                     boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
                                 }}>
                                     {
-                                        othertIndexObject?.chg24h
+                                        cr5IndexObject?.chg24h
+                                    }%
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                    ) : ("")
+                }
+                {
+                    mag7IndexObject ? (
+                        <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack} onClick={() => {
+                            
+                            changeSelectedIndex("MAG7")
+                            router.push('/pwa_tradeIndex')
+                        }}>
+                            <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
+                                <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 600,
+                                    }}>
+                                        {
+                                            mag7IndexObject.name
+                                        }
+                                    </Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: lightTheme.palette.text.primary,
+                                        fontWeight: 500,
+                                    }}>
+                                        {
+                                            mag7IndexObject.symbol
+                                        }
+                                    </Typography>
+                                </Stack>
+
+                            </Stack>
+                            <Stack paddingRight={1} direction={"column"} width={"fit-content"} height={"fit-content"} gap={1} alignItems={"end"} justifyContent={"center"}>
+                                <Typography variant="caption" sx={{
+                                    color: lightTheme.palette.text.primary,
+                                    fontWeight: 600,
+                                }}>
+                                    ${
+                                        FormatToViewNumber({ value: Number(mag7IndexObject?.mktPrice), returnType: 'string' })
+                                    }
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                    color: mag7IndexObject?.chg24h && Number(mag7IndexObject?.chg24h) < 0 ? "#F23645" : "#089981",
+                                    fontWeight: 600,
+                                    fontSize: ".8rem",
+                                    backgroundColor: lightTheme.palette.pageBackground.main,
+                                    paddingX: "0.8rem",
+                                    paddingY: "0.2rem",
+                                    borderRadius: "1rem",
+                                    border: "solid 1px rgba(37, 37, 37, 0.5)",
+                                    boxShadow: "0px 1px 1px 1px rgba(37, 37, 37, 0.3)"
+                                }}>
+                                    {
+                                        mag7IndexObject?.chg24h
                                     }%
                                 </Typography>
                             </Stack>
