@@ -359,7 +359,7 @@ const TopIndexData = () => {
 												<Typography variant="subtitle1" component="h6" sx={{
 													fontWeight: 600
 												}}>
-													ARB Index
+													ARBIn Index
 												</Typography>
 												<Typography variant="caption" component="h6" sx={{
 													fontWeight: 500,
