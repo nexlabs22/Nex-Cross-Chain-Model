@@ -3,6 +3,8 @@ export const stockDetails = {
     'CRYPTO5': ['crypto5', 'Crypto 5'],
     // 'STOCK5': ['stock5', 'Stock5'],
     'MAG7': ['mag7', 'Magnificient 7'],
+    'ARBIn': ['sci', 'Arbitrum Ecosystem Index'],
+    'ARBIn10': ['arb10', 'Arbitrum Ecosystem Index 10'],
     'V': ['visa', 'Visa'],
     'GSPC': ['sandp', 'S&P 500'],
     'DJI': ['dow', 'Dow Jones Industrial Average'],
@@ -35,5 +37,7 @@ export const stockDetails = {
     'COPPER':['copper', 'Copper'],
     'SILVER':['silver', 'Silver'],
     'BTC':['bitcoin', 'Bitcoin'],
+    'ARB':['arbitrum', 'Arbitrum'],
+    'ETH':['ethereum', 'Ethereum'],
 
 }

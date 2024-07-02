@@ -36,7 +36,9 @@ const colNameToSymbol: { [key: string]: string } = {
     "silver": "SILVER",
 
 
-    "bitcoin": "BTC"
+    "bitcoin": "BTC",
+    "ethereum": 'ETH',
+    "arbitrum": 'ARB'
 
 };
 
@@ -69,6 +71,8 @@ export async function GET() {
             const CRYPTO5: OHLC[] = [];
             const ANFI: OHLC[] = [];
             const MAG7: OHLC[] = [];
+            const ARBIn: OHLC[] = [];
+            const ARBIn10: OHLC[] = [];
 
             inputArray.forEach(item => {
                 const time = parseInt(item.stampsec, 10);
@@ -98,6 +102,26 @@ export async function GET() {
                         high: parseFloat(item.mag7),
                         low: parseFloat(item.mag7),
                         close: parseFloat(item.mag7),
+                    });
+                }
+
+                if (item.sci !== null && item.stampsec >= '1698811200') {
+                    ARBIn.push({
+                        time: time,
+                        open: parseFloat(item.sci),
+                        high: parseFloat(item.sci),
+                        low: parseFloat(item.sci),
+                        close: parseFloat(item.sci),
+                    });
+                }
+
+                if (item.arb10 !== null) {
+                    ARBIn10.push({
+                        time: time,
+                        open: parseFloat(item.arb10),
+                        high: parseFloat(item.arb10),
+                        low: parseFloat(item.arb10),
+                        close: parseFloat(item.arb10),
                     });
                 }
             });
@@ -131,6 +155,8 @@ export async function GET() {
             data.CRYPTO5 = CRYPTO5
             data.ANFI = ANFI
             data.MAG7 = MAG7
+            data.ARBIn = ARBIn
+            data.ARBIn10 = ARBIn10
 
             return NextResponse.json(data, { status: 200 })
         }

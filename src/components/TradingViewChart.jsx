@@ -48,6 +48,7 @@ const colNameToSymbol = {
 	silver: 'SILVER',
 	bitcoin: 'BTC',
 	mag7: 'MAG7',
+	arb10: 'ARBIn10'
 }
 
 const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {

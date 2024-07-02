@@ -168,6 +168,11 @@ const PWAChartBox = () => {
 					logo: mag7.src,
 				},
 				{
+					name: 'ARBIn10',
+					colName: 'arb10',
+					logo: mag7.src,
+				},
+				{
 					name: 'GSPC',
 					colName: 'sandp',
 					logo: sandp.src,
