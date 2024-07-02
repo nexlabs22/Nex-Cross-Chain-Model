@@ -119,6 +119,11 @@ const PWAIndexComparisonBox = () => {
 					colName: 'mag7',
 					logo: mag7.src,
 				},
+                {
+					name: 'ARBIn10',
+					colName: 'arb10',
+					logo: mag7.src,
+				},
             ],
         },
     ]
