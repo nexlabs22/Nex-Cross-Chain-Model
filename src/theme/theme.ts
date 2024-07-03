@@ -109,60 +109,50 @@ export const darkTheme = createTheme({
   breakpoints: breakpoints,
   typography: {
     fontFamily: inter.style.fontFamily,
+    allVariants: {color: "#F2F2F2"},
     h1: {
-      color: "#F2F2F2",
       fontWeight: 900,
       fontSize: "4.5rem",
     },
     h2: {
-      color: "#F2F2F2",
       fontWeight: 900,
       fontSize: "3.5rem",
     },
     h3: {
-      color: "#F2F2F2",
       fontWeight: 700,
       fontSize: "2rem",
     },
     h4: {
-      color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.8rem",
       width: "70%"
     },
     h5: {
-      color: "#F2F2F2",
       fontWeight: 900,
       fontSize: "1.7rem",
     },
     h6: {
-      color: "#F2F2F2",
       fontWeight: 900,
       fontSize: "1.6rem",
     },
     subtitle1: {
-      color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.2rem",
     },
     body1: {
-      color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.4rem",
     },
     body2: {
-      color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.6rem",
       textAlign: "justify"
     },
     caption: {
-      color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1rem",
     },
     subtitle2: {
-      color: "#F2F2F2",
       fontWeight: 500,
       fontSize: "1.1rem",
     }
@@ -375,6 +365,7 @@ export const darkTheme = createTheme({
         root:{
           color: "#FFFFFF",
           border: "solid 0.5px #FFFFFFAA",
+          minHeight: "42vh",
           height: "80%",
           marginTop: "auto",
           marginBottom: "auto"
@@ -388,62 +379,52 @@ export const lightTheme = createTheme({
   breakpoints: breakpoints,
   typography: {
     fontFamily: inter.style.fontFamily,
+    allVariants: {color: "#2A2A2A"},
     h1: {
-      color: "#2A2A2A",
       fontWeight: 900,
       fontSize: "4.5rem",
     },
     h2: {
-      color: "#2A2A2A",
       fontWeight: 900,
       fontSize: "3.5rem",
       marginBottom: "1.2rem"
     },
     h3: {
-      color: "#2A2A2A",
       fontWeight: 700,
       fontSize: "2rem",
       marginBottom: "1.2rem"
     },
     h4: {
-      color: "#000000",
       fontWeight: 500,
       fontSize: "1.8rem",
       width: "70%"
     },
     h5: {
-      color: "#2A2A2A",
       fontWeight: 900,
       fontSize: "1.8rem",
     },
     h6: {
-      color: "#2A2A2A",
       fontWeight: 900,
       fontSize: "1.6rem",
     },
     subtitle1: {
-      color: "#2A2A2A",
       fontWeight: 500,
       fontSize: "1.2rem",
     },
     body1: {
-      color: "#2A2A2A",
       fontWeight: 500,
       fontSize: "1.4rem",
     },
     body2: {
-      color: "#2A2A2A",
       fontWeight: 500,
       fontSize: "1.6rem",
       textAlign: "justify"
     },
     caption: {
-      color: "#2A2A2A",
       fontWeight: 500,
       fontSize: "1rem",
     },
     subtitle2: {
-      color: "#656565",
       fontWeight: 500,
       fontSize: "1.1rem",
     }
@@ -645,6 +626,7 @@ export const lightTheme = createTheme({
         root:{
           color: "#000000",
           border: "solid 0.5px #000000AA",
+          minHeight: "30vh",
           height: "80%",
           marginTop: "auto",
           marginBottom: "auto"

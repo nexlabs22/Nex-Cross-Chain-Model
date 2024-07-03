@@ -80,9 +80,11 @@ const TopIndexData = () => {
 		anfiIndexObject,
 		cr5IndexObject,
 		mag7IndexObject,
+		arbIndexObject,
 		CR5UnderLyingAssets,
 		ANFIUnderLyingAssets,
 		MAG7UnderLyingAssets,
+		ARBInUnderLyingAssets,
 		IndicesWithDetails
 	} = useDashboard();
 	const { isStandalone } = usePWA()
@@ -90,14 +92,18 @@ const TopIndexData = () => {
 	const { defaultIndex, changeDefaultIndex, theme } = useLandingPageStore()
 	const sliderRef = React.useRef<Slider | null>(null);
 
-	const [selectedIndex, setSelectedIndex] = useState(defaultIndex == "ANFI" ? anfiIndexObject : defaultIndex == "CRYPTO5" ? cr5IndexObject : mag7IndexObject)
-	const selectedIndexWeights = defaultIndex == "ANFI" ? ANFIUnderLyingAssets : defaultIndex == "CRYPTO5" ? CR5UnderLyingAssets : MAG7UnderLyingAssets
+	const [selectedIndex, setSelectedIndex] = useState(defaultIndex == "ANFI" ? anfiIndexObject : defaultIndex == "CRYPTO5" ? cr5IndexObject : defaultIndex == "MAG7" ? mag7IndexObject : arbIndexObject)
+	const [selectedIndexWeights, setSelectedIndexWeights] = useState(defaultIndex == "ANFI" ? ANFIUnderLyingAssets : defaultIndex == "CRYPTO5" ? CR5UnderLyingAssets : defaultIndex == "MAG7" ? MAG7UnderLyingAssets : ARBInUnderLyingAssets)
 
 	useEffect(() => {
-		setSelectedIndex(defaultIndex == "ANFI" ? anfiIndexObject : defaultIndex == "CRYPTO5" ? cr5IndexObject : mag7IndexObject)
-	}, [anfiIndexObject, cr5IndexObject, defaultIndex, mag7IndexObject])
 
+		setSelectedIndex(defaultIndex == "ANFI" ? anfiIndexObject : defaultIndex == "CRYPTO5" ? cr5IndexObject : defaultIndex == "MAG7" ? mag7IndexObject : arbIndexObject)
+		setSelectedIndexWeights(defaultIndex == "ANFI" ? ANFIUnderLyingAssets : defaultIndex == "CRYPTO5" ? CR5UnderLyingAssets : defaultIndex == "MAG7" ? MAG7UnderLyingAssets : ARBInUnderLyingAssets)
+	}, [ANFIUnderLyingAssets, ARBInUnderLyingAssets, CR5UnderLyingAssets, MAG7UnderLyingAssets, anfiIndexObject, arbIndexObject, cr5IndexObject, defaultIndex, mag7IndexObject])
 
+	useEffect(()=>{
+		MAG7UnderLyingAssets
+	}, [MAG7UnderLyingAssets])
 	return (
 		<>
 			{
@@ -108,10 +114,10 @@ const TopIndexData = () => {
 				) : (
 					<>
 						<section className="px-2 h-fit lg:px-10 pb-6 pt-3 xl:pb-16 xl:pt-8">
-							<Stack width={"100%"} height={400} marginBottom={4} borderRadius={4} direction={"row"} gap={0.5} alignItems={"start"} justifyContent={"start"} divider={<Divider orientation="vertical" variant='middle' flexItem />} sx={GradientStack}>
-								<Stack width={"35%"} height={"fit-content"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+							<Stack width={"100%"} minHeight={"30vh"} height={"fit-content"} marginBottom={4} borderRadius={4} direction={"row"} gap={0.5} alignItems={"start"} justifyContent={"start"} divider={<Divider orientation="vertical" variant='middle' flexItem />} sx={GradientStack}>
+								<Stack width={"35%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
 									<Stack direction={"row"} alignItems={"center"} justifyContent={"start"}>
-										<Image src={selectedIndex && selectedIndex.logo ? selectedIndex?.logo : ""} alt="" height={35} width={35} className="mr-2"></Image>
+										<Image src={selectedIndex && selectedIndex.logo ? selectedIndex?.logo : ""} alt="" height={35} width={35} className="mr-2" />
 										<Typography variant="h6" component="h6" sx={{
 											fontWeight: 600
 										}}>
@@ -119,7 +125,7 @@ const TopIndexData = () => {
 										</Typography>
 									</Stack>
 									<Typography variant="subtitle2" component="p" sx={{
-										marginTop: "1.2rem"
+										marginTop: "1.2rem",
 									}}>
 										{
 											selectedIndex?.description
@@ -127,15 +133,15 @@ const TopIndexData = () => {
 									</Typography>
 
 								</Stack>
-								<Stack width={"30%"} height={"fit-content"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+								<Stack width={"30%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
 									<Typography variant="h6" component="h6" sx={{
 										fontWeight: 600,
 									}}>
 										Key Information
 									</Typography>
 									<Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginTop={"1.2rem"} marginBottom={"0.8rem"}>
-										<Stack direction={"column"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
-											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
+										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
 												<Typography variant="caption" component={"p"} sx={{
 													fontSize: "1.1rem",
 													fontWeight: "600"
@@ -151,8 +157,8 @@ const TopIndexData = () => {
 												{selectedIndex?.mktCap + " " + selectedIndex?.shortSymbol}
 											</Typography>
 										</Stack>
-										<Stack direction={"column"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
-											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
+										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
 												<Typography variant="caption" component={"p"} sx={{
 													fontSize: "1.1rem",
 													fontWeight: "600"
@@ -170,8 +176,8 @@ const TopIndexData = () => {
 										</Stack>
 									</Stack>
 									<Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginY={"0.8rem"}>
-										<Stack direction={"column"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
-											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
+										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
 												<Typography variant="caption" component={"p"} sx={{
 													fontSize: "1.1rem",
 													fontWeight: "600"
@@ -188,8 +194,8 @@ const TopIndexData = () => {
 												{selectedIndex?.chg24h}%
 											</Typography>
 										</Stack>
-										<Stack direction={"column"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
-											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
+										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
 												<Typography variant="caption" component={"p"} sx={{
 													fontSize: "1.1rem",
 													fontWeight: "600"
@@ -207,8 +213,8 @@ const TopIndexData = () => {
 										</Stack>
 									</Stack>
 									<Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginY={"0.8rem"}>
-										<Stack direction={"column"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
-											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
+										<Stack direction={"column"} width={"100%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
 												<Typography variant="caption" component={"p"} sx={{
 													fontSize: "1.1rem",
 													fontWeight: "600"
@@ -227,14 +233,16 @@ const TopIndexData = () => {
 
 									</Stack>
 								</Stack>
-								<Stack width={"35%"} height={"fit-content"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
-									<Typography variant="h6" component="h6" sx={{
+								<Stack width={"35%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+									<Typography variant="h6" component="h6" marginBottom={"1.2rem"} sx={{
 										fontWeight: 600,
 									}}>
 										Composition
 									</Typography>
 
-									<Grid container columns={12} rowSpacing={2}>
+									<Grid container columns={12} rowSpacing={2} maxHeight={"40vh"} sx={{
+										overflowY: "auto"
+									}}>
 										{
 											selectedIndexWeights.map((item, key) => {
 												return (
@@ -284,7 +292,7 @@ const TopIndexData = () => {
 										selectedIndex?.symbol != "ANFI" ? (
 											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('ANFI') }}>
 												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-													<Image src={anfiIndexObject && anfiIndexObject.logo ? anfiIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#E8BB31] rounded-full "></Image>
+													<Image src={anfiIndexObject && anfiIndexObject.logo ? anfiIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#E8BB31] rounded-full " />
 													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
 														<Typography variant="subtitle1" component="h6" sx={{
 															fontWeight: 600
@@ -306,7 +314,7 @@ const TopIndexData = () => {
 										selectedIndex?.symbol != "CRYPTO5" ? (
 											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('CRYPTO5') }}>
 												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-													<Image src={cr5IndexObject && cr5IndexObject.logo ? cr5IndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#DA3E49] rounded-full "></Image>
+													<Image src={cr5IndexObject && cr5IndexObject.logo ? cr5IndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#DA3E49] rounded-full " />
 													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
 														<Typography variant="subtitle1" component="h6" sx={{
 															fontWeight: 600
@@ -328,7 +336,7 @@ const TopIndexData = () => {
 										selectedIndex?.symbol != "MAG7" ? (
 											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('MAG7') }}>
 												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-													<Image src={mag7IndexObject && mag7IndexObject.logo ? mag7IndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#D67DEC] rounded-full "></Image>
+													<Image src={mag7IndexObject && mag7IndexObject.logo ? mag7IndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#D67DEC] rounded-full " />
 													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
 														<Typography variant="subtitle1" component="h6" sx={{
 															fontWeight: 600
@@ -346,31 +354,29 @@ const TopIndexData = () => {
 											</Link>
 										) : ("")
 									}
-									<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { 
-										e.preventDefault(); 
-										GenericToast({
-											type: 'loading',
-											message: 'ARBIn Index will be available soon, come back in few days!',
-										})
-										}}>
-										<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-											<Image src={anfiIndexObject && anfiIndexObject.logo ? arbLogo : ""} alt="" height={60} width={60} className="mr-2 border border-[#152C4E] rounded-full "></Image>
-											<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
-												<Typography variant="subtitle1" component="h6" sx={{
-													fontWeight: 600
-												}}>
-													ARBIn Index
-												</Typography>
-												<Typography variant="caption" component="h6" sx={{
-													fontWeight: 500,
-													fontStyle: "italic"
-												}}>
-													Coming Soon
-												</Typography>
-											</Stack>
+									{
+										selectedIndex?.symbol != "ARBIn" ? (
+											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('ARBIn'); }}>
+												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+													<Image src={arbIndexObject && arbIndexObject.logo ? arbIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#D67DEC] rounded-full " />
+													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
+														<Typography variant="subtitle1" component="h6" sx={{
+															fontWeight: 600
+														}}>
+															{arbIndexObject?.name}
+														</Typography>
+														<Typography variant="caption" component="h6" sx={{
+															fontWeight: 500
+														}}>
+															24h Change: <span style={{ color: Number(arbIndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{arbIndexObject?.chg24h}%</span>
+														</Typography>
+													</Stack>
 
-										</Stack>
-									</Link>
+												</Stack>
+											</Link>
+										) : ("")
+									}
+									
 								</Stack>
 							</Stack>
 

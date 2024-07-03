@@ -217,10 +217,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 			}
 	)
 
-	useEffect(() => {
-		console.log(dataToShow)
-	}, [dataToShow])
-
+	
 	const handleExportPDF = () => {
 		toast.dismiss()
 		GenericToast({
