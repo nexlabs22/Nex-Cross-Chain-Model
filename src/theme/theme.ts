@@ -626,7 +626,7 @@ export const lightTheme = createTheme({
         root:{
           color: "#000000",
           border: "solid 0.5px #000000AA",
-          minHeight: "30vh",
+          minHeight: "42vh",
           height: "80%",
           marginTop: "auto",
           marginBottom: "auto"

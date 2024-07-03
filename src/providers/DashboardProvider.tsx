@@ -44,6 +44,18 @@ import mesh1 from '@assets/images/mesh1.png'
 import { FaMeta } from 'react-icons/fa6';
 import { LuSailboat } from 'react-icons/lu';
 
+import aave from '@assets/images/aave.png'
+import clipper from '@assets/images/clipper.png'
+import pendle from '@assets/images/pendle.png'
+import silo from '@assets/images/silo.png'
+import pancake from '@assets/images/pancake.png'
+import dodo from '@assets/images/dodo.png'
+import dxsale from "@assets/images/dxsale.png"
+import penpie from "@assets/images/penpie.png"
+import convex from '@assets/images/convex.png'
+import joe from '@assets/images/joe.png'
+
+
 type underlyingAsset = {
     name: string
     percentage: number
@@ -241,7 +253,7 @@ const useDashboard = () => {
 
 const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
+    const { defaultIndex, changeDefaultIndex, theme } = useLandingPageStore()
     const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
     const { ethPriceInUsd } = useTradePageStore()
 
@@ -779,9 +791,9 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             const assets = RawARBInUnderlyingAssets.map((underLyingAssetData: { symbol: string; weight: any }) => {
                 const Asset: underlyingAsset = {
                     name: underLyingAssetData.symbol.toUpperCase(),
-                    logo: underLyingAssetData.symbol === 'AAVE' ? <FaApple color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'CLIPPER' ? <LuSailboat fill='#FFFFFF' color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'PENDLE' ? <TfiMicrosoftAlt color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'SILO_FINANCE' ? <BsNvidia color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'PANCAKESWAP_AMM' ? <FaAmazon color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'DODO' ? <FaMeta color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'DXSALE' ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "PENPIE" ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "CONVEX_FINANCE" ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "JOE_V21" ? <SiTesla color="#FFFFFF" size={18} /> : <span></span>,
+                    logo: underLyingAssetData.symbol === 'AAVE' ? <Image src={aave} alt="aave" width={20} height={20} /> : underLyingAssetData.symbol === 'CLIPPER' ? <Image src={clipper} alt="clipper" width={20} height={20} /> : underLyingAssetData.symbol === 'PENDLE' ? <Image src={pendle} alt="pendle" width={20} height={20} /> : underLyingAssetData.symbol === 'SILO_FINANCE' ? <Image src={silo} alt="silo" width={20} height={20} /> : underLyingAssetData.symbol === 'PANCAKESWAP_AMM' ? <Image src={pancake} alt="pancake swap" width={20} height={20} /> : underLyingAssetData.symbol === 'DODO' ? <Image src={dodo} alt="DODO" width={20} height={20} /> : underLyingAssetData.symbol === 'DXSALE' ? <Image src={dxsale} alt="DxSale" width={20} height={20} /> : underLyingAssetData.symbol == "PENPIE" ? <Image src={penpie} alt="PENPIE" width={20} height={20} /> : underLyingAssetData.symbol == "CONVEX_FINANCE" ? <Image src={convex} alt="convex" width={20} height={20} /> : underLyingAssetData.symbol == "JOE_V21" ? <Image src={joe} alt="JOE V21" width={20} height={20} /> : <span></span>,
                     symbol: underLyingAssetData.symbol,
-                    percentage: underLyingAssetData.weight * 100,
+                    percentage: underLyingAssetData.weight,
                 }
                 return Asset
             })
