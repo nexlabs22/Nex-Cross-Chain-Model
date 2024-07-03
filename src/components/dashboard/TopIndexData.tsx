@@ -249,9 +249,7 @@ const TopIndexData = () => {
 													<Grid item md={6} key={key}>
 														<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
 															<Stack width={'fit-content'} height={'fit-content'} padding={"0.9rem"} borderRadius={"0.8rem"} sx={GradientStack}>
-																<Stack sx={{
-																	scale: "1.5"
-																}}>
+																<Stack width={25} height={25} direction={"row"} alignItems={"center"} justifyContent={"center"}>
 																	{item.logo}
 																</Stack>
 
