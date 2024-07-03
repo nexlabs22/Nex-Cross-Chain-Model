@@ -32,9 +32,14 @@ import managment from '@assets/images/managment.png'
 import mesh1 from '@assets/images/mesh1.png'
 import { GoArrowRight } from 'react-icons/go'
 import mag7 from '@assets/images/mag7.png'
+import arbLogo from '@assets/images/arb.png'
 import React from 'react'
 import { CustomArrowProps } from "react-slick";
-import { Stack, Box } from "@mui/material";
+import { Stack, Box, Typography, Button, Grid } from "@mui/material";
+import Divider from '@mui/material/Divider';
+import { GenericToast } from '../GenericToast'
+import { GradientStack } from '@/theme/overrides'
+
 
 const CustomNextArrow: React.FC<CustomArrowProps> = ({
 	onClick,
@@ -72,16 +77,33 @@ const TopIndexData = () => {
 
 
 	const {
-		defaultIndexObject,
-		othertIndexObject,
+		anfiIndexObject,
+		cr5IndexObject,
+		mag7IndexObject,
+		arbIndexObject,
 		CR5UnderLyingAssets,
 		ANFIUnderLyingAssets,
+		MAG7UnderLyingAssets,
+		ARBInUnderLyingAssets,
+		IndicesWithDetails
 	} = useDashboard();
 	const { isStandalone } = usePWA()
 	const { mode } = useLandingPageStore()
-	const { defaultIndex, changeDefaultIndex } = useLandingPageStore()
+	const { defaultIndex, changeDefaultIndex, theme } = useLandingPageStore()
 	const sliderRef = React.useRef<Slider | null>(null);
 
+	const [selectedIndex, setSelectedIndex] = useState(defaultIndex == "ANFI" ? anfiIndexObject : defaultIndex == "CRYPTO5" ? cr5IndexObject : defaultIndex == "MAG7" ? mag7IndexObject : arbIndexObject)
+	const [selectedIndexWeights, setSelectedIndexWeights] = useState(defaultIndex == "ANFI" ? ANFIUnderLyingAssets : defaultIndex == "CRYPTO5" ? CR5UnderLyingAssets : defaultIndex == "MAG7" ? MAG7UnderLyingAssets : ARBInUnderLyingAssets)
+
+	useEffect(() => {
+
+		setSelectedIndex(defaultIndex == "ANFI" ? anfiIndexObject : defaultIndex == "CRYPTO5" ? cr5IndexObject : defaultIndex == "MAG7" ? mag7IndexObject : arbIndexObject)
+		setSelectedIndexWeights(defaultIndex == "ANFI" ? ANFIUnderLyingAssets : defaultIndex == "CRYPTO5" ? CR5UnderLyingAssets : defaultIndex == "MAG7" ? MAG7UnderLyingAssets : ARBInUnderLyingAssets)
+	}, [ANFIUnderLyingAssets, ARBInUnderLyingAssets, CR5UnderLyingAssets, MAG7UnderLyingAssets, anfiIndexObject, arbIndexObject, cr5IndexObject, defaultIndex, mag7IndexObject])
+
+	useEffect(()=>{
+		MAG7UnderLyingAssets
+	}, [MAG7UnderLyingAssets])
 	return (
 		<>
 			{
@@ -91,464 +113,309 @@ const TopIndexData = () => {
 					</>
 				) : (
 					<>
-						<section className="px-2 h-fit lg:px-10 py-6 xl:pt-16">
-							<div className="w-full overflow-x-hidden flex h-fit xl:h-fit flex-row items-stretch justify-between gap-1 xl:gap-4 mb-2" id="TopDataSectionCarousel">
-								<Slider
-									prevArrow={
-										<CustomPrevArrow
-											className="glassy"
-											onClick={() => sliderRef.current?.slickPrev()}
-										/>
-									}
-									nextArrow={
-										<CustomNextArrow
-											className="glassy"
-											onClick={() => sliderRef.current?.slickNext()}
-										/>
-									}
-									dots={false}
-									infinite={false}
-									speed={500}
-									slidesToShow={1}
-									autoplay={false}
-									arrows
-									className="relative m-0 h-full w-full p-0"
-									ref={sliderRef}
-									
-								>
-									<div
-										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-md shadow-blackText-500/50'
-											} `}
-										style={{
-											boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-											backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : `url('${mesh1.src}')`,
-											backgroundColor: mode == 'dark' ? `green` : '',
-										}}
-									>
-										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
-											<div className="flex flex-row items-center justify-start">
-												<Image src={defaultIndexObject?.logo ? defaultIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.name}</h5>
-											</div>
-										</div>
-										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-											{defaultIndexObject?.symbol == 'ANFI' ? (
-												<div className="flex flex-row items-center justify-start">
-													{[...ANFIUnderLyingAssets]
-														.sort((a, b) => b.percentage - a.percentage)
-														.map((asset, i) => {
-															const zindex = i * 10
-															return (
-																<div
-																	key={i}
-																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																		}  p-[4px] `}
-																	style={{
-																		zIndex: `'${zindex}'`,
-																		marginLeft: '-2%',
-																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																	}}
-																>
-																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-																</div>
-															)
-														})}
-												</div>
-											) : (
-												<div className="flex flex-row items-center justify-start">
-													{[...CR5UnderLyingAssets]
-														.sort((a, b) => b.percentage - a.percentage)
-														.map((asset, i) => {
-															const zindex = i * 10
-															return (
-																<div
-																	key={i}
-																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																		}  p-[4px] `}
-																	style={{
-																		zIndex: `'${zindex}'`,
-																		marginLeft: '-2%',
-																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																	}}
-																>
-																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-																</div>
-															)
-														})}
-												</div>
-											)}
-										</div>
-										<div className={`hidden xl:block w-full h-[1px] ${mode == 'dark' ? 'bg-gray-300' : 'bg-blackText-500'}  my-4`}></div>
-										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} titleShadow`}>{defaultIndexObject?.description}</h5>
-									</div>
-									<div
-										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
-											} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
-										onClick={() => {
-											if (defaultIndexObject && defaultIndexObject.symbol == 'CRYPTO5') {
-												changeDefaultIndex('ANFI')
-											} else {
-												changeDefaultIndex('CRYPTO5')
-											}
-										}}
-									>
-										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
-											<div className="flex flex-row items-center justify-start">
-												<Image src={othertIndexObject?.logo ? othertIndexObject?.logo : ''} alt="" height={35} width={35} className="mr-2"></Image>
-												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.name} </h5>
-											</div>
-											
-										</div>
-										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-											{othertIndexObject?.symbol == 'ANFI' ? (
-												<div className="flex flex-row items-center justify-start">
-													{[...ANFIUnderLyingAssets]
-														.sort((a, b) => b.percentage - a.percentage)
-														.map((asset, i) => {
-															const zindex = i * 10
-															return (
-																<div
-																	key={i}
-																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																		}  p-[4px] `}
-																	style={{
-																		zIndex: `'${zindex}'`,
-																		marginLeft: '-2%',
-																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																	}}
-																>
-																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-																</div>
-															)
-														})}
-												</div>
-											) : (
-												<div className="flex flex-row items-center justify-start">
-													{[...CR5UnderLyingAssets]
-														.sort((a, b) => b.percentage - a.percentage)
-														.map((asset, i) => {
-															const zindex = i * 10
-															return (
-																<div
-																	key={i}
-																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																		}  p-[4px] `}
-																	style={{
-																		zIndex: `'${zindex}'`,
-																		marginLeft: '-2%',
-																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																	}}
-																>
-																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-																</div>
-															)
-														})}
-												</div>
-											)}
-										</div>
-										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
-										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{othertIndexObject?.description}</h5>
-									</div>
-									<div
-										className={`w-full lg:w-full xl:h-full xl:min-h-full rounded-2xl py-3 xl:py-6 border-[2px] ${mode == 'dark' ? ' border-gray-400/50 hover:shadow-gray-400/50' : 'border-gray-300 hover:shadow-gray-200'
-											} cursor-pointer hover:shadow-md  shadow-md shadow-blackText-500/50`}
-										onClick={() => {
-											
-										}}
-									>
-										<div className="flex flex-row items-center justify-between px-2 xl:px-6 w-full">
-											<div className="flex flex-row items-center justify-start">
-												<Image src={mag7} alt="" height={35} width={35} className="mr-2"></Image>
-												<h5 className={`interBlack whitespace-nowrap mr-3 text-lg xl:text-2xl lg:text-4xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>MAG7</h5>
-											</div>
-											
-										</div>
-										<div className="mt-5 hidden xl:flex flex-row items-center justify-start px-6">
-											{othertIndexObject?.symbol == 'ANFI' ? (
-												<div className="flex flex-row items-center justify-start">
-													{[...ANFIUnderLyingAssets]
-														.sort((a, b) => b.percentage - a.percentage)
-														.map((asset, i) => {
-															const zindex = i * 10
-															return (
-																<div
-																	key={i}
-																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																		}  p-[4px] `}
-																	style={{
-																		zIndex: `'${zindex}'`,
-																		marginLeft: '-2%',
-																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																	}}
-																>
-																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-																</div>
-															)
-														})}
-												</div>
-											) : (
-												<div className="flex flex-row items-center justify-start">
-													{[...CR5UnderLyingAssets]
-														.sort((a, b) => b.percentage - a.percentage)
-														.map((asset, i) => {
-															const zindex = i * 10
-															return (
-																<div
-																	key={i}
-																	className={`aspect-square w-fit rounded-lg ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-slate-500'
-																		}  p-[4px] `}
-																	style={{
-																		zIndex: `'${zindex}'`,
-																		marginLeft: '-2%',
-																		boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-																		backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-																	}}
-																>
-																	<span className={`text-whiteText-500 ${mode == 'dark' ? '' : 'invert'}`}>{asset.logo}</span>
-																</div>
-															)
-														})}
-												</div>
-											)}
-										</div>
-										<div className="w-full hidden xl:block h-[1px] bg-gray-300 my-4"></div>
-										<h5 className={`interMedium hidden xl:block px-6 w-full text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
-										 The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.
-										</h5>
-									</div>
-								</Slider>
-
-
-							</div>
-							<div className="flex w-full flex-row items-center justify-center">
-								<div className={`h-[1px] w-full ${mode == 'dark' ? ' bg-whiteBackground-500/80' : 'bg-blackText-500/20'} `}></div>
-							</div>
-							<div className="hidden my-2 lg:flex flex-row items-stretch justify-between gap-24">
-								<div className="flex w-2/6 py-12 flex-grow flex-row items-center justify-between">
-									<div>
-										<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
-											<h5 className={`interExtraBold text-base ${mode == 'dark' ? ' text-gray-100' : 'text-blackText-500'} `}>Market Cap</h5>
-											<span>
-												<GenericTooltip
-													color="#5E869B"
-													content={
-														<div>
-															<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interBold mb-1`}>Market Cap:</p>
-															<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
-																The total value of a cryptocurrency, calculated by multiplying its price by the circulating supply. It indicates the cryptocurrency{"'"}s significance in the
-																market.
-															</p>
-														</div>
-													}
-												>
-													<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
-												</GenericTooltip>
-											</span>
-										</div>
-
-										<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
-											{FormatToViewNumber({ value: Number(defaultIndexObject?.mktCap), returnType: 'string' }) + ' ' + defaultIndexObject?.shortSymbol}
-										</h5>
-									</div>
-									<div>
-										<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
-											<h5 className={`interExtraBold text-base ${mode == 'dark' ? ' text-gray-100' : 'text-blackText-500'} `}>Market Price</h5>
-											<span>
-												<GenericTooltip
-													color="#5E869B"
-													content={
-														<div>
-															<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interBold mb-1`}>Market Price:</p>
-															<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
-																The current value of a single unit of cryptocurrency in the market, indicating its buying or selling cost.
-															</p>
-														</div>
-													}
-												>
-													<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
-												</GenericTooltip>
-											</span>
-										</div>
-										<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>
-											${FormatToViewNumber({ value: Number(defaultIndexObject?.mktPrice), returnType: 'string' })}
-										</h5>
-									</div>
-									<div>
-										<div className="w-fit h-fit flex flex-row items-center justify-center gap-1 mb-5">
-											<h5 className={`interExtraBold text-base ${mode == 'dark' ? ' text-gray-100' : 'text-blackText-500'} `}>24h Change</h5>
-											<span>
-												<GenericTooltip
-													color="#5E869B"
-													content={
-														<div>
-															<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interBold mb-1`}>24h Change:</p>
-															<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
-																the percentage difference in a cryptocurrency{"'"}s price over the past day, reflecting recent price performance.
-															</p>
-														</div>
-													}
-												>
-													<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer mt-1" />
-												</GenericTooltip>
-											</span>
-										</div>
-										<h5 className={`interMedium text-base  ${defaultIndexObject?.chg24h && Number(defaultIndexObject?.chg24h) > 0 ? 'text-nexLightGreen-500' : 'text-nexLightRed-500'}`}>
-											{defaultIndexObject?.chg24h}%
-										</h5>
-									</div>
-								</div>
-								<div className="w-4/6 flex-grow flex flex-row items-stretch justify-between">
-									<div className="flex-grow w-1/3 flex flex-col items-start justify-center">
-										<div className="mb-5 flex w-full flex-row items-center justify-start gap-1">
-											<div className="mr-5 flex min-w-max flex-row items-center justify-between">
-												<CiGlobe color="#9CAAC6" size={20} />
-												<h5 className={`interExtraBold text-base ${mode == 'dark' ? ' text-gray-100' : ' text-blackText-500'} `}>Token address</h5>
-											</div>
-											<div className="flex flex-row items-center justify-between gap-1">
-												<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} `}>{reduceAddress(defaultIndexObject?.tokenAddress as string)}</h5>
-												<GenericAddressTooltip
-													color="#5E869B"
-													address={defaultIndexObject?.tokenAddress as string}
-													totalSupply={defaultIndexObject?.totalSupply as string}
-													name={defaultIndexObject?.name as string}
-												>
-													<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
-												</GenericAddressTooltip>
-											</div>
-										</div>
-										<div className="flex w-full flex-row items-center justify-start">
-											<div className="mr-5 flex flex-row items-center justify-between">
-												<CiStreamOn color="#9CAAC6" size={20} />
-												<h5 className={`interExtraBold text-base ${mode == 'dark' ? ' text-gray-100' : 'text-blackText-500'} `}>Management Fees</h5>
-											</div>
-											<div className="flex flex-row items-center justify-between gap-1">
-												<h5 className={`interMedium text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{defaultIndexObject?.managementFee} %</h5>
-												<GenericTooltip
-													color="#5E869B"
-													content={
-														<div>
-															<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interBold mb-1`}>Management Fees:</p>
-															<p className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-sm interMedium`}>
-																We charge a competitive 1.5% annual management fee on assets under management, similar to traditional ETF providers.
-															</p>
-														</div>
-													}
-												>
-													<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
-												</GenericTooltip>
-											</div>
-										</div>
-									</div>
-									<div className="flex-grow min-h-full p-2 w-2/3 flex flex-row items-center justify-end">
-										<div
-											className={`w-2/3 relative overflow-hidden h-full ${mode == 'dark' ? 'bg-cover border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500'
-												} rounded-2xl`}
-											style={{
-												boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-											}}
-										>
-											<Image src={managment} alt="managment section" className="absolute z-10 -right-32 -bottom-40 scale-50"></Image>
-											<div className="absolute h-full top-0 left-0 w-4/5 z-50 flex flex-col items-start justify-start p-4">
-												<h5 className={`interBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} titleShadow text-2xl mb-3`}>Nexlabs Fees</h5>
-
-												<Link href={'https://nex-labs.gitbook.io/nex-dex/protocol-structure/fees'}>
-													<button
-														className={`interBold flex h-fit mt-3 w-fit flex-row items-center justify-center gap-1 rounded-2xl bg-gradient-to-tl ${mode == 'dark' ? 'titleShadow bg-cover bg-center bg-no-repeat text-whiteText-500' : 'from-colorFour-500 to-colorSeven-500 text-blackText-500'
-															}  px-5 py-3 text-2xl shadow-sm shadow-blackText-500 active:translate-y-[1px] active:shadow-black `}
-														style={{
-															backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-															boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-														}}
-													>
-														<span>Learn More</span>
-														{mode == 'dark' ? <GoArrowRight color="#FFFFFF" size={30} /> : <GoArrowRight color="#252525" size={30} />}
-													</button>
-												</Link>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div className="block xl:hidden w-full h-fit text-blackText-500 py-6">
-								<Accordion className="w-full">
-									<AccordionItem
-										header={
-											<div className="w-full h-fit flex flex-row items-center justify-between px-2">
-												<h5 className={`${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-xl interBlack`}>{'More About ' + defaultIndexObject?.name.toString()}</h5>
-												{mode == 'dark' ? <AiOutlinePlus color="#FFFFFF" size={25}></AiOutlinePlus> : <AiOutlinePlus color="#000000" size={25}></AiOutlinePlus>}
-											</div>
+						<section className="px-2 h-fit lg:px-10 pb-6 pt-3 xl:pb-16 xl:pt-8">
+							<Stack width={"100%"} minHeight={"30vh"} height={"fit-content"} marginBottom={4} borderRadius={4} direction={"row"} gap={0.5} alignItems={"start"} justifyContent={"start"} divider={<Divider orientation="vertical" variant='middle' flexItem />} sx={GradientStack}>
+								<Stack width={"35%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+									<Stack direction={"row"} alignItems={"center"} justifyContent={"start"}>
+										<Image src={selectedIndex && selectedIndex.logo ? selectedIndex?.logo : ""} alt="" height={35} width={35} className="mr-2" />
+										<Typography variant="h6" component="h6" sx={{
+											fontWeight: 600
+										}}>
+											{selectedIndex?.name}
+										</Typography>
+									</Stack>
+									<Typography variant="subtitle2" component="p" sx={{
+										marginTop: "1.2rem",
+									}}>
+										{
+											selectedIndex?.description
 										}
+									</Typography>
+
+								</Stack>
+								<Stack width={"30%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+									<Typography variant="h6" component="h6" sx={{
+										fontWeight: 600,
+									}}>
+										Key Information
+									</Typography>
+									<Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginTop={"1.2rem"} marginBottom={"0.8rem"}>
+										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+												<Typography variant="caption" component={"p"} sx={{
+													fontSize: "1.1rem",
+													fontWeight: "600"
+												}}>
+													Market Cap
+												</Typography>
+												<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
+											</Stack>
+											<Typography variant="caption" component={"p"} sx={{
+												fontSize: "1rem",
+												fontWeight: "400"
+											}}>
+												{selectedIndex?.mktCap + " " + selectedIndex?.shortSymbol}
+											</Typography>
+										</Stack>
+										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+												<Typography variant="caption" component={"p"} sx={{
+													fontSize: "1.1rem",
+													fontWeight: "600"
+												}}>
+													Market Price
+												</Typography>
+												<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
+											</Stack>
+											<Typography variant="caption" component={"p"} sx={{
+												fontSize: "1rem",
+												fontWeight: "400"
+											}}>
+												${selectedIndex?.mktPrice}
+											</Typography>
+										</Stack>
+									</Stack>
+									<Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginY={"0.8rem"}>
+										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+												<Typography variant="caption" component={"p"} sx={{
+													fontSize: "1.1rem",
+													fontWeight: "600"
+												}}>
+													24h Change
+												</Typography>
+												<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
+											</Stack>
+											<Typography variant="caption" component={"p"} sx={{
+												fontSize: "1rem",
+												fontWeight: "400",
+												color: Number(selectedIndex?.chg24h) > 0 ? "#089981" : "#F23645"
+											}}>
+												{selectedIndex?.chg24h}%
+											</Typography>
+										</Stack>
+										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+												<Typography variant="caption" component={"p"} sx={{
+													fontSize: "1.1rem",
+													fontWeight: "600"
+												}}>
+													Management Fees
+												</Typography>
+												<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
+											</Stack>
+											<Typography variant="caption" component={"p"} sx={{
+												fontSize: "1rem",
+												fontWeight: "400"
+											}}>
+												{selectedIndex?.managementFee}%
+											</Typography>
+										</Stack>
+									</Stack>
+									<Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginY={"0.8rem"}>
+										<Stack direction={"column"} width={"100%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
+											<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+												<Typography variant="caption" component={"p"} sx={{
+													fontSize: "1.1rem",
+													fontWeight: "600"
+												}}>
+													Token Address
+												</Typography>
+												<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
+											</Stack>
+											<Typography variant="caption" component={"p"} sx={{
+												fontSize: "1rem",
+												fontWeight: "400",
+											}}>
+												{selectedIndex?.tokenAddress ? reduceAddress(selectedIndex?.tokenAddress) : ""}
+											</Typography>
+										</Stack>
+
+									</Stack>
+								</Stack>
+								<Stack width={"35%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+									<Typography variant="h6" component="h6" marginBottom={"1.2rem"} sx={{
+										fontWeight: 600,
+									}}>
+										Composition
+									</Typography>
+
+									<Grid container columns={12} rowSpacing={2} maxHeight={"40vh"} sx={{
+										overflowY: "auto"
+									}}>
+										{
+											selectedIndexWeights.map((item, key) => {
+												return (
+													<Grid item md={6} key={key}>
+														<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+															<Stack width={'fit-content'} height={'fit-content'} padding={"0.9rem"} borderRadius={"0.8rem"} sx={GradientStack}>
+																<Stack width={25} height={25} direction={"row"} alignItems={"center"} justifyContent={"center"}>
+																	{item.logo}
+																</Stack>
+
+															</Stack>
+															<Stack width={'fit-content'} height={'fit-content'} direction={"column"} alignItems={"start"} justifyContent={"start"}>
+																<Typography variant="caption" component={"p"} sx={{
+																	fontSize: "1.1rem",
+																	fontWeight: "600"
+																}}>
+																	{item.name}
+																</Typography>
+																<Typography variant="caption" component={"p"} sx={{
+																	fontSize: "1rem",
+																	fontWeight: "400"
+																}}>
+																	{item.percentage.toFixed(2)}%
+																</Typography>
+															</Stack>
+														</Stack>
+
+													</Grid>
+												)
+											})
+										}
+
+									</Grid>
+
+								</Stack>
+							</Stack>
+							<Stack width={"100%"} height={"fit-content"} paddingX={"1.2rem"} marginY={"1rem"}>
+								<Typography variant="h6" component="h6" sx={{
+									fontWeight: 600
+								}}>
+									Other Products
+								</Typography>
+								<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={6} marginTop={"1.2rem"}>
+									{
+										selectedIndex?.symbol != "ANFI" ? (
+											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('ANFI') }}>
+												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+													<Image src={anfiIndexObject && anfiIndexObject.logo ? anfiIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#E8BB31] rounded-full " />
+													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
+														<Typography variant="subtitle1" component="h6" sx={{
+															fontWeight: 600
+														}}>
+															{anfiIndexObject?.name}
+														</Typography>
+														<Typography variant="caption" component="h6" sx={{
+															fontWeight: 500
+														}}>
+															24h Change: <span style={{ color: Number(anfiIndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{anfiIndexObject?.chg24h}%</span>
+														</Typography>
+													</Stack>
+
+												</Stack>
+											</Link>
+										) : ("")
+									}
+									{
+										selectedIndex?.symbol != "CRYPTO5" ? (
+											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('CRYPTO5') }}>
+												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+													<Image src={cr5IndexObject && cr5IndexObject.logo ? cr5IndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#DA3E49] rounded-full " />
+													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
+														<Typography variant="subtitle1" component="h6" sx={{
+															fontWeight: 600
+														}}>
+															{cr5IndexObject?.name}
+														</Typography>
+														<Typography variant="caption" component="h6" sx={{
+															fontWeight: 500
+														}}>
+															24h Change: <span style={{ color: Number(cr5IndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{anfiIndexObject?.chg24h}%</span>
+														</Typography>
+													</Stack>
+
+												</Stack>
+											</Link>
+										) : ("")
+									}
+									{
+										selectedIndex?.symbol != "MAG7" ? (
+											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('MAG7') }}>
+												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+													<Image src={mag7IndexObject && mag7IndexObject.logo ? mag7IndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#D67DEC] rounded-full " />
+													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
+														<Typography variant="subtitle1" component="h6" sx={{
+															fontWeight: 600
+														}}>
+															{mag7IndexObject?.name}
+														</Typography>
+														<Typography variant="caption" component="h6" sx={{
+															fontWeight: 500
+														}}>
+															24h Change: <span style={{ color: Number(mag7IndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{anfiIndexObject?.chg24h}%</span>
+														</Typography>
+													</Stack>
+
+												</Stack>
+											</Link>
+										) : ("")
+									}
+									{
+										selectedIndex?.symbol != "ARBIn" ? (
+											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('ARBIn'); }}>
+												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
+													<Image src={arbIndexObject && arbIndexObject.logo ? arbIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#D67DEC] rounded-full " />
+													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
+														<Typography variant="subtitle1" component="h6" sx={{
+															fontWeight: 600
+														}}>
+															{arbIndexObject?.name}
+														</Typography>
+														<Typography variant="caption" component="h6" sx={{
+															fontWeight: 500
+														}}>
+															24h Change: <span style={{ color: Number(arbIndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{arbIndexObject?.chg24h}%</span>
+														</Typography>
+													</Stack>
+
+												</Stack>
+											</Link>
+										) : ("")
+									}
+									
+								</Stack>
+							</Stack>
+
+
+
+
+
+
+
+
+							<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+								<Stack marginTop={{ xs: 3, xl: 5 }} marginBottom={1} direction={"row"} alignItems={"center"} justifyContent={{ xs: "center", xl: "start" }}>
+									<Typography variant="h6" component={"h6"} sx={{
+
+										fontWeight: "600"
+									}}>
+										{selectedIndex?.symbol}
+									</Typography>
+									<CgArrowsExchange color={theme.palette.mode == "dark" ? "#FFFFFF" : "#5E869B"} size={35} className="mx-2" />
+									<Typography variant="h6" component={"h6"} sx={{
+										fontWeight: "600"
+									}}>
+										World{"'"}s best assets
+									</Typography>
+									<Stack width={"fit-content"} height={"fit-content"} paddingX={1.5} paddingY={1} marginLeft={1} direction={"row"} alignItems={"center"} justifyContent={"center"} borderRadius={"9999px"} sx={GradientStack}
+
 									>
-										<div className="w-full h-fit flex flex-col items-start justify-start gap-2 px-2 py-3">
-											<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} text-xl`}>{defaultIndexObject?.description}</h5>
-										</div>
-										<div className="grid grid-cols-2 grid-rows-2 grid-col gap-y-5 lg:hidden px-2 py-5">
-											<div className="flex flex-col items-center justify-center">
-												<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>Market Cap</h5>
-												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
-											</div>
-											<div className="flex flex-col items-center justify-center">
-												<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>Market Price</h5>
-												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
-											</div>
-											<div className="flex flex-col items-center justify-center">
-												<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>24h Change</h5>
-												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
-											</div>
-											<div className="flex flex-col items-center justify-center">
-												<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>Managment Fees</h5>
-												<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A{/*defaultIndexObject?.mktCap*/}</h5>
-											</div>
-										</div>
-										<div className="flex flex-row items-center justify-center gap-1 lg:hidden px-2">
-											<CiGlobe color="#9CAAC6" size={20} />
-											<h5 className={`interExtraBold mb-5 text-xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-400'}`}>Token address</h5>
-										</div>
-										<div className="flex flex-row items-center justify-center gap-2 lg:hidden px-2 py-2">
-											<h5 className={`interMedium text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>N/A</h5>
+										<Typography variant="caption" component={"p"} sx={{
+											fontSize: "1.1rem",
+											fontWeight: "600"
+										}}>
+											{selectedIndex?.name}
+										</Typography>
+									</Stack>
+								</Stack>
+							</Stack>
 
-											<BsInfoCircle color="#5E869B" size={25} />
-										</div>
-									</AccordionItem>
-								</Accordion>
-							</div>
+							<Stack width={"100%"} height={"fit-content"}>
+								<DashboardChartBox />
+							</Stack>
 
-							<div className="flex w-full flex-row items-center justify-center">
-								<div className={`h-[1px] w-full ${mode == 'dark' ? ' bg-whiteBackground-500/80' : 'bg-blackText-500/20'} `}></div>
-							</div>
-
-							<div>
-								<div className="w-full h-fit flex flex-row items-center justify-between">
-									<div className="mt-6 xl:mt-10 mb-5 flex flex-row items-center justify-center lg:justify-start">
-										<h5 className={`interBlack  text-xl lg:text-2xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>{defaultIndexObject?.symbol}</h5>
-										{mode == 'dark' ? <CgArrowsExchange color="#FFFFFF" size={35} className="mx-2" /> : <CgArrowsExchange color="#5E869B" size={35} className="mx-2" />}
-
-										<h5 className={`interBlack  text-xl lg:text-2xl ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'} `}>World{"'"}s best assets</h5>
-										<div
-											className={`w-fit h-fit p-3 ml-2 hidden lg:flex flex-row items-center justify-center gap-2 rounded-3xl ${mode == 'dark' ? 'bg-cover  border-transparent bg-center bg-no-repeat' : 'bg-gradient-to-tl from-colorFour-500 to-colorSeven-500 shadow-sm shadow-blackText-500'
-												} `}
-											style={{
-												boxShadow: mode == 'dark' ? `0px 0px 6px 1px rgba(91,166,153,0.68)` : '',
-												backgroundImage: mode == 'dark' ? `url('${mesh1.src}')` : '',
-											}}
-										>
-											<h5 className={`text-sm interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}`}>{defaultIndexObject?.name}</h5>
-										</div>
-									</div>
-								</div>
-
-								<div className="h-fit w-full">
-									<DashboardChartBox />
-									{/* <TradingViewChart index={defaultIndex}/> */}
-								</div>
-							</div>
 						</section>
 					</>
 				)
