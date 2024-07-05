@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect, useContext, ReactElement } from 'react';
 import Image, { StaticImageData } from 'next/image'
 import Link from 'next/link'
-import { goerliAnfiV2IndexToken, goerliCR5PoolAddress, goerliCrypto5IndexToken, goerlianfiPoolAddress, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaWethAddress } from '@/constants/contractAddresses'
+import { goerliAnfiV2IndexToken, goerliCR5PoolAddress, goerliCrypto5IndexToken, goerlianfiPoolAddress, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaWethAddress, zeroAddress } from '@/constants/contractAddresses'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
-import { indexTokenV2Abi } from '@/constants/abi'
+import { indexTokenV2Abi, tokenAbi } from '@/constants/abi'
 import axios from 'axios'
 import { reduceAddress } from '@/utils/general'
 import { FormatToViewNumber, num } from '@/hooks/math'
@@ -64,10 +64,7 @@ type underlyingAsset = {
 }
 
 interface DashboardContextProps {
-    mktPrice: {
-        anfi: number;
-        cr5: number;
-    };
+    mktPrice: {[key:string]:number};
     dayChange: {
         anfi: string;
         cr5: string;
@@ -254,7 +251,7 @@ const useDashboard = () => {
 const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 
     const { defaultIndex, changeDefaultIndex, theme } = useLandingPageStore()
-    const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
+    const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data,indexChangePer } = useChartDataStore()    
     const { ethPriceInUsd } = useTradePageStore()
 
     useEffect(() => {
@@ -266,7 +263,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
         // setANFIWeightage()
     }, [setDayChangePer])
 
-    const [mktPrice, setMktPrice] = useState({ anfi: 0, cr5: 0 })
+    const [todayPrice, setTodayPrice] = useState<{[key:string]:number}>({ anfi:0,cr5:0,mag7:0,arbei:0})
     const [dayChange, setDayChange] = useState({ anfi: '0.00', cr5: '0.00' })
 
 
@@ -316,48 +313,13 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             const marketPriceANFIUSD = await convertToUSD({ tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals }, ethPriceInUsd, false)
             const marketPriceCR5USD = await convertToUSD({ tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals }, ethPriceInUsd, false)
 
-            setMktPrice({ anfi: marketPriceANFIUSD as number, cr5: marketPriceCR5USD as number })
+            setTodayPrice({ anfi: marketPriceANFIUSD as number, cr5: marketPriceCR5USD as number, mag7:0.00, arbei:0.00})
         }
 
         getPrice()
     }, [ethPriceInUsd])
 
-    // useEffect(() => {
-    // 	async function getPrice() {
-    // 		try {
-    // 			const anfiTokenData = sepoliaTokens.find((d) => d.address === sepoliaAnfiV2IndexToken) as { address: string, decimals: number };
-    // 			const cr5TokenData = sepoliaTokens.find((d) => d.address === sepoliaCrypto5V2IndexToken) as { address: string, decimals: number };
-
-    // 			console.log("anfiTokenData:", anfiTokenData);
-    // 			console.log("anfiTokenData:", { tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals });
-    // 			console.log("cr5TokenData:", cr5TokenData);
-    // 			console.log("cr5TokenData:", { tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals });
-
-    // 			if (!anfiTokenData || !cr5TokenData) {
-    // 				console.error("Token data not found.");
-    // 				return;
-    // 			}
-
-    // 			const marketPriceANFIUSD = await convertToUSD({ tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals }, ethPriceInUsd, false) as number
-    // 			const marketPriceCR5USD = await convertToUSD({ tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals }, ethPriceInUsd, false) as number
-
-    // 			console.log("marketPriceANFIUSD:", marketPriceANFIUSD);
-    // 			console.log("marketPriceCR5USD:", marketPriceCR5USD);
-
-    // 			if (isNaN(marketPriceANFIUSD) || isNaN(marketPriceCR5USD)) {
-    // 				console.error("Invalid market price data.");
-    // 				return;
-    // 			}
-
-    // 			setMktPrice({ anfi: marketPriceANFIUSD, cr5: marketPriceCR5USD });
-    // 		} catch (error) {
-    // 			console.error("Error fetching market prices:", error);
-    // 		}
-    // 	}
-
-    // 	getPrice();
-    // }, [ethPriceInUsd, sepoliaTokens, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken]);
-
+   
     // here you go
     const [IndicesWithDetails, setIndicesWithDetails] = useState(
         [
@@ -371,8 +333,8 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                 description:
                     "The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.\nGold has traditionally been a reliable investment. Nevertheless, it's worth considering that Bitcoin, often referred to as 'digital gold,' has the potential to assume a prominent role in everyday life in the future.",
                 mktCap: 0,
-                mktPrice: mktPrice.anfi,
-                chg24h: dayChange.anfi,
+                mktPrice: 0,
+                chg24h: indexChangePer.anfi,
                 tokenAddress: sepoliaAnfiV2IndexToken,
                 managementFee: '1.00',
                 totalSupply: '78622.32',
@@ -405,8 +367,8 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                 description:
                     'The "Crypto 5 Index" represents a meticulously curated basket of assets designed to provide investors with a secure and diversified entry into the digital assets industry. It not only offers stability through its carefully selected assets but also presents substantial growth potential. This makes it an ideal choice for crypto investors seeking a balanced and reliable investment option in the ever-evolving cryptocurrency landscape.',
                 mktCap: 0,
-                mktPrice: mktPrice.cr5,
-                chg24h: dayChange.cr5,
+                mktPrice: 0,
+                chg24h: indexChangePer.cr5,
                 tokenAddress: sepoliaCrypto5V2IndexToken,
                 managementFee: '1.00',
                 totalSupply: '78622.32',
@@ -464,9 +426,9 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                 description:
                     'The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.',
                 mktCap: 0,
-                mktPrice: mktPrice.cr5,
-                chg24h: dayChange.cr5,
-                tokenAddress: sepoliaCrypto5V2IndexToken,
+                mktPrice: 0,
+                chg24h: indexChangePer.mag7,
+                tokenAddress: zeroAddress,
                 managementFee: '1.00',
                 totalSupply: '78622.32',
                 underlyingAssets: [
@@ -516,16 +478,16 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             {
                 name: 'Arbitrum Ecosystem Index',
                 logo: arbLogo,
-                symbol: 'ARBIn',
-                shortSymbol: 'ARBIn',
+                symbol: 'ARBEI',
+                shortSymbol: 'ARBEI',
                 shortDescription:
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
                 description:
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
                 mktCap: 0,
                 mktPrice: 0,
-                chg24h: "0.00",
-                tokenAddress: "N/A",
+                chg24h: indexChangePer.arb10,
+                tokenAddress: zeroAddress,
                 managementFee: '1.00',
                 totalSupply: '78622.32',
                 underlyingAssets: [
@@ -574,22 +536,39 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             },
         ]
     )
-    
+
+    useEffect(() => {
+        setIndicesWithDetails(prevState => 
+          prevState.map(item => ({
+            ...item,
+            chg24h: indexChangePer[item.shortSymbol.toLowerCase()],
+            mktPrice: todayPrice[item.shortSymbol.toLowerCase()]
+          }))
+        );
+      }, [indexChangePer,todayPrice]);
 
     const anfiIndexObject = IndicesWithDetails.find((o) => o.symbol === 'ANFI')
     const cr5IndexObject = IndicesWithDetails.find((o) => o.symbol === 'CRYPTO5')
     const mag7IndexObject = IndicesWithDetails.find((o) => o.symbol === 'MAG7')
-    const arbIndexObject = IndicesWithDetails.find((o) => o.symbol === 'ARBIn')
+    const arbIndexObject = IndicesWithDetails.find((o) => o.symbol === 'ARBEI')
 
     const IndexContract: UseContractResult = useContract(anfiIndexObject?.tokenAddress, indexTokenV2Abi)
-    const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
+    const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data /1e18
     const totalSupply = useContractRead(IndexContract.contract, 'totalSupply')
 
+    const IndexContractCR5: UseContractResult = useContract(cr5IndexObject?.tokenAddress, indexTokenV2Abi)
+    const feeRateCR5 = useContractRead(IndexContractCR5.contract, 'feeRatePerDayScaled').data / 1e18
+    const totalSupplyCR5 = useContractRead(IndexContractCR5.contract, 'totalSupply')
+
     if (anfiIndexObject) {
-        anfiIndexObject.managementFee = feeRate.toFixed(2)
-        anfiIndexObject.totalSupply = num(totalSupply.data).toFixed(2)
-        // console.log(num(totalSupply.data) * anfiIndexObject.mktPrice)
+        anfiIndexObject.managementFee = !!feeRate ?  feeRate.toFixed(2): '1.00'
+        anfiIndexObject.totalSupply = num(totalSupply.data).toFixed(2)        
         anfiIndexObject.mktCap = num(totalSupply.data) * anfiIndexObject.mktPrice
+    }
+    if (cr5IndexObject) {
+        cr5IndexObject.managementFee = feeRateCR5.toFixed(2)
+        cr5IndexObject.totalSupply = num(totalSupplyCR5.data).toFixed(2)        
+        cr5IndexObject.mktCap = num(totalSupplyCR5.data) * cr5IndexObject.mktPrice
     }
 
     const [CR5UnderLyingAssets, setCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
@@ -827,7 +806,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     const contextValue = {
-        mktPrice: mktPrice,
+        mktPrice: todayPrice,
         dayChange: dayChange,
         IndicesWithDetails: IndicesWithDetails,
         anfiIndexObject: anfiIndexObject,

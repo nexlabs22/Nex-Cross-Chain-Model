@@ -13,6 +13,7 @@ export async function GET() {
             const CRYPTO5: { time: number, value: number }[] = [];
             const ANFI: { time: number, value: number }[] = [];
             const MAG7: { time: number, value: number }[] = [];
+            const ARBEI: { time: number, value: number }[] = [];
 
             inputArray.forEach(item => {
                 const time = parseInt(item.stampsec, 10);
@@ -35,9 +36,15 @@ export async function GET() {
                         value: parseFloat(item.mag7),
                     });
                 }
+                if (item.arb10 !== null) {
+                    ARBEI.push({
+                        time: time,
+                        value: parseFloat(item.arb10),
+                    });
+                }
             });
 
-            const data = { CRYPTO5, ANFI, MAG7 };
+            const data = { CRYPTO5, ANFI, MAG7, ARBEI };
 
             return NextResponse.json(data, { status: 200 })
 

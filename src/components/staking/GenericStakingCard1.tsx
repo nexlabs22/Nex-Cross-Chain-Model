@@ -28,7 +28,7 @@ const GenericStakingCard1: React.FC<GenericStakingCardProps> = ({ index }) => {
             backgroundImage: index == "ANFI" ? "linear-gradient(#000000, #5F5126);" : ""
         }}>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={2} paddingX={4} paddingY={3}>
-                <Image src={index == "ANFI" ? anfiLogo : index == "CRYPTO5" ? cr5Logo : index == "MAG7" ? mag7Logo : index == "ARBIn" ? arbLogo : ""} alt={index + " logo"} height={70} width={70} className=" rounded-full"></Image>
+                <Image src={index == "ANFI" ? anfiLogo : index == "CRYPTO5" ? cr5Logo : index == "MAG7" ? mag7Logo : index == "ARBEI" ? arbLogo : ""} alt={index + " logo"} height={70} width={70} className=" rounded-full"></Image>
                 <Stack width={"fit-content"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"}>
                     <Typography variant="subtitle1" component="h6" sx={{ fontWeight: 700 }}>Staking {index.toUpperCase()}</Typography>
                     <Typography variant="caption" component="p" sx={{ color: "#D3D3D3" }}>Rewards are in ANFI or other NEX index products</Typography>

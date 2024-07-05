@@ -168,7 +168,7 @@ const PWAChartBox = () => {
 					logo: mag7.src,
 				},
 				{
-					name: 'ARBIn10',
+					name: 'ARBEI',
 					colName: 'arb10',
 					logo: mag7.src,
 				},

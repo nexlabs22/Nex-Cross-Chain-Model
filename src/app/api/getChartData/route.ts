@@ -72,7 +72,7 @@ export async function GET() {
             const ANFI: OHLC[] = [];
             const MAG7: OHLC[] = [];
             const ARBIn: OHLC[] = [];
-            const ARBIn10: OHLC[] = [];
+            const ARBEI: OHLC[] = [];
 
             inputArray.forEach(item => {
                 const time = parseInt(item.stampsec, 10);
@@ -116,7 +116,7 @@ export async function GET() {
                 }
 
                 if (item.arb10 !== null) {
-                    ARBIn10.push({
+                    ARBEI.push({
                         time: time,
                         open: parseFloat(item.arb10),
                         high: parseFloat(item.arb10),
@@ -156,7 +156,7 @@ export async function GET() {
             data.ANFI = ANFI
             data.MAG7 = MAG7
             data.ARBIn = ARBIn
-            data.ARBIn10 = ARBIn10
+            data.ARBEI = ARBEI
 
             return NextResponse.json(data, { status: 200 })
         }

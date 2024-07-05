@@ -10,6 +10,7 @@ import { comparisonIndices } from '@/constants/comparisionIndices'
 import isEqual from 'lodash/isEqual';
 import { Mode } from '@anatoliygatt/dark-mode-toggle';
 import { darkTheme, lightTheme, Theme } from "@theme/theme"
+import { calculateChange } from '@/utils/general'
 
 type LandingPageStore = {
 
@@ -83,6 +84,8 @@ interface chartDataStoreType {
 	CR5Data: { time: number, value: number }[],
 	STOCK5Data: { time: number, value: number }[],
 	MAG7Data: { time: number, value: number }[],
+	ARBEIData: { time: number, value: number }[],
+	indexChangePer: {[key:string]: string},
 	selectedIndex: { time: number, open: number, high: number, low: number, close: number }[],
 	ANFIWeightage: { time: number, btc: number, gold: number }[],
 	dayChange: dayChangeType,
@@ -107,8 +110,10 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	CR5Data: [],
 	STOCK5Data: [],
 	MAG7Data: [],
+	ARBEIData: [],
 	selectedIndex: [],
 	ANFIWeightage: [],
+	indexChangePer:{},
 	dayChange: dayChangeInitial,
 	loading: false,
 	error: null,
@@ -117,7 +122,7 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 	fetchIndexData: async ({ tableName, index }) => {
 		try {
 			set({ loading: true, error: null })
-			const indexData = await fetch('api/getIndexData').then(res => res.json()).catch(err => console.log(err))
+			const indexData = await fetch('api/getIndexData').then(res => res.json()).catch(err => console.log(err))			
 			const response = await fetch(
 				`/api/spotDatabase?indexName=${index}&tableName=${encodeURIComponent(tableName)}`
 			)
@@ -130,14 +135,21 @@ const useChartDataStore = create<chartDataStoreType>()((set) => ({
 					const anfiIndexPrices = indexData.ANFI;
 					const cr5IndexPrices = indexData.CRYPTO5;
 					const mag7IndexPrices = indexData.MAG7;
-					// const anfiIndexPrices = getIndexData('ANFI', inputData.data, inputData?.top5Cryptos);
-					// const cr5IndexPrices = getIndexData('CRYPTO5', inputData.data, inputData?.top5Cryptos);
-					// const stock5Prices = getIndexData('STOCK5', inputData.data, top5stockmarketcap)
+					const arbieIndexPrices = indexData.ARBEI;
+
+					const indexChange = {
+						'anfi': calculateChange(anfiIndexPrices),
+						'cr5': calculateChange(cr5IndexPrices),
+						'mag7': calculateChange(mag7IndexPrices),
+						'arbei': calculateChange(arbieIndexPrices),
+					}
+
 					return {
 						ANFIData: anfiIndexPrices,
 						CR5Data: cr5IndexPrices,
 						MAG7Data:mag7IndexPrices,
-						// STOCK5Data: stock5Prices,
+						ARBEIData:arbieIndexPrices,
+						indexChangePer: indexChange,
 						loading: false
 					}
 				} else {
