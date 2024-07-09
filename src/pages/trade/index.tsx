@@ -22,6 +22,7 @@ import mesh2 from '@assets/images/mesh2.png'
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import mag7Logo from '@assets/images/mag7.png'
+import arbLogo from '@assets/images/arb.png'
 import cefi from '@assets/images/CeFi_1c.png'
 import defi from '@assets/images/DeFi_1a.png'
 import hybrid from '@assets/images/hybrid.png'
@@ -143,6 +144,24 @@ export default function Explore() {
 			logo: mag7Logo.src,
 			address: reduceAddress(zeroAddress),
 			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'MAG7',
+			category: 'defi',
+			subcategory: 'sub1',
+		},
+		{
+			name: 'Arbitrum Ecosystem Index',
+			symbol: 'ARBEI',
+			logo: arbLogo.src,
+			address: reduceAddress(zeroAddress),
+			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'ARBEI',
+			category: 'cefi',
+			subcategory: 'sub1',
+		},
+		{
+			name: 'Arbitrum Ecosystem Index',
+			symbol: 'ARBEI',
+			logo: arbLogo.src,
+			address: reduceAddress(zeroAddress),
+			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'ARBEI',
 			category: 'defi',
 			subcategory: 'sub1',
 		},

@@ -127,12 +127,11 @@ const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
 	}, [index, wid])
 
 	useEffect(() => {
-		if (wid && wid.setSymbol && location === '/tradeIndex') {
-			const allowedSymbols = ['ANFI', 'CRYPTO5','MAG7']
-			const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
+		if (wid && wid.setSymbol && location === '/tradeIndex') {			
+			const activeTicker = [swapFromCur, swapToCur].filter((symbol) => symbol.isNexlabToken).map((res)=> res.Symbol)			
 			wid.setSymbol(`Nexlabs:${activeTicker[0]}/USD`, 'D')
 		}
-	}, [location, wid, swapFromCur.Symbol, swapToCur.Symbol])
+	}, [location, wid, swapFromCur, swapToCur])
 
 	useEffect(() => {
 		if (wid && wid.changeTheme) {
