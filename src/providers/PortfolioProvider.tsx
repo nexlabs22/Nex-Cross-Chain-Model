@@ -49,7 +49,7 @@ interface PortfolioContextProps {
     user: User | null,
     showPortfolioData: boolean | null
     chartArr: { time: number; value: number; }[]
-    indexPercent: { anfi: number, cr5: number } | null
+    indexPercent: {[key:string]:number} | null
     todayPortfolioPrice: number
     yesterdayPortfolioPrice: number
     portfolio24hChange: number
@@ -157,7 +157,7 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
     // })
 
     let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
-    const indexPercent = { anfi: anfiPercent, cr5: crypto5Percent }
+    const indexPercent:{[key:string]:number} = { anfi: anfiPercent, crypto5: crypto5Percent, mag7:0, arbei:0 }
 
     if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
         const chartData: { time: number; value: number }[] = []
@@ -222,7 +222,8 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
                     const calculatedUsdValue = (await convertToUSD({ tokenAddress: item.address, tokenDecimals: item.decimals }, ethPriceInUsd, false)) || 0
                     const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
                     const totalTokenUsd = calculatedUsdValue * totalToken || 0
-                    const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
+                    // const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
+                    const percentage = indexPercent[item.symbol.toLowerCase()] || 0
 
                     return {
                         ...item,

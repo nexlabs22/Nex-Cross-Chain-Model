@@ -214,7 +214,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			return coin.Symbol === selectedCoin
 		})
 		changeSwapToCur(coinDetails[0])
-	}, [])
+	}, [query.index])
 	
 	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
 	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)

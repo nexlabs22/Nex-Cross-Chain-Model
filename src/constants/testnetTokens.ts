@@ -3,6 +3,7 @@ import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import mag7 from '@assets/images/mag7.png'
 import sciLogo from '@assets/images/sci.png'
+import arbLogo from '@assets/images/arb.png'
 import { Coin } from "@/types/nexTokenData";
 
 export const goerliTokens = [
@@ -81,17 +82,17 @@ export const sepoliaTokens:Coin[] = [
         decimals: 18,
         indexType: 'crosschain'
     },
-    // {
-    //     id: 4,
-    //     logo: sciLogo.src,
-    //     name: 'SCI',
-    //     Symbol: 'SCI',
-    //     isNexlabToken:true,
-    //     address: sepoliaSciV2IndexToken,
-    //     factoryAddress: sepoliaSciV2Factory,
-    //     decimals: 18,
-    //     indexType: 'defi'
-    // }
+    {
+        id: 4,
+        logo: arbLogo.src,
+        name: 'Arbitrum Ecosystem Index',
+        Symbol: 'ARBEI',
+        isNexlabToken:true,
+        address: zeroAddress,
+        factoryAddress: zeroAddress,
+        decimals: 18,
+        indexType: 'defi' 
+    }
 ]
 // export const sepoliaTokens = [
 //     {

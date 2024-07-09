@@ -3,6 +3,7 @@ import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import mag7 from '@assets/images/mag7.png'
 import sciLogo from '@assets/images/sci.png'
+import arbLogo from '@assets/images/arb.png'
 
 export const nexTokens = [
     {
@@ -29,12 +30,12 @@ export const nexTokens = [
         decimals: 18,
         logo: mag7.src
     },
-    // {
-    //     symbol: 'SCI',
-    //     shortName: 'SCI',
-    //     indexType: 'defi',
-    //     address: sepoliaSciV2IndexToken,
-    //     decimals: 18,
-    //     logo: sciLogo.src
-    // },
+    {
+        symbol: 'ARBEI',
+        shortName: 'ARBEI',
+        indexType: 'defi',
+        address: zeroAddress,
+        decimals: 18,
+        logo: arbLogo.src
+    },
 ]

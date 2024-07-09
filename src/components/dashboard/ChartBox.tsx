@@ -30,6 +30,8 @@ import nasdaq from '@assets/images/nasdaq.jpg'
 import nyse from '@assets/images/nyse.png'
 import stock5 from '@assets/images/STOCK5.png'
 import mag7 from '@assets/images/mag7.png'
+import arb from '@assets/images/arbitrum.png'
+import eth from '@assets/images/ethereum.png'
 import microsoft from '@assets/images/microsoft.png'
 import paypal from '@assets/images/paypal.png'
 import asml from '@assets/images/asml.png'
@@ -200,11 +202,31 @@ const DashboardChartBox = () => {
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'nasdaq')?.selectionColor,
 				},
 				{
-					name: 'NYA ',
+					name: 'NYA',
 					colName: 'nyse',
 					logo: nyse.src,
 					selectionColor: comparisonIndices.find((index) => index.columnName === 'nyse')?.selectionColor,
 				},
+			],
+		},
+		{
+			index: 'ARBEI',
+			assetClasses: [
+				{
+					name: 'ARB',
+					colName: 'arbitrum',
+					logo: arb.src,
+				},
+				{
+					name: 'eth',
+					colName: 'ethereum',
+					logo: eth.src
+				},
+				{
+					name: 'btc',
+					colName: 'bitcoin',
+					logo: btc.src,
+				}
 			],
 		},
 	]

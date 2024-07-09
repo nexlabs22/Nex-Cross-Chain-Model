@@ -15,6 +15,9 @@ export async function GET() {
 		'GC=F': 'gold',
 		'CL=F': 'oil',
 		BTC: 'bitcoin',
+		ETH: 'ethereum',
+		ARB:'arbitrum'
+		
 	}
 	const endDate = new Date()
 	const startDate = getPreviousWeekday(endDate)
@@ -57,7 +60,7 @@ export async function GET() {
 		// const cryptoStr = cryptos.join('%2C')
 		// const cryptoChange = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${cryptoStr}&vs_currencies=usd&include_24hr_change=true`).then((res)=>res.data);
 		const cryptoChange = await axios
-			.get(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=BTC`, {
+			.get(`https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=BTC,ETH,ARB`, {
 				headers: {
 					'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_KEY,
 				},

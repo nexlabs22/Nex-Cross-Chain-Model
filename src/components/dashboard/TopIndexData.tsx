@@ -154,7 +154,7 @@ const TopIndexData = () => {
 												fontSize: "1rem",
 												fontWeight: "400"
 											}}>
-												{selectedIndex?.mktCap + " " + selectedIndex?.shortSymbol}
+												{selectedIndex?.mktCap.toFixed(2) + " " + selectedIndex?.shortSymbol}
 											</Typography>
 										</Stack>
 										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
@@ -171,7 +171,7 @@ const TopIndexData = () => {
 												fontSize: "1rem",
 												fontWeight: "400"
 											}}>
-												${selectedIndex?.mktPrice}
+												${selectedIndex?.mktPrice.toFixed(2)}
 											</Typography>
 										</Stack>
 									</Stack>
@@ -322,7 +322,7 @@ const TopIndexData = () => {
 														<Typography variant="caption" component="h6" sx={{
 															fontWeight: 500
 														}}>
-															24h Change: <span style={{ color: Number(cr5IndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{anfiIndexObject?.chg24h}%</span>
+															24h Change: <span style={{ color: Number(cr5IndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{cr5IndexObject?.chg24h}%</span>
 														</Typography>
 													</Stack>
 
@@ -344,7 +344,7 @@ const TopIndexData = () => {
 														<Typography variant="caption" component="h6" sx={{
 															fontWeight: 500
 														}}>
-															24h Change: <span style={{ color: Number(mag7IndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{anfiIndexObject?.chg24h}%</span>
+															24h Change: <span style={{ color: Number(mag7IndexObject?.chg24h) > 0 ? "#089981" : "#F23645" }}>{mag7IndexObject?.chg24h}%</span>
 														</Typography>
 													</Stack>
 
@@ -353,8 +353,8 @@ const TopIndexData = () => {
 										) : ("")
 									}
 									{
-										selectedIndex?.symbol != "ARBIn" ? (
-											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('ARBIn'); }}>
+										selectedIndex?.symbol != "ARBEI" ? (
+											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('ARBEI'); }}>
 												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
 													<Image src={arbIndexObject && arbIndexObject.logo ? arbIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#D67DEC] rounded-full " />
 													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>

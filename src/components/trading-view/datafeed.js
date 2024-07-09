@@ -55,7 +55,7 @@ async function getAllSymbols() {
     isTopTier: true,
     pairs: {
       ANFI: ['USD'], CRYPTO5: ['USD'],
-      MAG7: ['USD'], ARBIn: ['USD'], ARBIn10: ['USD'],
+      MAG7: ['USD'], ARBIn: ['USD'], ARBEI: ['USD'],
       GSPC: ['USD'],
       IXIC: ['USD'],
       DJI: ['USD'],
@@ -93,7 +93,7 @@ async function getAllSymbols() {
 
     }
   }
-  const indexes = ['ANFI', 'CRYPTO5', 'GSPC', 'IXIC', 'DJI', 'NYA','MAG7','ARBIn', 'ARBIn10']
+  const indexes = ['ANFI', 'CRYPTO5', 'GSPC', 'IXIC', 'DJI', 'NYA','MAG7','ARBIn', 'ARBEI']
   const stocks = ['V', 'ASML', 'PYPL', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', 'TCEHY', 'TSM', 'XOM', 'NVDA', 'UNH', 'JNJ', 'LVMHF', 'TSLA', 'JPM', 'WMT', 'META', 'SPY', 'MA', 'CVX', 'BRKA']
   const commodities = ['GOLD', 'COPPER', 'LITHIUM', 'CRUDEOIL', 'SILVER']
   data.Data.Nexlabs = nexLabsData;
