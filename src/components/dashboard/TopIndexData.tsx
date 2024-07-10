@@ -114,8 +114,8 @@ const TopIndexData = () => {
 				) : (
 					<>
 						<section className="px-2 h-fit lg:px-10 pb-6 pt-3 xl:pb-16 xl:pt-8">
-							<Stack width={"100%"} minHeight={"30vh"} height={"fit-content"} marginBottom={4} borderRadius={4} direction={"row"} gap={0.5} alignItems={"start"} justifyContent={"start"} divider={<Divider orientation="vertical" variant='middle' flexItem />} sx={GradientStack}>
-								<Stack width={"35%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+							<Stack width={"100%"} minHeight={"30vh"} height={"fit-content"} marginBottom={4} borderRadius={4} direction={"row"} gap={0.5} alignItems={"start"} justifyContent={"start"} flexWrap={{sm: "wrap", lg: "nowrap"}} divider={<Divider orientation="vertical" variant='middle' flexItem />} sx={GradientStack}>
+								<Stack width={{sm: "100%", md:"100%", lg: "35%"}} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
 									<Stack direction={"row"} alignItems={"center"} justifyContent={"start"}>
 										<Image src={selectedIndex && selectedIndex.logo ? selectedIndex?.logo : ""} alt="" height={35} width={35} className="mr-2" />
 										<Typography variant="h6" component="h6" sx={{
@@ -133,7 +133,7 @@ const TopIndexData = () => {
 									</Typography>
 
 								</Stack>
-								<Stack width={"30%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+								<Stack width={{sm: "48%", lg: "35%"}} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
 									<Typography variant="h6" component="h6" sx={{
 										fontWeight: 600,
 									}}>
@@ -233,14 +233,14 @@ const TopIndexData = () => {
 
 									</Stack>
 								</Stack>
-								<Stack width={"35%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+								<Stack width={{xs: "48%", lg: "35%"}} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
 									<Typography variant="h6" component="h6" marginBottom={"1.2rem"} sx={{
 										fontWeight: 600,
 									}}>
 										Composition
 									</Typography>
 
-									<Grid container columns={12} rowSpacing={2} maxHeight={"40vh"} sx={{
+									<Grid container columns={{xs: 6, lg: 12}} justifyContent={"space-between"} rowSpacing={2} paddingRight={{sm: 1}} maxHeight={{sm: "38vh", md: "38vh",lg: "40vh"}} sx={{
 										overflowY: "auto"
 									}}>
 										{
@@ -248,8 +248,8 @@ const TopIndexData = () => {
 												return (
 													<Grid item md={6} key={key}>
 														<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-															<Stack width={'fit-content'} height={'fit-content'} padding={"0.9rem"} borderRadius={"0.8rem"} sx={GradientStack}>
-																<Stack width={25} height={25} direction={"row"} alignItems={"center"} justifyContent={"center"}>
+															<Stack width={'fit-content'} height={'fit-content'} padding={"0.9rem"} borderRadius={"0.8rem"}>
+																<Stack width={35} height={35} direction={"row"} alignItems={"center"} justifyContent={"center"}>
 																	{item.logo}
 																</Stack>
 

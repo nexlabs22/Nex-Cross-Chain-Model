@@ -1,12 +1,11 @@
 import React, { createContext, useState, useEffect, useContext, ReactElement } from 'react';
 import Image, { StaticImageData } from 'next/image'
 import Link from 'next/link'
-import { goerliAnfiV2IndexToken, goerliCR5PoolAddress, goerliCrypto5IndexToken, goerlianfiPoolAddress, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaWethAddress } from '@/constants/contractAddresses'
+import { goerliCR5PoolAddress, goerlianfiPoolAddress, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken } from '@/constants/contractAddresses'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
 import { indexTokenV2Abi } from '@/constants/abi'
 import axios from 'axios'
-import { reduceAddress } from '@/utils/general'
-import { FormatToViewNumber, num } from '@/hooks/math'
+import { num } from '@/hooks/math'
 import convertToUSD from '@/utils/convertToUsd'
 import useTradePageStore from '@/store/tradeStore'
 import { useQuery } from '@apollo/client'
@@ -14,46 +13,28 @@ import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 
-//Components
-import DashboardChartBox from '@/components/dashboard/ChartBox';
-import { Accordion, AccordionItem } from '@szhsin/react-accordion'
-import GenericAddressTooltip from '@/components/GenericAddressTooltip';
-import GenericTooltip from '@/components/GenericTooltip';
 
 // Store
 import { useChartDataStore, useLandingPageStore } from '@/store/store'
 
 // Media && Icons : 
-import managment from '@assets/images/managment.png'
-import { GrBitcoin, GrFormClose } from 'react-icons/gr'
-import { BsInfoCircle, BsNvidia } from 'react-icons/bs'
-import { FaAmazon, FaApple, FaEthereum, FaGoogle } from 'react-icons/fa'
-import { SiTether, SiBinance, SiRipple, SiTesla } from 'react-icons/si'
-import { TfiMicrosoftAlt } from "react-icons/tfi";
+import { GrBitcoin } from 'react-icons/gr'
+import { FaEthereum } from 'react-icons/fa'
+import { SiTether, SiBinance, SiRipple } from 'react-icons/si'
 
-import { AiOutlinePlus } from 'react-icons/ai'
-import { CiGlobe, CiStreamOn } from 'react-icons/ci'
-import { CgArrowsExchange } from 'react-icons/cg'
+
 import { TbCurrencySolana } from 'react-icons/tb'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import mag7Logo from '@assets/images/mag7.png'
 import arbLogo from '@assets/images/arb.png'
-import { GoArrowRight } from 'react-icons/go'
-import mesh1 from '@assets/images/mesh1.png'
-import { FaMeta } from 'react-icons/fa6';
-import { LuSailboat } from 'react-icons/lu';
 
-import aave from '@assets/images/aave.png'
-import clipper from '@assets/images/clipper.png'
-import pendle from '@assets/images/pendle.png'
-import silo from '@assets/images/silo.png'
-import pancake from '@assets/images/pancake.png'
-import dodo from '@assets/images/dodo.png'
-import dxsale from "@assets/images/dxsale.png"
-import penpie from "@assets/images/penpie.png"
-import convex from '@assets/images/convex.png'
-import joe from '@assets/images/joe.png'
+
+
+import penpie from "@assets/icons/crypto/penpie.webp"
+
+import { AAVELogo, CLIPPERLogo, PENDLELogo, SILOLogo, PANCAKELogo, DODOLogo, DXSALELogo, CONVEXLogo, JOELogo, BITCOINLogo, ETHLogo, SOLANALogo, XRPLogo, BNBLogo, XAUTLogo } from '@assets/icons/crypto/cryptoLogos'
+import { AMAZONLogo, MICROSOFTLogo, GOOGLELogo, NVIDIALogo, TESLALogo, APPLELogo, METALogo } from '@/assets/icons/stocks/stocksLogos';
 
 
 type underlyingAsset = {
@@ -443,7 +424,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                         hoverColor: '#009393',
                         logo: <SiRipple color="#F2F2F2" size={19} />,
                     },
-    
+
                     {
                         symbol: 'SOL',
                         name: 'solana',
@@ -502,7 +483,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                         hoverColor: '#009393',
                         logo: <SiRipple color="#F2F2F2" size={19} />,
                     },
-    
+
                     {
                         symbol: 'SOL',
                         name: 'solana',
@@ -561,7 +542,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                         hoverColor: '#009393',
                         logo: <SiRipple color="#F2F2F2" size={19} />,
                     },
-    
+
                     {
                         symbol: 'SOL',
                         name: 'solana',
@@ -574,7 +555,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             },
         ]
     )
-    
+
 
     const anfiIndexObject = IndicesWithDetails.find((o) => o.symbol === 'ANFI')
     const cr5IndexObject = IndicesWithDetails.find((o) => o.symbol === 'CRYPTO5')
@@ -614,7 +595,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             const assets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
                 const Asset: underlyingAsset = {
                     name: underLyingAssetData.name === 'bitcoin' ? 'Bitcoin' : 'Gold',
-                    logo: underLyingAssetData.name === 'bitcoin' ? <GrBitcoin color="#FFFFFF" size={20} /> : <SiTether color="#FFFFFF" size={20} />,
+                    logo: underLyingAssetData.name === 'bitcoin' ? <BITCOINLogo /> : <XAUTLogo />,
                     symbol: underLyingAssetData.name === 'bitcoin' ? 'BTC' : 'XAUT',
                     percentage: underLyingAssetData.weight,
                 }
@@ -628,7 +609,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             const Smallassets = RawANFIUnderlyingAssets.map((underLyingAssetData: { name: string; weight: any }) => {
                 const SmallAsset: underlyingAsset = {
                     name: underLyingAssetData.name === 'bitcoin' ? 'Bitcoin' : 'Gold',
-                    logo: underLyingAssetData.name === 'bitcoin' ? <GrBitcoin color="#FFFFFF" size={22} /> : <SiTether color="#FFFFFF" size={22} />,
+                    logo: underLyingAssetData.name === 'bitcoin' ? <BITCOINLogo /> : <XAUTLogo />,
                     symbol: underLyingAssetData.name === 'bitcoin' ? 'BTC' : 'XAUT',
                     percentage: underLyingAssetData.weight,
                 }
@@ -663,15 +644,15 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                                         : 'Solana',
                     logo:
                         underLyingAssetData.name === 'bitcoin' ? (
-                            <GrBitcoin color="#FFFFFF" size={20} />
+                            <BITCOINLogo />
                         ) : underLyingAssetData.name === 'ethereum' ? (
-                            <FaEthereum color="#FFFFFF" size={20} />
+                            <ETHLogo />
                         ) : underLyingAssetData.name === 'binancecoin' ? (
-                            <SiBinance color="#FFFFFF" size={20} />
+                            <BNBLogo />
                         ) : underLyingAssetData.name === 'ripple' ? (
-                            <SiRipple color="#FFFFFF" size={20} />
+                            <XRPLogo />
                         ) : (
-                            <TbCurrencySolana color="#FFFFFF" size={20} />
+                            <SOLANALogo />
                         ),
                     symbol:
                         underLyingAssetData.name === 'bitcoin'
@@ -706,15 +687,15 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                                         : 'Solana',
                     logo:
                         underLyingAssetData.name === 'bitcoin' ? (
-                            <GrBitcoin color="#FFFFFF" size={22} />
+                            <BITCOINLogo />
                         ) : underLyingAssetData.name === 'ethereum' ? (
-                            <FaEthereum color="#FFFFFF" size={22} />
+                            <ETHLogo />
                         ) : underLyingAssetData.name === 'binancecoin' ? (
-                            <SiBinance color="#FFFFFF" size={22} />
+                            <BNBLogo />
                         ) : underLyingAssetData.name === 'ripple' ? (
-                            <SiRipple color="#FFFFFF" size={22} />
+                            <XRPLogo />
                         ) : (
-                            <TbCurrencySolana color="#FFFFFF" size={22} />
+                            <SOLANALogo />
                         ),
                     symbol:
                         underLyingAssetData.name === 'bitcoin'
@@ -750,7 +731,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                 const Asset: underlyingAsset = {
                     name: underLyingAssetData.symbol.toUpperCase(),
                     // eslint-disable-next-line react/jsx-no-undef
-                    logo: underLyingAssetData.symbol === 'AAPL' ? <FaApple color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'GOOG' ? <FaGoogle color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'MSFT' ? <TfiMicrosoftAlt color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'NVDA' ? <BsNvidia color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'AMZN' ? <FaAmazon color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'META' ? <FaMeta color="#FFFFFF" size={20} /> : <SiTesla color="#FFFFFF" size={18} />,
+                    logo: underLyingAssetData.symbol === 'AAPL' ? <APPLELogo /> : underLyingAssetData.symbol === 'GOOG' ? <GOOGLELogo /> : underLyingAssetData.symbol === 'MSFT' ? <MICROSOFTLogo /> : underLyingAssetData.symbol === 'NVDA' ? <NVIDIALogo /> : underLyingAssetData.symbol === 'AMZN' ? <AMAZONLogo /> : underLyingAssetData.symbol === 'META' ? <METALogo /> : <TESLALogo />,
                     symbol: underLyingAssetData.symbol,
                     percentage: underLyingAssetData.weight * 100,
                 }
@@ -764,7 +745,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                 const SmallAsset: underlyingAsset = {
                     name: underLyingAssetData.symbol.toUpperCase(),
                     // eslint-disable-next-line react/jsx-no-undef
-                    logo: underLyingAssetData.symbol === 'AAPL' ? <FaApple color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'GOOG' ? <FaGoogle color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'MSFT' ? <TfiMicrosoftAlt color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'NVDA' ? <BsNvidia color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'AMZN' ? <FaAmazon color="#FFFFFF" size={22} /> : underLyingAssetData.symbol === 'META' ? <FaMeta color="#FFFFFF" size={22} /> : <SiTesla color="#FFFFFF" size={22} />,
+                    logo: underLyingAssetData.symbol === 'AAPL' ? <APPLELogo /> : underLyingAssetData.symbol === 'GOOG' ? <GOOGLELogo /> : underLyingAssetData.symbol === 'MSFT' ? <MICROSOFTLogo /> : underLyingAssetData.symbol === 'NVDA' ? <NVIDIALogo /> : underLyingAssetData.symbol === 'AMZN' ? <AMAZONLogo /> : underLyingAssetData.symbol === 'META' ? <METALogo /> : <TESLALogo />,
                     symbol: underLyingAssetData.symbol,
                     percentage: underLyingAssetData.weight,
                 }
@@ -772,7 +753,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             })
 
             setSmallMAG7UnderLyingAssets(smallAssets)
-            
+
         } catch (error) {
             console.error('Error fetching MAG7 weights:', error)
         }
@@ -791,7 +772,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             const assets = RawARBInUnderlyingAssets.map((underLyingAssetData: { symbol: string; weight: any }) => {
                 const Asset: underlyingAsset = {
                     name: underLyingAssetData.symbol.split("_")[0].toUpperCase(),
-                    logo: underLyingAssetData.symbol === 'AAVE' ? <Image src={aave} alt="aave" width={40} height={40} style={{scale: "1.2"}}  /> : underLyingAssetData.symbol === 'CLIPPER' ? <Image src={clipper} alt="clipper" width={40} height={40} style={{scale: "1.2"}} /> : underLyingAssetData.symbol === 'PENDLE' ? <Image src={pendle} alt="pendle" width={40} height={40} style={{scale: "1.3"}} /> : underLyingAssetData.symbol === 'SILO_FINANCE' ? <Image src={silo} alt="silo" width={40} height={40} style={{scale: "1.1"}} /> : underLyingAssetData.symbol === 'PANCAKESWAP_AMM' ? <Image src={pancake} alt="pancake swap"  width={60} height={60} style={{scale: "1.3"}} /> : underLyingAssetData.symbol === 'DODO' ? <Image src={dodo} alt="DODO" width={60} height={60} className=' ' style={{scale: "2.5"}} /> : underLyingAssetData.symbol === 'DXSALE' ? <Image src={dxsale} alt="DxSale" width={60} height={60} /> : underLyingAssetData.symbol == "PENPIE" ? <Image src={penpie} alt="PENPIE" width={60} height={60} style={{scale: "1.2"}} /> : underLyingAssetData.symbol == "CONVEX_FINANCE" ? <Image src={convex} alt="convex" width={40} height={40} style={{scale: "1.1"}} /> : underLyingAssetData.symbol == "JOE_V21" ? <Image src={joe} alt="JOE V21" width={40} height={40} style={{scale: "1.2"}} /> : <span></span>,
+                    logo: underLyingAssetData.symbol === 'AAVE' ? <AAVELogo /> : underLyingAssetData.symbol === 'CLIPPER' ? <CLIPPERLogo /> : underLyingAssetData.symbol === 'PENDLE' ? <PENDLELogo /> : underLyingAssetData.symbol === 'SILO_FINANCE' ? <SILOLogo /> : underLyingAssetData.symbol === 'PANCAKESWAP_AMM' ? <PANCAKELogo /> : underLyingAssetData.symbol === 'DODO' ? <DODOLogo /> : underLyingAssetData.symbol === 'DXSALE' ? <DXSALELogo /> : underLyingAssetData.symbol == "PENPIE" ? <Image src={penpie} alt="PENPIE" width={60} height={60} style={{ scale: "1.2" }} /> : underLyingAssetData.symbol == "CONVEX_FINANCE" ? <CONVEXLogo /> : underLyingAssetData.symbol == "JOE_V21" ? <JOELogo /> : <span></span>,
                     symbol: underLyingAssetData.symbol,
                     percentage: underLyingAssetData.weight,
                 }
@@ -805,7 +786,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             const Smallassets = RawARBInUnderlyingAssets.map((underLyingAssetData: { symbol: string; weight: any }) => {
                 const SmallAsset: underlyingAsset = {
                     name: underLyingAssetData.symbol.split("_")[0].toUpperCase(),
-                    logo: underLyingAssetData.symbol === 'AAVE' ? <FaApple color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'CLIPPER' ? <LuSailboat fill='#FFFFFF' color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'PENDLE' ? <TfiMicrosoftAlt color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'SILO_FINANCE' ? <BsNvidia color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'PANCAKESWAP_AMM' ? <FaAmazon color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'DODO' ? <FaMeta color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'DXSALE' ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "PENPIE" ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "CONVEX_FINANCE" ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "JOE_V21" ? <SiTesla color="#FFFFFF" size={18} /> : <span></span>,
+                    logo: underLyingAssetData.symbol === 'AAVE' ? <AAVELogo /> : underLyingAssetData.symbol === 'CLIPPER' ? <CLIPPERLogo /> : underLyingAssetData.symbol === 'PENDLE' ? <PENDLELogo /> : underLyingAssetData.symbol === 'SILO_FINANCE' ? <SILOLogo /> : underLyingAssetData.symbol === 'PANCAKESWAP_AMM' ? <PANCAKELogo /> : underLyingAssetData.symbol === 'DODO' ? <DODOLogo /> : underLyingAssetData.symbol === 'DXSALE' ? <DXSALELogo /> : underLyingAssetData.symbol == "PENPIE" ? <Image src={penpie} alt="PENPIE" width={60} height={60} style={{ scale: "1.2" }} /> : underLyingAssetData.symbol == "CONVEX_FINANCE" ? <CONVEXLogo /> : underLyingAssetData.symbol == "JOE_V21" ? <JOELogo /> : <span></span>,
                     symbol: underLyingAssetData.symbol,
                     percentage: underLyingAssetData.weight * 100,
                 }
