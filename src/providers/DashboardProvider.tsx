@@ -718,10 +718,8 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 
     async function getMAG7Weights() {
         try {
-            const response = await axios.get('https://vercel-cron-xi.vercel.app/api/getMag7Weights')
-            console.log("response: " + response)
-            const RawMAG7UnderlyingAssets = response.data.data.allocations
-            console.log("weights: " + RawMAG7UnderlyingAssets)
+            const response = await axios.get('/api/getWeights')
+            const RawMAG7UnderlyingAssets = response.data.mag7
 
             setMAG7UnderLyingAssets([])
 
@@ -731,7 +729,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                     // eslint-disable-next-line react/jsx-no-undef
                     logo: underLyingAssetData.symbol === 'AAPL' ? <FaApple color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'GOOG' ? <FaGoogle color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'MSFT' ? <TfiMicrosoftAlt color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'NVDA' ? <BsNvidia color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'AMZN' ? <FaAmazon color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'META' ? <FaMeta color="#FFFFFF" size={20} /> : <SiTesla color="#FFFFFF" size={18} />,
                     symbol: underLyingAssetData.symbol,
-                    percentage: underLyingAssetData.weight * 100,
+                    percentage: underLyingAssetData.weight,
                 }
                 return Asset
             })
@@ -761,8 +759,8 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 
     async function getARBInWeights() {
         try {
-            const response = await axios.get('https://vercel-cron-xi.vercel.app/api/getArbInWeights')
-            const RawARBInUnderlyingAssets = response.data.data.allocations[1].allocation
+            const response = await axios.get('/api/getWeights')
+            const RawARBInUnderlyingAssets = response.data.arbei
 
             //Big logos for POR section :
             setARBInUnderLyingAssets([])
@@ -786,7 +784,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
                     name: underLyingAssetData.symbol.split("_")[0].toUpperCase(),
                     logo: underLyingAssetData.symbol === 'AAVE' ? <FaApple color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'CLIPPER' ? <LuSailboat fill='#FFFFFF' color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'PENDLE' ? <TfiMicrosoftAlt color="#FFFFFF" size={18} /> : underLyingAssetData.symbol === 'SILO_FINANCE' ? <BsNvidia color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'PANCAKESWAP_AMM' ? <FaAmazon color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'DODO' ? <FaMeta color="#FFFFFF" size={20} /> : underLyingAssetData.symbol === 'DXSALE' ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "PENPIE" ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "CONVEX_FINANCE" ? <SiTesla color="#FFFFFF" size={18} /> : underLyingAssetData.symbol == "JOE_V21" ? <SiTesla color="#FFFFFF" size={18} /> : <span></span>,
                     symbol: underLyingAssetData.symbol,
-                    percentage: underLyingAssetData.weight * 100,
+                    percentage: underLyingAssetData.weight,
                 }
                 return SmallAsset
             })
