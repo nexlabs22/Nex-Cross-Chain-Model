@@ -121,7 +121,7 @@ const PWAIndexComparisonBox = () => {
 				},
                 {
 					name: 'ARBEI',
-					colName: 'arb10',
+					colName: 'arbei',
 					logo: mag7.src,
 				},
             ],

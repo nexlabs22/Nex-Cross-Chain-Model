@@ -239,9 +239,10 @@ const dataFeed = {
       // const stock5OHLCPrices = stock5Prices.map(({time, value}) => ({ time, open: value, high: value, low: value, close: value }));
       // console.log({stock5OHLCPrices})
 
-      const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
+      const data1 = await fetch(`/api/getChartData2?symbol=${urlParameters.fsym}`).then(res => res.json()).catch(error => console.log(error));
+      // const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
       const data2 = await makeApiRequest(`data/histoday?${query}`);
-      const data = data2.Response === 'Error' ? data1[urlParameters.fsym] : data2.Data
+      const data = data2.Response === 'Error' ? data1.data : data2.Data
       // if (
       //   (data.Response && data.Response === "Error") ||
       //   data.Data.length === 0

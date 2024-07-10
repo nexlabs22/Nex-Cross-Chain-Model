@@ -36,10 +36,10 @@ export async function GET() {
                         value: parseFloat(item.mag7),
                     });
                 }
-                if (item.arb10 !== null) {
+                if (item.arbei !== null) {
                     ARBEI.push({
                         time: time,
-                        value: parseFloat(item.arb10),
+                        value: parseFloat(item.arbei),
                     });
                 }
             });
