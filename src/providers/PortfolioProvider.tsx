@@ -7,6 +7,8 @@ import {
     goerliLinkWethPoolAddress,
     sepoliaAnfiV2IndexToken,
     sepoliaCrypto5V2IndexToken,
+    sepoliaAnfiWethPoolAddress,
+    sepoliaLinkWethPoolAddress,
 } from '@/constants/contractAddresses'
 import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
@@ -27,6 +29,9 @@ import { useChartDataStore, useLandingPageStore } from "@/store/store";
 import usePortfolioPageStore from '@/store/portfolioStore';
 import { BaseContract } from 'ethers';
 import { GenericToast } from '@/components/GenericToast';
+import client from '@/utils/graphQL-client';
+import { GET_HISTORICAL_PRICES_QL } from '@/uniswap/graphQuery';
+import { error } from 'console';
 
 interface User {
     email: string
@@ -121,22 +126,40 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
     const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
     const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
 
-    const {
-        loading: loadingAnfi,
-        error: errorAnfi,
-        data: dataAnfi,
-    } = useQuery(GET_HISTORICAL_PRICES, {
-        // variables: { poolAddress: getPoolAddress(anfiDetails[0].address, anfiDetails[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
-        variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-    })
+    const [anfiData, setAnfiData] = useState<{error:any, data:any}>({error:null, data:null})
+    const [cr5Data, setCr5Data] = useState<{error:any, data:any}>({error:null, data:null})
 
-    const {
-        loading: loadingCR5,
-        error: errorCR5,
-        data: dataCR5,
-    } = useQuery(GET_HISTORICAL_PRICES, {
-        variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-    })
+
+    // const {
+    //     loading: loadingAnfi,
+    //     error: errorAnfi,
+    //     data: dataAnfi,
+    // } = useQuery(GET_HISTORICAL_PRICES, {
+    //     // variables: { poolAddress: getPoolAddress(anfiDetails[0].address, anfiDetails[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
+    //     variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
+    // })
+
+    // const {
+    //     loading: loadingCR5,
+    //     error: errorCR5,
+    //     data: dataCR5,
+    // } = useQuery(GET_HISTORICAL_PRICES, {
+    //     variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
+    // })
+
+
+    useEffect(()=>{
+        async function getHistoricalPrice(){
+            const {error:anfiError,data:anfiData} = await client.query(GET_HISTORICAL_PRICES_QL, { poolAddress: sepoliaAnfiWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' }).toPromise();
+            const {error:cr5Error,data:cr5Data} = await client.query(GET_HISTORICAL_PRICES_QL, { poolAddress: sepoliaLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' }).toPromise();
+            
+            setAnfiData({error: anfiError, data: anfiData})
+            setCr5Data({error: cr5Error, data: cr5Data})
+        }
+
+        getHistoricalPrice();
+    
+    },[])
 
     // *** FUNCTION TO GET THE INDEX PRICE HISTORY *** // Commented for later use
     // useEffect(()=>{
@@ -159,10 +182,10 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
     let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
     const indexPercent:{[key:string]:number} = { anfi: anfiPercent, crypto5: crypto5Percent, mag7:0, arbei:0 }
 
-    if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
+    if (!cr5Data.error && !anfiData.error && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
         const chartData: { time: number; value: number }[] = []
-        const ANFIData = dataAnfi.poolDayDatas
-        const CR5Data = dataCR5.poolDayDatas
+        const ANFIData = anfiData.data.poolDayDatas
+        const CR5Data = cr5Data.data.poolDayDatas
         for (let i = 0; i <= ANFIData.length - 1; i++) {
             const chartObj: { time: number; value: number } = { time: 0, value: 0 }
             const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i]?.token0Price || 0)

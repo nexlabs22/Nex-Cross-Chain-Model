@@ -121,6 +121,7 @@
 		"socket.io-client": "^4.7.4",
 		"three": "^0.158.0",
 		"tls": "^0.0.1",
+		"urql": "^4.1.0",
 		"use-query-params": "^2.2.1",
 		"viem": "^1.18.2",
 		"yahoo-finance": "^0.3.8",
