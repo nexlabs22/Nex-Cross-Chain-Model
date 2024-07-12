@@ -32,12 +32,12 @@ export async function GET() {
         const cr5Weights: Allocation[] = cr5Data.allocations.map(({ name, weight }: { name: string, weight: number }) => ({ name, weight:weight*100 }));
         const anfiWeights: Allocation[] = anfiData.allocations.map(({ name, weight }: { name: string, weight: number }) => ({ name, weight:weight*100 }));
         const mag7Weights: Allocation[] = mag7Data.allocations.map(({ symbol, weight }: { symbol: string, weight: number }) => ({ symbol, weight:weight*100 }));
-        const arbeiWeights: Allocation[] = arbeiData.allocations[1].allocation.map(({ symbol, weight }: { symbol: string, weight: number }) => ({ symbol, weight:weight }));
+        const arbeiWeights: Allocation[] = arbeiData.allocations.map(({ symbol, weight }: { symbol: string, weight: number }) => ({ symbol, weight:Number(weight.toFixed(2)) }));
         
         const roundedCr5Weights: Allocation[] = roundPercentages(cr5Weights);
         const roundedAnfiWeights: Allocation[] = roundPercentages(anfiWeights);
         const roundedMag7Weights: Allocation[] = roundPercentages(mag7Weights);
-        const roundeArbeiWeights: Allocation[] = roundPercentages(arbeiWeights);
+        const roundeArbeiWeights: Allocation[] = arbeiWeights;
 
         const data = { anfi: roundedAnfiWeights, cr5: roundedCr5Weights, mag7: roundedMag7Weights, arbei: roundeArbeiWeights }
         return NextResponse.json(data, { status: 200 })

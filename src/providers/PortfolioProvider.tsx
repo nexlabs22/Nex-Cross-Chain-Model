@@ -129,25 +129,6 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
     const [anfiData, setAnfiData] = useState<{error:any, data:any}>({error:null, data:null})
     const [cr5Data, setCr5Data] = useState<{error:any, data:any}>({error:null, data:null})
 
-
-    // const {
-    //     loading: loadingAnfi,
-    //     error: errorAnfi,
-    //     data: dataAnfi,
-    // } = useQuery(GET_HISTORICAL_PRICES, {
-    //     // variables: { poolAddress: getPoolAddress(anfiDetails[0].address, anfiDetails[0].decimals, false ), startingDate: getTimestampDaysAgo(90), limit: 10, direction: 'asc' },
-    //     variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-    // })
-
-    // const {
-    //     loading: loadingCR5,
-    //     error: errorCR5,
-    //     data: dataCR5,
-    // } = useQuery(GET_HISTORICAL_PRICES, {
-    //     variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-    // })
-
-
     useEffect(()=>{
         async function getHistoricalPrice(){
             const {error:anfiError,data:anfiData} = await client.query(GET_HISTORICAL_PRICES_QL, { poolAddress: sepoliaAnfiWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' }).toPromise();
@@ -182,7 +163,7 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
     let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
     const indexPercent:{[key:string]:number} = { anfi: anfiPercent, crypto5: crypto5Percent, mag7:0, arbei:0 }
 
-    if (!cr5Data.error && !anfiData.error && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
+    if (!cr5Data.error && !anfiData.error && !!anfiData.data && !!cr5Data.data  && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
         const chartData: { time: number; value: number }[] = []
         const ANFIData = anfiData.data.poolDayDatas
         const CR5Data = cr5Data.data.poolDayDatas
