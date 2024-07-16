@@ -15,6 +15,13 @@ import { seploliaWethAddress, sepoliaBitcoinAddress, sepoliaCrossChainTokenAddre
 import WETH9 from "./uniswap/utils/WETH9.json";
 import UniswapV3Factory from "@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json"
 import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json"
+import { WethAddresses } from "../contractAddresses";
+  
+const sepoliaARBIndexTokenAddress = "0x2F8B660e8E2CF66889862d4Ab1569cDe98d67748";
+const sepoliaMAG7IndexTokenAddress = "0x955b3F0091414E7DBbe7bdf2c39d73695CDcDd95";
+
+const token0 = WethAddresses[`sepolia`]
+const token1 = sepoliaARBIndexTokenAddress
 
   describe("Swap", function () {
     // We define a fixture to reuse the same setup in every test.
@@ -28,87 +35,37 @@ import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol
     const weth9 = new ethers.Contract(seploliaWethAddress, WETH9.abi) as IWETH
     const v3Fctory = new ethers.Contract(sepoliaFactoryV3Address, UniswapV3Factory.abi) as IUniswapV3Factory
     const v3Router = new ethers.Contract(sepoliaRouterV3Address, SwapRouter.abi) as ISwapRouter
-    const token = new ethers.Contract(sepoliaCrossChainTokenAddress, WETH9.abi) as IWETH
-    //   const weth9 = res["weth9"] as IWETH
-    //   const v3Fctory = res["factory"] as IUniswapV3Factory
-    //   const v3Router = res["router"] as ISwapRouter
-    //   const nft = res["positionManager"] as INonfungiblePositionManager
-      //token
-    // const Token = await ethers.getContractFactory("Token");
-    // const token0 = await Token.deploy(ethers.utils.parseEther("100000"));
-    // const token1 = await Token.deploy(ethers.utils.parseEther("100000"));
-      // const token0Address = await token0.getAddress()
-      // const token1Address = await token1.getAddress()
-
-      //flash swap
-      // const FlashSwap = await ethers.getContractFactory("SwapExamples");
-      // const flashSwap = await FlashSwap.deploy(v3Router.address, weth9.address);
-        
+    const token = new ethers.Contract(token1, WETH9.abi) as IWETH
+    
       return {owner, otherAccount, v3Fctory, v3Router, weth9, token };
     }
   
     describe("Deployment", function () {
       it("Should set the right unlockTime", async function () {
         const deploymentObj = await deployContracts();
-        // console.log(
-        //   deploymentObj.token0.address,
-        //   deploymentObj.token1.address,
-        // )
-        /**
-        let tokens = [];
-        tokens[0] = deploymentObj.token0.address < deploymentObj.token1.address ? deploymentObj.token0.address : deploymentObj.token1.address
-        tokens[1] = deploymentObj.token0.address > deploymentObj.token1.address ? deploymentObj.token0.address : deploymentObj.token1.address
-        await deploymentObj.nft.createAndInitializePoolIfNecessary(
-          tokens[0],
-          tokens[1],
-          "3000",
-          encodePriceSqrt(1, 1)
-        )
-      await deploymentObj.token0.approve(deploymentObj.nft.address, ethers.utils.parseEther("1000"));
-      await deploymentObj.token1.approve(deploymentObj.nft.address, ethers.utils.parseEther("1000"));
-      
+        
       const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-      const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
-      const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
-
-      // const block = new Block()
-      const liquidityParams = {
-      token0: tokens[0],
-      token1: tokens[1],
-      fee: "3000",
-      tickLower: getMinTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.MEDIUM]),
-      recipient: await deploymentObj.owner.getAddress(),
-      amount0Desired: ethers.utils.parseEther("1000"),
-      amount1Desired: ethers.utils.parseEther("1000"),
-      amount0Min: 0,
-      amount1Min: 0,
-      deadline: unlockTime,
-      }
-      
-      await deploymentObj.nft.mint(liquidityParams)
-      */
-      const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-    //   const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+    
       const unlockTime = (Date.now()) + ONE_YEAR_IN_SECS;
 
       const params1 = {
-        tokenIn: deploymentObj.token.address,
-        tokenOut: deploymentObj.weth9.address,
+        tokenIn: deploymentObj.weth9.address,
+        tokenOut: deploymentObj.token.address,
         fee: FeeAmount.MEDIUM,
         recipient: await deploymentObj.owner.getAddress(),
         deadline: unlockTime,
-        // amountIn: ethers.parseEther("1"),
-        amountIn: ethers.utils.parseEther("0.01"),
+        // amountIn: ethers.utils.parseEther("1"),
+        amountIn: ethers.utils.parseEther("0.001"),
         amountOutMinimum:0,
         sqrtPriceLimitX96: 0
       }
       const ownerAddress = deploymentObj.owner.getAddress()
-    //   console.log("token0 before swap:", ethers.utils.formatEther(await deploymentObj.token0.balanceOf(ownerAddress)))
-    //   console.log("token1 before swap:", ethers.utils.formatEther(await deploymentObj.token1.balanceOf(ownerAddress)))
-    //   await deploymentObj.weth9.connect(deploymentObj.owner).deposit({value: ethers.utils.parseEther("0.001")})
-    //   await deploymentObj.weth9.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther("0.001"));
-      await deploymentObj.token.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther("0.01"));
+      console.log("depositing weth...")
+      await deploymentObj.weth9.connect(deploymentObj.owner).deposit({value: ethers.utils.parseEther("0.001")})
+      console.log("approving weth...")
+      await deploymentObj.weth9.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther("0.001"));
+      // await deploymentObj.token.connect(deploymentObj.owner).approve(deploymentObj.v3Router.address, ethers.utils.parseEther("0.01"));
+      console.log("swap...")
       const res = await deploymentObj.v3Router.connect(deploymentObj.owner).exactInputSingle(params1, {gasLimit: 1000000});
       const receipt = await res.wait()
       if(receipt.status == 1){
@@ -116,9 +73,7 @@ import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol
       }else {
         console.log("Failed")
       }
-    //   console.log("token0 after swap:", ethers.utils.formatEther(await .balanceOf(ownerAddress)))
-    //   console.log("token1 after swap:", ethers.utils.formatEther(await deploymentObj.token1.balanceOf(ownerAddress)))
-      });
+       });
 
       
       });  
