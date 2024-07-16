@@ -154,7 +154,9 @@ const TopIndexData = () => {
 												fontSize: "1rem",
 												fontWeight: "400"
 											}}>
-												{selectedIndex?.mktCap.toFixed(2) + " " + selectedIndex?.shortSymbol}
+												{/* {selectedIndex?.mktCap.toFixed(2) + " " + selectedIndex?.shortSymbol} */}
+												${selectedIndex?.mktCap.toLocaleString( "en-US", { maximumFractionDigits: 2 } )} 
+
 											</Typography>
 										</Stack>
 										<Stack direction={"column"} width={"50%"} maxWidth={"50%"} alignItems={"start"} justifyContent={"space-between"} gap={1}>
@@ -171,7 +173,7 @@ const TopIndexData = () => {
 												fontSize: "1rem",
 												fontWeight: "400"
 											}}>
-												${selectedIndex?.mktPrice.toFixed(2)}
+												${selectedIndex?.mktPrice.toLocaleString( "en-US", { maximumFractionDigits: 2 } )}
 											</Typography>
 										</Stack>
 									</Stack>

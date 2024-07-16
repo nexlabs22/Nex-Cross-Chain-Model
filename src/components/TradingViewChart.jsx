@@ -50,7 +50,7 @@ const colNameToSymbol = {
 	ethereum: 'ETH',
 	arbitrum: 'ARB',
 	mag7: 'MAG7',
-	arb10: 'ARBEI'
+	arbei: 'ARBEI'
 }
 
 const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
