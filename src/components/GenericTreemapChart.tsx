@@ -6,19 +6,18 @@ import { Chart } from 'react-google-charts'
 import { FaGalacticSenate } from 'react-icons/fa'
 
 interface TreeMapChartProps {
-	percentage: {[key:string]:number} | null
+	percentage: { [key: string]: number }
 }
 
 const GenericTreemapChart3D: React.FC<TreeMapChartProps> = ({ percentage }) => {
-	const data = [
+
+	const data: [string, string | null, number | string, number | string][] = [
 		['Asset', 'Category', 'Amount', 'Color'],
 		['Global', null, 0, 0],
-		['ANFI', 'Global', percentage == null ? 0 : percentage.anfi, 10],
-		['CRYPTO5', 'Global', percentage == null ? 0 : percentage.cr5, 30],
-		// ['Ethereum', 'Global', 15, 40],
-		// ['MATIC', 'Global', 30, 50],
-		// ['BTC', 'Global', 20, 60],
 	]
+	Object.entries(percentage).forEach(([key, value], index) => {
+		data.push([key, 'Global', value, (index+1)*10])
+	})
 
 	const options = {
 		minColor: '#5E869B',
@@ -45,7 +44,7 @@ const GenericTreemapChart3D: React.FC<TreeMapChartProps> = ({ percentage }) => {
 		const selectedItem = Chart.chart.getSelection()[0]
 		if (selectedItem) {
 			const selectedValue = Chart.chart.getDataTable().getValue(selectedItem.row, selectedItem.column)
-			
+
 			//   setSelectedData(selectedValue);
 		}
 	}

@@ -29,8 +29,8 @@ type PortfolioPageStore = {
 	ownedAssetInActivity: string
 	setOwedAssetInActivity: (index: string) => void
 
-	dayChange: { anfi: number; cr5: number }
-	setDayChange: (change: { anfi: number; cr5: number }) => void
+	dayChange: { [key: string]: number }
+	setDayChange: (change: { [key: string]: number }) => void
 
 	portfolioData: { tradedBalance: { [key: string]: number; anfi: number; crypto5: number; total: number } }
 	setPortfolioData: (positionHistoryData: PositionType[]) => void
@@ -71,7 +71,7 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 	setGlobalConnectedUser: (user: User) => set({ globalConnectedUser: user }),
 
 	dayChange: { anfi: 0, cr5: 0 },
-	setDayChange: (change: { anfi: number; cr5: number }) => set({ dayChange: change }),
+	setDayChange: (change: { [key: string]: number }) => set({ dayChange: change }),
 
 	portfolioData: { tradedBalance: { anfi: 0, crypto5: 0, total: 0 } },
 	setPortfolioData: async (positionHistoryData: PositionType[]) => {

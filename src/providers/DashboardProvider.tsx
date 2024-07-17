@@ -799,8 +799,6 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 			const response = await axios.get('/api/getWeights')
 			const RawARBInUnderlyingAssets = response.data.arbei
 
-			console.log({RawARBInUnderlyingAssets})
-
 			//Big logos for POR section :
 			setARBInUnderLyingAssets([])
 
