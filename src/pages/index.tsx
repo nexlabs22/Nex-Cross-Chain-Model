@@ -48,7 +48,7 @@ const Dashboard: NextPage = (props) => {
 				) : (
 					<>
 
-						<Box margin={0} height={"100vh"} bgcolor={theme.palette.pageBackground.main} width={"100vw"} padding={0} sx={MainStack} display={{ xs: "none", lg: "block" }}>
+						<Box margin={0} height={"100vh"} bgcolor={theme.palette.pageBackground.main} width={"100vw"} padding={0} sx={MainStack} display={{ xs: "none", md: "block" }}>
 							<DappNavbar />
 							<TopIndexData />
 							<section className="w-screen h-fit flex flex-col items-center justify-center px-4 xl:px-9 pb-10 md:pb-2 xl:pb-10">
@@ -112,7 +112,7 @@ const Dashboard: NextPage = (props) => {
 								<MobileFooterSection />
 							</div>
 						</Box>
-						<Box display={{ xs: "flex", lg: "none" }} height={"100vh"} width={"100vw"} bgcolor={"#FFFFFF"} flexDirection={"column"} alignItems={"center"} justifyContent={"center"}>
+						<Box display={{ xs: "flex", md: "none" }} height={"100vh"} width={"100vw"} bgcolor={"#FFFFFF"} flexDirection={"column"} alignItems={"center"} justifyContent={"center"}>
 							<Stack height={"100%"} width={"100%"} bgcolor={"rgba(50,50,50,0.4)"} direction={"row"} alignItems={"center"} justifyContent={"center"}>
 								<Stack paddingX={2} paddingY={3} direction={"column"} alignItems={"center"} justifyContent={"center"} width={"90%"} height={"fit-content"} bgcolor={"#FFFFFF"} borderRadius={"1.75rem"} boxShadow={"boxShadow: rgba(0, 0, 0, 0.68) 0px 0px 6px 1px"}>
 

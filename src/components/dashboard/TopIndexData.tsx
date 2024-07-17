@@ -356,7 +356,7 @@ const TopIndexData = () => {
 										selectedIndex?.symbol != "ARBIn" ? (
 											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('ARBIn'); }}>
 												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-													<Image src={arbIndexObject && arbIndexObject.logo ? arbIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#D67DEC] rounded-full " />
+													<Image src={arbIndexObject && arbIndexObject.logo ? arbIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#1E457A] rounded-full " />
 													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
 														<Typography variant="subtitle1" component="h6" sx={{
 															fontWeight: 600
