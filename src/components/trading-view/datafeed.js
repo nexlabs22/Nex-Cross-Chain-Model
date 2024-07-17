@@ -55,7 +55,7 @@ async function getAllSymbols() {
     isTopTier: true,
     pairs: {
       ANFI: ['USD'], CRYPTO5: ['USD'],
-      MAG7: ['USD'], ARBIn: ['USD'], ARBIn10: ['USD'],
+      MAG7: ['USD'], ARBIn: ['USD'], ARBEI: ['USD'],
       GSPC: ['USD'],
       IXIC: ['USD'],
       DJI: ['USD'],
@@ -93,7 +93,7 @@ async function getAllSymbols() {
 
     }
   }
-  const indexes = ['ANFI', 'CRYPTO5', 'GSPC', 'IXIC', 'DJI', 'NYA','MAG7','ARBIn', 'ARBIn10']
+  const indexes = ['ANFI', 'CRYPTO5', 'GSPC', 'IXIC', 'DJI', 'NYA','MAG7','ARBIn', 'ARBEI']
   const stocks = ['V', 'ASML', 'PYPL', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', 'TCEHY', 'TSM', 'XOM', 'NVDA', 'UNH', 'JNJ', 'LVMHF', 'TSLA', 'JPM', 'WMT', 'META', 'SPY', 'MA', 'CVX', 'BRKA']
   const commodities = ['GOLD', 'COPPER', 'LITHIUM', 'CRUDEOIL', 'SILVER']
   data.Data.Nexlabs = nexLabsData;
@@ -239,9 +239,10 @@ const dataFeed = {
       // const stock5OHLCPrices = stock5Prices.map(({time, value}) => ({ time, open: value, high: value, low: value, close: value }));
       // console.log({stock5OHLCPrices})
 
-      const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
+      const data1 = await fetch(`/api/getChartData2?symbol=${urlParameters.fsym}`).then(res => res.json()).catch(error => console.log(error));
+      // const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
       const data2 = await makeApiRequest(`data/histoday?${query}`);
-      const data = data2.Response === 'Error' ? data1[urlParameters.fsym] : data2.Data
+      const data = data2.Response === 'Error' ? data1.data : data2.Data
       // if (
       //   (data.Response && data.Response === "Error") ||
       //   data.Data.length === 0

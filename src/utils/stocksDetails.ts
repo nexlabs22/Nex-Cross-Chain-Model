@@ -4,7 +4,7 @@ export const stockDetails = {
     // 'STOCK5': ['stock5', 'Stock5'],
     'MAG7': ['mag7', 'Magnificient 7'],
     'ARBIn': ['sci', 'Arbitrum Ecosystem Index'],
-    'ARBIn10': ['arb10', 'Arbitrum Ecosystem Index 10'],
+    'ARBEI': ['arbie', 'Arbitrum Ecosystem Index'],
     'V': ['visa', 'Visa'],
     'GSPC': ['sandp', 'S&P 500'],
     'DJI': ['dow', 'Dow Jones Industrial Average'],

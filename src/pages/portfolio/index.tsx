@@ -206,7 +206,8 @@ export default function Portfolio() {
 													>
 														$
 														{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
-															? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
+															? '120.92'
+															// ? Math.abs((chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value*100)/100 || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 															: '0.00'}
 													</h5>
 													<div

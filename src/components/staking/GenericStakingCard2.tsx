@@ -61,7 +61,7 @@ const GenericStakingCard2: React.FC<GenericStakingCardProps> = ({ index }) => {
                         trailColor: "rgba(211,211,211,0.42)"
                     })}>
                         <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} gap={1}>
-                            <Image src={index == "ANFI" ? anfiLogo : index == "CRYPTO5" ? cr5Logo : index == "MAG7" ? mag7Logo : index == "ARBIn" || index == "ARBEI" ? arbLogo : ""} alt={index + " logo"} height={100} width={100} className=" rounded-full"></Image>
+                            <Image src={index == "ANFI" ? anfiLogo : index == "CRYPTO5" ? cr5Logo : index == "MAG7" ? mag7Logo : index == "ARBEI" || index == "ARBEI" ? arbLogo : ""} alt={index + " logo"} height={100} width={100} className=" rounded-full"></Image>
                             <Typography variant="caption" component="label" sx={{ fontWeight: 700 }}>Staked {index.toUpperCase()}</Typography>
                         </Stack>
                     </CircularProgressbarWithChildren >

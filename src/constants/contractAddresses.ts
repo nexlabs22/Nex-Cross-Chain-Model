@@ -49,6 +49,12 @@ export const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 export const goerliUsdtWethPoolAddress = '0xE297447C5fCA561cAC6C1cEDc91Eab74D68dC6eb'
 export const goerlianfiPoolAddress = '0xEdFEEeFf1DAF631b4aBC8C021Cff4b1267547eF2';
 export const goerliCR5PoolAddress = '0x9329c764A2d8B02b01F5eC8fb6F4BB0a7155cFc0';
+
+export const sepoliaAnfiWethPoolAddress = '0x37214b0039e9b12711e9dbb5420e47d5a35f3aa2';
+export const sepoliaCR5WethPoolAddress = '0x3222bD13bA8bf8241A752A6907AeB8D769EbB63B';
+export const sepoliaLinkWethPoolAddress = '0xdd7cc9a0da070fb8b60dc6680b596133fb4a7100';
+
+
 export const goerliLinkWethPoolAddress = '0x4Cff90F02897259E1aB69FF6bbD370EA14529bD8'; // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
 export const sepoliaTokenFaucet = "0x5Efe973Bc615112Bca43696483bd53Ce86E2B0ab"
@@ -62,6 +68,8 @@ export const exchangeAddresses:{[key:string]: string} = {
     bitfinex: "0x0000000000000000000000000000000000000000",
     bybit: "0x0000000000000000000000000000000000000000"
 } 
+
+
 export const factoryAddresses:{[key:string]: `0x${string}`} =  { 'ANFI': sepoliaAnfiV2Factory, 'CRYPTO5': sepoliaCrypto5V2Factory, 'SCI': sepoliaSciV2Factory }
 export const goerliTokenAddresses:{[key:string]: string} = {'ANFI': goerliAnfiIndexToken,'CRYPTO5': goerliCrypto5IndexToken, 'USDT': goerliUsdtAddress, 'ETH': goerliWethAddress}
 export const sepoliaTokenAddresses:{[key:string]: string} = {'ANFI': sepoliaAnfiV2IndexToken,'CRYPTO5':sepoliaCrypto5V2IndexToken ,'USDT': sepoliaUsdtAddress, 'ETH': sepoliaWethAddress, 'SCI': sepoliaSciV2IndexToken}

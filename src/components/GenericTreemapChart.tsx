@@ -6,7 +6,7 @@ import { Chart } from 'react-google-charts'
 import { FaGalacticSenate } from 'react-icons/fa'
 
 interface TreeMapChartProps {
-	percentage: { anfi: number; cr5: number } | null
+	percentage: {[key:string]:number} | null
 }
 
 const GenericTreemapChart3D: React.FC<TreeMapChartProps> = ({ percentage }) => {
