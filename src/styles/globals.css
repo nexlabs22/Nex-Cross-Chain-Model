@@ -671,6 +671,19 @@ body {
   background-color: #5E869B !important;
 }
 
+.stakingRewardTypes{
+  width: 100% !important;
+}
+.stakingRewardTypes .szh-menu{
+  background-color: #303030 !important;
+  
+}
+
+.stakingRewardTypes .szh-menu ul{
+  background-color: #303030 !important;
+  width: 100% !important;
+}
+
 .cefiCsDefiAnimated{
   animation: moveUpDown 60s infinite alternate;
 }

@@ -101,7 +101,7 @@ const TopIndexData = () => {
 		setSelectedIndexWeights(defaultIndex == "ANFI" ? ANFIUnderLyingAssets : defaultIndex == "CRYPTO5" ? CR5UnderLyingAssets : defaultIndex == "MAG7" ? MAG7UnderLyingAssets : ARBInUnderLyingAssets)
 	}, [ANFIUnderLyingAssets, ARBInUnderLyingAssets, CR5UnderLyingAssets, MAG7UnderLyingAssets, anfiIndexObject, arbIndexObject, cr5IndexObject, defaultIndex, mag7IndexObject])
 
-	useEffect(()=>{
+	useEffect(() => {
 		MAG7UnderLyingAssets
 	}, [MAG7UnderLyingAssets])
 	return (
@@ -114,8 +114,8 @@ const TopIndexData = () => {
 				) : (
 					<>
 						<section className="px-2 h-fit lg:px-10 pb-6 pt-3 xl:pb-16 xl:pt-8">
-							<Stack width={"100%"} minHeight={"30vh"} height={"fit-content"} marginBottom={4} borderRadius={4} direction={"row"} gap={0.5} alignItems={"start"} justifyContent={"start"} divider={<Divider orientation="vertical" variant='middle' flexItem />} sx={GradientStack}>
-								<Stack width={"35%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+							<Stack width={"100%"} minHeight={"30vh"} height={"fit-content"} marginBottom={4} borderRadius={4} direction={"row"} gap={0.5} alignItems={"start"} justifyContent={"start"} flexWrap={{ sm: "wrap", lg: "nowrap" }} divider={<Divider orientation="vertical" variant='middle' flexItem />} sx={GradientStack}>
+								<Stack width={{ sm: "100%", md: "100%", lg: "35%" }} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
 									<Stack direction={"row"} alignItems={"center"} justifyContent={"start"}>
 										<Image src={selectedIndex && selectedIndex.logo ? selectedIndex?.logo : ""} alt="" height={35} width={35} className="mr-2" />
 										<Typography variant="h6" component="h6" sx={{
@@ -133,7 +133,7 @@ const TopIndexData = () => {
 									</Typography>
 
 								</Stack>
-								<Stack width={"30%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+								<Stack width={{ sm: "48%", lg: "35%" }} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
 									<Typography variant="h6" component="h6" sx={{
 										fontWeight: 600,
 									}}>
@@ -155,7 +155,7 @@ const TopIndexData = () => {
 												fontWeight: "400"
 											}}>
 												{/* {selectedIndex?.mktCap.toFixed(2) + " " + selectedIndex?.shortSymbol} */}
-												${selectedIndex?.mktCap.toLocaleString( "en-US", { maximumFractionDigits: 2 } )} 
+												${selectedIndex?.mktCap.toLocaleString("en-US", { maximumFractionDigits: 2 })}
 
 											</Typography>
 										</Stack>
@@ -165,7 +165,7 @@ const TopIndexData = () => {
 													fontSize: "1.1rem",
 													fontWeight: "600"
 												}}>
-													Market Price
+													Price
 												</Typography>
 												<BsInfoCircle color="#5E869B" size={12} className="cursor-pointer" />
 											</Stack>
@@ -173,7 +173,7 @@ const TopIndexData = () => {
 												fontSize: "1rem",
 												fontWeight: "400"
 											}}>
-												${selectedIndex?.mktPrice.toLocaleString( "en-US", { maximumFractionDigits: 2 } )}
+												${selectedIndex?.mktPrice.toLocaleString("en-US", { maximumFractionDigits: 2 })}
 											</Typography>
 										</Stack>
 									</Stack>
@@ -235,23 +235,24 @@ const TopIndexData = () => {
 
 									</Stack>
 								</Stack>
-								<Stack width={"35%"} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
+								<Stack width={{ xs: "48%", lg: "35%" }} height={"100%"} direction={"column"} alignContent={"start"} justifyContent={"start"} padding={4}>
 									<Typography variant="h6" component="h6" marginBottom={"1.2rem"} sx={{
 										fontWeight: 600,
 									}}>
 										Composition
 									</Typography>
 
-									<Grid container columns={12} rowSpacing={2} maxHeight={"40vh"} sx={{
-										overflowY: "auto"
+									<Grid container columns={{ xs: 6, lg: 12 }} justifyContent={"space-between"} rowSpacing={2} paddingRight={{ sm: 1 }} maxHeight={{ sm: "38vh", md: "38vh", lg: "40vh" }} sx={{
+										overflowY: "auto",
+										overflowX: "hidden"
 									}}>
 										{
 											selectedIndexWeights.map((item, key) => {
 												return (
 													<Grid item md={6} key={key}>
 														<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-															<Stack width={'fit-content'} height={'fit-content'} padding={"0.9rem"} borderRadius={"0.8rem"} sx={GradientStack}>
-																<Stack width={25} height={25} direction={"row"} alignItems={"center"} justifyContent={"center"}>
+															<Stack width={'fit-content'} height={'fit-content'} padding={"0.9rem"} borderRadius={"0.8rem"}>
+																<Stack width={35} height={35} direction={"row"} alignItems={"center"} justifyContent={"center"}>
 																	{item.logo}
 																</Stack>
 
@@ -295,7 +296,8 @@ const TopIndexData = () => {
 													<Image src={anfiIndexObject && anfiIndexObject.logo ? anfiIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#E8BB31] rounded-full " />
 													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
 														<Typography variant="subtitle1" component="h6" sx={{
-															fontWeight: 600
+															fontWeight: 600,
+															
 														}}>
 															{anfiIndexObject?.name}
 														</Typography>
@@ -358,7 +360,7 @@ const TopIndexData = () => {
 										selectedIndex?.symbol != "ARBEI" ? (
 											<Link href="" className="h-fit w-fit flex flex-row items-start justify-start" onClick={(e) => { e.preventDefault(); changeDefaultIndex('ARBEI'); }}>
 												<Stack direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-													<Image src={arbIndexObject && arbIndexObject.logo ? arbIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#D67DEC] rounded-full " />
+													<Image src={arbIndexObject && arbIndexObject.logo ? arbIndexObject?.logo : ""} alt="" height={60} width={60} className="mr-2 border border-[#1E457A] rounded-full " />
 													<Stack direction={"column"} alignItems={"start"} justifyContent={"start"}>
 														<Typography variant="subtitle1" component="h6" sx={{
 															fontWeight: 600
@@ -376,7 +378,7 @@ const TopIndexData = () => {
 											</Link>
 										) : ("")
 									}
-									
+
 								</Stack>
 							</Stack>
 
