@@ -88,10 +88,6 @@ export default function Portfolio() {
 	const { changeSelectedIndex } = useLandingPageStore()
 	const { isStandalone } = usePWA()
 
-	useEffect(()=>{
-		console.log('portfolio/index.tsx', {chartArr, showPortfolioData, portfolio24hChangePer, portfolio24hChange})
-	},[chartArr, showPortfolioData, portfolio24hChangePer, portfolio24hChange])
-
 	return (
 		<>
 			<Head>

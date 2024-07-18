@@ -197,7 +197,6 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value || 0
 	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value || 0
-	// Math.abs((chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value*100)/100 || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 	const portfolio24hChange = todayPortfolioPrice - yesterdayPortfolioPrice
 	const portfolio24hChangePer = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
 
@@ -211,10 +210,6 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 	const hasBalance = Object.values(indexTokenBalance).reduce((acc, value) => acc || typeof value === 'number', false)
 
 	const showPortfolioData = address && hasBalance ? true : false
-
-	useEffect(()=>{
-		console.log('portfolioProvider/index.tsx', {chartArr, showPortfolioData, portfolio24hChangePer, portfolio24hChange, hasBalance,indexTokenBalance })
-	},[chartArr, showPortfolioData, portfolio24hChangePer, portfolio24hChange, hasBalance, indexTokenBalance])
 
 	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
 
