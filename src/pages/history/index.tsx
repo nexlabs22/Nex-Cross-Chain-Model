@@ -96,75 +96,38 @@ import { toast } from 'react-toastify'
 import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 import { emptyData } from '@/constants/emptyChartData'
 import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
+import { usePortfolio } from '@/providers/PortfolioProvider'
+
 
 function History() {
 	const { mode } = useLandingPageStore()
+	const {
+		user,
+		showPortfolioData,
+		chartArr,
+		indexPercent,
+		todayPortfolioPrice,
+		yesterdayPortfolioPrice,
+		portfolio24hChange,
+		portfolio24hChangePer,
+		pieData,
+		nexTokenAssetData,
+		totalPortfolioBalance,
+		positionHistoryDefi,
+		positionHistoryCrosschain,
+		indexDetails,
+		indexDetailsMap,
+		uploadedPPLink,
+		chosenPPType,
+		handleCopyFunction,
+		handleCopyIndexDetailsFunction,
+	} = usePortfolio()
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState(false)
 	const { portfolioData } = usePortfolioPageStore()
 	const { ethPriceInUsd } = useTradePageStore()
 
-	const anfiTokenContract = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
-	const crypto5TokenContract = useContract(sepoliaCrypto5V2IndexToken, indexTokenAbi)
-
-	const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
-	const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
-
-	const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
-	const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
-
-	const {
-		loading: loadingAnfi,
-		error: errorAnfi,
-		data: dataAnfi,
-	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-	})
-
-	const {
-		loading: loadingCR5,
-		error: errorCR5,
-		data: dataCR5,
-	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerliLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-	})
-
-	// let anfiPrice = 0; let cr5Price = 0;
-	// let anfi24hChng = 0; let cr524hChng = 0;
-	let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
-	const [indexPrices, setIndexPrices] = useState({ anfi: 0, cr5: 0 })
-	const [index24hChange, setIndex24hChange] = useState({ anfi: 0, cr5: 0 })
-
-	if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
-		const chartData: { time: number; value: number }[] = []
-		const ANFIData = dataAnfi.poolDayDatas
-		const CR5Data = dataCR5.poolDayDatas
-		for (let i = 0; i <= ANFIData.length - 1; i++) {
-			const chartObj: { time: number; value: number } = { time: 0, value: 0 }
-			const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i].token0Price)
-			chartObj.time = ANFIData[i].date
-			chartObj.value = value
-			chartData.push(chartObj)
-		}
-		setChartArr(chartData)
-
-		const anfiPrice = ANFIData[ANFIData.length - 1].token0Price * num(anfiTokenBalance.data)
-		const cr5Price = CR5Data[CR5Data.length - 1].token0Price * num(crypto5TokenBalance.data)
-		setIndexPrices({ anfi: anfiPrice, cr5: cr5Price })
-
-		const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price
-		const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price
-		const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
-
-		const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price
-		const yesterdayCR5Price = CR5Data[CR5Data.length - 2].token0Price
-		const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
-		setIndex24hChange({ anfi: anfi24hChng, cr5: cr524hChng })
-	}
-
-	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value
-	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value
-	const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
+	
 
 	const [isCopied, setIsCopied] = useState(false)
 
@@ -184,25 +147,7 @@ function History() {
 		}
 	}
 
-	const data = [
-		['Asset', 'Percentage'],
-		['CRYPTO 5', crypto5Percent ? crypto5Percent : 0],
-		['ANFI', anfiPercent ? anfiPercent : 0],
-		['FIAT', anfiPercent ? 0 : 5],
-	]
-
-	const PieChartdata = [
-		{
-			label: 'ANFI',
-			percentage: !!anfiPercent ? anfiPercent + '%' : '0%',
-			color: '#133140',
-		},
-		{
-			label: 'CRYPTO 5',
-			percentage: !!crypto5Percent ? crypto5Percent + '%' : '0%',
-			color: '#b5e7ff',
-		},
-	]
+	
 
 	const options = {
 		is3D: true,
@@ -216,8 +161,8 @@ function History() {
 		},
 	}
 
-	const [uploadedPPLink, setUploadedPPLink] = useState('none')
-	const [chosenPPType, setChosenPPType] = useState('none')
+	// const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	// const [chosenPPType, setChosenPPType] = useState('none')
 
 	const [connectedUser, setConnectedUser] = useState<User>()
 	const [connectedUserId, setConnectedUserId] = useState('')
@@ -228,7 +173,7 @@ function History() {
 			onValue(usersRef, (snapshot) => {
 				const users = snapshot.val()
 				for (const key in users) {
-					console.log(users[key])
+					// console.log(users[key])
 					const potentialUser: User = users[key]
 					if (address && potentialUser.main_wallet == address) {
 						setConnectedUser(potentialUser)
@@ -240,82 +185,6 @@ function History() {
 		getUser()
 	}, [address])
 
-	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
-
-	useEffect(() => {
-		async function getTokenDetails() {
-			const data = await Promise.all(
-				nexTokens.map(async (item: nexTokenDataType) => {
-					const calculatedUsdValue = (await convertToUSD({ tokenAddress: item.address, tokenDecimals: item.decimals }, ethPriceInUsd, false)) || 0
-					const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
-					const totalTokenUsd = calculatedUsdValue * totalToken || 0
-					const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
-
-					return {
-						...item,
-						totalToken,
-						totalTokenUsd,
-						percentage,
-					}
-				})
-			)
-
-			setAssetData(data)
-		}
-
-		getTokenDetails()
-	}, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent])
-
-	const totalPortfolioBalance = assetData.reduce((total, data) => total + Number(data.totalTokenUsd), 0)
-
-	const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
-
-	// pdfMake.vfs = pdfFonts.pdfMake.vfs;
-	// const [isGenerating, setIsGenerating] = useState(false);
-
-	// const handleExportPDF = () => {
-	//     setIsGenerating(true);
-
-	//     const tableData = [
-	//         ['Column 1', 'Column 2', 'Column 3'],
-	//         ['Data 1', 'Data 2', 'Data 3'],
-	//         ['Data 4', 'Data 5', 'Data 6'],
-	//         // Add more rows as needed
-	//     ];
-
-	//     const docDefinition = {
-	//         content: [
-	//             {
-	//                 table: {
-	//                     body: tableData,
-	//                 },
-	//             },
-	//         ],
-	//     };
-
-	//     pdfMake.createPdf(docDefinition).download('table_data.pdf', () => {
-	//         setIsGenerating(false);
-	//     });
-	// };
-	const positionHistoryDefi = GetPositionsHistoryDefi()
-	const positionHistoryCrosschain = GetTradeHistoryCrossChain()
-	const [usdPrices, setUsdPrices] = useState<{ [key: string]: number }>({})
-
-	useEffect(() => {
-		async function getUsdPrices() {
-			sepoliaTokens.map(async (token) => {
-				if (ethPriceInUsd > 0) {
-					const obj = usdPrices
-					obj[token.address] = (await convertToUSD({ tokenAddress: token.address, tokenDecimals: token.decimals }, ethPriceInUsd, false)) || 0 // false as for testnet tokens
-					if (Object.keys(usdPrices).length === sepoliaTokens.length - 1) {
-						setUsdPrices(obj)
-					}
-				}
-			})
-		}
-
-		getUsdPrices()
-	}, [ethPriceInUsd, usdPrices])
 
 	const handleExportPDF = () => {
 		toast.dismiss()
@@ -359,22 +228,6 @@ function History() {
 
 		exportPDF(tableData, 'landscape', address as string)
 	}
-
-	chartArr = chartArr.filter((obj) => obj.time !== 1702512000)
-
-	// const tableData = [
-	// 	['Column 1', 'Column 2', 'Column 3'],
-	// 	['Data 1', { text: ['Data 2\n', { text: 'hello', color: 'gray' }] }, 'Data 3'],
-	// 	['Data 4', { text: ['Data 5\n', { text: 'hello', color: 'gray' }] }, 'Data 6'],
-	// 	// Add more rows as needed
-	// ];
-
-	// const tableData = [
-	// 	['Column 1', 'Column 2', 'Column 3'],
-	// 	['Data 1', 'Data 2', 'Data 3'],
-	// 	['Data 4', 'Data 5', 'Data 6'],
-	// 	// Add more rows as needed
-	// ]
 
 	return (
 		<>
@@ -465,7 +318,7 @@ function History() {
 										{/* <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold italic text-black text-5xl z-10`}>
 									${portfolio24hChange ? portfolio24hChange.toFixed(2) : 0}
 								</div> */}
-										<PNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChange : 0} />
+										<PNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChangePer : 0} />
 									</div>
 								</div>
 								<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
@@ -498,9 +351,10 @@ function History() {
 												} `}
 											>
 												$
-												{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
-													? Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)
-													: '0.00'}
+												{showPortfolioData
+														? '120.92'
+														//  ? FormatToViewNumber({value:portfolio24hChange, returnType: 'currency'})
+														:  '0.00'}
 											</h5>
 											<div
 												className={`w-fit h-fit rounded-lg ${

@@ -16,6 +16,7 @@ export function GetPositionsHistoryDefi() {
 	const address = useAddress()
 
 	const [positions, setPositions] = useState<PositionType[]>([])
+	const [loading, setLoading] = useState<boolean>(false)
 
 	useEffect(() => {
 		if (address) {
@@ -25,6 +26,7 @@ export function GetPositionsHistoryDefi() {
 
 
 	const getHistory = useCallback(async () => {
+		setLoading(true)
 		setPositions([])
 
 		const client = createPublicClient({
@@ -107,6 +109,7 @@ export function GetPositionsHistoryDefi() {
 			return Number(b.timestamp) - Number(a.timestamp)
 		})
 		setPositions(sortedPositionsData)
+		setLoading(false)
 	}, [accountAddress])
 
 	useEffect(() => {
@@ -116,5 +119,6 @@ export function GetPositionsHistoryDefi() {
 	return {
 		data: positions,
 		reload: getHistory,
+		loading
 	}
 }

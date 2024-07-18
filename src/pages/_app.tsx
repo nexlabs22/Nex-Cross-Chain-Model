@@ -36,13 +36,13 @@ import { HistoryProvider } from '@/providers/HistoryProvider'
 
 export default function App({ Component, pageProps }: AppProps) {
 	const { setEthPriceInUsd } = useTradePageStore()
-	const { setANFIWeightage } = useChartDataStore()
+	// const { setANFIWeightage } = useChartDataStore()
 	const { theme } = useLandingPageStore()
 
 	useEffect(() => {
 		setEthPriceInUsd()
-		setANFIWeightage()
-	}, [setEthPriceInUsd, setANFIWeightage])
+		// setANFIWeightage()
+	}, [setEthPriceInUsd])
 	return (
 		<>
 			<ToastContainer position="bottom-right" autoClose={5000} hideProgressBar={false} newestOnTop={true} closeOnClick theme={'light'} rtl={false} pauseOnFocusLoss draggable pauseOnHover />

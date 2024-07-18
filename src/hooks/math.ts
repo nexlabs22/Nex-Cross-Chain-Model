@@ -36,12 +36,16 @@ export function formatAsPercent(value: number): string {
 	return value.toFixed(2) + '%'
 }
 
+export function formatAsCurrency(value: number): string {
+	return Math.abs((value*100)/100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 export function FormatToViewNumber({
 	value,
 	returnType = 'string',
 }: {
 	value: number
-	returnType?: 'string' | 'number' | 'percent'
+	returnType?: 'string' | 'number' | 'percent' | 'currency'
 }) {
 	if (!value || typeof value !== 'number') return returnType === 'percent' ? value + '%' : value
 
@@ -52,6 +56,8 @@ export function FormatToViewNumber({
 			return formatAsNumber(value)
 		case 'percent':
 			return formatAsPercent(value)
+		case 'currency':
+			return formatAsCurrency(value)
 		default:
 			return value
 	}

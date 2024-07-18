@@ -67,13 +67,12 @@ export default function Portfolio() {
 		todayPortfolioPrice,
 		yesterdayPortfolioPrice,
 		portfolio24hChange,
+		portfolio24hChangePer,
 		pieData,
 		nexTokenAssetData,
 		totalPortfolioBalance,
 		positionHistoryDefi,
 		positionHistoryCrosschain,
-		combinedData,
-		latestObjectsMap,
 		indexDetails,
 		indexDetailsMap,
 		uploadedPPLink,
@@ -154,7 +153,7 @@ export default function Portfolio() {
 										</div>
 										<div className="lg:flex w-2/5 "></div>
 										<div className="hidden lg:flex w-1/5 justify-end mr-0 relative mt-5 xl:mt-0" id="smallChartBox">
-											<PNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChange : 0} />
+											<PNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChangePer : 0} />
 										</div>
 									</div>
 									<div className=" w-full h-fit px-4 xl:px-20 py-5 flex flex-wrap xl:flex-row items-stretch justify-between xl:justify-center mb-10 ">
@@ -193,10 +192,10 @@ export default function Portfolio() {
 													} `}
 												>
 													$
-													{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
+													{showPortfolioData
 														? '120.92'
-														: // ? Math.abs((chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value*100)/100 || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-														  '0.00'}
+														//  ? FormatToViewNumber({value:portfolio24hChange, returnType: 'currency'})
+														:  '0.00'}
 												</h5>
 												<div
 													className={`w-fit h-fit rounded-lg ${

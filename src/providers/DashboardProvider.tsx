@@ -76,11 +76,6 @@ type underlyingAsset = {
 }
 
 interface DashboardContextProps {
-	mktPrice: { [key: string]: number }
-	dayChange: {
-		anfi: string
-		cr5: string
-	}
 	IndicesWithDetails: {
 		name: string
 		logo: StaticImageData
@@ -182,8 +177,6 @@ interface DashboardContextProps {
 }
 
 const DashboardContext = createContext<DashboardContextProps>({
-	mktPrice: { anfi: 0, cr5: 0 },
-	dayChange: { anfi: '0.00', cr5: '0.00' },
 	IndicesWithDetails: [],
 	anfiIndexObject: {
 		name: '',
@@ -268,7 +261,7 @@ const useDashboard = () => {
 
 const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 	const { defaultIndex, changeDefaultIndex, theme } = useLandingPageStore()
-	const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data, indexChangePer } = useChartDataStore()
+	const { fetchIndexData, setDayChangePer, loading, STOCK5Data, indexChangePer } = useChartDataStore()
 	const { ethPriceInUsd } = useTradePageStore()
 
 	useEffect(() => {
@@ -281,45 +274,8 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 	}, [setDayChangePer])
 
 	const [todayPrice, setTodayPrice] = useState<{ [key: string]: number }>({ anfi: 0, cr5: 0, mag7: 0, arbei: 0 })
-	const [dayChange, setDayChange] = useState({ anfi: '0.00', cr5: '0.00' })
 
-	const {
-		loading: loadingAnfi,
-		error: errorAnfi,
-		data: dataAnfi,
-	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerlianfiPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-	})
-
-	const {
-		loading: loadingCR5,
-		error: errorCR5,
-		data: dataCR5,
-	} = useQuery(GET_HISTORICAL_PRICES, {
-		variables: { poolAddress: goerliCR5PoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' },
-	})
-
-	useEffect(() => {
-		async function get24hDayChangePer() {
-			if (!loadingCR5 && !loadingAnfi && !errorCR5 && !errorAnfi) {
-				const ANFIData = dataAnfi.poolDayDatas
-				const CR5Data = dataCR5.poolDayDatas
-
-				const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price || 0
-				const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price || 0
-				const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
-
-				const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price || 0
-				const yesterdayCR5Price = CR5Data[CR5Data.length - 2]?.token0Price || 0
-				const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
-
-				// setDayChange({ anfi: todayANFIPrice - yesterdayANFIPrice, cr5: todayCR5Price - yesterdayCR5Price })
-				setDayChange({ anfi: anfi24hChng.toFixed(2), cr5: cr524hChng.toFixed(2) })
-			}
-		}
-
-		get24hDayChangePer()
-	}, [loadingCR5, loadingAnfi, errorCR5, errorAnfi])
+	
 
 	useEffect(() => {
 		async function getPrice() {
@@ -894,8 +850,6 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 	}, [])
 
 	const contextValue = {
-		mktPrice: todayPrice,
-		dayChange: dayChange,
 		IndicesWithDetails: IndicesWithDetails,
 		anfiIndexObject: anfiIndexObject,
 		cr5IndexObject: cr5IndexObject,

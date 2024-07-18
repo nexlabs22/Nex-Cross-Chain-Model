@@ -61,7 +61,7 @@ export default function PWATradeIndex() {
     const [isReadMore, setIsReadMore] = useState<boolean>(true)
     const { changePWATradeoperation, selectedIndex, changeSelectedIndex } = useLandingPageStore()
     const [isFavorite, setIsFavorite] = useState<boolean>(false)
-    const { setANFIWeightage, fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
+    const { fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
     const { ethPriceInUsd, changeDefaultIndex } = useTradePageStore()
     useEffect(() => {
         fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
@@ -70,7 +70,7 @@ export default function PWATradeIndex() {
     useEffect(() => {
         setDayChangePer()
         // setANFIWeightage()
-    }, [setANFIWeightage, setDayChangePer])
+    }, [setDayChangePer])
     const [mktPrice, setMktPrice] = useState({ anfi: 0, cr5: 0 })
     const [dayChange, setDayChange] = useState({ anfi: '0.00', cr5: '0.00' })
     const {

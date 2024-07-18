@@ -22,11 +22,6 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
   };
 
 
-  useEffect(() => {
-    console.log(data)
-  }, [])
-
-
   const options = {
     title: '',
     legend: { position: 'none' },

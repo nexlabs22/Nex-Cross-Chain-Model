@@ -1,22 +1,9 @@
 import React, { createContext, useState, useEffect, useContext } from 'react'
-import { SmartContract, ThirdwebSDK, UseContractResult, useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
+import { ThirdwebSDK, useAddress } from '@thirdweb-dev/react'
 import useTradePageStore from '@/store/tradeStore'
-import {
-	goerlianfiPoolAddress,
-	zeroAddress,
-	goerliLinkWethPoolAddress,
-	sepoliaAnfiV2IndexToken,
-	sepoliaCrypto5V2IndexToken,
-	sepoliaAnfiWethPoolAddress,
-	sepoliaLinkWethPoolAddress,
-	sepoliaIndexTokenAddresses,
-	sepoliaIndexPoolAddresses,
-    sepoliaARBIndexTokenAddress,
-} from '@/constants/contractAddresses'
-import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
-import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
-import { useQuery } from '@apollo/client'
-import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
+import { sepoliaIndexTokenAddresses, sepoliaIndexPoolAddresses } from '@/constants/contractAddresses'
+import { indexTokenAbi } from '@/constants/abi'
+import { FormatToViewNumber, num } from '@/hooks/math'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import { nexTokenDataType } from '@/types/nexTokenData'
@@ -30,11 +17,9 @@ import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
 import { useChartDataStore, useLandingPageStore } from '@/store/store'
 import usePortfolioPageStore from '@/store/portfolioStore'
-import { BaseContract } from 'ethers'
 import { GenericToast } from '@/components/GenericToast'
 import client from '@/utils/graphQL-client'
 import { GET_HISTORICAL_PRICES_QL } from '@/uniswap/graphQuery'
-import { error } from 'console'
 
 interface User {
 	email: string
@@ -58,23 +43,18 @@ interface PortfolioContextProps {
 	showPortfolioData: boolean | null
 	chartArr: { time: number; value: number }[]
 	indexPercent: { [key: string]: number }
-    indexTokenBalance: { [key: string]: number }
+	indexTokenBalance: { [key: string]: number }
 	todayPortfolioPrice: number
 	yesterdayPortfolioPrice: number
 	portfolio24hChange: number
-	// anfiTokenContract: UseContractResult<SmartContract<BaseContract>> | null
-	// crypto5TokenContract: UseContractResult<SmartContract<BaseContract>> | null
-	// anfiPercent: number
-	// crypto5Percent: number
-	// anfiTokenBalance: any
-	// crypto5TokenBalance: any
+	portfolio24hChangePer: number
 	pieData: (string | number)[][]
 	nexTokenAssetData: nexTokenDataType[]
 	totalPortfolioBalance: any
 	positionHistoryDefi: { data: PositionType[]; reload: () => Promise<void> }
 	positionHistoryCrosschain: { data: PositionType[]; reload: () => Promise<void> }
-	combinedData: PositionType[]
-	latestObjectsMap: Map<string, PositionType>
+	// combinedData: PositionType[]
+	// latestObjectsMap: Map<string, PositionType>
 	indexDetails: { index: string; smartContract: string; lastTnx: string; ownedAmount: string }[]
 	indexDetailsMap: Map<string, any>
 	uploadedPPLink: string
@@ -88,23 +68,18 @@ const PortfolioContext = createContext<PortfolioContextProps>({
 	showPortfolioData: null,
 	chartArr: [],
 	indexPercent: {},
-    indexTokenBalance: {},
+	indexTokenBalance: {},
 	todayPortfolioPrice: 0,
 	yesterdayPortfolioPrice: 0,
 	portfolio24hChange: 0,
-	// anfiTokenContract: null,
-	// crypto5TokenContract: null,
-	// anfiPercent: 0,
-	// crypto5Percent: 0,
-	// anfiTokenBalance: 0,
-	// crypto5TokenBalance: 0,
+	portfolio24hChangePer: 0,
 	pieData: [],
 	nexTokenAssetData: [],
 	totalPortfolioBalance: 0,
 	positionHistoryDefi: { data: [], reload: () => Promise.resolve() },
 	positionHistoryCrosschain: { data: [], reload: () => Promise.resolve() },
-	combinedData: [],
-	latestObjectsMap: new Map(),
+	// combinedData: [],
+	// latestObjectsMap: new Map(),
 	indexDetails: [],
 	indexDetailsMap: new Map(),
 	uploadedPPLink: 'none',
@@ -124,7 +99,8 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 	const [indexData, setIndexData] = useState<{ [key: string]: { error: any; data: any } }>({})
 	const [indexTokenBalance, setIndexTokenBalance] = useState<{ [key: string]: number }>({})
 	const [indexPercentage, setIndexPercentages] = useState<{ [key: string]: number }>({})
-    const [indexDetails, setIndexDetails] = useState<{ index: string; smartContract: string; lastTnx: string; ownedAmount: string; }[]>([])
+	let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
+	const [indexDetails, setIndexDetails] = useState<{ index: string; smartContract: string; lastTnx: string; ownedAmount: string }[]>([])
 
 	useEffect(() => {
 		if (address) {
@@ -155,6 +131,7 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 				const { error, data } = await client
 					.query(GET_HISTORICAL_PRICES_QL, { poolAddress: poolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' })
 					.toPromise()
+
 				setIndexData((prevState) => ({
 					...prevState,
 					[indexName]: { error, data },
@@ -164,8 +141,6 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 
 		getHistoricalPrice()
 	}, [])
-
-	let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
 
 	const calculateMetrics = () => {
 		const chartData: { time: number; value: number }[] = []
@@ -180,7 +155,6 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 
 		if (allDataAvailable && chartArr.length === 0) {
-            
 			const indexNames = Object.keys(sepoliaIndexTokenAddresses)
 			const firstIndexData = indexData[indexNames[0]].data.poolDayDatas
 
@@ -199,7 +173,6 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 
 			setChartArr(chartData)
 
-
 			const indexPrices: { [key: string]: number } = {}
 			const dayChange: { [key: string]: number } = {}
 
@@ -217,24 +190,25 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 	}
 
 	useEffect(() => {
-        if(address && Object.keys(indexTokenBalance).length > 0){
-            calculateMetrics()
-        }
-	}, [indexData, address,indexTokenBalance]) 
+		if (address && Object.keys(indexTokenBalance).length > 0) {
+			calculateMetrics()
+		}
+	}, [indexData, address, indexTokenBalance])
 
-	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value
-	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value
-	const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
-
-	const pieDataToReturn:[string, number|string][] = [['Asset', 'Percentage']]
-
-    Object.entries(indexPercentage).forEach(([key,value])=>{
-        pieDataToReturn.push([key,Number(value.toFixed(2))])
-
-    })
+	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value || 0
+	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value || 0
+	// Math.abs((chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value*100)/100 || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+	const portfolio24hChange = todayPortfolioPrice - yesterdayPortfolioPrice
+	const portfolio24hChangePer = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
 
 
-    const hasBalance = Object.values(indexTokenBalance).reduce((acc, value) => acc || typeof value === 'number', false);
+	const pieDataToReturn: [string, number | string][] = [['Asset', 'Percentage']]
+
+	Object.entries(indexPercentage).forEach(([key, value]) => {
+		pieDataToReturn.push([key, Number(value.toFixed(2))])
+	})
+
+	const hasBalance = Object.values(indexTokenBalance).reduce((acc, value) => acc || typeof value === 'number', false)
 
 	const showPortfolioData = address && hasBalance ? true : false
 
@@ -267,34 +241,35 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 	const totalPortfolioBalance = assetData.reduce((total, data) => total + Number(data.totalTokenUsd), 0)
 	const positionHistoryDefi = GetPositionsHistoryDefi()
 	const positionHistoryCrosschain = GetTradeHistoryCrossChain()
-	const combinedData = positionHistoryDefi.data.concat(positionHistoryCrosschain.data)
-	const latestObjectsMap: Map<string, PositionType> = new Map()
 
-	for (const item of combinedData) {
-		if (!latestObjectsMap.has(item.indexName)) {
-			latestObjectsMap.set(item.indexName, item)
+	useEffect(() => {
+		const latestObjectsMap: Map<string, PositionType> = new Map()
+
+		const combinedData = !positionHistoryDefi.loading && !positionHistoryCrosschain.loading ? positionHistoryDefi.data.concat(positionHistoryCrosschain.data) : null
+
+		if (combinedData) {
+			for (const item of combinedData) {
+				if (!latestObjectsMap.has(item.indexName)) {
+					latestObjectsMap.set(item.indexName, item)
+				}
+			}
 		}
-	}
 
-    useEffect(() => {
 		async function getTokenDetails() {
-			const data = nexTokens.map( (item: nexTokenDataType) => {
-
-                    const index = item.symbol
-					return {
-						index,
-						smartContract:item.address,
-						lastTnx: latestObjectsMap.get(index)?.txHash || 'N/A',
-                        ownedAmount: FormatToViewNumber({ value: indexTokenBalance[index], returnType: 'string' }) + index,
-					}
-				})
+			const data = nexTokens.map((item: nexTokenDataType) => {
+				const index = item.symbol
+				return {
+					index,
+					smartContract: item.address,
+					lastTnx: latestObjectsMap.get(index)?.txHash || 'N/A',
+					ownedAmount: FormatToViewNumber({ value: indexTokenBalance[index], returnType: 'string' }) + index,
+				}
+			})
 			setIndexDetails(data)
-        }
+		}
 
 		getTokenDetails()
-	}, [indexTokenBalance ])
-
-	
+	}, [indexTokenBalance, positionHistoryDefi.loading, positionHistoryCrosschain.loading])
 
 	const indexDetailsMap: Map<string, any> = new Map()
 
@@ -366,10 +341,11 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 		showPortfolioData: showPortfolioData,
 		chartArr: chartArr,
 		indexPercent: indexPercentage,
-        indexTokenBalance: indexTokenBalance,
+		indexTokenBalance: indexTokenBalance,
 		todayPortfolioPrice: todayPortfolioPrice,
 		yesterdayPortfolioPrice: yesterdayPortfolioPrice,
 		portfolio24hChange: portfolio24hChange,
+		portfolio24hChangePer: portfolio24hChangePer,
 		// anfiTokenContract: anfiTokenContract,
 		// crypto5TokenContract: crypto5TokenContract,
 		// anfiPercent: anfiPercent,
@@ -381,8 +357,8 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 		totalPortfolioBalance: totalPortfolioBalance,
 		positionHistoryDefi: positionHistoryDefi,
 		positionHistoryCrosschain: positionHistoryCrosschain,
-		combinedData: combinedData,
-		latestObjectsMap: latestObjectsMap,
+		// combinedData: combinedData,
+		// latestObjectsMap: latestObjectsMap,
 		indexDetails: indexDetails,
 		indexDetailsMap: indexDetailsMap,
 		uploadedPPLink: uploadedPPLink,
