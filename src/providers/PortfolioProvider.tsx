@@ -212,6 +212,10 @@ const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const showPortfolioData = address && hasBalance ? true : false
 
+	useEffect(()=>{
+		console.log('portfolioProvider/index.tsx', {chartArr, showPortfolioData, portfolio24hChangePer, portfolio24hChange, hasBalance,indexTokenBalance })
+	},[chartArr, showPortfolioData, portfolio24hChangePer, portfolio24hChange, hasBalance, indexTokenBalance])
+
 	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
 
 	useEffect(() => {

@@ -10,7 +10,7 @@ import Footer from '@/components/newFooter'
 import 'react-tabs/style/react-tabs.css'
 import { useAddress } from '@thirdweb-dev/react'
 import GenericAvatar from '@/components/GenericAvatar'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TipsBox2 from '@/components/TipsBox'
 import ProgressBar from '@ramonak/react-progress-bar'
 import New3DPieChart from '@/components/new3DPieChart'
@@ -87,6 +87,10 @@ export default function Portfolio() {
 	const { mode } = useLandingPageStore()
 	const { changeSelectedIndex } = useLandingPageStore()
 	const { isStandalone } = usePWA()
+
+	useEffect(()=>{
+		console.log('portfolio/index.tsx', {chartArr, showPortfolioData, portfolio24hChangePer, portfolio24hChange})
+	},[chartArr, showPortfolioData, portfolio24hChangePer, portfolio24hChange])
 
 	return (
 		<>
