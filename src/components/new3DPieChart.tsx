@@ -17,7 +17,7 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
   const isLandscape = useMediaQuery('(orientation: landscape)'); 
 
   const handleSliceClick = (slice: any) => {
-    const index = slice.value[slice.row + 1][0]
+    const index = slice.value && slice.value[slice.row + 1] ? slice.value[slice.row + 1][0] : 'ANFI'
     setIndexSelectedInPie(index)
   };
 
