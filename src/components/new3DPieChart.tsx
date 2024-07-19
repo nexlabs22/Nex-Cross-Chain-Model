@@ -24,8 +24,7 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 		legend: { position: 'none' },
 		is3D: true,
 		backgroundColor: 'transparent',
-    // colors: ['#91AC9A', '#B7D1D3', '#5E869B', '#A6C3CE', '#86afbf'],
-		colors: ['#91AC9A', '#B7D1D3', '#5E869B','#B7D1D3' ,'#86afbf' ]
+    colors: ['#91AC9A', '#B7D1D3', '#5E869B', '#A6C3CE', '#86afbf']
 	}  
 
 	return (
@@ -68,8 +67,8 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 							data.slice(1).map((d, i) => (
 								<div key={i} className="w-fit h-fit flex flex-row items-center justify-start gap-1">
 									<div className={`w-4 aspect-square border border-slate-900 bg-[${options.colors[i]}]`}></div>
-									<span className="text-white">{d[0]}</span>
-									<span className="text-white">({Number(d[1]).toFixed(2)}%)</span>
+									<span className="text-black">{d[0]}</span>
+									<span className="text-black">({Number(d[1]).toFixed(2)}%)</span>
 								</div>
 							))}
 					</div>
