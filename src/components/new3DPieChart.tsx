@@ -19,17 +19,14 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 		setIndexSelectedInPie(index)
 	}
 
-	useEffect(() => {
-		console.log(data)
-	}, [data])
-
 	const options = {
 		title: '',
 		legend: { position: 'none' },
 		is3D: true,
 		backgroundColor: 'transparent',
-		colors: ['#91AC9A', '#B7D1D3', '#5E869B', '#A6C3CE', '#86afbf'],
-	}
+    // colors: ['#91AC9A', '#B7D1D3', '#5E869B', '#A6C3CE', '#86afbf'],
+		colors: ['#91AC9A', '#B7D1D3', '#5E869B','#B7D1D3' ,'#86afbf' ]
+	}  
 
 	return (
 		<div className="w-full h-fit flex flex-col relative">
@@ -47,9 +44,8 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 							callback: ({ chartWrapper }) => {
 								const chart = chartWrapper.getChart()
 								const selection = chart.getSelection()
-								console.log({ chart, selection })
 								const selectedItem = selection && selection[0]
-								console.log({ selectedItem })
+								
 								if (selectedItem) {
 									const { row, column } = selectedItem
 									handleSliceClick({
@@ -67,13 +63,13 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 			</div>
 			{isStandalone ? (
 				<>
-					<div className={`w-full h-10 absolute ${isLandscape ? 'bottom-[8%]' : 'bottom-[27%]'} z-50 flex flex-wrap items-center justify-center gap-4`}>
+					<div className={`w-full h-10 absolute ${isLandscape ? 'bottom-[8%]' : 'bottom-[30%]'} z-50 flex flex-wrap items-center justify-center gap-4`}>
 						{data.length > 1 &&
 							data.slice(1).map((d, i) => (
 								<div key={i} className="w-fit h-fit flex flex-row items-center justify-start gap-1">
-									<div className="w-4 aspect-square border border-slate-900 bg-[#91AC9A] "></div>
-									<span className="text-black">{d[0]}</span>
-									<span className="text-black">({Number(d[1]).toFixed(2)}%)</span>
+									<div className={`w-4 aspect-square border border-slate-900 bg-[${options.colors[i]}]`}></div>
+									<span className="text-white">{d[0]}</span>
+									<span className="text-white">({Number(d[1]).toFixed(2)}%)</span>
 								</div>
 							))}
 					</div>
