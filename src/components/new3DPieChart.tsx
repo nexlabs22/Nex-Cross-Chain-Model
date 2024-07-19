@@ -72,8 +72,8 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 							data.slice(1).map((d, i) => (
 								<div key={i} className="w-fit h-fit flex flex-row items-center justify-start gap-1">
 									<div className="w-4 aspect-square border border-slate-900 bg-[#91AC9A] "></div>
-									<span className="text-white">{d[0]}</span>
-									<span className="text-white">({Number(d[1]).toFixed(2)}%)</span>
+									<span className="text-black">{d[0]}</span>
+									<span className="text-black">({Number(d[1]).toFixed(2)}%)</span>
 								</div>
 							))}
 					</div>
