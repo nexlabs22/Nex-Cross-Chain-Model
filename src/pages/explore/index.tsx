@@ -142,7 +142,7 @@ export default function Explore() {
 	const formatSearchResult = (item: Product) => {
 		return (
 			<div className="w-full h-fit px-4 py-2 flex flfex-row items-center justify-start gap-2 cursor-pointer">
-				<Image src={item.logo} width={40} height={40} alt={item.name}></Image>
+				<Image src={item.logo} width={40} height={40} alt={item.name}/>
 				<div className="flex flex-col items-start justify-start gap-1">
 					<h5 className="interBold text-colorSeven-500 text-base">
 						{item.name} <span className="interBold uppercase text-blackText-500/50 text-sm italic">({item.category} Product)</span>{' '}
@@ -230,7 +230,7 @@ export default function Explore() {
 										<MenuButton>
 											<div className="w-[74vw] xl:w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
 												<div className="flex flex-row items-center justify-start gap-2">
-													<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}></Image>
+													<Image src={selectedSubCategory.logo} width={25} height={25} alt={selectedSubCategory.name}/>
 													<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedSubCategory.name}</h5>
 												</div>
 												<GoChevronDown color="#F2F2F2" size={20} />
@@ -252,7 +252,7 @@ export default function Explore() {
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-2">
-													<Image src={sub.logo} width={25} height={25} alt={sub.name}></Image>
+													<Image src={sub.logo} width={25} height={25} alt={sub.name}/>
 													<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{sub.name}</h5>
 												</div>
 												<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
@@ -294,7 +294,7 @@ export default function Explore() {
 																changeDefaultIndex(product.symbol)
 																router.push('/trade')
 															}}
-														></Image>
+														/>
 
 														<h5
 															className="interBold text-colorSeven-500 text-base cursor-pointer"
@@ -349,7 +349,7 @@ export default function Explore() {
 																changeDefaultIndex(product.symbol.toUpperCase())
 																router.push('/trade')
 															}}
-														></Image>
+														/>
 
 														<h5
 															className="interBold text-colorSeven-500 text-lg cursor-pointer"

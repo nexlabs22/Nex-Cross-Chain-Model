@@ -716,7 +716,7 @@ export default function DCACalculatorTest() {
 				<div className="w-full mx-auto h-0 px-2 flex flex-col items-start overflow-hidden justify-between">
 					<div className="w-full h-fit" id="pdfHeader">
 						<div className="w-11/12 mx-auto h-fit py-10  flex flex-row items-center overflow-hidden justify-between">
-							<Image src={logo} alt="logo" className="h-20 w-20"></Image>
+							<Image src={logo} alt="logo" className="h-20 w-20"/>
 							<h5 className="interBold text-2xl text-blackText-500">DCA Report</h5>
 						</div>
 						<div className="w-11/12 mx-auto h-fit py-10 flex flex-col items-start overflow-hidden justify-between">

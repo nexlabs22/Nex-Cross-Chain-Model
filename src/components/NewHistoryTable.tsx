@@ -150,7 +150,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 											>
 												<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} gap={1}>
 													<Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"} gap={1}>
-														<Image alt="index logo" src={position.indexName == "ANFI" || "anfi" ? anfiLogo : cr5Logo} width={40} height={40} className="rounded-full mb-2"></Image>
+														<Image alt="index logo" src={position.indexName == "ANFI" || "anfi" ? anfiLogo : cr5Logo} width={40} height={40} className="rounded-full mb-2"/>
 														<Typography
 															variant="caption"
 															sx={{
@@ -342,7 +342,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 									>
 										<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
 											<Stack direction={'row'} alignItems={'center'} justifyContent={'start'} width={'fit-content'} height={'fit-content'} gap={2}>
-												<Image alt="index logo" src={position.indexName == "ANFI" || "anfi" ? anfiLogo : cr5Logo} width={60} height={60} className="rounded-full mb-2"></Image>
+												<Image alt="index logo" src={position.indexName == "ANFI" || "anfi" ? anfiLogo : cr5Logo} width={60} height={60} className="rounded-full mb-2"/>
 												<Stack direction={'column'} width={'fit-content'} height={'fit-content'} gap={1}>
 													<Typography
 														variant="caption"

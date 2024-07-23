@@ -150,12 +150,12 @@ export default function PWAProfileSettings() {
 
     return (
         <Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
-            <PWATopBar></PWATopBar>
+            <PWATopBar/>
             {
                 connectedUser?.ppType == 'identicon' && address ? (
                     <Link href="" onClick={(e) => { e.preventDefault(); setPhotoOptionSheetOpen(true) }} className="w-fit h-fit flex flex-row items-center justify-center">
                         <Stack width="fit-content" height="fit-content" position={"relative"} direction={"row"} alignItems={"center"} justifyContent={"center"} marginY={12} sx={{ scale: "4" }}>
-                            <PWATopBarGenericAvatar walletAddress={address}></PWATopBarGenericAvatar>
+                            <PWATopBarGenericAvatar walletAddress={address}/>
                             <Stack width={"fit-content"} height={"fit-content"} bgcolor={"#FFFFFF"} position={"absolute"} zIndex={999} borderRadius={"999px"} bottom={"15%"} right={"3%"} border={"solid 0.2px #C0C0C0"} direction={"row"} alignItems={"center"} justifyContent={"center"} padding={"0.5px"}>
                                 <MdEdit color={lightTheme.palette.text.primary} size={4} className=" rotate-[90deg] " />
                             </Stack>
@@ -243,9 +243,7 @@ export default function PWAProfileSettings() {
                             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"}>
                                 <TextField id="outlined-basic" color="info" variant="outlined" placeholder={address ? reduceAddress(address.toString()) : ""} fullWidth />
                             </Stack>
-
                         </Stack>
-
                     </Stack>
                 </Stack>
                 {
@@ -443,7 +441,7 @@ export default function PWAProfileSettings() {
                 </Sheet.Container>
                 <Sheet.Backdrop onTap={() => { setPhotoUploadSheetOpen(false) }} />
             </Sheet>
-            <PWABottomNav></PWABottomNav>
+            <PWABottomNav/>
         </Box>
     )
 }

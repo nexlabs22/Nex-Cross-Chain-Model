@@ -189,7 +189,7 @@ function PWAProfileHistoryList() {
                                 <Stack key={i} width={"100%"} height={"fit-content"} direction={"column"} alignItems={"center"} justifyContent={"start"} borderRadius={"1.2rem"} paddingY={1} paddingX={1.5} sx={PWAGradientStack}>
                                     <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                                         <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"></Image>
+                                            <Image alt="index logo" src={anfiLogo} width={60} height={60} className="rounded-full mb-2"/>
                                             <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                                 <Typography variant="caption" sx={{
                                                     color: lightTheme.palette.text.primary,

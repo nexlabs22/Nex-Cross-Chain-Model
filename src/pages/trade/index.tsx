@@ -202,7 +202,7 @@ export default function Explore() {
 	const formatSearchResult = (item: Product) => {
 		return (
 			<div className="w-full h-fit px-4 py-2 flex flfex-row items-center justify-start gap-2 cursor-pointer">
-				<Image src={item.logo} width={40} height={40} alt={item.name}></Image>
+				<Image src={item.logo} width={40} height={40} alt={item.name}/>
 				<div className="flex flex-col items-start justify-start gap-1">
 					<h5 className="interBold text-colorSeven-500 text-base">
 						{item.name} <span className={`interBold uppercase ${mode == "dark" ? " text-whiteText-500" : "text-blackText-500/50"} text-sm italic`}>({item.category} Product)</span>{' '}
@@ -366,7 +366,7 @@ export default function Explore() {
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-2">
-													<Image src={selectedSubCategory.logo} width={30} height={30} alt={selectedSubCategory.name} className={`${selectedTradingCategory == "cefi" ? " " : ""} rounded-full` }></Image>
+													<Image src={selectedSubCategory.logo} width={30} height={30} alt={selectedSubCategory.name} className={`${selectedTradingCategory == "cefi" ? " " : ""} rounded-full` }/>
 													<h5 className={`text-sm ${mode == "dark" ? "text-whiteBackground-500" : " text-blackText-500"} titleShadow interBold uppercase`}>{selectedSubCategory.name}</h5>
 												</div>
 												<GoChevronDown color="#F2F2F2" size={20} />
@@ -388,7 +388,7 @@ export default function Explore() {
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-2">
-													<Image src={sub.logo} width={30} height={30} alt={sub.name}></Image>
+													<Image src={sub.logo} width={30} height={30} alt={sub.name}/>
 													<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{sub.name}</h5>
 												</div>
 												<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
@@ -432,7 +432,7 @@ export default function Explore() {
 
 																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
-														></Image>
+														/>
 
 														<h5
 															className={`interBold ${mode == "dark" ? " text-whiteText-500" : "text-colorSeven-500"}  text-base cursor-pointer`}
@@ -498,7 +498,7 @@ export default function Explore() {
 
 																router.push(`/tradeIndex?index=${product.symbol}&category=${selectedTradingCategory}`)
 															}}
-														></Image>
+														/>
 
 														<h5
 															className="interBold text-colorSeven-500 text-lg cursor-pointer"

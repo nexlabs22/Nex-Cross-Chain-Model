@@ -14,12 +14,11 @@ export default function PWAProfileHistory() {
 
     return (
         <Box width={"100vw"} height={"fit6content"} minHeight={'100vh'} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
-            <PWATopBar></PWATopBar>
+            <PWATopBar/>
             <Stack width={"100%"} height={"fit-content"} paddingTop={2} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
                 <NewHistoryTable maxPWAHeight={true}></NewHistoryTable>
-                
             </Stack>
-            <PWABottomNav></PWABottomNav>
+            <PWABottomNav/>
         </Box>
     )
 }

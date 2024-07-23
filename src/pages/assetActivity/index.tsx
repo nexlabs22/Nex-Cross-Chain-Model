@@ -192,7 +192,7 @@ export default function OwnedAsset({ params, searchParams }: { params: { slug: s
 					<section className="w-screen h-fit pt-10">
 						<div className="w-full h-fit px-20 py-5 flex flex-col xl:flex-row items-center justify-between mb-10">
 							<div className="w-full lg:w-2/5 h-fit flex flex-col lg:flex-row items-center justify-between gap-8">
-								<Image src={dataToshow ? dataToshow.logo : anfiLogo} alt="anfi" width={150} height={150} className=" rounded-full"></Image>
+								<Image src={dataToshow ? dataToshow.logo : anfiLogo} alt="anfi" width={150} height={150} className=" rounded-full"/>
 								<div className="w-full lg:w-2/3 h-fit flex flex-col items-center lg:items-start justify-start gap-2">
 									<h5 className="text-2xl text-blackText-500 montrealBold">
 										{showPortfolioData && dataToshow ? Number(dataToshow.totalToken?.toFixed(2)).toLocaleString() : '0.00'} {dataToshow ? dataToshow.symbol : 'ANFI'}

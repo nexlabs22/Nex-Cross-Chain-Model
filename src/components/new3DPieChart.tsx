@@ -60,21 +60,18 @@ const New3DPieChart: React.FC<PieChart3DProps> = ({ data }) => {
 
 				{/* <Chart chartType="ScatterChart" data={data} options={options} graphID="ScatterChart" width="100%" height="400px" chartEvents={()=>{cb}} /> */}
 			</div>
-			{isStandalone ? (
-				<>
+			{isStandalone && (
 					<div className={`w-full h-10 absolute ${isLandscape ? 'bottom-[8%]' : 'bottom-[30%]'} z-50 flex flex-wrap items-center justify-center gap-4`}>
 						{data.length > 1 &&
 							data.slice(1).map((d, i) => (
 								<div key={i} className="w-fit h-fit flex flex-row items-center justify-start gap-1">
-									<div className={`w-4 aspect-square border border-slate-900 bg-[${options.colors[i]}]`}></div>
+									<div className={`w-4 aspect-square border border-slate-900 bg-[${options.colors[i]}]`} />
 									<span className="text-black">{d[0]}</span>
 									<span className="text-black">({Number(d[1]).toFixed(2)}%)</span>
 								</div>
 							))}
 					</div>
-				</>
-			) : (
-				<></>
+				
 			)}
 		</div>
 	)

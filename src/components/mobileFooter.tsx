@@ -28,7 +28,7 @@ const MobileFooterSection = () => {
             src={xLogo}
             alt="nex logo"
             className="w-12 brightness-0 drop-shadow-sm invert md:mb-14 md:ml-6 md:mt-6 md:scale-[2]"
-          ></Image>
+          />
         </Link>
         <h5 className="interBold my-4 text-2xl text-white md:mb-12 md:w-1/2 md:text-3xl">
           Index your trades, your investment, your future

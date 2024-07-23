@@ -448,8 +448,8 @@ export default function PWATradeIndex() {
 
                 </Stack>
             </Stack>
-            <PWAIndexComparisonBox></PWAIndexComparisonBox>
-            <PWAIndexChartBox></PWAIndexChartBox>
+            <PWAIndexComparisonBox/>
+            <PWAIndexChartBox/>
             <Stack width={"100%"} height={"fit-content"} marginY={1} direction={"row"} alignItems={"center"} justifyContent={"center"} gap={1}>
                 <Button onClick={() => {
                     //changePWATradeoperation("sell") 
@@ -554,7 +554,7 @@ export default function PWATradeIndex() {
 
                     </Typography>
                 </Stack>
-                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}></Stack>
+                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}/>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
@@ -580,7 +580,7 @@ export default function PWATradeIndex() {
 
                     </Typography>
                 </Stack>
-                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}></Stack>
+                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}/>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
@@ -614,7 +614,7 @@ export default function PWATradeIndex() {
 
                     </Typography>
                 </Stack>
-                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}></Stack>
+                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}/>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
@@ -643,7 +643,7 @@ export default function PWATradeIndex() {
                     </Link>
 
                 </Stack>
-                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}></Stack>
+                <Stack width={"100%"} height={"0.5px"} marginY={"0.8rem"} sx={{backgroundColor: "#000000"}}/>
                 <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                     <Typography variant="caption" sx={{
                         color: lightTheme.palette.text.primary,
@@ -670,7 +670,7 @@ export default function PWATradeIndex() {
                     </Typography>
                 </Stack>
             </Stack>
-            <HistoryTable maxPWAHeight={false}></HistoryTable>
+            <HistoryTable maxPWAHeight={false}/>
             <Sheet
                 isOpen={isSheetOpen}
                 onClose={() => setSheetOpen(false)}
@@ -773,7 +773,7 @@ export default function PWATradeIndex() {
                 </Sheet.Container>
                 <Sheet.Backdrop onTap={() => { setSheetOpen(false) }} />
             </Sheet>
-            <PWABottomNav></PWABottomNav>
+            <PWABottomNav/>
         </Box>
     )
 }

@@ -88,6 +88,17 @@ export default function Portfolio() {
 	const { changeSelectedIndex } = useLandingPageStore()
 	const { isStandalone } = usePWA()
 
+	const progressBarColorOptions = {
+		dark: {
+			bgColor: '#089981',
+			baseBgColor: '#FFFFFF',
+		},
+		light: {
+			bgColor: '#5E869B',
+			baseBgColor: '#A9A9A9',
+		},
+	}
+
 	return (
 		<>
 			<Head>
@@ -194,8 +205,8 @@ export default function Portfolio() {
 													$
 													{showPortfolioData
 														? '120.92'
-														//  ? FormatToViewNumber({value:portfolio24hChange, returnType: 'currency'})
-														:  '0.00'}
+														: //  ? FormatToViewNumber({value:portfolio24hChange, returnType: 'currency'})
+														  '0.00'}
 												</h5>
 												<div
 													className={`w-fit h-fit rounded-lg ${
@@ -251,7 +262,7 @@ export default function Portfolio() {
 																onClick={() => {
 																	router.push(`/ownedAsset?asset=${asset.symbol.toLowerCase()}`)
 																}}
-															></Image>
+															/>
 															<div>
 																<h5 className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  text-lg cursor-pointer`}>{asset.symbol}</h5>
 																<h5 className={`interMedium ${mode == 'dark' ? ' text-whiteText-500/80' : ' text-blackText-500'} italic text-base cursor-pointer`}>
@@ -272,25 +283,14 @@ export default function Portfolio() {
 															</h5>
 														</div>
 														<div className="w-fit xl:w-1/4 h-fit px-1">
-															{mode == 'dark' ? (
-																<ProgressBar
-																	completed={showPortfolioData ? Number(asset.percentage) : 0}
-																	height="10px"
-																	isLabelVisible={false}
-																	className="w-[30vw] xl:w-8/12 mb-3"
-																	bgColor="#089981"
-																	baseBgColor="#FFFFFF"
-																/>
-															) : (
-																<ProgressBar
-																	completed={showPortfolioData ? Number(asset.percentage) : 0}
-																	height="10px"
-																	isLabelVisible={false}
-																	className="w-[30vw] xl:w-8/12 mb-3"
-																	bgColor="#5E869B"
-																	baseBgColor="#A9A9A9"
-																/>
-															)}
+															<ProgressBar
+																completed={showPortfolioData ? Number(asset.percentage) : 0}
+																height="10px"
+																isLabelVisible={false}
+																className="w-[30vw] xl:w-8/12 mb-3"
+																bgColor={progressBarColorOptions[mode].bgColor}
+																baseBgColor={progressBarColorOptions[mode].baseBgColor}
+															/>
 
 															<h5 className={`interExtraBold ${mode == 'dark' ? ' text-whiteText-500' : ' text-blackText-500'} text-base cursor-pointer`}>
 																{showPortfolioData ? asset.percentage?.toFixed(2) : '0.00'}%
@@ -517,7 +517,7 @@ export default function Portfolio() {
 								</div>
 							</div>
 							<div id="d2" className="w-full xl:w-3/12 flex flex-row items-center justify-center flex-grow max-h-full">
-								<TipsBox2></TipsBox2>
+								<TipsBox2 />
 							</div>
 						</section>
 						<div className="w-fit hidden xl:block h-fit pt-0 lg:pt-16">
@@ -560,19 +560,19 @@ export default function Portfolio() {
 						paddingX={3}
 						bgcolor={lightTheme.palette.background.default}
 					>
-						<PWATopBar></PWATopBar>
-						<PWAProfileOverviewHeader></PWAProfileOverviewHeader>
-						<PWA3DPieChart data={pieData}></PWA3DPieChart>
-						<PWAPortfolioMyAssets></PWAPortfolioMyAssets>
+						<PWATopBar />
+						<PWAProfileOverviewHeader />
+						<PWA3DPieChart data={pieData} />
+						<PWAPortfolioMyAssets />
 						<PWABanner
 							image={dca.src}
 							bigText="Nex DCA Calculator"
 							smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors."
 							link="/dcaCalculator"
 							linkText="Learn More"
-						></PWABanner>
-						<Box id="bottom seperator" width={'100vw'} height={'1rem'}></Box>
-						<PWABottomNav></PWABottomNav>
+						/>
+						<Box id="bottom seperator" width={'100vw'} height={'1rem'} />
+						<PWABottomNav />
 					</Box>
 				</>
 			)}

@@ -880,7 +880,7 @@ const SwapV2Defi = () => {
 									}}
 								>
 									<div className="flex flex-row items-center justify-start w-fit">
-										<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
+										<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"/>
 										<h5 className={`text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBlack pt-1`}>{swapFromCur.Symbol}</h5>
 									</div>
 									{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
@@ -930,7 +930,7 @@ const SwapV2Defi = () => {
 									}}
 								>
 									<div className="flex flex-row items-center justify-end ">
-										<Image src={swapToCur.logo} alt={swapToCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"></Image>
+										<Image src={swapToCur.logo} alt={swapToCur.Symbol} quality={100} width={30} height={30} className=" relative z-20 rounded-full mt-1 mr-1"/>
 										<h5 className={`text-lg ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500 '} interBlack pt-1`}>{swapToCur.Symbol}</h5>
 									</div>
 									{mode == 'dark' ? <BiSolidChevronDown color={'#FFFFFF'} size={18} className="mt-1" /> : <BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />}
@@ -1108,7 +1108,7 @@ const SwapV2Defi = () => {
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-3">
-													<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1 rounded-full"></Image>
+													<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1 rounded-full"/>
 													<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
 												</div>
 												<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'text-gray-300'} inter italic`}>{item.Symbol}</h5>
@@ -1163,7 +1163,7 @@ const SwapV2Defi = () => {
 												}}
 											>
 												<div className="flex flex-row items-center justify-start gap-3">
-													<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1 rounded-full"></Image>
+													<Image src={item.logo} alt={item.name} width={25} height={25} className="mt-1 rounded-full"/>
 													<h5 className={`text-base ${mode == 'dark' ? ' text-whiteText-500' : 'text-blackText-500'}  interBold`}>{item.Symbol}</h5>
 												</div>
 												<h5 className={`text-sm ${mode == 'dark' ? ' text-whiteText-500' : 'ext-gray-300'} t inter italic`}>{item.Symbol}</h5>

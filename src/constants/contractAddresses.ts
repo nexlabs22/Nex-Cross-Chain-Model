@@ -1,3 +1,5 @@
+import { addressMapType } from "@/types/generalTypes"
+
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
 export const goerliWethAddress = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'
@@ -68,27 +70,27 @@ export const arbtirumSepoliaCR5CrossChainFactory = '0xeB08A8CA65Bc5f5dD4D54841a5
 
 export const crypto5PoolAddress = '0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8' // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address
 
-export const exchangeAddresses: { [key: string]: string } = {
-	bitfinex: '0x0000000000000000000000000000000000000000',
-	bybit: '0x0000000000000000000000000000000000000000',
+export const exchangeAddresses: addressMapType = {
+	bitfinex: zeroAddress,
+	bybit: zeroAddress,
 }
 
-export const factoryAddresses: { [key: string]: `0x${string}` } = { ANFI: sepoliaAnfiV2Factory, CRYPTO5: sepoliaCrypto5V2Factory, SCI: sepoliaSciV2Factory }
-export const goerliTokenAddresses: { [key: string]: string } = { ANFI: goerliAnfiIndexToken, CRYPTO5: goerliCrypto5IndexToken, USDT: goerliUsdtAddress, ETH: goerliWethAddress }
-export const sepoliaTokenAddresses: { [key: string]: string } = {
+export const factoryAddresses: addressMapType = { ANFI: sepoliaAnfiV2Factory, CRYPTO5: sepoliaCrypto5V2Factory, SCI: sepoliaSciV2Factory }
+export const goerliTokenAddresses: addressMapType = { ANFI: goerliAnfiIndexToken, CRYPTO5: goerliCrypto5IndexToken, USDT: goerliUsdtAddress, ETH: goerliWethAddress }
+export const sepoliaTokenAddresses: addressMapType = {
 	ANFI: sepoliaAnfiV2IndexToken,
 	CRYPTO5: sepoliaCrypto5V2IndexToken,
 	USDT: sepoliaUsdtAddress,
 	ETH: sepoliaWethAddress,
 	SCI: sepoliaSciV2IndexToken,
 }
-export const sepoliaIndexTokenAddresses: { [key: string]: string } = {
+export const sepoliaIndexTokenAddresses: addressMapType = {
 	ANFI: sepoliaAnfiV2IndexToken,
 	CRYPTO5: sepoliaCrypto5V2IndexToken,
 	ARBEI: sepoliaARBIndexTokenAddress,
 	MAG7: sepoliaMAG7IndexTokenAddress,
 }
-export const sepoliaIndexPoolAddresses: { [key: string]: string } = {
+export const sepoliaIndexPoolAddresses: addressMapType = {
 	ANFI: sepoliaAnfiWethPoolAddress,
 	CRYPTO5: sepoliaCR5WethPoolAddress,
 	ARBEI: sepoliaARBEIWethPoolAddress,

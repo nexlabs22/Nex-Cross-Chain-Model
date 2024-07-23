@@ -185,7 +185,7 @@ const PWATopBar = () => {
 	return (
 		<Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
 			<Link href={"/pwa_index"} className="w-fit h-fit fle flex-row items-center justify-center">
-				<Image src={logo} alt="pwa" className="w-[2.5rem] h-auto"></Image>
+				<Image src={logo} alt="pwa" className="w-[2.5rem] h-auto"/>
 			</Link>
 
 			<Stack width={"fit-content"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={2}>

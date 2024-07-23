@@ -43,7 +43,7 @@ export default function PWATrade() {
 
     return (
         <Box width={"100vw"} height={"fit-content"} minHeight={"100vh"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
-            <PWATopBar></PWATopBar>
+            <PWATopBar/>
 
             <Stack width={"100%"} height={"fit-content"} paddingTop={2} direction={"column"} alignItems={"start"} justifyContent={"start"} gap={0.2}>
                 <Typography variant="h6" sx={{
@@ -103,7 +103,7 @@ export default function PWATrade() {
                             router.push('/pwa_tradeIndex')
                         }}>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                    <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                    <Image alt="index logo" src={cr5Logo.src} width={40} height={40} className="rounded-full mb-2"/>
                                     <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                         <Typography variant="caption" sx={{
                                             color: lightTheme.palette.text.primary,
@@ -161,7 +161,7 @@ export default function PWATrade() {
                             router.push('/pwa_tradeIndex')
                         }}>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                    <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                    <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"/>
                                     <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                         <Typography variant="caption" sx={{
                                             color: lightTheme.palette.text.primary,
@@ -219,7 +219,7 @@ export default function PWATrade() {
                             router.push('/pwa_tradeIndex')
                         }}>
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"start"} width={"fit-content"} height={"fit-content"} gap={2}>
-                                    <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"></Image>
+                                    <Image alt="index logo" src={anfiLogo.src} width={40} height={40} className="rounded-full mb-2"/>
                                     <Stack direction={"column"} width={"fit-content"} height={"fit-content"} gap={1}>
                                         <Typography variant="caption" sx={{
                                             color: lightTheme.palette.text.primary,
@@ -270,7 +270,7 @@ export default function PWATrade() {
                     ) : ("")
                 }
             </Stack>
-            <PWABottomNav></PWABottomNav>
+            <PWABottomNav/>
         </Box>
     )
 }

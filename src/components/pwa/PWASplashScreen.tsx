@@ -40,7 +40,7 @@ const PWASplashScreen = () => {
 	// !Function for auto switching to the right chain
     return (
         <Stack height={"100vh"} width={"100vw"} paddingBottom={6} direction={"column"} alignItems={"center"} justifyContent={"end"} bgcolor={"#FFFFFF"} paddingX={2}>
-            <Image src={logo} alt="pwa" className="w-6/12 h-auto mb-56"></Image>
+            <Image src={logo} alt="pwa" className="w-6/12 h-auto mb-56"/>
             <Stack height={"fit-content"} width={"100%"} direction={"column"} alignItems={"center"} justifyContent={"flex-end"} gap={1}>
                 {
                     address ? (
