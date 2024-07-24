@@ -15,6 +15,7 @@ const PWAProfileOverviewHeader = () => {
 		showPortfolioData,
 		chartArr,
 		portfolio24hChange,
+		portfolio24hChangePer,
 		totalPortfolioBalance,
 	} = usePortfolio()
 
@@ -54,14 +55,15 @@ const PWAProfileOverviewHeader = () => {
 				}}>
 					{portfolio24hChange < 0 ? "-" : "+"}
 					$
-					{showPortfolioData && chartArr && chartArr[chartArr.length - 1]
+					{showPortfolioData 
 					
-						? FormatToViewNumber({ value: Number(Math.abs(chartArr[chartArr.length - 1].value - (chartArr[chartArr.length - 2].value || 0)).toFixed(2)), returnType: 'string' })
+						// ? FormatToViewNumber({ value: portfolio24hChange, returnType: 'currency' })
+						? '120.92'
 						: '0.00'}
 				</Typography>
 			</Stack>
 			<Stack width={"45%"} maxWidth={"45%"} flexGrow={1} borderRadius={"0.8rem"}>
-				<PWAPNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChange : 0} />
+				<PWAPNLChart data={showPortfolioData ? chartArr : emptyData} totalPortfolioBalance={totalPortfolioBalance} change={showPortfolioData ? portfolio24hChangePer : 0} />
 			</Stack>
 		</Stack>
 	)

@@ -1,4 +1,4 @@
-import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaSciV2IndexToken, zeroAddress } from "./contractAddresses";
+import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, sepoliaAnfiV2IndexToken, sepoliaARBIndexTokenAddress, sepoliaCrypto5V2IndexToken, sepoliaMAG7IndexTokenAddress, sepoliaSciV2IndexToken, zeroAddress } from "./contractAddresses";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import mag7 from '@assets/images/mag7.png'
@@ -26,7 +26,7 @@ export const nexTokens = [
         symbol: 'MAG7',
         shortName: 'MAG7',
         indexType: 'crosschain',
-        address: zeroAddress,
+        address: sepoliaMAG7IndexTokenAddress,
         decimals: 18,
         logo: mag7.src
     },
@@ -34,7 +34,7 @@ export const nexTokens = [
         symbol: 'ARBEI',
         shortName: 'ARBEI',
         indexType: 'defi',
-        address: zeroAddress,
+        address: sepoliaARBIndexTokenAddress,
         decimals: 18,
         logo: arbLogo.src
     },

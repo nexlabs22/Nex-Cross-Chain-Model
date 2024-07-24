@@ -46,7 +46,7 @@ const PWABanner = ({ smallText, bigText, image, link, linkText, imgWidth, imgHei
                     </Typography>
                 </Stack>
             </Link>
-            <Image alt="banner image nex" src={image} className={`absolute -bottom-12 md:-bottom-15 -right-5 w-[${imgWidth}] h-[${imgHeight}] aspect-square`} width={150} height={150}></Image>
+            <Image alt="banner image nex" src={image} className={`absolute -bottom-12 md:-bottom-15 -right-5 w-[${imgWidth}] h-[${imgHeight}] aspect-square`} width={150} height={150}/>
         </Stack>
     )
 } 

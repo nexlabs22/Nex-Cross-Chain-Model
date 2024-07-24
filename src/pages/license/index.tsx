@@ -45,7 +45,7 @@ export default function Licenses() {
 					>
 						<div className='w-full lg:w-2/3 py-4 flex flex-col items-start justify-between gap-2'>
 							<h5 className={`text-2xl interBold ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>TradingView</h5>
-							<Image src={tw} alt='tradingview' className={`lg:hidden h-20 mt-8 mb-4 w-auto ${mode == "dark" ? " invert" : ""}`}></Image>
+							<Image src={tw} alt='tradingview' className={`lg:hidden h-20 mt-8 mb-4 w-auto ${mode == "dark" ? " invert" : ""}`}/>
 							<p className={` text-lg leading-normal mt-4 xl:w-11/12 lg:text-justify interMedium ${mode == "dark" ? " text-whiteText-500" : " text-blackText-500"}`}>
 								Nexlabs has partnered with TradingView, a top-tier charting and trading platform, to elevate your experience. Access advanced charting and market analysis tools, amplifying
 								success and gaining valuable insights into
@@ -75,7 +75,7 @@ export default function Licenses() {
 							</Link>
 						</div>
 						<div className='hidden h-fit w-1/3 lg:flex flex-col items-center py-10 justify-center'>
-							<Image src={tw} alt='tradingview' className={`h-32 w-auto ${mode == "dark" ? " invert" : ""}`}></Image>
+							<Image src={tw} alt='tradingview' className={`h-32 w-auto ${mode == "dark" ? " invert" : ""}`}/>
 						</div>
 
 					</div>

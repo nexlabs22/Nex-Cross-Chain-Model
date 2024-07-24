@@ -73,7 +73,7 @@ export default function PWAPortfolioMyAssets() {
                                     changeSelectedIndex(asset.shortName);
                                     router.push('/pwa_tradeIndex')
                                 }}>
-                                    <Image alt="index logo" src={asset.logo} width={40} height={40} className="rounded-full mb-2"></Image>
+                                    <Image alt="index logo" src={asset.logo} width={40} height={40} className="rounded-full mb-2"/>
                                     <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} width={"100%"} height={"fit-content"} marginBottom={1.5} padding={0}>
                                         <Typography variant="subtitle1" sx={{
                                             color: lightTheme.palette.text.primary,

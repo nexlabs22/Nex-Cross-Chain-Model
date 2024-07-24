@@ -599,7 +599,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		return (
 			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1" key={item.id}>
 				<div className="flex flex-row items-center justify-start gap-2">
-					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150"></Image>
+					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150"/>
 					<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
 				</div>
 				<h5 className="text-base text-gray-300 montrealBoldItalic">{item.Symbol}</h5>

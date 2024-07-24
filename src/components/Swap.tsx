@@ -461,7 +461,7 @@ const Swap = () => {
 		return (
 			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1" key={item.id}>
 				<div className="flex flex-row items-center justify-start gap-2">
-					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150"></Image>
+					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150"/>
 					<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
 				</div>
 				<h5 className="text-base text-gray-300 montrealBoldItalic">{item.Symbol}</h5>
@@ -604,7 +604,7 @@ const Swap = () => {
 							}}
 						>
 							<div className="flex flex-row items-center justify-start">
-								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={20} height={20} className="mt-1 mr-1"></Image>
+								<Image src={swapFromCur.logo} alt={swapFromCur.Symbol} width={20} height={20} className="mt-1 mr-1"/>
 								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapFromCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
@@ -650,7 +650,7 @@ const Swap = () => {
 							}}
 						>
 							<div className="flex flex-row items-center justify-start">
-								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={20} height={20} className=" mt-1 mr-1"></Image>
+								<Image src={swapToCur.logo} alt={swapToCur.Symbol} width={20} height={20} className=" mt-1 mr-1"/>
 								<h5 className="text-xl text-blackText-500 interBlack pt-1">{swapToCur.Symbol}</h5>
 							</div>
 							<BiSolidChevronDown color={'#2A2A2A'} size={18} className="mt-1" />
@@ -776,7 +776,7 @@ const Swap = () => {
 											>
 												<div className="flex flex-row items-center justify-start gap-3">
 													<div className="w-fit h-fit p-[1px] shadow-sm rounded-full flex flex-row items-center justify-center">
-														<Image src={item.logo} alt={item.name} width={25} height={25} className="rounded-full"></Image>
+														<Image src={item.logo} alt={item.name} width={25} height={25} className="rounded-full"/>
 													</div>
 
 													<h5 className="text-base text-colorSeven-500 interBold">{item.name}</h5>
@@ -819,7 +819,7 @@ const Swap = () => {
 											>
 												<div className="flex flex-row items-center justify-start gap-3">
 												<div className="w-fit h-fit p-[1px] shadow-sm rounded-full flex flex-row items-center justify-center">
-														<Image src={item.logo} alt={item.name} width={25} height={25} className="rounded-full"></Image>
+														<Image src={item.logo} alt={item.name} width={25} height={25} className="rounded-full"/>
 													</div>
 													<h5 className="text-base text-colorSeven-500 interBold">{item.name}</h5>
 												</div>

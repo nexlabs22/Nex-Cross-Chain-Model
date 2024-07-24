@@ -44,7 +44,7 @@ const Footer: React.FC<FooterProps> = ({ tradeFooter }) => {
                 src={xlogo}
                 alt="nex labs logo"
                 className={`w-14 brightness-0 ${mode == "dark" ? "invert" : ""}`}
-              ></Image>
+              />
               </Link>
               
             </div>

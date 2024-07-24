@@ -18,6 +18,7 @@ export function GetTradeHistoryCrossChain() {
 	// if(!exchangeAddress) return;
 
 	const [accountAddress, setAccountAddress] = useState<`0x${string}` | string>()
+	const [loading, setLoading] = useState<boolean>(false)
 	const address = useAddress()
 
 	const [positions, setPositions] = useState<PositionType[]>([])
@@ -33,6 +34,7 @@ export function GetTradeHistoryCrossChain() {
 
 	const getHistory = useCallback(async () => {
 
+		setLoading(true)
 		setPositions([])
 
 		const client = createPublicClient({
@@ -123,6 +125,7 @@ export function GetTradeHistoryCrossChain() {
 			return Number(b.timestamp) - Number(a.timestamp)
 		})
 		setPositions(sortedPositionsData)
+		setLoading(false)
 	}, [accountAddress])
 
 	useEffect(() => {
@@ -133,5 +136,6 @@ export function GetTradeHistoryCrossChain() {
 	return {
 		data: positions,
 		reload: getHistory,
+		loading
 	}
 }

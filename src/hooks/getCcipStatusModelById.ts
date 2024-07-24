@@ -13,6 +13,7 @@
 import { ethers } from "ethers";
 import { Result } from "ethers/lib/utils";
 import { getTransactionReceipt } from "./getMessageID";
+import { addressMapType } from "@/types/generalTypes";
   
   // Command: node src/get-status.js sourceChain destinationChain messageId
   // Examples(sepolia-->Fuji):
@@ -24,7 +25,7 @@ import { getTransactionReceipt } from "./getMessageID";
     "3": "FAILURE"
   }
 
-  const routerAddresses : { [key: string]: string } = {
+  const routerAddresses : addressMapType = {
     "ethereumSepolia": "0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59",
     "arbitrumSepolia": "0x2a9C5afB0d0e4BAb2BCdaE109EC4b0c4Be15a165"
   }

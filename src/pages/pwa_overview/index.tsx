@@ -20,12 +20,12 @@ export default function PWAOverview() {
 
     return (
         <Box width={"100vw"} height={"fit-content"} display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"start"} paddingY={4} paddingX={3} bgcolor={lightTheme.palette.background.default}>
-            <PWATopBar></PWATopBar>
-            <PWAProfileOverviewHeader></PWAProfileOverviewHeader>
-            <PWA3DChartBox></PWA3DChartBox>
-            <PWAMyAssets></PWAMyAssets>
-            <PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="dcaCalculator" linkText="Learn More"></PWABanner>
-            <PWABottomNav></PWABottomNav>
+            <PWATopBar/>
+            <PWAProfileOverviewHeader/>
+            <PWA3DChartBox/>
+            <PWAMyAssets/>
+            <PWABanner image={dca.src} bigText="Nex DCA Calculator" smallText="Nex Dollar Cost Averaging (DCA) Calculator, a strategic tool designed for investors." link="dcaCalculator" linkText="Learn More"/>
+            <PWABottomNav/>
         </Box>
     )
 }

@@ -1,379 +1,372 @@
-import React, { createContext, useState, useEffect, useContext } from 'react'; 
-import { SmartContract, UseContractResult, useAddress, useContract, useContractRead } from '@thirdweb-dev/react'
+import React, { createContext, useState, useEffect, useContext } from 'react'
+import { ThirdwebSDK, useAddress } from '@thirdweb-dev/react'
 import useTradePageStore from '@/store/tradeStore'
-import {
-    goerlianfiPoolAddress,
-    zeroAddress,
-    goerliLinkWethPoolAddress,
-    sepoliaAnfiV2IndexToken,
-    sepoliaCrypto5V2IndexToken,
-    sepoliaAnfiWethPoolAddress,
-    sepoliaLinkWethPoolAddress,
-} from '@/constants/contractAddresses'
-import { indexTokenAbi, indexTokenV2Abi } from '@/constants/abi'
-import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
-import { useQuery } from '@apollo/client'
-import { GET_HISTORICAL_PRICES } from '@/uniswap/query'
+import { sepoliaIndexTokenAddresses, sepoliaIndexPoolAddresses } from '@/constants/contractAddresses'
+import { indexTokenAbi } from '@/constants/abi'
+import { FormatToViewNumber, num } from '@/hooks/math'
 import { getTimestampDaysAgo } from '@/utils/conversionFunctions'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import { nexTokenDataType } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
 
-// Firebase : 
+// Firebase :
 import { ref, onValue } from 'firebase/database'
 import { database } from '@/utils/firebase'
 import { PositionType } from '@/types/tradeTableTypes'
 import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
-import { useChartDataStore, useLandingPageStore } from "@/store/store";
-import usePortfolioPageStore from '@/store/portfolioStore';
-import { BaseContract } from 'ethers';
-import { GenericToast } from '@/components/GenericToast';
-import client from '@/utils/graphQL-client';
-import { GET_HISTORICAL_PRICES_QL } from '@/uniswap/graphQuery';
-import { error } from 'console';
+import { useChartDataStore, useLandingPageStore } from '@/store/store'
+import usePortfolioPageStore from '@/store/portfolioStore'
+import { GenericToast } from '@/components/GenericToast'
+import client from '@/utils/graphQL-client'
+import { GET_HISTORICAL_PRICES_QL } from '@/uniswap/graphQuery'
 
 interface User {
-    email: string
-    inst_name: string
-    main_wallet: string
-    name: string
-    vatin: string
-    address: string
-    ppLink: string
-    p1: boolean
-    p2: boolean
-    p3: boolean
-    p4: boolean
-    p5: boolean
-    ppType: string
-    creationDate: string
+	email: string
+	inst_name: string
+	main_wallet: string
+	name: string
+	vatin: string
+	address: string
+	ppLink: string
+	p1: boolean
+	p2: boolean
+	p3: boolean
+	p4: boolean
+	p5: boolean
+	ppType: string
+	creationDate: string
 }
 
 interface PortfolioContextProps {
-    user: User | null,
-    showPortfolioData: boolean | null
-    chartArr: { time: number; value: number; }[]
-    indexPercent: {[key:string]:number} | null
-    todayPortfolioPrice: number
-    yesterdayPortfolioPrice: number
-    portfolio24hChange: number
-    anfiTokenContract: UseContractResult<SmartContract<BaseContract>> | null
-    crypto5TokenContract: UseContractResult<SmartContract<BaseContract>> | null
-    anfiPercent: number
-    crypto5Percent: number
-    anfiTokenBalance: any
-    crypto5TokenBalance: any
-    pieData: (string | number)[][]
-    nexTokenAssetData: nexTokenDataType[]
-    totalPortfolioBalance: any
-    positionHistoryDefi: { data: PositionType[]; reload: () => Promise<void>; }
-    positionHistoryCrosschain: { data: PositionType[]; reload: () => Promise<void>; }
-    combinedData: PositionType[]
-    latestObjectsMap: Map<string, PositionType>
-    indexDetails: { index: string; smartContract: string; lastTnx: string; ownedAmount: string; }[]
-    indexDetailsMap: Map<string, any>
-    uploadedPPLink: string
-    chosenPPType: string
-    handleCopyFunction: () => void
-    handleCopyIndexDetailsFunction: () => void
+	user: User | null
+	showPortfolioData: boolean | null
+	chartArr: { time: number; value: number }[]
+	indexPercent: { [key: string]: number }
+	indexTokenBalance: { [key: string]: number }
+	todayPortfolioPrice: number
+	yesterdayPortfolioPrice: number
+	portfolio24hChange: number
+	portfolio24hChangePer: number
+	pieData: (string | number)[][]
+	nexTokenAssetData: nexTokenDataType[]
+	totalPortfolioBalance: any
+	positionHistoryDefi: { data: PositionType[]; reload: () => Promise<void> }
+	positionHistoryCrosschain: { data: PositionType[]; reload: () => Promise<void> }
+	// combinedData: PositionType[]
+	// latestObjectsMap: Map<string, PositionType>
+	indexDetails: { index: string; smartContract: string; lastTnx: string; ownedAmount: string }[]
+	indexDetailsMap: Map<string, any>
+	uploadedPPLink: string
+	chosenPPType: string
+	handleCopyFunction: () => void
+	handleCopyIndexDetailsFunction: () => void
 }
 
 const PortfolioContext = createContext<PortfolioContextProps>({
-    user: null,
-    showPortfolioData: null,
-    chartArr: [],
-    indexPercent: null,
-    todayPortfolioPrice: 0,
-    yesterdayPortfolioPrice: 0,
-    portfolio24hChange: 0,
-    anfiTokenContract: null,
-    crypto5TokenContract: null,
-    anfiPercent: 0,
-    crypto5Percent: 0,
-    anfiTokenBalance: 0,
-    crypto5TokenBalance: 0,
-    pieData: [],
-    nexTokenAssetData: [],
-    totalPortfolioBalance: 0,
-    positionHistoryDefi: {data: [],reload: () => Promise.resolve(),},
-    positionHistoryCrosschain: {data: [],reload: () => Promise.resolve(),},
-    combinedData: [],
-    latestObjectsMap: new Map(),
-    indexDetails: [],
-    indexDetailsMap: new Map(),
-    uploadedPPLink: "none",
-    chosenPPType: "none",
-    handleCopyFunction: () => { },
-    handleCopyIndexDetailsFunction: () => { },
-});
+	user: null,
+	showPortfolioData: null,
+	chartArr: [],
+	indexPercent: {},
+	indexTokenBalance: {},
+	todayPortfolioPrice: 0,
+	yesterdayPortfolioPrice: 0,
+	portfolio24hChange: 0,
+	portfolio24hChangePer: 0,
+	pieData: [],
+	nexTokenAssetData: [],
+	totalPortfolioBalance: 0,
+	positionHistoryDefi: { data: [], reload: () => Promise.resolve() },
+	positionHistoryCrosschain: { data: [], reload: () => Promise.resolve() },
+	// combinedData: [],
+	// latestObjectsMap: new Map(),
+	indexDetails: [],
+	indexDetailsMap: new Map(),
+	uploadedPPLink: 'none',
+	chosenPPType: 'none',
+	handleCopyFunction: () => {},
+	handleCopyIndexDetailsFunction: () => {},
+})
 
 const usePortfolio = () => {
-    return useContext(PortfolioContext);
-};
+	return useContext(PortfolioContext)
+}
 
 const PortfolioProvider = ({ children }: { children: React.ReactNode }) => {
-    const address = useAddress()
-    const { selectedPortfolioChartSliceIndex, setSelectedPortfolioChartSliceIndex, setEthPriceInUsd, ethPriceInUsd } = useTradePageStore()
-    const { portfolioData, setDayChange, indexSelectedInPie } = usePortfolioPageStore()
-    const anfiTokenContract = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
-    const crypto5TokenContract = useContract(sepoliaCrypto5V2IndexToken, indexTokenAbi)
-    // const anfiTokenContract = useContract(goerliAnfiV2IndexToken, indexTokenV2Abi)
-    // const crypto5TokenContract = useContract(goerliCrypto5IndexToken, indexTokenAbi)
+	const address = useAddress()
+	const { ethPriceInUsd } = useTradePageStore()
+	const { setDayChange } = usePortfolioPageStore()
+	const [indexData, setIndexData] = useState<{ [key: string]: { error: any; data: any } }>({})
+	const [indexTokenBalance, setIndexTokenBalance] = useState<{ [key: string]: number }>({})
+	const [indexPercentage, setIndexPercentages] = useState<{ [key: string]: number }>({})
+	let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
+	const [indexDetails, setIndexDetails] = useState<{ index: string; smartContract: string; lastTnx: string; ownedAmount: string }[]>([])
 
-    const anfiTokenBalance = useContractRead(anfiTokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
-    const crypto5TokenBalance = useContractRead(crypto5TokenContract.contract, 'balanceOf', [!!address ? address : zeroAddress])
-    const anfiPercent = (num(anfiTokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
-    const crypto5Percent = (num(crypto5TokenBalance.data) / (num(crypto5TokenBalance.data) + num(anfiTokenBalance.data))) * 100
+	useEffect(() => {
+		if (address) {
+			Object.entries(sepoliaIndexTokenAddresses).forEach(async ([indexName, tokenAddress]) => {
+				const sdk = new ThirdwebSDK('sepolia')
+				const tokenContract = await sdk.getContract(tokenAddress as string, indexTokenAbi)
 
-    const [anfiData, setAnfiData] = useState<{error:any, data:any}>({error:null, data:null})
-    const [cr5Data, setCr5Data] = useState<{error:any, data:any}>({error:null, data:null})
+				const tokenBalance = await tokenContract.call('balanceOf', [address])
 
-    useEffect(()=>{
-        async function getHistoricalPrice(){
-            const {error:anfiError,data:anfiData} = await client.query(GET_HISTORICAL_PRICES_QL, { poolAddress: sepoliaAnfiWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' }).toPromise();
-            const {error:cr5Error,data:cr5Data} = await client.query(GET_HISTORICAL_PRICES_QL, { poolAddress: sepoliaLinkWethPoolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' }).toPromise();
-            
-            setAnfiData({error: anfiError, data: anfiData})
-            setCr5Data({error: cr5Error, data: cr5Data})
-        }
+				setIndexTokenBalance((prevState) => ({
+					...prevState,
+					[indexName]: num(tokenBalance),
+				}))
+			})
+		}
+	}, [address])
 
-        getHistoricalPrice();
-    
-    },[])
+	useEffect(() => {
+		const totalBalance = Object.values(indexTokenBalance).reduce((sum, value) => sum + value, 0)
+		const percentages = Object.fromEntries(Object.entries(indexTokenBalance).map(([key, value]) => [key, (value / totalBalance) * 100]))
 
-    // *** FUNCTION TO GET THE INDEX PRICE HISTORY *** // Commented for later use
-    // useEffect(()=>{
-    // 	async function getCR5PriceHistory() {
-    // 		//  const cr5poolAddress = getPoolAddress(cr5Details[0].address, cr5Details[0].decimals, false )
-    // 		const cr5poolAddress = '0x70393314c70C903ebf6ef073783B7F207cC9A5e2'
-    // 		const numberOfDays = 45
-    // 		const priceList = []
-    // 		for  (let i=0; i<=numberOfDays; i++) {
-    // 			const price = await getPriceHistory(cr5poolAddress as string, 86400 * i)
-    // 			priceList.push({date : new Date().getTime() - (86400 * i), price})
-    // 		}
-    // 		console.log(priceList)
-    // 		return priceList
-    // 	}
+		setIndexPercentages(percentages)
+	}, [indexTokenBalance])
 
-    // 	// getCR5PriceHistory()
-    // })
+	useEffect(() => {
+		async function getHistoricalPrice() {
+			Object.entries(sepoliaIndexPoolAddresses).forEach(async ([indexName, poolAddress]) => {
+				const { error, data } = await client
+					.query(GET_HISTORICAL_PRICES_QL, { poolAddress: poolAddress.toLowerCase(), startingDate: getTimestampDaysAgo(1000), limit: 10, direction: 'asc' })
+					.toPromise()
 
-    let [chartArr, setChartArr] = useState<{ time: number; value: number }[]>([])
-    const indexPercent:{[key:string]:number} = { anfi: anfiPercent, crypto5: crypto5Percent, mag7:0, arbei:0 }
+				setIndexData((prevState) => ({
+					...prevState,
+					[indexName]: { error, data },
+				}))
+			})
+		}
 
-    if (!cr5Data.error && !anfiData.error && !!anfiData.data && !!cr5Data.data  && chartArr.length == 0 && (!!anfiPercent || !!crypto5Percent)) {
-        const chartData: { time: number; value: number }[] = []
-        const ANFIData = anfiData.data.poolDayDatas
-        const CR5Data = cr5Data.data.poolDayDatas
-        for (let i = 0; i <= ANFIData.length - 1; i++) {
-            const chartObj: { time: number; value: number } = { time: 0, value: 0 }
-            const value = num(anfiTokenBalance.data) * Number(ANFIData[i].token0Price) + num(crypto5TokenBalance.data) * Number(CR5Data[i]?.token0Price || 0)
-            chartObj.time = ANFIData[i].date
-            chartObj.value = value
-            chartData.push(chartObj)
-        }
-        setChartArr(chartData)
+		getHistoricalPrice()
+	}, [])
 
-        const anfiPrice = ANFIData[ANFIData.length - 1].token0Price * num(anfiTokenBalance.data)
-        const cr5Price = CR5Data[CR5Data.length - 1].token0Price * num(crypto5TokenBalance.data)
-        // setIndexPrices({ anfi: anfiPrice, cr5: cr5Price })
+	const calculateMetrics = () => {
+		const chartData: { time: number; value: number }[] = []
+		let allDataAvailable = true
 
-        const todayANFIPrice = ANFIData[ANFIData.length - 1].token0Price || 0
-        const yesterdayANFIPrice = ANFIData[ANFIData.length - 2].token0Price || 0
-        const anfi24hChng = ((todayANFIPrice - yesterdayANFIPrice) / yesterdayANFIPrice) * 100
+		// Check if data is available for all indexes
+		for (const indexName of Object.keys(sepoliaIndexTokenAddresses)) {
+			if (indexData[indexName]?.error || !indexData[indexName]?.data) {
+				allDataAvailable = false
+				break
+			}
+		}
 
-        const todayCR5Price = CR5Data[CR5Data.length - 1].token0Price || 0
-        const yesterdayCR5Price = CR5Data[CR5Data.length - 2]?.token0Price || 0
-        const cr524hChng = ((todayCR5Price - yesterdayCR5Price) / yesterdayCR5Price) * 100
+		if (allDataAvailable && chartArr.length === 0) {
+			const indexNames = Object.keys(sepoliaIndexTokenAddresses)
+			const firstIndexData = indexData[indexNames[0]].data.poolDayDatas
 
-        setDayChange({ anfi: todayANFIPrice - yesterdayANFIPrice, cr5: todayCR5Price - yesterdayCR5Price })
-    }
+			for (let i = 0; i < firstIndexData.length; i++) {
+				const chartObj: { time: number; value: number } = { time: 0, value: 0 }
+				chartObj.time = firstIndexData[i].date
 
-    const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value
-    const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value
-    const portfolio24hChange = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
+				let totalValue = 0
+				for (const indexName of indexNames) {
+					const indexPoolDayData = indexData[indexName].data.poolDayDatas
+					totalValue += indexTokenBalance[indexName] * Number(indexPoolDayData[i]?.token0Price || 0)
+				}
+				chartObj.value = totalValue
+				chartData.push(chartObj)
+			}
 
-    const pieData = [
-        ['Asset', 'Percentage'],
-        ['CRYPTO5', crypto5Percent ? crypto5Percent : 0],
-        ['ANFI', anfiPercent ? anfiPercent : 0],
-        // ['FIAT', anfiPercent ? 0 : 5],
-    ]
+			setChartArr(chartData)
 
-    const PieChartdata = [
-        {
-            label: 'ANFI',
-            percentage: !!anfiPercent ? FormatToViewNumber({ value: anfiPercent, returnType: 'string' }) + '%' : '0%',
-            color: '#133140',
-        },
-        {
-            label: 'CRYPTO 5',
-            percentage: !!crypto5Percent ? FormatToViewNumber({ value: crypto5Percent, returnType: 'string' }) + '%' : '0%',
-            color: '#b5e7ff',
-        },
-    ]
+			const indexPrices: { [key: string]: number } = {}
+			const dayChange: { [key: string]: number } = {}
 
-    const showPortfolioData = address && (num(anfiTokenBalance.data) > 0 || num(crypto5TokenBalance.data) > 0) ? true : false
+			for (const indexName of indexNames) {
+				const indexPoolDayData = indexData[indexName].data.poolDayDatas
+				const todayPrice = indexPoolDayData[indexPoolDayData.length - 1].token0Price * indexTokenBalance[indexName]
+				const yesterdayPrice = indexPoolDayData[indexPoolDayData.length - 2]?.token0Price || 0
+				indexPrices[indexName] = todayPrice
+				dayChange[indexName] = ((todayPrice - yesterdayPrice) / yesterdayPrice) * 100
+			}
 
-    const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
+			// setIndexPrices(indexPrices);
+			setDayChange(dayChange)
+		}
+	}
 
-    useEffect(() => {
-        async function getTokenDetails() {
-            const data = await Promise.all(
-                nexTokens.map(async (item: nexTokenDataType) => {
-                    const calculatedUsdValue = (await convertToUSD({ tokenAddress: item.address, tokenDecimals: item.decimals }, ethPriceInUsd, false)) || 0
-                    const totalToken = item.symbol === 'ANFI' ? num(anfiTokenBalance.data) || 0 : item.symbol === 'CRYPTO5' ? num(crypto5TokenBalance.data) || 0 : 0
-                    const totalTokenUsd = calculatedUsdValue * totalToken || 0
-                    // const percentage = (item.symbol === 'ANFI' ? anfiPercent : crypto5Percent) || 0
-                    const percentage = indexPercent[item.symbol.toLowerCase()] || 0
+	useEffect(() => {
+		if (address && Object.keys(indexTokenBalance).length > 0) {
+			calculateMetrics()
+		}
+	}, [indexData, address, indexTokenBalance])
 
-                    return {
-                        ...item,
-                        totalToken,
-                        totalTokenUsd,
-                        percentage,
-                    }
-                })
-            )
-
-            setAssetData(data)
-        }
-
-        getTokenDetails()
-    }, [anfiTokenBalance.data, crypto5TokenBalance.data, ethPriceInUsd, anfiPercent, crypto5Percent])
-
-    const totalPortfolioBalance = assetData.reduce((total, data) => total + Number(data.totalTokenUsd), 0)
-    const positionHistoryDefi = GetPositionsHistoryDefi()
-    const positionHistoryCrosschain = GetTradeHistoryCrossChain()
-    const combinedData = positionHistoryDefi.data.concat(positionHistoryCrosschain.data)
-    const latestObjectsMap: Map<string, PositionType> = new Map()
-
-    for (const item of combinedData) {
-        if (!latestObjectsMap.has(item.indexName)) {
-            latestObjectsMap.set(item.indexName, item)
-        }
-    }
-
-    const indexDetails = [
-        {
-            index: 'ANFI',
-            smartContract: sepoliaAnfiV2IndexToken || 'N/A',
-            lastTnx: latestObjectsMap.get('ANFI')?.txHash || 'N/A',
-            ownedAmount: FormatToViewNumber({ value: num(anfiTokenBalance.data), returnType: 'string' }) + ' ANFI',
-            // tnxHistory: ,
-        },
-        {
-            index: 'CRYPTO5',
-            smartContract: sepoliaCrypto5V2IndexToken || 'N/A',
-            lastTnx: latestObjectsMap.get('CRYPTO5')?.txHash || 'N/A',
-            ownedAmount: FormatToViewNumber({ value: num(crypto5TokenBalance.data), returnType: 'string' }) + ' CRYPTO5',
-            // tnxHistory: ,
-        },
-    ]
-
-    const indexDetailsMap: Map<string, any> = new Map()
-
-    indexDetails.forEach((detail) => {
-        indexDetailsMap.set(detail.index, detail)
-    })
-
-    chartArr = chartArr.filter((obj) => obj.time !== 1702512000)
-
-    const { changeSelectedIndex } = useLandingPageStore()
-    const { fetchIndexData, ANFIData, CR5Data } = useChartDataStore();
-    useEffect(() => {
-        fetchIndexData({ tableName: "histcomp", index: "OurIndex" });
-    }, [fetchIndexData]);
-    const dataForChart: { [key: string]: { time: string | number | Date; value: number }[] } = {
-        ANFI: ANFIData.reverse().slice(30),
-        CR5: CR5Data.reverse().slice(30)
-    }
-
-    const [uploadedPPLink, setUploadedPPLink] = useState('none')
-    const [chosenPPType, setChosenPPType] = useState('none')
-
-    const [connectedUser, setConnectedUser] = useState<User | null>(null)
-    const [connectedUserId, setConnectedUserId] = useState('')
-
-    useEffect(() => {
-        function getUser() {
-            const usersRef = ref(database, 'users/')
-            onValue(usersRef, (snapshot) => {
-                const users = snapshot.val()
-                for (const key in users) {
-                    // console.log(users[key])
-                    const potentialUser: User = users[key]
-                    if (address && potentialUser.main_wallet == address) {
-                        setConnectedUser(potentialUser)
-                        setConnectedUserId(key)
-                    }
-                }
-            })
-        }
-        getUser()
-    }, [address])
+	const todayPortfolioPrice = chartArr[chartArr.length - 1]?.value || 0
+	const yesterdayPortfolioPrice = chartArr[chartArr.length - 2]?.value || 0
+	const portfolio24hChange = todayPortfolioPrice - yesterdayPortfolioPrice
+	const portfolio24hChangePer = ((todayPortfolioPrice - yesterdayPortfolioPrice) / yesterdayPortfolioPrice) * 100
 
 
-    const handleCopy = () => {
-        if (address) {
-            GenericToast({
-                type: 'success',
-                message: 'Copied !',
-            })
-        } else {
-            GenericToast({
-                type: 'error',
-                message: 'Please connect your wallet !',
-            })
-        }
-    }
+	const pieDataToReturn: [string, number | string][] = [['Asset', 'Percentage']]
 
-    const handleCopyIndexDetails = () => {
-        GenericToast({
-            type: 'success',
-            message: 'Copied !',
-        })
-    }
+	Object.entries(indexPercentage).forEach(([key, value]) => {
+		pieDataToReturn.push([key, Number(value.toFixed(2))])
+	})
 
-    const [t, setT] = useState<string>("kkkkkk");
+	const hasBalance = Object.values(indexTokenBalance).reduce((acc, value) => acc || typeof value === 'number', false)
 
-    const contextValue = {
-        user: connectedUser,
-        showPortfolioData: showPortfolioData,
-        chartArr: chartArr,
-        indexPercent: indexPercent,
-        todayPortfolioPrice: todayPortfolioPrice,
-        yesterdayPortfolioPrice: yesterdayPortfolioPrice,
-        portfolio24hChange: portfolio24hChange,
-        anfiTokenContract: anfiTokenContract,
-        crypto5TokenContract: crypto5TokenContract,
-        anfiPercent: anfiPercent,
-        crypto5Percent: crypto5Percent,
-        anfiTokenBalance: anfiTokenBalance,
-        crypto5TokenBalance: crypto5TokenBalance,
-        pieData: pieData,
-        nexTokenAssetData: assetData,
-        totalPortfolioBalance: totalPortfolioBalance,
-        positionHistoryDefi: positionHistoryDefi,
-        positionHistoryCrosschain: positionHistoryCrosschain,
-        combinedData: combinedData,
-        latestObjectsMap: latestObjectsMap,
-        indexDetails: indexDetails,
-        indexDetailsMap: indexDetailsMap,
-        uploadedPPLink: uploadedPPLink,
-        chosenPPType: chosenPPType,
-        handleCopyFunction: handleCopy,
-        handleCopyIndexDetailsFunction: handleCopyIndexDetails
-    };
+	const showPortfolioData = address && hasBalance ? true : false
 
+	const [assetData, setAssetData] = useState<nexTokenDataType[]>([])
 
-    return (
-        <PortfolioContext.Provider value={contextValue}>
-            {children}
-        </PortfolioContext.Provider>
-    );
-};
+	useEffect(() => {
+		async function getTokenDetails() {
+			const data = await Promise.all(
+				nexTokens.map(async (item: nexTokenDataType) => {
+					const calculatedUsdValue = (await convertToUSD({ tokenAddress: item.address, tokenDecimals: item.decimals }, ethPriceInUsd, false)) || 0
+					const totalToken = indexTokenBalance[item.symbol.toUpperCase()] || 0
+					const totalTokenUsd = calculatedUsdValue * totalToken || 0
+					const percentage = indexPercentage[item.symbol.toUpperCase()] || 0
+
+					return {
+						...item,
+						totalToken,
+						totalTokenUsd,
+						percentage,
+					}
+				})
+			)
+
+			setAssetData(data)
+		}
+
+		getTokenDetails()
+	}, [ethPriceInUsd, indexPercentage])
+
+	const totalPortfolioBalance = assetData.reduce((total, data) => total + Number(data.totalTokenUsd), 0)
+	const positionHistoryDefi = GetPositionsHistoryDefi()
+	const positionHistoryCrosschain = GetTradeHistoryCrossChain()
+
+	useEffect(() => {
+		const latestObjectsMap: Map<string, PositionType> = new Map()
+
+		const combinedData = !positionHistoryDefi.loading && !positionHistoryCrosschain.loading ? positionHistoryDefi.data.concat(positionHistoryCrosschain.data) : null
+
+		if (combinedData) {
+			for (const item of combinedData) {
+				if (!latestObjectsMap.has(item.indexName)) {
+					latestObjectsMap.set(item.indexName, item)
+				}
+			}
+		}
+
+		async function getTokenDetails() {
+			const data = nexTokens.map((item: nexTokenDataType) => {
+				const index = item.symbol
+				return {
+					index,
+					smartContract: item.address,
+					lastTnx: latestObjectsMap.get(index)?.txHash || 'N/A',
+					ownedAmount: FormatToViewNumber({ value: indexTokenBalance[index], returnType: 'string' }) + index,
+				}
+			})
+			setIndexDetails(data)
+		}
+
+		getTokenDetails()
+	}, [indexTokenBalance, positionHistoryDefi.loading, positionHistoryCrosschain.loading])
+
+	const indexDetailsMap: Map<string, any> = new Map()
+
+	indexDetails.forEach((detail) => {
+		indexDetailsMap.set(detail.index, detail)
+	})
+
+	chartArr = chartArr.filter((obj) => obj.time !== 1702512000)
+
+	const { changeSelectedIndex } = useLandingPageStore()
+
+	const { fetchIndexData, ANFIData, CR5Data } = useChartDataStore()
+	useEffect(() => {
+		fetchIndexData({ tableName: 'histcomp', index: 'OurIndex' })
+	}, [fetchIndexData])
+
+	const dataForChart: { [key: string]: { time: string | number | Date; value: number }[] } = {
+		ANFI: ANFIData.reverse().slice(30),
+		CR5: CR5Data.reverse().slice(30),
+	}
+
+	const [uploadedPPLink, setUploadedPPLink] = useState('none')
+	const [chosenPPType, setChosenPPType] = useState('none')
+
+	const [connectedUser, setConnectedUser] = useState<User | null>(null)
+	const [connectedUserId, setConnectedUserId] = useState('')
+
+	useEffect(() => {
+		function getUser() {
+			const usersRef = ref(database, 'users/')
+			onValue(usersRef, (snapshot) => {
+				const users = snapshot.val()
+				for (const key in users) {
+					// console.log(users[key])
+					const potentialUser: User = users[key]
+					if (address && potentialUser.main_wallet == address) {
+						setConnectedUser(potentialUser)
+						setConnectedUserId(key)
+					}
+				}
+			})
+		}
+		getUser()
+	}, [address])
+
+	const handleCopy = () => {
+		if (address) {
+			GenericToast({
+				type: 'success',
+				message: 'Copied !',
+			})
+		} else {
+			GenericToast({
+				type: 'error',
+				message: 'Please connect your wallet !',
+			})
+		}
+	}
+
+	const handleCopyIndexDetails = () => {
+		GenericToast({
+			type: 'success',
+			message: 'Copied !',
+		})
+	}
+
+	const contextValue = {
+		user: connectedUser,
+		showPortfolioData: showPortfolioData,
+		chartArr: chartArr,
+		indexPercent: indexPercentage,
+		indexTokenBalance: indexTokenBalance,
+		todayPortfolioPrice: todayPortfolioPrice,
+		yesterdayPortfolioPrice: yesterdayPortfolioPrice,
+		portfolio24hChange: portfolio24hChange,
+		portfolio24hChangePer: portfolio24hChangePer,
+		// anfiTokenContract: anfiTokenContract,
+		// crypto5TokenContract: crypto5TokenContract,
+		// anfiPercent: anfiPercent,
+		// crypto5Percent: crypto5Percent,
+		// anfiTokenBalance: anfiTokenBalance,
+		// crypto5TokenBalance: crypto5TokenBalance,
+		pieData: pieDataToReturn,
+		nexTokenAssetData: assetData,
+		totalPortfolioBalance: totalPortfolioBalance,
+		positionHistoryDefi: positionHistoryDefi,
+		positionHistoryCrosschain: positionHistoryCrosschain,
+		// combinedData: combinedData,
+		// latestObjectsMap: latestObjectsMap,
+		indexDetails: indexDetails,
+		indexDetailsMap: indexDetailsMap,
+		uploadedPPLink: uploadedPPLink,
+		chosenPPType: chosenPPType,
+		handleCopyFunction: handleCopy,
+		handleCopyIndexDetailsFunction: handleCopyIndexDetails,
+	}
+
+	return <PortfolioContext.Provider value={contextValue}>{children}</PortfolioContext.Provider>
+}
 
 export { PortfolioProvider, PortfolioContext, usePortfolio }

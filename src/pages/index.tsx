@@ -116,7 +116,7 @@ const Dashboard: NextPage = (props) => {
 							<Stack height={"100%"} width={"100%"} bgcolor={"rgba(50,50,50,0.4)"} direction={"row"} alignItems={"center"} justifyContent={"center"}>
 								<Stack paddingX={2} paddingY={3} direction={"column"} alignItems={"center"} justifyContent={"center"} width={"90%"} height={"fit-content"} bgcolor={"#FFFFFF"} borderRadius={"1.75rem"} boxShadow={"boxShadow: rgba(0, 0, 0, 0.68) 0px 0px 6px 1px"}>
 
-									<Image src={PWAIcon} alt="pwa" className="w-7/12 h-auto"></Image>
+									<Image src={PWAIcon} alt="pwa" className="w-7/12 h-auto"/>
 									<Typography variant="h3" align='center' sx={{
 										color: "#000000",
 										fontSize: "1.4rem"

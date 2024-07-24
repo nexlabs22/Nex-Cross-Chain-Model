@@ -270,7 +270,7 @@ const DappNavbar: React.FC<DappNavbarProps> = ({ lightVersion, tradeNavbar }) =>
 			<Link href={'https://www.nexlabs.io/'}>
 				<div className="flex flex-row items-center justify-between">
 					<div className=" mr-2 h-fit w-fit">
-						<Image src={xlogo} alt="nex labs logo" className={`w-12 brightness-[0.65] ${mode == 'dark' || lightVersion ? 'brightness-[0] invert' : ''} drop-shadow-sm`}></Image>
+						<Image src={xlogo} alt="nex labs logo" className={`w-12 brightness-[0.65] ${mode == 'dark' || lightVersion ? 'brightness-[0] invert' : ''} drop-shadow-sm`}/>
 					</div>
 				</div>
 			</Link>

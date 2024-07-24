@@ -52,7 +52,7 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
             <Typography variant="subtitle2" component="label" sx={{ fontWeight: 700, color: "#D3D3D3", marginTop: "1.2rem", paddingX: 3 }}>Reward Type</Typography>
             <Stack width={"100%"} height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} paddingX={3} paddingY={"1rem"} marginBottom={1}>
                 <Stack width="100%" height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={1}>
-                    <Image src={anfiLogo} alt={index + " logo"} height={40} width={40} className=" rounded-full"></Image>
+                    <Image src={anfiLogo} alt={index + " logo"} height={40} width={40} className=" rounded-full"/>
                     <Typography variant="caption" component={"label"}>ANFI</Typography>
                 </Stack>
                 <Stack width="fit-content" height="fit-content" direction="row" alignItems={"center"} justifyContent={"end"} gap={0.5}>
@@ -83,7 +83,7 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
                     <Stack width="fit-content" height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"end"} gap={1}>
                         <Stack width={"1px"} height={"80%"} minHeight={"1.1rem"} sx={{ backgroundColor: "white" }}></Stack>
                         <Stack width="fit-content" height={"fit-content"} direction={"row"} alignItems={"center"} justifyContent={"start"} gap={0.5}>
-                            <Image src={anfiLogo} alt={index + " logo"} height={20} width={20} className=" rounded-full"></Image>
+                            <Image src={anfiLogo} alt={index + " logo"} height={20} width={20} className=" rounded-full"/>
                             <Typography variant="caption" component={"label"} sx={{ fontSize: "0.8rem" }}>ANFI</Typography>
                         </Stack>
                     </Stack>
