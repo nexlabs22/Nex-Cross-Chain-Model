@@ -8,8 +8,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
-import mag7Logo from '@assets/images/cr5.png'
-import arbeiLogo from '@assets/images/cr5.png'
+import mag7Logo from '@assets/images/mag7.png'
+import arbeiLogo from '@assets/images/arb.png'
 import { PWAGradientStack } from "@/theme/overrides";
 import { useChartDataStore, useLandingPageStore } from "@/store/store";
 import { useRouter } from "next/router";
@@ -157,7 +157,7 @@ const PWAIndexSLider = () => {
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: lightTheme.palette.nexGreen.main,
+                                        color: cr5IndexObject.chg24h && Number(cr5IndexObject.chg24h) < 0 ? "#F23645" : "#089981",
                                         fontWeight: 600,
                                         fontSize: ".8rem",
                                         backgroundColor: lightTheme.palette.pageBackground.main,
@@ -206,7 +206,7 @@ const PWAIndexSLider = () => {
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: lightTheme.palette.nexGreen.main,
+                                        color: mag7IndexObject.chg24h && Number(mag7IndexObject.chg24h) < 0 ? "#F23645" : "#089981",
                                         fontWeight: 600,
                                         fontSize: ".8rem",
                                         backgroundColor: lightTheme.palette.pageBackground.main,
@@ -255,7 +255,7 @@ const PWAIndexSLider = () => {
                                         }
                                     </Typography>
                                     <Typography variant="caption" sx={{
-                                        color: lightTheme.palette.nexGreen.main,
+                                        color: arbIndexObject.chg24h && Number(arbIndexObject.chg24h) < 0 ? "#F23645" : "#089981",
                                         fontWeight: 600,
                                         fontSize: ".8rem",
                                         backgroundColor: lightTheme.palette.pageBackground.main,

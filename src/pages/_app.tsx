@@ -50,7 +50,7 @@ export default function App({ Component, pageProps }: AppProps) {
 			<ThirdwebProvider
 				activeChain={Sepolia}
 				autoConnect={true}
-				autoConnectTimeout={25000}
+				autoConnectTimeout={30000}
 				supportedChains={[Sepolia]}
 				clientId="5c5689ef3a7061d2ddbfeeff63b4e8e5"
 				supportedWallets={[
@@ -78,7 +78,7 @@ export default function App({ Component, pageProps }: AppProps) {
 									<DeFiSwapProvider>
 										<HistoryProvider>
 											<Component {...pageProps} />
-						<Analytics />
+											<Analytics />
 										</HistoryProvider>
 									</DeFiSwapProvider>
 								</PortfolioProvider>
