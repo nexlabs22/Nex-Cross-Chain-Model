@@ -56,9 +56,9 @@ export const goerlianfiPoolAddress = '0xEdFEEeFf1DAF631b4aBC8C021Cff4b1267547eF2
 export const goerliCR5PoolAddress = '0x9329c764A2d8B02b01F5eC8fb6F4BB0a7155cFc0'
 
 export const sepoliaAnfiWethPoolAddress = '0x37214b0039e9b12711e9dbb5420e47d5a35f3aa2'
-export const sepoliaCR5WethPoolAddress = '0x3222bD13bA8bf8241A752A6907AeB8D769EbB63B'
+export const sepoliaCR5WethPoolAddress = '0x3222bd13ba8bf8241a752a6907aeb8d769ebb63b'
 export const sepoliaLinkWethPoolAddress = '0xdd7cc9a0da070fb8b60dc6680b596133fb4a7100'
-export const sepoliaARBEIWethPoolAddress = '0xAb03e6314113E1cfb4Bf9737eE2850F1318561Ed'
+export const sepoliaARBEIWethPoolAddress = '0xab03e6314113e1cfb4bf9737ee2850f1318561ed'
 export const sepoliaMAG7WethPoolAddress = '0x3dB55b9fD6E407140E568e7F902aF9a3472Ec882'
 
 export const goerliLinkWethPoolAddress = '0x4Cff90F02897259E1aB69FF6bbD370EA14529bD8' // LINK/WETH Pool Address Needs to be replaced with CRYPTO5/WETH Pool Address

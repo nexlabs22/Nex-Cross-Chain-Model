@@ -12,6 +12,8 @@ import { MdOutlineStarBorder } from "react-icons/md";
 import { MdOutlineStar } from "react-icons/md";
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
+import mag7Logo from '@assets/images/mag7.png'
+import arbLogo from '@assets/images/arb.png'
 import { IoIosArrowDown, IoMdArrowForward } from "react-icons/io";
 import { TbCurrencySolana } from "react-icons/tb";
 import { SiBinance, SiRipple, SiTether } from "react-icons/si";
@@ -60,6 +62,7 @@ export default function PWATradeIndex() {
     const [isSheetOpen, setSheetOpen] = useState<boolean>(false);
     const [isReadMore, setIsReadMore] = useState<boolean>(true)
     const { changePWATradeoperation, selectedIndex, changeSelectedIndex } = useLandingPageStore()
+    const { indexChangePer } = useChartDataStore()
     const [isFavorite, setIsFavorite] = useState<boolean>(false)
     const { fetchIndexData, setDayChangePer, loading, STOCK5Data } = useChartDataStore()
     const { ethPriceInUsd, changeDefaultIndex } = useTradePageStore()
@@ -126,99 +129,217 @@ export default function PWATradeIndex() {
     }, [ethPriceInUsd])
 
     const IndicesWithDetails = [
-        {
-            name: 'ANFI',
-            logo: anfiLogo,
-            symbol: 'ANFI',
-            shortSymbol: 'ANFI',
-            shortDescription:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
-            description:
-                "The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.\nGold has traditionally been a reliable investment. Nevertheless, it's worth considering that Bitcoin, often referred to as 'digital gold,' has the potential to assume a prominent role in everyday life in the future.",
-            mktCap: 0,
-            mktPrice: mktPrice.anfi,
-            chg24h: dayChange.anfi,
-            tokenAddress: sepoliaAnfiV2IndexToken,
-            managementFee: '1.00',
-            totalSupply: '78622.32',
-            underlyingAssets: [
-                {
-                    symbol: 'XAUT',
-                    name: 'gold',
-                    percentage: 70,
-                    bgColor: '#A9C3B6',
-                    hoverColor: '#D4B460',
-                    logo: <GiMetalBar size={20} color="#F2F2F2" />,
-                },
-                {
-                    symbol: 'BTC',
-                    name: 'bitcoin',
-                    percentage: 30,
-                    bgColor: '#BBC8C2',
-                    hoverColor: '#F7931A',
-                    logo: <GrBitcoin color="#F2F2F2" size={20} />,
-                },
-            ],
-        },
-        {
-            name: 'CRYPTO 5',
-            logo: cr5Logo,
-            symbol: 'CRYPTO5',
-            shortSymbol: 'CR5',
-            shortDescription:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
-            description:
-                'The "Crypto 5 Index" represents a meticulously curated basket of assets designed to provide investors with a secure and diversified entry into the digital assets industry. It not only offers stability through its carefully selected assets but also presents substantial growth potential. This makes it an ideal choice for crypto investors seeking a balanced and reliable investment option in the ever-evolving cryptocurrency landscape.',
-            mktCap: 0,
-            mktPrice: mktPrice.cr5,
-            chg24h: dayChange.cr5,
-            tokenAddress: sepoliaCrypto5V2IndexToken,
-            managementFee: '1.00',
-            totalSupply: '78622.32',
-            underlyingAssets: [
-                {
-                    symbol: 'BTC',
-                    name: 'bitcoin',
-                    percentage: 50,
-                    bgColor: '#A9C3B6',
-                    hoverColor: '#F7931A',
-                    logo: <GrBitcoin color="#F2F2F2" size={20} />,
-                },
-                {
-                    symbol: 'ETH',
-                    name: 'ethereum',
-                    percentage: 25,
-                    bgColor: '#BBC8C2',
-                    hoverColor: '#627EEA',
-                    logo: <FaEthereum color="#F2F2F2" size={19} />,
-                },
-                {
-                    symbol: 'BNB',
-                    name: 'binancecoin',
-                    percentage: 8,
-                    bgColor: '#C7CECA',
-                    hoverColor: '#FCD535',
-                    logo: <SiBinance color="#F2F2F2" size={19} />,
-                },
-                {
-                    symbol: 'XRP',
-                    name: 'riplle',
-                    percentage: 12,
-                    bgColor: '#C7CECA',
-                    hoverColor: '#009393',
-                    logo: <SiRipple color="#F2F2F2" size={19} />,
-                },
+		{
+			name: 'ANFI',
+			logo: anfiLogo,
+			symbol: 'ANFI',
+			shortSymbol: 'ANFI',
+			shortDescription:
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
+			description:
+				"The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.\nGold has traditionally been a reliable investment. Nevertheless, it's worth considering that Bitcoin, often referred to as 'digital gold,' has the potential to assume a prominent role in everyday life in the future.",
+			mktCap: 0,
+			mktPrice: 0,
+			chg24h: indexChangePer.anfi,
+			tokenAddress: sepoliaAnfiV2IndexToken,
+			managementFee: '1.00',
+			totalSupply: '78622.32',
+			underlyingAssets: [
+				{
+					symbol: 'XAUT',
+					name: 'gold',
+					percentage: 70,
+					bgColor: '#A9C3B6',
+					hoverColor: '#D4B460',
+					logo: <SiTether size={20} color="#F2F2F2" />,
+				},
+				{
+					symbol: 'BTC',
+					name: 'bitcoin',
+					percentage: 30,
+					bgColor: '#BBC8C2',
+					hoverColor: '#F7931A',
+					logo: <GrBitcoin color="#F2F2F2" size={20} />,
+				},
+			],
+		},
+		{
+			name: 'CRYPTO 5',
+			logo: cr5Logo,
+			symbol: 'CRYPTO5',
+			shortSymbol: 'CR5',
+			shortDescription:
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. culpa qui officia deserunt mollit anim id est laborum.',
+			description:
+				'The "Crypto 5 Index" represents a meticulously curated basket of assets designed to provide investors with a secure and diversified entry into the digital assets industry. It not only offers stability through its carefully selected assets but also presents substantial growth potential. This makes it an ideal choice for crypto investors seeking a balanced and reliable investment option in the ever-evolving cryptocurrency landscape.',
+			mktCap: 0,
+			mktPrice: 0,
+			chg24h: indexChangePer.cr5,
+			tokenAddress: sepoliaCrypto5V2IndexToken,
+			managementFee: '1.00',
+			totalSupply: '78622.32',
+			underlyingAssets: [
+				{
+					symbol: 'BTC',
+					name: 'bitcoin',
+					percentage: 50,
+					bgColor: '#A9C3B6',
+					hoverColor: '#F7931A',
+					logo: <GrBitcoin color="#F2F2F2" size={20} />,
+				},
+				{
+					symbol: 'ETH',
+					name: 'ethereum',
+					percentage: 25,
+					bgColor: '#BBC8C2',
+					hoverColor: '#627EEA',
+					logo: <FaEthereum color="#F2F2F2" size={19} />,
+				},
+				{
+					symbol: 'BNB',
+					name: 'binancecoin',
+					percentage: 8,
+					bgColor: '#C7CECA',
+					hoverColor: '#FCD535',
+					logo: <SiBinance color="#F2F2F2" size={19} />,
+				},
+				{
+					symbol: 'XRP',
+					name: 'riplle',
+					percentage: 12,
+					bgColor: '#C7CECA',
+					hoverColor: '#009393',
+					logo: <SiRipple color="#F2F2F2" size={19} />,
+				},
 
-                {
-                    symbol: 'SOL',
-                    name: 'solana',
-                    percentage: 5,
-                    bgColor: '#C7CECA',
-                    hoverColor: '#2775CA',
-                    logo: <TbCurrencySolana color="#F2F2F2" size={19} />,
-                },
-            ],
-        },
+				{
+					symbol: 'SOL',
+					name: 'solana',
+					percentage: 5,
+					bgColor: '#C7CECA',
+					hoverColor: '#2775CA',
+					logo: <TbCurrencySolana color="#F2F2F2" size={19} />,
+				},
+			],
+		},
+		{
+			name: 'Magnificent 7 Index',
+			logo: mag7Logo,
+			symbol: 'MAG7',
+			shortSymbol: 'MAG7',
+			shortDescription:
+				'The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.',
+			description:
+				'The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.',
+			mktCap: 0,
+			mktPrice: 0,
+			chg24h: indexChangePer.mag7,
+			tokenAddress: "0x955b3F0091414E7DBbe7bdf2c39d73695CDcDd95",
+			managementFee: '1.00',
+			totalSupply: '78622.32',
+			underlyingAssets: [
+				{
+					symbol: 'BTC',
+					name: 'bitcoin',
+					percentage: 50,
+					bgColor: '#A9C3B6',
+					hoverColor: '#F7931A',
+					logo: <GrBitcoin color="#F2F2F2" size={20} />,
+				},
+				{
+					symbol: 'ETH',
+					name: 'ethereum',
+					percentage: 25,
+					bgColor: '#BBC8C2',
+					hoverColor: '#627EEA',
+					logo: <FaEthereum color="#F2F2F2" size={19} />,
+				},
+				{
+					symbol: 'BNB',
+					name: 'binancecoin',
+					percentage: 8,
+					bgColor: '#C7CECA',
+					hoverColor: '#FCD535',
+					logo: <SiBinance color="#F2F2F2" size={19} />,
+				},
+				{
+					symbol: 'XRP',
+					name: 'riplle',
+					percentage: 12,
+					bgColor: '#C7CECA',
+					hoverColor: '#009393',
+					logo: <SiRipple color="#F2F2F2" size={19} />,
+				},
+
+				{
+					symbol: 'SOL',
+					name: 'solana',
+					percentage: 5,
+					bgColor: '#C7CECA',
+					hoverColor: '#2775CA',
+					logo: <TbCurrencySolana color="#F2F2F2" size={19} />,
+				},
+			],
+		},
+		{
+			name: 'Arbitrum Ecosystem Index',
+			logo: arbLogo,
+			symbol: 'ARBEI',
+			shortSymbol: 'ARBEI',
+			shortDescription:
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+			description:
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+			mktCap: 0,
+			mktPrice: 0,
+			chg24h: indexChangePer.arbei,
+			tokenAddress: "0x58484111fC370bdb19AeaE6336cDb745A3006b4d",
+			managementFee: '1.00',
+			totalSupply: '78622.32',
+			underlyingAssets: [
+				{
+					symbol: 'BTC',
+					name: 'bitcoin',
+					percentage: 50,
+					bgColor: '#A9C3B6',
+					hoverColor: '#F7931A',
+					logo: <GrBitcoin color="#F2F2F2" size={20} />,
+				},
+				{
+					symbol: 'ETH',
+					name: 'ethereum',
+					percentage: 25,
+					bgColor: '#BBC8C2',
+					hoverColor: '#627EEA',
+					logo: <FaEthereum color="#F2F2F2" size={19} />,
+				},
+				{
+					symbol: 'BNB',
+					name: 'binancecoin',
+					percentage: 8,
+					bgColor: '#C7CECA',
+					hoverColor: '#FCD535',
+					logo: <SiBinance color="#F2F2F2" size={19} />,
+				},
+				{
+					symbol: 'XRP',
+					name: 'riplle',
+					percentage: 12,
+					bgColor: '#C7CECA',
+					hoverColor: '#009393',
+					logo: <SiRipple color="#F2F2F2" size={19} />,
+				},
+
+				{
+					symbol: 'SOL',
+					name: 'solana',
+					percentage: 5,
+					bgColor: '#C7CECA',
+					hoverColor: '#2775CA',
+					logo: <TbCurrencySolana color="#F2F2F2" size={19} />,
+				},
+			],
+		},
     ]
 
     const defaultIndexObject = IndicesWithDetails.find((o) => o.shortSymbol === selectedIndex || o.symbol === selectedIndex || o.name === selectedIndex)

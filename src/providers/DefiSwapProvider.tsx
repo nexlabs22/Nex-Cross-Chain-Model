@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 import { SmartContract } from '@thirdweb-dev/sdk'
 import { BigNumber } from 'alchemy-sdk'
 import { GenericToast } from '@/components/GenericToast';
-import { createPublicClient, http, parseEther } from 'viem'
+import { createPublicClient, http, parseEther, zeroAddress } from 'viem'
 import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
 import { ethers } from 'ethers'
 import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
@@ -702,6 +702,12 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	}, [signer, address])
 
 	async function approve() {
+
+		if (swapToCur.address == zeroAddress) {
+			return GenericToast({type: 'info', message: 'Index will be live for trading soon, Stay Tuned!'})
+			
+		}
+
 		const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
 		// const convertedValue = BigNumber.from(3*1001/1000)
 		try {
@@ -727,6 +733,12 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	}
 
 	async function mintRequest() {
+
+		if (swapToCur.address == zeroAddress) {
+			return GenericToast({type: 'info', message: 'Index will be live for trading soon, Stay Tuned!'})
+			
+		}
+
 		if (swapFromCur.address == sepoliaWethAddress) {
 			mintRequestEth()
 		} else {
