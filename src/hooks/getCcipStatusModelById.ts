@@ -136,17 +136,17 @@ const getMessageStatus = (status:string) => {
       if (events.length > 0) {
         const { state } = events[0].args as Result;
         const status = getMessageStatus(state);
-        console.log(
-          `Status of message ${messageId} on offRamp ${matchingOffRamp.offRamp} is ${status}\n`
-        );
+        // console.log(
+        //   `Status of message ${messageId} on offRamp ${matchingOffRamp.offRamp} is ${status}\n`
+        // );
         return status;
       }
     }
   
     // If no event found, the message has not yet been processed on the destination chain
-    console.log(
-      `Either the message ${messageId} does not exist OR it has not been processed yet on destination chain\n`
-    );
+    // console.log(
+    //   `Either the message ${messageId} does not exist OR it has not been processed yet on destination chain\n`
+    // );
 
     if(messageId){
       return "PENDING"

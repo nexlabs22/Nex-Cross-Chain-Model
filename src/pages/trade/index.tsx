@@ -34,7 +34,7 @@ import bg2 from '@assets/images/bg-2.png'
 import Head from 'next/head'
 import UseAnimations from 'react-useanimations'
 import { useLandingPageStore } from '@/store/store'
-import { sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, zeroAddress } from '@/constants/contractAddresses'
+import { sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaMAG7IndexTokenAddress, zeroAddress } from '@/constants/contractAddresses'
 import { reduceAddress } from '@/utils/general'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
 import { indexTokenV2Abi } from '@/constants/abi'
@@ -142,7 +142,7 @@ export default function Explore() {
 			name: 'Magnificent 7 Index',
 			symbol: 'MAG7',
 			logo: mag7Logo.src,
-			address: reduceAddress(zeroAddress),
+			address: reduceAddress(sepoliaMAG7IndexTokenAddress),
 			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'MAG7',
 			category: 'defi',
 			subcategory: 'sub1',

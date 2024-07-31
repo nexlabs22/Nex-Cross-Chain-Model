@@ -23,7 +23,7 @@ import {
 } from '@/constants/contractAddresses'
 import PaymentModal from './PaymentModal'
 import { BsInfoCircle } from 'react-icons/bs'
-import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
+import { FormatToViewNumber, formatNumber, num, weiToNum } from '@/hooks/math'
 import { LiaWalletSolid } from 'react-icons/lia'
 import Switch from 'react-switch'
 import GenericTooltip from './GenericTooltip'
@@ -89,7 +89,6 @@ const SwapV2Defi = () => {
 		fromTokenTotalSupply,
 		toTokenTotalSupply,
 		fromTokenAllowance,
-		convertedInputValue,
 		approveHook,
 		mintRequestHook,
 		mintRequestEthHook,
@@ -456,7 +455,7 @@ const SwapV2Defi = () => {
 						</Stack>
 						{swapToCur.hasOwnProperty('indexType') ? (
 							<>
-								{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) && swapFromCur.address != sepoliaWethAddress ? (
+								{weiToNum(fromTokenAllowance.data, swapFromCur.decimals) < Number(firstInputValue) && swapFromCur.address != sepoliaWethAddress ? (
 									<Button
 										onClick={() => {
 											approve()
@@ -985,7 +984,7 @@ const SwapV2Defi = () => {
 							<div className={`w-full h-fit flex flex-row items-center justify-end gap-1 px-2 py-3 mb-3`}>
 								{swapToCur.hasOwnProperty('indexType') ? (
 									<>
-										{Number(fromTokenAllowance.data) / 1e18 < Number(firstInputValue) && swapFromCur.address != sepoliaWethAddress ? (
+										{weiToNum(fromTokenAllowance.data, swapFromCur.decimals) < Number(firstInputValue) && swapFromCur.address != sepoliaWethAddress ? (
 											<button
 												onClick={approve}
 												disabled={isButtonDisabled}

@@ -6,6 +6,7 @@ import { goerli } from 'viem/chains'
 // import { getTickerFromAddress } from '../utils/general'
 import { zeroAddress } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
+import { getClient } from '@/app/api/client'
 
 interface Positions {
     side: string,
@@ -37,11 +38,7 @@ export function GetPositionsHistory(exchangeAddress: `0x${string}`, activeTicker
 		console.log("getHistory")
 		setPositions([])
 
-		const client = createPublicClient({
-			chain: goerli,
-			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			transport: http(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`),
-		})
+		const client = getClient('goerli')
 
 		const positions0: Positions[] = []
 		// return;

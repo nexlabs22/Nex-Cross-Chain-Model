@@ -1,6 +1,8 @@
 import { BigNumber } from 'alchemy-sdk'
 
 export const num = (value: string | BigNumber | unknown) => Number(value) / 1e18
+export const weiToNum = (value: string | BigNumber | unknown, decimals: number) => Number(value) / 10**decimals
+export const numToWei = (value: string | BigNumber | unknown, decimals: number) => Number(value) * 10**decimals
 
 export function formatAsString(value: number): string {
 	let result

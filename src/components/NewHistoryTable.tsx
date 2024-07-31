@@ -18,7 +18,7 @@ import { sepoliaTokenAddresses } from '@/constants/contractAddresses'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 import useTradePageStore from '@/store/tradeStore'
 import { PositionType } from '@/types/tradeTableTypes'
-import React from 'react'
+import React, { useEffect } from 'react'
 import etherscan from '@assets/images/etherscan2.png'
 import chainlink from '@assets/images/chainlink.png'
 import { useLandingPageStore } from '@/store/store'
@@ -34,6 +34,7 @@ import { RiDownloadLine } from 'react-icons/ri'
 import { CSVLink } from 'react-csv'
 import { usePWA } from '@/providers/PWAProvider'
 import { useHistory } from '@/providers/HistoryProvider'
+import { FaLastfmSquare } from 'react-icons/fa';
 
 interface HistoryTableProps {
 	maxPWAHeight?: boolean
@@ -44,11 +45,12 @@ function NewHistoryTable(props: HistoryTableProps) {
 	const address = useAddress()
 	const { mode, theme, setTheme } = useLandingPageStore()
 	const { isStandalone } = usePWA()
-	const { crosschainTableReload, isMainnet } = useTradePageStore()
+	const { crosschainTableReload, isMainnet, tradeTableReload, setTradeTableReload } = useTradePageStore()
 
 	const {
 		positionHistoryDefi,
 		positionHistoryCrosschain,
+		positionHistoryStock,
 		usdPrices,
 		activeIndexType,
 		path,
@@ -59,6 +61,29 @@ function NewHistoryTable(props: HistoryTableProps) {
 		csvData,
 		handleExportCSV,
 	} = useHistory()
+
+	function reloadTable(activeIndexType: string) {
+		if (activeIndexType === 'defi') {
+			console.log("Reloading positionHistoryDefi");
+			positionHistoryDefi.reload();
+		} else if (activeIndexType === 'crosschain') {
+			console.log("Reloading positionHistoryCrosschain");
+			positionHistoryCrosschain.reload();
+		} else if (activeIndexType === 'stock') {
+			console.log("Reloading positionHistoryStock");
+			positionHistoryStock.reload();
+		} else {
+			console.error("Unknown activeIndexType:", activeIndexType);
+		}
+	}
+	
+	useEffect(()=>{
+		if(tradeTableReload){
+			reloadTable(activeIndexType);
+			setTradeTableReload(false)
+		}
+	},[tradeTableReload, activeIndexType])
+
 
 	return isStandalone ? (
 		<>
@@ -533,7 +558,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 		<>
 			<div className={`w-full h-full overflow-x-auto ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
 				<div className={`h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[400px] ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
-					{address && path === '/tradeIndex' && activeIndexType === 'crosschain' && crosschainTableReload && (
+					{address && path === '/tradeIndex' && (activeIndexType === 'crosschain' || activeIndexType === 'stock')&& crosschainTableReload && (
 						<Box sx={{ p: 2, width: '100%' }}>
 							<LinearProgress />
 						</Box>
@@ -547,7 +572,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 								<th className="px-4 py-3 text-left whitespace-nowrap">Request Side</th>
 								<th className="px-4 py-3 text-left whitespace-nowrap">Input Amount</th>
 								<th className="px-4 py-3 text-left whitespace-nowrap">Output Amount</th>
-								{path === '/tradeIndex' && activeIndexType === 'crosschain' && (
+								{path === '/tradeIndex' && (activeIndexType === 'crosschain' || activeIndexType === 'stock') && (
 									<>
 										<th className="px-4 py-3 text-left whitespace-nowrap">Send Status</th>
 										<th className="px-4 py-3 text-left whitespace-nowrap">Receive Status</th>
@@ -557,7 +582,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 									Actions
 									<div
 										onClick={() => {
-											activeIndexType === 'defi' ? positionHistoryDefi.reload() : positionHistoryCrosschain.reload()
+											reloadTable(activeIndexType)
 										}}
 										className="float-end py-1 cursor-pointer"
 									>
@@ -637,7 +662,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 												'-'
 											)}
 										</td>
-										{path === '/tradeIndex' && activeIndexType === 'crosschain' && (
+										{path === '/tradeIndex' && (activeIndexType === 'crosschain' || activeIndexType === 'stock') && (
 											<>
 												<td
 													className={`px-4 text-left py-3 whitespace-nowrap ${position.sendStatus

@@ -131,7 +131,7 @@ const SwapV2Cefi = () => {
 		async function getIssuanceOutput() {
 			try {
 				if (swapToCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
-					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
+					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_GOERLI_KEY}`)
 					const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
 					const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
 					setSecondInputValue(num(output).toString())
@@ -147,7 +147,7 @@ const SwapV2Cefi = () => {
 		async function getRedemptionOutput() {
 			try {
 				if (swapFromCur.address == goerliAnfiV2IndexToken && convertedInputValue) {
-					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
+					const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_GOERLI_KEY}`)
 					const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
 					const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
 					setSecondInputValue(num(output).toString())
@@ -486,7 +486,7 @@ const SwapV2Cefi = () => {
 
 	const formatResult = (item: Coin) => {
 		return (
-			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1" key={item.id}>
+			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1" >
 				<div className="flex flex-row items-center justify-start gap-2">
 					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150"/>
 					<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>

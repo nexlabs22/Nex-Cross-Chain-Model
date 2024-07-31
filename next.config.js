@@ -18,8 +18,9 @@ const nextConfig = {
 		return config
 	},
 	env: {
-		ALCHEMY_KEY: process.env.ALCHEMY_KEY,
+		ALCHEMY_GOERLI_KEY: process.env.ALCHEMY_GOERLI_KEY,
 		ALCHEMY_SEPOLIA_KEY: process.env.ALCHEMY_SEPOLIA_KEY,
+		ALCHEMY_ARBITRUM_SEPOLIA_KEY: process.env.ALCHEMY_ARBITRUM_SEPOLIA_KEY,
 		CHAINBASE_KEY: process.env.CHAINBASE_KEY,
 	},
 	reactStrictMode: true,
