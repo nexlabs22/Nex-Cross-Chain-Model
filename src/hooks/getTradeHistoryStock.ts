@@ -1,22 +1,16 @@
-import { num } from './math'
+import { num, weiToNum } from './math'
 import { useEffect, useState, useCallback } from 'react'
-// import { useAccountAddressStore } from '@store/zustandStore'
 import { createPublicClient, http, parseAbiItem } from 'viem'
 import { goerli, sepolia } from 'viem/chains'
-// import { getTickerFromAddress } from '../utils/general'
-import { factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, zeroAddress } from '@constants/contractAddresses'
+import { factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaMag7Factory, zeroAddress } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
 import { PositionType } from '@/types/tradeTableTypes'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 import { getClient } from '@/app/api/client'
-// import { Positions } from '@/types/tradeTableTypes'
-// import { Positions1 } from './getRequestHistory'
 
 
 
-// export function GetPositionsHistory2(exchangeAddress: `0x${string}`, activeTicker: string) {
-export function GetTradeHistoryCrossChain() {
-	// const accountAddress = useAccountAddressStore((state) => state.accountAddress)
-	// if(!exchangeAddress) return;
+export function GetTradeHistoryStock() {
 
 	const [accountAddress, setAccountAddress] = useState<`0x${string}` | string>()
 	const [loading, setLoading] = useState<boolean>(false)
@@ -30,30 +24,31 @@ export function GetTradeHistoryCrossChain() {
 		}
 	}, [address])
 
-	// useEffect(() => {
-
-
 	const getHistory = useCallback(async () => {
 
 		setLoading(true)
 		setPositions([])
 
+		// const client = createPublicClient({
+		// 	chain: sepolia,
+		// 	// transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
+		// 	transport: http(`https://eth-sepolia.g.alchemy.com/v2/Go-5TbveGF0JbuWNP4URPr5cm5xgIKCy`),
+		// })
+
 		const client = getClient('sepolia')
 
 		const positions0: PositionType[] = []
-		// return;
+
 		if (!accountAddress) return
-		//store open long history
-		// console.log(exchangeAddress)
-		for (const [key, value] of Object.entries(factoryAddresses)) {
-			// if (!accountAddress || exchangeAddress === zeroAddress || !exchangeAddress) return
+
+		const factoryAddresses0 = {MAG7 : sepoliaMag7Factory}
+
+		for (const [key, value] of Object.entries(factoryAddresses0)) {
 			
 			const mintRequestlogs = await client.getLogs({
 				address: value as `0x${string}`,
 				event: parseAbiItem(
-					// 'event MintRequestAdd( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
-					// 'event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time)'
-					'event Issuanced(bytes32 indexed messageId,uint indexed nonce,address indexed user,address inputToken,uint inputAmount,uint outputAmount, uint time)'
+					'event Issuanced(uint indexed nonce,address indexed user,address inputToken,uint inputAmount,uint outputAmount, uint time)'
 				),
 				args: {
 					user: accountAddress as `0x${string}`,
@@ -61,32 +56,31 @@ export function GetTradeHistoryCrossChain() {
 				fromBlock: BigInt(0),
 			})
 			const userMintRequestLogs: any = mintRequestlogs.filter((log) => log.args.user == accountAddress)
+
 			userMintRequestLogs.forEach((log: any) => {
+				
+				const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address === log.args.inputToken})[0].decimals
 				const obj: PositionType = {
 					side: 'Mint Request',
 					user: log.args.user as `0x${string}`,
-					inputAmount: num(log.args.inputAmount),
+					inputAmount: weiToNum(log.args.inputAmount, tokenDecimals),
 					outputAmount: num(log.args.outputAmount),
 					tokenAddress: log.args.inputToken as `0x${string}`,
 					timestamp: Number(log.args.time),
 					txHash: log.transactionHash,
 					indexName: key,
-					messageId: log.args.messageId,
                     nonce: Number(log.args.nonce),
                     sendStatus: "SUCCESS",
                     receiveStatus: "SUCCESS"
 				}
 				positions0.push(obj)
-				// setPositions(preObj => [...preObj, obj])
 			})
 
 			//store open short history
 			const burnRequestLogs = await client.getLogs({
 				address: value as `0x${string}`,
 				event: parseAbiItem(
-					// 'event Burned( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
-					// 'event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time)'
-					'event Redemption(bytes32 indexed messageId,uint indexed nonce,address indexed user,address outputToken,uint inputAmount,uint outputAmount,uint time)'
+					'event Redemption(uint indexed nonce,address indexed user,address outputToken,uint inputAmount,uint outputAmount,uint time)'
 				),
 				args: {
 					user: accountAddress as `0x${string}`,
@@ -96,27 +90,25 @@ export function GetTradeHistoryCrossChain() {
 			const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
 
 			userBurnRequestLogsLogs.forEach(async (log) => {
+				const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address === log.args.outputToken})[0].decimals
 				const obj: PositionType = {
 					side: 'Burn Request',
 					user: log.args.user as `0x${string}`,
 					inputAmount: num(log.args.inputAmount),
-					outputAmount: num(log.args.outputAmount),
+					outputAmount: weiToNum(log.args.outputAmount, tokenDecimals),
 					tokenAddress: log.args.outputToken as `0x${string}`,
 					timestamp: Number(log.args.time),
 					txHash: log.transactionHash,
 					indexName: key,
-					messageId: log.args.messageId,
                     nonce: Number(log.args.nonce),
                     sendStatus: "SUCCESS",
                     receiveStatus: "SUCCESS"
 				}
 				positions0.push(obj)
-				// setPositions(preObj => [...preObj, obj])
 			})
 
 		}
 
-		// setPositions(positions0)
 		const sortedPositionsData = positions0.sort(function (a, b) {
 			if (!a.timestamp || !b.timestamp) return 0
 			return Number(b.timestamp) - Number(a.timestamp)

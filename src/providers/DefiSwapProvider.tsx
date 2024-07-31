@@ -1,21 +1,16 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import Image from 'next/image';
+import React, { createContext, useState, useEffect, useContext } from 'react'
+import Image from 'next/image'
 // Store
 import useTradePageStore from '@/store/tradeStore'
 import { UseContractResult, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
-import {
-	sepoliaCrypto5V2Factory,
-	sepoliaUsdtAddress,
-	sepoliaWethAddress,
-	sepoliaTokenFaucet,
-} from '@/constants/contractAddresses'
-import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi, tokenFaucetAbi } from '@/constants/abi'
+import { sepoliaCrypto5V2Factory, sepoliaUsdtAddress, sepoliaWethAddress, sepoliaTokenFaucet, sepoliaMAG7IndexTokenAddress, sepoliaMag7Factory } from '@/constants/contractAddresses'
+import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, stockFactoryABI, tokenAbi, tokenFaucetAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import { SmartContract } from '@thirdweb-dev/sdk'
 import { BigNumber } from 'alchemy-sdk'
-import { GenericToast } from '@/components/GenericToast';
-import { createPublicClient, http, parseEther } from 'viem'
-import { FormatToViewNumber, formatNumber, num } from '@/hooks/math'
+import { GenericToast } from '@/components/GenericToast'
+import { createPublicClient, http, parseEther, zeroAddress } from 'viem'
+import { FormatToViewNumber, formatNumber, num, numToWei, weiToNum } from '@/hooks/math'
 import { ethers } from 'ethers'
 import { GetCrossChainPortfolioBalance } from '@/hooks/getCrossChainPortfolioBalance'
 import { sepolia } from 'viem/chains'
@@ -25,6 +20,12 @@ import { useRouter } from 'next/router'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { Coin } from '@/types/nexTokenData'
 import convertToUSD from '@/utils/convertToUsd'
+import { parseUnits } from 'ethers/lib/utils'
+import { useHistory } from './HistoryProvider'
+import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
+import { GetPositionsHistoryCrossChain } from '@/hooks/getPositiontHistoryCrosschain'
+import { GetPositionsHistoryStock } from '@/hooks/getPositiontHistoryStock'
+import { getClient } from '@/app/api/client'
 
 interface DeFiSwapContextProps {
 	isPaymentModalOpen: boolean
@@ -51,13 +52,12 @@ interface DeFiSwapContextProps {
 	fromTokenTotalSupply: any
 	toTokenTotalSupply: any
 	fromTokenAllowance: any
-	convertedInputValue: number | bigint | 0
 	approveHook: any
 	mintRequestHook: any
 	mintRequestEthHook: any
 	burnRequestHook: any
-	faucetHook: any,
-	curr: Coin,
+	faucetHook: any
+	curr: Coin
 	IndexContract: UseContractResult | null
 	feeRate: number
 	setFirstInputValue: React.Dispatch<React.SetStateAction<string>>
@@ -93,8 +93,8 @@ interface DeFiSwapContextProps {
 const DeFiSwapContext = createContext<DeFiSwapContextProps>({
 	isPaymentModalOpen: false,
 	isChecked: false,
-	firstInputValue: "0",
-	secondInputValue: "0",
+	firstInputValue: '0',
+	secondInputValue: '0',
 	cookingModalVisible: false,
 	userEthBalance: 0,
 	from1UsdPrice: 0,
@@ -115,47 +115,47 @@ const DeFiSwapContext = createContext<DeFiSwapContextProps>({
 	fromTokenTotalSupply: 0,
 	toTokenTotalSupply: 0,
 	fromTokenAllowance: 0,
-	convertedInputValue: 0,
 	approveHook: 0,
 	mintRequestHook: 0,
 	mintRequestEthHook: 0,
 	burnRequestHook: 0,
 	faucetHook: 0,
 	curr: {
-		id: 0,
-		logo: "",
-		name: "",
-		Symbol: "",
-		address: "",
+		logo: '',
+		name: '',
+		Symbol: '',
+		address: '',
 		isNexlabToken: false,
-		indexType: "",
-		factoryAddress: "",
-		decimals: 0
+		indexType: '',
+		factoryAddress: '',
+		decimals: 0,
 	},
 	IndexContract: null,
 	feeRate: 0,
 	setFirstInputValue: () => {},
 	setSecondInputValue: () => {},
 	setCookingModalVisible: () => {},
-	toggleCheckbox: () => { },
-	toggleMainnetCheckbox: () => { },
-	openPaymentModal: () => { },
-	closePaymentModal: () => { },
-	openFromCurrencyModal: () => { },
-	closeFromCurrencyModal: () => { },
-	openToCurrencyModal: () => { },
-	closeToCurrencyModal: () => { },
-	openFromCurrencySheet: () => { },
-	closeFromCurrencySheet: () => { },
-	openToCurrencySheet: () => { },
-	closeToCurrencySheet: () => { },
+	toggleCheckbox: () => {},
+	toggleMainnetCheckbox: () => {},
+	openPaymentModal: () => {},
+	closePaymentModal: () => {},
+	openFromCurrencyModal: () => {},
+	closeFromCurrencyModal: () => {},
+	openToCurrencyModal: () => {},
+	closeToCurrencyModal: () => {},
+	openFromCurrencySheet: () => {},
+	closeFromCurrencySheet: () => {},
+	openToCurrencySheet: () => {},
+	closeToCurrencySheet: () => {},
 	fetchAllLiFiTokens: () => Promise.resolve([]),
-	Switching: () => { },
-	formatResult: () => { return <></>; },
-	changeFirstInputValue: () => { },
-	changeSecondInputValue: () => { },
-	getPrimaryBalance: () => "",
-	getSecondaryBalance: () => "",
+	Switching: () => {},
+	formatResult: () => {
+		return <></>
+	},
+	changeFirstInputValue: () => {},
+	changeSecondInputValue: () => {},
+	getPrimaryBalance: () => '',
+	getSecondaryBalance: () => '',
 	approve: () => Promise.resolve(),
 	mintRequest: () => Promise.resolve(),
 	mintRequestTokens: () => Promise.resolve(),
@@ -165,11 +165,10 @@ const DeFiSwapContext = createContext<DeFiSwapContextProps>({
 })
 
 const useDeFiSwap = () => {
-	return (useContext(DeFiSwapContext))
+	return useContext(DeFiSwapContext)
 }
 
 const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
-
 	const [isPaymentModalOpen, setPaymentModalOpen] = useState(false)
 	const [isChecked, setChecked] = useState(false)
 	const [firstInputValue, setFirstInputValue] = useState('0')
@@ -203,6 +202,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		isMainnet,
 		setIsmainnet,
 	} = useTradePageStore()
+
 	const address = useAddress()
 	const signer = useSigner()
 	const router = useRouter()
@@ -215,9 +215,15 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		})
 		changeSwapToCur(coinDetails[0])
 	}, [query.index])
-	
-	const mintFactoryContract: UseContractResult = useContract(swapToCur.factoryAddress, swapToCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
-	const burnFactoryContract: UseContractResult = useContract(swapFromCur.factoryAddress, swapFromCur.indexType === 'defi' ? indexFactoryV2Abi : crossChainIndexFactoryV2Abi)
+
+	const mintFactoryContract: UseContractResult = useContract(
+		swapToCur.factoryAddress,
+		swapToCur.indexType === 'defi' ? indexFactoryV2Abi : swapToCur.indexType === 'stock' ? stockFactoryABI : crossChainIndexFactoryV2Abi
+	)
+	const burnFactoryContract: UseContractResult = useContract(
+		swapFromCur.factoryAddress,
+		swapFromCur.indexType === 'defi' ? indexFactoryV2Abi : swapFromCur.indexType === 'stock' ? stockFactoryABI : crossChainIndexFactoryV2Abi
+	)
 	const faucetContract: UseContractResult = useContract(sepoliaTokenFaucet, tokenFaucetAbi)
 	const fromTokenContract = useContract(swapFromCur.address, tokenAbi)
 	const toTokenContract = useContract(swapToCur.address, tokenAbi)
@@ -226,7 +232,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	const fromTokenTotalSupply = useContractRead(fromTokenContract.contract, 'totalSupply', [])
 	const toTokenTotalSupply = useContractRead(toTokenContract.contract, 'totalSupply', [])
 	const fromTokenAllowance = useContractRead(fromTokenContract.contract, 'allowance', [address, swapToCur.factoryAddress])
-	const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
 	const approveHook = useContractWrite(fromTokenContract.contract, 'approve')
 	const mintRequestHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokens')
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
@@ -241,7 +246,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	// 	async function getIssuanceOutput() {
 	// 		try {
 	// 			if (swapToCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
-	// 				// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`)
+	// 				// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_GOERLI_KEY}`)
 	// 				const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
 	// 				const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
 	// 				const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
@@ -256,41 +261,51 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {
 		async function getIssuanceOutput2() {
 			try {
-				if (swapToCur.hasOwnProperty('indexType') && convertedInputValue) {
+				const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
+				if (swapToCur.hasOwnProperty('indexType')) {
 					const currentPortfolioValue = swapToCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(toTokenTotalSupply.data)
 					let inputValue
 					if (swapFromCur.address == sepoliaWethAddress) {
 						inputValue = Number(firstInputValue) * 1e18
 					} else {
-						const sepoliaPublicClient = createPublicClient({
-							chain: sepolia,
-							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-						})
-						const inputEthValue = await sepoliaPublicClient.readContract({
-							address: sepoliaCrypto5V2Factory,
-							abi: crossChainIndexFactoryV2Abi,
-							functionName: 'getAmountOut',
-							args: [swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3],
-						})
-						inputValue = Number(inputEthValue)
+						const sepoliaPublicClient = getClient('sepolia')
+						if (swapToCur.indexType === 'stock') {
+							const outAmount = await sepoliaPublicClient.readContract({
+								address: sepoliaMag7Factory,
+								abi: stockFactoryABI,
+								functionName: 'getIssuanceAmountOut',
+								args: [numToWei(firstInputValue, swapFromCur.decimals)],
+							})
+								setSecondInputValue(weiToNum(outAmount, swapFromCur.decimals).toFixed(2))
+						} else if(convertedInputValue) {
+							const inputEthValue = await sepoliaPublicClient.readContract({
+								address: sepoliaCrypto5V2Factory,
+								abi: crossChainIndexFactoryV2Abi,
+								functionName: 'getAmountOut',
+								args: [swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3],
+							})
+							
+							inputValue = Number(inputEthValue)
+
+							let newPortfolioValue: number = 0
+							if (swapToCur.indexType === 'crosschain') {
+								newPortfolioValue = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
+							} else {
+								newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
+							}
+							const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
+							const amountToMint = newTotalSupply - currentTotalSupply
+							setSecondInputValue(num(amountToMint).toString())
+						}
 					}
-					let newPortfolioValue: number = 0
-					if (swapToCur.indexType === 'crosschain') {
-						newPortfolioValue = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
-					} else {
-						newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
-					}
-					const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
-					const amountToMint = newTotalSupply - currentTotalSupply
-					setSecondInputValue(num(amountToMint).toString())
 				}
 			} catch (error) {
 				console.log('getIssuanceOutput error:', error)
 			}
 		}
 		getIssuanceOutput2()
-	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
+	}, [firstInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
 	// useEffect(() => {
 	// 	async function getRedemptionOutput() {
 	// 		try {
@@ -309,7 +324,8 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {
 		async function getRedemptionOutput2() {
 			try {
-				if (swapFromCur.hasOwnProperty('indexType') && convertedInputValue) {
+				if (swapFromCur.hasOwnProperty('indexType')) {
+					const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
 					let outputValue
 					const currentPortfolioValue = swapFromCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(fromTokenTotalSupply.data)
@@ -319,28 +335,35 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					if (swapToCur.address == sepoliaWethAddress) {
 						outputValue = ethAmountOut
 					} else {
-						const sepoliaPublicClient = createPublicClient({
-							chain: sepolia,
-							// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-							transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-						})
-						const outPutTokenValue = await sepoliaPublicClient.readContract({
-							address: sepoliaCrypto5V2Factory,
-							abi: crossChainIndexFactoryV2Abi,
-							functionName: 'getAmountOut',
-							args: [sepoliaWethAddress, swapToCur.address, ethAmountOut.toFixed(0), 3],
-						})
-						outputValue = Number(outPutTokenValue)
+						const sepoliaPublicClient = getClient('sepolia')
+						if (swapFromCur.indexType === 'stock') {
+							const outAmount = await sepoliaPublicClient.readContract({
+								address: sepoliaMag7Factory,
+								abi: stockFactoryABI,
+								functionName: 'getRedemptionAmountOut',
+								args: [parseEther(firstInputValue)],
+							})
+
+							setSecondInputValue(weiToNum(outAmount, swapFromCur.decimals).toString())
+						} else {
+							const outPutTokenValue = await sepoliaPublicClient.readContract({
+								address: sepoliaCrypto5V2Factory,
+								abi: crossChainIndexFactoryV2Abi,
+								functionName: 'getAmountOut',
+								args: [sepoliaWethAddress, swapToCur.address, ethAmountOut.toFixed(0), 3],
+							})
+							outputValue = Number(outPutTokenValue)
+							setSecondInputValue(weiToNum(outputValue, swapToCur.decimals).toString())
+						}
 					}
-					setSecondInputValue(num(outputValue).toString())
 				}
 			} catch (error) {
 				console.log('getRedemptionOutput error:', error)
 			}
 		}
 		getRedemptionOutput2()
-	}, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
-	
+	}, [firstInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
+
 	async function fetchData(tokenDetails: Coin, place: string) {
 		try {
 			const price = await convertToUSD({ tokenAddress: tokenDetails.address, tokenDecimals: tokenDetails.decimals }, ethPriceInUsd, isMainnet)
@@ -376,6 +399,14 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			approveHook.reset()
 		}
 	}, [approveHook.isSuccess, approveHook, fromTokenAllowance])
+
+	useEffect(() => {
+		if (mintRequestHook.isSuccess || burnRequestHook.isSuccess) {
+			setTradeTableReload(true)
+			mintRequestHook.reset()
+			burnRequestHook.reset()
+		}
+	}, [mintRequestHook, burnRequestHook, setTradeTableReload])
 
 	useEffect(() => {
 		if (faucetHook.isLoading) {
@@ -567,9 +598,35 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {
 		const finalCoinList = isMainnet ? coinsList : (sepoliaTokens as Coin[])
 		const OurIndexCoinList: Coin[] = finalCoinList.filter((coin) => coin.isNexlabToken)
-		const OtherCoinList: Coin[] = finalCoinList.filter((coin) => !coin.isNexlabToken)
+		let OtherCoinList: Coin[] = finalCoinList.filter((coin) => !coin.isNexlabToken)
+
+		console.log(swapToCur, swapFromCur)
+
+		if (swapToCur.Symbol === 'MAG7' || swapFromCur.Symbol === ' MAG7') {
+			OtherCoinList = OtherCoinList.filter((coin) => {
+				return coin.Symbol !== 'USDT'
+			})
+			const usdcDetails = OtherCoinList.filter((coin) => {
+				return coin.Symbol === 'USDC'
+			})[0]
+			const usdtDetails = OtherCoinList.filter((coin) => {
+				return coin.Symbol === 'USDT'
+			})[0]
+			if (swapToCur.Symbol === 'MAG7') {
+				changeSwapFromCur(usdcDetails)
+			} else {
+				changeSwapFromCur(usdtDetails)
+			}
+
+			// if (swapFromCur.Symbol === 'MAG7') {
+			// 	changeSwapToCur(usdcDetails)
+			// } else {
+			// 	changeSwapToCur(usdtDetails)
+			// }
+		}
+		console.log(swapToCur, swapFromCur)
 		setMergedCoinList([OtherCoinList, OurIndexCoinList])
-	}, [isMainnet])
+	}, [isMainnet, swapToCur.Symbol, swapFromCur.Symbol])
 
 	function Switching() {
 		let switchReserve: Coin = swapFromCur
@@ -597,9 +654,9 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const formatResult = (item: Coin) => {
 		return (
-			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1" key={item.id}>
+			<div className="w-full h-10 cursor-pointer flex flex-row items-center justify-between px-2 py-1">
 				<div className="flex flex-row items-center justify-start gap-2">
-					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150"/>
+					<Image src={item.logo} alt={item.name} width={15} height={15} className=" aspect-square scale-150" />
 					<h5 className="text-base text-blackText-500 pangram">{item.Symbol}</h5>
 				</div>
 				<h5 className="text-base text-gray-300 montrealBoldItalic">{item.Symbol}</h5>
@@ -656,7 +713,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 				return 0
 			} else {
 				const bal = FormatToViewNumber({
-					value: Number(ethers.utils.formatEther(fromTokenBalance.data)) as number,
+					value: Number(fromTokenBalance.data / Number(`1e${swapFromCur.decimals}`)) as number,
 					returnType: 'string',
 				}).toString()
 				const balWithoutComma = bal.includes(',') ? bal.split(',').join('') : bal
@@ -683,7 +740,8 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			} else
 				return FormatToViewNumber({
 					// value: Number((userEthBalance))/1e18,
-					value: parseFloat(ethers.utils.formatEther(toTokenBalance.data)) as number,
+					// value: parseFloat(ethers.utils.formatEther(toTokenBalance.data)) as number,
+					value: Number(toTokenBalance.data / Number(`1e${swapToCur.decimals}`)) as number,
 					returnType: 'string',
 				})
 		}
@@ -702,13 +760,23 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	}, [signer, address])
 
 	async function approve() {
-		const convertedValue = parseEther(((Number(firstInputValue) * 1001) / 1000)?.toString() as string)
-		// const convertedValue = BigNumber.from(3*1001/1000)
+		if (swapToCur.address == zeroAddress) {
+			return GenericToast({ type: 'info', message: 'Index will be live for trading soon, Stay Tuned!' })
+		}
+		// Ensure the number has at most swapFromCur.decimals decimal places
+		const valueWithCorrectDecimals = (Number(firstInputValue) * 1.001).toFixed(swapFromCur.decimals)
+
+		// Convert to BigNumber using parseUnits
+		const convertedValue = parseUnits(valueWithCorrectDecimals, swapFromCur.decimals)
+		// const convertedValue = parseUnits((Number(firstInputValue)*1.001).toString(),swapFromCur.decimals)
+
+		console.log({ value: Number(firstInputValue) * 1.001, decimals: swapFromCur.decimals, convertedValue })
+
 		try {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
+				if (weiToNum(fromTokenBalance.data, swapFromCur.decimals) < Number(firstInputValue)) {
 					return GenericToast({
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
@@ -719,7 +787,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 						message: `Please enter amount you want to approve`,
 					})
 				}
-				await approveHook.mutateAsync({ args: [swapToCur.factoryAddress, convertedValue] })
+				await approveHook.mutateAsync({ args: [swapToCur.factoryAddress, BigInt(convertedValue.toString())] })
 			}
 		} catch (error) {
 			console.log('approve error', error)
@@ -727,6 +795,10 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	}
 
 	async function mintRequest() {
+		if (swapToCur.address == zeroAddress) {
+			return GenericToast({ type: 'info', message: 'Index will be live for trading soon, Stay Tuned!' })
+		}
+
 		if (swapFromCur.address == sepoliaWethAddress) {
 			mintRequestEth()
 		} else {
@@ -739,7 +811,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
+				if (weiToNum(fromTokenBalance.data, swapFromCur.decimals) < Number(firstInputValue)) {
 					return GenericToast({
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
@@ -752,10 +824,16 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 				}
 				if (swapToCur.indexType === 'defi') {
 					await mintRequestHook.mutateAsync({
-						// args: [swapFromCur.address, (Number(firstInputValue) * 1e18).toString(), '3'],
 						args: [swapFromCur.address, parseEther(Number(firstInputValue).toString()), '3'],
 						overrides: {
 							gasLimit: 2000000,
+						},
+					})
+				} else if (swapToCur.indexType === 'stock') {
+					await mintRequestHook.mutateAsync({
+						args: [parseUnits(Number(firstInputValue).toString(), swapFromCur.decimals).toString()],
+						overrides: {
+							gasLimit: 3000000,
 						},
 					})
 				} else {
@@ -821,13 +899,13 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			if (isChecked) {
 				openPaymentModal()
 			} else {
-				if (num(fromTokenBalance.data) < Number(firstInputValue)) {
+				if (weiToNum(fromTokenBalance.data, swapFromCur.decimals) < Number(firstInputValue)) {
 					return GenericToast({
 						type: 'error',
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
 				} else if (Number(firstInputValue) <= 0) {
-					console.log("testing")
+					console.log('testing')
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to burn`,
@@ -836,15 +914,22 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 				if (swapFromCur.indexType === 'defi') {
 					await burnRequestHook.mutateAsync({
 						// args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
-						args: [parseEther(Number(firstInputValue).toString()), swapToCur.address, '3'],
+						args: [parseEther(Number(firstInputValue).toString()), swapFromCur.address, '3'],
 						overrides: {
 							gasLimit: 2000000,
+						},
+					})
+				} else if (swapFromCur.indexType === 'stock') {
+					await burnRequestHook.mutateAsync({
+						args: [parseUnits(Number(firstInputValue).toString(), swapFromCur.decimals).toString()],
+						overrides: {
+							gasLimit: 3000000,
 						},
 					})
 				} else {
 					await burnRequestHook.mutateAsync({
 						// args: [(Number(firstInputValue) * 1e18).toString(), '0', swapToCur.address, '3'],
-						args: [parseEther(Number(firstInputValue).toString()), '0', swapToCur.address, '3'],
+						args: [parseEther(Number(firstInputValue).toString()), '0', swapFromCur.address, '3'],
 						overrides: {
 							gasLimit: 3000000,
 						},
@@ -891,7 +976,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		fromTokenTotalSupply: fromTokenTotalSupply,
 		toTokenTotalSupply: toTokenTotalSupply,
 		fromTokenAllowance: fromTokenAllowance,
-		convertedInputValue: convertedInputValue,
 		approveHook: approveHook,
 		mintRequestHook: mintRequestEthHook,
 		mintRequestEthHook: mintRequestEthHook,
@@ -930,11 +1014,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		faucet: faucet,
 	}
 
-	return (
-		<DeFiSwapContext.Provider value={contextValue}>
-			{children}
-		</DeFiSwapContext.Provider>
-	)
+	return <DeFiSwapContext.Provider value={contextValue}>{children}</DeFiSwapContext.Provider>
 }
 
 export { DeFiSwapProvider, DeFiSwapContext, useDeFiSwap }

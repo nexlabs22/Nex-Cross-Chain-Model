@@ -1,24 +1,21 @@
-import { num } from './math'
+import { num, weiToNum } from './math'
 import { useEffect, useState, useCallback } from 'react'
-// import { useAccountAddressStore } from '@store/zustandStore'
-import { createPublicClient, http, parseAbiItem } from 'viem'
-import { arbitrumSepolia, goerli, sepolia } from 'viem/chains'
-// import { getTickerFromAddress } from '../utils/general'
-import { arbtirumSepoliaCR5CrossChainFactory, factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, sepoliaCrypto5V2Factory, zeroAddress } from '@constants/contractAddresses'
+import {  parseAbiItem } from 'viem'
+
+import { sepoliaMag7Factory } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
-import { getCCIPStatusById } from './getCcipStatusModelById'
 import useTradePageStore from '@/store/tradeStore'
-import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi } from '@/constants/abi'
-import { GetTradeHistoryCrossChain } from './getTradeHistoryCrossChain'
 import { PositionType } from '@/types/tradeTableTypes'
+import { GetTradeHistoryStock } from './getTradeHistoryStock'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 import { getClient } from '@/app/api/client'
 
-export function GetPositionsHistoryCrossChain() {
-	const { setCrosschainTableTableReload } = useTradePageStore()
+export function GetPositionsHistoryStock() {
+	const { setStockTableTableReload } = useTradePageStore()
 
 	const [accountAddress, setAccountAddress] = useState<`0x${string}` | string>()
 	const address = useAddress()
-	const crossChainpositionHistory = GetTradeHistoryCrossChain()
+	const stockTradeHistory = GetTradeHistoryStock()
 
 	const [positions, setPositions] = useState<PositionType[]>([])
 
@@ -30,20 +27,18 @@ export function GetPositionsHistoryCrossChain() {
 
 	const getHistory = useCallback(async () => {
 		try {
-			setCrosschainTableTableReload(true)
+			setStockTableTableReload(true)
 
-			const factoryAddresses0 = { CRYPTO5: sepoliaCrypto5V2Factory }
-			
+			const factoryAddresses0 = { MAG7: sepoliaMag7Factory }
+
 			const client = getClient('sepolia')
-			const client2 = getClient('arbitrumSepolia')
-
 
 			if (!accountAddress) return
 
 			const mintLogsPromise = Object.entries(factoryAddresses0).map(async ([key, value]) => {
 				const mintRequestlogs = await client.getLogs({
 					address: value as `0x${string}`,
-					event: parseAbiItem('event RequestIssuance(bytes32 indexed messageId, uint indexed nonce, address indexed user, address inputToken, uint inputAmount, uint outputAmount, uint time)'),
+					event: parseAbiItem('event RequestIssuance(uint indexed nonce, address indexed user, address inputToken, uint inputAmount, uint outputAmount, uint time)'),
 					args: {
 						user: accountAddress as `0x${string}`,
 					},
@@ -53,45 +48,48 @@ export function GetPositionsHistoryCrossChain() {
 				const userMintRequestLogs = mintRequestlogs.filter((log) => log.args.user == accountAddress)
 
 				const mintData = userMintRequestLogs.map(async (log) => {
-					const isExist = crossChainpositionHistory.data.find((data) => {
+					const isExist = stockTradeHistory.data.find((data) => {
 						return data.nonce === log.args.nonce && data.side === 'Mint Request'
 					})
 
 					let sendStatus = ''
 					let receiveStatus = ''
-					let recieveSideMessageId = ''
 
 					if (!isExist) {
-						sendStatus = await getCCIPStatusById(log.args.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
-						if (sendStatus == 'SUCCESS') {
-							const messageId = await client2.readContract({
-								address: arbtirumSepoliaCR5CrossChainFactory,
-								abi: crossChainIndexFactoryV2Abi,
-								functionName: 'issuanceMessageIdByNonce',
-								args: [log.args.nonce],
-							})
-							receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
-							recieveSideMessageId = messageId as string
-						}
+						// sendStatus = await getCCIPStatusById(log.args.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
+						// sendStatus = await getCCIPStatusById(log.args.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
+						// if (sendStatus == 'SUCCESS') {
+						// 	const messageId = await client2.readContract({
+						// 		address: arbtirumSepoliaCR5CrossChainFactory,
+						// 		abi: crossChainIndexFactoryV2Abi,
+						// 		functionName: 'issuanceMessageIdByNonce',
+						// 		args: [log.args.nonce],
+						// 	})
+						// 	receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
+						// 	recieveSideMessageId = messageId as string
+						// }
+						sendStatus = 'PENDING'
+						receiveStatus = 'PENDING'
 					} else {
 						sendStatus = 'SUCCESS'
 						receiveStatus = 'SUCCESS'
 					}
 
+
+					const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address === log.args.inputToken})[0].decimals
+
 					const obj: PositionType = {
 						side: 'Mint Request',
 						user: log.args.user as `0x${string}`,
-						inputAmount: num(log.args.inputAmount),
+						inputAmount: weiToNum(log.args.inputAmount, tokenDecimals),
 						outputAmount: num(log.args.outputAmount),
 						tokenAddress: log.args.inputToken as `0x${string}`,
 						timestamp: Number(log.args.time),
 						txHash: log.transactionHash,
 						indexName: key,
-						messageId: log.args.messageId,
 						nonce: Number(log.args.nonce),
 						sendStatus,
 						receiveStatus,
-						recieveSideMessageId,
 					}
 
 					return obj
@@ -103,7 +101,7 @@ export function GetPositionsHistoryCrossChain() {
 			const burnLogsPromise = Object.entries(factoryAddresses0).map(async ([key, value]) => {
 				const burnRequestLogs = await client.getLogs({
 					address: value as `0x${string}`,
-					event: parseAbiItem('event RequestRedemption(bytes32 indexed messageId, uint indexed nonce, address indexed user, address outputToken, uint inputAmount, uint outputAmount, uint time)'),
+					event: parseAbiItem('event RequestRedemption( uint indexed nonce, address indexed user, address outputToken, uint inputAmount, uint outputAmount, uint time)'),
 					args: {
 						user: accountAddress as `0x${string}`,
 					},
@@ -113,42 +111,43 @@ export function GetPositionsHistoryCrossChain() {
 				const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
 
 				const burnData = userBurnRequestLogsLogs.map(async (log) => {
-					const isExist = crossChainpositionHistory.data.find((data) => {
+					const isExist = stockTradeHistory.data.find((data) => {
 						return data.nonce === log.args.nonce && data.side === 'Burn Request'
 					})
 
 					let sendStatus = ''
 					let receiveStatus = ''
-					let recieveSideMessageId = ''
 
 					if (!isExist) {
-						sendStatus = await getCCIPStatusById(log.args.messageId as `0x${string}`, 'ethereumSepolia', 'arbitrumSepolia')
-						if (sendStatus == 'SUCCESS') {
-							const messageId = await client2.readContract({
-								address: arbtirumSepoliaCR5CrossChainFactory,
-								abi: crossChainIndexFactoryV2Abi,
-								functionName: 'redemptionMessageIdByNonce',
-								args: [log.args.nonce],
-							})
-							receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
-							recieveSideMessageId = messageId as string
-						}
+						// sendStatus = await getCCIPStatusById(log.args.messageId as `0x${string}`, 'ethereumSepolia', 'arbitrumSepolia')
+						// if (sendStatus == 'SUCCESS') {
+						// 	const messageId = await client2.readContract({
+						// 		address: arbtirumSepoliaCR5CrossChainFactory,
+						// 		abi: crossChainIndexFactoryV2Abi,
+						// 		functionName: 'redemptionMessageIdByNonce',
+						// 		args: [log.args.nonce],
+						// 	})
+						// 	receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
+						// 	recieveSideMessageId = messageId as string
+						// }
+						sendStatus = 'PENDING'
+						receiveStatus = 'PENDING'
 					} else {
 						sendStatus = 'SUCCESS'
 						receiveStatus = 'SUCCESS'
 					}
 
+					const tokenDecimals = sepoliaTokens.filter((d)=>{return d.address === log.args.outputToken})[0].decimals
+
 					const obj: PositionType = {
 						side: 'Burn Request',
 						user: log.args.user as `0x${string}`,
 						inputAmount: num(log.args.inputAmount),
-						outputAmount: num(log.args.outputAmount),
+						outputAmount: weiToNum(log.args.outputAmount, tokenDecimals),
 						tokenAddress: log.args.outputToken as `0x${string}`,
 						timestamp: Number(log.args.time),
 						txHash: log.transactionHash,
-						indexName: key,
-						messageId: log.args.messageId,
-						recieveSideMessageId,
+						indexName: key,						
 						nonce: Number(log.args.nonce),
 						sendStatus,
 						receiveStatus,
@@ -170,28 +169,28 @@ export function GetPositionsHistoryCrossChain() {
 					})
 
 					setPositions(sortedPositionsData)
-					setCrosschainTableTableReload(false)
+					setStockTableTableReload(false)
 				})
 				.catch((err) => {
 					console.log(err)
-					setCrosschainTableTableReload(false)
+					setStockTableTableReload(false)
 				})
 		} catch (err) {
 			console.log(err)
 		}
-	}, [accountAddress, crossChainpositionHistory.data])
+	}, [accountAddress, stockTradeHistory.data])
 
 	useEffect(() => {
-		// getHistory()
+		getHistory()
 	}, [getHistory])
 
 	function handleReload() {
-		crossChainpositionHistory.reload()
+		stockTradeHistory.reload()
 		getHistory()
 	}
 
 	return {
-		history: crossChainpositionHistory.data,
+		history: stockTradeHistory.data,
 		requests: positions,
 		reload: handleReload,
 	}

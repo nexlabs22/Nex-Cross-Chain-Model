@@ -57,7 +57,7 @@ const settings = {
 const alchemy = new Alchemy(settings)
 
 type Coin = {
-	id: number
+	id?: number
 	logo: string
 	name: string
 	Symbol: string

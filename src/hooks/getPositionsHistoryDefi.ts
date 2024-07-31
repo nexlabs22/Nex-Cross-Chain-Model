@@ -9,6 +9,7 @@ import { useAddress } from '@thirdweb-dev/react'
 // import { Positions } from '@/types/tradeTableTypes'
 import { nexTokens } from '@/constants/nexIndexTokens'
 import { PositionType } from '@/types/tradeTableTypes'
+import { getClient } from '@/app/api/client'
 
 export function GetPositionsHistoryDefi() {
 
@@ -29,11 +30,7 @@ export function GetPositionsHistoryDefi() {
 		setLoading(true)
 		setPositions([])
 
-		const client = createPublicClient({
-			chain: sepolia,
-			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-		})
+		const client = getClient('sepolia')
 
 		const positions0: PositionType[] = []
 		// return;

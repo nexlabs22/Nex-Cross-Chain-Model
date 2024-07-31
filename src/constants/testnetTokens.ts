@@ -1,4 +1,4 @@
-import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaSciV2Factory, sepoliaSciV2IndexToken, sepoliaUsdtAddress, sepoliaWethAddress, zeroAddress } from "./contractAddresses";
+import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaDianariUsdcAddress, sepoliaMag7Factory, sepoliaMAG7IndexTokenAddress, sepoliaSciV2Factory, sepoliaSciV2IndexToken, sepoliaUsdtAddress, sepoliaWethAddress, zeroAddress } from "./contractAddresses";
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import mag7 from '@assets/images/mag7.png'
@@ -30,7 +30,6 @@ export const goerliTokens = [
 ]
 export const sepoliaTokens:Coin[] = [
     {
-        id: 1,
         logo: anfiLogo.src,
         name: 'ANFI',
         Symbol: 'ANFI',
@@ -41,7 +40,6 @@ export const sepoliaTokens:Coin[] = [
         indexType: 'defi'
     },
     {
-        id: 2,
         logo: 'https://assets.coincap.io/assets/icons/usdt@2x.png',
         name: 'Tether',
         Symbol: 'USDT',
@@ -51,7 +49,15 @@ export const sepoliaTokens:Coin[] = [
         decimals: 18,
     },
     {
-        id: 3,
+        logo: 'https://assets.coincap.io/assets/icons/usdc@2x.png',
+        name: 'USD Coin',
+        Symbol: 'USDC',
+        isNexlabToken:false,
+        address: sepoliaDianariUsdcAddress,
+        factoryAddress: '',
+        decimals: 6
+    },
+    {
         logo: 'https://assets.coincap.io/assets/icons/eth@2x.png',
         name: 'Ethereum',
         isNexlabToken:false,
@@ -61,7 +67,6 @@ export const sepoliaTokens:Coin[] = [
         decimals: 18,
     },
     {
-        id: 4,
         logo: cr5Logo.src,
         name: 'CRYPTO5',
         Symbol: 'CRYPTO5',
@@ -71,19 +76,17 @@ export const sepoliaTokens:Coin[] = [
         decimals: 18,
         indexType: 'crosschain'
     },
-    {
-        id: 4,
+    {        
         logo: mag7.src,
         name: 'MAG7',
         Symbol: 'MAG7',
         isNexlabToken:true,
-        address: zeroAddress,
-        factoryAddress: zeroAddress,
+        address: sepoliaMAG7IndexTokenAddress,
+        factoryAddress: sepoliaMag7Factory,
         decimals: 18,
-        indexType: 'crosschain'
+        indexType: 'stock'
     },
     {
-        id: 4,
         logo: arbLogo.src,
         name: 'Arbitrum Ecosystem Index',
         Symbol: 'ARBEI',

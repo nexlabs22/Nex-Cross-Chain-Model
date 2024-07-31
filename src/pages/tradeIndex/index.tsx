@@ -134,7 +134,7 @@ export default function Trade() {
 				const users = snapshot.val()
 				if (address) {
 					for (const key in users) {
-						console.log(users[key])
+						// console.log(users[key])
 						const potentialUser: User = users[key]
 						if (potentialUser.main_wallet == address) {
 							setConnectedUser(potentialUser)
@@ -168,7 +168,7 @@ export default function Trade() {
 			//console.log(data)
 			setUserIP(data.ip || null); // Set IP or null if unavailable
 			setUserCountry(data.location || null)
-			console.log(data.location)
+			// console.log(data.location)
 		};
 
 		fetchIP();
@@ -176,7 +176,7 @@ export default function Trade() {
 	useEffect(() => {
 		if (userCountry && userCountry != null) {
 			const c = (JSON.stringify(userCountry).split(",")[0]).split(":")[1]
-			console.log("country is : " + (JSON.stringify(userCountry).split(",")[0]).split(":")[1])
+			// console.log("country is : " + (JSON.stringify(userCountry).split(",")[0]).split(":")[1])
 			if (c == '"us"' || c == '"US"' || c == '"usa"' || c == '"USA"') { setIsUSA(true); setIsUSPopUpOpen(true) }
 		}
 	}, [userCountry])

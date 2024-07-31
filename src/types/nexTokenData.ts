@@ -11,7 +11,6 @@ export interface nexTokenDataType {
 }
 
 export interface Coin {
-	id: number
 	logo: string
 	name: string
 	Symbol: string

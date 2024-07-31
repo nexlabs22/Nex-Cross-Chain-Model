@@ -19,23 +19,16 @@ import {
 } from '@constants/contractAddresses'
 import { useAddress } from '@thirdweb-dev/react'
 import { crossChainFactoryStorageAbi, crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi } from '@/constants/abi'
+import { getClient } from '@/app/api/client'
 
 export function GetCrossChainPortfolioBalance() {
 	const [portfolioValue, setPortfolioValue] = useState<number>()
 
 	const getPortfolioValue = useCallback(async () => {
-		const sepoliaPublicClient = createPublicClient({
-			chain: sepolia,
-			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-		})
 
-		const arbitrumSepoliaPublicClient = createPublicClient({
-			chain: arbitrumSepolia,
-			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			// transport: http(`https://rpc.ankr.com/polygon_mumbai/bf22a1af586c8f23c56205136ecbee0965c7d06d57c29d414bcd8ad877a0afc4`),
-			transport: http(`https://arb-sepolia.g.alchemy.com/v2/Go-5TbveGF0JbuWNP4URPr5cm5xgIKCy`),
-		})
+		const sepoliaPublicClient = getClient('sepolia')
+		const arbitrumSepoliaPublicClient = getClient('arbitrumSepolia')
+
 		// const mumbaiPublicClient = createPublicClient({
 		// 	chain: polygonMumbai,
 		// 	// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),

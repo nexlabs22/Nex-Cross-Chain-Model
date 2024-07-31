@@ -9,6 +9,7 @@ import { useAddress } from '@thirdweb-dev/react'
 import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, tokenAbi } from '@/constants/abi'
 import useTradePageStore from '@/store/tradeStore'
 import { sepoliaTokens } from '@/constants/testnetTokens'
+import { getClient } from '@/app/api/client'
 
 
 
@@ -22,11 +23,7 @@ export function GetDefiPortfolioBalance() {
 
 	const getPortfolioValue = useCallback(async () => {
 		
-		const sepoliaPublicClient = createPublicClient({
-			chain: sepolia,
-			// transport: http(`https://eth-goerli.g.alchemy.com/v2/NucIfnwc-5eXFYtxgjat7itrQPkNQsty`),
-			transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-		})
+		const sepoliaPublicClient = getClient('sepolia')
 
 		let totalPortfolioBalance: number = 0;
 

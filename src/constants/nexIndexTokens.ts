@@ -25,7 +25,7 @@ export const nexTokens = [
     {
         symbol: 'MAG7',
         shortName: 'MAG7',
-        indexType: 'crosschain',
+        indexType: 'stock',
         address: sepoliaMAG7IndexTokenAddress,
         decimals: 18,
         logo: mag7.src
