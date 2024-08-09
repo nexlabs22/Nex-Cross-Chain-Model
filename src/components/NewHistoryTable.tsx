@@ -618,7 +618,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 											{position.inputAmount && position.tokenAddress ? (
 												<>
 													{FormatToViewNumber({ value: Number(position.inputAmount), returnType: 'string' })}{' '}
-													{position.side === 'Mint Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
+													{position.side === 'Mint Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key].toLowerCase() === position.tokenAddress.toLowerCase()) : position?.indexName}{' '}
 													{isMainnet && (
 														<>
 															<div className="text-slate-500">
@@ -642,7 +642,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 											{position.outputAmount && position.tokenAddress ? (
 												<>
 													{FormatToViewNumber({ value: Number(position.outputAmount), returnType: 'string' })}{' '}
-													{position.side === 'Burn Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position?.indexName}{' '}
+													{position.side === 'Burn Request' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key].toLowerCase() === position.tokenAddress.toLowerCase()) : position?.indexName}{' '}
 													{isMainnet && (
 														<>
 															<div className="text-slate-500">

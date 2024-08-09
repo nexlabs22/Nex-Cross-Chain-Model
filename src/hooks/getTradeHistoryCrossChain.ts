@@ -8,6 +8,8 @@ import { factoryAddresses, goerliAnfiV2Factory, goerliCrypto5Factory, zeroAddres
 import { useAddress } from '@thirdweb-dev/react'
 import { PositionType } from '@/types/tradeTableTypes'
 import { getClient } from '@/app/api/client'
+import { indexesClient } from '@/utils/graphQL-client'
+import { GET_ISSUANCED_CR5_EVENT_LOGS, GET_REDEMPTION_CR5_EVENT_LOGS } from '@/uniswap/graphQuery'
 // import { Positions } from '@/types/tradeTableTypes'
 // import { Positions1 } from './getRequestHistory'
 
@@ -48,31 +50,26 @@ export function GetTradeHistoryCrossChain() {
 		for (const [key, value] of Object.entries(factoryAddresses)) {
 			// if (!accountAddress || exchangeAddress === zeroAddress || !exchangeAddress) return
 			
-			const mintRequestlogs = await client.getLogs({
-				address: value as `0x${string}`,
-				event: parseAbiItem(
-					// 'event MintRequestAdd( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
-					// 'event Issuanced(address indexed user, address indexed inputToken, uint inputAmount, uint outputAmount, uint time)'
-					'event Issuanced(bytes32 indexed messageId,uint indexed nonce,address indexed user,address inputToken,uint inputAmount,uint outputAmount, uint time)'
-				),
-				args: {
-					user: accountAddress as `0x${string}`,
-				},
-				fromBlock: BigInt(0),
-			})
-			const userMintRequestLogs: any = mintRequestlogs.filter((log) => log.args.user == accountAddress)
+			const { error, data: mintRequestlogs } = await indexesClient
+			.query(GET_ISSUANCED_CR5_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
+			.toPromise()
+
+			console.log({error, mintRequestlogs})
+
+
+			const userMintRequestLogs: any = mintRequestlogs.cr5Issuanceds.filter((log:any) => log.user == accountAddress.toLowerCase())
 			userMintRequestLogs.forEach((log: any) => {
 				const obj: PositionType = {
 					side: 'Mint Request',
-					user: log.args.user as `0x${string}`,
-					inputAmount: num(log.args.inputAmount),
-					outputAmount: num(log.args.outputAmount),
-					tokenAddress: log.args.inputToken as `0x${string}`,
-					timestamp: Number(log.args.time),
+					user: log.user as `0x${string}`,
+					inputAmount: num(log.inputAmount),
+					outputAmount: num(log.outputAmount),
+					tokenAddress: log.inputToken as `0x${string}`,
+					timestamp: Number(log.time),
 					txHash: log.transactionHash,
 					indexName: key,
-					messageId: log.args.messageId,
-                    nonce: Number(log.args.nonce),
+					messageId: log.messageId,
+                    nonce: Number(log.nonce),
                     sendStatus: "SUCCESS",
                     receiveStatus: "SUCCESS"
 				}
@@ -81,32 +78,24 @@ export function GetTradeHistoryCrossChain() {
 			})
 
 			//store open short history
-			const burnRequestLogs = await client.getLogs({
-				address: value as `0x${string}`,
-				event: parseAbiItem(
-					// 'event Burned( uint256 indexed nonce, address indexed requester, uint256 amount, address depositAddress, uint256 timestamp, bytes32 requestHash )'
-					// 'event Redemption(address indexed user, address indexed outputToken, uint inputAmount, uint outputAmount, uint time)'
-					'event Redemption(bytes32 indexed messageId,uint indexed nonce,address indexed user,address outputToken,uint inputAmount,uint outputAmount,uint time)'
-				),
-				args: {
-					user: accountAddress as `0x${string}`,
-				},
-				fromBlock: BigInt(0),
-			})
-			const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
+			const { data: burnRequestLogs } = await indexesClient
+			.query(GET_REDEMPTION_CR5_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
+			.toPromise()
+			
+			const userBurnRequestLogsLogs = burnRequestLogs.cr5Redemptions.filter((log:any) => log.user == accountAddress.toLowerCase())
 
-			userBurnRequestLogsLogs.forEach(async (log) => {
+			userBurnRequestLogsLogs.forEach(async (log:any) => {
 				const obj: PositionType = {
 					side: 'Burn Request',
-					user: log.args.user as `0x${string}`,
-					inputAmount: num(log.args.inputAmount),
-					outputAmount: num(log.args.outputAmount),
-					tokenAddress: log.args.outputToken as `0x${string}`,
-					timestamp: Number(log.args.time),
+					user: log.user as `0x${string}`,
+					inputAmount: num(log.inputAmount),
+					outputAmount: num(log.outputAmount),
+					tokenAddress: log.outputToken as `0x${string}`,
+					timestamp: Number(log.time),
 					txHash: log.transactionHash,
 					indexName: key,
-					messageId: log.args.messageId,
-                    nonce: Number(log.args.nonce),
+					messageId: log.messageId,
+                    nonce: Number(log.nonce),
                     sendStatus: "SUCCESS",
                     receiveStatus: "SUCCESS"
 				}

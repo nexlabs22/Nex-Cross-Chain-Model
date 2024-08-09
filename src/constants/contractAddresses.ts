@@ -27,7 +27,6 @@ export const sepoliaARBIndexTokenAddress = '0x2F8B660e8E2CF66889862d4Ab1569cDe98
 export const sepoliaMAG7IndexTokenAddress = '0x955b3F0091414E7DBbe7bdf2c39d73695CDcDd95'
 
 export const sepoliaSciV2IndexToken = '0x82166E2Fc8a641725F2Cc9C43ED04Df664065dA9'
-
 export const goerliAnfiFactory = '0x12A1d813f70025366B31B27582af902141b50484'
 export const goerliCrypto5Factory = '0x8a5e84A1B5e8640222A6Ae5A20B2740A060acCf4'
 export const mumbaiCrypto5V2IndexFactory = '0xe0c7EC4711EEa139Eaa5F04f6549C2dc9b5bF5Cf'

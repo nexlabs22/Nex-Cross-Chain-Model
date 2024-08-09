@@ -7,6 +7,8 @@ import { useAddress } from '@thirdweb-dev/react'
 import { PositionType } from '@/types/tradeTableTypes'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { getClient } from '@/app/api/client'
+import { indexesClient } from '@/utils/graphQL-client'
+import { GET_MAG7_ISSUANCED_EVENT_LOGS, GET_MAG7_REDEMPTION_EVENT_LOGS } from '@/uniswap/graphQuery'
 
 
 
@@ -45,31 +47,37 @@ export function GetTradeHistoryStock() {
 
 		for (const [key, value] of Object.entries(factoryAddresses0)) {
 			
-			const mintRequestlogs = await client.getLogs({
-				address: value as `0x${string}`,
-				event: parseAbiItem(
-					'event Issuanced(uint indexed nonce,address indexed user,address inputToken,uint inputAmount,uint outputAmount, uint time)'
-				),
-				args: {
-					user: accountAddress as `0x${string}`,
-				},
-				fromBlock: BigInt(0),
-			})
-			const userMintRequestLogs: any = mintRequestlogs.filter((log) => log.args.user == accountAddress)
+			// const mintRequestlogs = await client.getLogs({
+			// 	address: value as `0x${string}`,
+			// 	event: parseAbiItem(
+			// 		'event Issuanced(uint indexed nonce,address indexed user,address inputToken,uint inputAmount,uint outputAmount, uint time)'
+			// 	),
+			// 	args: {
+			// 		user: accountAddress as `0x${string}`,
+			// 	},
+			// 	fromBlock: BigInt(0),
+			// })
+
+			const { data: mintRequestlogs } = await indexesClient
+			.query(GET_MAG7_ISSUANCED_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
+			.toPromise()
+			
+
+			const userMintRequestLogs: any = mintRequestlogs.mag7Issuanceds.filter((log:any) => log.user.toLowerCase() == accountAddress.toLowerCase())
 
 			userMintRequestLogs.forEach((log: any) => {
 				
-				const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address === log.args.inputToken})[0].decimals
+				const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address.toLowerCase() === log.inputToken})[0].decimals
 				const obj: PositionType = {
 					side: 'Mint Request',
-					user: log.args.user as `0x${string}`,
-					inputAmount: weiToNum(log.args.inputAmount, tokenDecimals),
-					outputAmount: num(log.args.outputAmount),
-					tokenAddress: log.args.inputToken as `0x${string}`,
-					timestamp: Number(log.args.time),
+					user: log.user as `0x${string}`,
+					inputAmount: weiToNum(log.inputAmount, tokenDecimals),
+					outputAmount: num(log.outputAmount),
+					tokenAddress: log.inputToken as `0x${string}`,
+					timestamp: Number(log.time),
 					txHash: log.transactionHash,
 					indexName: key,
-                    nonce: Number(log.args.nonce),
+                    nonce: Number(log.nonce),
                     sendStatus: "SUCCESS",
                     receiveStatus: "SUCCESS"
 				}
@@ -77,30 +85,35 @@ export function GetTradeHistoryStock() {
 			})
 
 			//store open short history
-			const burnRequestLogs = await client.getLogs({
-				address: value as `0x${string}`,
-				event: parseAbiItem(
-					'event Redemption(uint indexed nonce,address indexed user,address outputToken,uint inputAmount,uint outputAmount,uint time)'
-				),
-				args: {
-					user: accountAddress as `0x${string}`,
-				},
-				fromBlock: BigInt(0),
-			})
-			const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
+			// const burnRequestLogs = await client.getLogs({
+			// 	address: value as `0x${string}`,
+			// 	event: parseAbiItem(
+			// 		'event Redemption(uint indexed nonce,address indexed user,address outputToken,uint inputAmount,uint outputAmount,uint time)'
+			// 	),
+			// 	args: {
+			// 		user: accountAddress as `0x${string}`,
+			// 	},
+			// 	fromBlock: BigInt(0),
+			// })
+			
+			const { data: burnRequestLogs } = await indexesClient
+			.query(GET_MAG7_REDEMPTION_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
+			.toPromise()
 
-			userBurnRequestLogsLogs.forEach(async (log) => {
-				const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address === log.args.outputToken})[0].decimals
+			const userBurnRequestLogsLogs = burnRequestLogs.mag7Redemptions.filter((log:any) => log.user.toLowerCase() == accountAddress.toLowerCase())
+
+			userBurnRequestLogsLogs.forEach(async (log:any) => {
+				const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address.toLowerCase() === log.outputToken})[0].decimals
 				const obj: PositionType = {
 					side: 'Burn Request',
-					user: log.args.user as `0x${string}`,
-					inputAmount: num(log.args.inputAmount),
-					outputAmount: weiToNum(log.args.outputAmount, tokenDecimals),
-					tokenAddress: log.args.outputToken as `0x${string}`,
-					timestamp: Number(log.args.time),
+					user: log.user as `0x${string}`,
+					inputAmount: num(log.inputAmount),
+					outputAmount: weiToNum(log.outputAmount, tokenDecimals),
+					tokenAddress: log.outputToken as `0x${string}`,
+					timestamp: Number(log.time),
 					txHash: log.transactionHash,
 					indexName: key,
-                    nonce: Number(log.args.nonce),
+                    nonce: Number(log.nonce),
                     sendStatus: "SUCCESS",
                     receiveStatus: "SUCCESS"
 				}

@@ -1,9 +1,6 @@
 import { createPublicClient, http } from 'viem'
 import {  arbitrumSepolia, goerli, sepolia } from 'viem/chains'
 
-console.log('GOELI: ', process.env.ALCHEMY_GOERLI_KEY)
-console.log('Sepolia: ', process.env.ALCHEMY_SEPOLIA_KEY)
-console.log('arbitrum: ', process.env.ALCHEMY_ARBITRUM_SEPOLIA_KEY)
 
 const clients = {
     goerli: createPublicClient({

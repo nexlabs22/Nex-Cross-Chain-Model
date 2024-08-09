@@ -9,6 +9,8 @@ import { PositionType } from '@/types/tradeTableTypes'
 import { GetTradeHistoryStock } from './getTradeHistoryStock'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { getClient } from '@/app/api/client'
+import { GET_MAG7_ISSUANCED_EVENT_LOGS, GET_MAG7_REDEMPTION_EVENT_LOGS, GET_MAG7_REQ_ISSUANCED_EVENT_LOGS, GET_MAG7_REQ_REDEMPTION_EVENT_LOGS } from '@/uniswap/graphQuery'
+import { indexesClient } from '@/utils/graphQL-client'
 
 export function GetPositionsHistoryStock() {
 	const { setStockTableTableReload } = useTradePageStore()
@@ -36,26 +38,27 @@ export function GetPositionsHistoryStock() {
 			if (!accountAddress) return
 
 			const mintLogsPromise = Object.entries(factoryAddresses0).map(async ([key, value]) => {
-				const mintRequestlogs = await client.getLogs({
-					address: value as `0x${string}`,
-					event: parseAbiItem('event RequestIssuance(uint indexed nonce, address indexed user, address inputToken, uint inputAmount, uint outputAmount, uint time)'),
-					args: {
-						user: accountAddress as `0x${string}`,
-					},
-					fromBlock: BigInt(0),
-				})
+				const { data: mintRequestlogs } = await indexesClient
+				.query(GET_MAG7_REQ_ISSUANCED_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
+				.toPromise()
+				
 
-				const userMintRequestLogs = mintRequestlogs.filter((log) => log.args.user == accountAddress)
+				const userMintRequestLogs = mintRequestlogs.mag7RequestIssuances.filter((log:any) => log.user == accountAddress.toLowerCase())
 
-				const mintData = userMintRequestLogs.map(async (log) => {
-					const isExist = stockTradeHistory.data.find((data) => {
-						return data.nonce === log.args.nonce && data.side === 'Mint Request'
+				const mintData = userMintRequestLogs.map(async (log:any) => {
+					const isExist = stockTradeHistory.data.find((data) => {						
+						return data.nonce === Number(log.nonce) && data.side === 'Mint Request'
 					})
+
+					console.log({isExist})
+
+					console.log(isExist === undefined)					
 
 					let sendStatus = ''
 					let receiveStatus = ''
 
-					if (!isExist) {
+					if (isExist === undefined) {
+						console.log('INSIDE IF')
 						// sendStatus = await getCCIPStatusById(log.args.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
 						// sendStatus = await getCCIPStatusById(log.args.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
 						// if (sendStatus == 'SUCCESS') {
@@ -76,18 +79,18 @@ export function GetPositionsHistoryStock() {
 					}
 
 
-					const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address === log.args.inputToken})[0].decimals
+					const tokenDecimals = sepoliaTokens.filter((d)=>{ return d.address.toLowerCase() === log.inputToken})[0].decimals
 
 					const obj: PositionType = {
 						side: 'Mint Request',
-						user: log.args.user as `0x${string}`,
-						inputAmount: weiToNum(log.args.inputAmount, tokenDecimals),
-						outputAmount: num(log.args.outputAmount),
-						tokenAddress: log.args.inputToken as `0x${string}`,
-						timestamp: Number(log.args.time),
+						user: log.user as `0x${string}`,
+						inputAmount: weiToNum(log.inputAmount, tokenDecimals),
+						outputAmount: num(log.outputAmount),
+						tokenAddress: log.inputToken as `0x${string}`,
+						timestamp: Number(log.time),
 						txHash: log.transactionHash,
 						indexName: key,
-						nonce: Number(log.args.nonce),
+						nonce: Number(log.nonce),
 						sendStatus,
 						receiveStatus,
 					}
@@ -99,20 +102,14 @@ export function GetPositionsHistoryStock() {
 			})
 
 			const burnLogsPromise = Object.entries(factoryAddresses0).map(async ([key, value]) => {
-				const burnRequestLogs = await client.getLogs({
-					address: value as `0x${string}`,
-					event: parseAbiItem('event RequestRedemption( uint indexed nonce, address indexed user, address outputToken, uint inputAmount, uint outputAmount, uint time)'),
-					args: {
-						user: accountAddress as `0x${string}`,
-					},
-					fromBlock: BigInt(0),
-				})
+				const { data: burnRequestLogs } = await indexesClient
+				.query(GET_MAG7_REQ_REDEMPTION_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
+				.toPromise()
+				const userBurnRequestLogsLogs = burnRequestLogs.mag7RequestRedemptions.filter((log:any) => log.user == accountAddress.toLowerCase())
 
-				const userBurnRequestLogsLogs = burnRequestLogs.filter((log) => log.args.user == accountAddress)
-
-				const burnData = userBurnRequestLogsLogs.map(async (log) => {
+				const burnData = userBurnRequestLogsLogs.map(async (log:any) => {
 					const isExist = stockTradeHistory.data.find((data) => {
-						return data.nonce === log.args.nonce && data.side === 'Burn Request'
+						return data.nonce === Number(log.nonce) && data.side === 'Burn Request'
 					})
 
 					let sendStatus = ''
@@ -137,21 +134,23 @@ export function GetPositionsHistoryStock() {
 						receiveStatus = 'SUCCESS'
 					}
 
-					const tokenDecimals = sepoliaTokens.filter((d)=>{return d.address === log.args.outputToken})[0].decimals
+					const tokenDecimals = sepoliaTokens.filter((d)=>{return d.address.toLowerCase() === log.outputToken})[0].decimals
 
 					const obj: PositionType = {
 						side: 'Burn Request',
-						user: log.args.user as `0x${string}`,
-						inputAmount: num(log.args.inputAmount),
-						outputAmount: weiToNum(log.args.outputAmount, tokenDecimals),
-						tokenAddress: log.args.outputToken as `0x${string}`,
-						timestamp: Number(log.args.time),
+						user: log.user as `0x${string}`,
+						inputAmount: num(log.inputAmount),
+						outputAmount: weiToNum(log.outputAmount, tokenDecimals),
+						tokenAddress: log.outputToken as `0x${string}`,
+						timestamp: Number(log.time),
 						txHash: log.transactionHash,
 						indexName: key,						
-						nonce: Number(log.args.nonce),
+						nonce: Number(log.nonce),
 						sendStatus,
 						receiveStatus,
 					}
+
+					console.log({obj})
 
 					return obj
 				})
@@ -167,6 +166,8 @@ export function GetPositionsHistoryStock() {
 						if (!a.timestamp || !b.timestamp) return 0
 						return Number(b.timestamp) - Number(a.timestamp)
 					})
+
+					console.log({sortedPositionsData})
 
 					setPositions(sortedPositionsData)
 					setStockTableTableReload(false)
