@@ -50,15 +50,10 @@ export function GetPositionsHistoryStock() {
 						return data.nonce === Number(log.nonce) && data.side === 'Mint Request'
 					})
 
-					console.log({isExist})
-
-					console.log(isExist === undefined)					
-
 					let sendStatus = ''
 					let receiveStatus = ''
 
 					if (isExist === undefined) {
-						console.log('INSIDE IF')
 						// sendStatus = await getCCIPStatusById(log.args.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
 						// sendStatus = await getCCIPStatusById(log.args.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
 						// if (sendStatus == 'SUCCESS') {
@@ -150,8 +145,6 @@ export function GetPositionsHistoryStock() {
 						receiveStatus,
 					}
 
-					console.log({obj})
-
 					return obj
 				})
 
@@ -167,7 +160,6 @@ export function GetPositionsHistoryStock() {
 						return Number(b.timestamp) - Number(a.timestamp)
 					})
 
-					console.log({sortedPositionsData})
 
 					setPositions(sortedPositionsData)
 					setStockTableTableReload(false)

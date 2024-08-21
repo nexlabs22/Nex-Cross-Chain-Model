@@ -20,6 +20,7 @@ export function GetDefiPortfolioBalance() {
 
 	const allowedSymbols = sepoliaTokens.filter((token) => token.isNexlabToken).map((token) => token.Symbol)
 	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))[0]
+	// console.log({activeTicker})
 
 	const getPortfolioValue = useCallback(async () => {
 		

@@ -3,8 +3,8 @@ import Image from 'next/image'
 // Store
 import useTradePageStore from '@/store/tradeStore'
 import { UseContractResult, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
-import { sepoliaCrypto5V2Factory, sepoliaUsdtAddress, sepoliaWethAddress, sepoliaTokenFaucet, sepoliaMAG7IndexTokenAddress, sepoliaMag7Factory } from '@/constants/contractAddresses'
-import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, stockFactoryABI, tokenAbi, tokenFaucetAbi } from '@/constants/abi'
+import { sepoliaCrypto5V2Factory, sepoliaUsdtAddress, sepoliaWethAddress, sepoliaTokenFaucet, sepoliaMAG7IndexTokenAddress, sepoliaMag7Factory, sepoliaMag7FactoryStorage } from '@/constants/contractAddresses'
+import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, stockFactoryABI, stockFactoryStorageABI, tokenAbi, tokenFaucetAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import { SmartContract } from '@thirdweb-dev/sdk'
 import { BigNumber } from 'alchemy-sdk'
@@ -203,6 +203,8 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		setIsmainnet,
 	} = useTradePageStore()
 
+	const sepoliaPublicClient = getClient('sepolia')
+
 	const address = useAddress()
 	const signer = useSigner()
 	const router = useRouter()
@@ -272,11 +274,12 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 						const sepoliaPublicClient = getClient('sepolia')
 						if (swapToCur.indexType === 'stock') {
 							const outAmount = await sepoliaPublicClient.readContract({
-								address: sepoliaMag7Factory,
-								abi: stockFactoryABI,
+								address: sepoliaMag7FactoryStorage,
+								abi: stockFactoryStorageABI,
 								functionName: 'getIssuanceAmountOut',
 								args: [numToWei(firstInputValue, swapFromCur.decimals)],
 							})
+							console.log(outAmount)
 								setSecondInputValue(weiToNum(outAmount, swapFromCur.decimals).toFixed(2))
 						} else if(convertedInputValue) {
 							const inputEthValue = await sepoliaPublicClient.readContract({
@@ -335,11 +338,10 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					if (swapToCur.address == sepoliaWethAddress) {
 						outputValue = ethAmountOut
 					} else {
-						const sepoliaPublicClient = getClient('sepolia')
 						if (swapFromCur.indexType === 'stock') {
 							const outAmount = await sepoliaPublicClient.readContract({
-								address: sepoliaMag7Factory,
-								abi: stockFactoryABI,
+								address: sepoliaMag7FactoryStorage,
+								abi: stockFactoryStorageABI,
 								functionName: 'getRedemptionAmountOut',
 								args: [parseEther(firstInputValue)],
 							})
@@ -600,8 +602,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		const OurIndexCoinList: Coin[] = finalCoinList.filter((coin) => coin.isNexlabToken)
 		let OtherCoinList: Coin[] = finalCoinList.filter((coin) => !coin.isNexlabToken)
 
-		console.log(swapToCur, swapFromCur)
-
 		if (swapToCur.Symbol === 'MAG7' || swapFromCur.Symbol === ' MAG7') {
 			OtherCoinList = OtherCoinList.filter((coin) => {
 				return coin.Symbol !== 'USDT'
@@ -624,7 +624,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			// 	changeSwapToCur(usdtDetails)
 			// }
 		}
-		console.log(swapToCur, swapFromCur)
 		setMergedCoinList([OtherCoinList, OurIndexCoinList])
 	}, [isMainnet, swapToCur.Symbol, swapFromCur.Symbol])
 
@@ -763,8 +762,22 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		if (swapToCur.address == zeroAddress) {
 			return GenericToast({ type: 'info', message: 'Index will be live for trading soon, Stay Tuned!' })
 		}
+
+		let dinariFeeAmount = 0
+		if(swapToCur.indexType === 'stock'){
+			
+			const feeAmountBigNumber = await sepoliaPublicClient.readContract({
+				address: sepoliaMag7FactoryStorage,
+				abi: stockFactoryStorageABI,
+				functionName: 'calculateIssuanceFee',
+				args: [numToWei(firstInputValue, swapFromCur.decimals)],
+			}) as BigNumber
+
+			dinariFeeAmount = weiToNum(feeAmountBigNumber,swapFromCur.decimals)
+		}
+
 		// Ensure the number has at most swapFromCur.decimals decimal places
-		const valueWithCorrectDecimals = (Number(firstInputValue) * 1.001).toFixed(swapFromCur.decimals)
+		const valueWithCorrectDecimals = ((Number(firstInputValue) * 1.001)+ dinariFeeAmount).toFixed(swapFromCur.decimals)
 
 		// Convert to BigNumber using parseUnits
 		const convertedValue = parseUnits(valueWithCorrectDecimals, swapFromCur.decimals)
@@ -833,7 +846,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					await mintRequestHook.mutateAsync({
 						args: [parseUnits(Number(firstInputValue).toString(), swapFromCur.decimals).toString()],
 						overrides: {
-							gasLimit: 3000000,
+							gasLimit: 5000000,
 						},
 					})
 				} else {
@@ -923,7 +936,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					await burnRequestHook.mutateAsync({
 						args: [parseUnits(Number(firstInputValue).toString(), swapFromCur.decimals).toString()],
 						overrides: {
-							gasLimit: 3000000,
+							gasLimit: 5000000,
 						},
 					})
 				} else {
