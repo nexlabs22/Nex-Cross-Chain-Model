@@ -48,7 +48,6 @@ interface OHLC {
 	time: number
 }
 
-
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url)
 	const symbol = searchParams.get('symbol') || ''
@@ -110,9 +109,6 @@ export async function GET(req: NextRequest) {
 
 			return NextResponse.json({ data: indexData, status: 200 })
 		}
-
-			
-	
 	} catch (err) {
 		console.log(err)
 		return NextResponse.json({ err }, { status: 400 })

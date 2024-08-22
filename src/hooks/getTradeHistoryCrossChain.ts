@@ -46,16 +46,12 @@ export function GetTradeHistoryCrossChain() {
 		// return;
 		if (!accountAddress) return
 		//store open long history
-		// console.log(exchangeAddress)
 		for (const [key, value] of Object.entries(factoryAddresses)) {
 			// if (!accountAddress || exchangeAddress === zeroAddress || !exchangeAddress) return
 			
 			const { error, data: mintRequestlogs } = await indexesClient
 			.query(GET_ISSUANCED_CR5_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
 			.toPromise()
-
-			console.log({error, mintRequestlogs})
-
 
 			const userMintRequestLogs: any = mintRequestlogs.cr5Issuanceds.filter((log:any) => log.user == accountAddress.toLowerCase())
 			userMintRequestLogs.forEach((log: any) => {

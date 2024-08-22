@@ -46,11 +46,14 @@ const colNameToSymbol = {
 	oil: 'CRUDEOIL',
 	copper: 'COPPER',
 	silver: 'SILVER',
+	mag7: 'MAG7',
+	arbei: 'ARBEI'
+}
+
+const KrakenCol ={
 	bitcoin: 'BTC',
 	ethereum: 'ETH',
 	arbitrum: 'ARB',
-	mag7: 'MAG7',
-	arbei: 'ARBEI'
 }
 
 const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
@@ -153,7 +156,7 @@ const TradingViewChart = ({ index, selectedIndices, page, pwa }) => {
 			const { addedStrings, removedStrings } = compareArrays(oldSelectedIndices, newSelectedIndices)
 
 			addedStrings.map((index) => {
-				const indName = index && colNameToSymbol[index] ? `Nexlabs:${colNameToSymbol[index]}/USD` : ''
+				const indName = index && colNameToSymbol[index] ? `Nexlabs:${colNameToSymbol[index]}/USD` : `Kraken:${KrakenCol[index]}/USD`
 				wid.activeChart()
 					.createStudy('Compare', false, false, { source: 'open', symbol: `${indName}` })
 					.then((id) => {

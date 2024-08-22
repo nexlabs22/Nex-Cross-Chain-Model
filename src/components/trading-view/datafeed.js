@@ -233,12 +233,6 @@ const dataFeed = {
       .join("&");
     try {
 
-      // const top5stockdata = await fetch('/api/getStockDataFromSpot').then(res => res.json()).catch(err => console.log(err))
-      // const top5stockmarketcap = await fetch('/api/getStockMarketCap').then(res => res.json()).catch(err => console.log(err))
-      // const stock5Prices = getIndexData('STOCK5', top5stockdata, top5stockmarketcap)
-      // const stock5OHLCPrices = stock5Prices.map(({time, value}) => ({ time, open: value, high: value, low: value, close: value }));
-      // console.log({stock5OHLCPrices})
-
       const data1 = await fetch(`/api/getChartData2?symbol=${urlParameters.fsym}`).then(res => res.json()).catch(error => console.log(error));
       // const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
       const data2 = await makeApiRequest(`data/histoday?${query}`);
@@ -247,12 +241,13 @@ const dataFeed = {
       //   (data.Response && data.Response === "Error") ||
       //   data.Data.length === 0
       // ) {
-      //   // "noData" should be set if there is no data in the requested period.
-      //   onHistoryCallback([], {
-      //     noData: true,
-      //   });
-      //   return;
-      // }
+      if (data1.length > 0) {
+        // "noData" should be set if there is no data in the requested period.
+        onHistoryCallback([], {
+          noData: true,
+        });
+        return;
+      }
       let bars = [];
       // data.Data.forEach((bar) => {
       data.forEach((bar) => {
