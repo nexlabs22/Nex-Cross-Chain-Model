@@ -15,6 +15,7 @@
 		"@apollo/client": "^3.8.7",
 		"@emotion/cache": "^11.11.0",
 		"@fontsource/inter": "^5.0.16",
+		"@grafbase/urql-exchange": "^1.0.1",
 		"@lifi/widget": "^2.4.5",
 		"@mui/icons-material": "^5.15.2",
 		"@mui/material-nextjs": "^5.15.11",

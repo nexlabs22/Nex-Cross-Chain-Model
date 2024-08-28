@@ -7,7 +7,8 @@ import { useAddress } from '@thirdweb-dev/react'
 import { PositionType } from '@/types/tradeTableTypes'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { getClient } from '@/app/api/client'
-import { indexesClient } from '@/utils/graphQL-client'
+// import { indexesClient } from '@/utils/graphQL-client'
+import apolloIndexClient from '@/utils/apollo-client'
 import { GET_MAG7_ISSUANCED_EVENT_LOGS, GET_MAG7_REDEMPTION_EVENT_LOGS } from '@/uniswap/graphQuery'
 
 
@@ -31,14 +32,6 @@ export function GetTradeHistoryStock() {
 		setLoading(true)
 		setPositions([])
 
-		// const client = createPublicClient({
-		// 	chain: sepolia,
-		// 	// transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`),
-		// 	transport: http(`https://eth-sepolia.g.alchemy.com/v2/Go-5TbveGF0JbuWNP4URPr5cm5xgIKCy`),
-		// })
-
-		const client = getClient('sepolia')
-
 		const positions0: PositionType[] = []
 
 		if (!accountAddress) return
@@ -46,22 +39,12 @@ export function GetTradeHistoryStock() {
 		const factoryAddresses0 = {MAG7 : sepoliaMag7Factory}
 
 		for (const [key, value] of Object.entries(factoryAddresses0)) {
-			
-			// const mintRequestlogs = await client.getLogs({
-			// 	address: value as `0x${string}`,
-			// 	event: parseAbiItem(
-			// 		'event Issuanced(uint indexed nonce,address indexed user,address inputToken,uint inputAmount,uint outputAmount, uint time)'
-			// 	),
-			// 	args: {
-			// 		user: accountAddress as `0x${string}`,
-			// 	},
-			// 	fromBlock: BigInt(0),
-			// })
 
-			const { data: mintRequestlogs } = await indexesClient
-			.query(GET_MAG7_ISSUANCED_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
-			.toPromise()
-			
+			const { data: mintRequestlogs } = await apolloIndexClient.query({
+				query: GET_MAG7_ISSUANCED_EVENT_LOGS,
+				variables: { accountAddress: accountAddress as `0x${string}` },
+				fetchPolicy: 'network-only'
+			  });
 
 			const userMintRequestLogs: any = mintRequestlogs.mag7Issuanceds.filter((log:any) => log.user.toLowerCase() == accountAddress.toLowerCase())
 
@@ -83,22 +66,13 @@ export function GetTradeHistoryStock() {
 				}
 				positions0.push(obj)
 			})
-
-			//store open short history
-			// const burnRequestLogs = await client.getLogs({
-			// 	address: value as `0x${string}`,
-			// 	event: parseAbiItem(
-			// 		'event Redemption(uint indexed nonce,address indexed user,address outputToken,uint inputAmount,uint outputAmount,uint time)'
-			// 	),
-			// 	args: {
-			// 		user: accountAddress as `0x${string}`,
-			// 	},
-			// 	fromBlock: BigInt(0),
-			// })
 			
-			const { data: burnRequestLogs } = await indexesClient
-			.query(GET_MAG7_REDEMPTION_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
-			.toPromise()
+			const { data: burnRequestLogs } = await apolloIndexClient.query({
+				query: GET_MAG7_REDEMPTION_EVENT_LOGS,
+				variables: { accountAddress: accountAddress as `0x${string}` },
+				fetchPolicy: 'network-only'
+			  });
+
 
 			const userBurnRequestLogsLogs = burnRequestLogs.mag7Redemptions.filter((log:any) => log.user.toLowerCase() == accountAddress.toLowerCase())
 
@@ -131,13 +105,16 @@ export function GetTradeHistoryStock() {
 	}, [accountAddress])
 
 	useEffect(() => {
-
 		getHistory()
 	}, [getHistory])
 
+	function handleReload() {
+		getHistory()
+	}
+
 	return {
 		data: positions,
-		reload: getHistory,
+		reload: handleReload,
 		loading
 	}
 }

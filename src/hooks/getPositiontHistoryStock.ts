@@ -9,8 +9,9 @@ import { PositionType } from '@/types/tradeTableTypes'
 import { GetTradeHistoryStock } from './getTradeHistoryStock'
 import { sepoliaTokens } from '@/constants/testnetTokens'
 import { getClient } from '@/app/api/client'
-import { GET_MAG7_ISSUANCED_EVENT_LOGS, GET_MAG7_REDEMPTION_EVENT_LOGS, GET_MAG7_REQ_ISSUANCED_EVENT_LOGS, GET_MAG7_REQ_REDEMPTION_EVENT_LOGS } from '@/uniswap/graphQuery'
-import { indexesClient } from '@/utils/graphQL-client'
+import { GET_MAG7_REQ_ISSUANCED_EVENT_LOGS, GET_MAG7_REQ_REDEMPTION_EVENT_LOGS } from '@/uniswap/graphQuery'
+import apolloIndexClient from '@/utils/apollo-client'
+
 
 export function GetPositionsHistoryStock() {
 	const { setStockTableTableReload } = useTradePageStore()
@@ -38,9 +39,12 @@ export function GetPositionsHistoryStock() {
 			if (!accountAddress) return
 
 			const mintLogsPromise = Object.entries(factoryAddresses0).map(async ([key, value]) => {
-				const { data: mintRequestlogs } = await indexesClient
-				.query(GET_MAG7_REQ_ISSUANCED_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
-				.toPromise()
+
+				const { data: mintRequestlogs } = await apolloIndexClient.query({
+					query: GET_MAG7_REQ_ISSUANCED_EVENT_LOGS,
+					variables: { accountAddress: accountAddress as `0x${string}` },
+					fetchPolicy: 'network-only'
+				  });
 				
 
 				const userMintRequestLogs = mintRequestlogs.mag7RequestIssuances.filter((log:any) => log.user == accountAddress.toLowerCase())
@@ -97,9 +101,13 @@ export function GetPositionsHistoryStock() {
 			})
 
 			const burnLogsPromise = Object.entries(factoryAddresses0).map(async ([key, value]) => {
-				const { data: burnRequestLogs } = await indexesClient
-				.query(GET_MAG7_REQ_REDEMPTION_EVENT_LOGS, { accountAddress: accountAddress as `0x${string}` })
-				.toPromise()
+
+				const { data: burnRequestLogs } = await apolloIndexClient.query({
+					query: GET_MAG7_REQ_REDEMPTION_EVENT_LOGS,
+					variables: { accountAddress: accountAddress as `0x${string}` },
+					fetchPolicy: 'network-only'
+				  });
+
 				const userBurnRequestLogsLogs = burnRequestLogs.mag7RequestRedemptions.filter((log:any) => log.user == accountAddress.toLowerCase())
 
 				const burnData = userBurnRequestLogsLogs.map(async (log:any) => {

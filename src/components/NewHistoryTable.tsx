@@ -34,7 +34,6 @@ import { RiDownloadLine } from 'react-icons/ri'
 import { CSVLink } from 'react-csv'
 import { usePWA } from '@/providers/PWAProvider'
 import { useHistory } from '@/providers/HistoryProvider'
-import { FaLastfmSquare } from 'react-icons/fa';
 
 interface HistoryTableProps {
 	maxPWAHeight?: boolean
