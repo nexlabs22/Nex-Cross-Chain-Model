@@ -35,6 +35,31 @@ export const GET_REDEMPTION_ANFI_EVENT_LOGS = gql`
 		}
 	}
 `
+export const GET_ISSUANCED_ARBEI_EVENT_LOGS = gql`
+	query GetHistoricalEventLogs($accountAddress: String!) {
+		arbeiissuanceds(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
+			time
+			user
+			transactionHash
+			inputToken
+			inputAmount
+			outputAmount
+		}
+	}
+`
+
+export const GET_REDEMPTION_ARBEI_EVENT_LOGS = gql`
+	query GetHistoricalEventLogs($accountAddress: String!) {
+		arbeiredemptions(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
+			time
+			user
+			transactionHash
+			outputToken
+			inputAmount
+			outputAmount
+		}
+	}
+`
 
 export const GET_ISSUANCED_CR5_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {

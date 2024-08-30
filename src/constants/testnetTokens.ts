@@ -1,4 +1,4 @@
-import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaDianariUsdcAddress, sepoliaMag7Factory, sepoliaMAG7IndexTokenAddress, sepoliaSciV2Factory, sepoliaSciV2IndexToken, sepoliaUsdtAddress, sepoliaWethAddress, zeroAddress } from "./contractAddresses";
+import { goerliAnfiV2IndexToken, goerliCrypto5IndexToken, goerliUsdtAddress, goerliWethAddress, sepoliaAnfiV2Factory, sepoliaAnfiV2IndexToken, sepoliaArbeiIndexFactoryAddress, sepoliaArbeiIndexTokenAddress, sepoliaCrypto5V2Factory, sepoliaCrypto5V2IndexToken, sepoliaDianariUsdcAddress, sepoliaMag7Factory, sepoliaMag7FactoryStorage, sepoliaMAG7IndexTokenAddress, sepoliaUsdtAddress, sepoliaWethAddress, zeroAddress } from "./contractAddresses";
 import cr5Logo from '@assets/images/cr5.png'
 import anfiLogo from '@assets/images/anfi.png'
 import mag7 from '@assets/images/mag7.png'
@@ -91,8 +91,8 @@ export const sepoliaTokens:Coin[] = [
         name: 'Arbitrum Ecosystem Index',
         Symbol: 'ARBEI',
         isNexlabToken:true,
-        address: zeroAddress,
-        factoryAddress: zeroAddress,
+        address: sepoliaArbeiIndexTokenAddress,
+        factoryAddress: sepoliaArbeiIndexFactoryAddress,
         decimals: 18,
         indexType: 'defi' 
     }

@@ -59,22 +59,22 @@ export function GetPositionsHistoryCrossChain() {
 					let receiveStatus = ''
 					let recieveSideMessageId = ''
 
-					if (!isExist) {
-						sendStatus = await getCCIPStatusById(log.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
-						if (sendStatus == 'SUCCESS') {
-							const messageId = await client2.readContract({
-								address: arbtirumSepoliaCR5CrossChainFactory,
-								abi: crossChainIndexFactoryV2Abi,
-								functionName: 'issuanceMessageIdByNonce',
-								args: [log.nonce],
-							})
-							receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
-							recieveSideMessageId = messageId as string
-						}
-					} else {
+					// if (!isExist) {
+					// 	sendStatus = await getCCIPStatusById(log.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
+					// 	if (sendStatus == 'SUCCESS') {
+					// 		const messageId = await client2.readContract({
+					// 			address: arbtirumSepoliaCR5CrossChainFactory,
+					// 			abi: crossChainIndexFactoryV2Abi,
+					// 			functionName: 'issuanceMessageIdByNonce',
+					// 			args: [log.nonce],
+					// 		})
+					// 		receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
+					// 		recieveSideMessageId = messageId as string
+					// 	}
+					// } else {
 						sendStatus = 'SUCCESS'
 						receiveStatus = 'SUCCESS'
-					}
+					// }
 
 					const obj: PositionType = {
 						side: 'Mint Request',
@@ -115,22 +115,22 @@ export function GetPositionsHistoryCrossChain() {
 					let receiveStatus = ''
 					let recieveSideMessageId = ''
 
-					if (!isExist) {
-						sendStatus = await getCCIPStatusById(log.messageId as `0x${string}`, 'ethereumSepolia', 'arbitrumSepolia')
-						if (sendStatus == 'SUCCESS') {
-							const messageId = await client2.readContract({
-								address: arbtirumSepoliaCR5CrossChainFactory,
-								abi: crossChainIndexFactoryV2Abi,
-								functionName: 'redemptionMessageIdByNonce',
-								args: [log.nonce],
-							})
-							receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
-							recieveSideMessageId = messageId as string
-						}
-					} else {
+					// if (!isExist) {
+					// 	sendStatus = await getCCIPStatusById(log.messageId as `0x${string}`, 'ethereumSepolia', 'arbitrumSepolia')
+					// 	if (sendStatus == 'SUCCESS') {
+					// 		const messageId = await client2.readContract({
+					// 			address: arbtirumSepoliaCR5CrossChainFactory,
+					// 			abi: crossChainIndexFactoryV2Abi,
+					// 			functionName: 'redemptionMessageIdByNonce',
+					// 			args: [log.nonce],
+					// 		})
+					// 		receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
+					// 		recieveSideMessageId = messageId as string
+					// 	}
+					// } else {
 						sendStatus = 'SUCCESS'
 						receiveStatus = 'SUCCESS'
-					}
+					// }
 
 					const obj: PositionType = {
 						side: 'Burn Request',

@@ -23,11 +23,12 @@ export const sepoliaCrypto5V2IndexToken = '0xA16FEC5964aDE6563624C16d0b2EDeC95bE
 export const mumbaiCrypto5V2Vault = '0x53B8876a23C057630c487D5a7B394EF45e64f2fA'
 export const arbitrumSepoliaCrypto5V2Vault = '0x04fddfb8b2EFaEaFc590505ffF0bA67E408d8A01'
 
-export const sepoliaARBIndexTokenAddress = '0x2F8B660e8E2CF66889862d4Ab1569cDe98d67748'
 // export const sepoliaMAG7IndexTokenAddress = '0x955b3F0091414E7DBbe7bdf2c39d73695CDcDd95'
 export const sepoliaMAG7IndexTokenAddress = '0x1e881F3c8bF7A161E884B4D86Fe8810290d3095D'
 
-export const sepoliaSciV2IndexToken = '0x82166E2Fc8a641725F2Cc9C43ED04Df664065dA9'
+export const sepoliaArbeiIndexTokenAddress = "0xeCBa11929312420414b6a9a70f206f90789f3069"
+export const sepoliaArbeiIndexFactoryAddress = "0xB5f11EAd535622Fa4EA1CA665e38ab2b4B1B2F9B"
+
 export const goerliAnfiFactory = '0x12A1d813f70025366B31B27582af902141b50484'
 export const goerliCrypto5Factory = '0x8a5e84A1B5e8640222A6Ae5A20B2740A060acCf4'
 export const mumbaiCrypto5V2IndexFactory = '0xe0c7EC4711EEa139Eaa5F04f6549C2dc9b5bF5Cf'
@@ -53,6 +54,15 @@ export const sepoliaMag7FactoryProcessor = '0x8250b30Ae818Ab30d5A03E893Cdc850bdA
 // export const IndexFactoryAddresses: AddressMap = {
 //     [`sepolia`]: `0x5EBD4Ac25ADbb238941086b7e2a87672f93919a4`
 // };
+export type AddressMap = { [blockchain: string]: string };
+
+export const OrderProcessorAddresses: AddressMap = {
+    [`sepolia`]: `0xd0d00Ee8457d79C12B4D7429F59e896F11364247`
+};
+
+export const IndexFactoryProcessorAddresses: AddressMap = {
+    [`sepolia`]: `0x8250b30Ae818Ab30d5A03E893Cdc850bdA08E638`
+};
 
 
 export const mumbaiWmaticAddress = '0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889'
@@ -93,7 +103,7 @@ export const exchangeAddresses: addressMapType = {
 	bybit: zeroAddress,
 }
 
-export const factoryAddresses: addressMapType = { ANFI: sepoliaAnfiV2Factory, CRYPTO5: sepoliaCrypto5V2Factory, MAG7: sepoliaMag7Factory }
+export const factoryAddresses: addressMapType = { ANFI: sepoliaAnfiV2Factory, CRYPTO5: sepoliaCrypto5V2Factory, MAG7: sepoliaMag7Factory, ARBEI: sepoliaArbeiIndexFactoryAddress }
 export const goerliTokenAddresses: addressMapType = { ANFI: goerliAnfiIndexToken, CRYPTO5: goerliCrypto5IndexToken, USDT: goerliUsdtAddress, ETH: goerliWethAddress }
 export const sepoliaTokenAddresses: addressMapType = {
 	ANFI: sepoliaAnfiV2IndexToken,
@@ -101,14 +111,14 @@ export const sepoliaTokenAddresses: addressMapType = {
 	USDT: sepoliaUsdtAddress,
 	USDC: sepoliaDianariUsdcAddress,
 	ETH: sepoliaWethAddress,
-	SCI: sepoliaSciV2IndexToken,
+	ARBEI: sepoliaArbeiIndexTokenAddress,
 	MAG7: sepoliaMAG7IndexTokenAddress,
 }
 export const sepoliaIndexTokenAddresses: addressMapType = {
 	ANFI: sepoliaAnfiV2IndexToken,
 	CRYPTO5: sepoliaCrypto5V2IndexToken,
-	ARBEI: sepoliaARBIndexTokenAddress,
 	MAG7: sepoliaMAG7IndexTokenAddress,
+	ARBEI: sepoliaArbeiIndexTokenAddress,
 }
 export const sepoliaIndexPoolAddresses: addressMapType = {
 	ANFI: sepoliaAnfiWethPoolAddress,

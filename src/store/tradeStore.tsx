@@ -70,6 +70,9 @@ type TradePageStore = {
 	stockTableReload: boolean
 	setStockTableTableReload: (input: boolean) => void
 
+	defiTableReload: boolean
+	setDefiTableTableReload: (input: boolean) => void
+
 	ethPriceInUsd: number
 	setEthPriceInUsd: () => void
 
@@ -156,7 +159,10 @@ const useTradePageStore = create<TradePageStore>()((set) => ({
 	setCrosschainTableTableReload: (input: boolean) => set({ crosschainTableReload: input }),
 
 	stockTableReload: false,
-	setStockTableTableReload: (input: boolean) => set({ crosschainTableReload: input }),
+	setStockTableTableReload: (input: boolean) => set({ stockTableReload: input }),
+
+	defiTableReload: false,
+	setDefiTableTableReload: (input: boolean) => set({ defiTableReload: input }),
 
 	ethPriceInUsd: 0,
 	setEthPriceInUsd: async () => {

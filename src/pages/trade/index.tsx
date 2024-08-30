@@ -34,7 +34,7 @@ import bg2 from '@assets/images/bg-2.png'
 import Head from 'next/head'
 import UseAnimations from 'react-useanimations'
 import { useLandingPageStore } from '@/store/store'
-import { sepoliaAnfiV2IndexToken, sepoliaCrypto5V2IndexToken, sepoliaMAG7IndexTokenAddress, zeroAddress } from '@/constants/contractAddresses'
+import { sepoliaAnfiV2IndexToken, sepoliaArbeiIndexTokenAddress, sepoliaCrypto5V2IndexToken, sepoliaMAG7IndexTokenAddress, zeroAddress } from '@/constants/contractAddresses'
 import { reduceAddress } from '@/utils/general'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
 import { indexTokenV2Abi } from '@/constants/abi'
@@ -75,9 +75,13 @@ export default function Explore() {
 
 	const AnfiContract: UseContractResult = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
 	const Cr5Contract: UseContractResult = useContract(sepoliaCrypto5V2IndexToken, indexTokenV2Abi)
+	const Mag7Contract: UseContractResult = useContract(sepoliaMAG7IndexTokenAddress, indexTokenV2Abi)
+	const ArbeiContract: UseContractResult = useContract(sepoliaArbeiIndexTokenAddress, indexTokenV2Abi)
 	
 	const totalSupplyAnfi = useContractRead(AnfiContract.contract, 'totalSupply')
 	const totalSupplyCR5 = useContractRead(Cr5Contract.contract, 'totalSupply')
+	const totalSupplyMAG7 = useContractRead(Mag7Contract.contract, 'totalSupply')
+	const totalSupplyArbei = useContractRead(ArbeiContract.contract, 'totalSupply')
 
 	const subCategories = [
 		{
@@ -133,8 +137,8 @@ export default function Explore() {
 			name: 'Magnificent 7 Index',
 			symbol: 'MAG7',
 			logo: mag7Logo.src,
-			address: reduceAddress(zeroAddress),
-			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'MAG7',
+			address: reduceAddress(sepoliaMAG7IndexTokenAddress),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyMAG7.data), returnType:'string'}) +' '+ 'MAG7',
 			category: 'cefi',
 			subcategory: 'sub1',
 		},
@@ -143,7 +147,7 @@ export default function Explore() {
 			symbol: 'MAG7',
 			logo: mag7Logo.src,
 			address: reduceAddress(sepoliaMAG7IndexTokenAddress),
-			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'MAG7',
+			totalSupply: FormatToViewNumber({value: num(totalSupplyMAG7.data), returnType:'string'}) +' '+ 'MAG7',
 			category: 'defi',
 			subcategory: 'sub1',
 		},
@@ -151,8 +155,8 @@ export default function Explore() {
 			name: 'Arbitrum Ecosystem Index',
 			symbol: 'ARBEI',
 			logo: arbLogo.src,
-			address: reduceAddress(zeroAddress),
-			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'ARBEI',
+			address: reduceAddress(sepoliaArbeiIndexTokenAddress),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyArbei.data), returnType:'string'}) +' '+ 'ARBEI',
 			category: 'cefi',
 			subcategory: 'sub1',
 		},
@@ -160,8 +164,8 @@ export default function Explore() {
 			name: 'Arbitrum Ecosystem Index',
 			symbol: 'ARBEI',
 			logo: arbLogo.src,
-			address: reduceAddress(zeroAddress),
-			totalSupply: FormatToViewNumber({value: num(0), returnType:'string'}) +' '+ 'ARBEI',
+			address: reduceAddress(sepoliaArbeiIndexTokenAddress),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyArbei.data), returnType:'string'}) +' '+ 'ARBEI',
 			category: 'defi',
 			subcategory: 'sub1',
 		},

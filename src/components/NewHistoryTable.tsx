@@ -44,7 +44,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 	const address = useAddress()
 	const { mode, theme, setTheme } = useLandingPageStore()
 	const { isStandalone } = usePWA()
-	const { crosschainTableReload, isMainnet, tradeTableReload, setTradeTableReload } = useTradePageStore()
+	const { crosschainTableReload, isMainnet, tradeTableReload, setTradeTableReload, stockTableReload, defiTableReload } = useTradePageStore()
 
 	const {
 		positionHistoryDefi,
@@ -557,7 +557,7 @@ function NewHistoryTable(props: HistoryTableProps) {
 		<>
 			<div className={`w-full h-full overflow-x-auto ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
 				<div className={`h-full border w-full border-gray-300 rounded-2xl overflow-scroll max-h-[400px] ${mode == 'dark' ? 'darkScrollBar' : ''}`}>
-					{address && path === '/tradeIndex' && (activeIndexType === 'crosschain' || activeIndexType === 'stock')&& crosschainTableReload && (
+					{address && path === '/tradeIndex' && ((activeIndexType === 'crosschain' && crosschainTableReload)|| (activeIndexType === 'stock' && stockTableReload) || (activeIndexType === 'defi' && defiTableReload) ) && (
 						<Box sx={{ p: 2, width: '100%' }}>
 							<LinearProgress />
 						</Box>
