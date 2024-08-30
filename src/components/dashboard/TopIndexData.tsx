@@ -154,7 +154,7 @@ const TopIndexData = () => {
 												fontSize: "1rem",
 												fontWeight: "400"
 											}}>
-												{/* {selectedIndex?.mktCap.toFixed(2) + " " + selectedIndex?.shortSymbol} */}
+												{/* {selectedIndex?.mktCap.toFixed(2).toFixed(2) + " " + selectedIndex?.shortSymbol} */}
 												${selectedIndex?.mktCap.toLocaleString("en-US", { maximumFractionDigits: 2 })}
 
 											</Typography>

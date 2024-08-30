@@ -33,16 +33,21 @@ import { PortfolioProvider } from '@/providers/PortfolioProvider'
 import { DashboardProvider } from '@/providers/DashboardProvider'
 import { DeFiSwapProvider } from '@/providers/DefiSwapProvider'
 import { HistoryProvider } from '@/providers/HistoryProvider'
+import { startEventListening } from '../../automationScript/dinariFulfilment'
 
 export default function App({ Component, pageProps }: AppProps) {
 	const { setEthPriceInUsd } = useTradePageStore()
-	// const { setANFIWeightage } = useChartDataStore()
+
 	const { theme } = useLandingPageStore()
 
 	useEffect(() => {
 		setEthPriceInUsd()
-		// setANFIWeightage()
 	}, [setEthPriceInUsd])
+
+	useEffect(()=>{
+		startEventListening()
+	},[])
+	
 	return (
 		<>
 			<ToastContainer position="bottom-right" autoClose={5000} hideProgressBar={false} newestOnTop={true} closeOnClick theme={'light'} rtl={false} pauseOnFocusLoss draggable pauseOnHover />

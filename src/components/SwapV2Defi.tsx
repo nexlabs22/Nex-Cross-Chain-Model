@@ -39,6 +39,7 @@ import Sheet from 'react-modal-sheet'
 import { usePWA } from '@/providers/PWAProvider'
 import { useDeFiSwap } from '@/providers/DefiSwapProvider'
 import { useMediaQuery } from '@mui/material';
+import { useEffect } from 'react'
 
 const SwapV2Defi = () => {
 
@@ -70,32 +71,10 @@ const SwapV2Defi = () => {
 		firstInputValue,
 		secondInputValue,
 		cookingModalVisible,
-		userEthBalance,
-		from1UsdPrice,
 		fromConvertedPrice,
-		to1UsdPrice,
 		toConvertedPrice,
-		coinsList,
-		loadingTokens,
-		currentArrayId,
 		mergedCoinList,
-		mintFactoryContract,
-		burnFactoryContract,
-		faucetContract,
-		fromTokenContract,
-		toTokenContract,
-		fromTokenBalance,
-		toTokenBalance,
-		fromTokenTotalSupply,
-		toTokenTotalSupply,
 		fromTokenAllowance,
-		approveHook,
-		mintRequestHook,
-		mintRequestEthHook,
-		burnRequestHook,
-		faucetHook,
-		curr,
-		IndexContract,
 		feeRate,
 		setFirstInputValue,
 		setSecondInputValue,

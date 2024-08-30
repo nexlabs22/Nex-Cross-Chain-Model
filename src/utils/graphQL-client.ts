@@ -6,4 +6,10 @@ const client = createClient({
   exchanges: [cacheExchange, fetchExchange],
 });
 
+const indexesClient = createClient({
+  url: `https://api.studio.thegraph.com/query/82654/nexlabs-subgraphs/version/latest`,
+  exchanges: [cacheExchange, fetchExchange],
+});
+
 export default client;
+export {indexesClient};

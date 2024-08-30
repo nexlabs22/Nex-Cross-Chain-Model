@@ -17,9 +17,10 @@ export function GetDefiPortfolioBalance() {
 	
 	const [portfolioValue, setPortfolioValue] = useState<number>()
 	const {swapFromCur, swapToCur} = useTradePageStore()
+	
 
-	const allowedSymbols = sepoliaTokens.filter((token) => token.isNexlabToken).map((token) => token.Symbol)
-	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))[0]
+	const allowedSymbols = sepoliaTokens.filter((token) => token.isNexlabToken && token.indexType ==='defi').map((token) => token.Symbol)
+	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))[0]	
 
 	const getPortfolioValue = useCallback(async () => {
 		
@@ -32,13 +33,16 @@ export function GetDefiPortfolioBalance() {
 			abi: indexFactoryV2Abi,
 			functionName: 'getPortfolioBalance',
 		  })
+		  
 		totalPortfolioBalance += Number(sepoliaPortfolioBalance)
 		
 		setPortfolioValue(totalPortfolioBalance);
-	}, [])
+	}, [activeTicker])
 
 	useEffect(() => {
-		getPortfolioValue()
+		if(activeTicker){
+			getPortfolioValue()
+		}
 	}, [getPortfolioValue])
 
 	return {

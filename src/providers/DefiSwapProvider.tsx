@@ -3,8 +3,18 @@ import Image from 'next/image'
 // Store
 import useTradePageStore from '@/store/tradeStore'
 import { UseContractResult, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
-import { sepoliaCrypto5V2Factory, sepoliaUsdtAddress, sepoliaWethAddress, sepoliaTokenFaucet, sepoliaMAG7IndexTokenAddress, sepoliaMag7Factory } from '@/constants/contractAddresses'
-import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, stockFactoryABI, tokenAbi, tokenFaucetAbi } from '@/constants/abi'
+import {
+	sepoliaCrypto5V2Factory,
+	sepoliaUsdtAddress,
+	sepoliaWethAddress,
+	sepoliaTokenFaucet,
+	sepoliaMAG7IndexTokenAddress,
+	sepoliaMag7Factory,
+	sepoliaMag7FactoryStorage,
+	sepoliaAnfiV2Factory,
+	sepoliaArbeiIndexFactoryAddress,
+} from '@/constants/contractAddresses'
+import { crossChainIndexFactoryV2Abi, indexFactoryV2Abi, stockFactoryABI, stockFactoryStorageABI, tokenAbi, tokenFaucetAbi } from '@/constants/abi'
 import { toast } from 'react-toastify'
 import { SmartContract } from '@thirdweb-dev/sdk'
 import { BigNumber } from 'alchemy-sdk'
@@ -57,8 +67,6 @@ interface DeFiSwapContextProps {
 	mintRequestEthHook: any
 	burnRequestHook: any
 	faucetHook: any
-	curr: Coin
-	IndexContract: UseContractResult | null
 	feeRate: number
 	setFirstInputValue: React.Dispatch<React.SetStateAction<string>>
 	setSecondInputValue: React.Dispatch<React.SetStateAction<string>>
@@ -120,17 +128,6 @@ const DeFiSwapContext = createContext<DeFiSwapContextProps>({
 	mintRequestEthHook: 0,
 	burnRequestHook: 0,
 	faucetHook: 0,
-	curr: {
-		logo: '',
-		name: '',
-		Symbol: '',
-		address: '',
-		isNexlabToken: false,
-		indexType: '',
-		factoryAddress: '',
-		decimals: 0,
-	},
-	IndexContract: null,
 	feeRate: 0,
 	setFirstInputValue: () => {},
 	setSecondInputValue: () => {},
@@ -182,6 +179,8 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	const [coinsList, setCoinsList] = useState<Coin[]>([])
 	const [loadingTokens, setLoadingTokens] = useState(true)
 	const [currentArrayId, setCurrentArrayId] = useState(0)
+	const [currentPortfolioValue, setCurrentPortfolioBalance] = useState(0)
+	const [feeRate, setFeeRate] = useState(0)
 	const [mergedCoinList, setMergedCoinList] = useState<Coin[][]>([[], []])
 	const {
 		isFromCurrencyModalOpen,
@@ -202,6 +201,15 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		isMainnet,
 		setIsmainnet,
 	} = useTradePageStore()
+
+	const sepoliaPublicClient = getClient('sepolia')
+
+	const feeRateFactoryContracts:{[key:string]: `0x${string}`} = {
+		'ANFI': sepoliaAnfiV2Factory,
+		'CRYPTO5' : sepoliaCrypto5V2Factory,
+		'ARBEI' : sepoliaArbeiIndexFactoryAddress,
+		'MAG7' : sepoliaMag7FactoryStorage
+	}
 
 	const address = useAddress()
 	const signer = useSigner()
@@ -237,55 +245,60 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 	const mintRequestEthHook = useContractWrite(mintFactoryContract.contract, 'issuanceIndexTokensWithEth')
 	const burnRequestHook = useContractWrite(burnFactoryContract.contract, 'redemption')
 	const faucetHook = useContractWrite(faucetContract.contract, 'getToken')
-	const curr = swapFromCur.factoryAddress ? swapFromCur : swapToCur
-	const IndexContract: UseContractResult = useContract(curr.factoryAddress, indexFactoryV2Abi)
-	const feeRate = useContractRead(IndexContract.contract, 'feeRate').data / 10000
 	const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
 	const defiPortfolioValue = GetDefiPortfolioBalance()
-	// useEffect(() => {
-	// 	async function getIssuanceOutput() {
-	// 		try {
-	// 			if (swapToCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
-	// 				// const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_GOERLI_KEY}`)
-	// 				const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
-	// 				const issuanceContract = new ethers.Contract(swapToCur.factoryAddress, indexFactoryV2Abi, provider)
-	// 				const output = await issuanceContract.callStatic.getIssuanceAmountOut2(convertedInputValue.toString(), swapFromCur.address, '3')
-	// 				setSecondInputValue(num(output).toString())
-	// 			}
-	// 		} catch (error) {
-	// 			// console.log('getIssuanceOutput error:', error)
-	// 		}
-	// 	}
-	// 	// getIssuanceOutput()
-	// }, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
+
+	useEffect(()=>{
+
+		async function getFeeRate(){
+
+			const activeSymbol = swapFromCur.isNexlabToken ? swapFromCur.Symbol : swapToCur.Symbol
+			const feeRate = await sepoliaPublicClient.readContract({
+				address: feeRateFactoryContracts[activeSymbol],
+				abi: stockFactoryStorageABI,
+				functionName: 'feeRate',
+				args: [],
+			})
+
+			setFeeRate(Number(feeRate)/10000)			
+		}
+
+		getFeeRate()
+			
+	},[swapFromCur, swapToCur])
+
+
+	useEffect(() => {
+		const currentPortfolioValue = swapToCur.indexType === 'defi' || swapFromCur.indexType === 'defi' ? defiPortfolioValue.data : (crossChainPortfolioValue.data as number)
+		setCurrentPortfolioBalance(currentPortfolioValue as number)
+	}, [crossChainPortfolioValue.data, defiPortfolioValue.data, swapToCur.indexType, swapFromCur.indexType])
+
 	useEffect(() => {
 		async function getIssuanceOutput2() {
 			try {
 				const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
 				if (swapToCur.hasOwnProperty('indexType')) {
-					const currentPortfolioValue = swapToCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
 					const currentTotalSupply = Number(toTokenTotalSupply.data)
 					let inputValue
 					if (swapFromCur.address == sepoliaWethAddress) {
 						inputValue = Number(firstInputValue) * 1e18
-					} else {
-						const sepoliaPublicClient = getClient('sepolia')
+					} else {						
 						if (swapToCur.indexType === 'stock') {
 							const outAmount = await sepoliaPublicClient.readContract({
-								address: sepoliaMag7Factory,
-								abi: stockFactoryABI,
+								address: sepoliaMag7FactoryStorage,
+								abi: stockFactoryStorageABI,
 								functionName: 'getIssuanceAmountOut',
 								args: [numToWei(firstInputValue, swapFromCur.decimals)],
 							})
-								setSecondInputValue(weiToNum(outAmount, swapFromCur.decimals).toFixed(2))
-						} else if(convertedInputValue) {
+							setSecondInputValue(weiToNum(outAmount, swapFromCur.decimals).toFixed(2))
+						} else if (convertedInputValue) {
 							const inputEthValue = await sepoliaPublicClient.readContract({
 								address: sepoliaCrypto5V2Factory,
 								abi: crossChainIndexFactoryV2Abi,
 								functionName: 'getAmountOut',
 								args: [swapFromCur.address, sepoliaWethAddress, convertedInputValue, 3],
 							})
-							
+
 							inputValue = Number(inputEthValue)
 
 							let newPortfolioValue: number = 0
@@ -295,7 +308,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 								newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
 							}
 							const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
-							const amountToMint = newTotalSupply - currentTotalSupply
+							const amountToMint = newTotalSupply - currentTotalSupply							
 							setSecondInputValue(num(amountToMint).toString())
 						}
 					}
@@ -305,29 +318,14 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			}
 		}
 		getIssuanceOutput2()
-	}, [firstInputValue, swapFromCur.address, swapToCur.address, swapToCur.factoryAddress])
-	// useEffect(() => {
-	// 	async function getRedemptionOutput() {
-	// 		try {
-	// 			if (swapFromCur.address == sepoliaAnfiV2IndexToken && convertedInputValue) {
-	// 				const provider = new ethers.providers.JsonRpcBatchProvider(`https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_KEY}`)
-	// 				const redemptionContract = new ethers.Contract(swapFromCur.factoryAddress, indexFactoryV2Abi, provider)
-	// 				const output = await redemptionContract.callStatic.getRedemptionAmountOut2(convertedInputValue.toString(), swapToCur.address, '3')
-	// 				setSecondInputValue(num(output).toString())
-	// 			}
-	// 		} catch (error) {
-	// 			console.log('getRedemptionOutput error:', error)
-	// 		}
-	// 	}
-	// 	// getRedemptionOutput()
-	// }, [firstInputValue, convertedInputValue, swapFromCur.address, swapToCur.address, swapFromCur.factoryAddress])
+	}, [firstInputValue, swapFromCur.address, swapToCur.address, toTokenTotalSupply.data, swapToCur.factoryAddress, defiPortfolioValue.data, crossChainPortfolioValue.data])
+
 	useEffect(() => {
 		async function getRedemptionOutput2() {
 			try {
 				if (swapFromCur.hasOwnProperty('indexType')) {
 					const convertedInputValue = firstInputValue ? parseEther(Number(firstInputValue)?.toString() as string) : 0
-					let outputValue
-					const currentPortfolioValue = swapFromCur.indexType === 'defi' ? defiPortfolioValue.data : crossChainPortfolioValue.data
+					let outputValue					
 					const currentTotalSupply = Number(fromTokenTotalSupply.data)
 					const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
 					const newPortfolioValue = (Number(currentPortfolioValue) * newTotalSupply) / currentTotalSupply
@@ -335,11 +333,10 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					if (swapToCur.address == sepoliaWethAddress) {
 						outputValue = ethAmountOut
 					} else {
-						const sepoliaPublicClient = getClient('sepolia')
 						if (swapFromCur.indexType === 'stock') {
 							const outAmount = await sepoliaPublicClient.readContract({
-								address: sepoliaMag7Factory,
-								abi: stockFactoryABI,
+								address: sepoliaMag7FactoryStorage,
+								abi: stockFactoryStorageABI,
 								functionName: 'getRedemptionAmountOut',
 								args: [parseEther(firstInputValue)],
 							})
@@ -600,8 +597,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		const OurIndexCoinList: Coin[] = finalCoinList.filter((coin) => coin.isNexlabToken)
 		let OtherCoinList: Coin[] = finalCoinList.filter((coin) => !coin.isNexlabToken)
 
-		console.log(swapToCur, swapFromCur)
-
 		if (swapToCur.Symbol === 'MAG7' || swapFromCur.Symbol === ' MAG7') {
 			OtherCoinList = OtherCoinList.filter((coin) => {
 				return coin.Symbol !== 'USDT'
@@ -624,7 +619,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			// 	changeSwapToCur(usdtDetails)
 			// }
 		}
-		console.log(swapToCur, swapFromCur)
 		setMergedCoinList([OtherCoinList, OurIndexCoinList])
 	}, [isMainnet, swapToCur.Symbol, swapFromCur.Symbol])
 
@@ -763,8 +757,21 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		if (swapToCur.address == zeroAddress) {
 			return GenericToast({ type: 'info', message: 'Index will be live for trading soon, Stay Tuned!' })
 		}
+
+		let dinariFeeAmount = 0
+		if (swapToCur.indexType === 'stock') {
+			const feeAmountBigNumber = (await sepoliaPublicClient.readContract({
+				address: sepoliaMag7FactoryStorage,
+				abi: stockFactoryStorageABI,
+				functionName: 'calculateIssuanceFee',
+				args: [numToWei(firstInputValue, swapFromCur.decimals)],
+			})) as BigNumber
+
+			dinariFeeAmount = weiToNum(feeAmountBigNumber, swapFromCur.decimals)
+		}
+
 		// Ensure the number has at most swapFromCur.decimals decimal places
-		const valueWithCorrectDecimals = (Number(firstInputValue) * 1.001).toFixed(swapFromCur.decimals)
+		const valueWithCorrectDecimals = (Number(firstInputValue) * 1.001 + dinariFeeAmount).toFixed(swapFromCur.decimals)
 
 		// Convert to BigNumber using parseUnits
 		const convertedValue = parseUnits(valueWithCorrectDecimals, swapFromCur.decimals)
@@ -785,6 +792,11 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to approve`,
+					})
+				} else if (Number(firstInputValue) <= 15 && swapToCur.indexType === 'stock') {
+					return GenericToast({
+						type: 'error',
+						message: `Please enter amount greater than $15`,
 					})
 				}
 				await approveHook.mutateAsync({ args: [swapToCur.factoryAddress, BigInt(convertedValue.toString())] })
@@ -810,7 +822,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		try {
 			if (isChecked) {
 				openPaymentModal()
-			} else {
+			} else {				
 				if (weiToNum(fromTokenBalance.data, swapFromCur.decimals) < Number(firstInputValue)) {
 					return GenericToast({
 						type: 'error',
@@ -820,6 +832,11 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to mint`,
+					})
+				} else if ((Number(firstInputValue) <= 15) && (swapToCur.indexType === 'stock')) {
+					return GenericToast({
+						type: 'error',
+						message: `Please enter amount greater than $15`,
 					})
 				}
 				if (swapToCur.indexType === 'defi') {
@@ -833,7 +850,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					await mintRequestHook.mutateAsync({
 						args: [parseUnits(Number(firstInputValue).toString(), swapFromCur.decimals).toString()],
 						overrides: {
-							gasLimit: 3000000,
+							gasLimit: 5000000,
 						},
 					})
 				} else {
@@ -905,16 +922,21 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 						message: `You don't have enough ${swapFromCur.Symbol} balance!`,
 					})
 				} else if (Number(firstInputValue) <= 0) {
-					console.log('testing')
 					return GenericToast({
 						type: 'error',
 						message: `Please enter amount you want to burn`,
+					})
+				} else if ((Number(secondInputValue) <= 15) && (swapFromCur.indexType === 'stock')) {
+					return GenericToast({
+						type: 'error',
+						message: `Minimum USDC that you can get is $15`,
 					})
 				}
 				if (swapFromCur.indexType === 'defi') {
 					await burnRequestHook.mutateAsync({
 						// args: [(Number(firstInputValue) * 1e18).toString(), swapToCur.address, '3'],
-						args: [parseEther(Number(firstInputValue).toString()), swapFromCur.address, '3'],
+						// args: [parseEther(Number(firstInputValue).toString()), swapFromCur.address, '3'],
+						args: [parseEther(Number(firstInputValue).toString()), swapToCur.address, '3'],
 						overrides: {
 							gasLimit: 2000000,
 						},
@@ -923,7 +945,7 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 					await burnRequestHook.mutateAsync({
 						args: [parseUnits(Number(firstInputValue).toString(), swapFromCur.decimals).toString()],
 						overrides: {
-							gasLimit: 3000000,
+							gasLimit: 5000000,
 						},
 					})
 				} else {
@@ -981,8 +1003,6 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 		mintRequestEthHook: mintRequestEthHook,
 		burnRequestHook: burnRequestHook,
 		faucetHook: faucetHook,
-		curr: curr,
-		IndexContract: IndexContract,
 		feeRate: feeRate,
 		setFirstInputValue: setFirstInputValue,
 		setSecondInputValue: setSecondInputValue,
