@@ -61,7 +61,7 @@ export function startEventListening() {
             onLogs: logs => multical(logs),
         });
 
-        console.log('Started listening to events.',  unwatch);
+        console.log('Started listening to events.');
 
     } catch (error) {
         console.error('Failed to set up event listener:', error);
