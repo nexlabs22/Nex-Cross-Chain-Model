@@ -7,6 +7,10 @@ import Image from 'next/image'
 // icons :
 import { BiSolidChevronDown } from 'react-icons/bi'
 import { AiOutlineSwap } from 'react-icons/ai'
+import { BsInfoCircle } from 'react-icons/bs'
+import { GoArrowUpRight } from 'react-icons/go'
+import { LiaWalletSolid } from 'react-icons/lia'
+import { IoIosArrowBack } from 'react-icons/io'
 
 // Store
 import useTradePageStore from '@/store/tradeStore'
@@ -22,16 +26,14 @@ import {
 	sepoliaWethAddress,
 } from '@/constants/contractAddresses'
 import PaymentModal from './PaymentModal'
-import { BsInfoCircle } from 'react-icons/bs'
+
 import { FormatToViewNumber, formatNumber, num, weiToNum } from '@/hooks/math'
-import { LiaWalletSolid } from 'react-icons/lia'
 import Switch from 'react-switch'
 import GenericTooltip from './GenericTooltip'
-import { GoArrowUpRight } from 'react-icons/go'
+
 
 
 import { IOSSwitch, PWAProfileTextField } from '@/theme/overrides'
-import { IoIosArrowBack } from 'react-icons/io'
 import { Stack, Container, Box, Paper, Typography, Button, BottomNavigation, BottomNavigationAction } from '@mui/material'
 import { lightTheme } from '@/theme/theme'
 import Link from 'next/link'
@@ -105,6 +107,8 @@ const SwapV2Defi = () => {
 		burnRequest,
 		faucet
 	} = useDeFiSwap()
+
+	console.log({feeRate})
 
 
 	const isButtonDisabled = isMainnet || (!swapFromCur.isNexlabToken && !swapToCur.isNexlabToken) ? true : false

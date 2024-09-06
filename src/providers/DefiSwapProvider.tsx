@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react'
 import Image from 'next/image'
+import Big from 'big.js';
 // Store
 import useTradePageStore from '@/store/tradeStore'
 import { UseContractResult, useAddress, useContract, useContractRead, useContractWrite, useSigner } from '@thirdweb-dev/react'
@@ -770,14 +771,15 @@ const DeFiSwapProvider = ({ children }: { children: React.ReactNode }) => {
 			dinariFeeAmount = weiToNum(feeAmountBigNumber, swapFromCur.decimals)
 		}
 
+		const firstInputValueNum = new Big(firstInputValue);
+		const result = firstInputValueNum.times(1.001).plus(dinariFeeAmount);
+		const valueWithCorrectDecimals = result.toFixed(swapFromCur.decimals);
+
 		// Ensure the number has at most swapFromCur.decimals decimal places
-		const valueWithCorrectDecimals = (Number(firstInputValue) * 1.001 + dinariFeeAmount).toFixed(swapFromCur.decimals)
+		// const valueWithCorrectDecimals = (Number(firstInputValue) * 1.001 + dinariFeeAmount).toFixed(swapFromCur.decimals)
 
 		// Convert to BigNumber using parseUnits
-		const convertedValue = parseUnits(valueWithCorrectDecimals, swapFromCur.decimals)
-		// const convertedValue = parseUnits((Number(firstInputValue)*1.001).toString(),swapFromCur.decimals)
-
-		console.log({ value: Number(firstInputValue) * 1.001, decimals: swapFromCur.decimals, convertedValue })
+		const convertedValue = parseUnits(valueWithCorrectDecimals, swapFromCur.decimals)		
 
 		try {
 			if (isChecked) {
