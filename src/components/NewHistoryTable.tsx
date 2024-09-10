@@ -1,10 +1,8 @@
 import { Stack, Container, Typography, Button } from '@mui/material'
 import Accordion from '@mui/material/Accordion';
-import AccordionActions from '@mui/material/AccordionActions';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Fade from '@mui/material/Fade';
 import { Menu, MenuButton, MenuItem } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css'
@@ -14,7 +12,7 @@ import { lightTheme } from '@/theme/theme'
 import anfiLogo from '@assets/images/anfi.png'
 import cr5Logo from '@assets/images/cr5.png'
 import Divider from '@mui/material/Divider'
-import { sepoliaTokenAddresses } from '@/constants/contractAddresses'
+import { sepoliaMag7FactoryProcessor, sepoliaTokenAddresses } from '@/constants/contractAddresses'
 import { FormatToViewNumber, formatNumber } from '@/hooks/math'
 import useTradePageStore from '@/store/tradeStore'
 import { PositionType } from '@/types/tradeTableTypes'
@@ -34,6 +32,8 @@ import { RiDownloadLine } from 'react-icons/ri'
 import { CSVLink } from 'react-csv'
 import { usePWA } from '@/providers/PWAProvider'
 import { useHistory } from '@/providers/HistoryProvider'
+import { stockFactoryProcessorAbi } from '@/constants/abi';
+import { getClient } from '@/app/api/client';
 
 interface HistoryTableProps {
 	maxPWAHeight?: boolean
@@ -42,6 +42,7 @@ interface HistoryTableProps {
 function NewHistoryTable(props: HistoryTableProps) {
 	const maxPWAHeight = props
 	const address = useAddress()
+	const client = getClient('sepolia')
 	const { mode, theme, setTheme } = useLandingPageStore()
 	const { isStandalone } = usePWA()
 	const { crosschainTableReload, isMainnet, tradeTableReload, setTradeTableReload, stockTableReload, defiTableReload } = useTradePageStore()
@@ -75,6 +76,30 @@ function NewHistoryTable(props: HistoryTableProps) {
 			console.error("Unknown activeIndexType:", activeIndexType);
 		}
 	}
+
+
+	client.watchContractEvent({
+		address: sepoliaMag7FactoryProcessor, 
+		abi: stockFactoryProcessorAbi,        
+		eventName: 'Issuanced',               
+		onLogs: (logs) => {
+		  logs.forEach((log:any) => {
+			reloadTable(activeIndexType);
+			setTradeTableReload(false)
+		  });
+		},
+	  });
+	client.watchContractEvent({
+		address: sepoliaMag7FactoryProcessor, 
+		abi: stockFactoryProcessorAbi,        
+		eventName: 'Redemption',               
+		onLogs: (logs) => {
+		  logs.forEach((log:any) => {
+			reloadTable(activeIndexType);
+			setTradeTableReload(false)
+		  });
+		},
+	  });
 	
 	useEffect(()=>{
 		if(tradeTableReload){

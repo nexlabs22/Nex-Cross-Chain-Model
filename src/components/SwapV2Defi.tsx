@@ -108,8 +108,6 @@ const SwapV2Defi = () => {
 		faucet
 	} = useDeFiSwap()
 
-	console.log({feeRate})
-
 
 	const isButtonDisabled = isMainnet || (!swapFromCur.isNexlabToken && !swapToCur.isNexlabToken) ? true : false
 
