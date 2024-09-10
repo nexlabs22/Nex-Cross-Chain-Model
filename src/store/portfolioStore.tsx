@@ -81,7 +81,7 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 		const pricesInUsd: any = (
 			await Promise.all(
 				sepoliaTokens.map(async (token) => {
-					priceObj[token.address] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
+					priceObj[token.address.toLowerCase()] = (await convertToUSD({tokenAddress:token.address, tokenDecimals:token.decimals}, ethPriceInUsd, false)) || 0 // false as for testnet tokens
 					if (Object.keys(priceObj).length === sepoliaTokens.length - 1) {
 						return priceObj
 					}
@@ -89,6 +89,7 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 			)
 		).filter((item) => item !== undefined)
 
+		
 		const anfiTotalTradeBalance = positionHistoryData.reduce((total, item) => {
 			if (item.side === 'Mint Request' && item.indexName === 'ANFI') {
 				return total + item.inputAmount * pricesInUsd[0][item.tokenAddress]
@@ -101,8 +102,22 @@ const usePortfolioPageStore = create<PortfolioPageStore>()((set) => ({
 			}
 			return total
 		}, 0)
+		const mag7TotalTradeBalance = positionHistoryData.reduce((total, item) => {
+			if (item.side === 'Mint Request' && item.indexName === 'MAG7') {
+				return total + item.inputAmount * pricesInUsd[0][item.tokenAddress]
+			}
+			return total
+		}, 0)
+		const arbeiTotalTradeBalance = positionHistoryData.reduce((total, item) => {
+			if (item.side === 'Mint Request' && item.indexName === 'ARBEI') {
+				return total + item.inputAmount * pricesInUsd[0][item.tokenAddress]
+			}
+			return total
+		}, 0)
+		const totalTradeBalance = anfiTotalTradeBalance + crypto5TotalTradeBalance + mag7TotalTradeBalance+ arbeiTotalTradeBalance
+		
 
-		set({ portfolioData: { tradedBalance: { anfi: anfiTotalTradeBalance, crypto5: crypto5TotalTradeBalance, total: anfiTotalTradeBalance + crypto5TotalTradeBalance } } })
+		set({ portfolioData: { tradedBalance: { anfi: anfiTotalTradeBalance, crypto5: crypto5TotalTradeBalance, total: totalTradeBalance } } })
 	},
 
 	indexSelectedInPie: '',
