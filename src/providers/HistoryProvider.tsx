@@ -53,7 +53,8 @@ interface HistoryContextProps {
 		requests: PositionType[] | null
 		reload: () => void
 	}
-	positionHistoryData: PositionType[]
+	positionHistoryData: PositionType[],
+	totalPortfolioData: PositionType[],
 	combinedPositionTableCrosschainData: PositionType[]
 	combinedPositionTableStockData: PositionType[]
 	usdPrices: {
@@ -92,6 +93,7 @@ const HistoryContext = createContext<HistoryContextProps>({
 	positionHistoryData: [],
 	combinedPositionTableCrosschainData: [],
 	combinedPositionTableStockData: [],
+	totalPortfolioData: [],
 	usdPrices: {},
 	activeIndexType: 'defi',
 	path: '',
@@ -171,10 +173,10 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const allowedSymbols = sepoliaTokens.filter((token) => token.isNexlabToken).map((token) => token.Symbol)
 	const activeTicker = [swapFromCur.Symbol, swapToCur.Symbol].filter((symbol) => allowedSymbols.includes(symbol))
+	const totalPortfolioData = [...positionHistoryDefi.data, ...positionHistoryCrosschain.history, ...positionHistoryStock.history].sort((a, b) => b.timestamp - a.timestamp)
 
 	useEffect(() => {
-		const combinedData = [...positionHistoryDefi.data, ...positionHistoryCrosschain.history, ...positionHistoryStock.history]
-		setPortfolioData(combinedData)
+		setPortfolioData(totalPortfolioData)
 	}, [setEthPriceInUsd, setPortfolioData, positionHistoryDefi.data, positionHistoryCrosschain.history, positionHistoryStock.history])
 
 	useEffect(() => {
@@ -200,11 +202,11 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 			setPositionHistoryData(data)
 		} else if (path === '/portfolio' || path === '/history' || path === '/pwa_history') {
-			const data = positionHistoryCrosschain.history.concat(positionHistoryDefi.data).sort((a, b) => b.timestamp - a.timestamp)
-			setPositionHistoryData(data)
+			if (JSON.stringify(totalPortfolioData) !== JSON.stringify(positionHistoryData)) {
+				setPositionHistoryData(totalPortfolioData)
+			}
 		} else if (path === '/assetActivity') {
-			const dataTotal = [...positionHistoryDefi.data, ...positionHistoryCrosschain.history, ...positionHistoryStock.history].sort((a, b) => b.timestamp - a.timestamp)
-			const data = dataTotal.filter((data) => {
+			const data = totalPortfolioData.filter((data) => {
 				return assetName.toUpperCase() === data.indexName
 			})
 
@@ -224,7 +226,8 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		ownedAssetInActivity,
 		combinedPositionTableStockData,
 		positionHistoryCrosschain,
-		positionHistoryStock
+		positionHistoryStock,
+		totalPortfolioData
 	])
 
 	useEffect(() => {
@@ -358,6 +361,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		timestampstring: timestampstring,
 		fileName: fileName,
 		csvData: csvData,
+		totalPortfolioData:totalPortfolioData,
 		handleExportCSV: handleExportCSV,
 	}
 

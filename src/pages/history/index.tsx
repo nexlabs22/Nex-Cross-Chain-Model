@@ -97,6 +97,7 @@ import { GetPositionsHistoryDefi } from '@/hooks/getPositionsHistoryDefi'
 import { emptyData } from '@/constants/emptyChartData'
 import { GetTradeHistoryCrossChain } from '@/hooks/getTradeHistoryCrossChain'
 import { usePortfolio } from '@/providers/PortfolioProvider'
+import { useHistory } from '@/providers/HistoryProvider'
 
 
 function History() {
@@ -105,23 +106,16 @@ function History() {
 		user,
 		showPortfolioData,
 		chartArr,
-		indexPercent,
-		todayPortfolioPrice,
-		yesterdayPortfolioPrice,
 		portfolio24hChange,
 		portfolio24hChangePer,
-		pieData,
-		nexTokenAssetData,
 		totalPortfolioBalance,
-		positionHistoryDefi,
-		positionHistoryCrosschain,
-		indexDetails,
-		indexDetailsMap,
 		uploadedPPLink,
 		chosenPPType,
 		handleCopyFunction,
 		handleCopyIndexDetailsFunction,
 	} = usePortfolio()
+
+	const {totalPortfolioData} = useHistory()
 	const address = useAddress()
 	const [QRModalVisible, setQRModalVisible] = useState(false)
 	const { portfolioData } = usePortfolioPageStore()
@@ -196,7 +190,7 @@ function History() {
 		const dataToExport = []
 		const heading = ['Time', 'Pair', 'Request Side', 'Input Amount', 'Output Amount', 'Transaction hash']
 		dataToExport.push(heading)
-		const combinedData = positionHistoryDefi.data.concat(positionHistoryCrosschain.data)
+		const combinedData = totalPortfolioData
 		combinedData
 			.sort((a, b) => b.timestamp - a.timestamp)
 			.forEach((position) => {
@@ -209,14 +203,14 @@ function History() {
 					{
 						text: [
 							`${FormatToViewNumber({ value: position.inputAmount, returnType: 'string' })} ${
-								side.toLowerCase() === 'mint' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+								side.toLowerCase() === 'mint' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key].toLowerCase() === position.tokenAddress) : position.indexName
 							}`,
 						],
 					},
 					{
 						text: [
 							`${FormatToViewNumber({ value: position.outputAmount, returnType: 'string' })} ${
-								side.toLowerCase() === 'burn' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key] === position.tokenAddress) : position.indexName
+								side.toLowerCase() === 'burn' ? Object.keys(sepoliaTokenAddresses).find((key) => sepoliaTokenAddresses[key].toLowerCase() === position.tokenAddress) : position.indexName
 							}`,
 						],
 					},

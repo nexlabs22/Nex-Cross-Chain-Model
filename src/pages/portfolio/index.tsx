@@ -203,10 +203,10 @@ export default function Portfolio() {
 													} `}
 												>
 													$
-													{showPortfolioData
-														? '120.92'
-														: //  ? FormatToViewNumber({value:portfolio24hChange, returnType: 'currency'})
-														  '0.00'}
+													{showPortfolioData ?
+														'120.92'
+														// FormatToViewNumber({value:portfolio24hChange, returnType: 'currency'})
+														: '0.00'}
 												</h5>
 												<div
 													className={`w-fit h-fit rounded-lg ${
