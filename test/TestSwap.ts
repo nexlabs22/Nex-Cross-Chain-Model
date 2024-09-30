@@ -10,6 +10,7 @@ import { UniswapV3Deployer } from "./uniswap/UniswapV3Deployer";
 import { getMaxTick, getMinTick } from "./uniswap/utils/ticks";
 import { FeeAmount, TICK_SPACINGS } from "./uniswap/utils/constants";
 import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
+import { FactoryV3Addresses } from '../contractAddresses';
   
   describe("Swap", function () {
     // We define a fixture to reuse the same setup in every test.
@@ -52,7 +53,7 @@ import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
           tokens[0],
           tokens[1],
           "3000",
-          encodePriceSqrt(1, 1)
+          encodePriceSqrt(1, 100000)
         )
       await deploymentObj.token0.approve(deploymentObj.nft.address, ethers.utils.parseEther("1000"));
       await deploymentObj.token1.approve(deploymentObj.nft.address, ethers.utils.parseEther("1000"));
@@ -77,6 +78,10 @@ import { encodePriceSqrt } from "./uniswap/utils/encodePriceSqrt.ts";
       }
       
       await deploymentObj.nft.mint(liquidityParams)
+
+      const poolAddress = await deploymentObj.v3Fctory.getPool(tokens[0], tokens[1], "3000");
+      console.log("token0 pool balance:", ethers.utils.formatEther(await deploymentObj.token0.balanceOf(poolAddress)))
+      console.log("token1 pool balance:", ethers.utils.formatEther(await deploymentObj.token1.balanceOf(poolAddress)))
 
       const params1 = {
         tokenIn: deploymentObj.token0.address,

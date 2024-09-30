@@ -53,6 +53,8 @@ contract IndexFactory is
     uint public redemptionNonce;
     uint public updatePortfolioNonce;
 
+    address public feeReceiver;
+
     mapping(uint => mapping(address => TokenOldAndNewValues))
         public issuanceTokenOldAndNewValues;
     mapping(uint => uint) public issuanceCompletedTokensCount;
@@ -146,6 +148,7 @@ contract IndexFactory is
         //fee
         feeRate = 10;
         latestFeeUpdate = block.timestamp;
+        feeReceiver = msg.sender;
     }
 
     function setIndexFactoryStorage(
@@ -154,7 +157,9 @@ contract IndexFactory is
         indexFactoryStorage = IndexFactoryStorage(_indexFactoryStorage);
     }
 
-    
+    function setFeeReceiver(address _feeReceiver) public onlyOwner {
+        feeReceiver = _feeReceiver;
+    }
     
 
     function crossChainFactoryBySelector(uint64 _chainSelector) public view returns(address){
@@ -250,10 +255,17 @@ contract IndexFactory is
     ) public {
         uint feeAmount = (_inputAmount * feeRate) / 10000;
         
-        //transfer fee to the owner
-        IERC20(_tokenIn).transferFrom(msg.sender, address(indexToken), _inputAmount);
-        IERC20(_tokenIn).transferFrom(msg.sender, owner(), feeAmount);
-        uint wethAmount = _swapSingle(_tokenIn, address(weth), _inputAmount, address(this), _tokenInSwapVersion);
+        
+        IERC20(_tokenIn).transferFrom(msg.sender, address(indexToken), _inputAmount + feeAmount);
+        uint wethAmountBeforFee = _swapSingle(_tokenIn, address(weth), _inputAmount + feeAmount, address(this), _tokenInSwapVersion);
+        uint feeWethAmount = wethAmountBeforFee*feeRate/10000;
+        uint wethAmount = wethAmountBeforFee - feeWethAmount;
+
+        //giving fee to the fee receiver
+        weth.withdraw(feeWethAmount);
+        (bool _feeReceiverSuccess,) = address(feeReceiver).call{value: feeWethAmount}("");
+        require(_feeReceiverSuccess, "transfer eth fee to the fee receiver failed");
+
         //set mappings
         issuanceNonce++;
         issuanceNonceRequester[issuanceNonce] = msg.sender;
@@ -271,8 +283,8 @@ contract IndexFactory is
         uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
         require(msg.value >= finalAmount, "lower than required amount");
         //transfer fee to the owner
-        (bool _success, ) = owner().call{value: feeAmount}("");
-        require(_success, "transfer eth fee to the owner failed");
+        (bool _success, ) = address(feeReceiver).call{value: feeAmount}("");
+        require(_success, "transfer eth fee to the fee receiver failed");
         weth.deposit{value: _inputAmount + _crossChainFee}();
         //set mappings
         issuanceNonce++;
@@ -591,7 +603,7 @@ contract IndexFactory is
         uint outputTokenSwapVersion = redemptionNonceOutputTokenSwapVersion[nonce];
         uint fee = (wethAmount * feeRate) / 10000;
         weth.withdraw(fee);
-        (bool _ownerSuccess, ) = owner().call{value: fee}("");
+        (bool _ownerSuccess, ) = address(feeReceiver).call{value: fee}("");
         require(_ownerSuccess, "transfer eth fee to the owner failed");
         if(outputToken == address(weth)){
         // weth.transfer(requester, wethAmount - fee);

@@ -74,19 +74,28 @@ import { arbitrumSepoliaTestRippleAddress, CrossChainTokenAddresses, FactoryV3Ad
         amounts[1] = tokens[1] == deploymentObj.token.address ? ethers.utils.parseEther("1000") : ethers.utils.parseEther("0.2")
         const price0 = tokens[0] == deploymentObj.token.address ? 2 : 100000
         const price1 = tokens[1] == deploymentObj.token.address ? 2 : 100000
-    //     console.log("createAndInitializePoolIfNecessary..")
-    //     await deploymentObj.nft.connect(signer).createAndInitializePoolIfNecessary(
-    //       tokens[0],
-    //       tokens[1],
-    //       "3000",
-    //       encodePriceSqrt(price0, price1)
-    //     )
-    //   console.log("approve token ...")
-    //   await deploymentObj.token.connect(signer).approve(deploymentObj.nft.address, ethers.utils.parseEther("10000"));
-    //   console.log("deposit weth ...")
-    //   await deploymentObj.weth9.connect(signer).deposit({value:ethers.utils.parseEther("0.2")});
-    //   console.log("approve weth ...")
-    //   await deploymentObj.weth9.connect(signer).approve(deploymentObj.nft.address, ethers.utils.parseEther("0.2"));
+        
+      console.log("createAndInitializePoolIfNecessary..")
+      // const initPoolResult = await deploymentObj.nft.connect(signer).createAndInitializePoolIfNecessary(
+      //   tokens[0],
+      //   tokens[1],
+      //   "3000",
+      //   encodePriceSqrt(price0, price1)
+      // )
+      const initPoolResult = await deploymentObj.nft.connect(signer).createAndInitializePoolIfNecessary(
+        deploymentObj.weth9.address,
+        deploymentObj.token.address,
+        "3000",
+        encodePriceSqrt(2, 100000)
+      )
+      await initPoolResult.wait();
+
+      console.log("approve token ...")
+      await deploymentObj.token.connect(signer).approve(deploymentObj.nft.address, ethers.utils.parseEther("10000"));
+      console.log("deposit weth ...")
+      await deploymentObj.weth9.connect(signer).deposit({value:ethers.utils.parseEther("0.2")});
+      console.log("approve weth ...")
+      await deploymentObj.weth9.connect(signer).approve(deploymentObj.nft.address, ethers.utils.parseEther("0.2"));
       
       const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
     //   const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
