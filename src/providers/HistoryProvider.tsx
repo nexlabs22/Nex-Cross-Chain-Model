@@ -192,15 +192,23 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		} else if (path === '/pwa_tradeIndex') {
 			const dataTotal = [...positionHistoryDefi.data, ...combinedPositionTableCrosschainData, ...combinedPositionTableStockData].sort((a, b) => b.timestamp - a.timestamp)
 
-			const data = dataTotal.filter((data) => {
-				if (selectedIndex == 'CRYPTO5' || selectedIndex == 'CRYPTO 5' || selectedIndex == 'CR5') {
-					return 'CRYPTO5' === data.indexName
-				} else {
-					return selectedIndex.toUpperCase() === data.indexName
-				}
+			console.log('History',{selectedIndex})
+			const dataToShow = dataTotal.filter((data) => {
+				return selectedIndex.toUpperCase() === data.indexName
 			})
 
-			setPositionHistoryData(data)
+			if (JSON.stringify(dataToShow) !== JSON.stringify(positionHistoryData)) {
+				setPositionHistoryData(dataToShow)
+			}
+			// const data = dataTotal.filter((data) => {
+			// 	if (selectedIndex == 'CRYPTO5' || selectedIndex == 'CRYPTO 5' || selectedIndex == 'CR5') {
+			// 		return 'CRYPTO5' === data.indexName
+			// 	} else {
+			// 		return selectedIndex.toUpperCase() === data.indexName
+			// 	}
+			// })
+
+			// setPositionHistoryData(data)
 		} else if (path === '/portfolio' || path === '/history' || path === '/pwa_history') {
 			if (JSON.stringify(totalPortfolioData) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(totalPortfolioData)

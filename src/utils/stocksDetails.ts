@@ -2,7 +2,7 @@ export const stockDetails = {
     'ANFI': ['anfi', 'Anti Inflation Index'],
     'CRYPTO5': ['crypto5', 'Crypto 5'],
     // 'STOCK5': ['stock5', 'Stock5'],
-    'MAG7': ['mag7', 'Magnificient 7'],
+    'MAG7': ['mag7', 'Magnificent 7'],
     'ARBIn': ['sci', 'Arbitrum Ecosystem Index'],
     'ARBEI': ['arbie', 'Arbitrum Ecosystem Index'],
     'V': ['visa', 'Visa'],

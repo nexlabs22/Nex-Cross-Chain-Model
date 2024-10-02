@@ -1,20 +1,15 @@
 import React, { createContext, useState, useEffect, useContext, ReactElement } from 'react'
 import Image, { StaticImageData } from 'next/image'
-import Link from 'next/link'
 import {
-	goerliAnfiV2IndexToken,
-	goerliCR5PoolAddress,
-	goerliCrypto5IndexToken,
-	goerlianfiPoolAddress,
-	sepoliaAnfiV2IndexToken,
+	sepoliaAnfiV2IndexToken,	
+	sepoliaArbeiIndexTokenAddress,
 	sepoliaCrypto5V2IndexToken,
-	sepoliaWethAddress,
-	zeroAddress,
+	sepoliaMAG7IndexTokenAddress,
 } from '@/constants/contractAddresses'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
 import { indexTokenV2Abi, tokenAbi } from '@/constants/abi'
 import axios from 'axios'
-import { num } from '@/hooks/math'
+import { FormatToViewNumber, num } from '@/hooks/math'
 import convertToUSD from '@/utils/convertToUsd'
 import useTradePageStore from '@/store/tradeStore'
 import { useQuery } from '@apollo/client'
@@ -67,98 +62,25 @@ import penpie from "@assets/icons/crypto/penpie.webp"
 
 import { AAVELogo, CLIPPERLogo, PENDLELogo, SILOLogo, PANCAKELogo, DODOLogo, DXSALELogo, CONVEXLogo, JOELogo, BITCOINLogo, ETHLogo, SOLANALogo, XRPLogo, BNBLogo, XAUTLogo, ARBITRUMLogo } from '@assets/icons/crypto/cryptoLogos'
 import { AMAZONLogo, MICROSOFTLogo, GOOGLELogo, NVIDIALogo, TESLALogo, APPLELogo, METALogo } from '@/assets/icons/stocks/stocksLogos';
+import { indexDetailsType, indexWithDetailsType, Product, underlyingAsset } from '@/types/nexTokenData'
+import { indexObjectEmpty, productsEmpty } from './initialvalues'
+import { reduceAddress } from '@/utils/general'
 
-type underlyingAsset = {
-	name: string
-	percentage: number
-	symbol: string
-	logo: ReactElement
-}
 
 interface DashboardContextProps {
-	IndicesWithDetails: {
-		name: string
-		logo: StaticImageData
-		symbol: string
-		shortSymbol: string
-		shortDescription: string
-		description: string
-		mktCap: number
-		mktPrice: number
-		chg24h: string
-		tokenAddress: string
-		managementFee: string
-		totalSupply: string
-		underlyingAssets: underlyingAsset[]
-	}[]
+	IndicesWithDetails: indexWithDetailsType[]
 	anfiIndexObject:
-		| {
-				name: string
-				logo: StaticImageData | null
-				symbol: string
-				shortSymbol: string
-				shortDescription: string
-				description: string
-				mktCap: number
-				mktPrice: number
-				chg24h: string
-				tokenAddress: string
-				managementFee: string
-				totalSupply: string
-				underlyingAssets: underlyingAsset[]
-		  }
+		| indexDetailsType
 		| undefined
 	cr5IndexObject:
-		| {
-				name: string
-				logo: StaticImageData | null
-				symbol: string
-				shortSymbol: string
-				shortDescription: string
-				description: string
-				mktCap: number
-				mktPrice: number
-				chg24h: string
-				tokenAddress: string
-				managementFee: string
-				totalSupply: string
-				underlyingAssets: underlyingAsset[]
-		  }
-		| undefined
+	| indexDetailsType
+	| undefined
 	mag7IndexObject:
-		| {
-				name: string
-				logo: StaticImageData | null
-				symbol: string
-				shortSymbol: string
-				shortDescription: string
-				description: string
-				mktCap: number
-				mktPrice: number
-				chg24h: string
-				tokenAddress: string
-				managementFee: string
-				totalSupply: string
-				underlyingAssets: underlyingAsset[]
-		  }
-		| undefined
+	| indexDetailsType
+	| undefined
 	arbIndexObject:
-		| {
-				name: string
-				logo: StaticImageData | null
-				symbol: string
-				shortSymbol: string
-				shortDescription: string
-				description: string
-				mktCap: number
-				mktPrice: number
-				chg24h: string
-				tokenAddress: string
-				managementFee: string
-				totalSupply: string
-				underlyingAssets: underlyingAsset[]
-		  }
-		| undefined
+	| indexDetailsType
+	| undefined
 	IndexContract: UseContractResult | null
 	feeRate: number
 	totalSupply: any
@@ -170,6 +92,9 @@ interface DashboardContextProps {
 	SmallANFIUnderLyingAssets: underlyingAsset[]
 	SmallMAG7UnderLyingAssets: underlyingAsset[]
 	SmallARBInUnderLyingAssets: underlyingAsset[]
+	indexDetailsMap: {[key:string]: indexDetailsType | undefined}
+	indexUnderlyingAssetsMap: {[key:string]: underlyingAsset[]}
+	products: Product[],
 	getANFIWeights(): Promise<void>
 	getCR5Weights(): Promise<void>
 	getMAG7Weights(): Promise<void>
@@ -178,66 +103,10 @@ interface DashboardContextProps {
 
 const DashboardContext = createContext<DashboardContextProps>({
 	IndicesWithDetails: [],
-	anfiIndexObject: {
-		name: '',
-		logo: null,
-		symbol: '',
-		shortSymbol: '',
-		shortDescription: '',
-		description: '',
-		mktCap: 0,
-		mktPrice: 0,
-		chg24h: '',
-		tokenAddress: '',
-		managementFee: '',
-		totalSupply: '',
-		underlyingAssets: [],
-	},
-	cr5IndexObject: {
-		name: '',
-		logo: null,
-		symbol: '',
-		shortSymbol: '',
-		shortDescription: '',
-		description: '',
-		mktCap: 0,
-		mktPrice: 0,
-		chg24h: '',
-		tokenAddress: '',
-		managementFee: '',
-		totalSupply: '',
-		underlyingAssets: [],
-	},
-	mag7IndexObject: {
-		name: '',
-		logo: null,
-		symbol: '',
-		shortSymbol: '',
-		shortDescription: '',
-		description: '',
-		mktCap: 0,
-		mktPrice: 0,
-		chg24h: '',
-		tokenAddress: '',
-		managementFee: '',
-		totalSupply: '',
-		underlyingAssets: [],
-	},
-	arbIndexObject: {
-		name: '',
-		logo: null,
-		symbol: '',
-		shortSymbol: '',
-		shortDescription: '',
-		description: '',
-		mktCap: 0,
-		mktPrice: 0,
-		chg24h: '',
-		tokenAddress: '',
-		managementFee: '',
-		totalSupply: '',
-		underlyingAssets: [],
-	},
+	anfiIndexObject: indexObjectEmpty,
+	cr5IndexObject: indexObjectEmpty,
+	mag7IndexObject: indexObjectEmpty,
+	arbIndexObject: indexObjectEmpty,
 	IndexContract: null,
 	feeRate: 0,
 	totalSupply: null,
@@ -248,7 +117,10 @@ const DashboardContext = createContext<DashboardContextProps>({
 	SmallCR5UnderLyingAssets: [],
 	SmallANFIUnderLyingAssets: [],
 	SmallMAG7UnderLyingAssets: [],
-	SmallARBInUnderLyingAssets: [],
+	SmallARBInUnderLyingAssets: [],	
+	indexDetailsMap: {},
+	indexUnderlyingAssetsMap: {},
+	products: productsEmpty,
 	getANFIWeights: () => Promise.resolve(),
 	getCR5Weights: () => Promise.resolve(),
 	getMAG7Weights: () => Promise.resolve(),
@@ -281,11 +153,15 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 		async function getPrice() {
 			const anfiTokenData = sepoliaTokens.find((d) => d.address === sepoliaAnfiV2IndexToken) as { address: string; decimals: number }
 			const cr5TokenData = sepoliaTokens.find((d) => d.address === sepoliaCrypto5V2IndexToken) as { address: string; decimals: number }
+			const mag7TokenData = sepoliaTokens.find((d) => d.address === sepoliaMAG7IndexTokenAddress) as { address: string; decimals: number }
+			const arbeiTokenData = sepoliaTokens.find((d) => d.address === sepoliaArbeiIndexTokenAddress) as { address: string; decimals: number }
 
 			const marketPriceANFIUSD = await convertToUSD({ tokenAddress: anfiTokenData.address, tokenDecimals: anfiTokenData.decimals }, ethPriceInUsd, false)
 			const marketPriceCR5USD = await convertToUSD({ tokenAddress: cr5TokenData.address, tokenDecimals: cr5TokenData.decimals }, ethPriceInUsd, false)
+			const marketPriceMAG7USD = await convertToUSD({ tokenAddress: mag7TokenData.address, tokenDecimals: mag7TokenData.decimals }, ethPriceInUsd, false)
+			const marketPriceARBEIUSD = await convertToUSD({ tokenAddress: arbeiTokenData.address, tokenDecimals: arbeiTokenData.decimals }, ethPriceInUsd, false)
 
-			setTodayPrice({ anfi: marketPriceANFIUSD as number, cr5: marketPriceCR5USD as number, mag7: 0.0, arbei: 0.0 })
+			setTodayPrice({ anfi: marketPriceANFIUSD as number, cr5: marketPriceCR5USD as number, mag7: marketPriceMAG7USD, arbei: marketPriceARBEIUSD })
 		}
 
 		getPrice()
@@ -398,7 +274,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 			mktCap: 0,
 			mktPrice: 0,
 			chg24h: indexChangePer.mag7,
-			tokenAddress: "0x955b3F0091414E7DBbe7bdf2c39d73695CDcDd95",
+			tokenAddress: sepoliaMAG7IndexTokenAddress,
 			managementFee: '1.00',
 			totalSupply: '78622.32',
 			underlyingAssets: [
@@ -457,7 +333,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 			mktCap: 0,
 			mktPrice: 0,
 			chg24h: indexChangePer.arbei,
-			tokenAddress: "0x58484111fC370bdb19AeaE6336cDb745A3006b4d",
+			tokenAddress: sepoliaArbeiIndexTokenAddress,
 			managementFee: '1.00',
 			totalSupply: '78622.32',
 			underlyingAssets: [
@@ -521,24 +397,78 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 	const mag7IndexObject = IndicesWithDetails.find((o) => o.symbol === 'MAG7')
 	const arbIndexObject = IndicesWithDetails.find((o) => o.symbol === 'ARBEI')
 
-	const IndexContract: UseContractResult = useContract(anfiIndexObject?.tokenAddress, indexTokenV2Abi)
-	const feeRate = useContractRead(IndexContract.contract, 'feeRatePerDayScaled').data / 1e18
-	const totalSupply = useContractRead(IndexContract.contract, 'totalSupply')
+	const IndexContractANFI: UseContractResult = useContract(anfiIndexObject?.tokenAddress, indexTokenV2Abi)
+	const feeRateANFI = useContractRead(IndexContractANFI.contract, 'feeRatePerDayScaled').data / 1e18
+	const totalSupplyANFI = useContractRead(IndexContractANFI.contract, 'totalSupply')
 
 	const IndexContractCR5: UseContractResult = useContract(cr5IndexObject?.tokenAddress, indexTokenV2Abi)
 	const feeRateCR5 = useContractRead(IndexContractCR5.contract, 'feeRatePerDayScaled').data / 1e18
 	const totalSupplyCR5 = useContractRead(IndexContractCR5.contract, 'totalSupply')
+	
+	const IndexContractMAG7: UseContractResult = useContract(mag7IndexObject?.tokenAddress, indexTokenV2Abi)
+	const totalSupplyMAG7 = useContractRead(IndexContractMAG7.contract, 'totalSupply')
+
+	const IndexContractARBEI: UseContractResult = useContract(arbIndexObject?.tokenAddress, indexTokenV2Abi)
+	const totalSupplyARBEI = useContractRead(IndexContractARBEI.contract, 'totalSupply')
+
 
 	if (anfiIndexObject) {
-		anfiIndexObject.managementFee = !!feeRate ? feeRate.toFixed(2) : '1.00'
-		anfiIndexObject.totalSupply = num(totalSupply.data).toFixed(2)
-		anfiIndexObject.mktCap = num(totalSupply.data) * anfiIndexObject.mktPrice
+		anfiIndexObject.managementFee = !!feeRateANFI ? feeRateANFI.toFixed(2) : '1.00'
+		anfiIndexObject.totalSupply = num(totalSupplyANFI.data).toFixed(2)
+		anfiIndexObject.mktCap = num(totalSupplyANFI.data) * anfiIndexObject.mktPrice
 	}
 	if (cr5IndexObject) {
 		cr5IndexObject.managementFee = feeRateCR5.toFixed(2)
 		cr5IndexObject.totalSupply = num(totalSupplyCR5.data).toFixed(2)
 		cr5IndexObject.mktCap = num(totalSupplyCR5.data) * cr5IndexObject.mktPrice
 	}
+	if (mag7IndexObject) {
+		mag7IndexObject.totalSupply = num(totalSupplyMAG7.data).toFixed(2)
+		mag7IndexObject.mktCap = num(totalSupplyMAG7.data) * mag7IndexObject.mktPrice
+	}
+	if (arbIndexObject) {
+		arbIndexObject.totalSupply = num(totalSupplyARBEI.data).toFixed(2)
+		arbIndexObject.mktCap = num(totalSupplyARBEI.data) * arbIndexObject.mktPrice
+	}
+
+	const products = [
+		{
+			name: 'CRYPTO 5',
+			symbol: 'CRYPTO5',
+			logo: cr5Logo.src,
+			address: reduceAddress(sepoliaCrypto5V2IndexToken),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyCR5.data), returnType:'string'}) +' '+ 'CR5',
+			category: ['cefi','defi'],
+			subcategory: 'sub2',
+		},
+		{
+			name: 'Anti Inflation Index',
+			symbol: 'ANFI',
+			logo: anfiLogo.src,
+			address: reduceAddress(sepoliaAnfiV2IndexToken),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyANFI.data), returnType:'string'}) +' '+ 'ANFI',
+			category: ['cefi','defi'],
+			subcategory: 'sub1',
+		},
+		{
+			name: 'Magnificent 7 Index',
+			symbol: 'MAG7',
+			logo: mag7Logo.src,
+			address: reduceAddress(sepoliaMAG7IndexTokenAddress),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyMAG7.data), returnType:'string'}) +' '+ 'MAG7',
+			category: ['cefi','defi'],
+			subcategory: 'sub1',
+		},
+		{
+			name: 'Arbitrum Ecosystem Index',
+			symbol: 'ARBEI',
+			logo: arbLogo.src,
+			address: reduceAddress(sepoliaArbeiIndexTokenAddress),
+			totalSupply: FormatToViewNumber({value: num(totalSupplyARBEI.data), returnType:'string'}) +' '+ 'ARBEI',
+			category: ['cefi','defi'],
+			subcategory: 'sub1',
+		}
+	]
 
 	const [CR5UnderLyingAssets, setCR5UnderLyingAssets] = useState<underlyingAsset[]>([])
 	const [ANFIUnderLyingAssets, setANFIUnderLyingAssets] = useState<underlyingAsset[]>([])
@@ -841,6 +771,19 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}
 
+	const indexDetailsMap = {
+		'ANFI': anfiIndexObject,
+		'CRYPTO5' : cr5IndexObject,
+		'MAG7' : mag7IndexObject,
+		'ARBEI' : arbIndexObject
+	}
+	const indexUnderlyingAssetsMap = {
+		'ANFI': ANFIUnderLyingAssets,
+		'CRYPTO5' : CR5UnderLyingAssets,
+		'MAG7' : MAG7UnderLyingAssets,
+		'ARBEI' : ARBInUnderLyingAssets
+	}
+
 	useEffect(() => {
 		getANFIWeights()
 		getCR5Weights()
@@ -855,9 +798,9 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 		cr5IndexObject: cr5IndexObject,
 		mag7IndexObject: mag7IndexObject,
 		arbIndexObject: arbIndexObject,
-		IndexContract: IndexContract,
-		feeRate: feeRate,
-		totalSupply: totalSupply,
+		IndexContract: IndexContractANFI,
+		feeRate: feeRateANFI,
+		totalSupply: totalSupplyANFI,
 		CR5UnderLyingAssets: CR5UnderLyingAssets,
 		ANFIUnderLyingAssets: ANFIUnderLyingAssets,
 		MAG7UnderLyingAssets: MAG7UnderLyingAssets,
@@ -866,6 +809,9 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 		SmallANFIUnderLyingAssets: SmallANFIUnderLyingAssets,
 		SmallMAG7UnderLyingAssets: SmallMAG7UnderLyingAssets,
 		SmallARBInUnderLyingAssets: SmallARBInUnderLyingAssets,
+		indexDetailsMap: indexDetailsMap,
+		indexUnderlyingAssetsMap: indexUnderlyingAssetsMap,
+		products: products,
 		getANFIWeights: getANFIWeights,
 		getCR5Weights: getCR5Weights,
 		getMAG7Weights: getMAG7Weights,

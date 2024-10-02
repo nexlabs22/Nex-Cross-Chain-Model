@@ -39,6 +39,8 @@ import { reduceAddress } from '@/utils/general'
 import { UseContractResult, useContract, useContractRead } from '@thirdweb-dev/react'
 import { indexTokenV2Abi } from '@/constants/abi'
 import { FormatToViewNumber, num } from '@/hooks/math'
+import { useDashboard } from '@/providers/DashboardProvider'
+import { Product } from '@/types/nexTokenData'
 
 interface Subcategory {
 	name: string
@@ -46,18 +48,9 @@ interface Subcategory {
 	logo: string
 }
 
-interface Product {
-	name: string
-	symbol: string
-	logo: string // Assuming logo is a file path or URL (string)
-	address: string
-	totalSupply: number | string // Corrected typo in property name
-	category: string
-	subcategory: string
-}
-
 export default function Explore() {
 	const { mode } = useLandingPageStore()
+	const { products } = useDashboard()
 	const router = useRouter()
 	const [selectedCategory, setSelectedCategory] = useState('defi')
 	const { changeDefaultIndex, selectedTradingCategory, setSelectedTradingCategory, selectedTradingProduct, setSelectedTradingProduct } = useTradePageStore()
@@ -73,16 +66,6 @@ export default function Explore() {
 		setSelectedCategory(selectedCategory === 'defi' ? 'cefi' : 'defi')
 	}
 
-	const AnfiContract: UseContractResult = useContract(sepoliaAnfiV2IndexToken, indexTokenV2Abi)
-	const Cr5Contract: UseContractResult = useContract(sepoliaCrypto5V2IndexToken, indexTokenV2Abi)
-	const Mag7Contract: UseContractResult = useContract(sepoliaMAG7IndexTokenAddress, indexTokenV2Abi)
-	const ArbeiContract: UseContractResult = useContract(sepoliaArbeiIndexTokenAddress, indexTokenV2Abi)
-	
-	const totalSupplyAnfi = useContractRead(AnfiContract.contract, 'totalSupply')
-	const totalSupplyCR5 = useContractRead(Cr5Contract.contract, 'totalSupply')
-	const totalSupplyMAG7 = useContractRead(Mag7Contract.contract, 'totalSupply')
-	const totalSupplyArbei = useContractRead(ArbeiContract.contract, 'totalSupply')
-
 	const subCategories = [
 		{
 			name: 'Hybrid Indices',
@@ -96,80 +79,14 @@ export default function Explore() {
 		},
 	]
 
-	const products = [
-		{
-			name: 'CRYPTO 5',
-			symbol: 'CRYPTO5',
-			logo: cr5Logo.src,
-			address: reduceAddress(sepoliaCrypto5V2IndexToken),
-			totalSupply: FormatToViewNumber({value: num(totalSupplyCR5.data), returnType:'string'}) +' '+ 'CR5',
-			category: 'defi',
-			subcategory: 'sub2',
-		},
-		{
-			name: 'CRYPTO 5',
-			symbol: 'CRYPTO5',
-			logo: cr5Logo.src,
-			address: reduceAddress(sepoliaCrypto5V2IndexToken),
-			totalSupply: FormatToViewNumber({value: num(totalSupplyCR5.data), returnType:'string'}) +' '+ 'CR5',
-			category: 'cefi',
-			subcategory: 'sub2',
-		},
-		{
-			name: 'Anti Inflation Index',
-			symbol: 'ANFI',
-			logo: anfiLogo.src,
-			address: reduceAddress(sepoliaAnfiV2IndexToken),
-			totalSupply: FormatToViewNumber({value: num(totalSupplyAnfi.data), returnType:'string'}) +' '+ 'ANFI',
-			category: 'defi',
-			subcategory: 'sub1',
-		},
-		{
-			name: 'Anti Inflation Index',
-			symbol: 'ANFI',
-			logo: anfiLogo.src,
-			address: reduceAddress(sepoliaAnfiV2IndexToken),
-			totalSupply: FormatToViewNumber({value: num(totalSupplyAnfi.data), returnType:'string'}) +' '+ 'ANFI',
-			category: 'cefi',
-			subcategory: 'sub1',
-		},
-		{
-			name: 'Magnificent 7 Index',
-			symbol: 'MAG7',
-			logo: mag7Logo.src,
-			address: reduceAddress(sepoliaMAG7IndexTokenAddress),
-			totalSupply: FormatToViewNumber({value: num(totalSupplyMAG7.data), returnType:'string'}) +' '+ 'MAG7',
-			category: 'cefi',
-			subcategory: 'sub1',
-		},
-		{
-			name: 'Magnificent 7 Index',
-			symbol: 'MAG7',
-			logo: mag7Logo.src,
-			address: reduceAddress(sepoliaMAG7IndexTokenAddress),
-			totalSupply: FormatToViewNumber({value: num(totalSupplyMAG7.data), returnType:'string'}) +' '+ 'MAG7',
-			category: 'defi',
-			subcategory: 'sub1',
-		},
-		{
-			name: 'Arbitrum Ecosystem Index',
-			symbol: 'ARBEI',
-			logo: arbLogo.src,
-			address: reduceAddress(sepoliaArbeiIndexTokenAddress),
-			totalSupply: FormatToViewNumber({value: num(totalSupplyArbei.data), returnType:'string'}) +' '+ 'ARBEI',
-			category: 'cefi',
-			subcategory: 'sub1',
-		},
-		{
-			name: 'Arbitrum Ecosystem Index',
-			symbol: 'ARBEI',
-			logo: arbLogo.src,
-			address: reduceAddress(sepoliaArbeiIndexTokenAddress),
-			totalSupply: FormatToViewNumber({value: num(totalSupplyArbei.data), returnType:'string'}) +' '+ 'ARBEI',
-			category: 'defi',
-			subcategory: 'sub1',
-		},
-	]
+
+	const flattenedProducts = products.flatMap(product => 
+		product.category.map(cat => ({
+			...product,
+			category: [cat], // assign each category individually
+		}))
+	);
+
 
 	const defiIcon = (
 		<svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 100 125" width="50" height="63">
@@ -198,7 +115,7 @@ export default function Explore() {
 	)
 
 	const handleOnSelect = (item: Product) => {
-		setSelectedTradingCategory(item.category)
+		setSelectedTradingCategory(item.category[0])
 		setSelectedTradingProduct(item.symbol)
 		router.push(`/tradeIndex?index=${item.symbol}`)
 	}
@@ -355,7 +272,7 @@ export default function Explore() {
 							}}
 						>
 							<div className="w-full h-fit flex flex-col xl:flex-row items-center justify-between mb-6 gap-3 xl:gap-0">
-								<ReactSearchAutocomplete className={`w-[75vw] xl:w-1/3 ${mode == "dark" ? "darkAutoComplete" : ""}`} items={products} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
+								<ReactSearchAutocomplete className={`w-[75vw] xl:w-1/3 ${mode == "dark" ? "darkAutoComplete" : ""}`} items={flattenedProducts} onSelect={handleOnSelect} autoFocus formatResult={formatSearchResult} />
 								<Menu
 									menuButton={
 										<MenuButton>
@@ -418,7 +335,7 @@ export default function Explore() {
 									<div className="w-fit xl:w-1/5 h-fit pr-8 xl:px-1"></div>
 								</div>
 								{products.map((product, index) => {
-									if (product.category == selectedCategory && product.subcategory == selectedSubCategory.symbol) {
+									if (product.category.includes(selectedCategory) && product.subcategory == selectedSubCategory.symbol) {
 										return (
 											<div key={index}>
 												<div className="w-full h-[1px] bg-blackText-500/50"></div>
@@ -485,7 +402,7 @@ export default function Explore() {
 							</div>
 							<div className="w-full h-fit border-gray-300 block xl:hidden rounded-xl px-3 py-6 shadow">
 								{products.map((product, index) => {
-									if (product.category == selectedCategory && product.subcategory == selectedSubCategory.symbol) {
+									if (product.category.includes(selectedCategory) && product.subcategory == selectedSubCategory.symbol) {
 										return (
 											<div key={index}>
 												<div className="flex flex-col items-start justify-start gap-3 mb-4">
