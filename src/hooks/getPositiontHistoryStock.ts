@@ -73,11 +73,8 @@ export function GetPositionsHistoryStock() {
 						sendStatus = 'PENDING'
 						receiveStatus = 'PENDING'
 					} else {
-						if(isMintedExist){
-							status = 'SUCCESS'
-						}else{
-							status = 'MINT PENDING'
-						}
+						sendStatus = 'SUCCESS'
+						receiveStatus = 'SUCCESS'
 					}
 
 

@@ -13,9 +13,9 @@ export async function getStakeChartData(rawData: { stakeds: rawStakeDataType[]; 
             time: Number(obj.timestamp),
             value: FormatToViewNumber({value:num(obj.poolSize), returnType: 'number'}) as number
         }
-    }).sort((a,b)=> a.time - b.time)
+    })
     const lastestTimestamp = Math.floor(new Date().getTime() / 1000)
-    if(chartData.length>0 && !!latestPoolSize && chartData[chartData.length-1].value !== latestPoolSize){
+    if(chartData.length>0){
         chartData.push({time: lastestTimestamp, value:latestPoolSize })
     }
 
