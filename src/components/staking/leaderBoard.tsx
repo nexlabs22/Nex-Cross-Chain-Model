@@ -24,11 +24,8 @@ import mag7Logo from '@assets/images/mag7.png'
 import arbLogo from '@assets/images/arb.png'
 
 import { CiStickyNote } from "react-icons/ci";
-
-
-interface GenericStakingLeaderBoardProps {
-    index: string
-}
+import { useStaking } from "@/providers/StakingProvider";
+import { FormatToViewNumber } from "@/hooks/math";
 
 function createData(
     PK: string,
@@ -52,11 +49,12 @@ const dataRows = [
 ];
 
 
-const StakingLeaderBoard: React.FC<GenericStakingLeaderBoardProps> = ({ index }) => {
+const StakingLeaderBoard: React.FC = () => {
 
     const { theme } = useLandingPageStore()
-
-
+    const { selectedStakingIndex, leaderBoardData} = useStaking()
+    console.log(leaderBoardData)
+    const index = selectedStakingIndex?.symbol
 
     return (
         <Stack width={"100%"} height={"fit-content"} direction={"column"} alignItems={"start"} justifyContent={"start"} borderRadius={"1.2rem"}>
@@ -70,39 +68,36 @@ const StakingLeaderBoard: React.FC<GenericStakingLeaderBoardProps> = ({ index })
                     }}>
                             <TableCell><Typography variant="subtitle2">Rank</Typography></TableCell>
                             <TableCell><Typography variant="subtitle2">Public Key</Typography></TableCell>
-                            <TableCell><Typography variant="subtitle2">Balance</Typography></TableCell>
-                            <TableCell><Typography variant="subtitle2">Income <span className=" font-light text-sm">(1D)</span></Typography></TableCell>
-                            <TableCell><Typography variant="subtitle2">Income <span className=" font-light text-sm">(7D)</span></Typography></TableCell>
-                            <TableCell><Typography variant="subtitle2">Income <span className=" font-light text-sm">(1M)</span></Typography></TableCell>
-                            <TableCell><Typography variant="subtitle2">Total Income</Typography></TableCell>
+                            <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Total {index} Staked*</Typography></TableCell>
+                            <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Reward* </Typography></TableCell>
+                            <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Percentage gain </Typography></TableCell>
+                            <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Last Activity at </Typography></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {
-                            dataRows.map((row, key) => {
+                            leaderBoardData.map((row, key) => {
                                 return (
                                     <TableRow key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 }, paddingX: 1 }}>
                                         <TableCell>
                                             <Typography variant="caption">#{key+1}</Typography>
                                         </TableCell>
                                         <TableCell>
-                                            <Typography variant="caption">{row.PK}</Typography>
+                                            <Typography variant="caption">{row.user}</Typography>
                                         </TableCell>
-                                        <TableCell>
-                                            <Typography variant="caption">{row.currentBalance.toFixed(2)+ " " + index}</Typography>
+                                        <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}>
+                                            <Typography variant="caption">{FormatToViewNumber({value:row.totalStakeAmount, returnType:'currency'})}</Typography>
                                         </TableCell>
-                                        <TableCell>
-                                            <Typography variant="caption">{row.income1day.toFixed(2)+ " " + index}</Typography>
+                                        <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}>
+                                            <Typography variant="caption">{FormatToViewNumber({value:row.rewardAmount, returnType:'currency'})}</Typography>
                                         </TableCell>
-                                        <TableCell>
-                                            <Typography variant="caption">{row.income7days.toFixed(2)+ " " + index}</Typography>
+                                        <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}>
+                                            <Typography variant="caption">{FormatToViewNumber({value:row.userPoolSharePercentage, returnType:'percent'})}</Typography>
                                         </TableCell>
-                                        <TableCell>
-                                            <Typography variant="caption">{row.income7days.toFixed(2)+ " " + index}</Typography>
+                                        <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}>
+                                            <Typography variant="caption">{row.lastActivityString}</Typography>
                                         </TableCell>
-                                        <TableCell>
-                                            <Typography variant="caption">{row.income30days.toFixed(2)+ " " + index}</Typography>
-                                        </TableCell>
+
                                         
                                     </TableRow>
                                 )

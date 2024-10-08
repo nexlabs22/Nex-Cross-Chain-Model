@@ -33,6 +33,7 @@ import { PortfolioProvider } from '@/providers/PortfolioProvider'
 import { DashboardProvider } from '@/providers/DashboardProvider'
 import { DeFiSwapProvider } from '@/providers/DefiSwapProvider'
 import { HistoryProvider } from '@/providers/HistoryProvider'
+import { StakingProvider } from '@/providers/StakingProvider'
 
 export default function App({ Component, pageProps }: AppProps) {
 	const { setEthPriceInUsd } = useTradePageStore()
@@ -74,14 +75,16 @@ export default function App({ Component, pageProps }: AppProps) {
 					<ThemeProvider theme={theme}>
 						<PWAProvider>
 							<DashboardProvider>
-								<PortfolioProvider>
-									<DeFiSwapProvider>
-										<HistoryProvider>
-											<Component {...pageProps} />
-											<Analytics />
-										</HistoryProvider>
-									</DeFiSwapProvider>
-								</PortfolioProvider>
+								<StakingProvider>
+									<PortfolioProvider>
+										<DeFiSwapProvider>
+											<HistoryProvider>
+												<Component {...pageProps} />
+												<Analytics />
+											</HistoryProvider>
+										</DeFiSwapProvider>
+									</PortfolioProvider>
+								</StakingProvider>
 							</DashboardProvider>
 						</PWAProvider>
 					</ThemeProvider>

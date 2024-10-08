@@ -10,6 +10,8 @@ import getTooltipDate, { convertTo13DigitsTimestamp, dateToEpoch } from '@/utils
 import useTradePageStore from '@/store/tradeStore'
 import { useRouter } from 'next/router'
 import useToolPageStore from '@/store/toolStore'
+import { useStaking } from '@/providers/StakingProvider'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 
 interface GradientAreaChartProps {
 	data: { time: string | number | Date; value: number }[]
@@ -17,13 +19,22 @@ interface GradientAreaChartProps {
 
 const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 	const { mode } = useLandingPageStore()
-	const router = useRouter()
-	const { index: selectedTradingProduct } = router.query
 	const { defaultIndex } = useLandingPageStore()
 	const { selectedDuration, comparisionIndices } = useChartDataStore()
+	const { selectedStakingIndex, chartLineColorMapping } = useStaking()
 	const { selectedIndex } = useToolPageStore()
+	const router = useRouter()
+
+	const { index: selectedTradingProduct } = router.query
 	const location = window.location.pathname
-	const ourIndexName = location === '/tradeIndex' ? selectedTradingProduct : (location === '/dcaCalculator')||location === '/dcaCalculatorTest' ? selectedIndex : defaultIndex
+	const ourIndexName =
+		location === '/tradeIndex'
+			? selectedTradingProduct
+			: location === '/dcaCalculator' || location === '/dcaCalculatorTest'
+			? selectedIndex
+			: location === '/staking'
+			? selectedStakingIndex?.symbol
+			: defaultIndex
 	const chartContainerRef = useRef<HTMLDivElement | null>(null)
 	const chartRef = useRef<any>(null)
 
@@ -47,7 +58,8 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 					fixRightEdge: false, // Do not fix the right edge of the x-axis
 					minBarSpacing: 0, // Set minimum bar spacing to 0 for smooth chart edges
 					borderVisible: false, // Hide the x-axis border
-					timeVisible: false, // Hide the time label on the x-axis
+					timeVisible: location === '/staking' ? true : false, // Hide the time label on the x-axis
+					secondsVisible: location === '/staking' ? true : false,
 					tickVisible: false, // Hide tick marks on the x-axis
 					maxRightOffset: 0, // Set maxRightOffset to 0
 					minRightOffset: maxValue, // Set minRightOffset based on the data range
@@ -55,8 +67,8 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				handleScale: false,
 				handleScroll: true,
 				layout: {
-					background: { color:  mode === 'dark' ? '#161A25' : '#FFFFFF' },
-					textColor:  mode === 'dark' ? '#D9D9D9' : '#191919',
+					background: { color: mode === 'dark' ? (location === '/staking' ? '#000000' : '#161A25') : '#FFFFFF' },
+					textColor: mode === 'dark' ? '#D9D9D9' : '#191919',
 					// textColor: location === '/dcaCalculator' ? '#D9D9D9',
 					// backgroundColor: 'red', // Set the background color to transparent
 				} as DeepPartial<LayoutOptions>, // Use type assertion to specify the type
@@ -65,7 +77,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 			const areaSeries = chartRef.current.addLineSeries({
 				lineStyle: LineStyle.Solid, // Use smooth line style
 				base: minValue, // Set the base to maxValue
-				color: '#2962FF', // Set the line color as black
+				color: location === '/staking' ? chartLineColorMapping[selectedStakingIndex?.symbol as string] : '#2962FF', // Set the line color as black
 				lineWidth: 2,
 				priceLineVisible: false,
 			})
@@ -102,7 +114,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				}
 			}
 
-			areaSeries.setData(location === '/dcaCalculator' ? data : historyRangeFilter(data))
+			areaSeries.setData(location === '/dcaCalculator' || location === '/staking' ? data : historyRangeFilter(data))
 
 			const container = chartContainerRef.current
 			container.style.position = 'relative'
@@ -142,19 +154,21 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				const incHeight = (selectedCompIndexes.length * 25) as number
 				toolTip.style.height = Number(toolTip.style.height.split('px')[0]) + incHeight + 'px'
 			}
-
+			const selectedTokenData = sepoliaTokens.find((token) => {
+				return token.Symbol === ourIndexName
+			})
 			let toolTipContentStatic =
 				// `<div style="font-size: 14px; z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; color: ${'black'}">
 				`<div style="font-size: 14px; z-index:100; margin: 4px 0px;  display: flex; flex-direction: row ">	
 				<Image
-				src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : ourIndexName === 'ANFI' ? anfiLogo.src : ''}"
+			src="${selectedTokenData?.logo}"
 					alt="tooltip logo"
 					style="width:22px;
 					   height:22px; 
 					   margin-right:5px ; 
 					   border-radius:50%;">
 				</Image>
-				${ourIndexName ? ourIndexName : ''}
+				${location=== '/staking' ? '0 '+ ourIndexName :ourIndexName ? ourIndexName : ''}
 			</div>`
 
 			if (selectedCompIndexes.length > 0) {
@@ -183,14 +197,14 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				if (param.point === undefined || !param.time || param.point.x < 0 || param.point.x > container.clientWidth || param.point.y < 0 || param.point.y > container.clientHeight) {
 					let toolTipContent = `<div style="font-size: 14px;z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; ">	
 						<Image
-						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : ourIndexName === 'ANFI' ? anfiLogo.src : ''}"
+						src="${selectedTokenData?.logo}"
 							alt="tooltip logo"
 							style="width:22px;
 							   height:22px; 
 							   margin-right:5px ; 
 							   border-radius:50%;">
 						</Image>
-						${ourIndexName ? ourIndexName : ''}
+						${location=== '/staking' ? '0 '+ ourIndexName :ourIndexName ? ourIndexName : ''}
 					</div>`
 
 					if (selectedCompIndexes.length > 0) {
@@ -219,14 +233,15 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 						const price = data && data.value !== undefined ? data.value : data.close
 						let toolTipContent = `<div style="font-size: 14px;z-index:100; margin: 4px 0px;  display: flex; flex-direction: row; ">	
 						<Image
-						src="${ourIndexName === 'CRYPTO5' ? cr5Logo.src : ourIndexName === 'ANFI' ? anfiLogo.src : ''}"
+						src="${selectedTokenData?.logo}"
 							alt="tooltip logo"
 							style="width:22px;
 							   height:22px; 
 							   margin-right:5px ; 
 							   border-radius:50%;">
 						</Image>
-							   ${ourIndexName ? ourIndexName : ''}: ${Math.round(100 * price) / 100}
+                             
+						    ${location === '/staking' ? Math.round(100 * price) / 100 + ' ' + selectedStakingIndex?.symbol! : ourIndexName ? ourIndexName : '' + ':' + Math.round(100 * price) / 100}
 							   </div>`
 
 						if (param.seriesData.size > 1) {
@@ -243,7 +258,11 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 											   margin-right:5px ; 			   
 											   border-radius:50%;">
 									 </Image>`
-									toolTipContent += `${indexDetails?.shortName}: ${Math.round(100 * value.value) / 100}`
+									// toolTipContent += `${indexDetails?.shortName}: ${Math.round(100 * value.value) / 100}`
+									toolTipContent += `${ location === '/staking' ? 
+										Math.round(100 * price) / 100 + ' ' + selectedStakingIndex?.symbol! : 
+										ourIndexName ? ourIndexName : '' + ':' + Math.round(100 * price) / 100
+									}`
 									toolTipContent += `</div>`
 								}
 							}
@@ -291,8 +310,8 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 
 			chartRef.current.applyOptions({
 				grid: {
-					horzLines: { visible: false },
-					vertLines: { visible: false },
+					horzLines: { visible: true, color: '#2d303a' },
+					vertLines: { visible: true, color: '#2d303a' },
 				},
 			})
 
@@ -326,7 +345,7 @@ export default GradientAreaChart
 // Helper function to get PriceScaleOptions
 function getAxesOptions(visible: boolean, location: string): PriceScaleOptions {
 	return {
-		mode: location === '/dcaCalculator' ? 1 : 2,
+		mode: location === '/dcaCalculator' || location === '/staking' ? 1 : 2,
 		visible: visible,
 		autoScale: true, // You can set this to your desired value
 		invertScale: false, // You can set this to your desired value

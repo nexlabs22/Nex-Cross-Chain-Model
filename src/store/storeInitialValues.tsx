@@ -9,3 +9,19 @@ export const dayChangeInitial = {
 	mag7: 0
 
 }
+
+export const indexDataObjectInitial = {
+	name: '',
+	logo: null,
+	symbol: '',
+	shortSymbol: '',
+	shortDescription: '',
+	description: '',
+	mktCap: 0,
+	mktPrice: 0,
+	chg24h: '',
+	tokenAddress: '',
+	managementFee: '',
+	totalSupply: '',
+	underlyingAssets: [],
+}
