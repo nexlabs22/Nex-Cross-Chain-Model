@@ -14,7 +14,6 @@ export async function getStakeLeaderBoardData(rawData: { stakeds: rawStakeDataTy
 
 	combinedRawDataArray.forEach((staked) => {
 		const existingEntry = latestStakedMap.get(staked.user)
-        console.log(selectedStakingIndex.tokenAddress, staked.tokenAddress)
 
 		if ((!existingEntry || staked.blockTimestamp > existingEntry.blockTimestamp) && (selectedStakingIndex.tokenAddress.toLowerCase() === staked.tokenAddress.toLowerCase())) {
 			latestStakedMap.set(staked.user, staked)

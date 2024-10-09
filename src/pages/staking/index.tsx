@@ -211,7 +211,7 @@ export default function Staking() {
 						</Stack>
 					</Stack>
 					<Stack width="100vw" height="fit-content" direction="row" alignItems="start" justifyContent="stretch" paddingX={8} gap={2} paddingTop={5}>
-						<Stack width="60%" height={'116vh'} borderRadius={'1rem'} flexGrow={1} sx={{ backgroundColor: '#000000', paddingY:4, paddingLeft: 4 }}>
+						<Stack width="60%" height={'116vh'} borderRadius={'1rem'} flexGrow={1} sx={{ backgroundColor: '#070707', paddingY:4, paddingLeft: 4 }}>
 							<Chart data={stakeChartData} />
 						</Stack>
 						<Stack width="35%" flexGrow={1}>

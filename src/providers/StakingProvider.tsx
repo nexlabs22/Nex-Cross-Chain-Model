@@ -130,7 +130,8 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 	const getSharesToApproveHook = useContractRead(stakingContract.contract, 'getSharesToRedeemAmount', [selectedStakingIndex?.tokenAddress, userAccountAddress, convertedValue.toString()])
 	const pureRewardAmountHook = useContractRead(stakingContract.contract, 'getPureRewardAmount', [selectedStakingIndex?.tokenAddress, userAccountAddress, convertedValue.toString()])
 
-	const vaultTokenAddress = userStakedTokenAmount.data?.vaultToken
+	// const vaultTokenAddress = userStakedTokenAmount.data?.vaultToken
+	const vaultTokenAddress = useContractRead(stakingContract.contract,'tokenAddressToVaultAddress',[selectedStakingIndex?.tokenAddress]).data
 	const vaultTokenContract = useContract(vaultTokenAddress, vaultAbi)
 	const uservTokenBalance = useContractRead(vaultTokenContract.contract, 'balanceOf', [userAccountAddress])
 	const uservTokenAllowance = useContractRead(vaultTokenContract.contract, 'allowance', [userAccountAddress, sepoliaStakingAddress])
@@ -226,11 +227,13 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		if (stakeHook.isSuccess) {
 			userIndexTokenBalance.refetch()
 			userIndexTokenAllowance.refetch()
+			uservTokenBalance.refetch()
 			vIndexTokenPoolSize.refetch()
 			previewRedeemAmount.refetch()
+
 			stakeHook.reset()
 		}
-	}, [stakeHook.isSuccess, stakeHook, vIndexTokenPoolSize, previewRedeemAmount, userIndexTokenBalance, userIndexTokenAllowance])
+	}, [stakeHook.isSuccess, stakeHook,uservTokenBalance, vIndexTokenPoolSize, previewRedeemAmount, userIndexTokenBalance, userIndexTokenAllowance])
 
 	useEffect(() => {
 		if (stakeHook.isLoading) {
@@ -355,6 +358,7 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 	}
 
 	async function unstake() {
+		console.log(selectedStakingIndex?.symbol, selectedStakingIndex?.tokenAddress)
 		if (num(userStakedTokenAmount.data?.stakeAmount) < Number(stakingInputAmount)) {
 			return GenericToast({
 				type: 'error',

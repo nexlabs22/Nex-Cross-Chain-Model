@@ -6,16 +6,21 @@ export async function getStakeChartData(rawData: { stakeds: rawStakeDataType[]; 
 
     const combinedRawDataArray = [...rawData.stakeds, ...rawData.unstakeds].filter((obj)=>{
         return selectedStakingIndex.tokenAddress.toLowerCase() === obj.tokenAddress.toLowerCase()
-    })
+    }).sort((a,b)=> Number(a.timestamp) - Number(b.timestamp))
 
-    const chartData = combinedRawDataArray.map((obj)=>{
+    const uniqueArray = [...new Map(combinedRawDataArray.map(item => [item.timestamp, item])).values()]
+
+    const chartData = uniqueArray.map((obj)=>{
         return {
             time: Number(obj.timestamp),
             value: FormatToViewNumber({value:num(obj.poolSize), returnType: 'number'}) as number
         }
     })
     const lastestTimestamp = Math.floor(new Date().getTime() / 1000)
-    if(chartData.length>0){
+    
+    const poolSize = FormatToViewNumber({value:latestPoolSize, returnType: 'number'}) as number    
+
+    if((chartData.length>0) && (poolSize > 0 )&& (poolSize !== chartData[chartData.length-1].value)){
         chartData.push({time: lastestTimestamp, value:latestPoolSize })
     }
 

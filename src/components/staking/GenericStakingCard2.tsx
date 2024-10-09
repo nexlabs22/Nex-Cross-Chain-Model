@@ -142,7 +142,8 @@ const GenericStakingCard2: React.FC<GenericStakingCardProps> = ({ index }) => {
 						color: index == 'ANFI' ? '#E8BB31' : '#E8BB31',
 					}}
 				>
-					$21.856,53
+					{/* $21.856,53 */}
+					${FormatToViewNumber({ value: ((selectedStakingIndex?.mktPrice||0)*stakedIndexAmountInt), returnType: 'currency' })}
 				</Typography>
 				<Stack width={'100%'} height="fit-content" direction={'row'} alignItems={'center'} justifyContent={'center'} marginTop={'1.8rem'}>
 					<Link target="_blank" href={`https://sepolia.etherscan.io/address/${vaultTokenAddress}`}>

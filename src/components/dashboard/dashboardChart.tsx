@@ -67,7 +67,7 @@ const GradientAreaChart: React.FC<GradientAreaChartProps> = ({ data }) => {
 				handleScale: false,
 				handleScroll: true,
 				layout: {
-					background: { color: mode === 'dark' ? (location === '/staking' ? '#000000' : '#161A25') : '#FFFFFF' },
+					background: { color: mode === 'dark' ? (location === '/staking' ? '#070707' : '#161A25') : '#FFFFFF' },
 					textColor: mode === 'dark' ? '#D9D9D9' : '#191919',
 					// textColor: location === '/dcaCalculator' ? '#D9D9D9',
 					// backgroundColor: 'red', // Set the background color to transparent
