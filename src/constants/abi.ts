@@ -18208,6 +18208,7 @@ export const stakingAbi = [
 	  "type": "function"
 	}
   ]
+
 export const vaultAbi = [
 	{
 	  "inputs": [
@@ -19054,5 +19055,722 @@ export const vaultAbi = [
 	  ],
 	  "stateMutability": "nonpayable",
 	  "type": "function"
+	}
+  ]
+
+export const feeManagerAbi = [
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "target",
+		  "type": "address"
+		}
+	  ],
+	  "name": "AddressEmptyCode",
+	  "type": "error"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "account",
+		  "type": "address"
+		}
+	  ],
+	  "name": "AddressInsufficientBalance",
+	  "type": "error"
+	},
+	{
+	  "inputs": [],
+	  "name": "FailedInnerCall",
+	  "type": "error"
+	},
+	{
+	  "inputs": [],
+	  "name": "InvalidInitialization",
+	  "type": "error"
+	},
+	{
+	  "inputs": [],
+	  "name": "NotInitializing",
+	  "type": "error"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "owner",
+		  "type": "address"
+		}
+	  ],
+	  "name": "OwnableInvalidOwner",
+	  "type": "error"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "account",
+		  "type": "address"
+		}
+	  ],
+	  "name": "OwnableUnauthorizedAccount",
+	  "type": "error"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "token",
+		  "type": "address"
+		}
+	  ],
+	  "name": "SafeERC20FailedOperation",
+	  "type": "error"
+	},
+	{
+	  "inputs": [],
+	  "name": "T",
+	  "type": "error"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": false,
+		  "internalType": "uint64",
+		  "name": "version",
+		  "type": "uint64"
+		}
+	  ],
+	  "name": "Initialized",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "previousOwner",
+		  "type": "address"
+		},
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "newOwner",
+		  "type": "address"
+		}
+	  ],
+	  "name": "OwnershipTransferred",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "tokenAddress",
+		  "type": "address"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "string",
+		  "name": "reason",
+		  "type": "string"
+		}
+	  ],
+	  "name": "RewardDistributionSkipped",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "tokenAddress",
+		  "type": "address"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "uint256",
+		  "name": "amount",
+		  "type": "uint256"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "uint256",
+		  "name": "timestamp",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "RewardsDistributed",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "tokenIn",
+		  "type": "address"
+		},
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "tokenOut",
+		  "type": "address"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "uint256",
+		  "name": "amountIn",
+		  "type": "uint256"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "uint256",
+		  "name": "amountOut",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "TokensSwapped",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": true,
+		  "internalType": "uint256",
+		  "name": "usdcAmount",
+		  "type": "uint256"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "uint256",
+		  "name": "timestamp",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "TransferToOwner",
+	  "type": "event"
+	},
+	{
+	  "stateMutability": "payable",
+	  "type": "fallback"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "wethForStaking",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "_distributeWETHToPools",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "_swapRewardTokensToWETH",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "wethAmount",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "_swapWETHToUSDCAndTransfer",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "calculateWeightOfPools",
+	  "outputs": [
+		{
+		  "internalType": "uint256[]",
+		  "name": "",
+		  "type": "uint256[]"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "checkAndTransfer",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "tokenIn",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "tokenOut",
+		  "type": "address"
+		},
+		{
+		  "internalType": "uint128",
+		  "name": "amountIn",
+		  "type": "uint128"
+		}
+	  ],
+	  "name": "estimateAmountOut",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "amountOut",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "factoryV3",
+	  "outputs": [
+		{
+		  "internalType": "contract IUniswapV3Factory",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "tokenIn",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "tokenOut",
+		  "type": "address"
+		},
+		{
+		  "internalType": "uint256",
+		  "name": "amountIn",
+		  "type": "uint256"
+		},
+		{
+		  "internalType": "uint8",
+		  "name": "_swapVersion",
+		  "type": "uint8"
+		}
+	  ],
+	  "name": "getAmountOut",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "finalAmountOut",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "tokenIn",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "tokenOut",
+		  "type": "address"
+		},
+		{
+		  "internalType": "uint256",
+		  "name": "amountIn",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "getAmountOutForRewardAmount",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "getPortfolioBalance",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "totalValue",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "getTotalValueOfIndexTokensInWETH",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "totalValue",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "contract NexStaking",
+		  "name": "_nexStakingAddress",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address[]",
+		  "name": "_indexTokensAddresses",
+		  "type": "address[]"
+		},
+		{
+		  "internalType": "address[]",
+		  "name": "_rewardTokensAddresses",
+		  "type": "address[]"
+		},
+		{
+		  "internalType": "uint8[]",
+		  "name": "_swapVersions",
+		  "type": "uint8[]"
+		},
+		{
+		  "internalType": "address",
+		  "name": "_uniswapRouter",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "_uniswapV2Router",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "_uniswapV3Factory",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "_nonfungiblePositionManager",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "_weth",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "_usdc",
+		  "type": "address"
+		},
+		{
+		  "internalType": "uint256",
+		  "name": "_threshold",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "initialize",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "nexStaking",
+	  "outputs": [
+		{
+		  "internalType": "contract NexStaking",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "nonfungiblePositionManager",
+	  "outputs": [
+		{
+		  "internalType": "contract INonfungiblePositionManager",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "owner",
+	  "outputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "poolTokensAddresses",
+	  "outputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "tokenAddress",
+		  "type": "address"
+		},
+		{
+		  "internalType": "uint256",
+		  "name": "etherAmount",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "predictAPY",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "apy",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "renounceOwnership",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "rewardTokensAddresses",
+	  "outputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "routerV2",
+	  "outputs": [
+		{
+		  "internalType": "contract IUniswapV2Router02",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "routerV3",
+	  "outputs": [
+		{
+		  "internalType": "contract ISwapRouter",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "name": "supportedToken",
+	  "outputs": [
+		{
+		  "internalType": "bool",
+		  "name": "",
+		  "type": "bool"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "tokenIn",
+		  "type": "address"
+		},
+		{
+		  "internalType": "address",
+		  "name": "tokenOut",
+		  "type": "address"
+		},
+		{
+		  "internalType": "uint256",
+		  "name": "amountIn",
+		  "type": "uint256"
+		},
+		{
+		  "internalType": "address",
+		  "name": "_recipient",
+		  "type": "address"
+		}
+	  ],
+	  "name": "swapTokens",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "amountOut",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "threshold",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "name": "tokenSwapVersion",
+	  "outputs": [
+		{
+		  "internalType": "uint8",
+		  "name": "",
+		  "type": "uint8"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "newOwner",
+		  "type": "address"
+		}
+	  ],
+	  "name": "transferOwnership",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "usdc",
+	  "outputs": [
+		{
+		  "internalType": "contract IERC20",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "weth",
+	  "outputs": [
+		{
+		  "internalType": "contract IWETH9",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "stateMutability": "payable",
+	  "type": "receive"
 	}
   ]

@@ -25,3 +25,14 @@ export const indexDataObjectInitial = {
 	totalSupply: '',
 	underlyingAssets: [],
 }
+
+export const coinObjectInitial = {
+	logo: '',
+	name: '',
+	Symbol: '',
+	isNexlabToken:true,
+	address: '',
+	factoryAddress: '',
+	decimals: 0,
+	indexType: 'defi'
+}

@@ -14,6 +14,8 @@ import { CiStickyNote } from 'react-icons/ci'
 import { useStaking } from '@/providers/StakingProvider'
 import { FormatToViewNumber, num } from '@/hooks/math'
 import { useEffect } from 'react'
+import GenericTooltip from '../GenericTooltip'
+import { BsInfoCircle } from 'react-icons/bs'
 
 interface GenericStakingCardProps {
 	index: string
@@ -21,7 +23,8 @@ interface GenericStakingCardProps {
 
 const GenericStakingCard1: React.FC<GenericStakingCardProps> = ({ index }) => {
 	const { theme } = useLandingPageStore()
-	const { selectedStakingIndex, stakedIndexAmountInt, userIndexAmountInt,vTokenAmountToApprove, previewRedeemAmountInt, profitPercentage, vIndexTokenPoolSizeInt,rewardAmount, poolHoldersInt } = useStaking()
+	const { selectedStakingIndex,chartLineColorMapping, stakedIndexAmountInt, userIndexAmountInt, vTokenAmountToApprove, previewRedeemAmountInt, profitPercentage, vIndexTokenPoolSizeInt, rewardAmount, poolHoldersInt } =
+		useStaking()
 
 	return (
 		<Stack
@@ -92,9 +95,25 @@ const GenericStakingCard1: React.FC<GenericStakingCardProps> = ({ index }) => {
 					</Typography>
 				</Stack>
 				<Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} width={'100%'} height={'fit-content'}>
-					<Typography variant="caption" component="label" sx={{ color: '#D3D3D3' }}>
+					<Typography variant="caption" component="label" sx={{ color: '#D3D3D3', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
 						Profit Percentage
+						<span>
+							<GenericTooltip
+								color={chartLineColorMapping[selectedStakingIndex?.symbol!]}
+								content={
+									<div>
+										{/* <p className="text-whiteText-500 text-sm interBold mb-2">No cryptocurrencies in your wallet? No problem!</p> */}
+										<p className="text-whiteText-500 text-sm interMedium">
+											Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate odit ipsa iure magnam pariatur cumque veniam fuga laboriosam et itaque soluta hic, modi aspernatur sapiente vitae sint, cum molestias natus?
+										</p>
+									</div>
+								}
+							>
+								<BsInfoCircle color={chartLineColorMapping[selectedStakingIndex?.symbol!]} size={14} className="cursor-pointer" />
+							</GenericTooltip>
+						</span>
 					</Typography>
+
 					<Typography variant="caption" component="label">
 						{profitPercentage === 0 ? '' : profitPercentage < 0 ? '-' : '+'}
 						{FormatToViewNumber({ value: profitPercentage, returnType: 'percent' })}

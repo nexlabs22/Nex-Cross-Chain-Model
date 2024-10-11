@@ -70,7 +70,7 @@ const StakingLeaderBoard: React.FC = () => {
                             <TableCell><Typography variant="subtitle2">Public Key</Typography></TableCell>
                             <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Total {index} Staked*</Typography></TableCell>
                             <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Reward* </Typography></TableCell>
-                            <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Percentage gain </Typography></TableCell>
+                            <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Pool share </Typography></TableCell>
                             <TableCell align="center" sx={{ paddingX: 1, verticalAlign: 'middle' }}><Typography variant="subtitle2">Last Activity</Typography></TableCell>
                         </TableRow>
                     </TableHead>

@@ -2,21 +2,22 @@ import { useAddress, useContract, useContractRead, useContractWrite } from '@thi
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useDashboard } from './DashboardProvider'
 import { indexObjectType } from '@/types/tradeTableTypes'
-import { indexDataObjectInitial } from '@/store/storeInitialValues'
-import { stakingAbi, tokenAbi, vaultAbi } from '@/constants/abi'
+import { coinObjectInitial, indexDataObjectInitial } from '@/store/storeInitialValues'
+import { feeManagerAbi, stakingAbi, tokenAbi, vaultAbi } from '@/constants/abi'
 import Big from 'big.js'
 import { GenericToast } from '@/components/GenericToast'
 import { parseUnits } from 'viem'
 import { num } from '@/hooks/math'
-import { sepoliaStakingAddress, zeroAddress } from '@/constants/contractAddresses'
+import { sepoliaFeeManagerAddress, sepoliaStakingAddress, zeroAddress } from '@/constants/contractAddresses'
 import { toast } from 'react-toastify'
 import apolloIndexClient from '@/utils/apollo-client'
 import { GET_STAKING_EVENT_LOGS } from '@/uniswap/graphQuery'
 import { useQuery } from '@apollo/client'
 import { getStakeLeaderBoardData } from '@/utils/getStakeLeaderboardData'
-import { indexDetailsType } from '@/types/nexTokenData'
+import { Coin, indexDetailsType } from '@/types/nexTokenData'
 import { LeaderBoardDataType, StakingChartType } from '@/types/stakingTypes'
 import { getStakeChartData } from '@/utils/getStakeChartData'
+import { sepoliaTokens } from '@/constants/testnetTokens'
 
 interface StakingContextProps {
 	selectedStakingIndex: indexObjectType | undefined
@@ -39,19 +40,23 @@ interface StakingContextProps {
 	poolHoldersInt: number
 	userStakingStartTime: number
 	pureRewardAmountInt: number
+	convertRewardAmountInt: number
 	rewardAmount: number
 	isUnStake: boolean
 	stakingInputAmount: string
 	vTokenAmountToApprove: number
+	selectedRewardToken: Coin,
+	supportedRewardTokens: Coin[]
 	leaderBoardData: LeaderBoardDataType[]
 	stakeChartData: StakingChartType[]
-	chartLineColorMapping: {[key:string]: string}
+	chartLineColorMapping: { [key: string]: string }
 	vaultTokenAddress: `0x${string}`
 	approve(): Promise<void>
 	vTokenApprove(): Promise<void>
 	stake(): Promise<void>
 	unstake(): Promise<void>
 	setIsUnstake: React.Dispatch<React.SetStateAction<boolean>>
+	setSelectedRewardToken: React.Dispatch<React.SetStateAction<Coin>>
 	setStakingInputAmount: React.Dispatch<React.SetStateAction<string>>
 	changeStakingInputAmount: (e: React.ChangeEvent<HTMLInputElement>) => void
 	handleStakingIndexChange: (index: indexObjectType) => void
@@ -78,19 +83,23 @@ const StakingContext = createContext<StakingContextProps>({
 	userPoolSharePercentage: 0,
 	userStakingStartTime: 0,
 	pureRewardAmountInt: 0,
+	convertRewardAmountInt: 0,
 	isUnStake: false,
+	selectedRewardToken:coinObjectInitial,
 	stakingInputAmount: '',
 	vTokenAmountToApprove: 0,
 	rewardAmount: 0,
-	chartLineColorMapping:{},
+	chartLineColorMapping: {},
 	leaderBoardData: [],
 	stakeChartData: [],
+	supportedRewardTokens: [],
 	vaultTokenAddress: zeroAddress,
 	approve: () => Promise.resolve(),
 	vTokenApprove: () => Promise.resolve(),
 	stake: () => Promise.resolve(),
 	unstake: () => Promise.resolve(),
 	setIsUnstake: () => {},
+	setSelectedRewardToken: () => {},
 	setStakingInputAmount: () => {},
 	changeStakingInputAmount: () => {},
 	handleStakingIndexChange: () => {},
@@ -110,8 +119,15 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 	const [stakeChartData, setStakeChartData] = useState<StakingChartType[]>([])
 	const [isUnStake, setIsUnstake] = useState(false)
 
+	const defaultRewardToken = sepoliaTokens.find((token)=>{return token.Symbol === selectedStakingIndex?.symbol}) as Coin
+	const [selectedRewardToken, setSelectedRewardToken] = useState<Coin>(defaultRewardToken)
+	// const [selectedRewardToken, setSelectedRewardToken] = useState()
+
+
 	const stakingTokenContract = useContract(selectedStakingIndex?.tokenAddress, tokenAbi)
 	const stakingContract = useContract(sepoliaStakingAddress, stakingAbi)
+	const feeManagerContract = useContract(sepoliaFeeManagerAddress, feeManagerAbi)
+
 	const userIndexTokenBalance = useContractRead(stakingTokenContract.contract, 'balanceOf', [userAccountAddress])
 	const userIndexTokenAllowance = useContractRead(stakingTokenContract.contract, 'allowance', [userAccountAddress, sepoliaStakingAddress])
 	const userStakedTokenAmount = useContractRead(stakingContract.contract, 'positions', [userAccountAddress, selectedStakingIndex?.tokenAddress])
@@ -129,9 +145,10 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const getSharesToApproveHook = useContractRead(stakingContract.contract, 'getSharesToRedeemAmount', [selectedStakingIndex?.tokenAddress, userAccountAddress, convertedValue.toString()])
 	const pureRewardAmountHook = useContractRead(stakingContract.contract, 'getPureRewardAmount', [selectedStakingIndex?.tokenAddress, userAccountAddress, convertedValue.toString()])
+	const convertedRewardAmountHook = useContractRead(feeManagerContract.contract, 'getAmountOutForRewardAmount', [selectedStakingIndex?.tokenAddress, selectedRewardToken.address, pureRewardAmountHook.data])
 
 	// const vaultTokenAddress = userStakedTokenAmount.data?.vaultToken
-	const vaultTokenAddress = useContractRead(stakingContract.contract,'tokenAddressToVaultAddress',[selectedStakingIndex?.tokenAddress]).data
+	const vaultTokenAddress = useContractRead(stakingContract.contract, 'tokenAddressToVaultAddress', [selectedStakingIndex?.tokenAddress]).data
 	const vaultTokenContract = useContract(vaultTokenAddress, vaultAbi)
 	const uservTokenBalance = useContractRead(vaultTokenContract.contract, 'balanceOf', [userAccountAddress])
 	const uservTokenAllowance = useContractRead(vaultTokenContract.contract, 'allowance', [userAccountAddress, sepoliaStakingAddress])
@@ -150,21 +167,20 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 	const userStakingStartTime = Number(userStakedTokenAmount.data?.startTime * 1000) || 0
 	const vTokenAmountToApprove = getSharesToApproveHook.data
 	const pureRewardAmountInt = num(pureRewardAmountHook.data) || 0
+	const convertRewardAmountInt = num(convertedRewardAmountHook.data) || 0
 
 	const profitPercentage = (previewRedeemAmountInt / stakedIndexAmountInt - 1) * 100 || 0
 	const userPoolSharePercentage = (stakedIndexAmountInt / vIndexTokenPoolSizeInt) * 100
 	const rewardAmount = previewRedeemAmountInt - stakedIndexAmountInt
 
 	const chartLineColorMapping = {
-		'ANFI': '#5D5025',
-		'CRYPTO5': '#542B2E',
-		'MAG7': '#662B75',
-		'ARBEI': '#1B3D6C'
+		ANFI: '#5D5025',
+		CRYPTO5: '#542B2E',
+		MAG7: '#662B75',
+		ARBEI: '#1B3D6C',
 	}
 
 	const { loading: loadingStaking, error: errorStaking, data: dataStaking } = useQuery(GET_STAKING_EVENT_LOGS)
-
-
 
 	useEffect(() => {
 		async function fetchLeaderboardData() {
@@ -177,27 +193,24 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		} else if (!loadingStaking && !!errorStaking) {
 			console.log('Error on fetching staking data from graph: ', errorStaking)
 		}
-	}, [dataStaking,selectedStakingIndex,loadingStaking,errorStaking,stakeHook.isSuccess,unstakeHook.isSuccess  ])
+	}, [dataStaking, selectedStakingIndex, loadingStaking, errorStaking, stakeHook.isSuccess, unstakeHook.isSuccess])
 
 	useEffect(() => {
 		async function fetchStakingChartData() {
-			const dataToSet = await getStakeChartData(dataStaking,vIndexTokenPoolSizeInt, selectedStakingIndex as indexDetailsType)
+			const dataToSet = await getStakeChartData(dataStaking, vIndexTokenPoolSizeInt, selectedStakingIndex as indexDetailsType)
 			setStakeChartData(dataToSet)
 		}
 
-		if (!loadingStaking && !!dataStaking ) {
+		if (!loadingStaking && !!dataStaking) {
 			fetchStakingChartData()
 		} else if (!loadingStaking && !!errorStaking) {
 			console.log('Error on fetching staking data from graph: ', errorStaking)
 		}
-	}, [dataStaking,selectedStakingIndex,vIndexTokenPoolSizeInt,loadingStaking,errorStaking,stakeHook.isSuccess,unstakeHook.isSuccess  ])
-
-	console.log({stakeChartData})
+	}, [dataStaking, selectedStakingIndex, vIndexTokenPoolSizeInt, loadingStaking, errorStaking, stakeHook.isSuccess, unstakeHook.isSuccess])
 
 	const handleStakingIndexChange = (stakingIndex: indexObjectType) => {
 		setSelectedStakingIndex(stakingIndex)
 	}
-
 	const changeStakingInputAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const enteredValue = e?.target?.value
 		if (Number(enteredValue) != 0 && Number(enteredValue) < 0.00001) {
@@ -209,7 +222,6 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 		setStakingInputAmount(e?.target?.value)
 	}
-
 	useEffect(() => {
 		if (approveHook.isSuccess) {
 			userIndexTokenAllowance.refetch()
@@ -233,7 +245,7 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 
 			stakeHook.reset()
 		}
-	}, [stakeHook.isSuccess, stakeHook,uservTokenBalance, vIndexTokenPoolSize, previewRedeemAmount, userIndexTokenBalance, userIndexTokenAllowance])
+	}, [stakeHook, uservTokenBalance, vIndexTokenPoolSize, previewRedeemAmount, userIndexTokenBalance, userIndexTokenAllowance])
 
 	useEffect(() => {
 		if (stakeHook.isLoading) {
@@ -372,7 +384,7 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 
 		try {
-			await unstakeHook.mutateAsync({ args: [selectedStakingIndex?.tokenAddress, selectedStakingIndex?.tokenAddress, BigInt(convertedValue.toString())] })
+			await unstakeHook.mutateAsync({ args: [selectedStakingIndex?.tokenAddress, selectedRewardToken.address, BigInt(convertedValue.toString())] })
 		} catch (error) {
 			console.log('stake error', error)
 		}
@@ -424,6 +436,11 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}
 
+	const supportedRewardTokenSymbols = [selectedStakingIndex?.symbol, 'USDT']
+	const supportedRewardTokens = sepoliaTokens.filter((token)=>{
+		{ return supportedRewardTokenSymbols.includes(token.Symbol) }
+	})
+
 	const contextValue = {
 		selectedStakingIndex,
 		userIndexTokenBalance,
@@ -452,13 +469,17 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		vTokenAmountToApprove,
 		userStakingStartTime,
 		pureRewardAmountInt,
+		convertRewardAmountInt,
 		chartLineColorMapping,
+		supportedRewardTokens,
+		selectedRewardToken,
 		approve,
 		vTokenApprove,
 		stake,
 		unstake,
 		setIsUnstake,
 		setStakingInputAmount,
+		setSelectedRewardToken,
 		changeStakingInputAmount,
 		handleStakingIndexChange,
 	}

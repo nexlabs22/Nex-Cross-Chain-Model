@@ -54,9 +54,13 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 		userIndexAllowanceInt,
 		uservTokenAllowanceInt,
 		pureRewardAmountInt,
+		convertRewardAmountInt,
 		uservTokenBalanceInt,
 		userStakingStartTime,
 		isUnStake,
+		supportedRewardTokens,
+		selectedRewardToken,
+		setSelectedRewardToken,
 		approve,
 		vTokenApprove,
 		stake,
@@ -67,8 +71,8 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 	} = useStaking()
 
 	useEffect(() => {
-		console.log({ isUnStake, userStakingStartTime, pureRewardAmountInt })
-	}, [isUnStake, userStakingStartTime, pureRewardAmountInt, userStakedTokenAmount.data])
+		console.log({ isUnStake, convertRewardAmountInt, pureRewardAmountInt, supportedRewardTokens })
+	}, [isUnStake, convertRewardAmountInt, pureRewardAmountInt, userStakedTokenAmount.data, supportedRewardTokens])
 
 	const label = { inputProps: { 'aria-label': 'Switch demo' } }
 
@@ -142,24 +146,53 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 				</Stack>
 			</Stack>
 			<Stack width={'100%'} height={'0.5px'} sx={{ backgroundColor: 'white' }}></Stack>
-			<Typography variant="subtitle2" component="label" sx={{ fontWeight: 700, color: '#D3D3D3', marginTop: '1.2rem', paddingX: 3 }}>
-				Reward Type
-			</Typography>
-			<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'start'} paddingX={3} paddingY={'1rem'} marginBottom={1}>
-				<Stack width="100%" height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'start'} gap={1}>
-					<Image src={selectedStakingIndex?.logo!} alt={index + ' logo'} height={40} width={40} className=" rounded-full" />
-					<Typography variant="caption" component={'label'}>
-						{selectedStakingIndex?.symbol}
-					</Typography>
-				</Stack>
-				<Stack width="fit-content" height="fit-content" direction="row" alignItems={'center'} justifyContent={'end'} gap={0.5}>
-					<Typography variant="caption" component={'label'} sx={{ fontSize: '0.8rem', fontWeight: 400 }}>
-						Change
-					</Typography>
-					<CgArrowsExchangeAlt size={18} color={theme.palette.text.primary} />
-				</Stack>
-			</Stack>
-			<Stack width={'100%'} height={'0.5px'} sx={{ backgroundColor: 'white' }}></Stack>
+			{isUnStake && (
+				<>
+					<Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingY: '1rem', marginBottom: 1 }}>
+						<Typography variant="subtitle2" component="label" sx={{ fontWeight: 700, color: '#D3D3D3', marginTop: '1.2rem', paddingX: 3 }}>
+							Reward Type
+						</Typography>
+						<Stack width="fit-content" height="fit-content" direction="row" alignItems={'center'} justifyContent={'end'} gap={0.5} sx={{ paddingX: 3 }}>
+							<Menu
+								menuButton={
+									<MenuButton>
+										<div className="w-[74vw] xl:w-fit h-fit px-2 py-2 flex flex-row items-center justify-between rounded-md bg-gradient-to-tr from-colorFour-500 to-colorSeven-500 hover:to-colorSeven-500 shadow-sm shadow-blackText-500 gap-8 cursor-pointer">
+											<div className="flex flex-row items-center justify-start gap-2">
+												<Image src={selectedRewardToken.logo} width={25} height={25} alt={selectedRewardToken.name} />
+												<h5 className="text-sm text-whiteBackground-500 titleShadow interBold uppercase">{selectedRewardToken.Symbol}</h5>
+											</div>
+											<GoChevronDown color="#F2F2F2" size={20} />
+										</div>
+									</MenuButton>
+								}
+								transition
+								direction="bottom"
+								align="end"
+								className="subCatgoriesMenu"
+							>
+								{supportedRewardTokens.map((token, id) => {
+									return (
+										<div
+											key={id}
+											className="w-fit h-fit px-2 py-2 flex flex-row items-center justify-between gap-8 cursor-pointer hover:bg-[#7fa5b8]/50"
+											onClick={() => {
+												setSelectedRewardToken(token)
+											}}
+										>
+											<div className="flex flex-row items-center justify-start gap-2">
+												<Image src={token.logo} width={25} height={25} alt={token.Symbol} />
+												<h5 className="text-sm text-whiteBackground-500 interMedium uppercase whitespace-nowrap">{token.Symbol}</h5>
+											</div>
+											<GoChevronDown className="opacity-0" color="#2A2A2A" size={20} />
+										</div>
+									)
+								})}
+							</Menu>
+						</Stack>
+					</Box>
+					<Stack width={'100%'} height={'0.5px'} sx={{ backgroundColor: 'white' }}></Stack>
+				</>
+			)}
 
 			<Stack width={'100%'} height={'fit-content'} direction={'row'} alignItems={'center'} justifyContent={'space-between'} paddingX={3} paddingY={'1.2rem'}>
 				<Typography variant="subtitle2" component="label" sx={{ fontWeight: 700, color: '#D3D3D3' }}>
@@ -256,7 +289,12 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 						Reward Amount:{' '}
 						<span style={{ color: '#34FFDA' }}>
 							{' '}
-							{FormatToViewNumber({ value: pureRewardAmountInt, returnType: 'currency' })} {index.toUpperCase()}
+							{
+								selectedRewardToken.Symbol === selectedStakingIndex?.symbol?
+								FormatToViewNumber({ value: pureRewardAmountInt, returnType: 'currency' }) + ' ' + index.toUpperCase():
+								FormatToViewNumber({ value: convertRewardAmountInt, returnType: 'currency' }) + ' ' + selectedRewardToken.Symbol.toUpperCase()
+								
+							}
 						</span>
 					</Typography>
 				)}

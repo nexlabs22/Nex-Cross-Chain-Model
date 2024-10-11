@@ -92,7 +92,8 @@ export const crypto5PoolAddress = '0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8' /
 // export const sepoliaStakingAddress = '0x7E4bf190D3d7A39918362bC8b47085155f2b2F04'
 // export const sepoliaStakingAddress = '0xc5e501b33bBEaE81e3FD74929C47505880bC4A21'
 export const sepoliaStakingAddress = '0x1247f518dfD79Bc0dDeB82E6E374CD5895601F56'
-export const sepoliaFeeManagerAddress = '0x4D0232c1433726165119e1B827E6eE16F47d73b4'
+// export const sepoliaFeeManagerAddress = '0x4D0232c1433726165119e1B827E6eE16F47d73b4'
+export const sepoliaFeeManagerAddress = '0x5763eD8399f33815E4404Ab84675927aE8A4a29F'
 
 export const exchangeAddresses: addressMapType = {
 	bitfinex: zeroAddress,
