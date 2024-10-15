@@ -365,7 +365,7 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 					<Typography variant="subtitle2" sx={{ fontSize: '0.9rem', color: 'lightgray' }}>
 						Est. APY:
 					</Typography>
-					<Typography variant="caption">{FormatToViewNumber({value: epyPercentage, returnType:'percent'})}</Typography>
+					<Typography variant="caption">{FormatToViewNumber({value: epyPercentage !==Infinity? epyPercentage: 0, returnType:'percent'})}</Typography>
 				</Stack>
 				{/* <Stack direction={'row'} alignItems={'center'} justifyContent={'start'} gap={1} width={'100%'}>
 					<Typography variant="subtitle2" sx={{ fontSize: '0.9rem', color: 'lightgray' }}>
