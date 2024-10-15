@@ -104,7 +104,7 @@ const GenericStakingCard1: React.FC<GenericStakingCardProps> = ({ index }) => {
 									<div>
 										{/* <p className="text-whiteText-500 text-sm interBold mb-2">No cryptocurrencies in your wallet? No problem!</p> */}
 										<p className="text-whiteText-500 text-sm interMedium">
-											Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate odit ipsa iure magnam pariatur cumque veniam fuga laboriosam et itaque soluta hic, modi aspernatur sapiente vitae sint, cum molestias natus?
+										If your staking amount has increased, but the percentage reward has decreased. Please note, this does not mean your overall reward is decreasing—your total reward is still growing, just at a lower percentage relative to your larger stake amount.
 										</p>
 									</div>
 								}

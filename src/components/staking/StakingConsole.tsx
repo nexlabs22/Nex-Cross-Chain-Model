@@ -60,6 +60,7 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 		isUnStake,
 		supportedRewardTokens,
 		selectedRewardToken,
+		epyPercentage,
 		setSelectedRewardToken,
 		approve,
 		vTokenApprove,
@@ -70,11 +71,11 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 		changeStakingInputAmount,
 	} = useStaking()
 
-	useEffect(() => {
-		console.log({ isUnStake, convertRewardAmountInt, pureRewardAmountInt, supportedRewardTokens })
-	}, [isUnStake, convertRewardAmountInt, pureRewardAmountInt, userStakedTokenAmount.data, supportedRewardTokens])
-
 	const label = { inputProps: { 'aria-label': 'Switch demo' } }
+	const rewardAmountString =
+		selectedRewardToken.Symbol === selectedStakingIndex?.symbol
+			? FormatToViewNumber({ value: pureRewardAmountInt, returnType: 'currency' }) + ' ' + index.toUpperCase()
+			: FormatToViewNumber({ value: convertRewardAmountInt, returnType: 'currency' }) + ' ' + selectedRewardToken.Symbol.toUpperCase()
 
 	return (
 		<Stack
@@ -283,19 +284,27 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 					</Stack>
 				</Stack>
 			</Stack>
+			{(isUnStake && !!stakingInputAmount) && (
+				<Typography
+					variant="caption"
+					component="label"
+					sx={{
+						fontSize: '0.7rem',
+						color: '#D3D3D3',
+						textAlign: 'ledt',
+						width: '100%',
+						paddingX: 4,
+						transform: 'skewX(-10deg)',
+						marginBottom: 1,
+					}}
+				>
+					Final Amount: {`${stakingInputAmount} ${selectedStakingIndex?.symbol} + ${rewardAmountString} (as reward)`}
+				</Typography>
+			)}
 			<Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
 				{isUnStake && (
 					<Typography variant="caption" component="label" sx={{ fontSize: '0.8rem', color: '#D3D3D3', textAlign: 'left', width: '100%', paddingX: 3, paddingTop: 1 }}>
-						Reward Amount:{' '}
-						<span style={{ color: '#34FFDA' }}>
-							{' '}
-							{
-								selectedRewardToken.Symbol === selectedStakingIndex?.symbol?
-								FormatToViewNumber({ value: pureRewardAmountInt, returnType: 'currency' }) + ' ' + index.toUpperCase():
-								FormatToViewNumber({ value: convertRewardAmountInt, returnType: 'currency' }) + ' ' + selectedRewardToken.Symbol.toUpperCase()
-								
-							}
-						</span>
+						Reward Amount: <span style={{ color: '#34FFDA' }}> {rewardAmountString}</span>
 					</Typography>
 				)}
 				<Typography variant="caption" component="label" sx={{ fontSize: '0.8rem', color: '#D3D3D3', textAlign: 'right', width: '100%', paddingX: 3, paddingTop: 1 }}>
@@ -356,14 +365,14 @@ const StakingConsole: React.FC<StakingConsoleProps> = ({ index, generic }) => {
 					<Typography variant="subtitle2" sx={{ fontSize: '0.9rem', color: 'lightgray' }}>
 						Est. APY:
 					</Typography>
-					<Typography variant="caption">36%</Typography>
+					<Typography variant="caption">{FormatToViewNumber({value: epyPercentage, returnType:'percent'})}</Typography>
 				</Stack>
-				<Stack direction={'row'} alignItems={'center'} justifyContent={'start'} gap={1} width={'100%'}>
+				{/* <Stack direction={'row'} alignItems={'center'} justifyContent={'start'} gap={1} width={'100%'}>
 					<Typography variant="subtitle2" sx={{ fontSize: '0.9rem', color: 'lightgray' }}>
 						Est. APY:
 					</Typography>
-					<Typography variant="caption">0.0 {index}</Typography>
-				</Stack>
+					<Typography variant="caption">{poolSizeInUsd} {index}</Typography>
+				</Stack> */}
 			</Stack>
 			<Stack width={'94%'} height={'1px'} marginX={'auto'} marginY={1} sx={{ backgroundColor: 'white' }}></Stack>
 			<Stack width="100%" height="fit-content" direction="row" alignItems={'center'} justifyContent={'center'} paddingX={3} paddingY={2}>

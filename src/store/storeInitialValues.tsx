@@ -23,6 +23,7 @@ export const indexDataObjectInitial = {
 	tokenAddress: '',
 	managementFee: '',
 	totalSupply: '',
+	predictedIncome: 0,
 	underlyingAssets: [],
 }
 

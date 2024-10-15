@@ -11,6 +11,7 @@ export const indexObjectEmpty =  {
     tokenAddress: '',
     managementFee: '',
     totalSupply: '',
+    predictedIncome:0,
     underlyingAssets: [],
 }
 

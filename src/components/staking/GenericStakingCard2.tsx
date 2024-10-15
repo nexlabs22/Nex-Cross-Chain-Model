@@ -26,11 +26,8 @@ interface GenericStakingCardProps {
 
 const GenericStakingCard2: React.FC<GenericStakingCardProps> = ({ index }) => {
 	const { theme } = useLandingPageStore()
-	const { selectedStakingIndex, userPoolSharePercentage,vTokenAmountToApprove,vaultTokenAddress, stakedIndexAmountInt, userStakingStartTime } = useStaking()
+	const { selectedStakingIndex, userPoolSharePercentage,vTokenAmountToApprove,vaultTokenAddress, stakedIndexAmountInt } = useStaking()
 
-	useEffect(() => {
-		console.log(vTokenAmountToApprove)
-	}, [vTokenAmountToApprove])
 
 	return (
 		<Stack
