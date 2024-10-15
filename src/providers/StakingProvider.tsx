@@ -374,7 +374,7 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 	}
 
 	async function unstake() {
-		console.log(selectedStakingIndex?.symbol, selectedStakingIndex?.tokenAddress)
+		
 		if (num(userStakedTokenAmount.data?.stakeAmount) < Number(stakingInputAmount)) {
 			return GenericToast({
 				type: 'error',
@@ -445,8 +445,25 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	})
 
-	const poolSizeInUsd = vIndexTokenPoolSizeInt * (selectedStakingIndex?.mktPrice||0)	
+	// const temp_price_map:{[key:string]:number} = {
+	// 	'ANFI':0.27,
+	// 	'CRYPTO5':49.43,
+	// 	'MAG7':42.26,
+	// 	'ARBEI':8.35
+	// }
+
+	// const poolSizeInUsd = vIndexTokenPoolSizeInt * (selectedStakingIndex?.mktPrice||0)	
+	const poolSizeInUsd = vIndexTokenPoolSizeInt * (0.26)	
 	const epyPercentage = (selectedStakingIndex?.predictedIncome||0) / poolSizeInUsd *100
+	
+	useEffect(()=>{
+		
+		console.log({price: selectedStakingIndex?.mktPrice})
+		console.log({predicted: selectedStakingIndex?.predictedIncome})
+		console.log({poolSizeInUsd})
+		console.log({epyPercentage})
+
+	},[selectedStakingIndex,poolSizeInUsd,epyPercentage ])
 
 	const contextValue = {
 		selectedStakingIndex,
