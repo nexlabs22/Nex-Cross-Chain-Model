@@ -126,7 +126,13 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		return token.Symbol === selectedStakingIndex?.symbol
 	}) as Coin
 	const [selectedRewardToken, setSelectedRewardToken] = useState<Coin>(defaultRewardToken)
-	// const [selectedRewardToken, setSelectedRewardToken] = useState()
+
+	useEffect(()=>{
+		const defaultRewardToken = sepoliaTokens.find((token) => {
+			return token.Symbol === selectedStakingIndex?.symbol
+		}) as Coin
+		setSelectedRewardToken(defaultRewardToken)
+	},[selectedStakingIndex?.symbol])
 
 	const stakingTokenContract = useContract(selectedStakingIndex?.tokenAddress, tokenAbi)
 	const stakingContract = useContract(sepoliaStakingAddress, stakingAbi)
@@ -445,16 +451,24 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	})
 
-	// const temp_price_map:{[key:string]:number} = {
-	// 	'ANFI':0.27,
-	// 	'CRYPTO5':49.43,
-	// 	'MAG7':42.26,
-	// 	'ARBEI':8.35
-	// }
+	const temp_price_map:{[key:string]:number} = {
+		'ANFI':0.27,
+		'CRYPTO5':49.43,
+		'MAG7':42.26,
+		'ARBEI':8.35
+	}
 
+	const temp_predictedIncome_map:{[key:string]:number} = {
+		'ANFI':60,
+		'CRYPTO5':(60/0.27*49.43),		
+		'MAG7':(60/0.27*42.26),
+		'ARBEI':(60/0.27*8.35)
+	}
+
+	const poolSizeInUsd = vIndexTokenPoolSizeInt * (temp_price_map[selectedStakingIndex?.symbol!])	
 	// const poolSizeInUsd = vIndexTokenPoolSizeInt * (selectedStakingIndex?.mktPrice||0)	
-	const poolSizeInUsd = vIndexTokenPoolSizeInt * (0.26)	
-	const epyPercentage = (selectedStakingIndex?.predictedIncome||0) / poolSizeInUsd *100
+	// const poolSizeInUsd = vIndexTokenPoolSizeInt * (0.26)	
+	const epyPercentage = (temp_predictedIncome_map[selectedStakingIndex?.symbol!]) / poolSizeInUsd *100
 	
 	useEffect(()=>{
 		
