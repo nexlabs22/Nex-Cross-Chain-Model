@@ -91,9 +91,12 @@ export const crypto5PoolAddress = '0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8' /
 // export const sepoliaStakingAddress = '0xD7A4399B01e6054E9A0F3c68971f7032e87eCa4E'
 // export const sepoliaStakingAddress = '0x7E4bf190D3d7A39918362bC8b47085155f2b2F04'
 // export const sepoliaStakingAddress = '0xc5e501b33bBEaE81e3FD74929C47505880bC4A21'
-export const sepoliaStakingAddress = '0x1247f518dfD79Bc0dDeB82E6E374CD5895601F56'
+// export const sepoliaStakingAddress = '0x1247f518dfD79Bc0dDeB82E6E374CD5895601F56'
+export const sepoliaStakingAddress = '0x291856fe15735Aafa2ad446B0879Afba344Ba024'
 // export const sepoliaFeeManagerAddress = '0x4D0232c1433726165119e1B827E6eE16F47d73b4'
-export const sepoliaFeeManagerAddress = '0x5763eD8399f33815E4404Ab84675927aE8A4a29F'
+// export const sepoliaFeeManagerAddress = '0x5763eD8399f33815E4404Ab84675927aE8A4a29F'
+export const sepoliaFeeManagerAddress = '0x0f2A687Af0f9b85568795299E6b1F33006f47Ee0'
+export const sepoliaERC4626FactoryAddress = '0x3c558178Be71715936015e8a84186D4F91665629'
 
 export const exchangeAddresses: addressMapType = {
 	bitfinex: zeroAddress,

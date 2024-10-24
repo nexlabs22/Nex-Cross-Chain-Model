@@ -17440,22 +17440,6 @@ export const stakingAbi = [
 	  "type": "error"
 	},
 	{
-	  "inputs": [
-		{
-		  "internalType": "address",
-		  "name": "implementation",
-		  "type": "address"
-		}
-	  ],
-	  "name": "ERC1967InvalidImplementation",
-	  "type": "error"
-	},
-	{
-	  "inputs": [],
-	  "name": "ERC1967NonPayable",
-	  "type": "error"
-	},
-	{
 	  "inputs": [],
 	  "name": "FailedInnerCall",
 	  "type": "error"
@@ -17509,22 +17493,6 @@ export const stakingAbi = [
 	  "type": "error"
 	},
 	{
-	  "inputs": [],
-	  "name": "UUPSUnauthorizedCallContext",
-	  "type": "error"
-	},
-	{
-	  "inputs": [
-		{
-		  "internalType": "bytes32",
-		  "name": "slot",
-		  "type": "bytes32"
-		}
-	  ],
-	  "name": "UUPSUnsupportedProxiableUUID",
-	  "type": "error"
-	},
-	{
 	  "anonymous": false,
 	  "inputs": [
 		{
@@ -17554,6 +17522,19 @@ export const stakingAbi = [
 		}
 	  ],
 	  "name": "OwnershipTransferred",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": false,
+		  "internalType": "address[]",
+		  "name": "newPoolTokens",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "PoolTokensUpdated",
 	  "type": "event"
 	},
 	{
@@ -17591,6 +17572,19 @@ export const stakingAbi = [
 		}
 	  ],
 	  "name": "RewardTokensSwapped",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": false,
+		  "internalType": "address[]",
+		  "name": "newRewardTokens",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "RewardTokensUpdated",
 	  "type": "event"
 	},
 	{
@@ -17710,29 +17704,16 @@ export const stakingAbi = [
 	  "type": "event"
 	},
 	{
-	  "anonymous": false,
 	  "inputs": [
 		{
-		  "indexed": true,
-		  "internalType": "address",
-		  "name": "implementation",
+		  "internalType": "contract ERC4626Factory",
+		  "name": "_erc4626Factory",
 		  "type": "address"
 		}
 	  ],
-	  "name": "Upgraded",
-	  "type": "event"
-	},
-	{
-	  "inputs": [],
-	  "name": "UPGRADE_INTERFACE_VERSION",
-	  "outputs": [
-		{
-		  "internalType": "string",
-		  "name": "",
-		  "type": "string"
-		}
-	  ],
-	  "stateMutability": "view",
+	  "name": "_setERC4626Factory",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
 	  "type": "function"
 	},
 	{
@@ -17983,19 +17964,6 @@ export const stakingAbi = [
 	},
 	{
 	  "inputs": [],
-	  "name": "proxiableUUID",
-	  "outputs": [
-		{
-		  "internalType": "bytes32",
-		  "name": "",
-		  "type": "bytes32"
-		}
-	  ],
-	  "stateMutability": "view",
-	  "type": "function"
-	},
-	{
-	  "inputs": [],
 	  "name": "renounceOwnership",
 	  "outputs": [],
 	  "stateMutability": "nonpayable",
@@ -18042,6 +18010,45 @@ export const stakingAbi = [
 		}
 	  ],
 	  "name": "setFeePercent",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address[]",
+		  "name": "_newPoolTokensAddresses",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "setPoolTokensAddresses",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address[]",
+		  "name": "_newRewardTokensAddresses",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "setRewardTokensAddresses",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "contract ISwapRouter",
+		  "name": "_routerV3",
+		  "type": "address"
+		}
+	  ],
+	  "name": "setRouterV3",
 	  "outputs": [],
 	  "stateMutability": "nonpayable",
 	  "type": "function"
@@ -18110,25 +18117,6 @@ export const stakingAbi = [
 		  "type": "address"
 		}
 	  ],
-	  "name": "tokenAddressToVaultAddress",
-	  "outputs": [
-		{
-		  "internalType": "address",
-		  "name": "",
-		  "type": "address"
-		}
-	  ],
-	  "stateMutability": "view",
-	  "type": "function"
-	},
-	{
-	  "inputs": [
-		{
-		  "internalType": "address",
-		  "name": "",
-		  "type": "address"
-		}
-	  ],
 	  "name": "tokenSwapVersion",
 	  "outputs": [
 		{
@@ -18174,24 +18162,6 @@ export const stakingAbi = [
 	  "name": "unstake",
 	  "outputs": [],
 	  "stateMutability": "nonpayable",
-	  "type": "function"
-	},
-	{
-	  "inputs": [
-		{
-		  "internalType": "address",
-		  "name": "newImplementation",
-		  "type": "address"
-		},
-		{
-		  "internalType": "bytes",
-		  "name": "data",
-		  "type": "bytes"
-		}
-	  ],
-	  "name": "upgradeToAndCall",
-	  "outputs": [],
-	  "stateMutability": "payable",
 	  "type": "function"
 	},
 	{
@@ -19060,33 +19030,6 @@ export const vaultAbi = [
 
 export const feeManagerAbi = [
 	{
-	  "inputs": [
-		{
-		  "internalType": "address",
-		  "name": "target",
-		  "type": "address"
-		}
-	  ],
-	  "name": "AddressEmptyCode",
-	  "type": "error"
-	},
-	{
-	  "inputs": [
-		{
-		  "internalType": "address",
-		  "name": "account",
-		  "type": "address"
-		}
-	  ],
-	  "name": "AddressInsufficientBalance",
-	  "type": "error"
-	},
-	{
-	  "inputs": [],
-	  "name": "FailedInnerCall",
-	  "type": "error"
-	},
-	{
 	  "inputs": [],
 	  "name": "InvalidInitialization",
 	  "type": "error"
@@ -19170,6 +19113,19 @@ export const feeManagerAbi = [
 	  "anonymous": false,
 	  "inputs": [
 		{
+		  "indexed": false,
+		  "internalType": "address[]",
+		  "name": "newPoolTokens",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "PoolTokensUpdated",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
 		  "indexed": true,
 		  "internalType": "address",
 		  "name": "tokenAddress",
@@ -19183,6 +19139,19 @@ export const feeManagerAbi = [
 		}
 	  ],
 	  "name": "RewardDistributionSkipped",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": false,
+		  "internalType": "address[]",
+		  "name": "newRewardTokens",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "RewardTokensUpdated",
 	  "type": "event"
 	},
 	{
@@ -19278,6 +19247,19 @@ export const feeManagerAbi = [
 	  "type": "function"
 	},
 	{
+	  "inputs": [
+		{
+		  "internalType": "contract ERC4626Factory",
+		  "name": "_erc4626Factory",
+		  "type": "address"
+		}
+	  ],
+	  "name": "_setERC4626Factory",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
 	  "inputs": [],
 	  "name": "_swapRewardTokensToWETH",
 	  "outputs": [],
@@ -19315,6 +19297,19 @@ export const feeManagerAbi = [
 	  "name": "checkAndTransfer",
 	  "outputs": [],
 	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "erc4626Factory",
+	  "outputs": [
+		{
+		  "internalType": "contract ERC4626Factory",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
 	  "type": "function"
 	},
 	{
@@ -19437,7 +19432,7 @@ export const feeManagerAbi = [
 	},
 	{
 	  "inputs": [],
-	  "name": "getTotalValueOfIndexTokensInWETH",
+	  "name": "getTotalValueOfAssetsInWeTH",
 	  "outputs": [
 		{
 		  "internalType": "uint256",
@@ -19477,11 +19472,6 @@ export const feeManagerAbi = [
 		},
 		{
 		  "internalType": "address",
-		  "name": "_uniswapV2Router",
-		  "type": "address"
-		},
-		{
-		  "internalType": "address",
 		  "name": "_uniswapV3Factory",
 		  "type": "address"
 		},
@@ -19504,6 +19494,11 @@ export const feeManagerAbi = [
 		  "internalType": "uint256",
 		  "name": "_threshold",
 		  "type": "uint256"
+		},
+		{
+		  "internalType": "address",
+		  "name": "_erc4626Factory",
+		  "type": "address"
 		}
 	  ],
 	  "name": "initialize",
@@ -19648,6 +19643,110 @@ export const feeManagerAbi = [
 	{
 	  "inputs": [
 		{
+		  "internalType": "contract IUniswapV3Factory",
+		  "name": "_factoryV3",
+		  "type": "address"
+		}
+	  ],
+	  "name": "setFactoryV3",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "contract NexStaking",
+		  "name": "_nexStakingAddress",
+		  "type": "address"
+		}
+	  ],
+	  "name": "setNexStaking",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "contract INonfungiblePositionManager",
+		  "name": "_nonfungiblePositionManager",
+		  "type": "address"
+		}
+	  ],
+	  "name": "setNonfungiblePositionManager",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address[]",
+		  "name": "_newPoolTokensAddresses",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "setPoolTokensAddresses",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address[]",
+		  "name": "_newRewardTokensAddresses",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "setRewardTokensAddresses",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "contract ISwapRouter",
+		  "name": "_routerV3",
+		  "type": "address"
+		}
+	  ],
+	  "name": "setRouterV3",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "_threshold",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "setThreshold",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "contract IERC20",
+		  "name": "_usdc",
+		  "type": "address"
+		}
+	  ],
+	  "name": "setUsdc",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
 		  "internalType": "address",
 		  "name": "",
 		  "type": "address"
@@ -19758,6 +19857,19 @@ export const feeManagerAbi = [
 	},
 	{
 	  "inputs": [],
+	  "name": "version",
+	  "outputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
 	  "name": "weth",
 	  "outputs": [
 		{
@@ -19772,5 +19884,187 @@ export const feeManagerAbi = [
 	{
 	  "stateMutability": "payable",
 	  "type": "receive"
+	}
+  ]
+
+export const ERC4626FactoryAbi = [
+	{
+	  "inputs": [],
+	  "name": "InvalidInitialization",
+	  "type": "error"
+	},
+	{
+	  "inputs": [],
+	  "name": "NotInitializing",
+	  "type": "error"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "owner",
+		  "type": "address"
+		}
+	  ],
+	  "name": "OwnableInvalidOwner",
+	  "type": "error"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "account",
+		  "type": "address"
+		}
+	  ],
+	  "name": "OwnableUnauthorizedAccount",
+	  "type": "error"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": false,
+		  "internalType": "uint64",
+		  "name": "version",
+		  "type": "uint64"
+		}
+	  ],
+	  "name": "Initialized",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "previousOwner",
+		  "type": "address"
+		},
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "newOwner",
+		  "type": "address"
+		}
+	  ],
+	  "name": "OwnershipTransferred",
+	  "type": "event"
+	},
+	{
+	  "anonymous": false,
+	  "inputs": [
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "vault",
+		  "type": "address"
+		},
+		{
+		  "indexed": true,
+		  "internalType": "address",
+		  "name": "underlyingAsset",
+		  "type": "address"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "string",
+		  "name": "name",
+		  "type": "string"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "string",
+		  "name": "symbol",
+		  "type": "string"
+		}
+	  ],
+	  "name": "VaultCreated",
+	  "type": "event"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "_underlyingAsset",
+		  "type": "address"
+		}
+	  ],
+	  "name": "createERC4626Vault",
+	  "outputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address[]",
+		  "name": "_indexTokensAddresses",
+		  "type": "address[]"
+		}
+	  ],
+	  "name": "initialize",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "owner",
+	  "outputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [],
+	  "name": "renounceOwnership",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "name": "tokenAddressToVaultAddress",
+	  "outputs": [
+		{
+		  "internalType": "address",
+		  "name": "",
+		  "type": "address"
+		}
+	  ],
+	  "stateMutability": "view",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "address",
+		  "name": "newOwner",
+		  "type": "address"
+		}
+	  ],
+	  "name": "transferOwnership",
+	  "outputs": [],
+	  "stateMutability": "nonpayable",
+	  "type": "function"
 	}
   ]

@@ -1,8 +1,8 @@
 import { ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { LeaderBoardDataType, rawStakeDataType } from '@/types/stakingTypes'
 import { indexDetailsType } from '@/types/nexTokenData'
-import { sepoliaStakingAddress } from '@/constants/contractAddresses'
-import { stakingAbi, tokenAbi, vaultAbi } from '@/constants/abi'
+import { sepoliaERC4626FactoryAddress, sepoliaStakingAddress } from '@/constants/contractAddresses'
+import { ERC4626FactoryAbi, stakingAbi, tokenAbi, vaultAbi } from '@/constants/abi'
 import { num } from '@/hooks/math'
 import { timeAgo } from './getTimeAgoString'
 
@@ -27,9 +27,10 @@ export async function getStakeLeaderBoardData(rawData: { stakeds: rawStakeDataTy
             const userAccountAddress = obj.user
 			const stakingTokenContract = await sdk.getContract(selectedStakingIndex?.tokenAddress, tokenAbi)
 			const stakingContract = await sdk.getContract(sepoliaStakingAddress, stakingAbi)
+			const erc4626CFactoryContract = await sdk.getContract(sepoliaERC4626FactoryAddress, ERC4626FactoryAbi)
 			const userStakedTokenAmount = await stakingContract.call('positions', [userAccountAddress, selectedStakingIndex.tokenAddress])
 
-			const vaultTokenAddress = await stakingContract.call('tokenAddressToVaultAddress', [selectedStakingIndex.tokenAddress])
+			const vaultTokenAddress = await erc4626CFactoryContract.call('tokenAddressToVaultAddress', [selectedStakingIndex.tokenAddress])
             const vaultTokenContract = await sdk.getContract(vaultTokenAddress, vaultAbi)
 
 

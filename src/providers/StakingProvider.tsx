@@ -3,12 +3,12 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { useDashboard } from './DashboardProvider'
 import { indexObjectType } from '@/types/tradeTableTypes'
 import { coinObjectInitial, indexDataObjectInitial } from '@/store/storeInitialValues'
-import { feeManagerAbi, stakingAbi, tokenAbi, vaultAbi } from '@/constants/abi'
+import { ERC4626FactoryAbi, feeManagerAbi, stakingAbi, tokenAbi, vaultAbi } from '@/constants/abi'
 import Big from 'big.js'
 import { GenericToast } from '@/components/GenericToast'
 import { parseUnits } from 'viem'
 import { num } from '@/hooks/math'
-import { sepoliaFeeManagerAddress, sepoliaStakingAddress, zeroAddress } from '@/constants/contractAddresses'
+import { sepoliaERC4626FactoryAddress, sepoliaFeeManagerAddress, sepoliaStakingAddress, zeroAddress } from '@/constants/contractAddresses'
 import { toast } from 'react-toastify'
 import { getStakeLeaderBoardData } from '@/utils/getStakeLeaderboardData'
 import { Coin, indexDetailsType } from '@/types/nexTokenData'
@@ -136,6 +136,7 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const stakingTokenContract = useContract(selectedStakingIndex?.tokenAddress, tokenAbi)
 	const stakingContract = useContract(sepoliaStakingAddress, stakingAbi)
+	const ERC4626FactoryContract = useContract(sepoliaERC4626FactoryAddress, ERC4626FactoryAbi)
 	const feeManagerContract = useContract(sepoliaFeeManagerAddress, feeManagerAbi)
 
 	const userIndexTokenBalance = useContractRead(stakingTokenContract.contract, 'balanceOf', [userAccountAddress])
@@ -162,7 +163,7 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 	])
 
 	// const vaultTokenAddress = userStakedTokenAmount.data?.vaultToken
-	const vaultTokenAddress = useContractRead(stakingContract.contract, 'tokenAddressToVaultAddress', [selectedStakingIndex?.tokenAddress]).data
+	const vaultTokenAddress = useContractRead(ERC4626FactoryContract.contract, 'tokenAddressToVaultAddress', [selectedStakingIndex?.tokenAddress]).data
 	const vaultTokenContract = useContract(vaultTokenAddress, vaultAbi)
 	const uservTokenBalance = useContractRead(vaultTokenContract.contract, 'balanceOf', [userAccountAddress])
 	const uservTokenAllowance = useContractRead(vaultTokenContract.contract, 'allowance', [userAccountAddress, sepoliaStakingAddress])
