@@ -132,7 +132,7 @@ const GenericStakingCard1: React.FC<GenericStakingCardProps> = ({ index }) => {
 						Pool Holders
 					</Typography>
 					<Typography variant="caption" component="label">
-						{FormatToViewNumber({ value: poolHoldersInt, returnType: 'string' })}
+						{poolHoldersInt}
 					</Typography>
 				</Stack>
 			</Stack>
