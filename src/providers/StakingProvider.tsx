@@ -254,6 +254,8 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 			stakingComponentData.reload()
 
 			stakeHook.reset()
+
+			setStakingInputAmount('')
 		}
 	}, [stakeHook, uservTokenBalance, stakingComponentData, vIndexTokenPoolSize, previewRedeemAmount, userIndexTokenBalance, userIndexTokenAllowance])
 
@@ -291,6 +293,8 @@ const StakingProvider = ({ children }: { children: React.ReactNode }) => {
 			previewRedeemAmount.refetch()
 			stakingComponentData.reload()
 			unstakeHook.reset()
+
+			setStakingInputAmount('')
 		}
 	}, [unstakeHook, userIndexTokenBalance, stakingComponentData, vIndexTokenPoolSize, previewRedeemAmount, userStakedTokenAmount, uservTokenAllowance, uservTokenBalance, userIndexTokenAllowance])
 
