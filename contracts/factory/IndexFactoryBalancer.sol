@@ -510,48 +510,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
                         chainValue,
                         oracleTokenShares
                     );
-                    /**
-                    uint chainCurrentRealShare = (chainValue * 100e18) /
-                        portfolioValue;
-                    reweightExtraPercentage[nonce] += (chainCurrentRealShare -
-                        chainSelectorTotalShares);
-
-                    address crossChainIndexFactory = crossChainFactoryBySelector(
-                            chainSelector
-                        );
-
-                    address[] memory currentTokenAddresses = indexFactoryStorage
-                        .allCurrentChainSelectorTokens(chainSelector);
-                    address[] memory newTokenAddresses = indexFactoryStorage
-                        .allOracleChainSelectorTokens(chainSelector);
-
-                    uint[] memory currentTokenVersions = indexFactoryStorage
-                        .allCurrentChainSelectorVersions(chainSelector);
-                    uint[] memory newTokenVersions = indexFactoryStorage
-                        .allOracleChainSelectorVersions(chainSelector);
-
-                    uint[] memory extraData = new uint[](2);
-                    extraData[0] = portfolioValue;
-                    extraData[1] = chainSelectorTotalShares;
-                    extraData[2] = chainValue;
-
-                    bytes memory data = abi.encode(
-                        3,
-                        currentTokenAddresses,
-                        newTokenAddresses,
-                        currentTokenVersions,
-                        newTokenVersions,
-                        updatePortfolioNonce,
-                        oracleTokenShares,
-                        extraData
-                    );
-                    sendMessage(
-                        chainSelector,
-                        crossChainIndexFactory,
-                        data,
-                        PayFeesIn.LINK
-                    );
-                    */
+                    
                 }
             }
         
