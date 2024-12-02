@@ -17,7 +17,7 @@ import "../../contracts/factory/IndexFactory.sol";
 import "../../contracts/factory/IndexFactoryStorage.sol";
 import "../../contracts/vault/CrossChainVault.sol";
 import "../../contracts/vault/CrossChainFactory.sol";
-import "../../contracts/test/TestSwap.sol";
+// import "../../contracts/test/TestSwap.sol";
 import "../../contracts/test/Token.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
@@ -95,7 +95,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
     CrossChainVault public crossChainVault;
     IndexFactoryStorage public indexFactoryStorage;
     Token public crossChainToken;
-    TestSwap public testSwap;
+    // TestSwap public testSwap;
     MockV3Aggregator public ethPriceOracle;
     ERC20 public dai;
     IWETH public weth;
@@ -157,7 +157,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         // MockApiOracle,
         IndexToken,
         // MockV3Aggregator,
-        TestSwap,
+        // TestSwap,
         MockRouter,
         CrossChainVault,
         CrossChainIndexFactory,
@@ -260,7 +260,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         link.transfer(address(indexFactory), 10e18);
         link.transfer(address(crossChainIndexFactory), 10e18);
 
-        TestSwap testSwap = new TestSwap();
+        // TestSwap testSwap = new TestSwap();
         
         
         return (
@@ -268,7 +268,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             // oracle,
             indexToken,
             // ethPriceOracle,
-            testSwap,
+            // testSwap,
             mockRouter,
             crossChainVault,
             crossChainIndexFactory,
@@ -324,7 +324,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             // oracle,
             indexToken,
             // ethPriceOracle,
-            testSwap,
+            // testSwap,
             mockRouter,
             crossChainVault,
             crossChainIndexFactory,

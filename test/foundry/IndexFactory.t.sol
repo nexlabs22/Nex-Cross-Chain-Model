@@ -4,7 +4,7 @@ pragma solidity ^0.8.7;
 import "forge-std/Test.sol";
 import "../../contracts/token/IndexToken.sol";
 import "../../contracts/factory/IndexFactory.sol";
-import "../../contracts/test/TestSwap.sol";
+// import "../../contracts/test/TestSwap.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";

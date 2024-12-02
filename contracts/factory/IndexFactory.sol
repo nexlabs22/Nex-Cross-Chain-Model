@@ -122,6 +122,14 @@ contract IndexFactory is
     );
     event MessageSent(bytes32 messageId);
 
+    /**
+     * @dev Initializes the contract with the given parameters.
+     * @param _currentChainSelector The current chain selector.
+     * @param _token The address of the IndexToken contract.
+     * @param _chainlinkToken The address of the Chainlink token.
+     * @param _router The address of the router.
+     * @param _weth The address of the WETH token.
+     */
     function initialize(
         uint64 _currentChainSelector,
         address payable _token,
@@ -134,6 +142,7 @@ contract IndexFactory is
         __ccipReceiver_init(_router);
         __Ownable_init();
         __ReentrancyGuard_init();
+        __ReentrancyGuard_init_unchained();
         //set chain selector
         currentChainSelector = _currentChainSelector;
         indexToken = IndexToken(_token);
@@ -152,38 +161,74 @@ contract IndexFactory is
         feeReceiver = msg.sender;
     }
 
+    /**
+     * @dev Sets the IndexFactoryStorage contract address.
+     * @param _indexFactoryStorage The address of the IndexFactoryStorage contract.
+     */
     function setIndexFactoryStorage(
         address _indexFactoryStorage
     ) public onlyOwner {
         indexFactoryStorage = IndexFactoryStorage(_indexFactoryStorage);
     }
 
+    /**
+     * @dev Sets the fee receiver address.
+     * @param _feeReceiver The address of the fee receiver.
+     */
     function setFeeReceiver(address _feeReceiver) public onlyOwner {
         feeReceiver = _feeReceiver;
     }
     
 
+    /**
+     * @dev Returns the cross-chain factory address for a given chain selector.
+     * @param _chainSelector The chain selector.
+     * @return The address of the cross-chain factory.
+     */
     function crossChainFactoryBySelector(uint64 _chainSelector) public view returns(address){
         return indexFactoryStorage.crossChainFactoryBySelector(_chainSelector);
     }
 
+    /**
+     * @dev Returns the cross-chain token address for a given chain selector.
+     * @param _chainSelector The chain selector.
+     * @return The address of the cross-chain token.
+     */
     function crossChainToken(uint64 _chainSelector) public view returns(address){
         return indexFactoryStorage.crossChainToken(_chainSelector);
     }
+
+    /**
+     * @dev Returns the cross-chain token swap version for a given chain selector.
+     * @param _chainSelector The chain selector.
+     * @return The swap version of the cross-chain token.
+     */
     function crossChainTokenSwapVersion(uint64 _chainSelector) public view returns(uint){
         address crossChainTokenAddress = crossChainToken(_chainSelector);
         return indexFactoryStorage.crossChainTokenSwapVersion(_chainSelector, crossChainTokenAddress);
     }
 
+    /**
+     * @dev Returns the price in Wei.
+     * @return The price in Wei.
+     */
     function priceInWei() public view returns (uint256) {
         return indexFactoryStorage.priceInWei();
     }
 
+    /**
+     * @dev Converts ETH amount to USD.
+     * @param _ethAmount The amount of ETH.
+     * @return The equivalent amount in USD.
+     */
     function convertEthToUsd(uint _ethAmount) public view returns (uint256) {
         return _ethAmount * priceInWei() / 1e18;
     }
 
-    //Notice: newFee should be between 1 to 100 (0.01% - 1%)
+    /**
+     * @dev Sets the fee rate, ensuring it is between 0.01% and 1%.
+     * @param _newFee The new fee rate.
+     */
     function setFeeRate(uint8 _newFee) public onlyOwner {
         uint256 distance = block.timestamp - latestFeeUpdate;
         require(
@@ -198,8 +243,20 @@ contract IndexFactory is
         latestFeeUpdate = block.timestamp;
     }
 
+    /**
+     * @dev Fallback function to receive ETH.
+     */
     receive() external payable {}
 
+    /**
+     * @dev Swaps a single token.
+     * @param tokenIn The address of the input token.
+     * @param tokenOut The address of the output token.
+     * @param amountIn The amount of input token.
+     * @param _recipient The address of the recipient.
+     * @param _swapVersion The swap version.
+     * @return The amount of output token.
+     */
     function _swapSingle(
         address tokenIn,
         address tokenOut,
@@ -230,6 +287,15 @@ contract IndexFactory is
         }
     }
 
+    /**
+     * @dev Swaps tokens.
+     * @param tokenIn The address of the input token.
+     * @param tokenOut The address of the output token.
+     * @param amountIn The amount of input token.
+     * @param _recipient The address of the recipient.
+     * @param _swapVersion The swap version.
+     * @return The amount of output token.
+     */
     function swap(
         address tokenIn,
         address tokenOut,
@@ -248,6 +314,13 @@ contract IndexFactory is
         return amountOut;
     }
 
+    /**
+     * @dev Issues index tokens.
+     * @param _tokenIn The address of the input token.
+     * @param _inputAmount The amount of input token.
+     * @param _crossChainFee The cross-chain fee.
+     * @param _tokenInSwapVersion The swap version of the input token.
+     */
     function issuanceIndexTokens(
         address _tokenIn,
         uint _inputAmount,
@@ -273,15 +346,20 @@ contract IndexFactory is
         _issuance(_tokenIn, wethAmount, _crossChainFee);
     }
 
+    /**
+     * @dev Issues index tokens with ETH.
+     * @param _inputAmount The amount of input token.
+     * @param _crossChainFee The cross-chain fee.
+     */
     function issuanceIndexTokensWithEth(
         uint _inputAmount,
         uint _crossChainFee
-    ) public payable nonReentrant {
+    ) external payable {
         uint feeAmount = (_inputAmount * feeRate) / 10000;
         uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
         require(msg.value >= finalAmount, "lower than required amount");
         //transfer fee to the owner
-        weth.deposit{value: feeAmount}();
+        weth.deposit{value: finalAmount}();
         weth.transfer(address(feeReceiver), feeAmount);
         //set mappings
         issuanceNonce++;
@@ -292,7 +370,12 @@ contract IndexFactory is
         _issuance(address(weth), _inputAmount, _crossChainFee);
     }
 
-
+    /**
+     * @dev Internal function to handle issuance.
+     * @param _tokenIn The address of the input token.
+     * @param _inputAmount The amount of input token.
+     * @param _crossChainFee The cross-chain fee.
+     */
     function _issuance(
         address _tokenIn,
         uint _inputAmount,
@@ -338,7 +421,14 @@ contract IndexFactory is
             );
     }
 
-
+    /**
+     * @dev Handles issuance swaps on the current chain.
+     * @param _wethAmount The amount of WETH.
+     * @param _issuanceNonce The issuance nonce.
+     * @param _chainSelectorTokensCount The number of tokens in the chain selector.
+     * @param _chainSelector The chain selector.
+     * @param _latestCount The latest count.
+     */
     function _issuanceSwapsCurrentChain(
         uint _wethAmount,
         uint _issuanceNonce,
@@ -390,6 +480,13 @@ contract IndexFactory is
         uint[] zeroNumbers;
     }
 
+    /**
+     * @dev Handles issuance swaps on other chains.
+     * @param _wethAmount The amount of WETH.
+     * @param _issuanceNonce The issuance nonce.
+     * @param _chainSelector The chain selector.
+     * @param _latestCount The latest count.
+     */
     function _issuanceSwapsOtherChains(
         uint _wethAmount,
         uint _issuanceNonce,
@@ -445,6 +542,11 @@ contract IndexFactory is
         issuanceMessageIdByNonce[issuanceNonce] = messageId;
     }
 
+    /**
+     * @dev Completes the issuance request.
+     * @param _issuanceNonce The issuance nonce.
+     * @param _messageId The message ID.
+     */
     function completeIssuanceRequest(uint _issuanceNonce, bytes32 _messageId) internal {
         uint totalOldVaules;
         uint totalNewVaules;
@@ -472,7 +574,13 @@ contract IndexFactory is
         emit Issuanced(_messageId, _issuanceNonce, issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);
     }
 
-    
+    /**
+     * @dev Redeems tokens.
+     * @param amountIn The amount of input tokens.
+     * @param _crossChainFee The cross-chain fee.
+     * @param _tokenOut The address of the output token.
+     * @param _tokenOutSwapVersion The swap version of the output token.
+     */
     function redemption(
         uint amountIn,
         uint _crossChainFee,
@@ -523,6 +631,12 @@ contract IndexFactory is
             );
     }
 
+    /**
+     * @dev Handles redemption swaps on the current chain.
+     * @param _burnPercent The burn percentage.
+     * @param _redemptionNonce The redemption nonce.
+     * @param _chainSelectorTokensCount The number of tokens in the chain selector.
+     */
     function _redemptionSwapsCurrentChain(
         uint _burnPercent,
         uint _redemptionNonce,
@@ -556,6 +670,12 @@ contract IndexFactory is
                 }
     }
 
+    /**
+     * @dev Handles redemption swaps on other chains.
+     * @param _burnPercent The burn percentage.
+     * @param _redemptionNonce The redemption nonce.
+     * @param _chainSelector The chain selector.
+     */
     function _redemptionSwapsOtherChains(
         uint _burnPercent,
         uint _redemptionNonce,
@@ -593,6 +713,11 @@ contract IndexFactory is
         redemptionMessageIdByNonce[_redemptionNonce] = messageId;
     }
 
+    /**
+     * @dev Completes the redemption request.
+     * @param nonce The redemption nonce.
+     * @param _messageId The message ID.
+     */
     function completeRedemptionRequest(uint nonce, bytes32 _messageId) internal {
         uint wethAmount = redemptionNonceTotalValue[nonce];
         address requester = redemptionNonceRequester[nonce];
@@ -615,7 +740,14 @@ contract IndexFactory is
         }
     }
     
-
+    /**
+     * @dev Returns the amount out for a given swap.
+     * @param tokenIn The address of the input token.
+     * @param tokenOut The address of the output token.
+     * @param amountIn The amount of input token.
+     * @param _swapVersion The swap version.
+     * @return finalAmountOut The amount of output token.
+     */
     function getAmountOut(
         address tokenIn,
         address tokenOut,
@@ -630,6 +762,10 @@ contract IndexFactory is
         );
     }
 
+    /**
+     * @dev Returns the portfolio balance.
+     * @return The total portfolio balance.
+     */
     function getPortfolioBalance() public view returns (uint) {
         uint totalValue;
         uint totalCurrentList = indexFactoryStorage.totalCurrentList();
@@ -654,6 +790,13 @@ contract IndexFactory is
         return totalValue;
     }
 
+    /**
+     * @dev Estimates the amount out for a given swap.
+     * @param tokenIn The address of the input token.
+     * @param tokenOut The address of the output token.
+     * @param amountIn The amount of input token.
+     * @return amountOut The estimated amount of output token.
+     */
     function estimateAmountOut(
         address tokenIn,
         address tokenOut,
@@ -666,6 +809,15 @@ contract IndexFactory is
         );
     }
 
+    /**
+     * @dev Sends tokens to another chain.
+     * @param destinationChainSelector The destination chain selector.
+     * @param _data The data to send.
+     * @param receiver The address of the receiver.
+     * @param tokensToSendDetails The details of the tokens to send.
+     * @param payFeesIn The fee payment method.
+     * @return The message ID.
+     */
     function sendToken(
         uint64 destinationChainSelector,
         bytes memory _data,
@@ -726,6 +878,14 @@ contract IndexFactory is
         return messageId;
     }
 
+    /**
+     * @dev Sends a message to another chain.
+     * @param destinationChainSelector The destination chain selector.
+     * @param receiver The address of the receiver.
+     * @param _data The data to send.
+     * @param payFeesIn The fee payment method.
+     * @return The message ID.
+     */
     function sendMessage(
         uint64 destinationChainSelector,
         address receiver,
@@ -768,7 +928,10 @@ contract IndexFactory is
         return messageId;
     }
 
-    // /// handle a received message
+    /**
+     * @dev Handles received messages.
+     * @param any2EvmMessage The received message.
+     */
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
@@ -808,7 +971,15 @@ contract IndexFactory is
         }
     }
 
-
+    /**
+     * @dev Handles received issuance messages.
+     * @param nonce The issuance nonce.
+     * @param tokenAddresses The addresses of the tokens.
+     * @param value1 The old token values.
+     * @param value2 The new token values.
+     * @param totalCurrentList The total current list.
+     * @param _messageId The message ID.
+     */
     function _handleReceivedIssuance(
         uint nonce,
         address[] memory tokenAddresses,
@@ -835,6 +1006,15 @@ contract IndexFactory is
         }
     }
 
+    /**
+     * @dev Handles received redemption messages.
+     * @param nonce The redemption nonce.
+     * @param any2EvmMessage The received message.
+     * @param tokenAddresses The addresses of the tokens.
+     * @param totalCurrentList The total current list.
+     * @param sourceChainSelector The source chain selector.
+     * @param _messageId The message ID.
+     */
     function _handleReceivedRedemption(
         uint nonce,
         Client.Any2EVMMessage memory any2EvmMessage,
