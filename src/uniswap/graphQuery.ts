@@ -9,7 +9,6 @@ export const GET_HISTORICAL_PRICES_QL = gql`
 		}
 	}
 `
-
 export const GET_ISSUANCED_ANFI_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		anfiissuanceds(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
@@ -22,7 +21,6 @@ export const GET_ISSUANCED_ANFI_EVENT_LOGS = gql`
 		}
 	}
 `
-
 export const GET_REDEMPTION_ANFI_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		anfiredemptions(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
@@ -47,7 +45,6 @@ export const GET_ISSUANCED_ARBEI_EVENT_LOGS = gql`
 		}
 	}
 `
-
 export const GET_REDEMPTION_ARBEI_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		arbeiredemptions(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
@@ -60,7 +57,6 @@ export const GET_REDEMPTION_ARBEI_EVENT_LOGS = gql`
 		}
 	}
 `
-
 export const GET_ISSUANCED_CR5_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		cr5Issuanceds(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
@@ -89,7 +85,6 @@ export const GET_REQ_ISSUANCED_CR5_EVENT_LOGS = gql`
 		}
 	}
 `
-
 export const GET_REQ_REDEMPTION_CR5_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		cr5RequestRedemptions(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
@@ -118,10 +113,23 @@ export const GET_REDEMPTION_CR5_EVENT_LOGS = gql`
 		}
 	}
 `
-
 export const GET_MAG7_ISSUANCED_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		mag7Issuanceds(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
+			user
+			time
+			nonce
+			inputToken
+			inputAmount
+			outputAmount
+			blockTimestamp
+			transactionHash
+		}
+	}
+`
+export const GET_MAG7_CANCELLED_ISSUANCED_EVENT_LOGS = gql`
+	query GetHistoricalEventLogs($accountAddress: String!) {
+		mag7IssuanceCancelleds(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
 			user
 			time
 			nonce
@@ -147,10 +155,37 @@ export const GET_MAG7_REQ_ISSUANCED_EVENT_LOGS = gql`
 		}
 	}
 `
-
+export const GET_MAG7_REQ_CANCEL_ISSUANCED_EVENT_LOGS = gql`
+	query GetHistoricalEventLogs($accountAddress: String!) {
+		mag7RequestCancelIssuances(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
+			user
+			time
+			nonce
+			inputToken
+			inputAmount
+			outputAmount
+			blockTimestamp
+			transactionHash
+		}
+	}
+`
 export const GET_MAG7_REDEMPTION_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		mag7Redemptions(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
+			user
+			time
+			nonce
+			outputToken
+			inputAmount
+			outputAmount
+			blockTimestamp
+			transactionHash
+		}
+	}
+`
+export const GET_MAG7_CANCELLED_REDEMPTION_EVENT_LOGS = gql`
+	query GetHistoricalEventLogs($accountAddress: String!) {
+		mag7RedemptionCancelleds(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
 			user
 			time
 			nonce
@@ -176,3 +211,48 @@ export const GET_MAG7_REQ_REDEMPTION_EVENT_LOGS = gql`
 		}
 	}
 `
+export const GET_MAG7_REQ_CANCEL_REDEMPTION_EVENT_LOGS = gql`
+	query GetHistoricalEventLogs($accountAddress: String!) {
+		mag7RequestCancelRedemptions(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
+			user
+			time
+			nonce
+			outputToken
+			inputAmount
+			outputAmount
+			blockTimestamp
+			transactionHash
+		}
+	}
+`
+export const GET_STAKING_EVENT_LOGS = gql`
+	query GetHistoricalEventLogs {
+		stakeds {
+  			user
+  			tokenAddress
+  			amount
+  			totalStakedAmount
+  			poolSize
+  			vault
+  			sharesMinted
+  			timestamp
+  			blockNumber
+  			blockTimestamp
+  			transactionHash
+		}
+		unstakeds {
+  			user
+  			tokenAddress
+  			amount
+  			totalStakedAmount
+  			poolSize
+  			vault
+  			sharesBurned
+  			timestamp
+  			blockNumber
+  			blockTimestamp
+  			transactionHash
+		}
+	}
+`
+

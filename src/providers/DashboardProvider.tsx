@@ -184,6 +184,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 			tokenAddress: sepoliaAnfiV2IndexToken,
 			managementFee: '1.00',
 			totalSupply: '78622.32',
+			predictedIncome: 60,
 			underlyingAssets: [
 				{
 					symbol: 'XAUT',
@@ -218,6 +219,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 			tokenAddress: sepoliaCrypto5V2IndexToken,
 			managementFee: '1.00',
 			totalSupply: '78622.32',
+			predictedIncome: 60,
 			underlyingAssets: [
 				{
 					symbol: 'BTC',
@@ -277,6 +279,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 			tokenAddress: sepoliaMAG7IndexTokenAddress,
 			managementFee: '1.00',
 			totalSupply: '78622.32',
+			predictedIncome: 60,
 			underlyingAssets: [
 				{
 					symbol: 'BTC',
@@ -336,6 +339,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 			tokenAddress: sepoliaArbeiIndexTokenAddress,
 			managementFee: '1.00',
 			totalSupply: '78622.32',
+			predictedIncome: 60,
 			underlyingAssets: [
 				{
 					symbol: 'BTC',

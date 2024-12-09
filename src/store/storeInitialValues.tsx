@@ -9,3 +9,31 @@ export const dayChangeInitial = {
 	mag7: 0
 
 }
+
+export const indexDataObjectInitial = {
+	name: '',
+	logo: null,
+	symbol: '',
+	shortSymbol: '',
+	shortDescription: '',
+	description: '',
+	mktCap: 0,
+	mktPrice: 0,
+	chg24h: '',
+	tokenAddress: '',
+	managementFee: '',
+	totalSupply: '',
+	predictedIncome: 0,
+	underlyingAssets: [],
+}
+
+export const coinObjectInitial = {
+	logo: '',
+	name: '',
+	Symbol: '',
+	isNexlabToken:true,
+	address: '',
+	factoryAddress: '',
+	decimals: 0,
+	indexType: 'defi'
+}

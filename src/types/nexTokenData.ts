@@ -45,6 +45,7 @@ export interface indexDetailsType {
     tokenAddress: string
     managementFee: string
     totalSupply: string
+    predictedIncome: number
     underlyingAssets: underlyingAsset[]
 }
 
