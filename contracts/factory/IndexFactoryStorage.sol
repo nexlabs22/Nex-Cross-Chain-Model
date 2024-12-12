@@ -11,10 +11,12 @@ import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
 import "../chainlink/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../libraries/OracleLibrary.sol";
+// import "../libraries/OracleLibrary.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+import "./IPriceOracle.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
@@ -47,6 +49,7 @@ contract IndexFactoryStorage is
     uint64 public currentChainSelector;
     // uint256 internal constant SCALAR = 1e20;
 
+    address public priceOracle;
     
 
     
@@ -296,6 +299,14 @@ contract IndexFactoryStorage is
     function setPriceFeed(address _toUsdPricefeed) external onlyOwner {
         require(_toUsdPricefeed != address(0), "ICO: Price feed address cannot be zero address");
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPricefeed);        
+    }
+
+    function setPriceOracle(address _priceOracle) external onlyOwner {
+        require(
+            _priceOracle != address(0),
+            "Price oracle address cannot be zero address"
+        );
+        priceOracle = _priceOracle;
     }
 
     /**
@@ -640,21 +651,24 @@ contract IndexFactoryStorage is
         address tokenOut,
         uint128 amountIn
     ) public view returns (uint amountOut) {
-        
-        address _pool = factoryV3.getPool(
+        amountOut = IPriceOracle(priceOracle).estimateAmountOut(
+            address(factoryV3),
             tokenIn,
             tokenOut,
-            3000
+            amountIn
         );
-        
-        (int24 tick ) = OracleLibrary.getLatestTick(_pool);
-        
-        amountOut = OracleLibrary.getQuoteAtTick(
-            tick,
-            amountIn,
-            tokenIn,
-            tokenOut
-        );
+        // address _pool = factoryV3.getPool(
+        //     tokenIn,
+        //     tokenOut,
+        //     3000
+        // );
+        // (int24 tick ) = OracleLibrary.getLatestTick(_pool);
+        // amountOut = OracleLibrary.getQuoteAtTick(
+        //     tick,
+        //     amountIn,
+        //     tokenIn,
+        //     tokenOut
+        // );
     }
 
     

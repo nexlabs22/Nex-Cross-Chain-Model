@@ -11,7 +11,7 @@ import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
 import "../chainlink/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../libraries/OracleLibrary.sol";
+// import "../libraries/OracleLibrary.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
@@ -21,7 +21,7 @@ import "../ccip/CCIPReceiver.sol";
 import "./CrossChainVault.sol";
 // import {Withdraw} from "./utils/Withdraw.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-
+import "../factory/IPriceOracle.sol";
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
@@ -85,6 +85,7 @@ contract CrossChainIndexFactory is
     // Address that can publish a new methodology.
     address public methodologist;
 
+    address public priceOracle;
     // Address that has privilege to mint and burn. It will be Controller and Admin to begin.
     address public minter;
 
@@ -194,6 +195,14 @@ contract CrossChainIndexFactory is
 
     function convertEthToUsd(uint _ethAmount) public view returns (uint256) {
         return _ethAmount * priceInWei() / 1e18;
+    }
+
+    function setPriceOracle(address _priceOracle) external onlyOwner {
+        require(
+            _priceOracle != address(0),
+            "Price oracle address cannot be zero address"
+        );
+        priceOracle = _priceOracle;
     }
 
     function setCcipRouter(address _router) public onlyOwner {
@@ -342,15 +351,20 @@ contract CrossChainIndexFactory is
         uint128 amountIn,
         uint32 secondsAgo
     ) public view returns (uint amountOut) {
-        address _pool = factoryV3.getPool(tokenIn, tokenOut, 3000);
-
-        (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
-        amountOut = OracleLibrary.getQuoteAtTick(
-            tick,
-            amountIn,
+        amountOut = IPriceOracle(priceOracle).estimateAmountOut(
+            address(factoryV3),
             tokenIn,
-            tokenOut
+            tokenOut,
+            amountIn
         );
+        // address _pool = factoryV3.getPool(tokenIn, tokenOut, 3000);
+        // (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
+        // amountOut = OracleLibrary.getQuoteAtTick(
+        //     tick,
+        //     amountIn,
+        //     tokenIn,
+        //     tokenOut
+        // );
     }
 
     function sendToken(
@@ -384,7 +398,7 @@ contract CrossChainIndexFactory is
             tokenAmounts: tokensToSendDetails,
             // extraArgs: "",
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 900_000, strict: false}) // Additional arguments, setting gas limit and non-strict sequency mode
+                Client.EVMExtraArgsV1({gasLimit: 900_000}) // Additional arguments, setting gas limit and non-strict sequency mode
             ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
@@ -936,7 +950,7 @@ contract CrossChainIndexFactory is
             tokenAmounts: new Client.EVMTokenAmount[](0),
             // extraArgs: "",
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 900_000, strict: false}) // Additional arguments, setting gas limit and non-strict sequency mode
+                Client.EVMExtraArgsV1({gasLimit: 900_000}) // Additional arguments, setting gas limit and non-strict sequency mode
             ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });

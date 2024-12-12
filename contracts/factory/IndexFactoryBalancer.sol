@@ -73,6 +73,15 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
 
     event MessageSent(bytes32 messageId);
 
+    /**
+     * @dev Initializes the contract with the given parameters.
+     * @param _currentChainSelector The current chain selector.
+     * @param _token The address of the IndexToken contract.
+     * @param _indexFactoryStorage The address of the IndexFactoryStorage contract.
+     * @param _chainlinkToken The address of the Chainlink token.
+     * @param _router The address of the router.
+     * @param _weth The address of the WETH token.
+     */
     function initialize(
         uint64 _currentChainSelector,
         address payable _token,
@@ -103,33 +112,60 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         latestFeeUpdate = block.timestamp;
     }
 
+    /**
+     * @dev Sets the IndexFactoryStorage contract address.
+     * @param _indexFactoryStorage The address of the IndexFactoryStorage contract.
+     */
     function setIndexFactoryStorage(
         address _indexFactoryStorage
     ) public onlyOwner {
         indexFactoryStorage = IndexFactoryStorage(_indexFactoryStorage);
     }
 
+    /**
+     * @dev Returns the cross-chain factory address for a given chain selector.
+     * @param _chainSelector The chain selector.
+     * @return The address of the cross-chain factory.
+     */
     function crossChainFactoryBySelector(
         uint64 _chainSelector
     ) public view returns (address) {
         return indexFactoryStorage.crossChainFactoryBySelector(_chainSelector);
     }
 
+    /**
+     * @dev Returns the cross-chain token address for a given chain selector.
+     * @param _chainSelector The chain selector.
+     * @return The address of the cross-chain token.
+     */
     function crossChainToken(
         uint64 _chainSelector
     ) public view returns (address) {
         return indexFactoryStorage.crossChainToken(_chainSelector);
     }
 
+    /**
+     * @dev Returns the price in Wei.
+     * @return The price in Wei.
+     */
     function priceInWei() public view returns (uint256) {
         return indexFactoryStorage.priceInWei();
     }
 
+    /**
+     * @dev Converts ETH amount to USD.
+     * @param _ethAmount The amount of ETH.
+     * @return The equivalent amount in USD.
+     */
     function convertEthToUsd(uint _ethAmount) public view returns (uint256) {
         return _ethAmount * priceInWei() / 1e18;
     }
 
     //Notice: newFee should be between 1 to 100 (0.01% - 1%)
+    /**
+     * @dev Sets the fee rate, ensuring it is between 0.01% and 1%.
+     * @param _newFee The new fee rate.
+     */
     function setFeeRate(uint8 _newFee) public onlyOwner {
         uint256 distance = block.timestamp - latestFeeUpdate;
         require(
@@ -144,8 +180,20 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         latestFeeUpdate = block.timestamp;
     }
 
+    /**
+     * @dev Fallback function to receive ETH.
+     */
     receive() external payable {}
 
+    /**
+     * @dev Swaps a single token.
+     * @param tokenIn The address of the input token.
+     * @param tokenOut The address of the output token.
+     * @param amountIn The amount of input token.
+     * @param _recipient The address of the recipient.
+     * @param _swapVersion The swap version.
+     * @return The amount of output token.
+     */
     function _swapSingle(
         address tokenIn,
         address tokenOut,
@@ -176,6 +224,15 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         }
     }
 
+    /**
+     * @dev Swaps tokens.
+     * @param tokenIn The address of the input token.
+     * @param tokenOut The address of the output token.
+     * @param amountIn The amount of input token.
+     * @param _recipient The address of the recipient.
+     * @param _swapVersion The swap version.
+     * @return The amount of output token.
+     */
     function swap(
         address tokenIn,
         address tokenOut,
@@ -194,6 +251,14 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         return amountOut;
     }
 
+    /**
+     * @dev Returns the amount out for a given swap.
+     * @param tokenIn The address of the input token.
+     * @param tokenOut The address of the output token.
+     * @param amountIn The amount of input token.
+     * @param _swapVersion The swap version.
+     * @return finalAmountOut The amount of output token.
+     */
     function getAmountOut(
         address tokenIn,
         address tokenOut,
@@ -208,6 +273,10 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         );
     }
 
+    /**
+     * @dev Returns the portfolio balance.
+     * @return The total portfolio balance.
+     */
     function getPortfolioBalance() public view returns (uint) {
         uint totalValue;
         uint totalCurrentList = indexFactoryStorage.totalCurrentList();
@@ -232,6 +301,13 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         return totalValue;
     }
 
+    /**
+     * @dev Estimates the amount out for a given swap.
+     * @param tokenIn The address of the input token.
+     * @param tokenOut The address of the output token.
+     * @param amountIn The amount of input token.
+     * @return amountOut The estimated amount of output token.
+     */
     function estimateAmountOut(
         address tokenIn,
         address tokenOut,
@@ -244,6 +320,14 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         );
     }
 
+    /**
+     * @dev Sends tokens to another chain.
+     * @param destinationChainSelector The destination chain selector.
+     * @param _data The data to send.
+     * @param receiver The address of the receiver.
+     * @param tokensToSendDetails The details of the tokens to send.
+     * @param payFeesIn The fee payment method.
+     */
     function sendToken(
         uint64 destinationChainSelector,
         bytes memory _data,
@@ -275,7 +359,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             tokenAmounts: tokensToSendDetails,
             // extraArgs: "",
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 900_000, strict: false}) // Additional arguments, setting gas limit and non-strict sequency mode
+                Client.EVMExtraArgsV1({gasLimit: 900_000}) // Additional arguments, setting gas limit and non-strict sequency mode
             ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
@@ -302,6 +386,13 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         emit MessageSent(messageId);
     }
 
+    /**
+     * @dev Sends a message to another chain.
+     * @param destinationChainSelector The destination chain selector.
+     * @param receiver The address of the receiver.
+     * @param _data The data to send.
+     * @param payFeesIn The fee payment method.
+     */
     function sendMessage(
         uint64 destinationChainSelector,
         address receiver,
@@ -314,7 +405,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             tokenAmounts: new Client.EVMTokenAmount[](0),
             // extraArgs: "",
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 900_000, strict: false}) // Additional arguments, setting gas limit and non-strict sequency mode
+                Client.EVMExtraArgsV1({gasLimit: 900_000}) // Additional arguments, setting gas limit and non-strict sequency mode
             ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
@@ -341,7 +432,10 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         emit MessageSent(messageId);
     }
 
-    // handle a received message
+    /**
+     * @dev Handles received messages.
+     * @param any2EvmMessage The received message.
+     */
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
@@ -386,6 +480,9 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         }
     }
 
+    /**
+     * @dev Requests values for the portfolio.
+     */
     function askValues() public onlyOwner {
         updatePortfolioNonce += 1;
 
@@ -460,6 +557,9 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         }
     }
 
+    /**
+     * @dev Performs the first reweight action.
+     */
     function firstReweightAction() public onlyOwner {
         uint nonce = updatePortfolioNonce;
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
@@ -517,7 +617,16 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         }
     }
 
-    
+    /**
+     * @dev Swaps extra value on the current chain.
+     * @param i The index.
+     * @param nonce The nonce.
+     * @param portfolioValue The portfolio value.
+     * @param chainSelector The chain selector.
+     * @param chainSelectorCurrentTokensCount The number of current tokens in the chain selector.
+     * @param chainSelectorOracleTokensCount The number of oracle tokens in the chain selector.
+     * @param chainSelectorTotalShares The total shares in the chain selector.
+     */
     function _swapExtraValueCurrentChain(
         uint i,
         uint nonce,
@@ -587,6 +696,15 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             chainSelectorTotalShares);
     }
 
+    /**
+     * @dev Sends extra value to other chains.
+     * @param nonce The nonce.
+     * @param portfolioValue The portfolio value.
+     * @param chainSelector The chain selector.
+     * @param chainSelectorTotalShares The total shares in the chain selector.
+     * @param chainValue The chain value.
+     * @param oracleTokenShares The oracle token shares.
+     */
     function _sendExtraValueOtherChains(
         uint nonce,
         uint portfolioValue,
@@ -637,6 +755,9 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         );
     }
 
+    /**
+     * @dev Performs the second reweight action.
+     */
     function secondReweightAction() public onlyOwner {
         uint nonce = updatePortfolioNonce;
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
@@ -691,6 +812,16 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         }
     }
 
+    /**
+     * @dev Swaps lower value on the current chain.
+     * @param i The index.
+     * @param nonce The nonce.
+     * @param portfolioValue The portfolio value.
+     * @param chainSelector The chain selector.
+     * @param chainSelectorCurrentTokensCount The number of current tokens in the chain selector.
+     * @param chainSelectorOracleTokensCount The number of oracle tokens in the chain selector.
+     * @param chainSelectorTotalShares The total shares in the chain selector.
+     */
     function _swapLowerValueCurrentChain(
         uint i,
         uint nonce,
@@ -763,6 +894,15 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint[] extraData;
     }
 
+    /**
+     * @dev Sends lower value to other chains.
+     * @param nonce The nonce.
+     * @param portfolioValue The portfolio value.
+     * @param chainSelector The chain selector.
+     * @param chainSelectorTotalShares The total shares in the chain selector.
+     * @param chainValue The chain value.
+     * @param oracleTokenShares The oracle token shares.
+     */
     function _sendLowerValueOtherChain(
         uint nonce,
         uint portfolioValue,
