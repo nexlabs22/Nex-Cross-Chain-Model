@@ -13,6 +13,8 @@ import "../ccip/CCIPReceiver.sol";
 import "./IndexFactoryStorage.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "../libraries/FeeCalculation.sol";
+import "../libraries/MessageSender.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
@@ -24,6 +26,8 @@ contract IndexFactory is
     ProposableOwnableUpgradeable,
     ReentrancyGuardUpgradeable
 {
+    using MessageSender for *;
+
     enum PayFeesIn {
         Native,
         LINK
@@ -31,11 +35,12 @@ contract IndexFactory is
 
     IndexFactoryStorage public indexFactoryStorage;
     address public i_link;
-    uint16 public i_maxTokensLength;
+    uint16 public constant MAX_TOKENS_LENGTH = 5;
+    uint8 public constant MIN_FEE_RATE = 1;
+    uint8 public constant MAX_FEE_RATE = 100;
+    uint256 public constant MIN_FEE_UPDATE_INTERVAL = 12 hours;
 
     IndexToken public indexToken;
-
-    // uint256 public fee;
     uint8 public feeRate; // 10/10000 = 0.1%
     uint256 public latestFeeUpdate;
     uint64 public currentChainSelector;
@@ -48,37 +53,43 @@ contract IndexFactory is
         uint newTokenValue;
     }
 
-    
+    struct IssuanceData {
+        mapping(address => TokenOldAndNewValues) tokenOldAndNewValues;
+        uint completedTokensCount;
+        address requester;
+        uint inputAmount;
+        address inputToken;
+        bytes32 messageId;
+    }
+
+    struct RedemptionData {
+        uint totalValue;
+        uint completedTokensCount;
+        address requester;
+        address outputToken;
+        uint outputTokenSwapVersion;
+        uint inputAmount;
+        bytes32 messageId;
+    }
+
+    struct IssuanceSendLocalVars {
+        address[] tokenAddresses;
+        uint[] tokenVersions;
+        uint[] tokenShares;
+        address[] zeroAddresses;
+        uint[] zeroNumbers;
+    }
+
     uint public issuanceNonce;
     uint public redemptionNonce;
-    uint public updatePortfolioNonce;
 
     address public feeReceiver;
 
-    mapping(uint => mapping(address => TokenOldAndNewValues))
-        public issuanceTokenOldAndNewValues;
-    mapping(uint => uint) public issuanceCompletedTokensCount;
-    mapping(uint => address) public issuanceNonceRequester;
-    
-    mapping(uint => uint) public redemptionNonceTotalValue;
-    mapping(uint => uint) public redemptionCompletedTokensCount;
-    mapping(uint => address) public redemptionNonceRequester;
-    
+    mapping(uint => IssuanceData) public issuanceData;
+    mapping(uint => RedemptionData) public redemptionData;
 
-    mapping(uint => uint) public portfolioTotalValueByNonce;
-    mapping(uint => uint) public updatedTokensValueCount;
-    mapping(uint => mapping(address => uint)) public tokenValueByNonce;
 
-    mapping(uint => bytes32) public issuanceMessageIdByNonce;
-    mapping(uint => bytes32) public redemptionMessageIdByNonce;
 
-    mapping(uint => address) public redemptionNonceOutputToken;
-    mapping(uint => uint) public redemptionNonceOutputTokenSwapVersion;
-
-    mapping(uint => uint) public issuanceInputAmount;
-    mapping(uint => address) public issuanceInputToken;
-    mapping(uint => uint) public redemptionInputAmount;
-    mapping(uint => address) public redemptionOutputToken;
     
 
     event RequestIssuance(
@@ -148,7 +159,6 @@ contract IndexFactory is
         indexToken = IndexToken(_token);
         //set ccip addresses
         i_link = _chainlinkToken;
-        i_maxTokensLength = 5;
         LinkTokenInterface(_chainlinkToken).approve(
             i_router,
             type(uint256).max
@@ -230,13 +240,12 @@ contract IndexFactory is
      * @param _newFee The new fee rate.
      */
     function setFeeRate(uint8 _newFee) public onlyOwner {
-        uint256 distance = block.timestamp - latestFeeUpdate;
         require(
-            distance / 60 / 60 > 12,
+            block.timestamp - latestFeeUpdate >= MIN_FEE_UPDATE_INTERVAL,
             "You should wait at least 12 hours after the latest update"
         );
         require(
-            _newFee <= 100 && _newFee >= 1,
+            _newFee <= MAX_FEE_RATE && _newFee >= MIN_FEE_RATE,
             "The newFee should be between 1 and 100 (0.01% - 1%)"
         );
         feeRate = _newFee;
@@ -327,7 +336,7 @@ contract IndexFactory is
         uint _crossChainFee,
         uint _tokenInSwapVersion
     ) public {
-        uint feeAmount = (_inputAmount * feeRate) / 10000;
+        uint feeAmount = FeeCalculation.calculateFee(_inputAmount, feeRate);
         
         
         IERC20(_tokenIn).transferFrom(msg.sender, address(indexToken), _inputAmount + feeAmount);
@@ -339,9 +348,9 @@ contract IndexFactory is
         weth.transfer(address(feeReceiver), feeWethAmount);
         //set mappings
         issuanceNonce++;
-        issuanceNonceRequester[issuanceNonce] = msg.sender;
-        issuanceInputAmount[issuanceNonce] = _inputAmount;
-        issuanceInputToken[issuanceNonce] = _tokenIn;
+        issuanceData[issuanceNonce].requester = msg.sender;
+        issuanceData[issuanceNonce].inputAmount = _inputAmount;
+        issuanceData[issuanceNonce].inputToken = _tokenIn;
         //run issuance
         _issuance(_tokenIn, wethAmount, _crossChainFee);
     }
@@ -355,7 +364,7 @@ contract IndexFactory is
         uint _inputAmount,
         uint _crossChainFee
     ) external payable {
-        uint feeAmount = (_inputAmount * feeRate) / 10000;
+        uint feeAmount = FeeCalculation.calculateFee(_inputAmount, feeRate);
         uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
         require(msg.value >= finalAmount, "lower than required amount");
         //transfer fee to the owner
@@ -363,9 +372,9 @@ contract IndexFactory is
         weth.transfer(address(feeReceiver), feeAmount);
         //set mappings
         issuanceNonce++;
-        issuanceNonceRequester[issuanceNonce] = msg.sender;
-        issuanceInputAmount[issuanceNonce] = _inputAmount;
-        issuanceInputToken[issuanceNonce] = address(weth);
+        issuanceData[issuanceNonce].requester = msg.sender;
+        issuanceData[issuanceNonce].inputAmount = _inputAmount;
+        issuanceData[issuanceNonce].inputToken = address(weth);
         //run issuance
         _issuance(address(weth), _inputAmount, _crossChainFee);
     }
@@ -411,11 +420,11 @@ contract IndexFactory is
             }
         }
         emit RequestIssuance(
-                issuanceMessageIdByNonce[issuanceNonce], 
+                issuanceData[issuanceNonce].messageId, 
                 issuanceNonce,
                 msg.sender, 
-                _tokenIn, 
-                issuanceInputAmount[issuanceNonce], 
+                _tokenIn,
+                issuanceData[issuanceNonce].inputAmount, 
                 0, 
                 block.timestamp
             );
@@ -440,45 +449,21 @@ contract IndexFactory is
             address tokenAddress = indexFactoryStorage.currentChainSelectorTokens(_latestCount, _chainSelector, i);
             uint tokenSwapVersion = indexFactoryStorage.tokenSwapVersion(tokenAddress);
             uint tokenMarketShare = indexFactoryStorage.tokenCurrentMarketShare(tokenAddress);
-            if(tokenAddress == address(weth)){
-            issuanceTokenOldAndNewValues[_issuanceNonce][tokenAddress]
-            .oldTokenValue = convertEthToUsd(IERC20(tokenAddress).balanceOf(address(indexToken)));
-            }else{
-            issuanceTokenOldAndNewValues[_issuanceNonce][tokenAddress]
-            .oldTokenValue = convertEthToUsd(getAmountOut(
-            tokenAddress,
-            address(weth),
-            IERC20(tokenAddress).balanceOf(address(indexToken)),
-            tokenSwapVersion
-            ));
+            uint oldTokenValue = tokenAddress == address(weth)
+                ? convertEthToUsd(IERC20(tokenAddress).balanceOf(address(indexToken)))
+                : convertEthToUsd(getAmountOut(tokenAddress, address(weth), IERC20(tokenAddress).balanceOf(address(indexToken)), tokenSwapVersion));
+            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].oldTokenValue = oldTokenValue;
+
+            if (tokenAddress != address(weth)) {
+                _swapSingle(address(weth), tokenAddress, (_wethAmount * tokenMarketShare) / 100e18, address(indexToken), tokenSwapVersion);
             }
-        if(tokenAddress == address(weth)){
-        }else{
-        _swapSingle(
-            address(weth),
-            tokenAddress,
-            (_wethAmount * tokenMarketShare) /
-                100e18,
-            address(indexToken),
-            tokenSwapVersion
-        );
-        }
-        issuanceTokenOldAndNewValues[_issuanceNonce][tokenAddress]
-            .newTokenValue =
-            issuanceTokenOldAndNewValues[_issuanceNonce][tokenAddress]
-                .oldTokenValue +
-            convertEthToUsd((_wethAmount * tokenMarketShare)/100e18);
-        issuanceCompletedTokensCount[_issuanceNonce] += 1;
+
+            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].newTokenValue = oldTokenValue + convertEthToUsd((_wethAmount * tokenMarketShare) / 100e18);
+            issuanceData[_issuanceNonce].completedTokensCount += 1;
         }
     }
 
-    struct IssuanceSendLocalVars {
-        address[] tokenAddresses;
-        uint[] tokenVersions;
-        uint[] tokenShares;
-        address[] zeroAddresses;
-        uint[] zeroNumbers;
-    }
+    
 
     /**
      * @dev Handles issuance swaps on other chains.
@@ -539,7 +524,8 @@ contract IndexFactory is
                                 tokensToSendArray,
                                 PayFeesIn.LINK
                             );
-        issuanceMessageIdByNonce[issuanceNonce] = messageId;
+        emit MessageSent(messageId);
+        issuanceData[issuanceNonce].messageId = messageId;
     }
 
     /**
@@ -553,10 +539,10 @@ contract IndexFactory is
         uint totalCurrentList = indexFactoryStorage.totalCurrentList();
         for (uint i = 0; i < totalCurrentList; i++) {
             address tokenAddress = indexFactoryStorage.currentList(i);
-            totalOldVaules += issuanceTokenOldAndNewValues[_issuanceNonce][
+            totalOldVaules += issuanceData[_issuanceNonce].tokenOldAndNewValues[
                 tokenAddress
             ].oldTokenValue;
-            totalNewVaules += issuanceTokenOldAndNewValues[_issuanceNonce][
+            totalNewVaules += issuanceData[_issuanceNonce].tokenOldAndNewValues[
                 tokenAddress
             ].newTokenValue;
         }
@@ -570,8 +556,8 @@ contract IndexFactory is
         } else {
             amountToMint = (totalNewVaules) * 100;
         }
-        indexToken.mint(issuanceNonceRequester[_issuanceNonce], amountToMint);
-        emit Issuanced(_messageId, _issuanceNonce, issuanceNonceRequester[_issuanceNonce], issuanceInputToken[_issuanceNonce], issuanceInputAmount[_issuanceNonce], amountToMint, block.timestamp);
+        indexToken.mint(issuanceData[_issuanceNonce].requester, amountToMint);
+        emit Issuanced(_messageId, _issuanceNonce, issuanceData[_issuanceNonce].requester, issuanceData[_issuanceNonce].inputToken, issuanceData[_issuanceNonce].inputAmount, amountToMint, block.timestamp);
     }
 
     /**
@@ -589,11 +575,10 @@ contract IndexFactory is
     ) public {
         uint burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         redemptionNonce += 1;
-        redemptionNonceRequester[redemptionNonce] = msg.sender;
-        redemptionNonceOutputToken[redemptionNonce] = _tokenOut;
-        redemptionNonceOutputTokenSwapVersion[redemptionNonce] = _tokenOutSwapVersion;
-        redemptionInputAmount[redemptionNonce] = amountIn;
-        redemptionOutputToken[redemptionNonce] = _tokenOut;
+        redemptionData[redemptionNonce].requester = msg.sender;
+        redemptionData[redemptionNonce].outputToken = _tokenOut;
+        redemptionData[redemptionNonce].outputTokenSwapVersion = _tokenOutSwapVersion;
+        redemptionData[redemptionNonce].inputAmount = amountIn;
 
         indexToken.burn(msg.sender, amountIn);
 
@@ -621,7 +606,7 @@ contract IndexFactory is
             }
         }
         emit RequestRedemption(
-                redemptionMessageIdByNonce[redemptionNonce],
+                redemptionData[redemptionNonce].messageId,
                 redemptionNonce,
                 msg.sender, 
                 _tokenOut, 
@@ -649,24 +634,11 @@ contract IndexFactory is
                     uint swapAmount = (_burnPercent *
                     IERC20(tokenAddress).balanceOf(address(indexToken))) /
                     1e18;
-                    uint swapAmountOut;
-                    if(tokenAddress == address(weth)){
-                    indexToken.wethTransfer(
-                        address(indexToken), 
-                        swapAmount
-                    );
-                    swapAmountOut = swapAmount;
-                    }else{
-                    swapAmountOut = _swapSingle(
-                        tokenAddress,
-                        address(weth),
-                        swapAmount,
-                        address(this),
-                        tokenSwapVersion
-                    );
-                    }
-                    redemptionNonceTotalValue[_redemptionNonce] += swapAmountOut;
-                    redemptionCompletedTokensCount[_redemptionNonce] += 1;
+                    uint swapAmountOut = tokenAddress == address(weth)
+                ? swapAmount
+                : _swapSingle(tokenAddress, address(weth), swapAmount, address(this), tokenSwapVersion);
+            redemptionData[_redemptionNonce].totalValue += swapAmountOut;
+            redemptionData[_redemptionNonce].completedTokensCount += 1;
                 }
     }
 
@@ -710,7 +682,7 @@ contract IndexFactory is
             data,
             PayFeesIn.LINK
         );
-        redemptionMessageIdByNonce[_redemptionNonce] = messageId;
+        redemptionData[_redemptionNonce].messageId = messageId;
     }
 
     /**
@@ -719,11 +691,11 @@ contract IndexFactory is
      * @param _messageId The message ID.
      */
     function completeRedemptionRequest(uint nonce, bytes32 _messageId) internal {
-        uint wethAmount = redemptionNonceTotalValue[nonce];
-        address requester = redemptionNonceRequester[nonce];
-        address outputToken = redemptionNonceOutputToken[nonce];
-        uint outputTokenSwapVersion = redemptionNonceOutputTokenSwapVersion[nonce];
-        uint fee = (wethAmount * feeRate) / 10000;
+        uint wethAmount = redemptionData[nonce].totalValue;
+        address requester = redemptionData[nonce].requester;
+        address outputToken = redemptionData[nonce].outputToken;
+        uint outputTokenSwapVersion = redemptionData[nonce].outputTokenSwapVersion;
+        uint fee = FeeCalculation.calculateFee(wethAmount, feeRate);
         weth.transfer(feeReceiver, fee);
         // weth.withdraw(fee);
         // (bool _ownerSuccess, ) = address(feeReceiver).call{value: fee}("");
@@ -733,10 +705,10 @@ contract IndexFactory is
         weth.withdraw(wethAmount - fee);
         (bool _requesterSuccess, ) = requester.call{value: wethAmount - fee}("");
         require(_requesterSuccess, "transfer eth to the requester failed");
-        emit Redemption(_messageId, nonce, requester, outputToken,  redemptionInputAmount[nonce], wethAmount - fee, block.timestamp);
+        emit Redemption(_messageId, nonce, requester, outputToken,  redemptionData[nonce].inputAmount, wethAmount - fee, block.timestamp);
         }else{
         uint reallOut = swap(address(weth), outputToken, wethAmount - fee, requester, outputTokenSwapVersion);
-        emit Redemption(_messageId, nonce, requester, outputToken, redemptionInputAmount[nonce], reallOut, block.timestamp);
+        emit Redemption(_messageId, nonce, requester, outputToken, redemptionData[nonce].inputAmount, reallOut, block.timestamp);
         }
     }
     
@@ -825,56 +797,17 @@ contract IndexFactory is
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         PayFeesIn payFeesIn
     ) internal nonReentrant returns(bytes32) {
-        uint256 length = tokensToSendDetails.length;
-        require(
-            length <= i_maxTokensLength,
-            "Maximum 5 different tokens can be sent per CCIP Message"
-        );
-
-        for (uint256 i = 0; i < length; ) {
-            if (tokensToSendDetails[i].token != i_link) {
-                IERC20(tokensToSendDetails[i].token).approve(
-                    i_router,
-                    tokensToSendDetails[i].amount
-                );
-            }
-            unchecked {
-                ++i;
-            }
-        }
-
-        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
-            receiver: abi.encode(receiver),
-            data: _data,
-            tokenAmounts: tokensToSendDetails,
-            // extraArgs: "",
-            extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 3_000_000}) // Additional arguments, setting gas limit and non-strict sequency mode
-            ),
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
-        });
-
-        uint256 fee = IRouterClient(i_router).getFee(
+        bytes32 messageId = MessageSender.sendToken(
+            i_router,
+            i_link,
+            MAX_TOKENS_LENGTH,
             destinationChainSelector,
-            message
+            _data,
+            receiver,
+            tokensToSendDetails,
+            payFeesIn
         );
-
-        bytes32 messageId;
-
-        if (payFeesIn == PayFeesIn.LINK) {
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
-
         emit MessageSent(messageId);
-
         return messageId;
     }
 
@@ -891,41 +824,15 @@ contract IndexFactory is
         address receiver,
         bytes memory _data,
         PayFeesIn payFeesIn
-    ) public  returns(bytes32){
-        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
-            receiver: abi.encode(receiver),
-            data: _data,
-            tokenAmounts: new Client.EVMTokenAmount[](0),
-            // extraArgs: "",
-            extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 3_000_000}) // Additional arguments, setting gas limit and non-strict sequency mode
-            ),
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
-        });
-
-        uint256 fee = IRouterClient(i_router).getFee(
+    ) public returns(bytes32) {
+        return MessageSender.sendMessage(
+            i_router,
+            i_link,
             destinationChainSelector,
-            message
+            receiver,
+            _data,
+            payFeesIn
         );
-
-        bytes32 messageId;
-
-        if (payFeesIn == PayFeesIn.LINK) {
-            // LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
-
-        emit MessageSent(messageId);
-
-        return messageId;
     }
 
     /**
@@ -935,8 +842,8 @@ contract IndexFactory is
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
-        bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
-        uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
+        bytes32 messageId = any2EvmMessage.messageId;
+        uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector;
         uint totalCurrentList = indexFactoryStorage.totalCurrentList();
         (
             uint actionType,
@@ -948,7 +855,8 @@ contract IndexFactory is
         ) = abi.decode(
                 any2EvmMessage.data,
                 (uint, address[], address[], uint, uint[], uint[])
-            ); // abi-decoding of the sent string message
+            );
+
         if (actionType == 0) {
             _handleReceivedIssuance(
                 nonce,
@@ -958,7 +866,6 @@ contract IndexFactory is
                 totalCurrentList,
                 messageId
             );
-            
         } else if (actionType == 1) {
             _handleReceivedRedemption(
                 nonce,
@@ -971,57 +878,39 @@ contract IndexFactory is
         }
     }
 
-    /**
-     * @dev Handles received issuance messages.
-     * @param nonce The issuance nonce.
-     * @param tokenAddresses The addresses of the tokens.
-     * @param value1 The old token values.
-     * @param value2 The new token values.
-     * @param totalCurrentList The total current list.
-     * @param _messageId The message ID.
-     */
     function _handleReceivedIssuance(
         uint nonce,
         address[] memory tokenAddresses,
         uint[] memory value1,
         uint[] memory value2,
         uint totalCurrentList,
-        bytes32 _messageId
-        ) private {
+        bytes32 messageId
+    ) private {
         uint requestIssuanceNonce = nonce;
         for (uint i; i < tokenAddresses.length; i++) {
             uint oldTokenValue = value1[i];
             uint newTokenValue = value2[i];
-            issuanceTokenOldAndNewValues[requestIssuanceNonce][tokenAddresses[i]]
+            issuanceData[requestIssuanceNonce].tokenOldAndNewValues[tokenAddresses[i]]
                 .oldTokenValue = oldTokenValue;
-            issuanceTokenOldAndNewValues[requestIssuanceNonce][tokenAddresses[i]]
+            issuanceData[requestIssuanceNonce].tokenOldAndNewValues[tokenAddresses[i]]
                 .newTokenValue = newTokenValue;
-            issuanceCompletedTokensCount[requestIssuanceNonce] += 1;
+            issuanceData[requestIssuanceNonce].completedTokensCount += 1;
         }
         if (
-            issuanceCompletedTokensCount[requestIssuanceNonce] ==
+            issuanceData[requestIssuanceNonce].completedTokensCount ==
             totalCurrentList
         ) {
-            completeIssuanceRequest(requestIssuanceNonce, _messageId);
+            completeIssuanceRequest(requestIssuanceNonce, messageId);
         }
     }
 
-    /**
-     * @dev Handles received redemption messages.
-     * @param nonce The redemption nonce.
-     * @param any2EvmMessage The received message.
-     * @param tokenAddresses The addresses of the tokens.
-     * @param totalCurrentList The total current list.
-     * @param sourceChainSelector The source chain selector.
-     * @param _messageId The message ID.
-     */
     function _handleReceivedRedemption(
         uint nonce,
         Client.Any2EVMMessage memory any2EvmMessage,
         address[] memory tokenAddresses,
         uint totalCurrentList,
         uint64 sourceChainSelector,
-        bytes32 _messageId
+        bytes32 messageId
     ) private {
         uint requestRedemptionNonce = nonce;
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
@@ -1035,18 +924,13 @@ contract IndexFactory is
             address(this),
             3
         );
-        redemptionNonceTotalValue[requestRedemptionNonce] += wethAmount;
-        redemptionCompletedTokensCount[requestRedemptionNonce] += tokenAddresses.length;
+        redemptionData[requestRedemptionNonce].totalValue += wethAmount;
+        redemptionData[requestRedemptionNonce].completedTokensCount += tokenAddresses.length;
         if (
-            redemptionCompletedTokensCount[requestRedemptionNonce] ==
+            redemptionData[requestRedemptionNonce].completedTokensCount ==
             totalCurrentList
         ) {
-            completeRedemptionRequest(requestRedemptionNonce, _messageId);
+            completeRedemptionRequest(requestRedemptionNonce, messageId);
         }
-}
-
-    
-
-    
-    
+    }
 }

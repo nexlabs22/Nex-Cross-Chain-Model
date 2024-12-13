@@ -88,6 +88,30 @@ contract IndexFactoryStorage is
     // uint public latestOracleChainsCount;
     // uint public latestCurrentChainsCount;
 
+    struct OracleData {
+        address[] tokens;
+        uint[] marketShares;
+        uint[] swapVersions;
+        uint64[] chainSelectors;
+        mapping(uint64 => bool) isOracleChainSelectorStored;
+        mapping(uint64 => address[]) oracleChainSelectorTokens;
+        mapping(uint64 => uint[]) oracleChainSelectorVersions;
+        mapping(uint64 => uint[]) oracleChainSelectorTokenShares;
+        mapping(uint64 => uint) oracleChainSelectorTotalShares;
+    }
+
+    struct CurrentData {
+        address[] tokens;
+        uint[] marketShares;
+        uint[] swapVersions;
+        uint64[] chainSelectors;
+        mapping(uint64 => bool) isCurrentChainSelectorStored;
+        mapping(uint64 => address[]) currentChainSelectorTokens;
+        mapping(uint64 => uint[]) currentChainSelectorVersions;
+        mapping(uint64 => uint[]) currentChainSelectorTokenShares;
+        mapping(uint64 => uint) currentChainSelectorTotalShares;
+    }
+
     mapping(uint => uint64[]) public oracleChainSelectors;
     mapping(uint => uint64[]) public currentChainSelectors;
 
