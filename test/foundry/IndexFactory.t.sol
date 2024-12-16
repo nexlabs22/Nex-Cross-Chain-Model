@@ -87,12 +87,12 @@ contract CounterTest is Test, ContractDeployer {
         tokenShares[3] = 20e18;
         tokenShares[4] = 20e18;
 
-        uint[] memory swapVersions = new uint[](5);
-        swapVersions[0] = 3;
-        swapVersions[1] = 3;
-        swapVersions[2] = 3;
-        swapVersions[3] = 3;
-        swapVersions[4] = 3;
+        uint[] memory swapFees = new uint[](5);
+        swapFees[0] = 3;
+        swapFees[1] = 3;
+        swapFees[2] = 3;
+        swapFees[3] = 3;
+        swapFees[4] = 3;
 
 
         uint64[] memory chains = new uint64[](5);
@@ -104,7 +104,7 @@ contract CounterTest is Test, ContractDeployer {
         
         link.transfer(address(indexFactoryStorage), 1e17);
         bytes32 requestId = indexFactoryStorage.requestAssetsData();
-        oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapVersions, chains);
+        oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }
     function testOracleList() public {
         updateOracleList();
@@ -128,11 +128,11 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token4)), 20e18);
         
         // token shares
-        assertEq(indexFactoryStorage.tokenSwapVersion(address(token0)), 3);
-        assertEq(indexFactoryStorage.tokenSwapVersion(address(token1)), 3);
-        assertEq(indexFactoryStorage.tokenSwapVersion(address(token2)), 3);
-        assertEq(indexFactoryStorage.tokenSwapVersion(address(token3)), 3);
-        assertEq(indexFactoryStorage.tokenSwapVersion(address(token4)), 3);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token0)), 3);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token1)), 3);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token2)), 3);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token3)), 3);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3);
         
     }
 

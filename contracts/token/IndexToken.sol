@@ -60,15 +60,7 @@ contract IndexToken is
     
     
 
-    mapping(address => uint) public tokenMarketShare;
-    mapping(address => uint) public tokenSwapVersion;
-
-    ISwapRouter public swapRouterV3;
-    IUniswapV3Factory public factoryV3;
-    IUniswapV2Router02 public swapRouterV2;
-    IUniswapV2Factory public factoryV2;
-    IWETH public weth;
-    IQuoter public quoter;
+    
 
     event FeeReceiverSet(address indexed feeReceiver);
     event FeeRateSet(uint256 indexed feeRatePerDayScaled);
@@ -97,14 +89,7 @@ contract IndexToken is
         string memory tokenSymbol,
         uint256 _feeRatePerDayScaled,
         address _feeReceiver,
-        uint256 _supplyCeiling,
-        //addresses
-        address _weth,
-        address _quoter,
-        address _swapRouterV3,
-        address _factoryV3,
-        address _swapRouterV2,
-        address _factoryV2
+        uint256 _supplyCeiling
     ) external initializer {
         require(_feeReceiver != address(0));
 
@@ -117,13 +102,6 @@ contract IndexToken is
         feeReceiver = _feeReceiver;
         supplyCeiling = _supplyCeiling;
         feeTimestamp = block.timestamp;
-        //set addresses
-        weth = IWETH(_weth);
-        quoter = IQuoter(_quoter);
-        swapRouterV3 = ISwapRouter(_swapRouterV3);
-        factoryV3 = IUniswapV3Factory(_factoryV3);
-        swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
-        factoryV2 = IUniswapV2Factory(_factoryV2);
     }
 
 
@@ -316,52 +294,5 @@ contract IndexToken is
         _transfer(from, to, amount);
         return true;
     }
-
-    function approveSwapToken(address _token, address _to, uint _amount) public onlyMinter {
-        IERC20(_token).approve(_to, _amount);
-    }
-
-    function swapSingle(address tokenIn, address tokenOut, uint amountIn, address _recipient, uint _swapVersion) public onlyMinter returns(uint){
-        
-            if(_swapVersion == 3){
-                IERC20(tokenIn).approve(address(swapRouterV3), amountIn);
-                ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
-                .ExactInputSingleParams({
-                    tokenIn: tokenIn,
-                    tokenOut: tokenOut,
-                    // pool fee 0.3%
-                    fee: 3000,
-                    recipient: _recipient,
-                    deadline: block.timestamp,
-                    amountIn: amountIn,
-                    amountOutMinimum: 0,
-                    // NOTE: In production, this value can be used to set the limit
-                    // for the price the swap will push the pool to,
-                    // which can help protect against price impact
-                    sqrtPriceLimitX96: 0
-                });
-                uint finalAmountOut = swapRouterV3.exactInputSingle(params);
-                return finalAmountOut;
-            } else{
-                address[] memory path = new address[](2);
-                path[0] = tokenIn;
-                path[1] = tokenOut;
-
-                IERC20(tokenIn).approve(address(swapRouterV2), amountIn);
-                swapRouterV2.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-                    amountIn, //amountIn
-                    0, //amountOutMin
-                    path, //path
-                    _recipient, //to
-                    block.timestamp //deadline
-                );
-                return 0;
-            }
-    }
-
-    function wethTransfer(address to, uint amount) public onlyMinter {
-        weth.transfer(to, amount);
-    }
-
     
 }
