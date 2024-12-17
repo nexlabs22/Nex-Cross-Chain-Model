@@ -135,7 +135,7 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3);
         
     }
-    
+    /**
     function testIssuanceWithEth() public {
         uint startAmount = 1e14;
         
@@ -153,7 +153,7 @@ contract CounterTest is Test, ContractDeployer {
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
     }
-
+    
     function testRedemptionWithEth() public {
         uint startAmount = 1e14;
         
@@ -173,7 +173,7 @@ contract CounterTest is Test, ContractDeployer {
         // factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), 3);
         // console.log(indexToken.balanceOf(add1));
     }
-    /**
+    
     function testIssuanceWithUsdc() public {
         uint startAmount = 1e14;
         
