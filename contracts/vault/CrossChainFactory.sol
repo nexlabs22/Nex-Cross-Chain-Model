@@ -525,7 +525,7 @@ contract CrossChainIndexFactory is
             tokenAmounts[0].token,
             address(weth),
             tokenAmounts[0].amount,
-            address(vault),
+            address(this),
             crossChainTokenSwapFee[sourceChainSelector][tokenAmounts[0].token]
         );
         vars.oldTokenValues = new uint[](targetAddresses.length);
@@ -547,7 +547,7 @@ contract CrossChainIndexFactory is
                 IERC20(targetAddresses[i]).balanceOf(
                     address(vault)
                 ),
-                3
+                3000
             );
             // _swapSingle(
             //     address(weth),
