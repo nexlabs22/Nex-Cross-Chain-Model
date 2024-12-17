@@ -16,7 +16,8 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import "../libraries/FeeCalculation.sol";
 import "../libraries/MessageSender.sol";
 import "../libraries/SwapHelpers.sol";
-
+import "../interfaces/IUniswapV2Router02.sol";
+import "../interfaces/IWETH.sol";
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
@@ -385,15 +386,15 @@ contract IndexFactory is
         uint _crossChainFee
     ) internal {
         
-        weth.transfer(address(indexToken), _inputAmount);
+        //weth.transfer(address(indexToken), _inputAmount);
         
         uint wethAmount = _inputAmount;
         
         //swap to underlying assets on all chain
         uint totalChains = factoryStorage.currentChainSelectorsCount();
         uint latestCount = factoryStorage.currentFilledCount();
+        (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
         for(uint i = 0; i < totalChains; i++){
-            (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
             uint64 chainSelector = chainSelectors[i];
             uint chainSelectorTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
             if(chainSelector == currentChainSelector){
@@ -440,20 +441,23 @@ contract IndexFactory is
         uint64 _chainSelector,
         uint _latestCount
     ) internal {
-        (address[] memory tokens,,,) = factoryStorage.getCurrentData(_latestCount);
+        // (address[] memory tokens,,,) = factoryStorage.getCurrentData(_latestCount);
+        address[] memory tokens = factoryStorage.allCurrentChainSelectorTokens(_chainSelector);
         for (uint i = 0; i < _chainSelectorTokensCount; i++) {
             address tokenAddress = tokens[i];
             uint24 tokenSwapFee = factoryStorage.tokenSwapFee(tokenAddress);
             uint tokenMarketShare = factoryStorage.tokenCurrentMarketShare(tokenAddress);
             uint oldTokenValue = tokenAddress == address(weth)
-                ? convertEthToUsd(IERC20(tokenAddress).balanceOf(address(indexToken)))
-                : convertEthToUsd(getAmountOut(tokenAddress, address(weth), IERC20(tokenAddress).balanceOf(address(indexToken)), tokenSwapFee));
+                ? convertEthToUsd(IERC20(tokenAddress).balanceOf(address(factoryStorage.vault())))
+                : convertEthToUsd(getAmountOut(tokenAddress, address(weth), IERC20(tokenAddress).balanceOf(address(factoryStorage.vault())), tokenSwapFee));
             issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].oldTokenValue = oldTokenValue;
-
+            uint swapAmount = (_wethAmount * tokenMarketShare) / 100e18;
             if (tokenAddress != address(weth)) {
                 // _swapSingle(address(weth), tokenAddress, (_wethAmount * tokenMarketShare) / 100e18, address(indexToken), tokenSwapFee);
-                uint swapAmount = (_wethAmount * tokenMarketShare) / 100e18;
+                // uint swapAmount = (_wethAmount * tokenMarketShare) / 100e18;
                 swap(address(weth), tokenAddress, swapAmount, address(factoryStorage.vault()), tokenSwapFee);
+            }else{
+                weth.transfer(address(factoryStorage.vault()), swapAmount);
             }
 
             issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].newTokenValue = oldTokenValue + convertEthToUsd((_wethAmount * tokenMarketShare) / 100e18);
@@ -593,8 +597,8 @@ contract IndexFactory is
         //swap
         uint totalChains = factoryStorage.currentChainSelectorsCount();
         uint latestCount = factoryStorage.currentFilledCount();
+        (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
         for(uint i = 0; i < totalChains; i++){
-            (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
             uint64 chainSelector = chainSelectors[i];
             uint chainSelectorTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
             if(chainSelector == currentChainSelector){
@@ -635,11 +639,14 @@ contract IndexFactory is
         uint _redemptionNonce,
         uint _chainSelectorTokensCount
     ) internal {
-        (address[] memory tokens,,,) = factoryStorage.getCurrentData(factoryStorage.currentFilledCount());
+        // (address[] memory tokens,,,) = factoryStorage.getCurrentData(factoryStorage.currentFilledCount());
+        address[] memory tokens = factoryStorage.allCurrentChainSelectorTokens(currentChainSelector);
+        Vault vault = factoryStorage.vault();
         for (uint i = 0; i < _chainSelectorTokensCount; i++) {
             address tokenAddress = tokens[i];
             uint24 tokenSwapFee = factoryStorage.tokenSwapFee(tokenAddress);
             uint swapAmount = (_burnPercent * IERC20(tokenAddress).balanceOf(address(factoryStorage.vault()))) / 1e18;
+            vault.withdrawFunds(tokenAddress, address(this), swapAmount);
             uint swapAmountOut = tokenAddress == address(weth)
                 ? swapAmount
                 // : _swapSingle(tokenAddress, address(weth), swapAmount, address(this), tokenSwapFee);

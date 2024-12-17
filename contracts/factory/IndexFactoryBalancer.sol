@@ -10,6 +10,8 @@ import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import "../ccip/CCIPReceiver.sol";
 import "./IndexFactoryStorage.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "../libraries/SwapHelpers.sol";
+import "../interfaces/IWETH.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
@@ -21,7 +23,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         LINK
     }
 
-    IndexFactoryStorage public indexFactoryStorage;
+    IndexFactoryStorage public factoryStorage;
     address public i_link;
     uint16 public i_maxTokensLength;
 
@@ -77,7 +79,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
      * @dev Initializes the contract with the given parameters.
      * @param _currentChainSelector The current chain selector.
      * @param _token The address of the IndexToken contract.
-     * @param _indexFactoryStorage The address of the IndexFactoryStorage contract.
+     * @param _factoryStorage The address of the IndexFactoryStorage contract.
      * @param _chainlinkToken The address of the Chainlink token.
      * @param _router The address of the router.
      * @param _weth The address of the WETH token.
@@ -85,7 +87,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
     function initialize(
         uint64 _currentChainSelector,
         address payable _token,
-        address _indexFactoryStorage,
+        address _factoryStorage,
         address _chainlinkToken,
         //ccip
         address _router,
@@ -97,7 +99,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         //set chain selector
         currentChainSelector = _currentChainSelector;
         indexToken = IndexToken(_token);
-        indexFactoryStorage = IndexFactoryStorage(_indexFactoryStorage);
+        factoryStorage = IndexFactoryStorage(_factoryStorage);
         //set ccip addresses
         i_link = _chainlinkToken;
         i_maxTokensLength = 5;
@@ -114,12 +116,12 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
 
     /**
      * @dev Sets the IndexFactoryStorage contract address.
-     * @param _indexFactoryStorage The address of the IndexFactoryStorage contract.
+     * @param _factoryStorage The address of the IndexFactoryStorage contract.
      */
     function setIndexFactoryStorage(
-        address _indexFactoryStorage
+        address _factoryStorage
     ) public onlyOwner {
-        indexFactoryStorage = IndexFactoryStorage(_indexFactoryStorage);
+        factoryStorage = IndexFactoryStorage(_factoryStorage);
     }
 
     /**
@@ -130,7 +132,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
     function crossChainFactoryBySelector(
         uint64 _chainSelector
     ) public view returns (address) {
-        return indexFactoryStorage.crossChainFactoryBySelector(_chainSelector);
+        return factoryStorage.crossChainFactoryBySelector(_chainSelector);
     }
 
     /**
@@ -141,7 +143,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
     function crossChainToken(
         uint64 _chainSelector
     ) public view returns (address) {
-        return indexFactoryStorage.crossChainToken(_chainSelector);
+        return factoryStorage.crossChainToken(_chainSelector);
     }
 
     /**
@@ -149,7 +151,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
      * @return The price in Wei.
      */
     function priceInWei() public view returns (uint256) {
-        return indexFactoryStorage.priceInWei();
+        return factoryStorage.priceInWei();
     }
 
     /**
@@ -185,44 +187,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
      */
     receive() external payable {}
 
-    /**
-     * @dev Swaps a single token.
-     * @param tokenIn The address of the input token.
-     * @param tokenOut The address of the output token.
-     * @param amountIn The amount of input token.
-     * @param _recipient The address of the recipient.
-     * @param _swapFee The swap version.
-     * @return The amount of output token.
-     */
-    function _swapSingle(
-        address tokenIn,
-        address tokenOut,
-        uint amountIn,
-        address _recipient,
-        uint24 _swapFee
-    ) internal returns (uint) {
-        uint amountOut = indexFactoryStorage.getAmountOut(
-            tokenIn,
-            tokenOut,
-            amountIn,
-            _swapFee
-        );
-        uint swapAmountOut;
-        if (amountOut > 0) {
-            swapAmountOut = indexToken.swapSingle(
-                tokenIn,
-                tokenOut,
-                amountIn,
-                _recipient,
-                _swapFee
-            );
-        }
-        if (_swapFee == 3) {
-            return swapAmountOut;
-        } else {
-            return amountOut;
-        }
-    }
+    
 
     /**
      * @dev Swaps tokens.
@@ -231,7 +196,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
      * @param amountIn The amount of input token.
      * @param _recipient The address of the recipient.
      * @param _swapFee The swap version.
-     * @return The amount of output token.
+     * @return outputAmount The amount of output token.
      */
     function swap(
         address tokenIn,
@@ -239,16 +204,27 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint amountIn,
         address _recipient,
         uint24 _swapFee
-    ) public returns (uint) {
-        IERC20(tokenIn).transfer(address(indexFactoryStorage), amountIn);
-        uint amountOut = indexFactoryStorage.swap(
+    ) public returns (uint outputAmount) {
+        ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
+        IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
+        outputAmount = SwapHelpers.swap(
+            swapRouterV3,
+            swapRouterV2,
+            _swapFee,
             tokenIn,
             tokenOut,
             amountIn,
-            _recipient,
-            _swapFee
+            _recipient
         );
-        return amountOut;
+        // IERC20(tokenIn).transfer(address(factoryStorage), amountIn);
+        // uint amountOut = factoryStorage.swap(
+        //     tokenIn,
+        //     tokenOut,
+        //     amountIn,
+        //     _recipient,
+        //     _swapFee
+        // );
+        // return amountOut;
     }
 
     /**
@@ -265,7 +241,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint amountIn,
         uint24 _swapFee
     ) public view returns (uint finalAmountOut) {
-        finalAmountOut = indexFactoryStorage.getAmountOut(
+        finalAmountOut = factoryStorage.getAmountOut(
             tokenIn,
             tokenOut,
             amountIn,
@@ -279,17 +255,17 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
      */
     function getPortfolioBalance() public view returns (uint) {
         uint totalValue;
-        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
+        uint totalCurrentList = factoryStorage.totalCurrentList();
         for (uint i = 0; i < totalCurrentList; i++) {
-            address tokenAddress = indexFactoryStorage.currentList(i);
-            uint64 tokenChainSelector = indexFactoryStorage.tokenChainSelector(
+            address tokenAddress = factoryStorage.currentList(i);
+            uint64 tokenChainSelector = factoryStorage.tokenChainSelector(
                 tokenAddress
             );
-            uint24 tokenSwapFee = indexFactoryStorage.tokenSwapFee(
+            uint24 tokenSwapFee = factoryStorage.tokenSwapFee(
                 tokenAddress
             );
             if (tokenChainSelector == currentChainSelector) {
-                uint value = indexFactoryStorage.getAmountOut(
+                uint value = factoryStorage.getAmountOut(
                     tokenAddress,
                     address(weth),
                     IERC20(tokenAddress).balanceOf(address(indexToken)),
@@ -313,7 +289,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         address tokenOut,
         uint128 amountIn
     ) public view returns (uint amountOut) {
-        amountOut = indexFactoryStorage.estimateAmountOut(
+        amountOut = factoryStorage.estimateAmountOut(
             tokenIn,
             tokenOut,
             amountIn
@@ -476,7 +452,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             );
             extraWethByNonce[nonce] += wethAmount;
         }else if(actionType == 4){
-            indexFactoryStorage.updateCurrentList();
+            factoryStorage.updateCurrentList();
         }
     }
 
@@ -486,18 +462,18 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
     function askValues() public onlyOwner {
         updatePortfolioNonce += 1;
 
-        uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
-        uint latestCount = indexFactoryStorage.currentFilledCount();
+        uint totalChains = factoryStorage.currentChainSelectorsCount();
+        uint latestCount = factoryStorage.currentFilledCount();
 
         for (uint i = 0; i < totalChains; i++) {
-            (,, , uint64[] memory chainSelectors) = indexFactoryStorage.getCurrentData(latestCount);
+            (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
             uint64 chainSelector = chainSelectors[i];
-            uint chainSelectorTokensCount = indexFactoryStorage.currentChainSelectorTokensCount(chainSelector);
+            uint chainSelectorTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
             if (chainSelector == currentChainSelector) {
-                address[] memory tokens = indexFactoryStorage.allCurrentChainSelectorTokens(chainSelector);
+                address[] memory tokens = factoryStorage.allCurrentChainSelectorTokens(chainSelector);
                 for (uint j = 0; j < chainSelectorTokensCount; j++) {
                     address tokenAddress = tokens[j];
-                    uint24 tokenSwapFee = indexFactoryStorage.tokenSwapFee(tokenAddress);
+                    uint24 tokenSwapFee = factoryStorage.tokenSwapFee(tokenAddress);
                     uint value;
                     if(tokenAddress == address(weth)){
                         value = IERC20(tokenAddress).balanceOf(address(indexToken));
@@ -523,9 +499,9 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
                     chainSelector
                 );
 
-                address[] memory tokenAddresses = indexFactoryStorage
+                address[] memory tokenAddresses = factoryStorage
                     .allCurrentChainSelectorTokens(chainSelector);
-                uint[] memory tokenVersions = indexFactoryStorage
+                uint[] memory tokenVersions = factoryStorage
                     .allCurrentChainSelectorVersions(chainSelector);
                 address[] memory zeroAddresses = new address[](0);
 
@@ -558,19 +534,19 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint nonce = updatePortfolioNonce;
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
 
-        uint totalChains = indexFactoryStorage.currentChainSelectorsCount();
-        uint latestCurrentCount = indexFactoryStorage.currentFilledCount();
-        uint latestOracleCount = indexFactoryStorage.oracleFilledCount();
+        uint totalChains = factoryStorage.currentChainSelectorsCount();
+        uint latestCurrentCount = factoryStorage.currentFilledCount();
+        uint latestOracleCount = factoryStorage.oracleFilledCount();
 
         for (uint i = 0; i < totalChains; i++) {
-            (,, , uint64[] memory chainSelectors) = indexFactoryStorage.getCurrentData(latestCurrentCount);
+            (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCurrentCount);
             uint64 chainSelector = chainSelectors[i];
             
-            uint chainSelectorCurrentTokensCount = indexFactoryStorage.currentChainSelectorTokensCount(chainSelector);
-            uint chainSelectorOracleTokensCount = indexFactoryStorage.oracleChainSelectorTokensCount(chainSelector);
-            uint chainSelectorTotalShares = indexFactoryStorage.getCurrentChainSelectorTotalShares(latestOracleCount, chainSelector);
+            uint chainSelectorCurrentTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
+            uint chainSelectorOracleTokensCount = factoryStorage.oracleChainSelectorTokensCount(chainSelector);
+            uint chainSelectorTotalShares = factoryStorage.getCurrentChainSelectorTotalShares(latestOracleCount, chainSelector);
             uint chainValue = chainValueByNonce[nonce][chainSelector];
-            uint[] memory oracleTokenShares = indexFactoryStorage.allOracleChainSelectorTokenShares(chainSelector);
+            uint[] memory oracleTokenShares = factoryStorage.allOracleChainSelectorTokenShares(chainSelector);
 
             if (
                 (chainValue * 100e18) / portfolioValue >
@@ -626,22 +602,29 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         swapVars.chainValue = chainValueByNonce[nonce][chainSelector];
         uint initialWethBalance = weth.balanceOf(address(indexToken));
         for (uint j = 0; j < chainSelectorCurrentTokensCount; j++) {
-            swapVars.tokenAddress = indexFactoryStorage.currentList(j);
-            swapVars.tokenSwapFee = indexFactoryStorage.tokenSwapFee(
+            swapVars.tokenAddress = factoryStorage.currentList(j);
+            swapVars.tokenSwapFee = factoryStorage.tokenSwapFee(
                 swapVars.tokenAddress
             );
-            swapVars.tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(
+            swapVars.tokenMarketShare = factoryStorage.tokenOracleMarketShare(
                 swapVars.tokenAddress
             );
             uint wethAmount;
             if(swapVars.tokenAddress == address(weth)){
                 wethAmount = initialWethBalance;
             }else{
-            wethAmount = _swapSingle(
+            // wethAmount = _swapSingle(
+            //     swapVars.tokenAddress,
+            //     address(weth),
+            //     IERC20(swapVars.tokenAddress).balanceOf(address(indexToken)),
+            //     address(indexToken),
+            //     swapVars.tokenSwapFee
+            // );
+            wethAmount = swap(
                 swapVars.tokenAddress,
                 address(weth),
                 IERC20(swapVars.tokenAddress).balanceOf(address(indexToken)),
-                address(indexToken),
+                address(this),
                 swapVars.tokenSwapFee
             );
             }
@@ -655,23 +638,31 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint extraWethAmount = swapVars.swapWethAmount - wethAmountToSwap;
         
         for (uint k = 0; k < chainSelectorOracleTokensCount; k++) {
-            address newTokenAddress = indexFactoryStorage.oracleList(k);
-            uint24 newTokenSwapFee = indexFactoryStorage.tokenSwapFee(
+            address newTokenAddress = factoryStorage.oracleList(k);
+            uint24 newTokenSwapFee = factoryStorage.tokenSwapFee(
                 newTokenAddress
             );
-            uint newTokenMarketShare = indexFactoryStorage
+            uint newTokenMarketShare = factoryStorage
                 .tokenOracleMarketShare(newTokenAddress);
             uint wethAmount;
             if(newTokenAddress == address(weth)){
             wethAmount = (wethAmountToSwap * newTokenMarketShare) /
                     chainSelectorTotalShares;
             }else{
-            wethAmount = _swapSingle(
+            // wethAmount = _swapSingle(
+            //     address(weth),
+            //     newTokenAddress,
+            //     (wethAmountToSwap * newTokenMarketShare) /
+            //         chainSelectorTotalShares,
+            //     address(indexToken),
+            //     newTokenSwapFee
+            // );
+            wethAmount = swap(
                 address(weth),
                 newTokenAddress,
                 (wethAmountToSwap * newTokenMarketShare) /
                     chainSelectorTotalShares,
-                address(indexToken),
+                address(this),
                 newTokenSwapFee
             );
             }
@@ -707,14 +698,14 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
                 chainSelector
             );
 
-        address[] memory currentTokenAddresses = indexFactoryStorage
+        address[] memory currentTokenAddresses = factoryStorage
             .allCurrentChainSelectorTokens(chainSelector);
-        address[] memory newTokenAddresses = indexFactoryStorage
+        address[] memory newTokenAddresses = factoryStorage
             .allOracleChainSelectorTokens(chainSelector);
 
-        uint[] memory currentTokenVersions = indexFactoryStorage
+        uint[] memory currentTokenVersions = factoryStorage
             .allCurrentChainSelectorVersions(chainSelector);
-        uint[] memory newTokenVersions = indexFactoryStorage
+        uint[] memory newTokenVersions = factoryStorage
             .allOracleChainSelectorVersions(chainSelector);
 
         uint[] memory extraData = new uint[](2);
@@ -747,20 +738,20 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint nonce = updatePortfolioNonce;
         uint portfolioValue = portfolioTotalValueByNonce[nonce];
 
-        uint totalChains = indexFactoryStorage.oracleChainSelectorsCount();
-        uint latestOracleCount = indexFactoryStorage.oracleFilledCount();
+        uint totalChains = factoryStorage.oracleChainSelectorsCount();
+        uint latestOracleCount = factoryStorage.oracleFilledCount();
 
         for (uint i = 0; i < totalChains; i++) {
-            (,, , uint64[] memory chainSelectors) = indexFactoryStorage.getOracleData(latestOracleCount);
+            (,, , uint64[] memory chainSelectors) = factoryStorage.getOracleData(latestOracleCount);
             uint64 chainSelector = chainSelectors[i];
             
-            uint chainSelectorCurrentTokensCount = indexFactoryStorage
+            uint chainSelectorCurrentTokensCount = factoryStorage
                 .currentChainSelectorTokensCount(chainSelector);
-            uint chainSelectorOracleTokensCount = indexFactoryStorage
+            uint chainSelectorOracleTokensCount = factoryStorage
                 .oracleChainSelectorTokensCount(chainSelector);
-            uint chainSelectorTotalShares = indexFactoryStorage.getCurrentChainSelectorTotalShares(latestOracleCount, chainSelector);
+            uint chainSelectorTotalShares = factoryStorage.getCurrentChainSelectorTotalShares(latestOracleCount, chainSelector);
             uint chainValue = chainValueByNonce[nonce][chainSelector];
-            uint[] memory oracleTokenShares = indexFactoryStorage
+            uint[] memory oracleTokenShares = factoryStorage
                 .allOracleChainSelectorTokenShares(chainSelector);
 
             if (
@@ -811,11 +802,11 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint chainSelectorTotalShares
     ) internal {
         LowSwapVariables memory swapVars;
-        swapVars.tokenAddress = indexFactoryStorage.currentList(i);
-        swapVars.tokenSwapFee = indexFactoryStorage.tokenSwapFee(
+        swapVars.tokenAddress = factoryStorage.currentList(i);
+        swapVars.tokenSwapFee = factoryStorage.tokenSwapFee(
             swapVars.tokenAddress
         );
-        swapVars.tokenMarketShare = indexFactoryStorage.tokenOracleMarketShare(
+        swapVars.tokenMarketShare = factoryStorage.tokenOracleMarketShare(
             swapVars.tokenAddress
         );
         swapVars.chainValue = chainValueByNonce[nonce][chainSelector];
@@ -824,11 +815,18 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             if(swapVars.tokenAddress == address(weth)){
                 swapVars.wethAmount = initialWethBalance;
             }else{
-            swapVars.wethAmount = _swapSingle(
+            // swapVars.wethAmount = _swapSingle(
+            //     swapVars.tokenAddress,
+            //     address(weth),
+            //     IERC20(swapVars.tokenAddress).balanceOf(address(indexToken)),
+            //     address(indexToken),
+            //     swapVars.tokenSwapFee
+            // );
+            swapVars.wethAmount = swap(
                 swapVars.tokenAddress,
                 address(weth),
                 IERC20(swapVars.tokenAddress).balanceOf(address(indexToken)),
-                address(indexToken),
+                address(this),
                 swapVars.tokenSwapFee
             );
             }
@@ -844,21 +842,29 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         swapVars.swapWethAmount += extraWethAmount;
 
         for (uint k = 0; k < chainSelectorOracleTokensCount; k++) {
-            address newTokenAddress = indexFactoryStorage.currentList(k);
-            uint24 newTokenSwapFee = indexFactoryStorage.tokenSwapFee(
+            address newTokenAddress = factoryStorage.currentList(k);
+            uint24 newTokenSwapFee = factoryStorage.tokenSwapFee(
                 newTokenAddress
             );
-            uint newTokenMarketShare = indexFactoryStorage
+            uint newTokenMarketShare = factoryStorage
                 .tokenOracleMarketShare(newTokenAddress);
             if(newTokenAddress == address(weth)){
                 swapVars.wethAmount = (swapVars.swapWethAmount * newTokenMarketShare) / chainSelectorTotalShares;
             }else{
-            swapVars.wethAmount = _swapSingle(
+            // swapVars.wethAmount = _swapSingle(
+            //     address(weth),
+            //     newTokenAddress,
+            //     (swapVars.swapWethAmount * newTokenMarketShare) /
+            //         chainSelectorTotalShares,
+            //     address(indexToken),
+            //     newTokenSwapFee
+            // );
+            swapVars.wethAmount = swap(
                 address(weth),
                 newTokenAddress,
                 (swapVars.swapWethAmount * newTokenMarketShare) /
                     chainSelectorTotalShares,
-                address(indexToken),
+                address(this),
                 newTokenSwapFee
             );
             }
@@ -902,23 +908,30 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             chainSelector
         );
 
-        uint crossChainTokenAmount = _swapSingle(
+        // uint crossChainTokenAmount = _swapSingle(
+        //     address(weth),
+        //     crossChainToken(chainSelector),
+        //     extraWethAmount,
+        //     address(this),
+        //     3
+        // );
+
+        uint crossChainTokenAmount = swap(
             address(weth),
             crossChainToken(chainSelector),
-            // weth.balanceOf(address(this)),
             extraWethAmount,
             address(this),
             3
         );
 
-        vars.currentTokenAddresses = indexFactoryStorage
+        vars.currentTokenAddresses = factoryStorage
             .allCurrentChainSelectorTokens(chainSelector);
-        vars.newTokenAddresses = indexFactoryStorage
+        vars.newTokenAddresses = factoryStorage
             .allOracleChainSelectorTokens(chainSelector);
 
-        vars.currentTokenVersions = indexFactoryStorage
+        vars.currentTokenVersions = factoryStorage
             .allCurrentChainSelectorVersions(chainSelector);
-        vars.newTokenVersions = indexFactoryStorage
+        vars.newTokenVersions = factoryStorage
             .allOracleChainSelectorVersions(chainSelector);
         
         vars.extraData = new uint[](2);

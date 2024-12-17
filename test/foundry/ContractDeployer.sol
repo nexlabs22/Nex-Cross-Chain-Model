@@ -17,15 +17,13 @@ import "../../contracts/test/UniswapRouterByteCode.sol";
 import "../../contracts/test/UniswapPositionManagerByteCode.sol";
 import "../../contracts/factory/IndexFactory.sol";
 import "../../contracts/factory/IndexFactoryStorage.sol";
-import "../../contracts/vault/CrossChainVault.sol";
+import "../../contracts/vault/Vault.sol";
 import "../../contracts/vault/CrossChainFactory.sol";
-// import "../../contracts/test/TestSwap.sol";
 import "../../contracts/test/Token.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
-import "../../contracts/interfaces/IUniswapV3Pool.sol";
 
 import "../../contracts/uniswap/INonfungiblePositionManager.sol";
 import "../../contracts/interfaces/IUniswapV3Factory2.sol";
@@ -93,7 +91,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
     LinkToken link;
     IndexFactory public factory;
     CrossChainIndexFactory public crossChainIndexFactory;
-    CrossChainVault public crossChainVault;
+    Vault public crossChainVault;
     IndexFactoryStorage public indexFactoryStorage;
     Token public crossChainToken;
     // TestSwap public testSwap;
@@ -161,7 +159,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         // MockV3Aggregator,
         // TestSwap,
         MockRouter2,
-        CrossChainVault,
+        Vault,
         CrossChainIndexFactory,
         IndexFactoryStorage,
         IndexFactory
@@ -185,29 +183,14 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             "ANFI",
             1e18,
             feeReceiver,
-            1000000e18,
-            //swap addresses
-            wethAddress,
-            QUOTER,
-            router,
-            factoryAddress,
-            router,
-            factoryAddress
+            1000000e18
         );
         
         // MockRouter mockRouter = new MockRouter(address(link));
         MockRouter2 mockRouter = new MockRouter2();
 
-        CrossChainVault crossChainVault = new CrossChainVault();
-        crossChainVault.initialize(
-            address(0),
-            wethAddress,
-            router, //qouter
-            router,
-            factoryAddress,
-            router,
-            factoryAddress
-        );
+        Vault crossChainVault = new Vault();
+        crossChainVault.initialize();
 
         CrossChainIndexFactory crossChainIndexFactory = new CrossChainIndexFactory();
         crossChainIndexFactory.initialize(
@@ -219,7 +202,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             router,
             factoryAddress,
             router,
-            factoryAddress,
+            // factoryAddress,
             address(ethPriceOracle)
         );
 
@@ -257,7 +240,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         indexFactory.setIndexFactoryStorage(address(indexFactoryStorage));
         crossChainIndexFactory.setCrossChainToken(1, address(crossChainToken), 3);
         crossChainIndexFactory.setPriceOracle(priceOracleAddress);
-        crossChainVault.setFactory(address(crossChainIndexFactory));
+        crossChainVault.setOperator(address(crossChainIndexFactory), true);
         
         mockRouter.setFactoryChainSelector(1, address(indexFactory));
         mockRouter.setFactoryChainSelector(2, address(crossChainIndexFactory));

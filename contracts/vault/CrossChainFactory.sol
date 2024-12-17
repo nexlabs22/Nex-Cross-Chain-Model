@@ -18,10 +18,12 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 // import "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import "../ccip/CCIPReceiver.sol";
-import "./CrossChainVault.sol";
+import "./Vault.sol";
 // import {Withdraw} from "./utils/Withdraw.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../factory/IPriceOracle.sol";
+import "../libraries/SwapHelpers.sol";
+import "../interfaces/IWETH.sol";
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
@@ -65,7 +67,7 @@ contract CrossChainIndexFactory is
     mapping(bytes32 => Message) public messageDetail; // Mapping from message ID to Message struct, storing details of each received message.
 
     // IndexToken public indexToken;
-    CrossChainVault public crossChainVault;
+    Vault public vault;
 
     uint256 public fee;
     uint8 public feeRate; // 10/10000 = 0.1%
@@ -101,13 +103,13 @@ contract CrossChainIndexFactory is
     ISwapRouter public swapRouterV3;
     IUniswapV3Factory public factoryV3;
     IUniswapV2Router02 public swapRouterV2;
-    IUniswapV2Factory public factoryV2;
+    // IUniswapV2Factory public factoryV2;
     IWETH public weth;
     IQuoter public quoter;
 
     // address public crossChainToken;
     mapping(uint64 => address) public crossChainToken;
-    mapping(uint64 => mapping(address => uint)) public crossChainTokenSwapVersion;
+    mapping(uint64 => mapping(address => uint24)) public crossChainTokenSwapFee;
 
     
     //nonce
@@ -138,7 +140,7 @@ contract CrossChainIndexFactory is
 
     function initialize(
         uint64 _currentChainSelector,
-        address payable _crossChainVault,
+        address payable _vault,
         address _chainlinkToken,
         //ccip
         address _router,
@@ -148,7 +150,7 @@ contract CrossChainIndexFactory is
         address _swapRouterV3,
         address _factoryV3,
         address _swapRouterV2,
-        address _factoryV2,
+        // address _factoryV2,
         address _toUsdPriceFeed
     ) external initializer {
         CCIPReceiver(_router);
@@ -156,7 +158,7 @@ contract CrossChainIndexFactory is
         __Pausable_init();
         //set chain selector
         currentChainSelector = _currentChainSelector;
-        crossChainVault = CrossChainVault(_crossChainVault);
+        vault = Vault(_vault);
         //set oracle data
         setChainlinkToken(_chainlinkToken);
 
@@ -174,7 +176,7 @@ contract CrossChainIndexFactory is
         swapRouterV3 = ISwapRouter(_swapRouterV3);
         factoryV3 = IUniswapV3Factory(_factoryV3);
         swapRouterV2 = IUniswapV2Router02(_swapRouterV2);
-        factoryV2 = IUniswapV2Factory(_factoryV2);
+        // factoryV2 = IUniswapV2Factory(_factoryV2);
         //oracle
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
     }
@@ -212,16 +214,16 @@ contract CrossChainIndexFactory is
     function setCrossChainToken(
         uint64 _chainSelector,
         address _crossChainToken,
-        uint _swapVersion
+        uint24 _swapFee
     ) public onlyOwner {
         crossChainToken[_chainSelector] = _crossChainToken;
-        crossChainTokenSwapVersion[_chainSelector][_crossChainToken] = _swapVersion;
+        crossChainTokenSwapFee[_chainSelector][_crossChainToken] = _swapFee;
     }
 
-    function setCrossChainVault(
-        address payable _crossChainVault
+    function setVault(
+        address payable _vault
     ) public onlyOwner {
-        crossChainVault = CrossChainVault(_crossChainVault);
+        vault = Vault(_vault);
     }
 
     /**
@@ -240,49 +242,26 @@ contract CrossChainIndexFactory is
         _unpause();
     }
 
-    function _swapSingle(
-        address tokenIn,
-        address tokenOut,
-        uint amountIn,
-        address _recipient,
-        uint _swapVersion
-    ) internal returns (uint) {
-        
-        if (_swapVersion == 3) {
-            uint swapAmountOut = crossChainVault.swapSingle(
-                tokenIn,
-                tokenOut,
-                amountIn,
-                _recipient,
-                _swapVersion
-            );
-            return swapAmountOut;
-        } else {
-            uint amountOut = getAmountOut(
-                tokenIn,
-                tokenOut,
-                amountIn,
-                _swapVersion
-            );
-            crossChainVault.swapSingle(
-                tokenIn,
-                tokenOut,
-                amountIn,
-                _recipient,
-                _swapVersion
-            );
-            return amountOut;
-        }
-    }
-
     function swap(
         address tokenIn,
         address tokenOut,
         uint amountIn,
         address _recipient,
-        uint _swapVersion
-    ) public returns (uint) {
-        if (_swapVersion == 3) {
+        uint24 _swapFee
+    ) public returns (uint outputAmount) {
+        // ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
+        // IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
+        outputAmount = SwapHelpers.swap(
+            swapRouterV3,
+            swapRouterV2,
+            _swapFee,
+            tokenIn,
+            tokenOut,
+            amountIn,
+            _recipient
+        );
+        /**
+        if (_swapFee == 3) {
             IERC20(tokenIn).approve(address(swapRouterV3), amountIn);
             ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
                 .ExactInputSingleParams({
@@ -316,16 +295,17 @@ contract CrossChainIndexFactory is
             );
             return 0;
         }
+        */
     }
 
     function getAmountOut(
         address tokenIn,
         address tokenOut,
         uint amountIn,
-        uint _swapVersion
+        uint _swapFee
     ) public view returns (uint finalAmountOut) {
         if (amountIn > 0) {
-            if (_swapVersion == 3) {
+            if (_swapFee == 3) {
                 finalAmountOut = estimateAmountOut(
                     tokenIn,
                     tokenOut,
@@ -441,8 +421,8 @@ contract CrossChainIndexFactory is
             uint actionType,
             address[] memory targetAddresses,
             address[] memory targetAddresses2,
-            uint[] memory targetVersions,
-            uint[] memory targetVersions2,
+            uint[] memory targetFees,
+            uint[] memory targetFees2,
             uint nonce,
             uint[] memory percentages,
             uint[] memory extraValues
@@ -456,7 +436,7 @@ contract CrossChainIndexFactory is
             _handleIssuance(
                 tokenAmounts,
                 targetAddresses,
-                targetVersions,
+                targetFees,
                 nonce,
                 sourceChainSelector,
                 sender,
@@ -467,7 +447,7 @@ contract CrossChainIndexFactory is
         } else if (actionType == 1) {
             _handleRedemption(
                 targetAddresses,
-                targetVersions,
+                targetFees,
                 nonce,
                 sourceChainSelector,
                 sender,
@@ -477,7 +457,7 @@ contract CrossChainIndexFactory is
         } else if (actionType == 2) {
             _handleAskValues(
                 targetAddresses,
-                targetVersions,
+                targetFees,
                 nonce,
                 sourceChainSelector,
                 sender
@@ -489,8 +469,8 @@ contract CrossChainIndexFactory is
                 HandleFirstReweightActionInputs(
                     targetAddresses,
                     targetAddresses2,
-                    targetVersions,
-                    targetVersions2,
+                    targetFees,
+                    targetFees2,
                     percentages,
                     sourceChainSelector,
                     sender,
@@ -507,8 +487,8 @@ contract CrossChainIndexFactory is
                 HandleSecondReweightActionInputs(
                     targetAddresses,
                     targetAddresses2,
-                    targetVersions,
-                    targetVersions2,
+                    targetFees,
+                    targetFees2,
                     percentages,
                     tokenAmounts[0].token,
                     tokenAmounts[0].amount,
@@ -531,7 +511,7 @@ contract CrossChainIndexFactory is
     function _handleIssuance(
         Client.EVMTokenAmount[] memory tokenAmounts,
         address[] memory targetAddresses,
-        uint[] memory targetVersions,
+        uint[] memory targetFees,
         uint nonce,
         uint64 sourceChainSelector,
         address sender,
@@ -545,8 +525,8 @@ contract CrossChainIndexFactory is
             tokenAmounts[0].token,
             address(weth),
             tokenAmounts[0].amount,
-            address(crossChainVault),
-            crossChainTokenSwapVersion[sourceChainSelector][tokenAmounts[0].token]
+            address(vault),
+            crossChainTokenSwapFee[sourceChainSelector][tokenAmounts[0].token]
         );
         vars.oldTokenValues = new uint[](targetAddresses.length);
         vars.newTokenValues = new uint[](targetAddresses.length);
@@ -557,24 +537,31 @@ contract CrossChainIndexFactory is
             uint oldTokenValue;
             if(targetAddresses[i] == address(weth)){
                 oldTokenValue = IERC20(targetAddresses[i]).balanceOf(
-                    address(crossChainVault)
+                    address(vault)
                 );
-                weth.transfer(address(crossChainVault), wethToSwap);
+                weth.transfer(address(vault), wethToSwap);
             }else{
             oldTokenValue = getAmountOut(
                 targetAddresses[i],
                 address(weth),
                 IERC20(targetAddresses[i]).balanceOf(
-                    address(crossChainVault)
+                    address(vault)
                 ),
                 3
             );
-            _swapSingle(
+            // _swapSingle(
+            //     address(weth),
+            //     address(targetAddresses[i]),
+            //     wethToSwap,
+            //     address(vault),
+            //     targetFees[i]
+            // );
+            swap(
                 address(weth),
                 address(targetAddresses[i]),
                 wethToSwap,
-                address(crossChainVault),
-                targetVersions[i]
+                address(vault),
+                uint24(targetFees[i])
             );
             }
             uint newTokenValue = oldTokenValue + wethToSwap;
@@ -606,7 +593,7 @@ contract CrossChainIndexFactory is
     
     function _handleRedemption(
         address[] memory targetAddresses,
-        uint[] memory targetVersions,
+        uint[] memory targetFees,
         uint nonce,
         uint64 sourceChainSelector,
         address sender,
@@ -616,18 +603,26 @@ contract CrossChainIndexFactory is
             for (uint i = 0; i < targetAddresses.length; i++) {
                 uint swapAmount = (extraValues[0] *
                     IERC20(address(targetAddresses[i])).balanceOf(
-                        address(crossChainVault)
+                        address(vault)
                     )) / 1e18;
                 if(address(targetAddresses[i]) == address(weth)){
-                    crossChainVault.wethTransfer(address(this), swapAmount);
+                    // vault.wethTransfer(address(this), swapAmount);
+                    vault.withdrawFunds(address(weth), address(this), swapAmount);
                     wethSwapAmountOut += swapAmount;
                 }else{
-                wethSwapAmountOut += _swapSingle(
+                // wethSwapAmountOut += _swapSingle(
+                //     address(targetAddresses[i]),
+                //     address(weth),
+                //     swapAmount,
+                //     address(this),
+                //     targetFees[i]
+                // );
+                wethSwapAmountOut += swap(
                     address(targetAddresses[i]),
                     address(weth),
                     swapAmount,
                     address(this),
-                    targetVersions[i]
+                    uint24(targetFees[i])
                 );
                 }
             }
@@ -637,7 +632,7 @@ contract CrossChainIndexFactory is
                 address(crossChainToken[sourceChainSelector]),
                 wethSwapAmountOut,
                 address(this),
-                crossChainTokenSwapVersion[sourceChainSelector][crossChainToken[sourceChainSelector]]
+                crossChainTokenSwapFee[sourceChainSelector][crossChainToken[sourceChainSelector]]
             );
             Client.EVMTokenAmount[]
                 memory tokensToSendArray = new Client.EVMTokenAmount[](1);
@@ -669,7 +664,7 @@ contract CrossChainIndexFactory is
 
     function _handleAskValues(
         address[] memory targetAddresses,
-        uint[] memory targetVersions,
+        uint[] memory targetFees,
         uint nonce,
         uint64 sourceChainSelector,
         address sender
@@ -678,13 +673,13 @@ contract CrossChainIndexFactory is
         uint[] memory tokenValueArr = new uint[](targetAddresses.length);
         for (uint i = 0; i < targetAddresses.length; i++) {
             if(targetAddresses[i] == address(weth)){
-            tokenValueArr[i] = convertEthToUsd(IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)));
+            tokenValueArr[i] = convertEthToUsd(IERC20(targetAddresses[i]).balanceOf(address(vault)));
             }else{
             uint tokenValue = getAmountOut(
                 targetAddresses[i],
                 address(weth),
-                IERC20(targetAddresses[i]).balanceOf(address(crossChainVault)),
-                targetVersions[i]
+                IERC20(targetAddresses[i]).balanceOf(address(vault)),
+                targetFees[i]
             );
             tokenValueArr[i] = convertEthToUsd(tokenValue);
             }
@@ -703,8 +698,8 @@ contract CrossChainIndexFactory is
     struct HandleFirstReweightActionInputs {
         address[] currentTokens;
         address[] oracleTokens;
-        uint[] targetVersions;
-        uint[] targetVersions2;
+        uint[] targetFees;
+        uint[] targetFees2;
         uint[] oracleTokenShares;
         uint64 sourceChainSelector;
         address sender;
@@ -725,8 +720,8 @@ contract CrossChainIndexFactory is
                                     data,
                                     inputData.currentTokens,
                                     inputData.oracleTokens,
-                                    inputData.targetVersions,
-                                    inputData.targetVersions2,
+                                    inputData.targetFees,
+                                    inputData.targetFees2,
                                     inputData.oracleTokenShares,
                                     inputData.sender,
                                     inputData.nonce
@@ -737,7 +732,7 @@ contract CrossChainIndexFactory is
             address(crossChainToken[inputData.sourceChainSelector]),
             extraWethAmount,
             address(this),
-            crossChainTokenSwapVersion[inputData.sourceChainSelector][crossChainToken[inputData.sourceChainSelector]]
+            crossChainTokenSwapFee[inputData.sourceChainSelector][crossChainToken[inputData.sourceChainSelector]]
         );
         Client.EVMTokenAmount[]
             memory tokensToSendArray = new Client.EVMTokenAmount[](1);
@@ -778,27 +773,34 @@ contract CrossChainIndexFactory is
         ReweightActionData memory data,
         address[] memory currentTokens,
         address[] memory oracleTokens,
-        uint[] memory targetVersions,
-        uint[] memory targetVersions2,
+        uint[] memory targetFees,
+        uint[] memory targetFees2,
         uint[] memory oracleTokenShares,
         address sender,
         uint nonce
     ) internal returns (uint) {
         SwapFirstReweightActionVars memory vars;
         // swapData.chainSelectorCurrentTokensCount = data.chainSelectorCurrentTokensCount;
-        vars.initialWethBalance = weth.balanceOf(address(crossChainVault));
+        vars.initialWethBalance = weth.balanceOf(address(vault));
         for (uint i = 0; i < vars.chainSelectorCurrentTokensCount; i++) {
             
             uint wethAmount;
             if(currentTokens[i] == address(weth)){
             wethAmount = vars.initialWethBalance;
             }else{
-            wethAmount = _swapSingle(
+            // wethAmount = _swapSingle(
+            //     currentTokens[i],
+            //     address(weth),
+            //     IERC20(currentTokens[i]).balanceOf(address(vault)),
+            //     address(vault),
+            //     targetFees[i]
+            // );
+            wethAmount = swap(
                 currentTokens[i],
                 address(weth),
-                IERC20(currentTokens[i]).balanceOf(address(crossChainVault)),
-                address(crossChainVault),
-                targetVersions[i]
+                IERC20(currentTokens[i]).balanceOf(address(vault)),
+                address(vault),
+                uint24(targetFees[i])
             );
             }
             vars.swapWethAmount += wethAmount;
@@ -815,13 +817,21 @@ contract CrossChainIndexFactory is
         for (uint i = 0; i < vars.chainSelectorOracleTokensCount; i++) {
             
             if(oracleTokens[i] != address(weth)){
-            uint wethAmount = _swapSingle(
+            // uint wethAmount = _swapSingle(
+            //     address(weth),
+            //     oracleTokens[i],
+            //     (vars.wethAmountToSwap * oracleTokenShares[i]) /
+            //         vars.chainSelectorTotalShares,
+            //     address(vault),
+            //     targetFees2[i]
+            // );
+            uint wethAmount = swap(
                 address(weth),
                 oracleTokens[i],
                 (vars.wethAmountToSwap * oracleTokenShares[i]) /
                     vars.chainSelectorTotalShares,
-                address(crossChainVault),
-                targetVersions2[i]
+                address(vault),
+                uint24(targetFees2[i])
             );
             }
             
@@ -834,8 +844,8 @@ contract CrossChainIndexFactory is
     struct HandleSecondReweightActionInputs {
         address[] currentTokens;
         address[] oracleTokens;
-        uint[] targetVersions;
-        uint[] targetVersions2;
+        uint[] targetFees;
+        uint[] targetFees2;
         uint[] oracleTokenShares;
         address tokenAddress;
         uint tokenAmount;
@@ -851,15 +861,15 @@ contract CrossChainIndexFactory is
             inputData.tokenAddress,
             address(weth),
             inputData.tokenAmount,
-            address(crossChainVault),
-            3
+            address(vault),
+            3000
         );
 
         swapSecondReweightAction(
             inputData.currentTokens,
             inputData.oracleTokens,
-            inputData.targetVersions,
-            inputData.targetVersions2,
+            inputData.targetFees,
+            inputData.targetFees2,
             inputData.oracleTokenShares,
             crossChainWethAmount,
             inputData.extraData
@@ -893,8 +903,8 @@ contract CrossChainIndexFactory is
     function swapSecondReweightAction(
         address[] memory currentTokens,
         address[] memory oracleTokens,
-        uint[] memory targetVersions,
-        uint[] memory targetVersions2,
+        uint[] memory targetFees,
+        uint[] memory targetFees2,
         uint[] memory oracleTokenShares,
         uint crossChainWethAmount,
         uint[] memory extraData
@@ -902,7 +912,7 @@ contract CrossChainIndexFactory is
         SwapSecondReweightActionVars memory vars;
         vars.chainSelectorTotalShares = extraData[1];
         vars.chainSelectorCurrentTokensCount = currentTokens.length;
-        vars.initialWethBalance = weth.balanceOf(address(crossChainVault));
+        vars.initialWethBalance = weth.balanceOf(address(vault));
         vars.swapWethAmount = 0; // Initialize swapWethAmount to 0
         for (uint i = 0; i < vars.chainSelectorCurrentTokensCount; i++) {
             address tokenAddress = currentTokens[i];
@@ -910,12 +920,19 @@ contract CrossChainIndexFactory is
             if (tokenAddress == address(weth)) {
                 wethAmount = vars.initialWethBalance;
             } else {
-                wethAmount = _swapSingle(
+                // wethAmount = _swapSingle(
+                //     tokenAddress,
+                //     address(weth),
+                //     IERC20(tokenAddress).balanceOf(address(vault)),
+                //     address(vault),
+                //     targetFees[i]
+                // );
+                wethAmount = swap(
                     tokenAddress,
                     address(weth),
-                    IERC20(tokenAddress).balanceOf(address(crossChainVault)),
-                    address(crossChainVault),
-                    targetVersions[i]
+                    IERC20(tokenAddress).balanceOf(address(vault)),
+                    address(vault),
+                    uint24(targetFees[i])
                 );
             }
             vars.swapWethAmount += wethAmount; // Accumulate wethAmount in swapWethAmount
@@ -926,13 +943,21 @@ contract CrossChainIndexFactory is
             address newTokenAddress = oracleTokens[i];
             uint newTokenMarketShare = oracleTokenShares[i];
             if (newTokenAddress != address(weth)) {
-                uint wethAmount = _swapSingle(
+                // uint wethAmount = _swapSingle(
+                //     address(weth),
+                //     newTokenAddress,
+                //     (vars.wethAmountToSwap * newTokenMarketShare) /
+                //         vars.chainSelectorTotalShares,
+                //     address(vault),
+                //     targetFees2[i]
+                // );
+                uint wethAmount = swap(
                     address(weth),
                     newTokenAddress,
                     (vars.wethAmountToSwap * newTokenMarketShare) /
                         vars.chainSelectorTotalShares,
-                    address(crossChainVault),
-                    targetVersions2[i]
+                    address(vault),
+                    uint24(targetFees2[i])
                 );
             }
         }
