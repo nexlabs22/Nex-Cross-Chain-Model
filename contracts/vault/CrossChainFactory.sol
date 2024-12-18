@@ -606,17 +606,10 @@ contract CrossChainIndexFactory is
                         address(vault)
                     )) / 1e18;
                 if(address(targetAddresses[i]) == address(weth)){
-                    // vault.wethTransfer(address(this), swapAmount);
                     vault.withdrawFunds(address(weth), address(this), swapAmount);
                     wethSwapAmountOut += swapAmount;
                 }else{
-                // wethSwapAmountOut += _swapSingle(
-                //     address(targetAddresses[i]),
-                //     address(weth),
-                //     swapAmount,
-                //     address(this),
-                //     targetFees[i]
-                // );
+                vault.withdrawFunds(address(targetAddresses[i]), address(this), swapAmount);
                 wethSwapAmountOut += swap(
                     address(targetAddresses[i]),
                     address(weth),
@@ -626,7 +619,6 @@ contract CrossChainIndexFactory is
                 );
                 }
             }
-            // sourceChainSelectorF = sourceChainSelector;
             uint crossChainTokenAmount = swap(
                 address(weth),
                 address(crossChainToken[sourceChainSelector]),

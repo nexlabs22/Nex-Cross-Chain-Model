@@ -32,30 +32,6 @@ import "../../contracts/interfaces/IWETH.sol";
 
 contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, UniswapRouterByteCode, UniswapPositionManagerByteCode, PriceOracleByteCode {
 
-    bytes32 jobId = "6b88e0402e5d415eb946e528b8e0c7ba";
-    
-    address public constant WETH9 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-    address public constant QUOTER = 0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6;
-    
-    address public constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-    
-    address public SHIB = 0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE;
-    address public constant PEPE = 0x6982508145454Ce325dDbE47a25d4ec3d2311933;
-    address public constant FLOKI = 0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E;
-    address public constant MEME = 0xb131f4A55907B10d1F0A50d8ab8FA09EC342cd74;
-    address public constant BabyDoge = 0xAC57De9C1A09FeC648E93EB98875B212DB0d460B;
-    address public constant BONE = 0x9813037ee2218799597d83D4a5B6F3b6778218d9;
-    address public constant HarryPotterObamaSonic10Inu = 0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9;
-    address public constant ELON = 0x761D38e5ddf6ccf6Cf7c55759d5210750B5D60F3;
-    address public constant WSM = 0xB62E45c3Df611dcE236A6Ddc7A493d79F9DFadEf;
-    address public constant LEASH = 0x27C70Cd1946795B66be9d954418546998b546634;
-
-    address public constant WBTC = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
-    address public constant BNB = 0x418D75f65a02b3D53B2418FB8E1fe493759c7605;
-    address public constant WXRP = 0x1E02E2eD139F5Baf6bfaD04c0E61EBb0110dA653;
-    address public constant CURVE = 0xD533a949740bb3306d119CC777fa900bA034cd52;
-    address public constant LINK = 0x514910771AF9Ca656af840dff83E8264EcF986CA;
-    address public constant UNI = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
     
     address feeReceiver = vm.addr(1);
     address newFeeReceiver = vm.addr(2);
@@ -91,7 +67,16 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
     LinkToken link;
     IndexFactory public factory;
     CrossChainIndexFactory public crossChainIndexFactory;
+    CrossChainIndexFactory public crossChainIndexFactory1;
+    CrossChainIndexFactory public crossChainIndexFactory2;
+    CrossChainIndexFactory public crossChainIndexFactory3;
+    CrossChainIndexFactory public crossChainIndexFactory4;
+    Vault public vault;
     Vault public crossChainVault;
+    Vault public crossChainVault1;
+    Vault public crossChainVault2;
+    Vault public crossChainVault3;
+    Vault public crossChainVault4;
     IndexFactoryStorage public indexFactoryStorage;
     Token public crossChainToken;
     // TestSwap public testSwap;
@@ -106,6 +91,10 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         ISwapRouter(router);
     // MockRouter mockRouter;
     MockRouter2 mockRouter;
+    MockRouter2 mockRouter1;
+    MockRouter2 mockRouter2;
+    MockRouter2 mockRouter3;
+    MockRouter2 mockRouter4;
     
     function getMinTick(int24 tickSpacing) public pure returns (int24) {
         return int24((int256(-887272) / int256(tickSpacing) + 1) * int256(tickSpacing));
@@ -160,6 +149,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         // TestSwap,
         MockRouter2,
         Vault,
+        Vault,
         CrossChainIndexFactory,
         IndexFactoryStorage,
         IndexFactory
@@ -187,11 +177,55 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         );
         
         // MockRouter mockRouter = new MockRouter(address(link));
-        MockRouter2 mockRouter = new MockRouter2();
+        // MockRouter2 mockRouter = new MockRouter2();
 
+        MockRouter2[] memory mockRouters = new MockRouter2[](5);
+        for (uint256 i = 0; i < 5; i++) {
+            mockRouters[i] = new MockRouter2();
+        }
+
+
+
+        Vault vault = new Vault();
+        vault.initialize();
+
+        Vault[] memory crossChainVaults = new Vault[](5);
+        for (uint256 i = 0; i < 5; i++) {
+            crossChainVaults[i] = new Vault();
+            crossChainVaults[i].initialize();
+        }
+        crossChainVault = crossChainVaults[0];
+        crossChainVault1 = crossChainVaults[1];
+        crossChainVault2 = crossChainVaults[2];
+        crossChainVault3 = crossChainVaults[3];
+        crossChainVault4 = crossChainVaults[4];
+        /**
         Vault crossChainVault = new Vault();
         crossChainVault.initialize();
+        */
 
+        CrossChainIndexFactory[] memory crossChainIndexFactories = new CrossChainIndexFactory[](5);
+        for (uint256 i = 0; i < 5; i++) {
+            crossChainIndexFactories[i] = new CrossChainIndexFactory();
+            crossChainIndexFactories[i].initialize(
+            2 + i,
+            payable(address(crossChainVault)),
+            address(link),
+            address(mockRouter),
+            wethAddress,
+            router,
+            factoryAddress,
+            router,
+            // factoryAddress,
+            address(ethPriceOracle)
+        );
+        }
+        crossChainIndexFactory = crossChainIndexFactories[0];
+        crossChainIndexFactory1 = crossChainIndexFactories[1];
+        crossChainIndexFactory2 = crossChainIndexFactories[2];
+        crossChainIndexFactory3 = crossChainIndexFactories[3];
+        crossChainIndexFactory4 = crossChainIndexFactories[4];
+        /**
         CrossChainIndexFactory crossChainIndexFactory = new CrossChainIndexFactory();
         crossChainIndexFactory.initialize(
             2,
@@ -205,7 +239,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             // factoryAddress,
             address(ethPriceOracle)
         );
-
+        */
 
         IndexFactoryStorage indexFactoryStorage = new IndexFactoryStorage();
         indexFactoryStorage.initialize(
@@ -233,12 +267,14 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         
 
         indexToken.setMinter(address(indexFactory), true);
-        indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), 3);
+        indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), 3000);
         indexFactoryStorage.setCrossChainFactory(address(crossChainIndexFactory), 2);
         indexFactoryStorage.setIndexFactory(address(indexFactory));
         indexFactoryStorage.setPriceOracle(address(priceOracleAddress));
+        indexFactoryStorage.setVault(address(vault));
+        vault.setOperator(address(indexFactory), true);
         indexFactory.setIndexFactoryStorage(address(indexFactoryStorage));
-        crossChainIndexFactory.setCrossChainToken(1, address(crossChainToken), 3);
+        crossChainIndexFactory.setCrossChainToken(1, address(crossChainToken), 3000);
         crossChainIndexFactory.setPriceOracle(priceOracleAddress);
         crossChainVault.setOperator(address(crossChainIndexFactory), true);
         
@@ -258,6 +294,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             // ethPriceOracle,
             // testSwap,
             mockRouter,
+            vault,
             crossChainVault,
             crossChainIndexFactory,
             indexFactoryStorage,
@@ -311,6 +348,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         (
             indexToken,
             mockRouter,
+            vault,
             crossChainVault,
             crossChainIndexFactory,
             indexFactoryStorage,

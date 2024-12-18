@@ -386,11 +386,9 @@ contract IndexFactory is
         uint _crossChainFee
     ) internal {
         
-        //weth.transfer(address(indexToken), _inputAmount);
-        
         uint wethAmount = _inputAmount;
         
-        //swap to underlying assets on all chain
+        // swap to underlying assets on all chain
         uint totalChains = factoryStorage.currentChainSelectorsCount();
         uint latestCount = factoryStorage.currentFilledCount();
         (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
@@ -415,15 +413,15 @@ contract IndexFactory is
                 );
             }
         }
-        emit RequestIssuance(
-                issuanceData[issuanceNonce].messageId, 
-                issuanceNonce,
-                msg.sender, 
-                _tokenIn,
-                issuanceData[issuanceNonce].inputAmount, 
-                0, 
-                block.timestamp
-            );
+        // emit RequestIssuance(
+        //         issuanceData[issuanceNonce].messageId, 
+        //         issuanceNonce,
+        //         msg.sender, 
+        //         _tokenIn,
+        //         issuanceData[issuanceNonce].inputAmount, 
+        //         0, 
+        //         block.timestamp
+        //     );
     }
 
     /**
@@ -486,13 +484,7 @@ contract IndexFactory is
         uint[] memory totalSharesArr = new uint[](1);
         totalSharesArr[0] = totalShares;
 
-        // uint crossChainTokenAmount = _swapSingle(
-        // address(weth),
-        // crossChainToken(_chainSelector),
-        // (_wethAmount*totalSharesArr[0])/100e18,
-        // address(this),
-        // crossChainTokenSwapFee(_chainSelector)
-        // );
+        
         uint crossChainTokenAmount = swap(
             address(weth),
             crossChainToken(_chainSelector),
@@ -711,9 +703,6 @@ contract IndexFactory is
         uint24 outputTokenSwapFee = redemptionData[nonce].outputTokenSwapFee;
         uint fee = FeeCalculation.calculateFee(wethAmount, feeRate);
         weth.transfer(feeReceiver, fee);
-        // weth.withdraw(fee);
-        // (bool _ownerSuccess, ) = address(feeReceiver).call{value: fee}("");
-        // require(_ownerSuccess, "transfer eth fee to the owner failed");
         if(outputToken == address(weth)){
         // weth.transfer(requester, wethAmount - fee);
         weth.withdraw(wethAmount - fee);
@@ -936,7 +925,7 @@ contract IndexFactory is
             address(weth),
             amount,
             address(this),
-            3
+            3000
         );
         redemptionData[requestRedemptionNonce].totalValue += wethAmount;
         redemptionData[requestRedemptionNonce].completedTokensCount += tokenAddresses.length;

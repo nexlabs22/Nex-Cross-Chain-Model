@@ -88,11 +88,11 @@ contract CounterTest is Test, ContractDeployer {
         tokenShares[4] = 20e18;
 
         uint[] memory swapFees = new uint[](5);
-        swapFees[0] = 3;
-        swapFees[1] = 3;
-        swapFees[2] = 3;
-        swapFees[3] = 3;
-        swapFees[4] = 3;
+        swapFees[0] = 3000;
+        swapFees[1] = 3000;
+        swapFees[2] = 3000;
+        swapFees[3] = 3000;
+        swapFees[4] = 3000;
 
 
         uint64[] memory chains = new uint64[](5);
@@ -128,14 +128,15 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token4)), 20e18);
         
         // token shares
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token0)), 3);
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token1)), 3);
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token2)), 3);
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token3)), 3);
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token0)), 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token1)), 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token2)), 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token3)), 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3000);
         
     }
-    /**
+
+    
     function testIssuanceWithEth() public {
         uint startAmount = 1e14;
         
@@ -153,7 +154,7 @@ contract CounterTest is Test, ContractDeployer {
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
     }
-    
+   
     function testRedemptionWithEth() public {
         uint startAmount = 1e14;
         
@@ -167,11 +168,11 @@ contract CounterTest is Test, ContractDeployer {
         payable(add1).transfer(11e18);
         vm.startPrank(add1);
         
-        // console.log(indexToken.balanceOf(add1));
-        // factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
-        // console.log(indexToken.balanceOf(add1));
-        // factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), 3);
-        // console.log(indexToken.balanceOf(add1));
+        console.log(indexToken.balanceOf(add1));
+        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
+        console.log(indexToken.balanceOf(add1));
+        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), 3);
+        console.log(indexToken.balanceOf(add1));
     }
     
     function testIssuanceWithUsdc() public {
@@ -190,10 +191,10 @@ contract CounterTest is Test, ContractDeployer {
         
         console.log(indexToken.balanceOf(add1));
         usdt.approve(address(factory), 1001e18);
-        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3);
+        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3000);
         console.log(indexToken.balanceOf(add1));
     }
-
+    
     function testRedemptionWithUsdc() public {
         uint startAmount = 1e14;
         
@@ -210,14 +211,14 @@ contract CounterTest is Test, ContractDeployer {
         
         console.log(indexToken.balanceOf(add1));
         usdt.approve(address(factory), 1001e18);
-        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3);
+        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3000);
         console.log(indexToken.balanceOf(add1));
-        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), 3);
+        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), 3000);
         console.log(indexToken.balanceOf(add1));
     }
 
 
-    */
+    
 
 
     
