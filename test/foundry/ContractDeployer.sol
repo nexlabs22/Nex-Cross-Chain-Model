@@ -31,7 +31,7 @@ import "../../contracts/interfaces/IWETH.sol";
 
 
 contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, UniswapRouterByteCode, UniswapPositionManagerByteCode, PriceOracleByteCode {
-
+    bytes32 jobId = "6b88e0402e5d415eb946e528b8e0c7ba";
     
     address feeReceiver = vm.addr(1);
     address newFeeReceiver = vm.addr(2);
@@ -164,8 +164,8 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
 
         // (LinkToken link, MockApiOracle oracle, MockV3Aggregator ethPriceOracle) = deployInternalContracts();
 
-        dai = ERC20(DAI);
-        quoter = IQuoter(QUOTER);
+        // dai = ERC20(DAI);
+        // quoter = IQuoter(QUOTER);
 
         IndexToken indexToken = new IndexToken();
         indexToken.initialize(
@@ -183,6 +183,13 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         for (uint256 i = 0; i < 5; i++) {
             mockRouters[i] = new MockRouter2();
         }
+        mockRouter = mockRouters[0];
+        mockRouter1 = mockRouters[1];
+        mockRouter2 = mockRouters[2];
+        mockRouter3 = mockRouters[3];
+        mockRouter4 = mockRouters[4];
+        
+
 
 
 
@@ -208,7 +215,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         for (uint256 i = 0; i < 5; i++) {
             crossChainIndexFactories[i] = new CrossChainIndexFactory();
             crossChainIndexFactories[i].initialize(
-            2 + i,
+            uint64(2 + i),
             payable(address(crossChainVault)),
             address(link),
             address(mockRouter),

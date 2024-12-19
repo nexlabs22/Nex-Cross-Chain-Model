@@ -136,7 +136,48 @@ contract CounterTest is Test, ContractDeployer {
         
     }
 
-    
+    function showPercentages() public {
+        uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
+        // uint portfolioBalance1 = crossChainIndexFactory.getPortfolioBalance();
+        uint totalPortfolioBalance;
+        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
+        for (uint i = 0; i < totalCurrentList; i++) {
+            address tokenAddress = indexFactoryStorage.currentList(i);
+            uint64 chainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
+            // address crossChainFactoryAddress = factory.crossChainFactoryBySelector(chainSelector);
+            if(chainSelector == 1){
+                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                totalPortfolioBalance += tokenValue;
+            }else{
+                address payable crossChainIndexFactory = payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
+                Vault vault = CrossChainIndexFactory(crossChainIndexFactory).vault();
+                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                totalPortfolioBalance += tokenValue;
+            }
+
+        }
+        for (uint i = 0; i < totalCurrentList; i++) {
+            address tokenAddress = indexFactoryStorage.currentList(i);
+            uint64 chainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
+            // address crossChainFactoryAddress = factory.crossChainFactoryBySelector(chainSelector);
+            if(chainSelector == 1){
+                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
+                console.log("token", i, "percentage", percentage);
+            }else{
+                // address payable crossChainIndexFactory = payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
+                // Vault vault = CrossChainIndexFactory(crossChainIndexFactory).vault();
+                // uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                // uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                // uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
+                // console.log("token", i, "percentage", percentage);
+            }
+
+        }
+    }
     function testIssuanceWithEth() public {
         initializeOracleList();
         
@@ -150,62 +191,16 @@ contract CounterTest is Test, ContractDeployer {
         console.log(indexToken.balanceOf(add1));
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
+        
+        // console.log("token 0 balance", token0.balanceOf(address(vault)));
+        // console.log("token 1 balance", token1.balanceOf(address(vault)));
+        // console.log("token 2 balance", token2.balanceOf(address(vault)));
+        // console.log("token 3 balance", token3.balanceOf(address(vault)));
+        // console.log("token 4 balance", token4.balanceOf(address(crossChainVault)));
+        // uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
+        // console.log("portfolio balance", portfolioBalance);
+        showPercentages();
     }
-   
-    function testRedemptionWithEth() public {
-        initializeOracleList();
-        
-        factory.proposeOwner(owner);
-        vm.startPrank(owner);
-        factory.transferOwnership(owner);
-        vm.stopPrank();
-        payable(add1).transfer(11e18);
-        vm.startPrank(add1);
-        
-        console.log(indexToken.balanceOf(add1));
-        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
-        console.log(indexToken.balanceOf(add1));
-        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), 3);
-        console.log(indexToken.balanceOf(add1));
-    }
-    
-    function testIssuanceWithUsdc() public {
-        initializeOracleList();
-        
-        factory.proposeOwner(owner);
-        vm.startPrank(owner);
-        factory.transferOwnership(owner);
-        vm.stopPrank();
-        payable(add1).transfer(11e18);
-        usdt.transfer(add1, 1001e18);
-        vm.startPrank(add1);
-        
-        console.log(indexToken.balanceOf(add1));
-        usdt.approve(address(factory), 1001e18);
-        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3000);
-        console.log(indexToken.balanceOf(add1));
-    }
-    
-    function testRedemptionWithUsdc() public {
-        initializeOracleList();
-        
-        factory.proposeOwner(owner);
-        vm.startPrank(owner);
-        factory.transferOwnership(owner);
-        vm.stopPrank();
-        payable(add1).transfer(11e18);
-        usdt.transfer(add1, 1001e18);
-        vm.startPrank(add1);
-        
-        console.log(indexToken.balanceOf(add1));
-        usdt.approve(address(factory), 1001e18);
-        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3000);
-        console.log(indexToken.balanceOf(add1));
-        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), 3000);
-        console.log(indexToken.balanceOf(add1));
-    }
-
-
     
 
 

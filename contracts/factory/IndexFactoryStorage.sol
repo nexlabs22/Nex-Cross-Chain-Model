@@ -561,8 +561,8 @@ contract IndexFactoryStorage is
     function getAmountOut(address tokenIn, address tokenOut, uint amountIn, uint24 _swapFee) public view returns(uint finalAmountOutValue) {
         uint finalAmountOut;
         if(amountIn > 0){
-        if(_swapFee == 3){
-           finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn));
+        if(_swapFee > 0){
+           finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn), _swapFee);
         }else {
             address[] memory path = new address[](2);
             path[0] = tokenIn;
@@ -581,7 +581,7 @@ contract IndexFactoryStorage is
     function getPortfolioBalance() public view returns(uint){
         uint totalValue;
         for(uint i = 0; i < totalCurrentList; i++) {
-            uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(indexToken)), tokenSwapFee[currentList[i]]);
+            uint value = getAmountOut(currentList[i], address(weth), IERC20(currentList[i]).balanceOf(address(vault)), tokenSwapFee[currentList[i]]);
             totalValue += value;
         }
         return totalValue;
@@ -597,13 +597,15 @@ contract IndexFactoryStorage is
     function estimateAmountOut(
         address tokenIn,
         address tokenOut,
-        uint128 amountIn
+        uint128 amountIn,
+        uint24 fee
     ) public view returns (uint amountOut) {
         amountOut = IPriceOracle(priceOracle).estimateAmountOut(
             address(factoryV3),
             tokenIn,
             tokenOut,
-            amountIn
+            amountIn,
+            fee
         );
         // address _pool = factoryV3.getPool(
         //     tokenIn,

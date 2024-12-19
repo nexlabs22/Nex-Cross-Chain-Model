@@ -23,9 +23,10 @@ contract PriceOracle
         address factoryAddress,
         address tokenIn,
         address tokenOut,
-        uint128 amountIn
+        uint128 amountIn,
+        uint24 fee
     ) public view returns (uint amountOut) {
-        address _pool = IUniswapV3Factory(factoryAddress).getPool(tokenIn, tokenOut, 3000);
+        address _pool = IUniswapV3Factory(factoryAddress).getPool(tokenIn, tokenOut, fee);
 
         (, int24 tick , , , , , ) = IUniswapV3Pool(_pool).slot0();
         amountOut = OracleLibrary.getQuoteAtTick(

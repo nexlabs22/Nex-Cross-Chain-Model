@@ -302,15 +302,15 @@ contract CrossChainIndexFactory is
         address tokenIn,
         address tokenOut,
         uint amountIn,
-        uint _swapFee
+        uint24 _swapFee
     ) public view returns (uint finalAmountOut) {
         if (amountIn > 0) {
-            if (_swapFee == 3) {
+            if (_swapFee > 0) {
                 finalAmountOut = estimateAmountOut(
                     tokenIn,
                     tokenOut,
                     uint128(amountIn),
-                    1
+                    _swapFee
                 );
             } else {
                 address[] memory path = new address[](2);
@@ -329,13 +329,14 @@ contract CrossChainIndexFactory is
         address tokenIn,
         address tokenOut,
         uint128 amountIn,
-        uint32 secondsAgo
+        uint24 fee
     ) public view returns (uint amountOut) {
         amountOut = IPriceOracle(priceOracle).estimateAmountOut(
             address(factoryV3),
             tokenIn,
             tokenOut,
-            amountIn
+            amountIn,
+            fee
         );
         // address _pool = factoryV3.getPool(tokenIn, tokenOut, 3000);
         // (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
@@ -671,7 +672,7 @@ contract CrossChainIndexFactory is
                 targetAddresses[i],
                 address(weth),
                 IERC20(targetAddresses[i]).balanceOf(address(vault)),
-                targetFees[i]
+                uint24(targetFees[i])
             );
             tokenValueArr[i] = convertEthToUsd(tokenValue);
             }

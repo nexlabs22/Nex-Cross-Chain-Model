@@ -287,12 +287,14 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
     function estimateAmountOut(
         address tokenIn,
         address tokenOut,
-        uint128 amountIn
+        uint128 amountIn,
+        uint24 fee
     ) public view returns (uint amountOut) {
         amountOut = factoryStorage.estimateAmountOut(
             tokenIn,
             tokenOut,
-            amountIn
+            amountIn,
+            fee
         );
     }
 
