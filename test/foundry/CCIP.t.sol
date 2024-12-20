@@ -10,6 +10,7 @@ import {
 } from "@chainlink/local/src/ccip/CCIPLocalSimulator.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {MockRouter2} from "contracts/test/MockRouter2.sol";
+
 contract Example01Test is Test {
     CCIPLocalSimulator public ccipLocalSimulator;
 
@@ -114,7 +115,6 @@ contract Example01Test is Test {
         assertEq(balanceOfAliceAfter, balanceOfAliceBefore - amountToSend);
         assertEq(balanceOfBobAfter, balanceOfBobBefore + amountToSend);
     }
-
 
     function test_transferTokensFromEoaToEoaPayFeesInNative() external {
         (Client.EVMTokenAmount[] memory tokensToSendDetails, uint256 amountToSend) = prepareScenario();

@@ -8,10 +8,7 @@ import "../../contracts/test/MockApiOracle.sol";
 import "../../contracts/test/LinkToken.sol";
 import "./ContractDeployer.sol";
 
-
 contract CounterTest is Test, ContractDeployer {
-
-
     uint256 internal constant SCALAR = 1e20;
     // bytes32 jobId = "6b88e0402e5d415eb946e528b8e0c7ba";
 
@@ -25,13 +22,12 @@ contract CounterTest is Test, ContractDeployer {
     // address public constant FactoryV3 = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
     // address public constant SwapRouterV2 = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     // address public constant FactoryV2 = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
-    
+
     // address feeReceiver = vm.addr(1);
     // address newFeeReceiver = vm.addr(2);
     // address minter = vm.addr(3);
     // address newMinter = vm.addr(4);
     // address methodologist = vm.addr(5);
-
 
     event FeeReceiverSet(address indexed feeReceiver);
     event FeeRateSet(uint256 indexed feeRatePerDayScaled);
@@ -42,9 +38,6 @@ contract CounterTest is Test, ContractDeployer {
     event MintFeeToReceiver(address feeReceiver, uint256 timestamp, uint256 totalSupply, uint256 amount);
     event ToggledRestricted(address indexed account, bool isRestricted);
 
-    
-    
-
     function setUp() public {
         // ContractDeployer deployer = new ContractDeployer();
         // (link, oracle, indexToken) = deployer.deployContracts();
@@ -52,26 +45,26 @@ contract CounterTest is Test, ContractDeployer {
         // (link, oracle, indexToken,,,) = deployContracts();
         indexToken.setMinter(minter, true);
         /**
-        LinkToken link = new LinkToken();
-        oracle = new MockApiOracle(address(link));
-
-        indexToken = new IndexToken();
-        indexToken.initialize(
-            "Anti Inflation",
-            "ANFI",
-            1e18,
-            feeReceiver,
-            1000000e18,
-            //swap addresses
-            WETH9,
-            QUOTER,
-            SwapRouterV3,
-            FactoryV3,
-            SwapRouterV2,
-            FactoryV2
-        );
-        indexToken.setMinter(minter, true);
-        */
+         * LinkToken link = new LinkToken();
+         *     oracle = new MockApiOracle(address(link));
+         *
+         *     indexToken = new IndexToken();
+         *     indexToken.initialize(
+         *         "Anti Inflation",
+         *         "ANFI",
+         *         1e18,
+         *         feeReceiver,
+         *         1000000e18,
+         *         //swap addresses
+         *         WETH9,
+         *         QUOTER,
+         *         SwapRouterV3,
+         *         FactoryV3,
+         *         SwapRouterV2,
+         *         FactoryV2
+         *     );
+         *     indexToken.setMinter(minter, true);
+         */
     }
 
     function testInitialized() public {
@@ -103,13 +96,12 @@ contract CounterTest is Test, ContractDeployer {
         vm.startPrank(minter);
         indexToken.mint(address(this), 1000e18);
         assertEq(indexToken.balanceOf(address(this)), 1000e18);
-
     }
 
     function testMintExceedSupply() public {
         vm.startPrank(minter);
         vm.expectRevert("will exceed supply ceiling");
-        indexToken.mint(address(this), 1000000e18 +1);
+        indexToken.mint(address(this), 1000000e18 + 1);
         assertEq(indexToken.balanceOf(address(this)), 0);
         indexToken.mint(address(this), 1000000e18);
         assertEq(indexToken.balanceOf(address(this)), 1000000e18);
@@ -164,7 +156,6 @@ contract CounterTest is Test, ContractDeployer {
         indexToken.burn(address(this), 1000e18);
     }
 
-
     function testBurn() public {
         vm.startPrank(minter);
         indexToken.mint(address(this), 1000e18);
@@ -173,20 +164,19 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexToken.balanceOf(address(this)), 0);
     }
 
-
     function testMintForFeeReceiver() public {
-        //mint 1000 index token        
+        //mint 1000 index token
         vm.startPrank(minter);
         indexToken.mint(address(this), 1000e18);
         assertEq(indexToken.balanceOf(address(this)), 1000e18);
         assertEq(indexToken.totalSupply(), 1000e18);
-        //move time for 1 day      
-        uint newTime = block.timestamp + 1 days;
+        //move time for 1 day
+        uint256 newTime = block.timestamp + 1 days;
         vm.warp(newTime);
         //calcualte fee amount
-        uint feePerDay = indexToken.feeRatePerDayScaled();
-        uint totalSupply = indexToken.totalSupply();
-        uint expectedFeeAmount = ((feePerDay*totalSupply)/1e20);
+        uint256 feePerDay = indexToken.feeRatePerDayScaled();
+        uint256 totalSupply = indexToken.totalSupply();
+        uint256 expectedFeeAmount = ((feePerDay * totalSupply) / 1e20);
         vm.stopPrank();
         //call mintForFeeReceiver and check fee
         indexToken.mintToFeeReceiver();
@@ -194,20 +184,19 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexToken.totalSupply(), 1000e18 + expectedFeeAmount);
     }
 
-
     function testMintForFeeReceiverOneDay() public {
-        //mint 1000 index token        
+        //mint 1000 index token
         vm.startPrank(minter);
         indexToken.mint(address(this), 1000e18);
         assertEq(indexToken.balanceOf(address(this)), 1000e18);
         assertEq(indexToken.totalSupply(), 1000e18);
-        //move time for 1 day      
-        uint newTime = block.timestamp + 1 days;
+        //move time for 1 day
+        uint256 newTime = block.timestamp + 1 days;
         vm.warp(newTime);
         //calcualte fee amount
-        uint feePerDay = indexToken.feeRatePerDayScaled();
-        uint totalSupply = indexToken.totalSupply();
-        uint expectedFeeAmount = ((feePerDay*totalSupply)/1e20);
+        uint256 feePerDay = indexToken.feeRatePerDayScaled();
+        uint256 totalSupply = indexToken.totalSupply();
+        uint256 expectedFeeAmount = ((feePerDay * totalSupply) / 1e20);
         //mint another 1000 token and check fee
         indexToken.mint(address(this), 1000e18);
         assertEq(indexToken.balanceOf(address(this)), 2000e18);
@@ -215,35 +204,33 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexToken.totalSupply(), 2000e18 + expectedFeeAmount);
     }
 
-
     function testMintForFeeReceiverTenDays() public {
-        //mint 1000 index token        
+        //mint 1000 index token
         vm.startPrank(minter);
         indexToken.mint(address(this), 1000e18);
         assertEq(indexToken.balanceOf(address(this)), 1000e18);
         assertEq(indexToken.totalSupply(), 1000e18);
-        //move time for 1 day      
-        uint newTime = block.timestamp + 10 days;
+        //move time for 1 day
+        uint256 newTime = block.timestamp + 10 days;
         vm.warp(newTime);
         //calcualte fee amount
         uint256 _days = (block.timestamp - indexToken.feeTimestamp()) / 1 days;
-        uint feePerDay = indexToken.feeRatePerDayScaled();
-        uint totalSupply = indexToken.totalSupply();
-        uint supply = totalSupply;
-        for (uint256 i; i < _days; ) {
-                supply += ((supply * feePerDay) / SCALAR);
-                unchecked {
-                    ++i;
-                }
+        uint256 feePerDay = indexToken.feeRatePerDayScaled();
+        uint256 totalSupply = indexToken.totalSupply();
+        uint256 supply = totalSupply;
+        for (uint256 i; i < _days;) {
+            supply += ((supply * feePerDay) / SCALAR);
+            unchecked {
+                ++i;
+            }
         }
-        uint expectedFeeAmount = supply - totalSupply;
+        uint256 expectedFeeAmount = supply - totalSupply;
         //mint another 1000 token and check fee
         indexToken.mint(address(this), 1000e18);
         assertEq(indexToken.balanceOf(address(this)), 2000e18);
         assertEq(indexToken.balanceOf(feeReceiver), expectedFeeAmount);
         assertEq(indexToken.totalSupply(), 2000e18 + expectedFeeAmount);
     }
-
 
     function testSetMethodologist() public {
         // check event
@@ -313,7 +300,6 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexToken.supplyCeiling(), 2000000e18);
     }
 
-
     function testToggleRestriction() public {
         // check event
         vm.expectEmit(true, true, true, true);
@@ -327,7 +313,7 @@ contract CounterTest is Test, ContractDeployer {
         emit ToggledRestricted(minter, false);
         //disable restrict
         indexToken.toggleRestriction(minter);
-        assertEq(indexToken.isRestricted(minter), false);  
+        assertEq(indexToken.isRestricted(minter), false);
     }
 
     function testTransferWhenNotPaused() public {
@@ -459,6 +445,4 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexToken.balanceOf(feeReceiver), 100e18);
         assertEq(indexToken.balanceOf(minter), 900e18);
     }
-
-    
 }
