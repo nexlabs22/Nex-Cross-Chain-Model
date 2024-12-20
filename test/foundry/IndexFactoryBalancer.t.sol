@@ -137,46 +137,43 @@ contract CounterTest is Test, ContractDeployer {
     }
 
     function showPercentages() public {
-        uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
-        // uint portfolioBalance1 = crossChainIndexFactory.getPortfolioBalance();
-        uint totalPortfolioBalance;
-        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
-        for (uint i = 0; i < totalCurrentList; i++) {
-            address tokenAddress = indexFactoryStorage.currentList(i);
-            uint64 chainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
-            // address crossChainFactoryAddress = factory.crossChainFactoryBySelector(chainSelector);
-            if(chainSelector == 1){
-                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
-                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
-                totalPortfolioBalance += tokenValue;
-            }else{
-                address payable crossChainIndexFactory = payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
-                Vault vault = CrossChainIndexFactory(crossChainIndexFactory).vault();
-                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
-                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
-                totalPortfolioBalance += tokenValue;
-            }
+        // uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
+        // uint totalPortfolioBalance;
+        // uint totalCurrentList = indexFactoryStorage.totalCurrentList();
+        // for (uint i = 0; i < totalCurrentList; i++) {
+            // address tokenAddress = indexFactoryStorage.currentList(i);
+            // uint64 chainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
+            // if(chainSelector == 1){
+                // uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                // uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                // totalPortfolioBalance += tokenValue;
+            // }else{
+                // address payable crossChainIndexFactory = payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
+                // Vault vault = CrossChainIndexFactory(crossChainIndexFactory).vault();
+                // uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                // uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                // totalPortfolioBalance += tokenValue;
+            // }
 
-        }
-        for (uint i = 0; i < totalCurrentList; i++) {
-            address tokenAddress = indexFactoryStorage.currentList(i);
-            uint64 chainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
-            // address crossChainFactoryAddress = factory.crossChainFactoryBySelector(chainSelector);
-            if(chainSelector == 1){
-                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
-                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
-                uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
-                console.log("token", i, "percentage", percentage);
-            }else{
+        // }
+        // for (uint i = 0; i < totalCurrentList; i++) {
+            // address tokenAddress = indexFactoryStorage.currentList(i);
+            // uint64 chainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
+            // if(chainSelector == 1){
+                // uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                // uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                // uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
+                // console.log("token", i, "percentage", percentage);
+            // }else{
                 // address payable crossChainIndexFactory = payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
                 // Vault vault = CrossChainIndexFactory(crossChainIndexFactory).vault();
                 // uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
                 // uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
                 // uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
                 // console.log("token", i, "percentage", percentage);
-            }
+            // }
 
-        }
+        // }
     }
     function testIssuanceWithEth() public {
         initializeOracleList();
@@ -192,14 +189,21 @@ contract CounterTest is Test, ContractDeployer {
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
         
-        // console.log("token 0 balance", token0.balanceOf(address(vault)));
-        // console.log("token 1 balance", token1.balanceOf(address(vault)));
-        // console.log("token 2 balance", token2.balanceOf(address(vault)));
-        // console.log("token 3 balance", token3.balanceOf(address(vault)));
-        // console.log("token 4 balance", token4.balanceOf(address(crossChainVault)));
+        console.log("token 0 balance", token0.balanceOf(address(vault)));
+        console.log("token 1 balance", token1.balanceOf(address(vault)));
+        console.log("token 2 balance", token2.balanceOf(address(vault)));
+        console.log("token 3 balance", token3.balanceOf(address(vault)));
+        console.log("token 4 balance", token4.balanceOf(address(crossChainVault)));
+        // vm.roll(block.number + 100);
+        // vm.mine();
+        console.log("block number", block.number);
+        console.log("token 0 value", indexFactoryStorage.getAmountOut(address(token0), address(indexFactoryStorage.weth()), token0.balanceOf(address(vault)), 3000));
+        // console.log("token 0 value", IPriceOracle(priceOracleAddress).estimateAmountOut(address(factoryV3), address(crossChainToken), address(weth), uint128(token0.balanceOf(address(vault))), 3000));
+        // vm.roll(block.number + 100);
+        // console.log(indexToken.balanceOf(add1));
         // uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
         // console.log("portfolio balance", portfolioBalance);
-        showPercentages();
+        // showPercentages();
     }
     
 

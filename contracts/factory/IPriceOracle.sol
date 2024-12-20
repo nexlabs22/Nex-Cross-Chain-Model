@@ -10,6 +10,7 @@ interface IPriceOracle {
      * @param tokenIn The address of the input token.
      * @param tokenOut The address of the output token.
      * @param amountIn The amount of input token to be exchanged.
+     * @param fee The current fee of the pool.
      * @return amountOut The estimated amount of output token that would be received.
      */
     function estimateAmountOut(
