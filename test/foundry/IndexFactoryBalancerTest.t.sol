@@ -8,9 +8,8 @@ import "../mocks/MockERC20.sol";
 import "../../contracts/test/MockRouter2.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../contracts/test/LinkToken.sol";
-import "./OlympixUnitTest.sol";
 
-contract IndexFactoryBalancerTest is OlympixUnitTest("IndexFactoryBalancer") {
+contract IndexFactoryBalancerTest is Test {
     IndexFactoryBalancer balancer;
     IndexFactoryStorage storageContract;
     MockERC20 mockToken;
@@ -30,8 +29,6 @@ contract IndexFactoryBalancerTest is OlympixUnitTest("IndexFactoryBalancer") {
         link = new LinkToken();
 
         storageContract = new IndexFactoryStorage();
-        balancer = new IndexFactoryBalancer();
-
         storageContract.initialize(
             1,
             payable(address(mockToken)),
@@ -46,6 +43,10 @@ contract IndexFactoryBalancerTest is OlympixUnitTest("IndexFactoryBalancer") {
             address(0x234)
         );
 
+        storageContract.proposeOwner(owner);
+        storageContract.transferOwnership(owner);
+
+        balancer = new IndexFactoryBalancer();
         balancer.initialize(
             1,
             payable(address(mockToken)),
@@ -55,12 +56,8 @@ contract IndexFactoryBalancerTest is OlympixUnitTest("IndexFactoryBalancer") {
             address(0x5678)
         );
 
-        // Set balancer as storage contract owner
-        // storageContract.setOwner(address(balancer));
-
         vm.stopPrank();
 
-        // Approve mock router for LINK token
         link.approve(address(mockRouter), type(uint256).max);
     }
 
@@ -91,29 +88,36 @@ contract IndexFactoryBalancerTest is OlympixUnitTest("IndexFactoryBalancer") {
         assertEq(storageContract.crossChainTokenSwapFee(chainSelector, tokenAddress), swapFee, "Swap fee mismatch");
     }
 
-    // function testPortfolioBalanceCalculation() public {
-    //     address token = address(mockToken);
-    //     uint256 amount = 100 ether;
+    function testPortfolioBalanceCalculation() public {
+        address token = address(mockToken);
+        uint256 amount = 100 ether;
 
-    //     // Mint tokens to simulate portfolio
-    //     mockToken.mint(address(balancer), amount);
+        mockToken.mint(address(balancer), amount);
 
-    //     // Fill asset data in storage contract
-    //     address[] memory tokens = new address[](1);
-    //     tokens[0] = token;
-    //     uint256[] memory marketShares = new uint256[](1);
-    //     marketShares[0] = 50;
-    //     uint24[] memory swapFees = new uint24[](1);
-    //     swapFees[0] = 3000;
-    //     uint64[] memory chainSelectors = new uint64[](1);
-    //     chainSelectors[0] = 1;
+        uint256 balancerBalance = mockToken.balanceOf(address(balancer));
+        console.log("Balancer Balance:", balancerBalance);
 
-    //     vm.prank(owner);
-    //     storageContract.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+        address[] memory tokens = new address[](1);
+        tokens[0] = token;
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 50;
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 3000;
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
 
-    //     uint256 balance = balancer.getPortfolioBalance();
-    //     assertGt(balance, 0, "Portfolio balance calculation failed");
-    // }
+        vm.prank(owner);
+        storageContract.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        vm.mockCall(
+            address(storageContract),
+            abi.encodeWithSelector(storageContract.getAmountOut.selector),
+            abi.encode(200 ether)
+        );
+
+        uint256 balance = balancer.getPortfolioBalance();
+        assertGt(balance, 0, "Portfolio balance calculation failed");
+    }
 
     function testFeeRateSetting() public {
         uint8 newFee = 50;
@@ -126,23 +130,24 @@ contract IndexFactoryBalancerTest is OlympixUnitTest("IndexFactoryBalancer") {
         assertEq(balancer.feeRate(), newFee, "Fee rate not updated correctly");
     }
 
-    // function testCrossChainOperation() public {
-    //     uint64 chainSelector = 2;
-    //     address crossChainFactory = address(0x4321);
-    //     address crossChainToken = address(0x9876);
+    function testCrossChainOperation() public {
+        uint64 chainSelector = 2;
+        address crossChainFactory = address(0x4321);
+        address crossChainToken = address(0x9876);
 
-    //     vm.prank(owner); // Ensure the owner is calling
-    //     storageContract.setCrossChainFactory(crossChainFactory, chainSelector);
-    //     storageContract.setCrossChainToken(chainSelector, crossChainToken, 3000);
+        vm.startPrank(owner);
+        storageContract.setCrossChainFactory(crossChainFactory, chainSelector);
+        storageContract.setCrossChainToken(chainSelector, crossChainToken, 3000);
+        vm.stopPrank();
 
-    //     assertEq(
-    //         storageContract.crossChainFactoryBySelector(chainSelector),
-    //         crossChainFactory,
-    //         "Cross-chain factory setup failed"
-    //     );
+        assertEq(
+            storageContract.crossChainFactoryBySelector(chainSelector),
+            crossChainFactory,
+            "Cross-chain factory setup failed"
+        );
 
-    //     assertEq(storageContract.crossChainToken(chainSelector), crossChainToken, "Cross-chain token setup failed");
-    // }
+        assertEq(storageContract.crossChainToken(chainSelector), crossChainToken, "Cross-chain token setup failed");
+    }
 
     function test_setIndexFactoryStorage_SuccessfulSetIndexFactoryStorage() public {
         address newFactoryStorage = address(0x1234);
