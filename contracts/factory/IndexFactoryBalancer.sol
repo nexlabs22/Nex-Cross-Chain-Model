@@ -450,7 +450,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
                 address(weth),
                 amount,
                 address(this),
-                3
+                3000
             );
             extraWethByNonce[nonce] += wethAmount;
         }else if(actionType == 4){
@@ -473,17 +473,18 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             uint chainSelectorTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
             if (chainSelector == currentChainSelector) {
                 address[] memory tokens = factoryStorage.allCurrentChainSelectorTokens(chainSelector);
+                Vault vault = factoryStorage.vault();
                 for (uint j = 0; j < chainSelectorTokensCount; j++) {
                     address tokenAddress = tokens[j];
                     uint24 tokenSwapFee = factoryStorage.tokenSwapFee(tokenAddress);
                     uint value;
                     if(tokenAddress == address(weth)){
-                        value = IERC20(tokenAddress).balanceOf(address(indexToken));
+                        value = IERC20(tokenAddress).balanceOf(address(vault));
                     }else{
                     value = getAmountOut(
                         tokenAddress,
                         address(weth),
-                        IERC20(tokenAddress).balanceOf(address(indexToken)),
+                        IERC20(tokenAddress).balanceOf(address(vault)),
                         tokenSwapFee
                     );
                     }
