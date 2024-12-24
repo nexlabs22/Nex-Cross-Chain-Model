@@ -4,6 +4,7 @@ pragma solidity ^0.8.7;
 import "forge-std/Test.sol";
 import "forge-std/Vm.sol";
 import {CrossChainIndexFactory} from "../../contracts/vault/CrossChainFactory.sol";
+import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "../mocks/MockERC20.sol";
 import "../../contracts/test/MockRouter2.sol";
 import "../../contracts/test/LinkToken.sol";
@@ -17,18 +18,48 @@ import "../mocks/MockPriceFeed.sol";
 import "./ContractDeployer.sol";
 
 contract CrossChainIndexFactoryTest is Test, CrossChainIndexFactory {
-    CrossChainIndexFactory factory;
-    CCIPReceiver ccip;
-    MockERC20 mockToken;
-    MockRouter2 mockRouter;
     LinkToken link;
+    MockApiOracle oracle;
+    MockV3Aggregator ethPriceOracle;
+    IndexToken indexToken;
+    MockRouter2 mockRouter;
     Vault vaultContract;
+    CrossChainIndexFactory factory;
+    IndexFactoryStorage indexFactoryStorage;
+    IndexFactory indexFactory;
+    Token token;
+    ContractDeployer deployer;
+    MockERC20 mockToken;
     MockPriceFeed mockPriceFeed;
 
+    // CrossChainIndexFactory factory;
+    // ContractDeployer deployer;
+    // CCIPReceiver ccip;
+    // MockRouter2 mockRouter;
+    // LinkToken link;
+    // Vault vaultContract;
+
     address ownerAddr = address(1);
+    address userAddr = address(2);
+
+    struct TestAny2EVMMessage {
+        bytes32 messageId;
+        uint64 sourceChainSelector;
+        bytes sender;
+        bytes data;
+        Client.EVMTokenAmount[] destTokenAmounts;
+    }
 
     function setUp() public {
         vm.startPrank(ownerAddr);
+
+        deployer = new ContractDeployer();
+        deployer.deployAllContracts();
+
+        // Retrieve deployed contract instances
+        (indexToken, mockRouter, vaultContract, factory, indexFactoryStorage, indexFactory) = deployer.deployContracts();
+
+        token = deployer.crossChainToken();
 
         mockToken = new MockERC20("Mock Token", "MTK");
         mockRouter = new MockRouter2();
@@ -36,6 +67,8 @@ contract CrossChainIndexFactoryTest is Test, CrossChainIndexFactory {
         vaultContract = new Vault();
 
         mockPriceFeed = new MockPriceFeed();
+        mockPriceFeed.setPrice(2000 * 10 ** 8);
+        mockPriceFeed.setDecimals(8);
 
         vaultContract.initialize();
 
@@ -49,11 +82,13 @@ contract CrossChainIndexFactoryTest is Test, CrossChainIndexFactory {
             address(mockRouter), // SwapRouterV3
             address(mockRouter), // FactoryV3
             address(mockRouter), // SwapRouterV2
-            address(mockRouter) // PriceFeed
+            address(mockPriceFeed) // PriceFeed
         );
 
-        mockPriceFeed.setPrice(2000 * 10 ** 8);
-        mockPriceFeed.setDecimals(8);
+        link.transfer(address(factory), 1000 ether);
+        mockToken.mint(address(factory), 1000 ether);
+
+        factory.setCrossChainToken(100, address(mockToken), 0); // swapFee=0 for V2
 
         vm.stopPrank();
     }
@@ -184,207 +219,205 @@ contract CrossChainIndexFactoryTest is Test, CrossChainIndexFactory {
         assertFalse(paused, "Contract should be unpaused");
     }
 
-    // function testHandleIssuance() public {
-    //     vm.mockCall(
-    //         address(mockRouter),
-    //         abi.encodeWithSelector(IUniswapV2Router02.getAmountsOut.selector, 100 ether, new address[](2)),
-    //         abi.encode(new uint256[](2))
+    function testFailSetPriceOracleZeroAddress() public {
+        vm.prank(ownerAddr);
+        factory.setPriceOracle(address(0));
+    }
+
+    function testSetPriceOracleNonZero() public {
+        address newOracle = address(0x123);
+        vm.prank(ownerAddr);
+        factory.setPriceOracle(newOracle);
+        assertEq(factory.priceOracle(), newOracle);
+    }
+
+    function testFailSendTokenWithSixTokens() public {
+        Client.EVMTokenAmount[] memory tooManyTokens = new Client.EVMTokenAmount[](6);
+        for (uint256 i = 0; i < 6; i++) {
+            tooManyTokens[i].token = address(mockToken);
+            tooManyTokens[i].amount = 1 ether;
+        }
+
+        vm.startPrank(ownerAddr);
+        sendToken(2, "someData", userAddr, tooManyTokens, CrossChainIndexFactory.PayFeesIn.LINK);
+        vm.stopPrank();
+    }
+
+    //     function testCcipReceiveIssuance() public {
+    //         vm.startPrank(ownerAddr);
+
+    //         uint256 amountIn = 10 ether;
+    //         address recipient = address(factory.weth());
+    //         uint24 poolFee = 3000;
+    //         uint256 nonce = 99;
+
+    // =        vm.mockCall(
+    //             address(factory), abi.encodeWithSelector(factory.swapRouterV3.selector), abi.encode(address(mockRouter))
+    //         );
+
+    //         vm.mockCall(
+    //             address(factory),
+    //             abi.encodeWithSelector(factory.swapRouterV2.selector),
+    //             abi.encode(address(mockRouter))
+    //         );
+
+    //         vm.mockCall(
+    //             address(token),
+    //             abi.encodeWithSelector(IERC20.transferFrom.selector, ownerAddr, address(factory), amountIn),
+    //             abi.encode(true)
+    //         );
+
+    //         vm.mockCall(
+    //             address(token),
+    //             abi.encodeWithSelector(IERC20.approve.selector, address(mockRouter), amountIn),
+    //             abi.encode(true)
+    //         );
+
+    //         address[] memory path = new address[](2);
+    //         path[0] = address(mockToken);
+    //         path[1] = address(factory.weth());
+    //         uint256[] memory amountsOut = new uint256[](2);
+    //         amountsOut[0] = 10 ether;
+    //         amountsOut[1] = 20 ether;
+
+    //         vm.mockCall(
+    //             address(mockRouter),
+    //             abi.encodeWithSelector(IUniswapV2Router02.getAmountsOut.selector, amountIn, path),
+    //             abi.encode(amountsOut)
+    //         );
+
+    //         ISwapRouter.ExactInputSingleParams memory paramsV3 = ISwapRouter.ExactInputSingleParams({
+    //             tokenIn: address(token),
+    //             tokenOut: address(factory.weth()),
+    //             fee: poolFee,
+    //             recipient: address(factory),
+    //             deadline: block.timestamp + 300,
+    //             amountIn: amountIn,
+    //             amountOutMinimum: 0,
+    //             sqrtPriceLimitX96: 0
+    //         });
+
+    //         vm.mockCall(
+    //             address(mockRouter),
+    //             abi.encodeWithSelector(ISwapRouter.exactInputSingle.selector, paramsV3),
+    //             abi.encode(20 ether)
+    //         );
+
+    //         bytes memory callData = abi.encode(
+    //             0,
+    //             new address[](0),
+    //             new address[](0),
+    //             new uint256[](0),
+    //             new uint256[](0),
+    //             nonce,
+    //             new uint256[](0),
+    //             new uint256[](0)
+    //         );
+
+    //         Client.EVMTokenAmount[] memory receivedTokens = new Client.EVMTokenAmount[](1);
+    //         receivedTokens[0].token = address(token);
+    //         receivedTokens[0].amount = amountIn;
+
+    //         Client.Any2EVMMessage memory any2EvmMessage = Client.Any2EVMMessage({
+    //             messageId: keccak256("testMessageId"),
+    //             sourceChainSelector: 100,
+    //             sender: abi.encode(ownerAddr),
+    //             data: callData,
+    //             destTokenAmounts: receivedTokens
+    //         });
+
+    //         ccipReceivePublic(any2EvmMessage);
+
+    //         bytes32 storedMessageId = factory.issuanceMessageIdByNonce(nonce);
+    //         assertTrue(storedMessageId != bytes32(0), "Issuance message ID should be non-zero");
+
+    //         vm.stopPrank();
+    //     }
+
+    // function testCcipReceiveRedemption() public {
+    //     uint256 actionType = 1; // _handleRedemption
+    //     uint64 sourceChainSelector = 200;
+    //     address sender = userAddr;
+    //     uint256 nonce = 101;
+
+    //     bytes memory callData = abi.encode(
+    //         actionType,
+    //         // targetAddresses
+    //         new address[](0),
+    //         // targetAddresses2
+    //         new address[](0),
+    //         // targetFees
+    //         new uint256[](0),
+    //         // targetFees2
+    //         new uint256[](0),
+    //         // nonce
+    //         nonce,
+    //         // percentages
+    //         new uint256[](0),
+    //         // extraValues
+    //         new uint256[](1)
     //     );
 
-    //     Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](1);
-    //     tokenAmounts[0].token = address(mockToken);
-    //     tokenAmounts[0].amount = 100 ether;
+    //     Client.EVMTokenAmount[] memory receivedTokens = new Client.EVMTokenAmount[](0);
 
-    //     address[] memory targetAddresses = new address[](1);
-    //     targetAddresses[0] = address(mockToken);
-
-    //     uint256[] memory targetFees = new uint256[](1);
-    //     targetFees[0] = 3000;
-
-    //     uint256[] memory percentages = new uint256[](1);
-    //     percentages[0] = 50;
-
-    //     uint256[] memory extraValues = new uint256[](1);
-    //     extraValues[0] = 100;
-
-    //     uint256 nonce = 1;
-
-    //     vm.startPrank(ownerAddr);
-    //     _handleIssuance(tokenAmounts, targetAddresses, targetFees, nonce, 1, ownerAddr, percentages, extraValues);
-    //     vm.stopPrank();
-
-    //     bytes32 issuanceMessageId = factory.issuanceMessageIdByNonce(nonce);
-    //     assertTrue(issuanceMessageId != bytes32(0), "Issuance message ID should not be zero");
-    // }
-
-    // ----------------------------------------------------------------------------------------------------------------------------------
-
-    // function testHandleIssuance() public {
-    //     uint256 amountIn = 100 ether;
-    //     mockToken.mint(address(factory), amountIn);
-
-    //     Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](1);
-    //     tokenAmounts[0].token = address(mockToken);
-    //     tokenAmounts[0].amount = amountIn;
-
-    //     address[] memory targetAddresses = new address[](1);
-    //     targetAddresses[0] = address(mockToken);
-
-    //     uint256[] memory targetFees = new uint256[](1);
-    //     targetFees[0] = 3000;
-
-    //     uint256[] memory percentages = new uint256[](1);
-    //     percentages[0] = 100;
-
-    //     uint256[] memory extraValues = new uint256[](1);
-    //     extraValues[0] = 100;
-
-    //     uint256 nonce = 1;
-
-    //     vm.mockCall(
-    //         address(mockRouter), abi.encodeWithSelector(ISwapRouter.exactInputSingle.selector), abi.encode(amountIn)
-    //     );
-
-    //     address[] memory path = new address[](2);
-    //     path[0] = address(mockToken);
-    //     path[1] = address(mockToken);
-
-    //     vm.mockCall(
-    //         address(mockRouter),
-    //         abi.encodeWithSelector(IUniswapV2Router02.getAmountsOut.selector, amountIn, path),
-    //         abi.encode(new uint256[](2))
-    //     );
-
-    //     vm.startPrank(ownerAddr);
-    //     _handleIssuance(tokenAmounts, targetAddresses, targetFees, nonce, 1, ownerAddr, percentages, extraValues);
-    //     vm.stopPrank();
-
-    //     bytes32 issuanceMessageId = factory.issuanceMessageIdByNonce(nonce);
-    //     assertTrue(issuanceMessageId != bytes32(0), "Issuance message ID should not be zero");
-    // }
-
-    // function testHandleRedemption() public {
-    //     uint256 amountIn = 100 ether;
-    //     mockToken.mint(address(vaultContract), amountIn);
+    //     TestAny2EVMMessage memory testMsg = TestAny2EVMMessage({
+    //         messageId: keccak256("someRedemptionMsg"),
+    //         sourceChainSelector: sourceChainSelector,
+    //         sender: abi.encode(sender),
+    //         data: callData,
+    //         destTokenAmounts: receivedTokens
+    //     });
 
     //     vm.prank(ownerAddr);
-    //     factory.setCrossChainToken(1, address(mockToken), 3000);
-
-    //     address[] memory path = new address[](2);
-    //     path[0] = address(mockToken);
-    //     path[1] = address(mockToken);
-
-    //     uint256[] memory amountOut = new uint256[](2);
-    //     amountOut[0] = 100 ether;
-    //     uint256 amountsOut = amountOut[0] / 2;
-
-    //     vm.mockCall(
-    //         address(mockRouter),
-    //         abi.encodeWithSelector(IUniswapV2Router02.getAmountsOut.selector, 100 ether, path),
-    //         abi.encode(amountsOut)
+    //     _ccipReceiveInternal(
+    //         testMsg.messageId, testMsg.sourceChainSelector, testMsg.sender, testMsg.data, testMsg.destTokenAmounts
     //     );
 
-    //     vm.mockCall(
-    //         address(mockRouter),
-    //         abi.encodeWithSelector(
-    //             ISwapRouter.exactInputSingle.selector,
-    //             abi.encode(
-    //                 ISwapRouter.ExactInputSingleParams({
-    //                     tokenIn: address(mockToken),
-    //                     tokenOut: address(mockToken),
-    //                     fee: 3000,
-    //                     recipient: address(this),
-    //                     deadline: block.timestamp,
-    //                     amountIn: 100 ether,
-    //                     amountOutMinimum: 50 ether,
-    //                     sqrtPriceLimitX96: 0
-    //                 })
-    //             )
-    //         ),
-    //         abi.encode(50 ether)
-    //     );
+    //     bytes32 storedMessageId = factory.redemptionMessageIdByNonce(nonce);
+    //     assertTrue(storedMessageId != bytes32(0), "Redemption message ID should be non-zero");
+    // }
 
-    //     address[] memory targetAddresses = new address[](1);
-    //     targetAddresses[0] = address(mockToken);
-
-    //     uint256[] memory targetFees = new uint256[](1);
-    //     targetFees[0] = 3000;
-
-    //     uint256[] memory extraValues = new uint256[](1);
-    //     extraValues[0] = 100;
-
-    //     uint256 nonce = 1;
-    //     // uint64 sourceChainSelector = 2;
-
-    //     vm.mockCall(
-    //         address(mockRouter), abi.encodeWithSelector(ISwapRouter.exactInputSingle.selector), abi.encode(amountIn)
-    //     );
+    // function testSwapWithV2Path() public {
+    //     uint256 amountIn = 50 ether;
+    //     mockToken.mint(address(factory), amountIn);
 
     //     vm.startPrank(ownerAddr);
-    //     _handleRedemption(targetAddresses, targetFees, nonce, 1, ownerAddr, extraValues);
+    //     uint256 outputAmount = factory.swap(address(mockToken), address(mockToken), amountIn, ownerAddr, 100);
     //     vm.stopPrank();
 
-    //     bytes32 redemptionMessageId = factory.redemptionMessageIdByNonce(nonce);
-    //     assertTrue(redemptionMessageId != bytes32(0), "Redemption message ID should not be zero");
+    //     assertEq(outputAmount, 0, "Expected 0 from V2 path in the sample library code");
     // }
 
-    // function testHandleAskValues() public {
-    //     address[] memory targetAddresses = new address[](1);
-    //     targetAddresses[0] = address(mockToken);
+    function testFailSetVaultNonOwner() public {
+        vm.prank(userAddr);
+        factory.setVault(payable(address(0x123)));
+    }
 
-    //     uint256[] memory targetFees = new uint256[](1);
-    //     targetFees[0] = 3000;
+    function testConvertEthToUsdCheck() public {
+        uint256 ethAmount = 1 ether;
+        uint256 usdValue = factory.convertEthToUsd(ethAmount);
+        assertEq(usdValue, 2000 * 1e18, "convertEthToUsd mismatch at 2000 USD/ETH");
+    }
 
-    //     uint256 nonce = 1;
-    //     uint64 sourceChainSelector = 2;
+    function _ccipReceiveInternal(
+        bytes32 messageId,
+        uint64 sourceChainSelector,
+        bytes memory sender,
+        bytes memory data,
+        Client.EVMTokenAmount[] memory tokenAmounts
+    ) internal {
+        Client.Any2EVMMessage memory any2EvmMessage = Client.Any2EVMMessage({
+            messageId: messageId,
+            sourceChainSelector: sourceChainSelector,
+            sender: sender,
+            data: data,
+            destTokenAmounts: tokenAmounts
+        });
 
-    //     mockToken.mint(address(vaultContract), 1 ether);
+        ccipReceivePublic(any2EvmMessage);
+    }
 
-    //     vm.mockCall(
-    //         address(mockRouter), abi.encodeWithSelector(IUniswapV2Router02.getAmountsOut.selector), abi.encode(1 ether)
-    //     );
-
-    //     vm.startPrank(ownerAddr);
-    //     _handleAskValues(targetAddresses, targetFees, nonce, sourceChainSelector, ownerAddr);
-    //     vm.stopPrank();
-    // }
-
-    // function testHandleFirstReweightAction() public {
-    //     address[] memory currentTokens = new address[](1);
-    //     currentTokens[0] = address(mockToken);
-
-    //     address[] memory oracleTokens = new address[](1);
-    //     oracleTokens[0] = address(mockToken);
-
-    //     uint256[] memory targetFees = new uint256[](1);
-    //     targetFees[0] = 3000;
-
-    //     uint256[] memory targetFees2 = new uint256[](1);
-    //     targetFees2[0] = 3000;
-
-    //     uint256[] memory oracleTokenShares = new uint256[](1);
-    //     oracleTokenShares[0] = 100;
-
-    //     uint256[] memory extraData = new uint256[](3);
-    //     extraData[0] = 100; // portfolio value
-    //     extraData[1] = 100; // total shares
-    //     extraData[2] = 100; // chain value
-
-    //     uint256 nonce = 1;
-    //     uint64 sourceChainSelector = 2;
-
-    //     _handleFirstReweightAction(
-    //         CrossChainIndexFactory.HandleFirstReweightActionInputs(
-    //             currentTokens,
-    //             oracleTokens,
-    //             targetFees,
-    //             targetFees2,
-    //             oracleTokenShares,
-    //             sourceChainSelector,
-    //             ownerAddr,
-    //             nonce,
-    //             extraData
-    //         )
-    //     );
-    // }
+    function ccipReceivePublic(Client.Any2EVMMessage memory any2EvmMessage) public {
+        _ccipReceive(any2EvmMessage);
+    }
 }

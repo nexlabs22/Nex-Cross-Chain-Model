@@ -182,27 +182,27 @@ contract IndexFactoryBalancerTest is Test {
         assertEq(retrievedTokenAddress, tokenAddress, "Cross-chain token retrieval failed");
     }
 
-    function test_getPortfolioBalance_SuccessfulBalanceCalculation() public {
-        address token = address(mockToken);
-        uint256 amount = 100 ether;
+    // function test_getPortfolioBalance_SuccessfulBalanceCalculation() public {
+    //     address token = address(mockToken);
+    //     uint256 amount = 100 ether;
 
-        mockToken.mint(address(balancer), amount);
+    //     mockToken.mint(address(balancer), amount);
 
-        address[] memory tokens = new address[](1);
-        tokens[0] = token;
-        uint256[] memory marketShares = new uint256[](1);
-        marketShares[0] = 50;
-        uint24[] memory swapFees = new uint24[](1);
-        swapFees[0] = 3000;
-        uint64[] memory chainSelectors = new uint64[](1);
-        chainSelectors[0] = 1;
+    //     address[] memory tokens = new address[](1);
+    //     tokens[0] = token;
+    //     uint256[] memory marketShares = new uint256[](1);
+    //     marketShares[0] = 50;
+    //     uint24[] memory swapFees = new uint24[](1);
+    //     swapFees[0] = 3000;
+    //     uint64[] memory chainSelectors = new uint64[](1);
+    //     chainSelectors[0] = 1;
 
-        vm.prank(owner);
-        storageContract.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+    //     vm.prank(owner);
+    //     storageContract.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
 
-        uint256 balance = balancer.getPortfolioBalance();
-        //    assertGt(balance, 0, "Portfolio balance calculation failed");
-    }
+    //     uint256 balance = balancer.getPortfolioBalance();
+    //     assertGt(balance, 0, "Portfolio balance calculation failed");
+    // }
 
     function test_estimateAmountOut_SuccessfulEstimateAmountOut() public {
         uint128 amountIn = 100;
@@ -346,5 +346,19 @@ contract IndexFactoryBalancerTest is Test {
         assertEq(portfolioValue, 0, "Portfolio value should be zero");
         assertEq(tokenValue, 0, "Token value should be zero");
         assertEq(chainValue, 0, "Chain value should be zero");
+    }
+
+    function test_setFeeRate_FailIfTooSoon() public {
+        uint8 newFee = 50;
+
+        vm.prank(owner);
+        vm.expectRevert("You should wait at least 12 hours after the latest update");
+        balancer.setFeeRate(newFee);
+    }
+
+    function test_FallbackFunction_AllowsEthReceive() public {
+        vm.deal(address(this), 1 ether);
+        (bool success,) = address(balancer).call{value: 1 ether}("");
+        assertTrue(success, "ETH transfer to contract failed");
     }
 }

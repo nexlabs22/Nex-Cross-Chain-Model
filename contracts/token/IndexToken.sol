@@ -28,9 +28,8 @@ contract IndexToken is
     ProposableOwnableUpgradeable,
     PausableUpgradeable
 {
-
     uint256 public fee;
-    
+
     uint256 internal constant SCALAR = 1e20;
 
     // Inflation rate (per day) on total supply, to be accrued to the feeReceiver.
@@ -55,13 +54,6 @@ contract IndexToken is
 
     mapping(address => bool) public isRestricted;
 
-    
-
-    
-    
-
-    
-
     event FeeReceiverSet(address indexed feeReceiver);
     event FeeRateSet(uint256 indexed feeRatePerDayScaled);
     event MethodologistSet(address indexed methodologist);
@@ -83,7 +75,6 @@ contract IndexToken is
         _;
     }
 
-    
     function initialize(
         string memory tokenName,
         string memory tokenSymbol,
@@ -104,16 +95,13 @@ contract IndexToken is
         feeTimestamp = block.timestamp;
     }
 
-
-   /**
-    * @dev The contract's fallback function that does not allow direct payments to the contract.
-    * @notice Prevents users from sending ether directly to the contract by reverting the transaction.
-    */
+    /**
+     * @dev The contract's fallback function that does not allow direct payments to the contract.
+     * @notice Prevents users from sending ether directly to the contract by reverting the transaction.
+     */
     receive() external payable {
         // revert DoNotSendFundsDirectlyToTheContract();
     }
-
-
 
     /// @notice External mint function
     /// @dev Mint function can only be called externally by the controller
@@ -127,7 +115,6 @@ contract IndexToken is
         _mint(to, amount);
     }
 
-    
     /// @notice External mint function
     /// @dev Mint function can only be called externally by the controller
     /// @param to address
@@ -151,7 +138,6 @@ contract IndexToken is
         _burn(from, amount);
     }
 
-
     /// @notice External burn function
     /// @dev burn function can only be called externally by the controller
     /// @param from address
@@ -172,7 +158,7 @@ contract IndexToken is
             uint256 supply = initial;
             uint256 _feeRate = feeRatePerDayScaled;
 
-            for (uint256 i; i < _days; ) {
+            for (uint256 i; i < _days;) {
                 supply += ((supply * _feeRate) / SCALAR);
                 unchecked {
                     ++i;
@@ -193,7 +179,6 @@ contract IndexToken is
         _mintToFeeReceiver();
     }
 
-    
     /// @notice Only owner function for setting the methodologist
     /// @param _methodologist address
     function setMethodologist(address _methodologist) external onlyOwner {
@@ -231,10 +216,10 @@ contract IndexToken is
     function setMinter(address _minter, bool _enabled) external onlyOwner {
         require(_minter != address(0));
         isMinter[_minter] = _enabled;
-        if(_enabled){
-        emit MinterSet(_minter);
-        }else{
-        emit MinterRemoved(_minter);
+        if (_enabled) {
+            emit MinterSet(_minter);
+        } else {
+            emit MinterRemoved(_minter);
         }
     }
 
@@ -245,7 +230,6 @@ contract IndexToken is
         emit SupplyCeilingSet(_supplyCeiling);
     }
 
-    
     function pause() external onlyOwner {
         _pause();
     }
@@ -254,7 +238,6 @@ contract IndexToken is
         _unpause();
     }
 
-    
     /// @notice Compliance feature to blacklist bad actors
     /// @dev Negates current restriction state
     /// @param who address
@@ -263,7 +246,6 @@ contract IndexToken is
         emit ToggledRestricted(who, isRestricted[who]);
     }
 
-    
     /// @notice Overriden ERC20 transfer to include restriction
     /// @param to address
     /// @param amount uint256
@@ -281,11 +263,7 @@ contract IndexToken is
     /// @param to address
     /// @param amount uint256
     /// @return bool
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) public override whenNotPaused returns (bool) {
+    function transferFrom(address from, address to, uint256 amount) public override whenNotPaused returns (bool) {
         require(!isRestricted[msg.sender], "msg.sender is restricted");
         require(!isRestricted[to], "to is restricted");
         require(!isRestricted[from], "from is restricted");
@@ -294,5 +272,4 @@ contract IndexToken is
         _transfer(from, to, amount);
         return true;
     }
-    
 }
