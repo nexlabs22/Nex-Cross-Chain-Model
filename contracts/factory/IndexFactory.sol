@@ -384,6 +384,8 @@ contract IndexFactory is Initializable, CCIPReceiver, ProposableOwnableUpgradeab
         uint256 _latestCount
     ) internal {
         // (address[] memory tokens,,,) = factoryStorage.getCurrentData(_latestCount);
+        // swap(address(weth), tokenAddress, swapAmount, address(factoryStorage.vault()), tokenSwapFee);
+
         address[] memory tokens = factoryStorage.allCurrentChainSelectorTokens(_chainSelector);
         for (uint256 i = 0; i < _chainSelectorTokensCount; i++) {
             address tokenAddress = tokens[i];
@@ -404,6 +406,7 @@ contract IndexFactory is Initializable, CCIPReceiver, ProposableOwnableUpgradeab
             if (tokenAddress != address(weth)) {
                 // _swapSingle(address(weth), tokenAddress, (_wethAmount * tokenMarketShare) / 100e18, address(indexToken), tokenSwapFee);
                 // uint swapAmount = (_wethAmount * tokenMarketShare) / 100e18;
+                // IERC20(weth).approve(address(factoryStorage.vault()), swapAmount);
                 swap(address(weth), tokenAddress, swapAmount, address(factoryStorage.vault()), tokenSwapFee);
             } else {
                 weth.transfer(address(factoryStorage.vault()), swapAmount);

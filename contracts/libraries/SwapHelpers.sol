@@ -7,8 +7,6 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IUniswapV2Router02} from "../interfaces/IUniswapV2Router02.sol";
 
 library SwapHelpers {
-    
-
     function swapVersion3(
         ISwapRouter uniswapRouter,
         uint24 poolFee,
@@ -38,11 +36,11 @@ library SwapHelpers {
         address tokenOut,
         uint256 amountIn,
         address recipient
-    ) internal returns (uint amountOut) {
+    ) internal returns (uint256 amountOut) {
         address[] memory path = new address[](2);
         path[0] = tokenIn;
         path[1] = tokenOut;
-        uint[] memory v2AmountOut = uniswapRouter.getAmountsOut(amountIn, path);
+        uint256[] memory v2AmountOut = uniswapRouter.getAmountsOut(amountIn, path);
         IERC20(tokenIn).approve(address(uniswapRouter), amountIn);
         uniswapRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
             amountIn, //amountIn
@@ -69,5 +67,4 @@ library SwapHelpers {
             amountOut = swapTokensV2(uniswapRouterV2, tokenIn, tokenOut, amountIn, recipient);
         }
     }
-
 }

@@ -125,7 +125,8 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenSwapFee(address(token3)), 3);
         assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3);
     }
-    /**
+
+    /*
      * function testIssuanceWithEth() public {
      *     uint startAmount = 1e14;
      *
