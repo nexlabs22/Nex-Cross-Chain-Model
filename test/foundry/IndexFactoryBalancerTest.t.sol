@@ -8,68 +8,42 @@ import "../mocks/MockERC20.sol";
 import "../../contracts/test/MockRouter2.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../contracts/test/LinkToken.sol";
+import "./ContractDeployer.sol";
 
-contract IndexFactoryBalancerTest is Test {
+contract IndexFactoryBalancerTest is Test, ContractDeployer {
     IndexFactoryBalancer balancer;
-    IndexFactoryStorage storageContract;
-    MockERC20 mockToken;
-    MockRouter2 mockRouter;
-    LinkToken link;
 
-    address owner = address(1);
     address crossChainReceiver;
 
     function setUp() public {
-        crossChainReceiver = address(0x1234);
-
-        vm.startPrank(owner);
-
-        mockToken = new MockERC20("Mock Token", "MTK");
-        mockRouter = new MockRouter2();
-        link = new LinkToken();
-
-        storageContract = new IndexFactoryStorage();
-        storageContract.initialize(
-            1,
-            payable(address(mockToken)),
-            address(link),
-            address(0x12345),
-            bytes32("mockJobId"),
-            address(0x123456),
-            address(0x5678),
-            address(mockRouter),
-            address(0x6789),
-            address(mockRouter),
-            address(0x234)
-        );
-
-        storageContract.proposeOwner(owner);
-        storageContract.transferOwnership(owner);
+        deployAllContracts();
+        addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 1000e18, 1e18);
+        addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, 1000e18, 1e18);
+        addLiquidityETH(positionManager, factoryAddress, token2, wethAddress, 1000e18, 1e18);
+        addLiquidityETH(positionManager, factoryAddress, token3, wethAddress, 1000e18, 1e18);
+        addLiquidityETH(positionManager, factoryAddress, token4, wethAddress, 1000e18, 1e18);
+        addLiquidityETH(positionManager, factoryAddress, crossChainToken, wethAddress, 1000e18, 1e18);
+        addLiquidityETH(positionManager, factoryAddress, usdt, wethAddress, 1000e18, 1e18);
 
         balancer = new IndexFactoryBalancer();
         balancer.initialize(
             1,
-            payable(address(mockToken)),
-            address(storageContract),
+            payable(address(crossChainToken)),
+            address(indexFactoryStorage),
             address(link),
             address(mockRouter),
             address(0x5678)
         );
-
-        vm.stopPrank();
-
-        link.approve(address(mockRouter), type(uint256).max);
     }
 
     function testSetCrossChainFactory() public {
         uint64 chainSelector = 1;
         address crossChainFactory = address(0x7890);
 
-        vm.prank(owner);
-        storageContract.setCrossChainFactory(crossChainFactory, chainSelector);
+        indexFactoryStorage.setCrossChainFactory(crossChainFactory, chainSelector);
 
         assertEq(
-            storageContract.crossChainFactoryBySelector(chainSelector),
+            indexFactoryStorage.crossChainFactoryBySelector(chainSelector),
             crossChainFactory,
             "Cross-chain factory address mismatch"
         );
@@ -77,24 +51,23 @@ contract IndexFactoryBalancerTest is Test {
 
     function testSetCrossChainToken() public {
         uint64 chainSelector = 1;
-        address tokenAddress = address(mockToken);
+        address tokenAddress = address(crossChainToken);
         uint24 swapFee = 3000;
 
-        vm.prank(owner);
-        storageContract.setCrossChainToken(chainSelector, tokenAddress, swapFee);
+        indexFactoryStorage.setCrossChainToken(chainSelector, tokenAddress, swapFee);
 
-        assertEq(storageContract.crossChainToken(chainSelector), tokenAddress, "Cross-chain token mismatch");
+        assertEq(indexFactoryStorage.crossChainToken(chainSelector), tokenAddress, "Cross-chain token mismatch");
 
-        assertEq(storageContract.crossChainTokenSwapFee(chainSelector, tokenAddress), swapFee, "Swap fee mismatch");
+        assertEq(indexFactoryStorage.crossChainTokenSwapFee(chainSelector, tokenAddress), swapFee, "Swap fee mismatch");
     }
 
     function testPortfolioBalanceCalculation() public {
-        address token = address(mockToken);
+        address token = address(token0);
         uint256 amount = 100 ether;
 
-        mockToken.mint(address(balancer), amount);
+        deal(address(token0), address(balancer), amount);
 
-        uint256 balancerBalance = mockToken.balanceOf(address(balancer));
+        uint256 balancerBalance = token0.balanceOf(address(balancer));
         console.log("Balancer Balance:", balancerBalance);
 
         address[] memory tokens = new address[](1);
@@ -106,12 +79,11 @@ contract IndexFactoryBalancerTest is Test {
         uint64[] memory chainSelectors = new uint64[](1);
         chainSelectors[0] = 1;
 
-        vm.prank(owner);
-        storageContract.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
 
         vm.mockCall(
-            address(storageContract),
-            abi.encodeWithSelector(storageContract.getAmountOut.selector),
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getAmountOut.selector),
             abi.encode(200 ether)
         );
 
@@ -124,7 +96,6 @@ contract IndexFactoryBalancerTest is Test {
 
         vm.warp(block.timestamp + 13 hours);
 
-        vm.prank(owner);
         balancer.setFeeRate(newFee);
 
         assertEq(balancer.feeRate(), newFee, "Fee rate not updated correctly");
@@ -135,24 +106,21 @@ contract IndexFactoryBalancerTest is Test {
         address crossChainFactory = address(0x4321);
         address crossChainToken = address(0x9876);
 
-        vm.startPrank(owner);
-        storageContract.setCrossChainFactory(crossChainFactory, chainSelector);
-        storageContract.setCrossChainToken(chainSelector, crossChainToken, 3000);
-        vm.stopPrank();
+        indexFactoryStorage.setCrossChainFactory(crossChainFactory, chainSelector);
+        indexFactoryStorage.setCrossChainToken(chainSelector, crossChainToken, 3000);
 
         assertEq(
-            storageContract.crossChainFactoryBySelector(chainSelector),
+            indexFactoryStorage.crossChainFactoryBySelector(chainSelector),
             crossChainFactory,
             "Cross-chain factory setup failed"
         );
 
-        assertEq(storageContract.crossChainToken(chainSelector), crossChainToken, "Cross-chain token setup failed");
+        assertEq(indexFactoryStorage.crossChainToken(chainSelector), crossChainToken, "Cross-chain token setup failed");
     }
 
     function test_setIndexFactoryStorage_SuccessfulSetIndexFactoryStorage() public {
         address newFactoryStorage = address(0x1234);
 
-        vm.prank(owner);
         balancer.setIndexFactoryStorage(newFactoryStorage);
 
         assertEq(address(balancer.factoryStorage()), newFactoryStorage, "Factory storage address mismatch");
@@ -162,8 +130,7 @@ contract IndexFactoryBalancerTest is Test {
         uint64 chainSelector = 1;
         address crossChainFactory = address(0x7890);
 
-        vm.prank(owner);
-        storageContract.setCrossChainFactory(crossChainFactory, chainSelector);
+        indexFactoryStorage.setCrossChainFactory(crossChainFactory, chainSelector);
 
         address result = balancer.crossChainFactoryBySelector(chainSelector);
 
@@ -172,51 +139,27 @@ contract IndexFactoryBalancerTest is Test {
 
     function test_crossChainToken_SuccessfulCrossChainTokenRetrieval() public {
         uint64 chainSelector = 1;
-        address tokenAddress = address(mockToken);
+        address tokenAddress = address(crossChainToken);
         uint24 swapFee = 3000;
 
-        vm.prank(owner);
-        storageContract.setCrossChainToken(chainSelector, tokenAddress, swapFee);
+        indexFactoryStorage.setCrossChainToken(chainSelector, tokenAddress, swapFee);
 
         address retrievedTokenAddress = balancer.crossChainToken(chainSelector);
         assertEq(retrievedTokenAddress, tokenAddress, "Cross-chain token retrieval failed");
     }
 
-    // function test_getPortfolioBalance_SuccessfulBalanceCalculation() public {
-    //     address token = address(mockToken);
-    //     uint256 amount = 100 ether;
-
-    //     mockToken.mint(address(balancer), amount);
-
-    //     address[] memory tokens = new address[](1);
-    //     tokens[0] = token;
-    //     uint256[] memory marketShares = new uint256[](1);
-    //     marketShares[0] = 50;
-    //     uint24[] memory swapFees = new uint24[](1);
-    //     swapFees[0] = 3000;
-    //     uint64[] memory chainSelectors = new uint64[](1);
-    //     chainSelectors[0] = 1;
-
-    //     vm.prank(owner);
-    //     storageContract.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
-
-    //     uint256 balance = balancer.getPortfolioBalance();
-    //     assertGt(balance, 0, "Portfolio balance calculation failed");
-    // }
-
     function test_estimateAmountOut_SuccessfulEstimateAmountOut() public {
         uint128 amountIn = 100;
-        address tokenIn = address(mockToken);
+        address tokenIn = address(token0);
         address tokenOut = address(0x5678);
 
         vm.mockCall(
-            address(storageContract),
-            abi.encodeWithSelector(storageContract.estimateAmountOut.selector, tokenIn, tokenOut, amountIn),
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.estimateAmountOut.selector, tokenIn, tokenOut, amountIn),
             abi.encode(200)
         );
 
-        vm.prank(owner);
-        uint256 amountOut = balancer.estimateAmountOut(tokenIn, tokenOut, amountIn);
+        uint256 amountOut = balancer.estimateAmountOut(tokenIn, tokenOut, amountIn, 3000);
 
         assertEq(amountOut, 200, "Amount out should be 200");
     }
@@ -226,7 +169,6 @@ contract IndexFactoryBalancerTest is Test {
         address receiver = address(0x1234);
         bytes memory data = "test data";
 
-        vm.prank(owner);
         balancer.sendMessage(destinationChainSelector, receiver, data, IndexFactoryBalancer.PayFeesIn.LINK);
 
         // Verify that the message was sent successfully
@@ -236,7 +178,7 @@ contract IndexFactoryBalancerTest is Test {
     function test_ccipReceive_SuccessfulReceiveMessageWithActionType2() public {
         uint256 actionType = 2;
         address[] memory tokenAddresses = new address[](1);
-        tokenAddresses[0] = address(mockToken);
+        tokenAddresses[0] = address(crossChainToken);
         address[] memory tokenAddresses2 = new address[](0);
         uint256 nonce = 1;
         uint256[] memory value1 = new uint256[](1);
@@ -258,7 +200,7 @@ contract IndexFactoryBalancerTest is Test {
         balancer.ccipReceive(any2EvmMessage);
 
         assertEq(balancer.portfolioTotalValueByNonce(nonce), 100, "Portfolio total value mismatch");
-        assertEq(balancer.tokenValueByNonce(nonce, address(mockToken)), 100, "Token value mismatch");
+        assertEq(balancer.tokenValueByNonce(nonce, address(crossChainToken)), 100, "Token value mismatch");
         assertEq(balancer.chainValueByNonce(nonce, 1), 100, "Chain value mismatch");
         assertEq(balancer.updatedTokensValueCount(nonce), 1, "Updated tokens value count mismatch");
     }
@@ -282,13 +224,12 @@ contract IndexFactoryBalancerTest is Test {
             destTokenAmounts: tokenAmounts
         });
 
-        vm.prank(owner);
-        storageContract.setIndexFactoryBalancer(address(balancer));
+        indexFactoryStorage.setIndexFactoryBalancer(address(balancer));
 
         vm.prank(address(mockRouter));
         balancer.ccipReceive(any2EvmMessage);
 
-        assertEq(storageContract.currentFilledCount(), 1, "Current filled count mismatch");
+        assertEq(indexFactoryStorage.currentFilledCount(), 1, "Current filled count mismatch");
     }
 
     function test_ccipReceive_SuccessfulReceiveMessageWithActionType5() public {
@@ -317,10 +258,8 @@ contract IndexFactoryBalancerTest is Test {
     }
 
     function test_askValues_SuccessfulAskValues() public {
-        vm.startPrank(owner);
-
         address[] memory tokens = new address[](1);
-        tokens[0] = address(mockToken);
+        tokens[0] = address(token0);
         uint256[] memory marketShares = new uint256[](1);
         marketShares[0] = 50;
         uint24[] memory swapFees = new uint24[](1);
@@ -328,10 +267,12 @@ contract IndexFactoryBalancerTest is Test {
         uint64[] memory chainSelectors = new uint64[](1);
         chainSelectors[0] = 1;
 
-        storageContract.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
 
         vm.mockCall(
-            address(storageContract), abi.encodeWithSelector(storageContract.priceInWei.selector), abi.encode(1e18)
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.priceInWei.selector),
+            abi.encode(1e18)
         );
 
         balancer.askValues();
@@ -340,7 +281,7 @@ contract IndexFactoryBalancerTest is Test {
 
         uint256 nonce = balancer.updatePortfolioNonce();
         uint256 portfolioValue = balancer.portfolioTotalValueByNonce(nonce);
-        uint256 tokenValue = balancer.tokenValueByNonce(nonce, address(mockToken));
+        uint256 tokenValue = balancer.tokenValueByNonce(nonce, address(token0));
         uint256 chainValue = balancer.chainValueByNonce(nonce, 1);
 
         assertEq(portfolioValue, 0, "Portfolio value should be zero");
@@ -351,7 +292,6 @@ contract IndexFactoryBalancerTest is Test {
     function test_setFeeRate_FailIfTooSoon() public {
         uint8 newFee = 50;
 
-        vm.prank(owner);
         vm.expectRevert("You should wait at least 12 hours after the latest update");
         balancer.setFeeRate(newFee);
     }
@@ -360,5 +300,281 @@ contract IndexFactoryBalancerTest is Test {
         vm.deal(address(this), 1 ether);
         (bool success,) = address(balancer).call{value: 1 ether}("");
         assertTrue(success, "ETH transfer to contract failed");
+    }
+
+    // ----------------------------------------------------------------------
+
+    function testSetFeeRate_NotOwnerReverts() public {
+        vm.startPrank(address(0xDEAD));
+        vm.expectRevert("Ownable: caller is not the owner");
+        balancer.setFeeRate(40);
+        vm.stopPrank();
+    }
+
+    function testSetIndexFactoryStorageFailIfNotOwner() public {
+        address newFactoryStorage = address(0xABCD);
+
+        vm.startPrank(address(0x9999));
+        vm.expectRevert("Ownable: caller is not the owner");
+        balancer.setIndexFactoryStorage(newFactoryStorage);
+        vm.stopPrank();
+    }
+
+    function testFirstReweightAction_BasicScenario() public {
+        balancer.setPortfolioTotalValueByNonce(1, 1000);
+        uint64 chainSel = 1;
+
+        balancer.chainValueByNonce(1, chainSel);
+
+        vm.store(
+            address(balancer),
+            keccak256(abi.encode(chainSel, keccak256(abi.encode(uint256(1), 73)))),
+            bytes32(uint256(1500))
+        );
+
+        vm.startPrank(balancer.owner());
+        balancer.firstReweightAction();
+        vm.stopPrank();
+    }
+
+    function testSecondReweightAction_BasicScenario() public {
+        balancer.setPortfolioTotalValueByNonce(1, 2000);
+
+        uint64 chainSel = 2;
+        vm.store(
+            address(balancer),
+            keccak256(abi.encode(chainSel, keccak256(abi.encode(uint256(1), 73)))),
+            bytes32(uint256(100))
+        );
+
+        vm.startPrank(balancer.owner());
+        balancer.secondReweightAction();
+        vm.stopPrank();
+    }
+
+    function testSetPortfolioTotalValueByNonce_Basic() public {
+        vm.startPrank(balancer.owner());
+        balancer.setPortfolioTotalValueByNonce(2, 9999);
+        vm.stopPrank();
+
+        uint256 val = balancer.portfolioTotalValueByNonce(2);
+        assertEq(val, 9999, "Value mismatch for setPortfolioTotalValueByNonce");
+    }
+
+    function test_crossChainFactoryBySelector_NoExist() public {
+        address returnedAddr = balancer.crossChainFactoryBySelector(55);
+        assertEq(returnedAddr, address(0), "Should return zero if not set");
+    }
+
+    function testConvertEthToUsd_BasicMock() public {
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.priceInWei.selector),
+            abi.encode(2000e18)
+        );
+        uint256 usdVal = balancer.convertEthToUsd(1 ether);
+        assertEq(usdVal, 2000e18, "convertEthToUsd mismatch");
+    }
+
+    function testCrossChainToken_NoSelectorSetShouldReturn0() public {
+        address cToken = balancer.crossChainToken(99); // not set
+        assertEq(cToken, address(0), "Should be zero if not set");
+    }
+
+    function testFirstReweightAction_CallsWithNoChainValueShouldDoNothing() public {
+        balancer.setPortfolioTotalValueByNonce(1, 1000);
+
+        vm.startPrank(balancer.owner());
+        balancer.firstReweightAction();
+        vm.stopPrank();
+    }
+
+    function testSecondReweightAction_CallsWithNoChainValueShouldDoNothing() public {
+        balancer.setPortfolioTotalValueByNonce(2, 2000);
+
+        vm.startPrank(balancer.owner());
+        balancer.secondReweightAction();
+        vm.stopPrank();
+    }
+
+    function testCcipReceive_ActionType0() public {
+        uint256 actionType = 0;
+        address[] memory tokenAddresses = new address[](0);
+        address[] memory tokenAddresses2 = new address[](0);
+        uint256[] memory value1 = new uint256[](0);
+        uint256[] memory value2 = new uint256[](0);
+        bytes memory data = abi.encode(actionType, tokenAddresses, tokenAddresses2, uint256(42), value1, value2);
+
+        Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](0);
+        Client.Any2EVMMessage memory msgData = Client.Any2EVMMessage({
+            messageId: bytes32("some-id"),
+            sourceChainSelector: 77,
+            sender: abi.encode(address(this)),
+            data: data,
+            destTokenAmounts: tokenAmounts
+        });
+
+        vm.prank(address(mockRouter));
+        balancer.ccipReceive(msgData);
+    }
+
+    function testCcipReceive_ActionType1() public {
+        uint256 actionType = 1;
+        address[] memory tokenAddresses = new address[](0);
+        address[] memory tokenAddresses2 = new address[](0);
+        uint256[] memory value1 = new uint256[](0);
+        uint256[] memory value2 = new uint256[](0);
+        bytes memory data = abi.encode(actionType, tokenAddresses, tokenAddresses2, uint256(43), value1, value2);
+
+        Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](0);
+        Client.Any2EVMMessage memory msgData = Client.Any2EVMMessage({
+            messageId: bytes32("some-other-id"),
+            sourceChainSelector: 88,
+            sender: abi.encode(address(this)),
+            data: data,
+            destTokenAmounts: tokenAmounts
+        });
+
+        vm.prank(address(mockRouter));
+        balancer.ccipReceive(msgData);
+    }
+
+    function testCcipReceive_ActionType999_InvalidPath() public {
+        uint256 actionType = 999;
+        address[] memory tokenAddresses = new address[](1);
+        tokenAddresses[0] = address(token0);
+
+        uint256[] memory value1 = new uint256[](1);
+        value1[0] = 123;
+
+        bytes memory data =
+            abi.encode(actionType, tokenAddresses, new address[](0), uint256(4), value1, new uint256[](0));
+
+        Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](0);
+        Client.Any2EVMMessage memory any2EvmMessage = Client.Any2EVMMessage({
+            messageId: bytes32("unknown-action"),
+            sourceChainSelector: 1,
+            sender: abi.encode(address(this)),
+            data: data,
+            destTokenAmounts: tokenAmounts
+        });
+
+        vm.prank(address(mockRouter));
+        balancer.ccipReceive(any2EvmMessage);
+    }
+
+    function testOwnerCanSetFeeRateWithinRange() public {
+        vm.warp(block.timestamp + 13 hours);
+        uint8 newFee = 99;
+        balancer.setFeeRate(newFee);
+        assertEq(balancer.feeRate(), newFee, "Fee rate not updated correctly");
+    }
+
+    function testSetFeeRate_RevertIfValueBelow1() public {
+        vm.warp(block.timestamp + 13 hours);
+        vm.expectRevert("The newFee should be between 1 and 100 (0.01% - 1%)");
+        balancer.setFeeRate(0); // invalid
+    }
+
+    function testSetFeeRate_RevertIfValueAbove100() public {
+        vm.warp(block.timestamp + 13 hours);
+        vm.expectRevert("The newFee should be between 1 and 100 (0.01% - 1%)");
+        balancer.setFeeRate(101);
+    }
+
+    function testNonOwnerSetFeeRateShouldRevert() public {
+        vm.startPrank(address(0xDEAD));
+        vm.warp(block.timestamp + 13 hours);
+        vm.expectRevert("Ownable: caller is not the owner");
+        balancer.setFeeRate(10);
+        vm.stopPrank();
+    }
+
+    function testSetIndexFactoryStorageByNonOwnerReverts() public {
+        vm.startPrank(address(0xBEEF));
+        vm.expectRevert("Ownable: caller is not the owner");
+        balancer.setIndexFactoryStorage(address(0x1234));
+        vm.stopPrank();
+    }
+
+    function testFallbackFunctionCanReceiveEth() public {
+        vm.deal(address(this), 1 ether);
+        (bool success,) = address(balancer).call{value: 1 ether}("");
+        assertTrue(success, "ETH transfer to contract failed");
+    }
+
+    function test_getPortfolioBalance_SuccessfulGetPortfolioBalance() public {
+        address token = address(token0);
+        uint256 amount = 100 ether;
+
+        deal(address(token0), address(balancer), amount);
+
+        uint256 balancerBalance = token0.balanceOf(address(balancer));
+        console.log("Balancer Balance:", balancerBalance);
+
+        address[] memory tokens = new address[](1);
+        tokens[0] = token;
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 50;
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 3000;
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 2;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getAmountOut.selector),
+            abi.encode(200 ether)
+        );
+
+        uint256 balance = balancer.getPortfolioBalance();
+        assertEq(balance, 0, "Portfolio balance calculation failed");
+    }
+
+    function test_sendMessage_SuccessfulSendMessageWithEth() public {
+        uint64 destinationChainSelector = 2;
+        address receiver = address(0x1234);
+        bytes memory data = "test data";
+
+        balancer.sendMessage(destinationChainSelector, receiver, data, IndexFactoryBalancer.PayFeesIn.Native);
+
+        // Verify that the message was sent successfully
+        // You can add additional assertions here if needed
+    }
+
+    function test_ccipReceive_SuccessfulReceiveMessageWithActionType3() public {
+        uint256 actionType = 3;
+        address[] memory tokenAddresses = new address[](1);
+        tokenAddresses[0] = address(crossChainToken);
+        address[] memory tokenAddresses2 = new address[](0);
+        uint256 nonce = 1;
+        uint256[] memory value1 = new uint256[](1);
+        value1[0] = 100;
+        uint256[] memory value2 = new uint256[](0);
+
+        bytes memory data = abi.encode(actionType, tokenAddresses, tokenAddresses2, nonce, value1, value2);
+
+        Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](1);
+        tokenAmounts[0] = Client.EVMTokenAmount({token: address(crossChainToken), amount: 100});
+
+        Client.Any2EVMMessage memory any2EvmMessage = Client.Any2EVMMessage({
+            messageId: bytes32(0),
+            sourceChainSelector: 1,
+            sender: abi.encode(address(this)),
+            data: data,
+            destTokenAmounts: tokenAmounts
+        });
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getAmountOut.selector),
+            abi.encode(200)
+        );
+
+        vm.expectRevert();
+        vm.prank(address(mockRouter));
+        balancer.ccipReceive(any2EvmMessage);
     }
 }

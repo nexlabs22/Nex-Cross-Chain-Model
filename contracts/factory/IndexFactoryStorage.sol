@@ -553,8 +553,8 @@ contract IndexFactoryStorage is Initializable, ChainlinkClient, ProposableOwnabl
     {
         uint256 finalAmountOut;
         if (amountIn > 0) {
-            if (_swapFee == 3) {
-                finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn));
+            if (_swapFee > 0) {
+                finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn), _swapFee);
             } else {
                 address[] memory path = new address[](2);
                 path[0] = tokenIn;
@@ -576,7 +576,7 @@ contract IndexFactoryStorage is Initializable, ChainlinkClient, ProposableOwnabl
             uint256 value = getAmountOut(
                 currentList[i],
                 address(weth),
-                IERC20(currentList[i]).balanceOf(address(indexToken)),
+                IERC20(currentList[i]).balanceOf(address(vault)),
                 tokenSwapFee[currentList[i]]
             );
             totalValue += value;
@@ -591,12 +591,12 @@ contract IndexFactoryStorage is Initializable, ChainlinkClient, ProposableOwnabl
      * @param amountIn The amount of input token.
      * @return amountOut The estimated amount of output token.
      */
-    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn)
+    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn, uint24 fee)
         public
         view
         returns (uint256 amountOut)
     {
-        amountOut = IPriceOracle(priceOracle).estimateAmountOut(address(factoryV3), tokenIn, tokenOut, amountIn);
+        amountOut = IPriceOracle(priceOracle).estimateAmountOut(address(factoryV3), tokenIn, tokenOut, amountIn, fee);
         // address _pool = factoryV3.getPool(
         //     tokenIn,
         //     tokenOut,

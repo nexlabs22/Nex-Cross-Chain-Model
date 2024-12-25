@@ -57,7 +57,7 @@ contract CrossChainIndexFactoryTest is Test, CrossChainIndexFactory {
         deployer.deployAllContracts();
 
         // Retrieve deployed contract instances
-        (indexToken, mockRouter, vaultContract, factory, indexFactoryStorage, indexFactory) = deployer.deployContracts();
+        // (indexToken, mockRouter, vaultContract, factory, indexFactoryStorage, indexFactory) = deployer.deployContracts();
 
         token = deployer.crossChainToken();
 

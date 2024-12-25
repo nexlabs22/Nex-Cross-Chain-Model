@@ -267,14 +267,14 @@ contract CrossChainIndexFactory is
          */
     }
 
-    function getAmountOut(address tokenIn, address tokenOut, uint256 amountIn, uint256 _swapFee)
+    function getAmountOut(address tokenIn, address tokenOut, uint256 amountIn, uint24 _swapFee)
         public
         view
         returns (uint256 finalAmountOut)
     {
         if (amountIn > 0) {
-            if (_swapFee == 3) {
-                finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn), 1);
+            if (_swapFee > 0) {
+                finalAmountOut = estimateAmountOut(tokenIn, tokenOut, uint128(amountIn), _swapFee);
             } else {
                 address[] memory path = new address[](2);
                 path[0] = tokenIn;
@@ -285,12 +285,12 @@ contract CrossChainIndexFactory is
         }
     }
 
-    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn, uint32 secondsAgo)
+    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn, uint24 fee)
         public
         view
         returns (uint256 amountOut)
     {
-        amountOut = IPriceOracle(priceOracle).estimateAmountOut(address(factoryV3), tokenIn, tokenOut, amountIn);
+        amountOut = IPriceOracle(priceOracle).estimateAmountOut(address(factoryV3), tokenIn, tokenOut, amountIn, fee);
         // address _pool = factoryV3.getPool(tokenIn, tokenOut, 3000);
         // (int24 tick, ) = OracleLibrary.consult(_pool, secondsAgo);
         // amountOut = OracleLibrary.getQuoteAtTick(
@@ -476,27 +476,19 @@ contract CrossChainIndexFactory is
         uint64 sourceChainSelector,
         address sender,
         uint256[] memory extraValues
-    ) internal {
+    ) private {
         uint256 wethSwapAmountOut;
         for (uint256 i = 0; i < targetAddresses.length; i++) {
             uint256 swapAmount = (extraValues[0] * IERC20(address(targetAddresses[i])).balanceOf(address(vault))) / 1e18;
             if (address(targetAddresses[i]) == address(weth)) {
-                // vault.wethTransfer(address(this), swapAmount);
                 vault.withdrawFunds(address(weth), address(this), swapAmount);
                 wethSwapAmountOut += swapAmount;
             } else {
-                // wethSwapAmountOut += _swapSingle(
-                //     address(targetAddresses[i]),
-                //     address(weth),
-                //     swapAmount,
-                //     address(this),
-                //     targetFees[i]
-                // );
+                vault.withdrawFunds(address(targetAddresses[i]), address(this), swapAmount);
                 wethSwapAmountOut +=
                     swap(address(targetAddresses[i]), address(weth), swapAmount, address(this), uint24(targetFees[i]));
             }
         }
-        // sourceChainSelectorF = sourceChainSelector;
         uint256 crossChainTokenAmount = swap(
             address(weth),
             address(crossChainToken[sourceChainSelector]),
@@ -531,7 +523,7 @@ contract CrossChainIndexFactory is
                     targetAddresses[i],
                     address(weth),
                     IERC20(targetAddresses[i]).balanceOf(address(vault)),
-                    targetFees[i]
+                    uint24(targetFees[i])
                 );
                 tokenValueArr[i] = convertEthToUsd(tokenValue);
             }

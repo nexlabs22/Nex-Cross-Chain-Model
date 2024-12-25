@@ -243,12 +243,12 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
      * @param amountIn The amount of input token.
      * @return amountOut The estimated amount of output token.
      */
-    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn)
+    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn, uint24 fee)
         public
         view
         returns (uint256 amountOut)
     {
-        amountOut = factoryStorage.estimateAmountOut(tokenIn, tokenOut, amountIn);
+        amountOut = factoryStorage.estimateAmountOut(tokenIn, tokenOut, amountIn, fee);
     }
 
     /**
@@ -363,7 +363,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage.destTokenAmounts;
             address token = tokenAmounts[0].token;
             uint256 amount = tokenAmounts[0].amount;
-            uint256 wethAmount = swap(token, address(weth), amount, address(this), 3);
+            uint256 wethAmount = swap(token, address(weth), amount, address(this), 3000);
             extraWethByNonce[nonce] += wethAmount;
         } else if (actionType == 4) {
             factoryStorage.updateCurrentList();
@@ -385,18 +385,16 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             uint256 chainSelectorTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
             if (chainSelector == currentChainSelector) {
                 address[] memory tokens = factoryStorage.allCurrentChainSelectorTokens(chainSelector);
+                Vault vault = factoryStorage.vault();
                 for (uint256 j = 0; j < chainSelectorTokensCount; j++) {
                     address tokenAddress = tokens[j];
                     uint24 tokenSwapFee = factoryStorage.tokenSwapFee(tokenAddress);
                     uint256 value;
                     if (tokenAddress == address(weth)) {
-                        value = IERC20(tokenAddress).balanceOf(address(indexToken));
+                        value = IERC20(tokenAddress).balanceOf(address(vault));
                     } else {
                         value = getAmountOut(
-                            tokenAddress,
-                            address(weth),
-                            IERC20(tokenAddress).balanceOf(address(indexToken)),
-                            tokenSwapFee
+                            tokenAddress, address(weth), IERC20(tokenAddress).balanceOf(address(vault)), tokenSwapFee
                         );
                     }
                     portfolioTotalValueByNonce[updatePortfolioNonce] += convertEthToUsd(value);

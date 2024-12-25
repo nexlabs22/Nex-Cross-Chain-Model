@@ -338,11 +338,9 @@ contract IndexFactory is Initializable, CCIPReceiver, ProposableOwnableUpgradeab
      * @param _crossChainFee The cross-chain fee.
      */
     function _issuance(address _tokenIn, uint256 _inputAmount, uint256 _crossChainFee) internal {
-        //weth.transfer(address(indexToken), _inputAmount);
-
         uint256 wethAmount = _inputAmount;
 
-        //swap to underlying assets on all chain
+        // swap to underlying assets on all chain
         uint256 totalChains = factoryStorage.currentChainSelectorsCount();
         uint256 latestCount = factoryStorage.currentFilledCount();
         (,,, uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
@@ -357,15 +355,15 @@ contract IndexFactory is Initializable, CCIPReceiver, ProposableOwnableUpgradeab
                 _issuanceSwapsOtherChains(wethAmount, issuanceNonce, chainSelector, latestCount);
             }
         }
-        emit RequestIssuance(
-            issuanceData[issuanceNonce].messageId,
-            issuanceNonce,
-            msg.sender,
-            _tokenIn,
-            issuanceData[issuanceNonce].inputAmount,
-            0,
-            block.timestamp
-        );
+        // emit RequestIssuance(
+        //         issuanceData[issuanceNonce].messageId,
+        //         issuanceNonce,
+        //         msg.sender,
+        //         _tokenIn,
+        //         issuanceData[issuanceNonce].inputAmount,
+        //         0,
+        //         block.timestamp
+        //     );
     }
 
     /**
@@ -437,13 +435,6 @@ contract IndexFactory is Initializable, CCIPReceiver, ProposableOwnableUpgradeab
         uint256[] memory totalSharesArr = new uint256[](1);
         totalSharesArr[0] = totalShares;
 
-        // uint crossChainTokenAmount = _swapSingle(
-        // address(weth),
-        // crossChainToken(_chainSelector),
-        // (_wethAmount*totalSharesArr[0])/100e18,
-        // address(this),
-        // crossChainTokenSwapFee(_chainSelector)
-        // );
         uint256 crossChainTokenAmount = swap(
             address(weth),
             crossChainToken(_chainSelector),
@@ -620,9 +611,6 @@ contract IndexFactory is Initializable, CCIPReceiver, ProposableOwnableUpgradeab
         uint24 outputTokenSwapFee = redemptionData[nonce].outputTokenSwapFee;
         uint256 fee = FeeCalculation.calculateFee(wethAmount, feeRate);
         weth.transfer(feeReceiver, fee);
-        // weth.withdraw(fee);
-        // (bool _ownerSuccess, ) = address(feeReceiver).call{value: fee}("");
-        // require(_ownerSuccess, "transfer eth fee to the owner failed");
         if (outputToken == address(weth)) {
             // weth.transfer(requester, wethAmount - fee);
             weth.withdraw(wethAmount - fee);
@@ -693,12 +681,12 @@ contract IndexFactory is Initializable, CCIPReceiver, ProposableOwnableUpgradeab
      * @param amountIn The amount of input token.
      * @return amountOut The estimated amount of output token.
      */
-    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn)
+    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn, uint24 fee)
         public
         view
         returns (uint256 amountOut)
     {
-        amountOut = factoryStorage.estimateAmountOut(tokenIn, tokenOut, amountIn);
+        amountOut = factoryStorage.estimateAmountOut(tokenIn, tokenOut, amountIn, fee);
     }
 
     /**
@@ -805,7 +793,7 @@ contract IndexFactory is Initializable, CCIPReceiver, ProposableOwnableUpgradeab
         Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage.destTokenAmounts;
         address token = tokenAmounts[0].token;
         uint256 amount = tokenAmounts[0].amount;
-        uint256 wethAmount = swap(address(token), address(weth), amount, address(this), 3);
+        uint256 wethAmount = swap(address(token), address(weth), amount, address(this), 3000);
         redemptionData[requestRedemptionNonce].totalValue += wethAmount;
         redemptionData[requestRedemptionNonce].completedTokensCount += tokenAddresses.length;
         if (redemptionData[requestRedemptionNonce].completedTokensCount == totalCurrentList) {
