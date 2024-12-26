@@ -2,6 +2,7 @@
 pragma solidity ^0.8.7;
 
 import "forge-std/Test.sol";
+import "forge-std/Vm.sol";
 import "../../contracts/factory/IndexFactoryBalancer.sol";
 import "../../contracts/factory/IndexFactoryStorage.sol";
 import "../mocks/MockERC20.sol";
@@ -576,5 +577,156 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         vm.expectRevert();
         vm.prank(address(mockRouter));
         balancer.ccipReceive(any2EvmMessage);
+    }
+
+    function testFailFulfillAssetsData_ArrayLengthMismatch() public {
+        vm.startPrank(owner);
+
+        address[] memory tokens = new address[](2);
+        tokens[0] = address(token1);
+        tokens[1] = address(token2);
+
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 100e18;
+
+        uint24[] memory swapFees = new uint24[](2);
+        swapFees[0] = 3000;
+        swapFees[1] = 10000;
+
+        uint64[] memory chainSelectors = new uint64[](2);
+        chainSelectors[0] = 1;
+        chainSelectors[1] = 1;
+
+        vm.expectRevert("The length of the arrays should be the same");
+        indexFactoryStorage.fulfillAssetsData(bytes32("requestId"), tokens, marketShares, swapFees, chainSelectors);
+
+        vm.stopPrank();
+    }
+
+    function testInitialize_SecondInitializationReverts() public {
+        vm.expectRevert("Initializable: contract is already initialized");
+        balancer.initialize(
+            1,
+            payable(address(crossChainToken)),
+            address(indexFactoryStorage),
+            address(link),
+            address(mockRouter),
+            address(0x5678)
+        );
+    }
+
+    function testCurrentListFunctionsWithoutMocking() public {
+        address[] memory tokens = new address[](3);
+        tokens[0] = address(token1);
+        tokens[1] = address(token2);
+        tokens[2] = wethAddress;
+
+        uint256[] memory marketShares = new uint256[](3);
+        marketShares[0] = 100e18;
+        marketShares[1] = 200e18;
+        marketShares[2] = 300e18;
+
+        uint24[] memory swapFees = new uint24[](3);
+        swapFees[0] = 3000;
+        swapFees[1] = 10000;
+        swapFees[2] = 500;
+
+        uint64[] memory chainSelectors = new uint64[](3);
+        chainSelectors[0] = 1;
+        chainSelectors[1] = 1;
+        chainSelectors[2] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        uint256 total = indexFactoryStorage.totalCurrentList();
+        assertEq(total, 3, "Expected totalCurrentList to be 3");
+
+        assertEq(indexFactoryStorage.currentList(0), address(token1), "currentList(0) should be token1");
+        assertEq(indexFactoryStorage.currentList(1), address(token2), "currentList(1) should be token2");
+        assertEq(indexFactoryStorage.currentList(2), wethAddress, "currentList(2) should be wethAddress");
+    }
+
+    function testSetAndCheckCurrentList() public {
+        address[] memory tokens = new address[](2);
+        tokens[0] = address(token1);
+        tokens[1] = address(token2);
+
+        uint256[] memory marketShares = new uint256[](2);
+        marketShares[0] = 100e18;
+        marketShares[1] = 200e18;
+
+        uint24[] memory swapFees = new uint24[](2);
+        swapFees[0] = 3000;
+        swapFees[1] = 10000;
+
+        uint64[] memory chainSelectors = new uint64[](2);
+        chainSelectors[0] = 1;
+        chainSelectors[1] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        vm.stopPrank();
+
+        uint256 total = indexFactoryStorage.totalCurrentList();
+        assertEq(total, 2, "totalCurrentList should be 2 after mockFillAssetsList");
+
+        address listToken0 = indexFactoryStorage.currentList(0);
+        address listToken1 = indexFactoryStorage.currentList(1);
+
+        assertEq(listToken0, address(token1), "currentList(0) should return token1");
+        assertEq(listToken1, address(token2), "currentList(1) should return token2");
+
+        uint256 shareToken1 = indexFactoryStorage.tokenCurrentMarketShare(address(token1));
+        uint256 shareToken2 = indexFactoryStorage.tokenCurrentMarketShare(address(token2));
+        assertEq(shareToken1, 100e18, "tokenCurrentMarketShare for token1 mismatch");
+        assertEq(shareToken2, 200e18, "tokenCurrentMarketShare for token2 mismatch");
+    }
+
+    function testMockCurrentListFunctions() public {
+        address[] memory tokens = new address[](3);
+        tokens[0] = address(token1);
+        tokens[1] = address(token2);
+        tokens[2] = wethAddress;
+
+        uint256[] memory marketShares = new uint256[](3);
+        marketShares[0] = 100e18;
+        marketShares[1] = 200e18;
+        marketShares[2] = 300e18;
+
+        uint24[] memory swapFees = new uint24[](3);
+        swapFees[0] = 3000;
+        swapFees[1] = 10000;
+        swapFees[2] = 500;
+
+        uint64[] memory chainSelectors = new uint64[](3);
+        chainSelectors[0] = 1;
+        chainSelectors[1] = 1;
+        chainSelectors[2] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        uint256 total = indexFactoryStorage.totalCurrentList();
+        assertEq(total, 3, "Expected totalCurrentList to be 3");
+
+        assertEq(indexFactoryStorage.currentList(0), address(token1), "currentList(0) should be token1");
+        assertEq(indexFactoryStorage.currentList(1), address(token2), "currentList(1) should be token2");
+        assertEq(indexFactoryStorage.currentList(2), wethAddress, "currentList(2) should be wethAddress");
+    }
+
+    function testPriceInWei() public {
+        vm.mockCall(
+            address(indexFactoryStorage.toUsdPriceFeed()),
+            abi.encodeWithSelector(AggregatorV3Interface.latestRoundData.selector),
+            abi.encode(uint80(0), int256(123456789000000000), uint256(0), uint256(0), uint80(0))
+        );
+
+        vm.mockCall(
+            address(indexFactoryStorage.toUsdPriceFeed()),
+            abi.encodeWithSelector(AggregatorV3Interface.decimals.selector),
+            abi.encode(uint8(8))
+        );
+
+        uint256 price = indexFactoryStorage.priceInWei();
+        assertTrue(price > 0, "priceInWei should return a positive value");
     }
 }

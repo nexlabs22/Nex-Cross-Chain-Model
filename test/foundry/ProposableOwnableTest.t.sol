@@ -3,6 +3,7 @@ pragma solidity ^0.8.7;
 
 import "forge-std/Test.sol";
 import "../../contracts/proposable/ProposableOwnable.sol";
+import "./OlympixUnitTest.sol";
 
 contract ProposableOwnableTest is Test {
     ProposableOwnableMock proposableOwnable;

@@ -3,8 +3,9 @@ pragma solidity ^0.8.7;
 
 import "forge-std/Test.sol";
 import "../../contracts/proposable/ProposableOwnableUpgradeable.sol";
+import "./OlympixUnitTest.sol";
 
-contract ProposableOwnableUpgradeableTest is Test {
+contract ProposableOwnableUpgradeableTest is OlympixUnitTest("ProposableOwnableUpgradeable") {
     ProposableOwnableUpgradeableMock proposableOwnableUpgradeable;
     address owner = address(0x1);
     address proposedOwner = address(0x2);
