@@ -198,6 +198,21 @@ contract CounterTest is Test, ContractDeployer {
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
         
+        vm.stopPrank();
+        factoryBalancer.proposeOwner(owner);
+        vm.startPrank(owner);
+        factoryBalancer.transferOwnership(owner);
+        factoryBalancer.askValues();
+        showTokenBalances();
+        showPercentages();
+        console.log("token 0 value", indexFactoryStorage.getAmountOut(address(token0), address(indexFactoryStorage.weth()), token0.balanceOf(address(vault)), 3000));
+        console.log("token0 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token0)));
+        console.log("token1 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token1)));
+        console.log("token2 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token2)));
+        console.log("token3 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token3)));
+        console.log("token4 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token4)));
+        console.log("portfolioTotalValueByNonce", factoryBalancer.portfolioTotalValueByNonce(1));
+        console.log("tokenValueByNonce", factoryBalancer.updatedTokensValueCount(1));
         // console.log("token 0 balance", token0.balanceOf(address(vault)));
         // console.log("token 1 balance", token1.balanceOf(address(vault)));
         // console.log("token 2 balance", token2.balanceOf(address(vault)));
@@ -213,8 +228,7 @@ contract CounterTest is Test, ContractDeployer {
         // uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
         // console.log("portfolio balance", portfolioBalance);
         // showPercentages();
-        showTokenBalances();
-        showPercentages();
+        
     }
     
 

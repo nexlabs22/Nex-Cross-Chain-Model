@@ -16,6 +16,7 @@ import "../../contracts/test/UniswapWETHByteCode.sol";
 import "../../contracts/test/UniswapRouterByteCode.sol";
 import "../../contracts/test/UniswapPositionManagerByteCode.sol";
 import "../../contracts/factory/IndexFactory.sol";
+import "../../contracts/factory/IndexFactoryBalancer.sol";
 import "../../contracts/factory/IndexFactoryStorage.sol";
 import "../../contracts/vault/Vault.sol";
 import "../../contracts/vault/CrossChainFactory.sol";
@@ -66,6 +67,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
     MockApiOracle public oracle;
     LinkToken link;
     IndexFactory public factory;
+    IndexFactoryBalancer public factoryBalancer;
     CrossChainIndexFactory public crossChainIndexFactory;
     CrossChainIndexFactory public crossChainIndexFactory1;
     CrossChainIndexFactory public crossChainIndexFactory2;
@@ -153,6 +155,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         CrossChainIndexFactory,
         IndexFactoryStorage,
         IndexFactory
+        // IndexFactoryBalancer
     ) {
     //     LinkToken link = new LinkToken();
     //     MockApiOracle oracle = new MockApiOracle(address(link));
@@ -271,6 +274,16 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             address(mockRouter), // ccip router
             wethAddress
         );
+
+
+        // IndexFactoryBalancer indexFactoryBalancer = new IndexFactoryBalancer();
+        // indexFactoryBalancer.initialize(
+        //     1,
+        //     address(indexFactoryStorage),
+        //     address(link),
+        //     address(mockRouter), // ccip router
+        //     wethAddress
+        // );
         
 
         indexToken.setMinter(address(indexFactory), true);
@@ -306,6 +319,30 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             crossChainIndexFactory,
             indexFactoryStorage,
             indexFactory
+            // indexFactoryBalancer
+        );
+
+    }
+
+    function deployContracts2() public returns(
+        IndexFactoryBalancer
+    ) {
+    
+
+
+        IndexFactoryBalancer indexFactoryBalancer = new IndexFactoryBalancer();
+        indexFactoryBalancer.initialize(
+            1,
+            address(indexFactoryStorage),
+            address(link),
+            address(mockRouter), // ccip router
+            wethAddress
+        );
+        
+
+        
+        return (
+            indexFactoryBalancer
         );
 
     }
@@ -360,7 +397,9 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             crossChainIndexFactory,
             indexFactoryStorage,
             factory
+            // factoryBalancer
         ) = deployContracts();
+        (factoryBalancer) = deployContracts2();
     }
 
     function deployByteCode(bytes memory bytecode) public returns(address){
