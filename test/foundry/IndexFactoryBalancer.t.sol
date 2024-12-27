@@ -203,16 +203,42 @@ contract CounterTest is Test, ContractDeployer {
         vm.startPrank(owner);
         factoryBalancer.transferOwnership(owner);
         factoryBalancer.askValues();
+        vm.stopPrank();
         showTokenBalances();
-        showPercentages();
-        console.log("token 0 value", indexFactoryStorage.getAmountOut(address(token0), address(indexFactoryStorage.weth()), token0.balanceOf(address(vault)), 3000));
-        console.log("token0 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token0)));
-        console.log("token1 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token1)));
-        console.log("token2 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token2)));
-        console.log("token3 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token3)));
-        console.log("token4 ValueByNonce", factoryBalancer.tokenValueByNonce(1, address(token4)));
-        console.log("portfolioTotalValueByNonce", factoryBalancer.portfolioTotalValueByNonce(1));
-        console.log("tokenValueByNonce", factoryBalancer.updatedTokensValueCount(1));
+
+        //update oracle
+        address[] memory assetList = new address[](5);
+        assetList[0] = address(token0);
+        assetList[1] = address(token1);
+        assetList[2] = address(token2);
+        assetList[3] = address(token3);
+        assetList[4] = address(token4);
+
+        uint[] memory tokenShares = new uint[](5);
+        tokenShares[0] = 30e18;
+        tokenShares[1] = 20e18;
+        tokenShares[2] = 20e18;
+        tokenShares[3] = 20e18;
+        tokenShares[4] = 10e18;
+
+        uint[] memory swapFees = new uint[](5);
+        swapFees[0] = 3000;
+        swapFees[1] = 3000;
+        swapFees[2] = 3000;
+        swapFees[3] = 3000;
+        swapFees[4] = 3000;
+
+        uint64[] memory chains = new uint64[](5);
+        chains[0] = 1;
+        chains[1] = 1;
+        chains[2] = 1;
+        chains[3] = 1;
+        chains[4] = 2;
+
+        updateOracleList(assetList, tokenShares, swapFees, chains);
+
+        vm.startPrank(owner);
+        factoryBalancer.firstReweightAction();
         // console.log("token 0 balance", token0.balanceOf(address(vault)));
         // console.log("token 1 balance", token1.balanceOf(address(vault)));
         // console.log("token 2 balance", token2.balanceOf(address(vault)));
