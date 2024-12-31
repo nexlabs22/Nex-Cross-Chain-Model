@@ -525,7 +525,7 @@ contract IndexFactory is
                                 data,
                                 crossChainIndexFactory,
                                 tokensToSendArray,
-                                PayFeesIn.LINK
+                                MessageSender.PayFeesIn.LINK
                             );
         emit MessageSent(messageId);
         issuanceData[issuanceNonce].messageId = messageId;
@@ -686,7 +686,7 @@ contract IndexFactory is
             _chainSelector,
             crossChainIndexFactory,
             data,
-            PayFeesIn.LINK
+            MessageSender.PayFeesIn.LINK
         );
         redemptionData[_redemptionNonce].messageId = messageId;
     }
@@ -800,7 +800,7 @@ contract IndexFactory is
         bytes memory _data,
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
-        PayFeesIn payFeesIn
+        MessageSender.PayFeesIn payFeesIn
     ) internal nonReentrant returns(bytes32) {
         bytes32 messageId = MessageSender.sendToken(
             i_router,
@@ -828,7 +828,7 @@ contract IndexFactory is
         uint64 destinationChainSelector,
         address receiver,
         bytes memory _data,
-        PayFeesIn payFeesIn
+        MessageSender.PayFeesIn payFeesIn
     ) public returns(bytes32) {
         return MessageSender.sendMessage(
             i_router,
@@ -839,7 +839,6 @@ contract IndexFactory is
             payFeesIn
         );
     }
-
     /**
      * @dev Handles received messages.
      * @param any2EvmMessage The received message.
@@ -861,7 +860,6 @@ contract IndexFactory is
                 any2EvmMessage.data,
                 (uint, address[], address[], uint, uint[], uint[])
             );
-
         if (actionType == 0) {
             _handleReceivedIssuance(
                 nonce,

@@ -21,7 +21,7 @@ library MessageSender {
         bytes memory _data,
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
-        IndexFactory.PayFeesIn payFeesIn
+        PayFeesIn payFeesIn
     ) internal returns(bytes32) {
         uint256 length = tokensToSendDetails.length;
         require(
@@ -48,7 +48,7 @@ library MessageSender {
             extraArgs: Client._argsToBytes(
                 Client.EVMExtraArgsV1({gasLimit: 3_000_000})
             ),
-            feeToken: payFeesIn == IndexFactory.PayFeesIn.LINK ? i_link : address(0)
+            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -58,7 +58,7 @@ library MessageSender {
 
         bytes32 messageId;
 
-        if (payFeesIn == IndexFactory.PayFeesIn.LINK) {
+        if (payFeesIn == PayFeesIn.LINK) {
             messageId = IRouterClient(i_router).ccipSend(
                 destinationChainSelector,
                 message
@@ -75,13 +75,18 @@ library MessageSender {
         return messageId;
     }
 
+    enum PayFeesIn {
+        Native,
+        LINK
+    }
+
     function sendMessage(
         address i_router,
         address i_link,
         uint64 destinationChainSelector,
         address receiver,
         bytes memory _data,
-        IndexFactory.PayFeesIn payFeesIn
+        PayFeesIn payFeesIn
     ) internal returns(bytes32) {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
@@ -90,7 +95,7 @@ library MessageSender {
             extraArgs: Client._argsToBytes(
                 Client.EVMExtraArgsV1({gasLimit: 3_000_000})
             ),
-            feeToken: payFeesIn == IndexFactory.PayFeesIn.LINK ? i_link : address(0)
+            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
 
         uint256 fee = IRouterClient(i_router).getFee(
@@ -100,7 +105,7 @@ library MessageSender {
 
         bytes32 messageId;
 
-        if (payFeesIn == IndexFactory.PayFeesIn.LINK) {
+        if (payFeesIn == PayFeesIn.LINK) {
             messageId = IRouterClient(i_router).ccipSend(
                 destinationChainSelector,
                 message

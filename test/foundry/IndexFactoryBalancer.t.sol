@@ -177,6 +177,7 @@ contract CounterTest is Test, ContractDeployer {
     }
 
     function showTokenBalances() public {
+        console.log("***");
         console.log("token 0 balance", token0.balanceOf(address(vault)));
         console.log("token 1 balance", token1.balanceOf(address(vault)));
         console.log("token 2 balance", token2.balanceOf(address(vault)));
@@ -239,6 +240,14 @@ contract CounterTest is Test, ContractDeployer {
 
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
+        // console.log("test data", crossChainIndexFactory.testData());
+        // console.log("test data2", crossChainIndexFactory.testData2());
+        // console.log("test data3", crossChainIndexFactory.testData3());
+        // console.log("test data1", crossChainIndexFactory.testData1());
+        showTokenBalances();
+        console.log("extra weth balance:", factoryBalancer.extraWethByNonce(1));
+        factoryBalancer.secondReweightAction();
+        showTokenBalances();
         // console.log("token 0 balance", token0.balanceOf(address(vault)));
         // console.log("token 1 balance", token1.balanceOf(address(vault)));
         // console.log("token 2 balance", token2.balanceOf(address(vault)));

@@ -634,4 +634,8 @@ contract IndexFactoryStorage is
     function getCurrentChainSelectorTotalShares(uint index, uint64 chainSelector) public view returns (uint) {
         return currentData[index].currentChainSelectorTotalShares[chainSelector];
     }
+
+    function getOracleChainSelectorTotalShares(uint index, uint64 chainSelector) public view returns (uint) {
+        return oracleData[index].oracleChainSelectorTotalShares[chainSelector];
+    }
 }

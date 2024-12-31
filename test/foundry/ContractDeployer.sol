@@ -288,6 +288,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
 
         indexToken.setMinter(address(indexFactory), true);
         indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), 3000);
+        indexFactoryStorage.setCrossChainToken(1, address(crossChainToken), 3000);
         indexFactoryStorage.setCrossChainFactory(address(crossChainIndexFactory), 2);
         indexFactoryStorage.setIndexFactory(address(indexFactory));
         indexFactoryStorage.setPriceOracle(address(priceOracleAddress));
@@ -339,6 +340,10 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
             wethAddress
         );
         
+        vault.setOperator(address(indexFactoryBalancer), true);
+        mockRouter.setFactoryChainSelector(1, address(indexFactoryBalancer));
+
+        // indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), 3000);
 
         
         return (
