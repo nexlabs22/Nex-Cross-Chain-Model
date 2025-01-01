@@ -137,6 +137,7 @@ contract CounterTest is Test, ContractDeployer {
     }
 
     function showPercentages() public {
+        console.log("****");
         uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
         uint totalPortfolioBalance;
         uint totalCurrentList = indexFactoryStorage.totalCurrentList();
@@ -195,11 +196,17 @@ contract CounterTest is Test, ContractDeployer {
         payable(add1).transfer(11e18);
         vm.startPrank(add1);
         
-        console.log(indexToken.balanceOf(add1));
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
-        console.log(indexToken.balanceOf(add1));
+        factory.redemption(indexToken.balanceOf(add1), 0, address(usdt), 3000);
         
         vm.stopPrank();
+
+        token0.transfer(address(vault), 20e18);
+        token1.transfer(address(vault), 20e18);
+        token2.transfer(address(vault), 20e18);
+        token3.transfer(address(vault), 20e18);
+        token4.transfer(address(crossChainVault), 20e18);
+
         factoryBalancer.proposeOwner(owner);
         vm.startPrank(owner);
         factoryBalancer.transferOwnership(owner);
@@ -240,29 +247,17 @@ contract CounterTest is Test, ContractDeployer {
 
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
-        // console.log("test data", crossChainIndexFactory.testData());
-        // console.log("test data2", crossChainIndexFactory.testData2());
-        // console.log("test data3", crossChainIndexFactory.testData3());
-        // console.log("test data1", crossChainIndexFactory.testData1());
+        console.log("reweightExtraPercentage", factoryBalancer.reweightExtraPercentage(1));
+        console.log("cross chain weth balance", weth.balanceOf(address(crossChainIndexFactory)));
         showTokenBalances();
-        console.log("extra weth balance:", factoryBalancer.extraWethByNonce(1));
         factoryBalancer.secondReweightAction();
         showTokenBalances();
-        // console.log("token 0 balance", token0.balanceOf(address(vault)));
-        // console.log("token 1 balance", token1.balanceOf(address(vault)));
-        // console.log("token 2 balance", token2.balanceOf(address(vault)));
-        // console.log("token 3 balance", token3.balanceOf(address(vault)));
-        // console.log("token 4 balance", token4.balanceOf(address(crossChainVault)));
-        // vm.roll(block.number + 100);
-        // vm.mine();
-        // console.log("block number", block.number);
-        // console.log("token 0 value", indexFactoryStorage.getAmountOut(address(token0), address(indexFactoryStorage.weth()), token0.balanceOf(address(vault)), 3000));
-        // console.log("token 0 value", IPriceOracle(priceOracleAddress).estimateAmountOut(address(factoryV3), address(crossChainToken), address(weth), uint128(token0.balanceOf(address(vault))), 3000));
-        // vm.roll(block.number + 100);
-        // console.log(indexToken.balanceOf(add1));
-        // uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
-        // console.log("portfolio balance", portfolioBalance);
-        // showPercentages();
+        factoryBalancer.askValues();
+        showPercentages();
+        console.log("testData", crossChainIndexFactory.testData());
+        console.log("testData2", crossChainIndexFactory.testData2());
+        // console.log(weth.balanceOf(address(factoryBalancer)));
+        
         
     }
     

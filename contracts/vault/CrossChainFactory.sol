@@ -693,8 +693,8 @@ contract CrossChainIndexFactory is
         uint nonce;
         uint[] extraData;
     }
-    uint64 public testData;
-    address public testData2;
+    uint public testData;
+    uint public testData2;
     function _handleFirstReweightAction(
         HandleFirstReweightActionInputs memory inputData
     ) private {
@@ -715,8 +715,8 @@ contract CrossChainIndexFactory is
             inputData.nonce
         );
 
-        testData = inputData.sourceChainSelector;
-        testData2 = crossChainToken[inputData.sourceChainSelector];
+        // testData = inputData.sourceChainSelector;
+        // testData2 = crossChainToken[inputData.sourceChainSelector];
         uint crossChainTokenAmount = swap(
             address(weth),
             address(crossChainToken[inputData.sourceChainSelector]),
@@ -772,6 +772,9 @@ contract CrossChainIndexFactory is
         SwapFirstReweightActionVars memory vars;
         // swapData.chainSelectorCurrentTokensCount = data.chainSelectorCurrentTokensCount;
         vars.initialWethBalance = weth.balanceOf(address(vault));
+        testData = IERC20(oracleTokens[0]).balanceOf(
+                    address(vault)
+                );
         for (uint i = 0; i < currentTokens.length; i++) {
             uint wethAmount;
             if (currentTokens[i] == address(weth)) {
@@ -812,6 +815,7 @@ contract CrossChainIndexFactory is
         vars.extraWethAmount = vars.swapWethAmount - vars.wethAmountToSwap;
 
         
+        
         for (uint i = 0; i < oracleTokens.length; i++) {
             if (oracleTokens[i] == address(weth)) {
                 weth.transfer(
@@ -831,6 +835,9 @@ contract CrossChainIndexFactory is
             }
         }
 
+        testData2 = IERC20(oracleTokens[0]).balanceOf(
+                    address(vault)
+                );
         return vars.extraWethAmount;
     }
 

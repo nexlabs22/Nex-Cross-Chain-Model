@@ -562,8 +562,8 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint latestCurrentCount = factoryStorage.currentFilledCount();
         uint latestOracleCount = factoryStorage.oracleFilledCount();
 
+        (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCurrentCount);
         for (uint i = 0; i < totalChains; i++) {
-            (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCurrentCount);
             uint64 chainSelector = chainSelectors[i];
             
             uint chainSelectorCurrentTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
