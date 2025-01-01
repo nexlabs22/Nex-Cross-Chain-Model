@@ -81,10 +81,23 @@ contract IndexFactoryTest is Test, ContractDeployer {
         );
     }
 
+    function testSetIndexFactoryStorageRevertWithNonOwnerAddress() public {
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        factory.setIndexFactoryStorage(address(indexFactoryStorage));
+    }
+
     function testSetFeeReceiver() public {
         address newFeeReceiver = address(0x1234);
         factory.setFeeReceiver(newFeeReceiver);
         assertEq(factory.feeReceiver(), newFeeReceiver, "Fee receiver should match");
+    }
+
+    function testSetFeeReceiverRevertWithNonOwnerAddress() public {
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        address newFeeReceiver = address(0x1234);
+        factory.setFeeReceiver(newFeeReceiver);
     }
 
     function testSetFeeRate() public {
@@ -92,6 +105,14 @@ contract IndexFactoryTest is Test, ContractDeployer {
 
         factory.setFeeRate(50); // 0.5%
         assertEq(factory.feeRate(), 50, "Fee rate should be set to 50");
+    }
+
+    function testSetFeeRateRevertWithNonOwnerAddress() public {
+        vm.warp(block.timestamp + 12 hours);
+
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        factory.setFeeRate(50); // 0.5%
     }
 
     function testIssuanceIndexTokensWithEth() public {

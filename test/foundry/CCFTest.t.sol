@@ -20,6 +20,14 @@ import "./ContractDeployer.sol";
 contract CCFTest is Test, ContractDeployer {
     CCIPReceiver ccip;
 
+    struct TestAny2EVMMessage {
+        bytes32 messageId;
+        uint64 sourceChainSelector;
+        bytes sender;
+        bytes data;
+        Client.EVMTokenAmount[] destTokenAmounts;
+    }
+
     function setUp() public {
         deployAllContracts();
         addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 1000e18, 1e18);

@@ -2,7 +2,6 @@
 pragma solidity ^0.8.7;
 
 import "forge-std/Test.sol";
-import "forge-std/Vm.sol";
 import "../../contracts/factory/IndexFactoryBalancer.sol";
 import "../../contracts/factory/IndexFactoryStorage.sol";
 import "../mocks/MockERC20.sol";
@@ -13,6 +12,11 @@ import "./ContractDeployer.sol";
 
 contract IndexFactoryBalancerTest is Test, ContractDeployer {
     IndexFactoryBalancer balancer;
+
+    enum PayFeesIn {
+        Native,
+        LINK
+    }
 
     address crossChainReceiver;
 
@@ -290,6 +294,30 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         assertEq(chainValue, 0, "Chain value should be zero");
     }
 
+    function testAskValuesRevertWithNonOwnerAddress() public {
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(token0);
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 50;
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 3000;
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.priceInWei.selector),
+            abi.encode(1e18)
+        );
+
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        balancer.askValues();
+        vm.stopPrank();
+    }
+
     function test_setFeeRate_FailIfTooSoon() public {
         uint8 newFee = 50;
 
@@ -338,6 +366,24 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         vm.stopPrank();
     }
 
+    function testFirstReweightActionRevertWithNonOwnerAddress() public {
+        balancer.setPortfolioTotalValueByNonce(1, 1000);
+        uint64 chainSel = 1;
+
+        balancer.chainValueByNonce(1, chainSel);
+
+        vm.store(
+            address(balancer),
+            keccak256(abi.encode(chainSel, keccak256(abi.encode(uint256(1), 73)))),
+            bytes32(uint256(1500))
+        );
+
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        balancer.firstReweightAction();
+        vm.stopPrank();
+    }
+
     function testSecondReweightAction_BasicScenario() public {
         balancer.setPortfolioTotalValueByNonce(1, 2000);
 
@@ -353,6 +399,22 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         vm.stopPrank();
     }
 
+    function testSecondReweightActionRevertWithNonOwnerAddress() public {
+        balancer.setPortfolioTotalValueByNonce(1, 2000);
+
+        uint64 chainSel = 2;
+        vm.store(
+            address(balancer),
+            keccak256(abi.encode(chainSel, keccak256(abi.encode(uint256(1), 73)))),
+            bytes32(uint256(100))
+        );
+
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        balancer.secondReweightAction();
+        vm.stopPrank();
+    }
+
     function testSetPortfolioTotalValueByNonce_Basic() public {
         vm.startPrank(balancer.owner());
         balancer.setPortfolioTotalValueByNonce(2, 9999);
@@ -360,6 +422,13 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
 
         uint256 val = balancer.portfolioTotalValueByNonce(2);
         assertEq(val, 9999, "Value mismatch for setPortfolioTotalValueByNonce");
+    }
+
+    function testSetPortfolioTotalValueByNonceRevert_WithNonOwnerAddress() public {
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        balancer.setPortfolioTotalValueByNonce(2, 9999);
+        vm.stopPrank();
     }
 
     function test_crossChainFactoryBySelector_NoExist() public {
@@ -540,9 +609,6 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         bytes memory data = "test data";
 
         balancer.sendMessage(destinationChainSelector, receiver, data, IndexFactoryBalancer.PayFeesIn.Native);
-
-        // Verify that the message was sent successfully
-        // You can add additional assertions here if needed
     }
 
     function test_ccipReceive_SuccessfulReceiveMessageWithActionType3() public {
@@ -728,5 +794,35 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
 
         uint256 price = indexFactoryStorage.priceInWei();
         assertTrue(price > 0, "priceInWei should return a positive value");
+    }
+
+    function test_askValues_Mutations() public {
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(token0);
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 50;
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 3000;
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.priceInWei.selector),
+            abi.encode(1e18)
+        );
+
+        balancer.askValues();
+
+        uint256 nonce = balancer.updatePortfolioNonce();
+        uint256 portfolioValue = balancer.portfolioTotalValueByNonce(nonce);
+        uint256 tokenValue = balancer.tokenValueByNonce(nonce, address(token0));
+        uint256 chainValue = balancer.chainValueByNonce(nonce, 1);
+
+        assertEq(portfolioValue, 0, "Portfolio value should remain zero due to mutation");
+        assertEq(tokenValue, 0, "Token value should remain zero due to mutation");
+        assertEq(chainValue, 0, "Chain value should remain zero due to mutation");
     }
 }

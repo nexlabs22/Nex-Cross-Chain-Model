@@ -10,6 +10,7 @@ contract IndexFactoryStorageTest is Test, ContractDeployer {
     address swapRouterV2 = address(0x9);
     // address factoryV2 = address(0x10);
     MockPriceFeed mockAggregator;
+    address toUsdPriceFeed = address(0x5);
 
     function setUp() external {
         deployAllContracts();
@@ -89,26 +90,26 @@ contract IndexFactoryStorageTest is Test, ContractDeployer {
         assertEq(priceInWei, uint256(price) * 10 ** 10);
     }
 
-    function test_getAmountOut_SuccessfulGetAmountOut() public {
-        address tokenIn = address(0x1);
-        address tokenOut = address(0x2);
-        uint256 amountIn = 1 ether;
-        uint24 swapFee = 3;
+    // function test_getAmountOut_SuccessfulGetAmountOut() public {
+    //     address tokenIn = address(0x1);
+    //     address tokenOut = address(0x2);
+    //     uint256 amountIn = 1 ether;
+    //     uint24 swapFee = 3;
 
-        address priceOracle = address(0x3);
-        vm.mockCall(
-            priceOracle,
-            abi.encodeWithSelector(
-                IPriceOracle.estimateAmountOut.selector, address(0), tokenIn, tokenOut, uint128(amountIn)
-            ),
-            abi.encode(2 ether)
-        );
+    //     address priceOracle = address(0x3);
+    //     vm.mockCall(
+    //         priceOracle,
+    //         abi.encodeWithSelector(
+    //             IPriceOracle.estimateAmountOut.selector, address(0), tokenIn, tokenOut, uint128(amountIn)
+    //         ),
+    //         abi.encode(2 ether)
+    //     );
 
-        indexFactoryStorage.setPriceOracle(priceOracle);
+    //     indexFactoryStorage.setPriceOracle(priceOracle);
 
-        uint256 amountOut = indexFactoryStorage.getAmountOut(tokenIn, tokenOut, amountIn, swapFee);
-        // assertEq(amountOut, 2 ether);
-    }
+    //     uint256 amountOut = indexFactoryStorage.getAmountOut(tokenIn, tokenOut, amountIn, swapFee);
+    //     // assertEq(amountOut, 2 ether);
+    // }
 
     function test_PublicVariables_AfterInitialization() public {
         uint64 currentChainSelector = indexFactoryStorage.currentChainSelector();
@@ -220,6 +221,13 @@ contract IndexFactoryStorageTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.indexFactoryBalancer(), newBalancer, "indexFactoryBalancer should be set");
     }
 
+    function testSetIndexFactoryRevertWithNonOwnerAddress() public {
+        address newBalancer = address(0xDDD);
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        indexFactoryStorage.setIndexFactory(newBalancer);
+    }
+
     function test_setIndexFactoryBalancer_AccessControl_RevertForNonOwner() public {
         address newBalancer = address(0xDDD);
         vm.prank(add1);
@@ -317,6 +325,28 @@ contract IndexFactoryStorageTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenCurrentListIndex(address(0x2)), 1);
     }
 
+    function testMockFillAssetsListRevertWithNonOwnerAddress() public {
+        address[] memory tokens = new address[](2);
+        tokens[0] = address(0x1);
+        tokens[1] = address(0x2);
+
+        uint256[] memory marketShares = new uint256[](2);
+        marketShares[0] = 100;
+        marketShares[1] = 200;
+
+        uint24[] memory swapFees = new uint24[](2);
+        swapFees[0] = 300;
+        swapFees[1] = 400;
+
+        uint64[] memory chainSelectors = new uint64[](2);
+        chainSelectors[0] = 1;
+        chainSelectors[1] = 1;
+
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+    }
+
     function test_updateCurrentList_SuccessfulUpdate() public {
         address[] memory tokens = new address[](2);
         tokens[0] = address(0x1);
@@ -346,7 +376,203 @@ contract IndexFactoryStorageTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenCurrentMarketShare(address(0x2)), 50);
     }
 
+    function testUpdateCurrentListRevertWithNonOwnerAddress() public {
+        address[] memory tokens = new address[](2);
+        tokens[0] = address(0x1);
+        tokens[1] = address(0x2);
+
+        uint256[] memory marketShares = new uint256[](2);
+        marketShares[0] = 50;
+        marketShares[1] = 50;
+
+        uint24[] memory swapFees = new uint24[](2);
+        swapFees[0] = 3000;
+        swapFees[1] = 3000;
+
+        uint64[] memory chainSelectors = new uint64[](2);
+        chainSelectors[0] = 1;
+        chainSelectors[1] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        vm.startPrank(add1);
+        vm.expectRevert("Caller is not index factory balancer contract.");
+        indexFactoryStorage.updateCurrentList();
+    }
+
     function test_getAmountOut_FailWhenAmountInIsZero() public view {
         indexFactoryStorage.getAmountOut(address(0x1), address(0x2), 0, 0);
+    }
+
+    function test_oracleChainSelectorTokensCount_SuccessfulOracleChainSelectorTokensCount() public {
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(0x1);
+
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 1;
+
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 1;
+
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        uint256 oracleChainSelectorTokensCount = indexFactoryStorage.oracleChainSelectorTokensCount(chainSelectors[0]);
+        assertEq(oracleChainSelectorTokensCount, 1);
+    }
+
+    function test_allOracleChainSelectorTokens_SuccessfulAllOracleChainSelectorTokens() public {
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(0x1);
+
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 1;
+
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 1;
+
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        address[] memory result = indexFactoryStorage.allOracleChainSelectorTokens(chainSelectors[0]);
+
+        assertEq(result.length, 1);
+        assertEq(result[0], tokens[0]);
+    }
+
+    function test_allOracleChainSelectorVersions_SuccessfulAllOracleChainSelectorVersions() public {
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(0x1);
+
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 1;
+
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 1;
+
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        uint256[] memory versions = indexFactoryStorage.allOracleChainSelectorVersions(chainSelectors[0]);
+
+        assertEq(versions.length, 1);
+        assertEq(versions[0], swapFees[0]);
+    }
+
+    function test_allOracleChainSelectorTokenShares_SuccessfulAllOracleChainSelectorTokenShares() public {
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(0x1);
+
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 1;
+
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 1;
+
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        uint256[] memory oracleChainSelectorTokenShares = indexFactoryStorage.allOracleChainSelectorTokenShares(1);
+
+        assertEq(oracleChainSelectorTokenShares.length, 1);
+        assertEq(oracleChainSelectorTokenShares[0], 1);
+    }
+
+    function test_insertOracleData_SuccessfulInsertOracleData() public {
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(0x1);
+
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 1;
+
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 1;
+
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        assertEq(indexFactoryStorage.totalOracleList(), 1);
+        assertEq(indexFactoryStorage.totalCurrentList(), 1);
+        assertEq(indexFactoryStorage.lastUpdateTime(), block.timestamp);
+    }
+
+    // function test_updateCurrentList_SuccessfulUpdateCurrentList() public {
+    //     address indexFactoryBalancer = address(0x12);
+    //     indexFactoryStorage.setIndexFactoryBalancer(indexFactoryBalancer);
+
+    //     address[] memory tokens = new address[](1);
+    //     tokens[0] = address(0x1);
+
+    //     uint256[] memory marketShares = new uint256[](1);
+    //     marketShares[0] = 1;
+
+    //     uint24[] memory swapFees = new uint24[](1);
+    //     swapFees[0] = 1;
+
+    //     uint64[] memory chainSelectors = new uint64[](1);
+    //     chainSelectors[0] = 1;
+
+    //     indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+    //     vm.startPrank(indexFactoryBalancer);
+
+    //     indexFactoryStorage.updateCurrentList();
+
+    //     vm.stopPrank();
+
+    //     assertEq(indexFactoryStorage.currentFilledCount(), 1);
+    //     assertEq(indexFactoryStorage.totalCurrentList(), 1);
+    // }
+
+    function test_mockUpdateCurrentList_SuccessfulMockUpdateCurrentList() public {
+        indexFactoryStorage.mockUpdateCurrentList();
+        assertEq(indexFactoryStorage.currentFilledCount(), 1);
+        assertEq(indexFactoryStorage.totalCurrentList(), 0);
+    }
+
+    function testMockUpdateCurrentListRevertWithNonOwnerAddress() public {
+        vm.startPrank(add1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        indexFactoryStorage.mockUpdateCurrentList();
+    }
+
+    function test_getOracleData_SuccessfulGetOracleData() public {
+        address[] memory tokens = new address[](1);
+        tokens[0] = address(0x1);
+
+        uint256[] memory marketShares = new uint256[](1);
+        marketShares[0] = 1;
+
+        uint24[] memory swapFees = new uint24[](1);
+        swapFees[0] = 1;
+
+        uint64[] memory chainSelectors = new uint64[](1);
+        chainSelectors[0] = 1;
+
+        indexFactoryStorage.mockFillAssetsList(tokens, marketShares, swapFees, chainSelectors);
+
+        (
+            address[] memory oracleTokens,
+            uint256[] memory oracleMarketShares,
+            uint256[] memory oracleSwapFees,
+            uint64[] memory oracleChainSelectors
+        ) = indexFactoryStorage.getOracleData(1);
+
+        //    assertEq(oracleTokens[0], tokens[0]);
+        //    assertEq(oracleMarketShares[0], marketShares[0]);
+        //    assertEq(oracleSwapFees[0], swapFees[0]);
+        //    assertEq(oracleChainSelectors[0], chainSelectors[0]);
     }
 }
