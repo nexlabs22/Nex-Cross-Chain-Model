@@ -857,41 +857,41 @@ contract CrossChainIndexFactory is
     function _handleSecondReweightAction(
         HandleSecondReweightActionInputs memory inputData
     ) internal {
-        uint crossChainWethAmount = swap(
-            inputData.tokenAddress,
-            address(weth),
-            inputData.tokenAmount,
-            address(vault),
-            3000
-        );
+        // uint crossChainWethAmount = swap(
+        //     inputData.tokenAddress,
+        //     address(weth),
+        //     inputData.tokenAmount,
+        //     address(this),
+        //     3000
+        // );
 
-        swapSecondReweightAction(
-            inputData.currentTokens,
-            inputData.oracleTokens,
-            inputData.targetFees,
-            inputData.targetFees2,
-            inputData.oracleTokenShares,
-            crossChainWethAmount,
-            inputData.extraData
-        );
+        // swapSecondReweightAction(
+        //     inputData.currentTokens,
+        //     inputData.oracleTokens,
+        //     inputData.targetFees,
+        //     inputData.targetFees2,
+        //     inputData.oracleTokenShares,
+        //     crossChainWethAmount,
+        //     inputData.extraData
+        // );
 
-        uint[] memory zeroUintArr = new uint[](0);
-        address[] memory zeroAddArr = new address[](0);
-
-        bytes memory data = abi.encode(
-            4,
-            zeroAddArr,
-            zeroAddArr,
-            inputData.nonce,
-            zeroUintArr,
-            zeroUintArr
-        );
-        sendMessage(
-            inputData.sourceChainSelector,
-            inputData.sender,
-            data,
-            PayFeesIn.LINK
-        );
+        // uint[] memory zeroUintArr = new uint[](0);
+        // address[] memory zeroAddArr = new address[](0);
+        
+        // bytes memory data = abi.encode(
+        //     4,
+        //     zeroAddArr,
+        //     zeroAddArr,
+        //     inputData.nonce,
+        //     zeroUintArr,
+        //     zeroUintArr
+        // );
+        // sendMessage(
+        //     inputData.sourceChainSelector,
+        //     inputData.sender,
+        //     data,
+        //     PayFeesIn.LINK
+        // );
     }
 
     struct SwapSecondReweightActionVars {
@@ -917,7 +917,7 @@ contract CrossChainIndexFactory is
         vars.chainSelectorCurrentTokensCount = currentTokens.length;
         vars.initialWethBalance = weth.balanceOf(address(vault));
         vars.swapWethAmount = 0; // Initialize swapWethAmount to 0
-        for (uint i = 0; i < vars.chainSelectorCurrentTokensCount; i++) {
+        for (uint i = 0; i < currentTokens.length; i++) {
             address tokenAddress = currentTokens[i];
             uint wethAmount;
             if (tokenAddress == address(weth)) {
@@ -928,13 +928,6 @@ contract CrossChainIndexFactory is
                 );
                 wethAmount = vars.initialWethBalance;
             } else {
-                // wethAmount = _swapSingle(
-                //     tokenAddress,
-                //     address(weth),
-                //     IERC20(tokenAddress).balanceOf(address(vault)),
-                //     address(vault),
-                //     targetFees[i]
-                // );
                 uint tokenAmount = IERC20(tokenAddress).balanceOf(address(vault));
                 vault.withdrawFunds(
                     tokenAddress,
@@ -945,7 +938,7 @@ contract CrossChainIndexFactory is
                     tokenAddress,
                     address(weth),
                     tokenAmount,
-                    address(vault),
+                    address(this),
                     uint24(targetFees[i])
                 );
             }
@@ -953,7 +946,7 @@ contract CrossChainIndexFactory is
         }
         vars.wethAmountToSwap = crossChainWethAmount + vars.swapWethAmount;
         vars.chainSelectorOracleTokensCount = oracleTokens.length;
-        for (uint i = 0; i < vars.chainSelectorOracleTokensCount; i++) {
+        for (uint i = 0; i < oracleTokens.length; i++) {
             address newTokenAddress = oracleTokens[i];
             uint newTokenMarketShare = oracleTokenShares[i];
             if (newTokenAddress == address(weth)) {
@@ -988,7 +981,7 @@ contract CrossChainIndexFactory is
             tokenAmounts: new Client.EVMTokenAmount[](0),
             // extraArgs: "",
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 900_000}) // Additional arguments, setting gas limit and non-strict sequency mode
+                Client.EVMExtraArgsV1({gasLimit: 2000_000}) // Additional arguments, setting gas limit and non-strict sequency mode
             ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });

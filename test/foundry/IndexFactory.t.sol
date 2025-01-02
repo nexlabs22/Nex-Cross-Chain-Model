@@ -45,7 +45,7 @@ contract CounterTest is Test, ContractDeployer {
 
     function setUp() public {
         
-        deployAllContracts();
+        deployAllContracts(1000000e18);
         addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, token2, wethAddress, 1000e18, 1e18);

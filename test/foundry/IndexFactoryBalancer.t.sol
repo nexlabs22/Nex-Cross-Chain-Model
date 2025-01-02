@@ -33,7 +33,7 @@ contract CounterTest is Test, ContractDeployer {
 
     function setUp() public {
         
-        deployAllContracts();
+        deployAllContracts(1000000e18);
         addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, token2, wethAddress, 1000e18, 1e18);
@@ -185,8 +185,9 @@ contract CounterTest is Test, ContractDeployer {
         console.log("token 3 balance", token3.balanceOf(address(vault)));
         console.log("token 4 balance", token4.balanceOf(address(crossChainVault)));
     }
+    
 
-    function testIssuanceWithEth() public {
+    function testRebalanceSameTokens() public {
         initializeOracleList();
         
         factory.proposeOwner(owner);
@@ -247,21 +248,93 @@ contract CounterTest is Test, ContractDeployer {
 
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
-        console.log("reweightExtraPercentage", factoryBalancer.reweightExtraPercentage(1));
-        console.log("cross chain weth balance", weth.balanceOf(address(crossChainIndexFactory)));
-        showTokenBalances();
+        // console.log("reweightExtraPercentage", factoryBalancer.reweightExtraPercentage(1));
+        // console.log("cross chain weth balance", weth.balanceOf(address(crossChainIndexFactory)));
+        // showTokenBalances();
         factoryBalancer.secondReweightAction();
-        showTokenBalances();
-        factoryBalancer.askValues();
+        // showTokenBalances();
+        // factoryBalancer.askValues();
         showPercentages();
-        console.log("testData", crossChainIndexFactory.testData());
-        console.log("testData2", crossChainIndexFactory.testData2());
+        // console.log("testData", crossChainIndexFactory.testData());
+        // console.log("testData2", crossChainIndexFactory.testData2());
         // console.log(weth.balanceOf(address(factoryBalancer)));
         
         
     }
     
 
+    function testRebalanceSameTokens2() public {
+        initializeOracleList();
+        
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        payable(add1).transfer(11e18);
+        vm.startPrank(add1);
+        
+        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
+        factory.redemption(indexToken.balanceOf(add1), 0, address(usdt), 3000);
+        
+        vm.stopPrank();
+
+        token0.transfer(address(vault), 20e18);
+        token1.transfer(address(vault), 20e18);
+        token2.transfer(address(vault), 20e18);
+        token3.transfer(address(vault), 20e18);
+        token4.transfer(address(crossChainVault), 20e18);
+
+        factoryBalancer.proposeOwner(owner);
+        vm.startPrank(owner);
+        factoryBalancer.transferOwnership(owner);
+        factoryBalancer.askValues();
+        vm.stopPrank();
+        showTokenBalances();
+
+        //update oracle
+        address[] memory assetList = new address[](5);
+        assetList[0] = address(token0);
+        assetList[1] = address(token1);
+        assetList[2] = address(token2);
+        assetList[3] = address(token3);
+        assetList[4] = address(token4);
+
+        uint[] memory tokenShares = new uint[](5);
+        tokenShares[0] = 10e18;
+        tokenShares[1] = 20e18;
+        tokenShares[2] = 20e18;
+        tokenShares[3] = 20e18;
+        tokenShares[4] = 30e18;
+
+        uint[] memory swapFees = new uint[](5);
+        swapFees[0] = 3000;
+        swapFees[1] = 3000;
+        swapFees[2] = 3000;
+        swapFees[3] = 3000;
+        swapFees[4] = 3000;
+
+        uint64[] memory chains = new uint64[](5);
+        chains[0] = 1;
+        chains[1] = 1;
+        chains[2] = 1;
+        chains[3] = 1;
+        chains[4] = 2;
+
+        updateOracleList(assetList, tokenShares, swapFees, chains);
+
+        vm.startPrank(owner);
+        factoryBalancer.firstReweightAction();
+        // console.log("reweightExtraPercentage", factoryBalancer.reweightExtraPercentage(1));
+        // console.log("cross chain weth balance", weth.balanceOf(address(crossChainIndexFactory)));
+        // showTokenBalances();
+        factoryBalancer.secondReweightAction();
+        // showTokenBalances();
+        // factoryBalancer.askValues();
+        showPercentages();
+        // console.log("testData", crossChainIndexFactory.testData());
+        // console.log("testData2", crossChainIndexFactory.testData2());
+        // console.log(weth.balanceOf(address(factoryBalancer)));   
+    }
 
     
 
