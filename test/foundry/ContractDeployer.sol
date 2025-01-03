@@ -47,29 +47,29 @@ contract ContractDeployer is
     address owner = vm.addr(6);
     address add1 = vm.addr(7);
 
-    Token token0;
-    Token token1;
-    Token token2;
-    Token token3;
-    Token token4;
+    Token public token0;
+    Token public token1;
+    Token public token2;
+    Token public token3;
+    Token public token4;
     Token token5;
     Token token6;
     Token token7;
     Token token8;
     Token token9;
 
-    Token usdt;
+    Token public usdt;
 
     // Token crossChainToken;
 
     address priceOracleAddress;
-    address factoryAddress;
-    address wethAddress;
+    address public factoryAddress;
+    address public wethAddress;
     address router;
-    address positionManager;
+    address public positionManager;
     IndexToken public indexToken;
     MockApiOracle public oracle;
-    LinkToken link;
+    LinkToken public link;
     IndexFactory public factory;
     CrossChainIndexFactory public crossChainIndexFactory;
     CrossChainIndexFactory public crossChainIndexFactory1;

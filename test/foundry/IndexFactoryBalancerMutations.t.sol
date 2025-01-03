@@ -107,9 +107,9 @@ contract IndexFactoryBalancerMutations is Test, IndexFactoryBalancer {
 
     function testSecondReweightAction_ConditionMutation() public {
         uint256 chainSelector = 1;
-        uint256 chainValue = 3e18;
+        uint256 chainValue = 300e18;
         uint256 portfolioValue = 100e18;
-        uint256 chainSelectorTotalShares = 40e18;
+        uint256 chainSelectorTotalShares = 20e18;
 
         indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
 
@@ -248,61 +248,70 @@ contract IndexFactoryBalancerMutations is Test, IndexFactoryBalancer {
     //     indexFactoryBalancer.secondReweightAction();
     // }
 
-    // function testSecondReweightAction_ChainSelectorEquality() public {
-    //     uint256 chainSelector = 2;
-    //     uint256 currentChainSelector = 1; // Ensure equality logic is valid
-    //     uint256 chainValue = 100e18; // Chain value
-    //     uint256 portfolioValue = 50e18; // Portfolio value
-    //     uint256 chainSelectorTotalShares = 150e18;
+    function testSecondReweightAction_ChainSelectorEquality() public {
+        uint256 chainSelector = 2;
+        uint256 currentChainSelector = 1;
+        uint256 chainValue = 100e18;
+        uint256 portfolioValue = 50e18;
+        uint256 chainSelectorTotalShares = 150e18;
 
-    //     // indexFactoryBalancer.setCurrentChainSelector(currentChainSelector);
-    //     indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
 
-    //     // Mock chain selectors and values
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.oracleChainSelectorsCount.selector),
-    //         abi.encode(2)
-    //     );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.oracleChainSelectorsCount.selector),
+            abi.encode(2)
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.oracleFilledCount.selector),
-    //         abi.encode(1)
-    //     );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.oracleFilledCount.selector),
+            abi.encode(1)
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.getOracleData.selector, 1),
-    //         abi.encode(new uint64[](0), new uint64[](0), new uint64[](0), new uint64[](uint64(2)))
-    //     );
+        // vm.mockCall(
+        //     address(indexFactoryStorage),
+        //     abi.encodeWithSelector(indexFactoryStorage.getOracleData.selector, 1),
+        //     abi.encode(new uint64[](0), new uint64[](0), new uint64[](0), uint64(1))
+        // );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getOracleData.selector, 1),
+            abi.encode(new uint64[](0), new uint64[](0), new uint64[](0), new uint64[](uint64(1)))
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 2, chainSelector),
-    //         abi.encode(chainSelectorTotalShares)
-    //     );
+        // vm.mockCall(
+        //     address(indexFactoryStorage),
+        //     abi.encodeWithSelector(indexFactoryStorage.getOracleData.selector, 1),
+        //     abi.encode(new uint64[](0), new uint64[](0), new uint64[](0), uint64(2))
+        // );
 
-    //     vm.mockCall(
-    //         address(indexFactoryBalancer),
-    //         abi.encodeWithSelector(indexFactoryBalancer.currentChainSelector.selector),
-    //         abi.encode(1)
-    //     );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryBalancer),
-    //         abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
-    //         abi.encode(chainValue)
-    //     );
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.currentChainSelector.selector),
+            abi.encode(currentChainSelector)
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.allOracleChainSelectorTokenShares.selector, chainSelector),
-    //         abi.encode([25e18, 25e18, 25e18, 25e18])
-    //     );
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
 
-    //     indexFactoryBalancer.secondReweightAction();
-    // }
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.allOracleChainSelectorTokenShares.selector, chainSelector),
+            abi.encode([25e18, 25e18, 25e18, 25e18])
+        );
+
+        indexFactoryBalancer.secondReweightAction();
+    }
 
     function testFirstReweightAction_ProportionExceedsTotalShares() public {
         uint256 chainValue = 100e18;

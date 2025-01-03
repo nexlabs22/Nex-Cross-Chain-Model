@@ -9,6 +9,7 @@ import "../../contracts/test/MockRouter2.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../contracts/test/LinkToken.sol";
 import "./ContractDeployer.sol";
+import "../../contracts/ccip/CCIPReceiver.sol";
 
 contract IndexFactoryBalancerTest is Test, ContractDeployer {
     IndexFactoryBalancer balancer;
@@ -39,6 +40,32 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             address(mockRouter),
             address(0x5678)
         );
+    }
+
+    function testSetFeeRateMutations() public {
+        uint8 validFee = 50;
+        uint256 twelveHours = 12 * 60 * 60;
+
+        skip(twelveHours + 1);
+        vm.expectRevert("You should wait at least 12 hours after the latest update");
+        balancer.setFeeRate(validFee);
+
+        uint256 latestFeeUpdate = block.timestamp - (twelveHours / 2);
+        vm.expectRevert("You should wait at least 12 hours after the latest update");
+        balancer.setFeeRate(validFee);
+        vm.stopPrank();
+
+        skip(twelveHours + 1);
+        vm.expectRevert("The newFee should be between 1 and 100 (0.01% - 1%)");
+        balancer.setFeeRate(0);
+
+        vm.expectRevert("The newFee should be between 1 and 100 (0.01% - 1%)");
+        balancer.setFeeRate(101);
+
+        balancer.setFeeRate(validFee);
+        assertEq(balancer.feeRate(), validFee, "Fee rate should be updated successfully");
+
+        vm.stopPrank();
     }
 
     function testSetCrossChainFactory() public {
