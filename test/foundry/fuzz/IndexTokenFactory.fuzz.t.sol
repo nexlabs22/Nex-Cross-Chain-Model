@@ -30,6 +30,8 @@ contract FactoryFuzzTesting is Test, ContractDeployer {
     
 
     // string MAINNET_RPC_URL = vm.envString("MAINNET_RPC_URL");
+    uint256 internal constant TOKEN_LIQUIDITY_LIMIT = 1000000e18;
+    uint256 internal constant WETH_LIQUIDITY_LIMIT = 1000e18;
 
     
 
@@ -44,7 +46,19 @@ contract FactoryFuzzTesting is Test, ContractDeployer {
 
 
     function setUp() public {
+        deployAllContracts(TOKEN_LIQUIDITY_LIMIT * 1000);
+        addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, TOKEN_LIQUIDITY_LIMIT, WETH_LIQUIDITY_LIMIT);
+        addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, TOKEN_LIQUIDITY_LIMIT, WETH_LIQUIDITY_LIMIT);
+        addLiquidityETH(positionManager, factoryAddress, token2, wethAddress, TOKEN_LIQUIDITY_LIMIT, WETH_LIQUIDITY_LIMIT);
+        addLiquidityETH(positionManager, factoryAddress, token3, wethAddress, TOKEN_LIQUIDITY_LIMIT, WETH_LIQUIDITY_LIMIT);
+        addLiquidityETH(positionManager, factoryAddress, token4, wethAddress, TOKEN_LIQUIDITY_LIMIT, WETH_LIQUIDITY_LIMIT);
+        addLiquidityETH(positionManager, factoryAddress, usdt, wethAddress, TOKEN_LIQUIDITY_LIMIT, WETH_LIQUIDITY_LIMIT);
+        addLiquidityETH(positionManager, factoryAddress, crossChainToken, wethAddress, TOKEN_LIQUIDITY_LIMIT, WETH_LIQUIDITY_LIMIT);
+
         
+        //set supply ceiling
+        indexToken.setSupplyCeiling(type(uint256).max);
+
         deployAllContracts(1000000e18);
         addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, 1000e18, 1e18);
@@ -136,7 +150,45 @@ contract FactoryFuzzTesting is Test, ContractDeployer {
         
     }
 
-    
+
+    function testFuzzIssuanceWithTokens(uint256 amount) public {
+        vm.assume(amount > 1000000 && amount < TOKEN_LIQUIDITY_LIMIT - TOKEN_LIQUIDITY_LIMIT*10/10000);   
+        // vm.assume(amount > 1000000 && amount < 1000e18 - 1000e18*10/10000);   
+        updateOracleList();
+        
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        usdt.transfer(add1, amount + amount*10/10000);
+        vm.startPrank(add1);
+
+        usdt.approve(address(factory), amount + amount*10/10000);
+        factory.issuanceIndexTokens(address(usdt), amount, 0, 3000);
+
+    }
+
+    function testFuzzRedemptionWithTokens(uint256 amount) public {
+        // vm.assume(amount + 1e18 < TOKEN_LIQUIDITY_LIMIT);    
+        // vm.assume(amount < TOKEN_LIQUIDITY_LIMIT - 1e18);   
+        vm.assume(amount > 1000000 && amount < TOKEN_LIQUIDITY_LIMIT - TOKEN_LIQUIDITY_LIMIT*10/10000);   
+        updateOracleList();
+        
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        usdt.transfer(add1, amount + amount*10/10000);
+        vm.startPrank(add1);
+
+        usdt.approve(address(factory), amount + amount*10/10000);
+        factory.issuanceIndexTokens(address(usdt), amount, 0, 3000);
+        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), 3000);
+        assertEq(indexToken.balanceOf(add1), 0);
+
+    }
+
+    /**
     function testIssuanceWithEth() public {
         uint startAmount = 1e14;
         
@@ -154,7 +206,7 @@ contract FactoryFuzzTesting is Test, ContractDeployer {
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
     }
-   
+    */
     
     
 }
