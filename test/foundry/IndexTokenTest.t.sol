@@ -55,10 +55,10 @@ contract IndexTokenTest is Test {
         indexToken.setMinter(address(0x987), true);
     }
 
-    function setSupplyCeiling() public {
+    function setSupplyCeilingRevert() public {
         vm.startPrank(add1);
         vm.expectRevert("Ownable: caller is not the owner");
-        indexToken.setSupplyCeiling(1);
+        indexToken.setSupplyCeiling(1e18);
     }
 
     function testPauseRevert() public {

@@ -3,6 +3,7 @@ pragma solidity ^0.8.7;
 
 import "forge-std/Test.sol";
 import "forge-std/Vm.sol";
+import "forge-std/StdError.sol";
 import "../../contracts/factory/IndexFactory.sol";
 import "../../contracts/factory/IndexFactoryStorage.sol";
 import "../../contracts/test/Token.sol";
@@ -199,54 +200,52 @@ contract IndexFactoryBalancerMutations is Test, IndexFactoryBalancer {
         indexFactoryBalancer.secondReweightAction();
     }
 
-    // function testSecondReweightAction_DivisionToMultiplicationMutation() public {
-    //     uint256 chainSelector = 1;
-    //     uint256 chainValue = 100e18;
-    //     uint256 portfolioValue = 50e18;
-    //     uint256 chainSelectorTotalShares = 150e18;
+    function testSecondReweightAction_DivisionToMultiplicationMutation() public {
+        uint256 chainSelector = 1;
+        uint256 chainValue = 100e18;
+        uint256 portfolioValue = 50e18;
+        uint256 chainSelectorTotalShares = 150e18;
 
-    //     // Set portfolio value
-    //     indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
 
-    //     // Mock chain selectors and values
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.oracleChainSelectorsCount.selector),
-    //         abi.encode(2)
-    //     );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.oracleChainSelectorsCount.selector),
+            abi.encode(2)
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.oracleFilledCount.selector),
-    //         abi.encode(1)
-    //     );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.oracleFilledCount.selector),
+            abi.encode(1)
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.getOracleData.selector, 1),
-    //         abi.encode(new uint64[](0), new uint64[](0), new uint64[](0), new uint64[](uint64(4)))
-    //     );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getOracleData.selector, 1),
+            abi.encode(new uint64[](0), new uint64[](0), new uint64[](0), new uint64[](uint64(4)))
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
-    //         abi.encode(chainSelectorTotalShares)
-    //     );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryBalancer),
-    //         abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
-    //         abi.encode(chainValue)
-    //     );
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
 
-    //     vm.mockCall(
-    //         address(indexFactoryStorage),
-    //         abi.encodeWithSelector(indexFactoryStorage.allOracleChainSelectorTokenShares.selector, chainSelector),
-    //         abi.encode([25e18, 25e18, 25e18, 25e18])
-    //     );
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.allOracleChainSelectorTokenShares.selector, chainSelector),
+            abi.encode([25e18, 25e18, 25e18, 25e18])
+        );
 
-    //     indexFactoryBalancer.secondReweightAction();
-    // }
+        indexFactoryBalancer.secondReweightAction();
+    }
 
     function testSecondReweightAction_ChainSelectorEquality() public {
         uint256 chainSelector = 2;
@@ -277,7 +276,7 @@ contract IndexFactoryBalancerMutations is Test, IndexFactoryBalancer {
         vm.mockCall(
             address(indexFactoryStorage),
             abi.encodeWithSelector(indexFactoryStorage.getOracleData.selector, 1),
-            abi.encode(new uint64[](0), new uint64[](0), new uint64[](0), new uint64[](uint64(1)))
+            abi.encode(new uint64[](0), new uint64[](0), new uint64[](0), new uint64[](uint64(4)))
         );
 
         // vm.mockCall(
@@ -380,6 +379,421 @@ contract IndexFactoryBalancerMutations is Test, IndexFactoryBalancer {
         );
 
         indexFactoryBalancer.firstReweightAction();
+    }
+
+    // (chainValue * 100e18) / portfolioValue	(chainValue * 100e18) * portfolioValue
+    // chainValue * 100e18	chainValue / 100e18
+    // chainSelector == currentChainSelector	chainSelector != currentChainSelector
+
+    function testFirstReweightAction_ConditionMutation() public {
+        uint256 chainSelector = 1;
+        uint256 chainValue = 50e18;
+        uint256 portfolioValue = 100e18;
+        uint256 chainSelectorTotalShares = 40e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+    }
+
+    function testFirstReweightAction_EqualityMutation() public {
+        uint256 chainSelector = 1;
+        uint256 currentChainSelector = 2;
+        uint256 chainValue = 50e18;
+        uint256 portfolioValue = 100e18;
+        uint256 chainSelectorTotalShares = 40e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.currentChainSelector.selector),
+            abi.encode(currentChainSelector)
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+    }
+
+    function testFirstReweightAction_PortfolioValueMultiplicationMutation() public {
+        uint256 nonce = updatePortfolioNonce;
+        uint64 chainSelector = 1;
+        uint256 portfolioValue = 1e18;
+        uint256 chainValue = 50e18;
+        uint256 chainSelectorTotalShares = 40e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(nonce, portfolioValue);
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.getCurrentChainSelectorTotalShares.selector, nonce, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.allOracleChainSelectorTokenShares.selector, chainSelector),
+            abi.encode([10e18, 10e18, 10e18, 10e18])
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+    }
+
+    function testFirstReweightAction_ChainValueDivisionMutation() public {
+        uint256 nonce = updatePortfolioNonce;
+        uint64 chainSelector = 1;
+        uint256 portfolioValue = 100e18;
+        uint256 chainValue = 50e18;
+        uint256 chainSelectorTotalShares = 40e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(nonce, portfolioValue);
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.getCurrentChainSelectorTotalShares.selector, nonce, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.allOracleChainSelectorTokenShares.selector, chainSelector),
+            abi.encode([10e18, 10e18, 10e18, 10e18])
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, nonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+    }
+
+    function testSendMessage_AddressSwapMutation() public {
+        uint64 destinationChainSelector = 2;
+        address receiver = address(0x1234);
+        bytes memory data = "test data";
+
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(receiver),
+            data: data,
+            tokenAmounts: new Client.EVMTokenAmount[](0),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 900_000})),
+            feeToken: i_link
+        });
+
+        vm.mockCall(
+            address(router),
+            abi.encodeWithSelector(IRouterClient.getFee.selector, destinationChainSelector, message),
+            abi.encode(1 ether)
+        );
+
+        vm.mockCall(
+            address(router),
+            abi.encodeWithSelector(IRouterClient.ccipSend.selector, destinationChainSelector, message),
+            abi.encode(bytes32("mock-message-id"))
+        );
+
+        indexFactoryBalancer.sendMessage(destinationChainSelector, receiver, data, IndexFactoryBalancer.PayFeesIn.LINK);
+
+        message.feeToken = address(0);
+
+        vm.mockCall(
+            address(router),
+            abi.encodeWithSelector(IRouterClient.getFee.selector, destinationChainSelector, message),
+            abi.encode(1 ether)
+        );
+
+        vm.mockCall(
+            address(router),
+            abi.encodeWithSelector(IRouterClient.ccipSend.selector, destinationChainSelector, message),
+            abi.encode(bytes32("mock-message-id"))
+        );
+
+        indexFactoryBalancer.sendMessage(
+            destinationChainSelector, receiver, data, IndexFactoryBalancer.PayFeesIn.Native
+        );
+    }
+
+    function testSendLowerValueOtherChain_Mutations() public {
+        uint256 nonce = 1;
+        uint256 portfolioValue = 1e20;
+        uint64 chainSelector = 1;
+        uint256 chainSelectorTotalShares = 200e18;
+        uint256 chainValue = 50e18;
+        uint256[] memory oracleTokenShares = new uint256[](1);
+        oracleTokenShares[0] = 10e18;
+
+        vm.store(
+            address(this), keccak256(abi.encode(nonce, keccak256("reweightExtraPercentage"))), bytes32(uint256(100e18))
+        );
+
+        vm.store(address(this), keccak256(abi.encode(nonce, keccak256("extraWethByNonce"))), bytes32(uint256(10e18)));
+
+        {
+            vm.expectRevert(stdError.divisionError);
+            _sendLowerValueOtherChain(
+                nonce, portfolioValue, chainSelector, chainSelectorTotalShares, chainValue / 100e18, oracleTokenShares
+            );
+        }
+
+        {
+            vm.expectRevert(stdError.divisionError);
+            _sendLowerValueOtherChain(
+                nonce,
+                portfolioValue,
+                chainSelector,
+                chainSelectorTotalShares,
+                (chainValue * 100e18) * portfolioValue,
+                oracleTokenShares
+            );
+        }
+
+        {
+            vm.expectRevert(stdError.divisionError);
+            _sendLowerValueOtherChain(
+                nonce,
+                portfolioValue,
+                chainSelector,
+                chainSelectorTotalShares + ((chainValue * 100e18) / portfolioValue),
+                chainValue,
+                oracleTokenShares
+            );
+        }
+
+        {
+            vm.expectRevert(stdError.divisionError);
+            _sendLowerValueOtherChain(
+                nonce, portfolioValue, chainSelector, chainSelectorTotalShares, chainValue, oracleTokenShares
+            );
+        }
+
+        {
+            vm.expectRevert(stdError.divisionError);
+            _sendLowerValueOtherChain(
+                nonce, portfolioValue, chainSelector, chainSelectorTotalShares, chainValue, oracleTokenShares
+            );
+        }
+    }
+
+    function testSendExtraValueOtherChains_Mutations1() public {
+        uint256 nonce = 1;
+        uint256 portfolioValue = 1e20;
+        uint64 chainSelector = 1;
+        uint256 chainSelectorTotalShares = 200e18;
+        uint256 chainValue = 50e18;
+        uint256[] memory oracleTokenShares = new uint256[](1);
+        oracleTokenShares[0] = 10e18;
+
+        vm.store(
+            address(this), keccak256(abi.encode(nonce, keccak256("reweightExtraPercentage"))), bytes32(uint256(100e18))
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.allCurrentChainSelectorTokens.selector, chainSelector),
+            abi.encode(new address[](0))
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.allOracleChainSelectorTokens.selector, chainSelector),
+            abi.encode(new address[](0))
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.allCurrentChainSelectorVersions.selector, chainSelector),
+            abi.encode(new uint256[](0))
+        );
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.allOracleChainSelectorVersions.selector, chainSelector),
+            abi.encode(new uint256[](0))
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.crossChainFactoryBySelector.selector, chainSelector),
+            abi.encode(address(0x1234))
+        );
+
+        {
+            vm.expectRevert(stdError.arithmeticError);
+            _sendExtraValueOtherChains(
+                nonce,
+                portfolioValue,
+                chainSelector,
+                chainSelectorTotalShares,
+                (chainValue * 100e18) * portfolioValue,
+                oracleTokenShares
+            );
+        }
+
+        {
+            vm.expectRevert(stdError.divisionError);
+            _sendExtraValueOtherChains(
+                nonce, portfolioValue, chainSelector, chainSelectorTotalShares, chainValue / 100e18, oracleTokenShares
+            );
+        }
+
+        {
+            uint256 chainCurrentRealShare = (chainValue * 100e18) / portfolioValue;
+            vm.store(
+                address(this),
+                keccak256(abi.encode(nonce, keccak256("reweightExtraPercentage"))),
+                bytes32(uint256(100e18))
+            );
+
+            vm.expectRevert();
+            _sendExtraValueOtherChains(
+                nonce, portfolioValue, chainSelector, chainCurrentRealShare, chainValue, oracleTokenShares
+            );
+            // _sendExtraValueOtherChains(
+            //     nonce, portfolioValue, chainSelector, chainSelectorTotalShares, chainValue, oracleTokenShares
+            // );
+        }
+
+        {
+            vm.expectRevert(stdError.divisionError);
+            _sendExtraValueOtherChains(
+                nonce,
+                portfolioValue,
+                chainSelector,
+                chainSelectorTotalShares + ((chainValue * 100e18) / portfolioValue),
+                chainValue,
+                oracleTokenShares
+            );
+        }
+    }
+
+    function testAskValues_Mutations() public {
+        uint256 nonce = 1;
+        uint64 chainSelector = 1;
+        uint256 wethAmount = 10e18;
+        uint256 ethValue = 1000e18;
+        uint256 updateNonce = 1;
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.currentChainSelectorsCount.selector),
+            abi.encode(2)
+        );
+
+        vm.mockCall(
+            address(factoryStorage), abi.encodeWithSelector(factoryStorage.currentFilledCount.selector), abi.encode(1)
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.getCurrentData.selector, 1),
+            abi.encode(0, 0, 0, new uint64[](0))
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.allCurrentChainSelectorTokens.selector, chainSelector),
+            abi.encode(new address[](0))
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.allCurrentChainSelectorVersions.selector, chainSelector),
+            abi.encode(new uint256[](0))
+        );
+
+        vm.mockCall(
+            address(factoryStorage),
+            abi.encodeWithSelector(factoryStorage.tokenSwapFee.selector, address(weth)),
+            abi.encode(3000)
+        );
+
+        vm.mockCall(
+            address(factoryStorage), abi.encodeWithSelector(factoryStorage.vault.selector), abi.encode(address(vault))
+        );
+
+        vm.mockCall(
+            address(weth),
+            abi.encodeWithSelector(IERC20(address(weth)).balanceOf.selector, address(vault)),
+            abi.encode(wethAmount)
+        );
+
+        vm.mockCall(
+            address(this), abi.encodeWithSelector(this.convertEthToUsd.selector, wethAmount), abi.encode(ethValue)
+        );
+
+        {
+            vm.store(address(this), keccak256(abi.encode(nonce, keccak256("extraWethByNonce"))), bytes32(uint256(0)));
+
+            vm.expectRevert();
+            askValues();
+        }
+
+        {
+            vm.mockCall(
+                address(indexFactoryStorage),
+                abi.encodeWithSelector(indexFactoryStorage.allCurrentChainSelectorTokens.selector, chainSelector),
+                abi.encode([address(token0)])
+            );
+
+            askValues();
+        }
+
+        {
+            vm.store(
+                address(this),
+                keccak256(abi.encode(updateNonce, keccak256("portfolioTotalValueByNonce"))),
+                bytes32(uint256(ethValue))
+            );
+
+            vm.expectRevert();
+            askValues();
+        }
+
+        {
+            vm.store(
+                address(this),
+                keccak256(abi.encode(updateNonce, keccak256("tokenValueByNonce"))),
+                bytes32(uint256(ethValue))
+            );
+
+            vm.expectRevert();
+            askValues();
+        }
+
+        {
+            vm.store(
+                address(this),
+                keccak256(abi.encode(updateNonce, keccak256("chainValueByNonce"))),
+                bytes32(uint256(ethValue))
+            );
+
+            vm.expectRevert();
+            askValues();
+        }
     }
 
     function updateOracleList() public {

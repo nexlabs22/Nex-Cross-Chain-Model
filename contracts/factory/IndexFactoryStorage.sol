@@ -330,7 +330,7 @@ contract IndexFactoryStorage is Initializable, ChainlinkClient, ProposableOwnabl
      * @param _chainDecimals The decimals of the chain.
      * @return The amount in Wei.
      */
-    function _toWei(int256 _amount, uint8 _amountDecimals, uint8 _chainDecimals) private pure returns (int256) {
+    function _toWei(int256 _amount, uint8 _amountDecimals, uint8 _chainDecimals) internal pure returns (int256) {
         if (_chainDecimals > _amountDecimals) {
             return _amount * int256(10 ** (_chainDecimals - _amountDecimals));
         } else {
