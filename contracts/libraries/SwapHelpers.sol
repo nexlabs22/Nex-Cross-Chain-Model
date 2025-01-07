@@ -63,6 +63,9 @@ library SwapHelpers {
         uint256 amountIn,
         address recipient
     ) internal returns (uint256 amountOut) {
+        require(tokenIn != address(0), "Invalid tokenIn address");
+        require(tokenOut != address(0), "Invalid tokenOut address");
+        require(amountIn > 0, "Amount must be greater than zero");
         if (poolFee > 0) {
             amountOut = swapVersion3(uniswapRouter, poolFee, tokenIn, tokenOut, amountIn, recipient);
         } else {

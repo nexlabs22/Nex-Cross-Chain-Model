@@ -91,7 +91,11 @@ contract IndexToken is
         address _feeReceiver,
         uint256 _supplyCeiling
     ) external initializer {
-        require(_feeReceiver != address(0));
+        // Validate input parameters
+        require(bytes(tokenName).length > 0, "Token name cannot be empty");
+        require(bytes(tokenSymbol).length > 0, "Token symbol cannot be empty");
+        require(_feeRatePerDayScaled > 0, "Fee rate must be greater than zero");
+        require(_feeReceiver != address(0), "Invalid fee receiver address");
 
         __Ownable_init();
         __Pausable_init();
@@ -104,6 +108,10 @@ contract IndexToken is
         feeTimestamp = block.timestamp;
     }
 
+    // Function to withdraw Ether from the contract
+    function withdrawEther() external onlyOwner {
+        payable(owner()).transfer(address(this).balance);
+    }
 
    /**
     * @dev The contract's fallback function that does not allow direct payments to the contract.
@@ -145,6 +153,9 @@ contract IndexToken is
     /// @param from address
     /// @param amount uint256
     function _burnTo(address from, uint256 amount) internal whenNotPaused {
+        // Validate input parameters
+        require(from != address(0), "Invalid from address");
+        require(amount > 0, "Amount must be greater than zero");
         require(!isRestricted[from], "from is restricted");
         require(!isRestricted[msg.sender], "msg.sender is restricted");
         _mintToFeeReceiver();
@@ -205,6 +216,8 @@ contract IndexToken is
     /// @notice Callable only by the methodoligst to store on chain data about the underlying weight of the token
     /// @param _methodology string
     function setMethodology(string memory _methodology) external onlyMethodologist {
+        // Validate input parameters
+        require(bytes(_methodology).length > 0, "Methodology cannot be empty");
         methodology = _methodology;
         emit MethodologySet(_methodology);
     }
@@ -269,6 +282,10 @@ contract IndexToken is
     /// @param amount uint256
     /// @return bool
     function transfer(address to, uint256 amount) public override whenNotPaused returns (bool) {
+        // Validate input parameters
+        require(to != address(0), "Invalid to address");
+        require(amount > 0, "Amount must be greater than zero");
+
         require(!isRestricted[msg.sender], "msg.sender is restricted");
         require(!isRestricted[to], "to is restricted");
 
@@ -286,6 +303,11 @@ contract IndexToken is
         address to,
         uint256 amount
     ) public override whenNotPaused returns (bool) {
+        // Validate input parameters
+        require(from != address(0), "Invalid from address");
+        require(to != address(0), "Invalid to address");
+        require(amount > 0, "Amount must be greater than zero");
+
         require(!isRestricted[msg.sender], "msg.sender is restricted");
         require(!isRestricted[to], "to is restricted");
         require(!isRestricted[from], "from is restricted");

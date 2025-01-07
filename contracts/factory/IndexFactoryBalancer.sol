@@ -94,6 +94,11 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         //addresses
         address _weth
     ) external initializer {
+        // Validate input parameters
+        require(_currentChainSelector > 0, "Invalid chain selector");
+        require(_factoryStorage != address(0), "Invalid factory storage address");
+        require(_chainlinkToken != address(0), "Invalid Chainlink token address");
+        require(_router != address(0), "Invalid router address");
         __ccipReceiver_init(_router);
         __Ownable_init();
         //set chain selector
@@ -204,6 +209,11 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         address _recipient,
         uint24 _swapFee
     ) public returns (uint outputAmount) {
+        // Validate input parameters
+        require(tokenIn != address(0), "Invalid tokenIn address");
+        require(tokenOut != address(0), "Invalid tokenOut address");
+        require(amountIn > 0, "Amount must be greater than zero");
+        require(_recipient != address(0), "Invalid recipient address");
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
         outputAmount = SwapHelpers.swap(
@@ -377,6 +387,10 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         bytes memory _data,
         MessageSender.PayFeesIn payFeesIn
     ) public returns(bytes32) {
+        // Validate input parameters
+        require(destinationChainSelector > 0, "Invalid destination chain selector");
+        require(receiver != address(0), "Invalid receiver address");
+        require(_data.length > 0, "Data cannot be empty");
         return MessageSender.sendMessage(
             i_router,
             i_link,

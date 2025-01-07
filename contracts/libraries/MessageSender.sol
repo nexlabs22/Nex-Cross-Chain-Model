@@ -88,6 +88,11 @@ library MessageSender {
         bytes memory _data,
         PayFeesIn payFeesIn
     ) internal returns(bytes32) {
+        require(i_router != address(0), "Invalid i_router address");
+        require(i_link != address(0), "Invalid i_link address");
+        require(destinationChainSelector != 0, "Invalid destinationChainSelector");
+        require(receiver != address(0), "Invalid receiver address");
+        require(_data.length > 0, "Invalid data");
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: _data,

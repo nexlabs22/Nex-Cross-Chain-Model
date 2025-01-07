@@ -152,6 +152,10 @@ contract IndexFactory is
         //addresses
         address _weth
     ) external initializer {
+        // Validate input parameters
+        require(_currentChainSelector > 0, "Invalid chain selector");
+        require(_token != address(0), "Invalid token address");
+        require(_chainlinkToken != address(0), "Invalid Chainlink token address");
         __ccipReceiver_init(_router);
         __Ownable_init();
         __ReentrancyGuard_init();
@@ -313,6 +317,12 @@ contract IndexFactory is
         uint _crossChainFee,
         uint24 _tokenInSwapFee
     ) public {
+        // Validate input parameters
+        require(_tokenIn != address(0), "Invalid input token address");
+        require(_inputAmount > 0, "Input amount must be greater than zero");
+        require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
+        require(_tokenInSwapFee > 0, "Invalid input token swap fee");
+
         IWETH weth = factoryStorage.weth();
         Vault vault = factoryStorage.vault();
 
@@ -359,6 +369,11 @@ contract IndexFactory is
         uint _inputAmount,
         uint _crossChainFee
     ) external payable {
+        // Validate input parameters
+        require(_inputAmount > 0, "Input amount must be greater than zero");
+        require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
+        require(msg.value >= _inputAmount, "Insufficient ETH sent");
+
         uint feeAmount = FeeCalculation.calculateFee(_inputAmount, feeRate);
         uint finalAmount = _inputAmount + feeAmount + _crossChainFee;
         require(msg.value >= finalAmount, "lower than required amount");
@@ -576,6 +591,11 @@ contract IndexFactory is
         address _tokenOut,
         uint24 _tokenOutSwapFee
     ) public {
+        // Validate input parameters
+        require(amountIn > 0, "Amount must be greater than zero");
+        require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
+        require(_tokenOut != address(0), "Invalid output token address");
+        require(_tokenOutSwapFee > 0, "Invalid output token swap fee");
         uint burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         redemptionNonce += 1;
         redemptionData[redemptionNonce].requester = msg.sender;
@@ -830,6 +850,10 @@ contract IndexFactory is
         bytes memory _data,
         MessageSender.PayFeesIn payFeesIn
     ) public returns(bytes32) {
+        // Validate input parameters
+        require(destinationChainSelector > 0, "Invalid destination chain selector");
+        require(receiver != address(0), "Invalid receiver address");
+        require(_data.length > 0, "Data cannot be empty");
         return MessageSender.sendMessage(
             i_router,
             i_link,

@@ -166,6 +166,10 @@ contract IndexFactoryStorage is
         address _swapRouterV2,
         address _factoryV2
     ) external initializer {
+        // Validate input parameters
+        require(_currentChainSelector > 0, "Invalid chain selector");
+        require(_token != address(0), "Invalid token address");
+        require(_chainlinkToken != address(0), "Invalid Chainlink token address");
         __Ownable_init();
         //set chain selector
         currentChainSelector = _currentChainSelector;
@@ -429,6 +433,11 @@ contract IndexFactoryStorage is
     public
     recordChainlinkFulfillment(requestId)
   {
+    // Validate input parameters
+    require(_tokens.length > 0, "Tokens array cannot be empty");
+    require(_marketShares.length == _tokens.length, "Market shares array length must match tokens array length");
+    require(_swapFees.length == _tokens.length, "Swap fees array length must match tokens array length");
+    require(_chainSelectors.length == _tokens.length, "Chain selectors array length must match tokens array length");
     insertOracleData(_tokens, _marketShares, _swapFees, _chainSelectors);
     
     }

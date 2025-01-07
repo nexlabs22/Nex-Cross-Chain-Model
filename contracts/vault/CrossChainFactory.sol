@@ -142,6 +142,9 @@ contract CrossChainIndexFactory is
         // address _factoryV2,
         address _toUsdPriceFeed
     ) external initializer {
+        require(_currentChainSelector > 0, "Invalid chain selector");
+        require(_vault != address(0), "Invalid vault address");
+        require(_chainlinkToken != address(0), "Invalid Chainlink token address");
         CCIPReceiver(_router);
         __Ownable_init();
         __Pausable_init();
