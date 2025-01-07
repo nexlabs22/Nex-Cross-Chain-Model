@@ -170,6 +170,15 @@ contract IndexFactoryStorage is
         require(_currentChainSelector > 0, "Invalid chain selector");
         require(_token != address(0), "Invalid token address");
         require(_chainlinkToken != address(0), "Invalid Chainlink token address");
+        require(_oracleAddress != address(0), "Invalid oracle address");
+        require(_externalJobId != "", "Invalid external job ID");
+        require(_toUsdPriceFeed != address(0), "Invalid price feed address");
+        require(_weth != address(0), "Invalid WETH address");
+        require(_swapRouterV3 != address(0), "Invalid Uniswap V3 swap router address");
+        require(_factoryV3 != address(0), "Invalid Uniswap V3 factory address");
+        require(_swapRouterV2 != address(0), "Invalid Uniswap V2 swap router address");
+        require(_factoryV2 != address(0), "Invalid Uniswap V2 factory address");
+        
         __Ownable_init();
         //set chain selector
         currentChainSelector = _currentChainSelector;

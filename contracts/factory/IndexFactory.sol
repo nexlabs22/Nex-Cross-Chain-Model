@@ -156,6 +156,9 @@ contract IndexFactory is
         require(_currentChainSelector > 0, "Invalid chain selector");
         require(_token != address(0), "Invalid token address");
         require(_chainlinkToken != address(0), "Invalid Chainlink token address");
+        require(_router != address(0), "Invalid router address");
+        require(_weth != address(0), "Invalid WETH address");
+
         __ccipReceiver_init(_router);
         __Ownable_init();
         __ReentrancyGuard_init();
@@ -731,7 +734,11 @@ contract IndexFactory is
         address outputToken = redemptionData[nonce].outputToken;
         uint24 outputTokenSwapFee = redemptionData[nonce].outputTokenSwapFee;
         uint fee = FeeCalculation.calculateFee(wethAmount, feeRate);
-        weth.transfer(feeReceiver, fee);
+        // weth.transfer(feeReceiver, fee);
+        require(
+            weth.transfer(address(feeReceiver), fee),
+            "Fee transfer failed"
+        );
         if(outputToken == address(weth)){
         // weth.transfer(requester, wethAmount - fee);
         weth.withdraw(wethAmount - fee);

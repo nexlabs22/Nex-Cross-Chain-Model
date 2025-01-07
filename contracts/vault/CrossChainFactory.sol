@@ -145,6 +145,13 @@ contract CrossChainIndexFactory is
         require(_currentChainSelector > 0, "Invalid chain selector");
         require(_vault != address(0), "Invalid vault address");
         require(_chainlinkToken != address(0), "Invalid Chainlink token address");
+        require(_router != address(0), "Invalid router address");
+        require(_weth != address(0), "Invalid WETH address");
+        require(_swapRouterV3 != address(0), "Invalid swap router v3 address");
+        require(_factoryV3 != address(0), "Invalid factory v3 address");
+        require(_swapRouterV2 != address(0), "Invalid swap router v2 address");
+        // require(_factoryV2 != address(0), "Invalid factory v2 address");
+        require(_toUsdPriceFeed != address(0), "Invalid price feed address");
         CCIPReceiver(_router);
         __Ownable_init();
         __Pausable_init();
@@ -407,7 +414,6 @@ contract CrossChainIndexFactory is
         return messageId;
     }
 
-    uint64 public testData3;
 
 
     /// handle a received message
@@ -701,8 +707,6 @@ contract CrossChainIndexFactory is
         uint nonce;
         uint[] extraData;
     }
-    uint public testData;
-    uint public testData2;
     function _handleFirstReweightAction(
         HandleFirstReweightActionInputs memory inputData
     ) private {
@@ -723,8 +727,6 @@ contract CrossChainIndexFactory is
             inputData.nonce
         );
 
-        // testData = inputData.sourceChainSelector;
-        // testData2 = crossChainToken[inputData.sourceChainSelector];
         uint crossChainTokenAmount = swap(
             address(weth),
             address(crossChainToken[inputData.sourceChainSelector]),
@@ -780,9 +782,7 @@ contract CrossChainIndexFactory is
         SwapFirstReweightActionVars memory vars;
         // swapData.chainSelectorCurrentTokensCount = data.chainSelectorCurrentTokensCount;
         vars.initialWethBalance = weth.balanceOf(address(vault));
-        testData = IERC20(oracleTokens[0]).balanceOf(
-                    address(vault)
-                );
+        
         for (uint i = 0; i < currentTokens.length; i++) {
             uint wethAmount;
             if (currentTokens[i] == address(weth)) {
@@ -843,9 +843,6 @@ contract CrossChainIndexFactory is
             }
         }
 
-        testData2 = IERC20(oracleTokens[0]).balanceOf(
-                    address(vault)
-                );
         return vars.extraWethAmount;
     }
 

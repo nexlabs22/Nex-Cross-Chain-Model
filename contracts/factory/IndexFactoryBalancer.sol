@@ -99,6 +99,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         require(_factoryStorage != address(0), "Invalid factory storage address");
         require(_chainlinkToken != address(0), "Invalid Chainlink token address");
         require(_router != address(0), "Invalid router address");
+        require(_weth != address(0), "Invalid WETH address");
         __ccipReceiver_init(_router);
         __Ownable_init();
         //set chain selector
