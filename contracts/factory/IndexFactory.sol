@@ -316,7 +316,7 @@ contract IndexFactory is
         uint _inputAmount,
         uint _crossChainFee,
         uint24 _tokenInSwapFee
-    ) public nonReentrant {
+    ) public {
         // Validate input parameters
         require(_tokenIn != address(0), "Invalid input token address");
         require(_inputAmount > 0, "Input amount must be greater than zero");
@@ -355,8 +355,11 @@ contract IndexFactory is
         uint feeWethAmount = wethAmountBeforFee*feeRate/10000;
         uint wethAmount = wethAmountBeforFee - feeWethAmount;
 
-        //giving fee to the fee receiver
-        weth.transfer(address(feeReceiver), feeWethAmount);
+        // Transfer fee to the fee receiver and check the result
+        require(
+            weth.transfer(address(feeReceiver), feeWethAmount),
+            "Fee transfer failed"
+        );
         
         //run issuance
         _issuance(_tokenIn, wethAmount, _crossChainFee);
@@ -381,7 +384,11 @@ contract IndexFactory is
         require(msg.value >= finalAmount, "lower than required amount");
         //transfer fee to the owner
         weth.deposit{value: finalAmount}();
-        weth.transfer(address(feeReceiver), feeAmount);
+         // Transfer fee to the fee receiver and check the result
+        require(
+            weth.transfer(address(feeReceiver), feeAmount),
+            "Fee transfer failed"
+        );
         //set mappings
         issuanceNonce++;
         issuanceData[issuanceNonce].requester = msg.sender;
@@ -430,15 +437,15 @@ contract IndexFactory is
                 );
             }
         }
-        // emit RequestIssuance(
-        //         issuanceData[issuanceNonce].messageId, 
-        //         issuanceNonce,
-        //         msg.sender, 
-        //         _tokenIn,
-        //         issuanceData[issuanceNonce].inputAmount, 
-        //         0, 
-        //         block.timestamp
-        //     );
+        emit RequestIssuance(
+                issuanceData[issuanceNonce].messageId, 
+                issuanceNonce,
+                msg.sender, 
+                _tokenIn,
+                issuanceData[issuanceNonce].inputAmount, 
+                0, 
+                block.timestamp
+            );
     }
 
     /**
