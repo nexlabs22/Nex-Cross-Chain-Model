@@ -106,6 +106,7 @@ contract CounterTest is Test, ContractDeployer {
         oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }
 
+    
     function testOracleList() public {
         initializeOracleList();
         // token  oracle list
@@ -262,7 +263,7 @@ contract CounterTest is Test, ContractDeployer {
         
     }
     
-
+    
     function testRebalanceSameTokens2() public {
         initializeOracleList();
         
@@ -335,7 +336,7 @@ contract CounterTest is Test, ContractDeployer {
         // console.log("testData2", crossChainIndexFactory.testData2());
         // console.log(weth.balanceOf(address(factoryBalancer)));   
     }
-
+    
     
 
     

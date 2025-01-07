@@ -316,7 +316,7 @@ contract IndexFactory is
         uint _inputAmount,
         uint _crossChainFee,
         uint24 _tokenInSwapFee
-    ) public {
+    ) public nonReentrant {
         // Validate input parameters
         require(_tokenIn != address(0), "Invalid input token address");
         require(_inputAmount > 0, "Input amount must be greater than zero");
@@ -327,6 +327,12 @@ contract IndexFactory is
         Vault vault = factoryStorage.vault();
 
         uint feeAmount = FeeCalculation.calculateFee(_inputAmount, feeRate);
+        
+        //set mappings
+        issuanceNonce++;
+        issuanceData[issuanceNonce].requester = msg.sender;
+        issuanceData[issuanceNonce].inputAmount = _inputAmount;
+        issuanceData[issuanceNonce].inputToken = _tokenIn;
         
         // IERC20(_tokenIn).transferFrom(msg.sender, address(indexToken), _inputAmount + feeAmount);
         require(
@@ -351,11 +357,7 @@ contract IndexFactory is
 
         //giving fee to the fee receiver
         weth.transfer(address(feeReceiver), feeWethAmount);
-        //set mappings
-        issuanceNonce++;
-        issuanceData[issuanceNonce].requester = msg.sender;
-        issuanceData[issuanceNonce].inputAmount = _inputAmount;
-        issuanceData[issuanceNonce].inputToken = _tokenIn;
+        
         //run issuance
         _issuance(_tokenIn, wethAmount, _crossChainFee);
     }

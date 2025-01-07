@@ -96,6 +96,7 @@ contract IndexToken is
         require(bytes(tokenSymbol).length > 0, "Token symbol cannot be empty");
         require(_feeRatePerDayScaled > 0, "Fee rate must be greater than zero");
         require(_feeReceiver != address(0), "Invalid fee receiver address");
+        require(_supplyCeiling > 0, "Supply ceiling must be greater than zero");
 
         __Ownable_init();
         __Pausable_init();
@@ -110,7 +111,11 @@ contract IndexToken is
 
     // Function to withdraw Ether from the contract
     function withdrawEther() external onlyOwner {
-        payable(owner()).transfer(address(this).balance);
+        uint256 balance = address(this).balance;
+        require(balance > 0, "No Ether to withdraw");
+
+        (bool success, ) = payable(owner()).call{value: balance}("");
+        require(success, "Ether transfer failed");
     }
 
    /**
@@ -168,6 +173,10 @@ contract IndexToken is
     /// @param from address
     /// @param amount uint256
     function burn(address from, uint256 amount) public whenNotPaused onlyMinter {
+        // Validate input parameters
+        require(from != address(0), "Invalid from address");
+        require(amount > 0, "Amount must be greater than zero");
+
         require(!isRestricted[from], "from is restricted");
         require(!isRestricted[msg.sender], "msg.sender is restricted");
         _mintToFeeReceiver();

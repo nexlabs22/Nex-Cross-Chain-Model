@@ -342,6 +342,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         
         vault.setOperator(address(indexFactoryBalancer), true);
         mockRouter.setFactoryChainSelector(1, address(indexFactoryBalancer));
+        indexFactoryStorage.setIndexFactoryBalancer(address(indexFactoryBalancer));
 
         // indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), 3000);
 

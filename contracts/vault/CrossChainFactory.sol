@@ -242,6 +242,11 @@ contract CrossChainIndexFactory is
         address _recipient,
         uint24 _swapFee
     ) public returns (uint outputAmount) {
+        // Validate input parameters
+        require(tokenIn != address(0), "Invalid tokenIn address");
+        require(tokenOut != address(0), "Invalid tokenOut address");
+        require(amountIn > 0, "Amount must be greater than zero");
+        require(_recipient != address(0), "Invalid recipient address");
         // ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         // IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
         outputAmount = SwapHelpers.swap(
@@ -860,35 +865,35 @@ contract CrossChainIndexFactory is
     function _handleSecondReweightAction(
         HandleSecondReweightActionInputs memory inputData
     ) internal {
-        // uint crossChainWethAmount = swap(
-        //     inputData.tokenAddress,
-        //     address(weth),
-        //     inputData.tokenAmount,
-        //     address(this),
-        //     3000
-        // );
+        uint crossChainWethAmount = swap(
+            inputData.tokenAddress,
+            address(weth),
+            inputData.tokenAmount,
+            address(this),
+            3000
+        );
 
-        // swapSecondReweightAction(
-        //     inputData.currentTokens,
-        //     inputData.oracleTokens,
-        //     inputData.targetFees,
-        //     inputData.targetFees2,
-        //     inputData.oracleTokenShares,
-        //     crossChainWethAmount,
-        //     inputData.extraData
-        // );
+        swapSecondReweightAction(
+            inputData.currentTokens,
+            inputData.oracleTokens,
+            inputData.targetFees,
+            inputData.targetFees2,
+            inputData.oracleTokenShares,
+            crossChainWethAmount,
+            inputData.extraData
+        );
 
-        // uint[] memory zeroUintArr = new uint[](0);
-        // address[] memory zeroAddArr = new address[](0);
+        uint[] memory zeroUintArr = new uint[](0);
+        address[] memory zeroAddArr = new address[](0);
         
-        // bytes memory data = abi.encode(
-        //     4,
-        //     zeroAddArr,
-        //     zeroAddArr,
-        //     inputData.nonce,
-        //     zeroUintArr,
-        //     zeroUintArr
-        // );
+        bytes memory data = abi.encode(
+            4,
+            zeroAddArr,
+            zeroAddArr,
+            inputData.nonce,
+            zeroUintArr,
+            zeroUintArr
+        );
         // sendMessage(
         //     inputData.sourceChainSelector,
         //     inputData.sender,
@@ -915,6 +920,7 @@ contract CrossChainIndexFactory is
         uint crossChainWethAmount,
         uint[] memory extraData
     ) internal {
+        
         SwapSecondReweightActionVars memory vars;
         vars.chainSelectorTotalShares = extraData[1];
         vars.chainSelectorCurrentTokensCount = currentTokens.length;
@@ -978,13 +984,18 @@ contract CrossChainIndexFactory is
         bytes memory _data,
         PayFeesIn payFeesIn
     ) public returns (bytes32) {
+        // Validate input parameters
+        require(destinationChainSelector > 0, "Invalid destination chain selector");
+        require(receiver != address(0), "Invalid receiver address");
+        require(_data.length > 0, "Data cannot be empty");
+
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: _data,
             tokenAmounts: new Client.EVMTokenAmount[](0),
             // extraArgs: "",
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 2000_000}) // Additional arguments, setting gas limit and non-strict sequency mode
+                Client.EVMExtraArgsV1({gasLimit: 900_000}) // Additional arguments, setting gas limit and non-strict sequency mode
             ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });

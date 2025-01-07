@@ -438,6 +438,7 @@ contract IndexFactoryStorage is
     require(_marketShares.length == _tokens.length, "Market shares array length must match tokens array length");
     require(_swapFees.length == _tokens.length, "Swap fees array length must match tokens array length");
     require(_chainSelectors.length == _tokens.length, "Chain selectors array length must match tokens array length");
+
     insertOracleData(_tokens, _marketShares, _swapFees, _chainSelectors);
     
     }

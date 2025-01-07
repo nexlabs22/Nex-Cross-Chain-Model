@@ -476,7 +476,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             );
             extraWethByNonce[nonce] += wethAmount;
         }else if(actionType == 4){
-            // factoryStorage.updateCurrentList();
+            factoryStorage.updateCurrentList();
         }
     }
 
@@ -1144,12 +1144,12 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             vars.extraData
         );
 
-        // sendToken(
-        //     chainSelector,
-        //     data,
-        //     crossChainIndexFactory,
-        //     tokensToSendArray,
-        //     PayFeesIn.LINK
-        // );
+        sendToken(
+            chainSelector,
+            data,
+            crossChainIndexFactory,
+            tokensToSendArray,
+            PayFeesIn.LINK
+        );
     }
 }
