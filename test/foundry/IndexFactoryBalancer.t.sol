@@ -19,20 +19,13 @@ import "../../contracts/test/MockV3Aggregator.sol";
 import "./ContractDeployer.sol";
 
 contract CounterTest is Test, ContractDeployer {
-
     using stdStorage for StdStorage;
 
     uint256 internal constant SCALAR = 1e20;
 
-
     uint256 mainnetFork;
 
-    
-
-
-
     function setUp() public {
-        
         deployAllContracts();
         addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, 1000e18, 1e18);
@@ -41,7 +34,6 @@ contract CounterTest is Test, ContractDeployer {
         addLiquidityETH(positionManager, factoryAddress, token4, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, crossChainToken, wethAddress, 1000e18, 1e18);
         addLiquidityETH(positionManager, factoryAddress, usdt, wethAddress, 1000e18, 1e18);
-        
     }
 
     function testInitialized() public {
@@ -60,8 +52,7 @@ contract CounterTest is Test, ContractDeployer {
         UNISWAP_V3
     }
 
-    function initializeOracleList(
-    ) public {
+    function initializeOracleList() public {
         address[] memory assetList = new address[](5);
         assetList[0] = address(token0);
         assetList[1] = address(token1);
@@ -69,14 +60,14 @@ contract CounterTest is Test, ContractDeployer {
         assetList[3] = address(token3);
         assetList[4] = address(token4);
 
-        uint[] memory tokenShares = new uint[](5);
+        uint256[] memory tokenShares = new uint256[](5);
         tokenShares[0] = 20e18;
         tokenShares[1] = 20e18;
         tokenShares[2] = 20e18;
         tokenShares[3] = 20e18;
         tokenShares[4] = 20e18;
 
-        uint[] memory swapFees = new uint[](5);
+        uint256[] memory swapFees = new uint256[](5);
         swapFees[0] = 3000;
         swapFees[1] = 3000;
         swapFees[2] = 3000;
@@ -97,8 +88,8 @@ contract CounterTest is Test, ContractDeployer {
 
     function updateOracleList(
         address[] memory assetList,
-        uint[] memory tokenShares,
-        uint[] memory swapFees,
+        uint256[] memory tokenShares,
+        uint256[] memory swapFees,
         uint64[] memory chains
     ) public {
         link.transfer(address(indexFactoryStorage), 1e17);
@@ -126,53 +117,52 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token2)), 20e18);
         assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token3)), 20e18);
         assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token4)), 20e18);
-        
+
         // token shares
         assertEq(indexFactoryStorage.tokenSwapFee(address(token0)), 3000);
         assertEq(indexFactoryStorage.tokenSwapFee(address(token1)), 3000);
         assertEq(indexFactoryStorage.tokenSwapFee(address(token2)), 3000);
         assertEq(indexFactoryStorage.tokenSwapFee(address(token3)), 3000);
         assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3000);
-        
     }
 
     function showPercentages() public {
-        uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
-        uint totalPortfolioBalance;
-        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
-        for (uint i = 0; i < totalCurrentList; i++) {
+        uint256 portfolioBalance = indexFactoryStorage.getPortfolioBalance();
+        uint256 totalPortfolioBalance;
+        uint256 totalCurrentList = indexFactoryStorage.totalCurrentList();
+        for (uint256 i = 0; i < totalCurrentList; i++) {
             address tokenAddress = indexFactoryStorage.currentList(i);
             uint64 chainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
-            if(chainSelector == 1){
-                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
-                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+            if (chainSelector == 1) {
+                uint256 vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                uint256 tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
                 totalPortfolioBalance += tokenValue;
-            }else{
-                address payable crossChainIndexFactory = payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
+            } else {
+                address payable crossChainIndexFactory =
+                    payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
                 Vault vault = CrossChainIndexFactory(crossChainIndexFactory).vault();
-                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
-                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                uint256 vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                uint256 tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
                 totalPortfolioBalance += tokenValue;
             }
-
         }
-        for (uint i = 0; i < totalCurrentList; i++) {
+        for (uint256 i = 0; i < totalCurrentList; i++) {
             address tokenAddress = indexFactoryStorage.currentList(i);
             uint64 chainSelector = indexFactoryStorage.tokenChainSelector(tokenAddress);
-            if(chainSelector == 1){
-                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
-                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
-                uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
+            if (chainSelector == 1) {
+                uint256 vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                uint256 tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                uint256 percentage = (tokenValue * 1e18) / totalPortfolioBalance;
                 console.log("token", i, "percentage", percentage);
-            }else{
-                address payable crossChainIndexFactory = payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
+            } else {
+                address payable crossChainIndexFactory =
+                    payable(indexFactoryStorage.crossChainFactoryBySelector(chainSelector));
                 Vault vault = CrossChainIndexFactory(crossChainIndexFactory).vault();
-                uint vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
-                uint tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
-                uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
+                uint256 vaultBalance = IERC20(tokenAddress).balanceOf(address(vault));
+                uint256 tokenValue = indexFactoryStorage.getAmountOut(tokenAddress, address(weth), vaultBalance, 3000);
+                uint256 percentage = (tokenValue * 1e18) / totalPortfolioBalance;
                 console.log("token", i, "percentage", percentage);
             }
-
         }
     }
 
@@ -186,18 +176,18 @@ contract CounterTest is Test, ContractDeployer {
 
     function testIssuanceWithEth() public {
         initializeOracleList();
-        
+
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
         vm.stopPrank();
         payable(add1).transfer(11e18);
         vm.startPrank(add1);
-        
+
         console.log(indexToken.balanceOf(add1));
-        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
+        factory.issuanceIndexTokensWithEth{value: (1e18 * 1001) / 1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
-        
+
         // console.log("token 0 balance", token0.balanceOf(address(vault)));
         // console.log("token 1 balance", token1.balanceOf(address(vault)));
         // console.log("token 2 balance", token2.balanceOf(address(vault)));
@@ -216,10 +206,4 @@ contract CounterTest is Test, ContractDeployer {
         showTokenBalances();
         showPercentages();
     }
-    
-
-
-    
-
-    
 }
