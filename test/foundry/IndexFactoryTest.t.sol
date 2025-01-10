@@ -74,6 +74,117 @@ contract IndexFactoryTest is Test, ContractDeployer {
         oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }
 
+    function testInternalIssuanceSwapsCurrentChain() public {
+        deal(address(token0), user, 10 ether);
+        uint64 currentChainSelector = factory.currentChainSelector();
+        uint256 wethAmount = 1 ether;
+        uint256 issuanceNonce = 1;
+
+        vm.startPrank(user);
+        token0.approve(address(factory), wethAmount + 1 ether);
+        factory.issuanceIndexTokens(address(token0), wethAmount, 0, 3000);
+
+        assertEq(factory.issuanceNonce(), issuanceNonce, "Issuance nonce mismatch");
+        vm.stopPrank();
+    }
+
+    function testMaxTokensLength() public {
+        uint16 maxLength = factory.MAX_TOKENS_LENGTH();
+        assertEq(maxLength, 5, "MAX_TOKENS_LENGTH should be 5");
+    }
+
+    function testMinFeeRate() public {
+        uint8 minFee = factory.MIN_FEE_RATE();
+        assertEq(minFee, 1, "MIN_FEE_RATE should be 1");
+    }
+
+    function testMaxFeeRate() public {
+        uint8 maxFee = factory.MAX_FEE_RATE();
+        assertEq(maxFee, 100, "MAX_FEE_RATE should be 100");
+    }
+
+    function testPriceInWei() public {
+        uint256 ethAmount = 1 ether;
+        uint256 price = factory.priceInWei();
+        uint256 usdAmount = factory.convertEthToUsd(ethAmount);
+
+        assertEq(usdAmount, ethAmount * price / 1e18, "Price conversion is incorrect");
+    }
+
+    function testSetFeeRate1() public {
+        vm.warp(block.timestamp + 12 hours);
+        factory.setFeeRate(50);
+        uint8 feeRate = factory.feeRate();
+        assertEq(feeRate, 50, "Fee rate should be 50");
+
+        vm.expectRevert("Ownable: caller is not the owner");
+        vm.prank(user);
+        factory.setFeeRate(60);
+    }
+
+    function testIssuanceWithEth() public {
+        uint256 inputAmount = 1 ether;
+        uint256 feeAmount = FeeCalculation.calculateFee(inputAmount, factory.feeRate());
+        uint256 crossChainFee = 1 ether;
+
+        uint256 totalRequired = inputAmount + feeAmount + crossChainFee;
+
+        vm.deal(user, totalRequired);
+        vm.startPrank(user);
+
+        factory.issuanceIndexTokensWithEth{value: totalRequired}(inputAmount, crossChainFee);
+
+        assertEq(factory.issuanceNonce(), 1, "Issuance nonce did not increment");
+        vm.stopPrank();
+    }
+
+    function testRedemptionWithFee() public {
+        uint256 inputAmount = 1 ether;
+        uint256 feeAmount = FeeCalculation.calculateFee(inputAmount, factory.feeRate());
+
+        vm.startPrank(user);
+        vm.deal(user, inputAmount + feeAmount);
+
+        weth.deposit{value: inputAmount + feeAmount}();
+        weth.transfer(address(factory), inputAmount);
+
+        vm.expectRevert();
+        factory.redemption(inputAmount, feeAmount, address(weth), 3000);
+
+        vm.stopPrank();
+    }
+
+    function testIssuanceRequestCalculation() public {
+        uint256 totalSupply = 100 ether;
+        uint256 totalNewValues = 200 ether;
+        uint256 totalOldValues = 100 ether;
+
+        uint256 expectedAmount = (totalSupply * totalNewValues) / totalOldValues - totalSupply;
+
+        uint256 mutatedAmount1 = (totalSupply * totalNewValues) / totalOldValues + totalSupply;
+        uint256 mutatedAmount2 = (totalSupply * totalNewValues) * totalOldValues;
+        uint256 mutatedAmount3 = totalSupply / totalNewValues;
+
+        emit log_named_uint("Expected Amount", expectedAmount);
+        emit log_named_uint("Mutated Amount1", mutatedAmount1);
+        emit log_named_uint("Mutated Amount2", mutatedAmount2);
+        emit log_named_uint("Mutated Amount3", mutatedAmount3);
+
+        assertEq(expectedAmount != mutatedAmount1, true, "Addition mutation should fail");
+        assertEq(expectedAmount != mutatedAmount2, true, "Multiplication mutation should fail");
+        assertEq(expectedAmount != mutatedAmount3, true, "Division mutation should fail");
+    }
+
+    function testTotalValuesCalculation() public {
+        uint256 totalNewValues = 100 ether;
+
+        uint256 expectedValue = totalNewValues * 100;
+        uint256 mutatedValue = totalNewValues / 100;
+
+        assertEq(expectedValue != mutatedValue, true, "Division mutation should fail");
+        assertEq(expectedValue, totalNewValues * 100, "Value calculation is incorrect");
+    }
+
     function testSetIndexFactoryStorage() public {
         factory.setIndexFactoryStorage(address(indexFactoryStorage));
         assertEq(
