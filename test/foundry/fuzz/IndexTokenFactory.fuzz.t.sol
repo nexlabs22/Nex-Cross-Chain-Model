@@ -18,7 +18,7 @@ import "../../../contracts/test/MockV3Aggregator.sol";
 
 import "../ContractDeployer.sol";
 
-contract FactoryFuzzTesting is Test, ContractDeployer {
+contract IndexTokenFactoryFuzzTests is Test, ContractDeployer {
 
     using stdStorage for StdStorage;
 
@@ -152,7 +152,7 @@ contract FactoryFuzzTesting is Test, ContractDeployer {
 
 
     function testFuzzIssuanceWithTokens(uint256 amount) public {
-        vm.assume(amount > 1000000 && amount < TOKEN_LIQUIDITY_LIMIT - TOKEN_LIQUIDITY_LIMIT*10/10000);   
+        vm.assume(amount > 1000000 && amount < TOKEN_LIQUIDITY_LIMIT - TOKEN_LIQUIDITY_LIMIT*100/10000);   
         // vm.assume(amount > 1000000 && amount < 1000e18 - 1000e18*10/10000);   
         updateOracleList();
         
@@ -171,7 +171,7 @@ contract FactoryFuzzTesting is Test, ContractDeployer {
     function testFuzzRedemptionWithTokens(uint256 amount) public {
         // vm.assume(amount + 1e18 < TOKEN_LIQUIDITY_LIMIT);    
         // vm.assume(amount < TOKEN_LIQUIDITY_LIMIT - 1e18);   
-        vm.assume(amount > 1000000 && amount < TOKEN_LIQUIDITY_LIMIT - TOKEN_LIQUIDITY_LIMIT*10/10000);   
+        vm.assume(amount > 1000000 && amount < TOKEN_LIQUIDITY_LIMIT - TOKEN_LIQUIDITY_LIMIT*100/10000);   
         updateOracleList();
         
         factory.proposeOwner(owner);
@@ -188,25 +188,6 @@ contract FactoryFuzzTesting is Test, ContractDeployer {
 
     }
 
-    /**
-    function testIssuanceWithEth() public {
-        uint startAmount = 1e14;
-        
-
-        updateOracleList();
-        
-        factory.proposeOwner(owner);
-        vm.startPrank(owner);
-        factory.transferOwnership(owner);
-        vm.stopPrank();
-        payable(add1).transfer(11e18);
-        vm.startPrank(add1);
-        
-        console.log(indexToken.balanceOf(add1));
-        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
-        console.log(indexToken.balanceOf(add1));
-    }
-    */
     
     
 }

@@ -5,6 +5,11 @@ node_modules
 /cache
 /artifacts
 
+#Foundry files
+cache/
+cache_forge
+out/
+
 # TypeChain files
 /typechain
 /typechain-types
