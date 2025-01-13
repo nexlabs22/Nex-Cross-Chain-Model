@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.20;
 
 import "../token/IndexToken.sol";
 import "../proposable/ProposableOwnableUpgradeable.sol";
@@ -108,7 +108,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         //set ccip addresses
         i_link = _chainlinkToken;
         i_maxTokensLength = 5;
-        LinkTokenInterface(_chainlinkToken).approve(
+        IERC20(_chainlinkToken).approve(
             i_router,
             type(uint256).max
         );

@@ -130,7 +130,7 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         MockV3Aggregator
     ){
         LinkToken link = new LinkToken();
-        MockApiOracle oracle = new MockApiOracle(address(link));
+        MockApiOracle oracle = new MockApiOracle();
 
         MockV3Aggregator ethPriceOracle = new MockV3Aggregator(
             18, //decimals

@@ -103,8 +103,19 @@ contract CounterTest is Test, ContractDeployer {
         chains[4] = 2;
         
         link.transfer(address(indexFactoryStorage), 1e17);
-        bytes32 requestId = indexFactoryStorage.requestAssetsData();
-        oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
+        // bytes32 requestId = indexFactoryStorage.requestAssetsData();
+        bytes32 requestId = indexFactoryStorage.requestAssetsData(
+            "console.log('Hello, World!');",
+            // FunctionsConsumer.Location.Inline, // Use the imported enum directly
+            abi.encodePacked("default"),
+            new string[](1), // Convert to dynamic array
+            new bytes[](1),  // Convert to dynamic array
+            0,
+            0
+        );
+        bytes memory data = abi.encode(requestId, assetList, tokenShares, swapFees, chains);
+        oracle.fulfillRequest(address(indexFactoryStorage), requestId, data);
+        // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }
     function testOracleList() public {
         updateOracleList();

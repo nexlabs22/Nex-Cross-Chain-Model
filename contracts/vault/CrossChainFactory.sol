@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.20;
 
 // import "../token/IndexToken.sol";
 import "../proposable/ProposableOwnableUpgradeable.sol";
@@ -8,13 +8,12 @@ import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
-import "../chainlink/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 // import "../libraries/OracleLibrary.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+// import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 // import "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import "../ccip/CCIPReceiver.sol";
@@ -24,6 +23,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../factory/IPriceOracle.sol";
 import "../libraries/SwapHelpers.sol";
 import "../interfaces/IWETH.sol";
+
 /// @title Index Token
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
@@ -31,7 +31,6 @@ import "../interfaces/IWETH.sol";
 contract CrossChainIndexFactory is
     Initializable,
     CCIPReceiver,
-    ChainlinkClient,
     ContextUpgradeable,
     ProposableOwnableUpgradeable,
     PausableUpgradeable
@@ -40,7 +39,6 @@ contract CrossChainIndexFactory is
         Native,
         LINK
     }
-    using Chainlink for Chainlink.Request;
 
     struct Message {
         uint64 sourceChainSelector; // The chain selector of the source chain.
@@ -159,13 +157,13 @@ contract CrossChainIndexFactory is
         currentChainSelector = _currentChainSelector;
         vault = Vault(_vault);
         //set oracle data
-        setChainlinkToken(_chainlinkToken);
+        // setChainlinkToken(_chainlinkToken);
 
         //set ccip addresses
         i_router = _router;
         i_link = _chainlinkToken;
         i_maxTokensLength = 5;
-        LinkTokenInterface(_chainlinkToken).approve(
+        IERC20(_chainlinkToken).approve(
             i_router,
             type(uint256).max
         );
