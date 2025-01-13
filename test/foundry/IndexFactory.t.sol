@@ -201,4 +201,25 @@ contract CounterTest is Test, ContractDeployer {
         factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), 3000);
         console.log(indexToken.balanceOf(add1));
     }
+
+    function testRedemptionWithUsdcMutation() public {
+        uint256 startAmount = 1e14;
+
+        updateOracleList();
+
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        payable(add1).transfer(11e18);
+        usdt.transfer(add1, 1001e18);
+        vm.startPrank(add1);
+
+        console.log(indexToken.balanceOf(add1));
+        usdt.approve(address(factory), 1001e18);
+        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3000);
+        console.log(indexToken.balanceOf(add1));
+        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), 3000);
+        console.log(indexToken.balanceOf(add1));
+    }
 }

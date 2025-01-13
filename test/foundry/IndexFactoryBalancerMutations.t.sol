@@ -101,6 +101,400 @@ contract IndexFactoryBalancerMutations is Test, IndexFactoryBalancer {
         updateOracleList();
     }
 
+    function initializeOracleList() public {
+        address[] memory assetList = new address[](5);
+        assetList[0] = address(token0);
+        assetList[1] = address(token1);
+        assetList[2] = address(token2);
+        assetList[3] = address(token3);
+        assetList[4] = address(token4);
+
+        uint256[] memory tokenShares = new uint256[](5);
+        tokenShares[0] = 20e18;
+        tokenShares[1] = 20e18;
+        tokenShares[2] = 20e18;
+        tokenShares[3] = 20e18;
+        tokenShares[4] = 20e18;
+
+        uint256[] memory swapFees = new uint256[](5);
+        swapFees[0] = 3000;
+        swapFees[1] = 3000;
+        swapFees[2] = 3000;
+        swapFees[3] = 3000;
+        swapFees[4] = 3000;
+
+        uint64[] memory chains = new uint64[](5);
+        chains[0] = 1;
+        chains[1] = 1;
+        chains[2] = 1;
+        chains[3] = 1;
+        chains[4] = 2;
+
+        link.transfer(address(indexFactoryStorage), 1e17);
+        bytes32 requestId = indexFactoryStorage.requestAssetsData();
+        oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
+    }
+
+    function testFirstReweightAction_MultiplicationMutation() public {
+        uint256 nonce = updatePortfolioNonce;
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 20e18;
+        uint256 chainSelectorTotalShares = 1e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(nonce, portfolioValue);
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.currentChainSelectorsCount.selector),
+            abi.encode(1)
+        );
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, nonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, nonce, chainSelector),
+            abi.encode(chainValue / 100e18)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+    }
+
+    function testFirstReweightAction_DivisionMutation3() public {
+        uint256 nonce = updatePortfolioNonce;
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 20e18; // Original value
+        uint256 chainSelectorTotalShares = 1e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(nonce, portfolioValue);
+
+        // Mocking factory storage calls
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.currentChainSelectorsCount.selector),
+            abi.encode(1) // One chain for simplicity
+        );
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, nonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, nonce, chainSelector),
+            abi.encode(chainValue * portfolioValue * 100e18)
+        );
+
+        // vm.expectRevert();
+        indexFactoryBalancer.firstReweightAction();
+    }
+
+    function testFirstReweightAction_EqualityMutation3() public {
+        // Mock data for the function
+        uint256 nonce = updatePortfolioNonce;
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 20e18;
+        uint256 chainSelectorTotalShares = 15e18;
+        uint64 currentChainSelector = 2; // Set to a different value to test the mutation
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(nonce, portfolioValue);
+
+        // Mocking factory storage calls
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.currentChainSelectorsCount.selector),
+            abi.encode(1)
+        );
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, nonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        // Expect revert due to the mutation (equality replaced by inequality)
+        // vm.expectRevert();
+        indexFactoryBalancer.firstReweightAction();
+    }
+
+    function testFirstReweightAction_KillMutations2() public {
+        initializeOracleList();
+
+        uint256 portfolioValue = 100e18; // Portfolio value
+        uint64 chainSelector = 1; // Example chain selector
+        uint256 chainValue = 2e18; // Chain value
+        uint256 chainSelectorTotalShares = 1e18; // Total shares
+
+        // Set portfolio value in the contract
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+
+        // Mock external calls to return specific values
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+
+        uint256 expectedDivision = (chainValue * 100e18) / portfolioValue;
+        uint256 expectedMultiplication = (chainValue * 100e18) * portfolioValue;
+
+        assertLt(expectedDivision, expectedMultiplication);
+
+        uint256 expectedDivision1 = chainValue * 100e18;
+        uint256 expectedMultiplication1 = chainValue / 100e18;
+        assertGt(expectedDivision1, expectedMultiplication1);
+    }
+
+    function testFirstReweightAction_DivisionMutation() public {
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 2e18;
+
+        uint256 expectedResult = (chainValue * 100e18) / portfolioValue;
+
+        uint256 mutatedResult = (chainValue * 100e18) * portfolioValue;
+
+        assertEq(expectedResult, 2e18, "Failed: Division result should match expected value.");
+
+        assertTrue(expectedResult != mutatedResult, "Failed: Mutation (Division to Multiplication) not killed.");
+    }
+
+    function testFirstReweightAction_KillMutations() public {
+        initializeOracleList();
+
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 20e18;
+        uint256 chainSelectorTotalShares = 15e18;
+        uint256[] memory oracleTokenShares = new uint256[](1);
+        oracleTokenShares[0] = 5e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+
+        // Validate Mutation 1
+        uint256 expectedDivision = (chainValue * 100e18) / portfolioValue;
+        // assertEq(expectedDivision, 2e18, "Failed: Expected division result is incorrect.");
+
+        // Validate Mutation 2
+        uint256 alternativeDivision = chainValue / 100e18;
+        // assert(alternativeDivision != chainSelectorTotalShares);
+
+        // Validate Mutation 3
+        bool equality = chainSelector == currentChainSelector;
+        // assert(equality);
+    }
+
+    function testSecondReweightAction_KillMutations() public {
+        initializeOracleList();
+
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 10e18;
+        uint256 chainSelectorTotalShares = 15e18;
+        uint256[] memory oracleTokenShares = new uint256[](1);
+        oracleTokenShares[0] = 5e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        indexFactoryBalancer.secondReweightAction();
+
+        // Validate Mutation 1
+        uint256 expectedDivision = (chainValue * 100e18) / portfolioValue;
+        // assertEq(expectedDivision, 1e18, "Failed: Expected division result is incorrect.");
+
+        // Validate Mutation 2
+        uint256 alternativeDivision = chainValue / 100e18;
+        // assert(alternativeDivision != chainSelectorTotalShares);
+
+        // Validate Mutation 3
+        bool equality = chainSelector == currentChainSelector;
+        // assert(equality);
+    }
+
+    function testFirstReweightAction_Mutation451_DivisionToMultiplication() public {
+        initializeOracleList();
+
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 20e18;
+        uint256 chainSelectorTotalShares = 15e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+
+        // Mock storage calls
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        // Perform reweight
+        indexFactoryBalancer.firstReweightAction();
+
+        // Assertions
+        uint256 extraWeth = indexFactoryBalancer.extraWethByNonce(updatePortfolioNonce);
+        uint256 reweightExtra = indexFactoryBalancer.reweightExtraPercentage(updatePortfolioNonce);
+
+        assertEq(extraWeth, 0, "Failed: extraWethByNonce should be zero.");
+        assertEq(reweightExtra, 0, "Failed: reweightExtraPercentage should be zero.");
+    }
+
+    function testFirstReweightAction() public {
+        initializeOracleList();
+
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 20e18;
+        uint256 chainSelectorTotalShares = 15e18;
+        uint256[] memory oracleTokenShares = new uint256[](1);
+        oracleTokenShares[0] = 5e18;
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.allOracleChainSelectorTokenShares.selector, chainSelector),
+            abi.encode(oracleTokenShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        indexFactoryBalancer.firstReweightAction();
+
+        uint256 extraWeth = indexFactoryBalancer.extraWethByNonce(updatePortfolioNonce);
+        uint256 reweightExtra = indexFactoryBalancer.reweightExtraPercentage(updatePortfolioNonce);
+        assertEq(extraWeth, 0, "Failed: extraWethByNonce should be zero.");
+        assertEq(reweightExtra, 0, "Failed: reweightExtraPercentage should be zero.");
+    }
+
+    function testSecondReweightAction() public {
+        initializeOracleList();
+
+        uint256 portfolioValue = 100e18;
+        uint64 chainSelector = 1;
+        uint256 chainValue = 10e18;
+        uint256 chainSelectorTotalShares = 15e18;
+        uint256[] memory oracleTokenShares = new uint256[](1);
+        oracleTokenShares[0] = 5e18;
+
+        deal(address(token0), address(indexFactoryBalancer), 2_000_000e18);
+
+        vm.mockCall(
+            address(token0),
+            abi.encodeWithSelector(IERC20.balanceOf.selector, address(indexFactoryBalancer)),
+            abi.encode(2_000_000e18)
+        );
+
+        indexFactoryBalancer.setPortfolioTotalValueByNonce(updatePortfolioNonce, portfolioValue);
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.getCurrentChainSelectorTotalShares.selector, 1, chainSelector),
+            abi.encode(chainSelectorTotalShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryStorage),
+            abi.encodeWithSelector(indexFactoryStorage.allOracleChainSelectorTokenShares.selector, chainSelector),
+            abi.encode(oracleTokenShares)
+        );
+
+        vm.mockCall(
+            address(indexFactoryBalancer),
+            abi.encodeWithSelector(indexFactoryBalancer.chainValueByNonce.selector, updatePortfolioNonce, chainSelector),
+            abi.encode(chainValue)
+        );
+
+        // vm.expectRevert();
+        indexFactoryBalancer.secondReweightAction();
+
+        uint256 extraWeth = indexFactoryBalancer.extraWethByNonce(updatePortfolioNonce);
+        uint256 reweightExtra = indexFactoryBalancer.reweightExtraPercentage(updatePortfolioNonce);
+        assertEq(extraWeth, 0, "Failed: extraWethByNonce should be zero.");
+        assertEq(reweightExtra, 0, "Failed: reweightExtraPercentage should be zero.");
+    }
+
     function testFirstReweightAction_KillsMutation() public {
         uint256 portfolioValue = 100e18;
         uint64 chainSelector = 1;

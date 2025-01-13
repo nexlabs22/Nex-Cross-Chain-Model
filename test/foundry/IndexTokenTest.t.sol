@@ -16,6 +16,61 @@ contract IndexTokenTest is Test {
         indexToken.initialize("Index Token", "IT", 0, address(1), 1000);
     }
 
+    function testMintToWithinSupplyCeiling() public {
+        indexToken.setMinter(address(this), true);
+        uint256 currentSupply = indexToken.totalSupply();
+        uint256 mintAmount = 100;
+
+        // Mint within the supply ceiling
+        indexToken.mint(address(2), mintAmount);
+
+        // Assert that the total supply has increased correctly
+        assertEq(
+            indexToken.totalSupply(), currentSupply + mintAmount, "Total supply should increase by the mint amount"
+        );
+    }
+
+    function testMintToExceedsSupplyCeiling() public {
+        indexToken.setMinter(address(this), true);
+        uint256 supplyCeiling = indexToken.supplyCeiling();
+        uint256 currentSupply = indexToken.totalSupply();
+        uint256 excessAmount = supplyCeiling - currentSupply + 1;
+
+        // Expect a revert when minting exceeds the supply ceiling
+        vm.expectRevert("will exceed supply ceiling");
+        indexToken.mint(address(2), excessAmount);
+    }
+
+    function testMintToRestrictedReceiver() public {
+        indexToken.setMinter(address(this), true);
+        indexToken.toggleRestriction(address(2)); // Restrict the recipient address
+
+        // Expect a revert when minting to a restricted address
+        vm.expectRevert("to is restricted");
+        indexToken.mint(address(2), 100);
+    }
+
+    function testMintToRestrictedSender() public {
+        indexToken.setMinter(address(3), true); // Authorize another account as a minter
+        indexToken.toggleRestriction(address(3)); // Restrict the sender
+
+        vm.prank(address(3)); // Simulate the call from the restricted minter
+        vm.expectRevert("msg.sender is restricted");
+        indexToken.mint(address(2), 100);
+    }
+
+    function testMintToSupplyDecreasesIncorrectly() public {
+        indexToken.setMinter(address(this), true);
+        uint256 currentSupply = indexToken.totalSupply();
+        uint256 mintAmount = 100;
+
+        // Mint and verify the total supply increases correctly
+        indexToken.mint(address(2), mintAmount);
+
+        // Assert that the total supply does not decrease (target mutation)
+        assertGt(indexToken.totalSupply(), currentSupply, "Total supply should not decrease");
+    }
+
     function test_setMinter_DisableMinter() public {
         indexToken.setMinter(address(2), true);
         indexToken.setMinter(address(2), false);

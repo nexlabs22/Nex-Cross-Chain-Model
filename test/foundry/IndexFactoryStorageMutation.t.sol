@@ -45,4 +45,62 @@ contract IndexFactoryStorageMutation is Test, IndexFactoryStorage {
         int256 actual = _toWei(amount, amountDecimals, chainDecimals);
         assertEq(expected, actual, "Original logic failed for valid input");
     }
+
+    function testToWeiChainDecimalsGreaterThanAmountDecimals() public {
+        int256 amount = 1;
+        uint8 amountDecimals = 6;
+        uint8 chainDecimals = 18;
+
+        int256 result = _toWei(amount, amountDecimals, chainDecimals);
+
+        // Expected result: amount * 10^(chainDecimals - amountDecimals)
+        int256 expected = amount * int256(10 ** (chainDecimals - amountDecimals));
+        assertEq(result, expected, "Result should match the expected value when chainDecimals > amountDecimals");
+    }
+
+    function testToWeiAmountDecimalsGreaterThanChainDecimals() public {
+        int256 amount = 1;
+        uint8 amountDecimals = 18;
+        uint8 chainDecimals = 6;
+
+        int256 result = _toWei(amount, amountDecimals, chainDecimals);
+
+        // Expected result: amount * 10^(amountDecimals - chainDecimals)
+        int256 expected = amount * int256(10 ** (amountDecimals - chainDecimals));
+        assertEq(result, expected, "Result should match the expected value when amountDecimals > chainDecimals");
+    }
+
+    function testToWeiChainDecimalsEqualAmountDecimals() public {
+        int256 amount = 1;
+        uint8 amountDecimals = 18;
+        uint8 chainDecimals = 18;
+
+        int256 result = _toWei(amount, amountDecimals, chainDecimals);
+
+        // Expected result: amount (no conversion needed)
+        assertEq(result, amount, "Result should match the input amount when chainDecimals == amountDecimals");
+    }
+
+    function testToWeiEdgeCaseZeroAmount() public {
+        int256 amount = 0;
+        uint8 amountDecimals = 18;
+        uint8 chainDecimals = 6;
+
+        int256 result = _toWei(amount, amountDecimals, chainDecimals);
+
+        // Expected result: 0 (no conversion needed)
+        assertEq(result, 0, "Result should be zero for zero input amount");
+    }
+
+    function testToWeiLargeDifferenceInDecimals() public {
+        int256 amount = 1;
+        uint8 amountDecimals = 1;
+        uint8 chainDecimals = 30;
+
+        int256 result = _toWei(amount, amountDecimals, chainDecimals);
+
+        // Expected result: amount * 10^(chainDecimals - amountDecimals)
+        int256 expected = amount * int256(10 ** (chainDecimals - amountDecimals));
+        assertEq(result, expected, "Result should handle large differences in decimals correctly");
+    }
 }
