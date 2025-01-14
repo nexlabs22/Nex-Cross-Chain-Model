@@ -113,7 +113,7 @@ contract CounterTest is Test, ContractDeployer {
             0,
             0
         );
-        bytes memory data = abi.encode(requestId, assetList, tokenShares, swapFees, chains);
+        bytes memory data = abi.encode(assetList, tokenShares, swapFees, chains);
         oracle.fulfillRequest(address(indexFactoryStorage), requestId, data);
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }

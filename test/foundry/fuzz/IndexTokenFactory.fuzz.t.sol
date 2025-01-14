@@ -222,7 +222,6 @@ contract IndexTokenFactoryFuzzTests is Test, ContractDeployer {
             0
         );
         bytes memory data = abi.encode(
-            requestId,
             assetList,
             tokenShares,
             swapFees,
