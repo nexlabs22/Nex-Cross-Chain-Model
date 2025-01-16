@@ -857,6 +857,9 @@ contract CrossChainIndexFactory is
         uint nonce;
         uint[] extraData;
     }
+
+    uint public testData;
+    address public testData2;
     function _handleSecondReweightAction(
         HandleSecondReweightActionInputs memory inputData
     ) internal {
@@ -878,8 +881,8 @@ contract CrossChainIndexFactory is
             inputData.extraData
         );
 
-        uint[] memory zeroUintArr = new uint[](0);
-        address[] memory zeroAddArr = new address[](0);
+        uint[] memory zeroUintArr = new uint[](1);
+        address[] memory zeroAddArr = new address[](1);
         
         bytes memory data = abi.encode(
             4,
@@ -889,6 +892,8 @@ contract CrossChainIndexFactory is
             zeroUintArr,
             zeroUintArr
         );
+        testData = inputData.nonce;
+        testData2 = inputData.sender;
         // sendMessage(
         //     inputData.sourceChainSelector,
         //     inputData.sender,
@@ -1019,4 +1024,6 @@ contract CrossChainIndexFactory is
 
         return messageId;
     }
+
+
 }

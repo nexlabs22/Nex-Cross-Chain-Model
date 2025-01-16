@@ -11,7 +11,10 @@ pragma solidity ^0.8.0;
  * @notice Chainlink smart contract developers can use this to test their contracts
  */
 contract MockApiOracle {
-
+  
+  uint public counter;
+  uint public counter2;
+  bytes32 public preRequestId;
   function sendRequest(
     uint64 subscriptionId,
     bytes calldata data,
@@ -19,19 +22,26 @@ contract MockApiOracle {
     uint32 callbackGasLimit,
     bytes32 donId
   ) external returns (bytes32) {
-    return getRandomBytes32();
+    // return getRandomBytes32();
+    counter++;
+    return keccak256(abi.encodePacked(block.timestamp, counter));
   }
   
   function fulfillRequest(address _requester, bytes32 _requestId, bytes memory _data)
     external
     returns (bool)
   {
+    if(_requestId != preRequestId){
+      preRequestId = _requestId;
+      counter2++;
+    }
     bytes memory err;
     (bool success, ) = _requester.call(
       // abi.encodeWithSelector(req.callbackFunctionId, _requestId, _data1, _data2, _data3, _data4, _data5)
       // abi.encodeWithSelector(req.callbackFunctionId, _requestId, convertUintToBytes32(price), convertIntToBytes32Array(fundingRate), convertStringToBytes32Array(strings))
       abi.encodeWithSelector(this.handleOracleFulfillment.selector, _requestId, _data, err)
     ); // solhint-disable-line avoid-low-level-calls
+    require(success, "MockOracle: fulfilling request faild");
     return success;
   }
 

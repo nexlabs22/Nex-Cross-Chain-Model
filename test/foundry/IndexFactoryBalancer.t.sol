@@ -18,7 +18,7 @@ import "../../contracts/test/MockV3Aggregator.sol";
 
 import "./ContractDeployer.sol";
 
-contract CounterTest is Test, ContractDeployer {
+contract IndexFactoryBalancerTest is Test, ContractDeployer {
     using stdStorage for StdStorage;
 
     uint256 internal constant SCALAR = 1e20;
@@ -166,7 +166,8 @@ contract CounterTest is Test, ContractDeployer {
         uint[] memory tokenShares,
         uint[] memory swapFees,
         uint64[] memory chains
-    ) public {
+    ) public returns(bool) {
+        vm.warp(block.timestamp + 1);
         link.transfer(address(indexFactoryStorage), 1e17);
         // bytes32 requestId = indexFactoryStorage.requestAssetsData();
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
@@ -180,20 +181,19 @@ contract CounterTest is Test, ContractDeployer {
             0
         );
         bytes memory data = abi.encode(
-            requestId,
             assetList,
             tokenShares,
             swapFees,
             chains
         );
-        oracle.fulfillRequest(
+        return oracle.fulfillRequest(
             address(indexFactoryStorage),
             requestId,
             data
         );
     }
 
-    function testOracleList() public {
+    function testOracleListForRebalancing() public {
         initializeOracleList();
         // token  oracle list
         assertEq(indexFactoryStorage.oracleList(0), address(token0));
@@ -235,6 +235,56 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenSwapFee(address(token2)), 3000);
         assertEq(indexFactoryStorage.tokenSwapFee(address(token3)), 3000);
         assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3000);
+
+        address[] memory assetList2 = new address[](5);
+        assetList2[0] = address(token0);
+        assetList2[1] = address(token1);
+        assetList2[2] = address(token2);
+        assetList2[3] = address(token3);
+        assetList2[4] = address(token4);
+
+        uint[] memory tokenShares2 = new uint[](5);
+        tokenShares2[0] = 30e18;
+        tokenShares2[1] = 20e18;
+        tokenShares2[2] = 20e18;
+        tokenShares2[3] = 20e18;
+        tokenShares2[4] = 10e18;
+
+        uint[] memory swapFees2 = new uint[](5);
+        swapFees2[0] = 3000;
+        swapFees2[1] = 3000;
+        swapFees2[2] = 3000;
+        swapFees2[3] = 3000;
+        swapFees2[4] = 3000;
+
+        uint64[] memory chains2 = new uint64[](5);
+        chains2[0] = 1;
+        chains2[1] = 1;
+        chains2[2] = 1;
+        chains2[3] = 1;
+        chains2[4] = 2;
+        bool success = updateOracleList(assetList2, tokenShares2, swapFees2, chains2);
+        // token shares
+        assertEq(
+            indexFactoryStorage.tokenOracleMarketShare(address(token0)),
+            30e18
+        );
+        assertEq(
+            indexFactoryStorage.tokenOracleMarketShare(address(token1)),
+            20e18
+        );
+        assertEq(
+            indexFactoryStorage.tokenOracleMarketShare(address(token2)),
+            20e18
+        );
+        assertEq(
+            indexFactoryStorage.tokenOracleMarketShare(address(token3)),
+            20e18
+        );
+        assertEq(
+            indexFactoryStorage.tokenOracleMarketShare(address(token4)),
+            10e18
+        );
     }
 
     function showPercentages() public {
@@ -477,8 +527,8 @@ contract CounterTest is Test, ContractDeployer {
         // showTokenBalances();
         // factoryBalancer.askValues();
         showPercentages();
-        // console.log("testData", crossChainIndexFactory.testData());
-        // console.log("testData2", crossChainIndexFactory.testData2());
+        console.log("testData", crossChainIndexFactory.testData());
+        console.log("testData2", crossChainIndexFactory.testData2());
         // console.log(weth.balanceOf(address(factoryBalancer)));
     }
 }

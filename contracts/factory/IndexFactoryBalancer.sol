@@ -477,7 +477,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             );
             extraWethByNonce[nonce] += wethAmount;
         }else if(actionType == 4){
-            factoryStorage.updateCurrentList();
+            // factoryStorage.updateCurrentList();
         }
     }
 
