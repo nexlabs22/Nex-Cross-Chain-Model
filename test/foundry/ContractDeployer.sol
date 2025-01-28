@@ -287,15 +287,20 @@ contract ContractDeployer is Test, UniswapFactoryByteCode, UniswapWETHByteCode, 
         
 
         indexToken.setMinter(address(indexFactory), true);
-        indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), 3000);
-        indexFactoryStorage.setCrossChainToken(1, address(crossChainToken), 3000);
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
+         address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(crossChainToken);
+        indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), path, feesData);
+        indexFactoryStorage.setCrossChainToken(1, address(crossChainToken), path, feesData);
         indexFactoryStorage.setCrossChainFactory(address(crossChainIndexFactory), 2);
         indexFactoryStorage.setIndexFactory(address(indexFactory));
         indexFactoryStorage.setPriceOracle(address(priceOracleAddress));
         indexFactoryStorage.setVault(address(vault));
         vault.setOperator(address(indexFactory), true);
         indexFactory.setIndexFactoryStorage(address(indexFactoryStorage));
-        crossChainIndexFactory.setCrossChainToken(1, address(crossChainToken), 3000);
+        crossChainIndexFactory.setCrossChainToken(1, address(crossChainToken), path, feesData);
         crossChainIndexFactory.setPriceOracle(priceOracleAddress);
         crossChainVault.setOperator(address(crossChainIndexFactory), true);
         

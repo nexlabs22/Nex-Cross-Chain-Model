@@ -18,7 +18,7 @@ import "../../contracts/test/MockV3Aggregator.sol";
 
 import "./ContractDeployer.sol";
 
-contract CounterTest is Test, ContractDeployer {
+contract IndexFactoryTest is Test, ContractDeployer {
 
     using stdStorage for StdStorage;
 
@@ -80,6 +80,36 @@ contract CounterTest is Test, ContractDeployer {
         assetList[3] = address(token3);
         assetList[4] = address(token4);
 
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
+
+        bytes[] memory pathData = new bytes[](5);
+        //updating path data for token0
+        address[] memory path0 = new address[](2);
+        path0[0] = address(weth);
+        path0[1] = address(token0);
+        pathData[0] = abi.encode(path0, feesData);
+        //updating path data for token1
+        address[] memory path1 = new address[](2);
+        path1[0] = address(weth);
+        path1[1] = address(token1);
+        pathData[1] = abi.encode(path1, feesData);
+        //updating path data for token2
+        address[] memory path2 = new address[](2);
+        path2[0] = address(weth);
+        path2[1] = address(token2);
+        pathData[2] = abi.encode(path2, feesData);
+        //updating path data for token3
+        address[] memory path3 = new address[](2);
+        path3[0] = address(weth);
+        path3[1] = address(token3);
+        pathData[3] = abi.encode(path3, feesData);
+        //updating path data for token4
+        address[] memory path4 = new address[](2);
+        path4[0] = address(weth);
+        path4[1] = address(token4);
+        pathData[4] = abi.encode(path4, feesData);
+
         uint[] memory tokenShares = new uint[](5);
         tokenShares[0] = 20e18;
         tokenShares[1] = 20e18;
@@ -87,12 +117,6 @@ contract CounterTest is Test, ContractDeployer {
         tokenShares[3] = 20e18;
         tokenShares[4] = 20e18;
 
-        uint[] memory swapFees = new uint[](5);
-        swapFees[0] = 3000;
-        swapFees[1] = 3000;
-        swapFees[2] = 3000;
-        swapFees[3] = 3000;
-        swapFees[4] = 3000;
 
 
         uint64[] memory chains = new uint64[](5);
@@ -102,6 +126,7 @@ contract CounterTest is Test, ContractDeployer {
         chains[3] = 1;
         chains[4] = 2;
         
+
         link.transfer(address(indexFactoryStorage), 1e17);
         // bytes32 requestId = indexFactoryStorage.requestAssetsData();
         bytes32 requestId = indexFactoryStorage.requestAssetsData(
@@ -113,8 +138,9 @@ contract CounterTest is Test, ContractDeployer {
             0,
             0
         );
-        bytes memory data = abi.encode(assetList, tokenShares, swapFees, chains);
-        oracle.fulfillRequest(address(indexFactoryStorage), requestId, data);
+        bytes memory data = abi.encode(assetList, pathData, tokenShares, chains);
+        bool success = oracle.fulfillRequest(address(indexFactoryStorage), requestId, data);
+        require(success, "oracle request failed");
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }
     function testOracleList() public {
@@ -138,12 +164,49 @@ contract CounterTest is Test, ContractDeployer {
         assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token3)), 20e18);
         assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token4)), 20e18);
         
-        // token shares
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token0)), 3000);
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token1)), 3000);
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token2)), 3000);
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token3)), 3000);
-        assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3000);
+         // token from eth path data
+        (address[] memory path0, uint24[] memory fees0) = indexFactoryStorage.getFromETHPathData(address(token0));
+        assertEq(path0[0], address(weth));
+        assertEq(path0[1], address(token0));
+        assertEq(fees0[0], 3000);
+        (address[] memory path1, uint24[] memory fees1) = indexFactoryStorage.getFromETHPathData(address(token1));
+        assertEq(path1[0], address(weth));
+        assertEq(path1[1], address(token1));
+        assertEq(fees1[0], 3000);
+        (address[] memory path2, uint24[] memory fees2) = indexFactoryStorage.getFromETHPathData(address(token2));
+        assertEq(path2[0], address(weth));
+        assertEq(path2[1], address(token2));
+        assertEq(fees2[0], 3000);
+        (address[] memory path3, uint24[] memory fees3) = indexFactoryStorage.getFromETHPathData(address(token3));
+        assertEq(path3[0], address(weth));
+        assertEq(path3[1], address(token3));
+        assertEq(fees3[0], 3000);
+        (address[] memory path4, uint24[] memory fees4) = indexFactoryStorage.getFromETHPathData(address(token4));
+        assertEq(path4[0], address(weth));
+        assertEq(path4[1], address(token4));
+        assertEq(fees4[0], 3000);
+
+        // token to eth path data
+        (address[] memory path5, uint24[] memory fees5) = indexFactoryStorage.getToETHPathData(address(token0));
+        assertEq(path5[0], address(token0));
+        assertEq(path5[1], address(weth));
+        assertEq(fees5[0], 3000);
+        (address[] memory path6, uint24[] memory fees6) = indexFactoryStorage.getToETHPathData(address(token1));
+        assertEq(path6[0], address(token1));
+        assertEq(path6[1], address(weth));
+        assertEq(fees6[0], 3000);
+        (address[] memory path7, uint24[] memory fees7) = indexFactoryStorage.getToETHPathData(address(token2));
+        assertEq(path7[0], address(token2));
+        assertEq(path7[1], address(weth));
+        assertEq(fees7[0], 3000);
+        (address[] memory path8, uint24[] memory fees8) = indexFactoryStorage.getToETHPathData(address(token3));
+        assertEq(path8[0], address(token3));
+        assertEq(path8[1], address(weth));
+        assertEq(fees8[0], 3000);
+        (address[] memory path9, uint24[] memory fees9) = indexFactoryStorage.getToETHPathData(address(token4));
+        assertEq(path9[0], address(token4));
+        assertEq(path9[1], address(weth));
+        assertEq(fees9[0], 3000);
         
     }
 
@@ -165,7 +228,8 @@ contract CounterTest is Test, ContractDeployer {
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
     }
-   
+
+    
     function testRedemptionWithEth() public {
         uint startAmount = 1e14;
         
@@ -182,9 +246,16 @@ contract CounterTest is Test, ContractDeployer {
         console.log(indexToken.balanceOf(add1));
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
-        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), 3);
+        // redemption input token path data
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
+        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), path, fees);
         console.log(indexToken.balanceOf(add1));
     }
+    
     
     function testIssuanceWithUsdc() public {
         uint startAmount = 1e14;
@@ -202,9 +273,16 @@ contract CounterTest is Test, ContractDeployer {
         
         console.log(indexToken.balanceOf(add1));
         usdt.approve(address(factory), 1001e18);
-        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3000);
+        // redemption input token path data
+        address[] memory path = new address[](2);
+        path[0] = address(usdt);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
+        factory.issuanceIndexTokens(address(usdt), path, fees, 1000e18, 0);
         console.log(indexToken.balanceOf(add1));
     }
+    
     
     function testRedemptionWithUsdc() public {
         uint startAmount = 1e14;
@@ -222,13 +300,25 @@ contract CounterTest is Test, ContractDeployer {
         
         console.log(indexToken.balanceOf(add1));
         usdt.approve(address(factory), 1001e18);
-        factory.issuanceIndexTokens(address(usdt), 1000e18, 0, 3000);
+        // redemption input token path data
+        address[] memory path = new address[](2);
+        path[0] = address(usdt);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
+        factory.issuanceIndexTokens(address(usdt), path, fees, 1000e18, 0);
         console.log(indexToken.balanceOf(add1));
-        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), 3000);
+        // redemption input token path data
+        address[] memory path2 = new address[](2);
+        path2[0] = address(weth);
+        path2[1] = address(usdt);
+        uint24[] memory fees2 = new uint24[](1);
+        fees2[0] = 3000;
+        factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), path2, fees2);
         console.log(indexToken.balanceOf(add1));
     }
 
-
+    
     
 
 

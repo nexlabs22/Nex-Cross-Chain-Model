@@ -109,36 +109,6 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         assetList[3] = address(token3);
         assetList[4] = address(token4);
 
-        uint24[] memory feesData = new uint24[](1);
-        feesData[0] = 3000;
-
-        bytes[] memory pathData = new bytes[](5);
-        //updating path data for token0
-        address[] memory path0 = new address[](2);
-        path0[0] = address(weth);
-        path0[1] = address(token0);
-        pathData[0] = abi.encode(path0, feesData);
-        //updating path data for token1
-        address[] memory path1 = new address[](2);
-        path1[0] = address(weth);
-        path1[1] = address(token1);
-        pathData[1] = abi.encode(path1, feesData);
-        //updating path data for token2
-        address[] memory path2 = new address[](2);
-        path2[0] = address(weth);
-        path2[1] = address(token2);
-        pathData[2] = abi.encode(path2, feesData);
-        //updating path data for token3
-        address[] memory path3 = new address[](2);
-        path3[0] = address(weth);
-        path3[1] = address(token3);
-        pathData[3] = abi.encode(path3, feesData);
-        //updating path data for token4
-        address[] memory path4 = new address[](2);
-        path4[0] = address(weth);
-        path4[1] = address(token4);
-        pathData[4] = abi.encode(path4, feesData);
-
         uint[] memory tokenShares = new uint[](5);
         tokenShares[0] = 20e18;
         tokenShares[1] = 20e18;
@@ -146,7 +116,12 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         tokenShares[3] = 20e18;
         tokenShares[4] = 20e18;
 
-        
+        uint[] memory swapFees = new uint[](5);
+        swapFees[0] = 3000;
+        swapFees[1] = 3000;
+        swapFees[2] = 3000;
+        swapFees[3] = 3000;
+        swapFees[4] = 3000;
 
         uint64[] memory chains = new uint64[](5);
         chains[0] = 1;
@@ -175,22 +150,21 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         );
         bytes memory data = abi.encode(
             assetList,
-            pathData,
             tokenShares,
+            swapFees,
             chains
         );
-        bool success = oracle.fulfillRequest(
+        oracle.fulfillRequest(
             address(indexFactoryStorage),
             requestId,
             data
         );
-        require(success, "fulfillRequest failed");
     }
 
     function updateOracleList(
         address[] memory assetList,
-        bytes[] memory pathData,
         uint[] memory tokenShares,
+        uint[] memory swapFees,
         uint64[] memory chains
     ) public returns(bool) {
         vm.warp(block.timestamp + 1);
@@ -208,17 +182,15 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         );
         bytes memory data = abi.encode(
             assetList,
-            pathData,
             tokenShares,
+            swapFees,
             chains
         );
-        bool success = oracle.fulfillRequest(
+        return oracle.fulfillRequest(
             address(indexFactoryStorage),
             requestId,
             data
         );
-        require(success, "fulfillRequest failed");
-        return success;
     }
 
     function testOracleListForRebalancing() public {
@@ -258,25 +230,11 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         );
 
         // token shares
-        // token from eth path data
-        (address[] memory path00, uint24[] memory fees00) = indexFactoryStorage.getFromETHPathData(address(token0));
-        assertEq(path00[0], address(weth));
-        assertEq(path00[1], address(token0));
-        assertEq(fees00[0], 3000);
-        (address[] memory path40, uint24[] memory fees40) = indexFactoryStorage.getFromETHPathData(address(token4));
-        assertEq(path40[0], address(weth));
-        assertEq(path40[1], address(token4));
-        assertEq(fees40[0], 3000);
-
-        // token to eth path data
-        (address[] memory path50, uint24[] memory fees50) = indexFactoryStorage.getToETHPathData(address(token0));
-        assertEq(path50[0], address(token0));
-        assertEq(path50[1], address(weth));
-        assertEq(fees50[0], 3000);
-        (address[] memory path90, uint24[] memory fees90) = indexFactoryStorage.getToETHPathData(address(token4));
-        assertEq(path90[0], address(token4));
-        assertEq(path90[1], address(weth));
-        assertEq(fees90[0], 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token0)), 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token1)), 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token2)), 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token3)), 3000);
+        assertEq(indexFactoryStorage.tokenSwapFee(address(token4)), 3000);
 
         address[] memory assetList2 = new address[](5);
         assetList2[0] = address(token0);
@@ -292,35 +250,12 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         tokenShares2[3] = 20e18;
         tokenShares2[4] = 10e18;
 
-        uint24[] memory feesData = new uint24[](1);
-        feesData[0] = 3000;
-
-        bytes[] memory pathData = new bytes[](5);
-        //updating path data for token0
-        address[] memory path0 = new address[](2);
-        path0[0] = address(weth);
-        path0[1] = address(token0);
-        pathData[0] = abi.encode(path0, feesData);
-        //updating path data for token1
-        address[] memory path1 = new address[](2);
-        path1[0] = address(weth);
-        path1[1] = address(token1);
-        pathData[1] = abi.encode(path1, feesData);
-        //updating path data for token2
-        address[] memory path2 = new address[](2);
-        path2[0] = address(weth);
-        path2[1] = address(token2);
-        pathData[2] = abi.encode(path2, feesData);
-        //updating path data for token3
-        address[] memory path3 = new address[](2);
-        path3[0] = address(weth);
-        path3[1] = address(token3);
-        pathData[3] = abi.encode(path3, feesData);
-        //updating path data for token4
-        address[] memory path4 = new address[](2);
-        path4[0] = address(weth);
-        path4[1] = address(token4);
-        pathData[4] = abi.encode(path4, feesData);
+        uint[] memory swapFees2 = new uint[](5);
+        swapFees2[0] = 3000;
+        swapFees2[1] = 3000;
+        swapFees2[2] = 3000;
+        swapFees2[3] = 3000;
+        swapFees2[4] = 3000;
 
         uint64[] memory chains2 = new uint64[](5);
         chains2[0] = 1;
@@ -328,7 +263,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         chains2[2] = 1;
         chains2[3] = 1;
         chains2[4] = 2;
-        bool success = updateOracleList(assetList2, pathData, tokenShares2, chains2);
+        bool success = updateOracleList(assetList2, tokenShares2, swapFees2, chains2);
         // token shares
         assertEq(
             indexFactoryStorage.tokenOracleMarketShare(address(token0)),
@@ -352,7 +287,6 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         );
     }
 
-    /**
     function showPercentages() public {
         console.log("****");
         uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
@@ -597,5 +531,4 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         console.log("testData2", crossChainIndexFactory.testData2());
         // console.log(weth.balanceOf(address(factoryBalancer)));
     }
-    */
 }

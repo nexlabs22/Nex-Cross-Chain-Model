@@ -69,7 +69,8 @@ contract IndexFactory is
         uint completedTokensCount;
         address requester;
         address outputToken;
-        uint24 outputTokenSwapFee;
+        address[] outputTokenPath;
+        uint24[] outputTokenFees;
         uint inputAmount;
         bytes32 messageId;
     }
@@ -269,62 +270,48 @@ contract IndexFactory is
 
     /**
      * @dev Swaps tokens.
-     * @param tokenIn The address of the input token.
-     * @param tokenOut The address of the output token.
+     * @param path The path of the tokens.
+     * @param fees The fees of the tokens.
      * @param amountIn The amount of input token.
      * @param _recipient The address of the recipient.
-     * @param _swapFee The swap version.
      * @return outputAmount The amount of output token.
      */
     function swap(
-        address tokenIn,
-        address tokenOut,
+        address[] memory path,
+        uint24[] memory fees,
         uint amountIn,
-        address _recipient,
-        uint24 _swapFee
+        address _recipient
     ) internal returns (uint outputAmount) {
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
         outputAmount = SwapHelpers.swap(
             swapRouterV3,
             swapRouterV2,
-            _swapFee,
-            tokenIn,
-            tokenOut,
+            path,
+            fees,
             amountIn,
             _recipient
         );
-        /**
-        IERC20(tokenIn).transfer(address(factoryStorage), amountIn);
-        uint amountOut = factoryStorage.swap(
-            tokenIn,
-            tokenOut,
-            amountIn,
-            _recipient,
-            _swapFee
-        );
-        return amountOut;
-        */
     }
 
     /**
      * @dev Issues index tokens.
      * @param _tokenIn The address of the input token.
+     * @param _tokenInPath The path of the input token.
      * @param _inputAmount The amount of input token.
      * @param _crossChainFee The cross-chain fee.
-     * @param _tokenInSwapFee The swap version of the input token.
      */
     function issuanceIndexTokens(
         address _tokenIn,
+        address[] memory _tokenInPath,
+        uint24[] memory _tokenInFees,
         uint _inputAmount,
-        uint _crossChainFee,
-        uint24 _tokenInSwapFee
+        uint _crossChainFee
     ) public {
         // Validate input parameters
         require(_tokenIn != address(0), "Invalid input token address");
         require(_inputAmount > 0, "Input amount must be greater than zero");
         require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
-        require(_tokenInSwapFee > 0, "Invalid input token swap fee");
 
         IWETH weth = factoryStorage.weth();
         Vault vault = factoryStorage.vault();
@@ -347,14 +334,11 @@ contract IndexFactory is
             "Token transfer failed"
         );
         uint wethAmountBeforFee = swap(
-            _tokenIn,
-            address(weth),
+            _tokenInPath,
+            _tokenInFees,
             _inputAmount + feeAmount,
-            address(this),
-            _tokenInSwapFee
+            address(this)
         );
-        // uint wethAmountBeforFee = _swapSingle(_tokenIn, address(weth), _inputAmount + feeAmount, address(this), _tokenInSwapFee);
-        // uint wethAmountBeforFee = _swapSingle(_tokenIn, address(weth), _inputAmount + feeAmount, address(this), _tokenInSwapFee);
         uint feeWethAmount = wethAmountBeforFee*feeRate/10000;
         uint wethAmount = wethAmountBeforFee - feeWethAmount;
 
@@ -418,7 +402,7 @@ contract IndexFactory is
         // swap to underlying assets on all chain
         uint totalChains = factoryStorage.currentChainSelectorsCount();
         uint latestCount = factoryStorage.currentFilledCount();
-        (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
+        (,, uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
         for(uint i = 0; i < totalChains; i++){
             uint64 chainSelector = chainSelectors[i];
             uint chainSelectorTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
@@ -451,6 +435,20 @@ contract IndexFactory is
             );
     }
 
+    function _getOldTokenValue(
+        address tokenAddress
+    ) internal returns(uint) {
+        (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage.getToETHPathData(
+                tokenAddress
+        );
+            
+        uint oldTokenValue = tokenAddress == address(weth)
+            ? convertEthToUsd(IERC20(tokenAddress).balanceOf(address(factoryStorage.vault())))
+            : convertEthToUsd(getAmountOut(toETHPath, toETHFees, IERC20(tokenAddress).balanceOf(address(factoryStorage.vault()))));
+        
+        return oldTokenValue;
+    }
+
     /**
      * @dev Handles issuance swaps on the current chain.
      * @param _wethAmount The amount of WETH.
@@ -470,27 +468,85 @@ contract IndexFactory is
         address[] memory tokens = factoryStorage.allCurrentChainSelectorTokens(_chainSelector);
         for (uint i = 0; i < _chainSelectorTokensCount; i++) {
             address tokenAddress = tokens[i];
-            uint24 tokenSwapFee = factoryStorage.tokenSwapFee(tokenAddress);
+            (address[] memory fromETHPath, uint24[] memory fromETHFees) = factoryStorage.getFromETHPathData(
+                tokenAddress
+            );
+            
+            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].oldTokenValue = _getOldTokenValue(tokenAddress);
             uint tokenMarketShare = factoryStorage.tokenCurrentMarketShare(tokenAddress);
-            uint oldTokenValue = tokenAddress == address(weth)
-                ? convertEthToUsd(IERC20(tokenAddress).balanceOf(address(factoryStorage.vault())))
-                : convertEthToUsd(getAmountOut(tokenAddress, address(weth), IERC20(tokenAddress).balanceOf(address(factoryStorage.vault())), tokenSwapFee));
-            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].oldTokenValue = oldTokenValue;
             uint swapAmount = (_wethAmount * tokenMarketShare) / 100e18;
             if (tokenAddress != address(weth)) {
-                // _swapSingle(address(weth), tokenAddress, (_wethAmount * tokenMarketShare) / 100e18, address(indexToken), tokenSwapFee);
-                // uint swapAmount = (_wethAmount * tokenMarketShare) / 100e18;
-                swap(address(weth), tokenAddress, swapAmount, address(factoryStorage.vault()), tokenSwapFee);
+                swap(fromETHPath, fromETHFees, swapAmount, address(factoryStorage.vault()));
             }else{
                 weth.transfer(address(factoryStorage.vault()), swapAmount);
             }
 
-            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].newTokenValue = oldTokenValue + convertEthToUsd((_wethAmount * tokenMarketShare) / 100e18);
+            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].newTokenValue = issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].oldTokenValue + convertEthToUsd((_wethAmount * tokenMarketShare) / 100e18);
             issuanceData[_issuanceNonce].completedTokensCount += 1;
         }
     }
 
-    
+    function _issuanceSwapToCrossChainToken(
+        uint _wethAmount,
+        uint64 _chainSelector,
+        uint totalShares
+    ) internal returns(uint) {
+        (address[] memory fromETHPath, uint24[] memory fromETHFees) = factoryStorage.getFromETHPathData(
+            crossChainToken(_chainSelector)
+        );
+        uint crossChainTokenAmount = swap(
+            fromETHPath,
+            fromETHFees,
+            (_wethAmount*totalShares)/100e18,
+            address(this)
+        );
+        return crossChainTokenAmount;
+    }
+    function _encodeIssuanceMessageData(
+        uint _issuanceNonce,
+        uint[] memory _totalSharesArr,
+        address[] memory tokenAddresses,
+        uint[] memory tokenShares
+    ) internal view returns(bytes memory){
+        return abi.encode(
+            0,
+            tokenAddresses,
+            new address[](0),
+            factoryStorage.getFromETHPathBytesForTokens(tokenAddresses),
+            factoryStorage.getFromETHPathBytesForTokens(new address[](0)),
+            _issuanceNonce,
+            tokenShares,
+            _totalSharesArr
+        );
+    }
+    function _sendIssuanceMessage(
+        uint _issuanceNonce,
+        uint64 _chainSelector,
+        uint _crossChainTokenAmount,
+        address crossChainIndexFactory,
+        uint[] memory _totalSharesArr,
+        address[] memory tokenAddresses,
+        uint[] memory tokenShares
+    ) internal returns (bytes32) {
+        Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+        tokensToSendArray[0].token = crossChainToken(_chainSelector);
+        tokensToSendArray[0].amount = _crossChainTokenAmount;
+
+        bytes memory data = _encodeIssuanceMessageData(
+            _issuanceNonce,
+            _totalSharesArr,
+            tokenAddresses,
+            tokenShares
+        );
+
+        return sendToken(
+            _chainSelector,
+            data,
+            crossChainIndexFactory,
+            tokensToSendArray,
+            MessageSender.PayFeesIn.LINK
+        );
+    }
 
     /**
      * @dev Handles issuance swaps on other chains.
@@ -505,57 +561,31 @@ contract IndexFactory is
         uint64 _chainSelector,
         uint _latestCount
     ) internal {
-        IssuanceSendLocalVars memory localVars;
-
         uint totalShares = factoryStorage.getCurrentChainSelectorTotalShares(_latestCount, _chainSelector);
         uint[] memory totalSharesArr = new uint[](1);
         totalSharesArr[0] = totalShares;
 
-        
-        uint crossChainTokenAmount = swap(
-            address(weth),
-            crossChainToken(_chainSelector),
-            (_wethAmount*totalSharesArr[0])/100e18,
-            address(this),
-            crossChainTokenSwapFee(_chainSelector)
+        uint crossChainTokenAmount = _issuanceSwapToCrossChainToken(
+            _wethAmount,
+            _chainSelector,
+            totalShares
         );
-        address crossChainIndexFactory = crossChainFactoryBySelector(
-        _chainSelector
-        );
-        
-        localVars.tokenAddresses = factoryStorage.allCurrentChainSelectorTokens(_chainSelector);
-        localVars.tokenVersions = factoryStorage.allCurrentChainSelectorVersions(_chainSelector);
-        localVars.tokenShares = factoryStorage.allCurrentChainSelectorTokenShares(_chainSelector);
-        localVars.zeroAddresses = new address[](0);
-        localVars.zeroNumbers = new uint[](0);
-        //fee
-        Client.EVMTokenAmount[]
-            memory tokensToSendArray = new Client.EVMTokenAmount[](
-                1
-            );
-        tokensToSendArray[0].token = crossChainToken(_chainSelector);
-        tokensToSendArray[0].amount = crossChainTokenAmount;
-        
-        bytes memory data = abi.encode(
-            0,
-            localVars.tokenAddresses,
-            localVars.zeroAddresses,
-            localVars.tokenVersions,
-            localVars.zeroNumbers,
+
+        address[] memory tokenAddresses = factoryStorage.allCurrentChainSelectorTokens(_chainSelector);
+        uint[] memory tokenShares = factoryStorage.allCurrentChainSelectorTokenShares(_chainSelector);
+        address crossChainIndexFactory = crossChainFactoryBySelector(_chainSelector);
+
+        bytes32 messageId = _sendIssuanceMessage(
             _issuanceNonce,
-            localVars.tokenShares,
-            totalSharesArr
+            _chainSelector,
+            crossChainTokenAmount,
+            crossChainIndexFactory,
+            totalSharesArr,
+            tokenAddresses,
+            tokenShares
         );
-    
-        bytes32 messageId = sendToken(
-                                _chainSelector,
-                                data,
-                                crossChainIndexFactory,
-                                tokensToSendArray,
-                                MessageSender.PayFeesIn.LINK
-                            );
         emit MessageSent(messageId);
-        issuanceData[issuanceNonce].messageId = messageId;
+        issuanceData[_issuanceNonce].messageId = messageId;
     }
 
     /**
@@ -595,25 +625,25 @@ contract IndexFactory is
      * @param amountIn The amount of input tokens.
      * @param _crossChainFee The cross-chain fee.
      * @param _tokenOut The address of the output token.
-     * @param _tokenOutSwapFee The swap version of the output token.
      */
     function redemption(
         uint amountIn,
         uint _crossChainFee,
         address _tokenOut,
-        uint24 _tokenOutSwapFee
+        address[] memory _tokenOutPath,
+        uint24[] memory _tokenOutFees
     ) public {
         // Validate input parameters
         require(amountIn > 0, "Amount must be greater than zero");
         require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
         require(_tokenOut != address(0), "Invalid output token address");
-        require(_tokenOutSwapFee > 0, "Invalid output token swap fee");
         uint burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         redemptionNonce += 1;
         redemptionData[redemptionNonce].requester = msg.sender;
         redemptionData[redemptionNonce].outputToken = _tokenOut;
-        redemptionData[redemptionNonce].outputTokenSwapFee = _tokenOutSwapFee;
         redemptionData[redemptionNonce].inputAmount = amountIn;
+        redemptionData[redemptionNonce].outputTokenPath = _tokenOutPath;
+        redemptionData[redemptionNonce].outputTokenFees = _tokenOutFees;
 
         indexToken.burn(msg.sender, amountIn);
 
@@ -621,7 +651,7 @@ contract IndexFactory is
         //swap
         uint totalChains = factoryStorage.currentChainSelectorsCount();
         uint latestCount = factoryStorage.currentFilledCount();
-        (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
+        (,, uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCount);
         for(uint i = 0; i < totalChains; i++){
             uint64 chainSelector = chainSelectors[i];
             uint chainSelectorTokensCount = factoryStorage.currentChainSelectorTokensCount(chainSelector);
@@ -668,13 +698,13 @@ contract IndexFactory is
         Vault vault = factoryStorage.vault();
         for (uint i = 0; i < _chainSelectorTokensCount; i++) {
             address tokenAddress = tokens[i];
-            uint24 tokenSwapFee = factoryStorage.tokenSwapFee(tokenAddress);
+            (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage.getToETHPathData(tokenAddress);
             uint swapAmount = (_burnPercent * IERC20(tokenAddress).balanceOf(address(factoryStorage.vault()))) / 1e18;
             vault.withdrawFunds(tokenAddress, address(this), swapAmount);
             uint swapAmountOut = tokenAddress == address(weth)
                 ? swapAmount
                 // : _swapSingle(tokenAddress, address(weth), swapAmount, address(this), tokenSwapFee);
-                : swap(tokenAddress, address(weth), swapAmount, address(this), tokenSwapFee);
+                : swap(toETHPath, toETHFees, swapAmount, address(this));
             redemptionData[_redemptionNonce].totalValue += swapAmountOut;
             redemptionData[_redemptionNonce].completedTokensCount += 1;
         }
@@ -696,22 +726,22 @@ contract IndexFactory is
                 );
           
         address[] memory tokenAddresses = factoryStorage.allCurrentChainSelectorTokens(_chainSelector);
-        uint[] memory tokenVersions = factoryStorage.allCurrentChainSelectorVersions(_chainSelector);
-        uint[] memory tokenShares = factoryStorage.allCurrentChainSelectorTokenShares(_chainSelector);
-        address[] memory zeroAddresses = new address[](0);
-        uint[] memory zeroNumbers = new uint[](0);
+        // uint[] memory tokenVersions = factoryStorage.allCurrentChainSelectorVersions(_chainSelector);
+        // uint[] memory tokenShares = factoryStorage.allCurrentChainSelectorTokenShares(_chainSelector);
+        // address[] memory zeroAddresses = new address[](0);
+        // uint[] memory zeroNumbers = new uint[](0);
         uint[] memory burnPercentages = new uint[](1);
-
         burnPercentages[0] = _burnPercent;
+        
 
         bytes memory data = abi.encode(
             1,
             tokenAddresses,
-            zeroAddresses,
-            tokenVersions,
-            zeroNumbers,
+            new address[](0),
+            factoryStorage.getFromETHPathBytesForTokens(tokenAddresses),
+            new bytes[](0),
             _redemptionNonce,
-            tokenShares,
+            new uint[](0),
             burnPercentages
         );
         bytes32 messageId = sendMessage(
@@ -732,7 +762,7 @@ contract IndexFactory is
         uint wethAmount = redemptionData[nonce].totalValue;
         address requester = redemptionData[nonce].requester;
         address outputToken = redemptionData[nonce].outputToken;
-        uint24 outputTokenSwapFee = redemptionData[nonce].outputTokenSwapFee;
+        // uint24 outputTokenSwapFee = redemptionData[nonce].outputTokenSwapFee;
         uint fee = FeeCalculation.calculateFee(wethAmount, feeRate);
         // weth.transfer(feeReceiver, fee);
         require(
@@ -746,30 +776,27 @@ contract IndexFactory is
         require(_requesterSuccess, "transfer eth to the requester failed");
         emit Redemption(_messageId, nonce, requester, outputToken,  redemptionData[nonce].inputAmount, wethAmount - fee, block.timestamp);
         }else{
-        uint reallOut = swap(address(weth), outputToken, wethAmount - fee, requester, outputTokenSwapFee);
+        uint reallOut = swap(redemptionData[nonce].outputTokenPath, redemptionData[nonce].outputTokenFees, wethAmount - fee, requester);
         emit Redemption(_messageId, nonce, requester, outputToken, redemptionData[nonce].inputAmount, reallOut, block.timestamp);
         }
     }
     
     /**
      * @dev Returns the amount out for a given swap.
-     * @param tokenIn The address of the input token.
-     * @param tokenOut The address of the output token.
+     * @param path The path of the tokens.
+     * @param fees The fees of the tokens.
      * @param amountIn The amount of input token.
-     * @param _swapFee The swap version.
      * @return finalAmountOut The amount of output token.
      */
     function getAmountOut(
-        address tokenIn,
-        address tokenOut,
-        uint amountIn,
-        uint24 _swapFee
+        address[] memory path,
+        uint24[] memory fees,
+        uint amountIn
     ) public view returns (uint finalAmountOut) {
         finalAmountOut = factoryStorage.getAmountOut(
-            tokenIn,
-            tokenOut,
-            amountIn,
-            _swapFee
+            path,
+            fees,
+            amountIn
         );
     }
 
@@ -780,19 +807,19 @@ contract IndexFactory is
     function getPortfolioBalance() public view returns (uint) {
         uint totalValue;
         uint totalCurrentList = factoryStorage.totalCurrentList();
+        Vault vault = factoryStorage.vault();
         for (uint i = 0; i < totalCurrentList; i++) {
             address tokenAddress = factoryStorage.currentList(i);
             uint64 tokenChainSelector = factoryStorage.tokenChainSelector(tokenAddress);
-            uint24 tokenSwapFee = factoryStorage.tokenSwapFee(tokenAddress);
+            (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage.getToETHPathData(tokenAddress);
             if (tokenChainSelector == currentChainSelector) {
             if(tokenAddress == address(weth)){
-            totalValue += IERC20(tokenAddress).balanceOf(address(indexToken));
+            totalValue += IERC20(tokenAddress).balanceOf(address(vault));
             }else{
             uint value = factoryStorage.getAmountOut(
-                tokenAddress,
-                address(weth),
-                IERC20(tokenAddress).balanceOf(address(indexToken)),
-                tokenSwapFee
+                toETHPath,
+                toETHFees,
+                IERC20(tokenAddress).balanceOf(address(vault))
             );
             totalValue += value;
             }
@@ -801,26 +828,7 @@ contract IndexFactory is
         return totalValue;
     }
 
-    /**
-     * @dev Estimates the amount out for a given swap.
-     * @param tokenIn The address of the input token.
-     * @param tokenOut The address of the output token.
-     * @param amountIn The amount of input token.
-     * @return amountOut The estimated amount of output token.
-     */
-    function estimateAmountOut(
-        address tokenIn,
-        address tokenOut,
-        uint128 amountIn,
-        uint24 fee
-    ) public view returns (uint amountOut) {
-        amountOut = factoryStorage.estimateAmountOut(
-            tokenIn,
-            tokenOut,
-            amountIn,
-            fee
-        );
-    }
+    
 
     /**
      * @dev Sends tokens to another chain.
@@ -892,13 +900,18 @@ contract IndexFactory is
         (
             uint actionType,
             address[] memory tokenAddresses,
-            address[] memory tokenAddresses2,
+            ,
+            ,
+            ,
+            // address[] memory tokenAddresses2,
+            // bytes[] memory tokenPaths,
+            // bytes[] memory tokenPaths2,
             uint nonce,
             uint[] memory value1,
             uint[] memory value2
         ) = abi.decode(
                 any2EvmMessage.data,
-                (uint, address[], address[], uint, uint[], uint[])
+                (uint, address[], address[], bytes[], bytes[], uint, uint[], uint[])
             );
         if (actionType == 0) {
             _handleReceivedIssuance(
@@ -960,12 +973,14 @@ contract IndexFactory is
             .destTokenAmounts;
         address token = tokenAmounts[0].token;
         uint256 amount = tokenAmounts[0].amount;
+        (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage.getToETHPathData(
+            token
+        );
         uint wethAmount = swap(
-            address(token),
-            address(weth),
+            toETHPath,
+            toETHFees,
             amount,
-            address(this),
-            3000
+            address(this)
         );
         redemptionData[requestRedemptionNonce].totalValue += wethAmount;
         redemptionData[requestRedemptionNonce].completedTokensCount += tokenAddresses.length;

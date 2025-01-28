@@ -15,7 +15,7 @@ import "../chainlink/ConfirmedOwner.sol";
 import "@chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
-// import "../libraries/OracleLibrary.sol";
+import "../libraries/PathHelpers.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -36,7 +36,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
         Native,
         LINK
     }
-    // using Chainlink for Chainlink.Request;
 
     IndexToken public indexToken;
     address public indexFactory;
@@ -80,8 +79,12 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
 
     mapping(address => uint) public tokenCurrentMarketShare;
     mapping(address => uint) public tokenOracleMarketShare;
-    mapping(address => uint24) public tokenSwapFee;
     mapping(address => uint64) public tokenChainSelector;
+
+    mapping(address => address[]) public fromETHPath;
+    mapping(address => address[]) public toETHPath;
+    mapping(address => uint24[]) public fromETHFees;
+    mapping(address => uint24[]) public toETHFees;
 
     //new mappings
     uint public oracleFilledCount;
@@ -93,7 +96,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
     struct OracleData {
         address[] tokens;
         uint[] marketShares;
-        uint[] swapFees;
         uint64[] chainSelectors;
         mapping(uint64 => bool) isOracleChainSelectorStored;
         mapping(uint64 => address[]) oracleChainSelectorTokens;
@@ -105,7 +107,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
     struct CurrentData {
         address[] tokens;
         uint[] marketShares;
-        uint24[] swapFees;
         uint64[] chainSelectors;
         mapping(uint64 => bool) isCurrentChainSelectorStored;
         mapping(uint64 => address[]) currentChainSelectorTokens;
@@ -353,15 +354,18 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
      * @dev Sets the cross-chain token and its swap version.
      * @param _chainSelector The chain selector.
      * @param _crossChainToken The address of the cross-chain token.
-     * @param _swapFee The swap version of the cross-chain token.
      */
     function setCrossChainToken(
         uint64 _chainSelector,
         address _crossChainToken,
-        uint24 _swapFee
+        address[] memory _fromETHPath,
+        uint24[] memory _fromETHFees
     ) public onlyOwner {
         crossChainToken[_chainSelector] = _crossChainToken;
-        crossChainTokenSwapFee[_chainSelector][_crossChainToken] = _swapFee;
+        fromETHPath[_crossChainToken] = _fromETHPath;
+        fromETHFees[_crossChainToken] = _fromETHFees;
+        toETHPath[_crossChainToken] = PathHelpers.reverseAddressArray(_fromETHPath);
+        toETHFees[_crossChainToken] = PathHelpers.reverseUint24Array(_fromETHFees);
     }
 
     /**
@@ -531,101 +535,54 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
     ) internal override {
         (
             address[] memory _tokens,
+            bytes[] memory _pathBytes,
             uint256[] memory _marketShares,
-            uint24[] memory _swapFees,
             uint64[] memory _chainSelectors
-        ) = abi.decode(response, (address[], uint256[], uint24[], uint64[]));
+        ) = abi.decode(response, (address[], bytes[], uint256[], uint64[]));
         require(_tokens.length > 0, "Tokens array cannot be empty");
         require(
             _marketShares.length == _tokens.length,
             "Market shares array length must match tokens array length"
         );
         require(
-            _swapFees.length == _tokens.length,
-            "Swap fees array length must match tokens array length"
-        );
-        require(
             _chainSelectors.length == _tokens.length,
             "Chain selectors array length must match tokens array length"
         );
 
-        insertOracleData(_tokens, _marketShares, _swapFees, _chainSelectors);
+        insertOracleData(_tokens, _pathBytes, _marketShares, _chainSelectors);
     }
-    // /**
-    //  * @dev Requests asset data from the oracle.
-    //  * @return The request ID.
-    //  */
-    // function requestAssetsData(
-    // )
-    //     public
-    //     returns(bytes32)
-    // {
-
-    //     string memory url = concatenation(baseUrl, urlParams);
-    //     Chainlink.Request memory req = buildChainlinkRequest(externalJobId, address(this), this.fulfillAssetsData.selector);
-    //     req.add("get", url);
-    //     req.add("path1", "results,tokens");
-    //     req.add("path2", "results,marketShares");
-    //     req.add("path3", "results,swapFees");
-    //     req.add("path4", "results,chainSelector");
-    //     // sendOperatorRequest(req, oraclePayment);
-    //     return sendChainlinkRequestTo(chainlinkOracleAddress(), req, oraclePayment);
-    // }
-
-    // /**
-    //  * @dev Fulfills the asset data request.
-    //  * @param requestId The request ID.
-    //  * @param _tokens The addresses of the tokens.
-    //  * @param _marketShares The market shares of the tokens.
-    //  * @param _swapFees The swap versions of the tokens.
-    //  * @param _chainSelectors The chain selectors of the tokens.
-    //  */
-    //   function fulfillAssetsData(bytes32 requestId, address[] memory _tokens, uint256[] memory _marketShares, uint24[] memory _swapFees, uint64[] memory _chainSelectors)
-    //     public
-    //     recordChainlinkFulfillment(requestId)
-    //   {
-    //     // Validate input parameters
-    //     require(_tokens.length > 0, "Tokens array cannot be empty");
-    //     require(_marketShares.length == _tokens.length, "Market shares array length must match tokens array length");
-    //     require(_swapFees.length == _tokens.length, "Swap fees array length must match tokens array length");
-    //     require(_chainSelectors.length == _tokens.length, "Chain selectors array length must match tokens array length");
-
-    //     insertOracleData(_tokens, _marketShares, _swapFees, _chainSelectors);
-
-    //     }
+    
 
     /**
      * @dev Mocks the fulfillment of asset data.
      * @param _tokens The addresses of the tokens.
      * @param _marketShares The market shares of the tokens.
-     * @param _swapFees The swap versions of the tokens.
      * @param _chainSelectors The chain selectors of the tokens.
      */
     function mockFillAssetsList(
         address[] memory _tokens,
+        bytes[] memory _pathBytes,
         uint256[] memory _marketShares,
-        uint24[] memory _swapFees,
         uint64[] memory _chainSelectors
     ) public onlyOwner {
-        insertOracleData(_tokens, _marketShares, _swapFees, _chainSelectors);
+        insertOracleData(_tokens, _pathBytes, _marketShares, _chainSelectors);
     }
 
     /**
      * @dev Inserts oracle data into the contract.
      * @param _tokens The addresses of the tokens.
      * @param _marketShares The market shares of the tokens.
-     * @param _swapFees The swap versions of the tokens.
      * @param _chainSelectors The chain selectors of the tokens.
      */
     function insertOracleData(
         address[] memory _tokens,
+        bytes[] memory _pathBytes,
         uint256[] memory _marketShares,
-        uint24[] memory _swapFees,
         uint64[] memory _chainSelectors
     ) private {
         address[] memory tokens0 = _tokens;
+        bytes[] memory pathBytes0 = _pathBytes;
         uint[] memory marketShares0 = _marketShares;
-        uint24[] memory swapFees0 = _swapFees;
         uint64[] memory chainSelectors0 = _chainSelectors;
 
         oracleFilledCount += 1;
@@ -634,10 +591,12 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
         }
         //save mappings
         for (uint i = 0; i < tokens0.length; i++) {
+            //update path
+            _initPathData(tokens0[i], pathBytes0[i]);
+            //update token data
             oracleList[i] = tokens0[i];
             tokenOracleListIndex[tokens0[i]] = i;
             tokenOracleMarketShare[tokens0[i]] = marketShares0[i];
-            tokenSwapFee[tokens0[i]] = swapFees0[i];
             tokenChainSelector[tokens0[i]] = chainSelectors0[i];
             // oracle chain selector actions
             if (
@@ -655,9 +614,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
             oracleData[oracleFilledCount]
                 .oracleChainSelectorTokens[chainSelectors0[i]]
                 .push(tokens0[i]);
-            oracleData[oracleFilledCount]
-                .oracleChainSelectorVersions[chainSelectors0[i]]
-                .push(swapFees0[i]);
             oracleData[oracleFilledCount].oracleChainSelectorTotalShares[
                 chainSelectors0[i]
             ] += marketShares0[i];
@@ -689,9 +645,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
                 currentData[currentFilledCount]
                     .currentChainSelectorTokens[chainSelectors0[i]]
                     .push(tokens0[i]);
-                currentData[currentFilledCount]
-                    .currentChainSelectorVersions[chainSelectors0[i]]
-                    .push(swapFees0[i]);
                 currentData[currentFilledCount].currentChainSelectorTotalShares[
                     chainSelectors0[i]
                 ] += marketShares0[i];
@@ -706,6 +659,22 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
         }
         lastUpdateTime = block.timestamp;
     }
+
+    function _initPathData(address _tokenAddress, bytes memory _pathBytes) internal {
+        // decode pathBytes to get fromETHPath and fromETHFees
+        (address[] memory _fromETHPath, uint24[] memory _fromETHFees) = abi.decode(_pathBytes, (address[], uint24[]));
+        require(_fromETHPath.length == _fromETHFees.length + 1, "Invalid input arrays");
+        fromETHPath[_tokenAddress] = _fromETHPath;
+        fromETHFees[_tokenAddress] = _fromETHFees;
+        // update toETHPath and toETHFees
+        address[] memory _toETHPath = PathHelpers.reverseAddressArray(_fromETHPath);
+        uint24[] memory _toETHFees = PathHelpers.reverseUint24Array(_fromETHFees);
+        toETHPath[_tokenAddress] = _toETHPath;
+        toETHFees[_tokenAddress] = _toETHFees;
+        
+    }
+    
+    
 
     /**
      * @dev Updates the current list of tokens.
@@ -738,9 +707,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
             currentData[currentFilledCount]
                 .currentChainSelectorTokens[chainSelector]
                 .push(oracleList[i]);
-            currentData[currentFilledCount]
-                .currentChainSelectorVersions[chainSelector]
-                .push(tokenSwapFee[oracleList[i]]);
             currentData[currentFilledCount].currentChainSelectorTotalShares[
                 chainSelector
             ] += tokenOracleMarketShare[oracleList[i]];
@@ -765,38 +731,51 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
         _updateCurrenctList();
     }
 
+    function getFromETHPathData(address _tokenAddress) public view returns (address[] memory, uint24[] memory) {
+        return (fromETHPath[_tokenAddress], fromETHFees[_tokenAddress]);
+    }
+
+    function getToETHPathData(address _tokenAddress) public view returns (address[] memory, uint24[] memory) {
+        return (toETHPath[_tokenAddress], toETHFees[_tokenAddress]);
+    }
+
+    
+
+    function getFromETHPathBytesForTokens(address[] memory _tokens) public view returns (bytes[] memory) {
+        bytes[] memory pathBytes = new bytes[](_tokens.length);
+        for (uint i = 0; i < _tokens.length; i++) {
+            pathBytes[i] = PathHelpers.getFromETHPathBytes(fromETHPath[_tokens[i]], fromETHFees[_tokens[i]]);
+        }
+
+        return pathBytes;
+    }
+
     /**
      * @dev Returns the amount out for a given swap.
-     * @param tokenIn The address of the input token.
-     * @param tokenOut The address of the output token.
+     * @param path The path of the swap.
+     * @param fees The fees of the swap.
      * @param amountIn The amount of input token.
-     * @param _swapFee The swap version.
      * @return finalAmountOutValue The amount of output token.
      */
     function getAmountOut(
-        address tokenIn,
-        address tokenOut,
-        uint amountIn,
-        uint24 _swapFee
+        address[] memory path,
+        uint24[] memory fees,
+        uint amountIn
     ) public view returns (uint finalAmountOutValue) {
         uint finalAmountOut;
         if (amountIn > 0) {
-            if (_swapFee > 0) {
-                finalAmountOut = estimateAmountOut(
-                    tokenIn,
-                    tokenOut,
-                    uint128(amountIn),
-                    _swapFee
+            if (fees.length > 0) {
+                finalAmountOut = estimateAmountOutWithPath(
+                    path,
+                    fees,
+                    amountIn
                 );
             } else {
-                address[] memory path = new address[](2);
-                path[0] = tokenIn;
-                path[1] = tokenOut;
                 uint[] memory v2amountOut = swapRouterV2.getAmountsOut(
                     amountIn,
                     path
                 );
-                finalAmountOut = v2amountOut[1];
+                finalAmountOut = v2amountOut[v2amountOut.length - 1];
             }
         }
         finalAmountOutValue = finalAmountOut;
@@ -809,16 +788,21 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
     function getPortfolioBalance() public view returns (uint) {
         uint totalValue;
         for (uint i = 0; i < totalCurrentList; i++) {
+            address tokenAddress = currentList[i];
+            if (tokenAddress == address(weth)) {
+                totalValue += IERC20(tokenAddress).balanceOf(address(vault));
+            } else {
             uint value = getAmountOut(
-                currentList[i],
-                address(weth),
-                IERC20(currentList[i]).balanceOf(address(vault)),
-                tokenSwapFee[currentList[i]]
+                toETHPath[tokenAddress],
+                toETHFees[tokenAddress],
+                IERC20(tokenAddress).balanceOf(address(vault))
             );
             totalValue += value;
+            }
         }
         return totalValue;
     }
+
 
     /**
      * @dev Estimates the amount out for a given swap.
@@ -840,18 +824,24 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
             amountIn,
             fee
         );
-        // address _pool = factoryV3.getPool(
-        //     tokenIn,
-        //     tokenOut,
-        //     3000
-        // );
-        // (int24 tick ) = OracleLibrary.getLatestTick(_pool);
-        // amountOut = OracleLibrary.getQuoteAtTick(
-        //     tick,
-        //     amountIn,
-        //     tokenIn,
-        //     tokenOut
-        // );
+    }
+
+    function estimateAmountOutWithPath(
+        address[] memory path,
+        uint24[] memory fees,
+        uint amountIn
+    ) public view returns (uint amountOut) {
+        uint lastAmount = amountIn;
+        for(uint i = 0; i < path.length - 1; i++) {
+            lastAmount = IPriceOracle(priceOracle).estimateAmountOut(
+                address(factoryV3),
+                path[i],
+                path[i+1],
+                uint128(lastAmount),
+                fees[i]
+            );
+        }
+        amountOut = lastAmount;
     }
 
     function getOracleData(
@@ -862,7 +852,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
         returns (
             address[] memory tokens,
             uint[] memory marketShares,
-            uint[] memory swapFees,
             uint64[] memory chainSelectors
         )
     {
@@ -870,7 +859,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
         return (
             data.tokens,
             data.marketShares,
-            data.swapFees,
             data.chainSelectors
         );
     }
@@ -883,7 +871,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
         returns (
             address[] memory tokens,
             uint[] memory marketShares,
-            uint24[] memory swapFees,
             uint64[] memory chainSelectors
         )
     {
@@ -891,7 +878,6 @@ contract IndexFactoryStorage is Initializable, FunctionsClient, ConfirmedOwner {
         return (
             data.tokens,
             data.marketShares,
-            data.swapFees,
             data.chainSelectors
         );
     }

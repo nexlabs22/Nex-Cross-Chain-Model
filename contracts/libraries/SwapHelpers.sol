@@ -8,42 +8,50 @@ import {IUniswapV2Router02} from "../interfaces/IUniswapV2Router02.sol";
 
 library SwapHelpers {
     
+    function encodePath(address[] memory tokens, uint24[] memory fees)
+        public
+        pure
+        returns (bytes memory path)
+    {
+        require(tokens.length == fees.length + 1, "Invalid input arrays");
+
+        for (uint256 i = 0; i < fees.length; i++) {
+            // Concatenate token address and fee tier
+            path = abi.encodePacked(path, tokens[i], fees[i]);
+        }
+
+        // Append the final token address
+        path = abi.encodePacked(path, tokens[tokens.length - 1]);
+    }
+
 
     function swapVersion3(
         ISwapRouter uniswapRouter,
-        uint24 poolFee,
-        address tokenIn,
-        address tokenOut,
+        address[] memory path,
+        uint24[] memory fees,
         uint256 amountIn,
         address recipient
     ) internal returns (uint256 amountOut) {
-        IERC20(tokenIn).approve(address(uniswapRouter), amountIn);
-        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: tokenIn,
-            tokenOut: tokenOut,
-            fee: poolFee,
+        IERC20(path[0]).approve(address(uniswapRouter), amountIn);
+        ISwapRouter.ExactInputParams memory params = ISwapRouter.ExactInputParams({
+            path: encodePath(path, fees),
             recipient: recipient,
             deadline: block.timestamp + 300,
-            amountIn: amountIn,
-            amountOutMinimum: 0,
-            sqrtPriceLimitX96: 0
+            amountIn:  amountIn,
+            amountOutMinimum: 0
         });
 
-        amountOut = uniswapRouter.exactInputSingle(params);
+        amountOut = uniswapRouter.exactInput(params);
     }
 
     function swapTokensV2(
         IUniswapV2Router02 uniswapRouter,
-        address tokenIn,
-        address tokenOut,
+        address[] memory path,
         uint256 amountIn,
         address recipient
     ) internal returns (uint amountOut) {
-        address[] memory path = new address[](2);
-        path[0] = tokenIn;
-        path[1] = tokenOut;
         uint[] memory v2AmountOut = uniswapRouter.getAmountsOut(amountIn, path);
-        IERC20(tokenIn).approve(address(uniswapRouter), amountIn);
+        IERC20(path[0]).approve(address(uniswapRouter), amountIn);
         uniswapRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
             amountIn, //amountIn
             0, //amountOutMin
@@ -51,25 +59,22 @@ library SwapHelpers {
             recipient, //to
             block.timestamp //deadline
         );
-        amountOut = v2AmountOut[1];
+        amountOut = v2AmountOut[v2AmountOut.length - 1];
     }
 
     function swap(
         ISwapRouter uniswapRouter,
         IUniswapV2Router02 uniswapRouterV2,
-        uint24 poolFee,
-        address tokenIn,
-        address tokenOut,
+        address[] memory path,
+        uint24[] memory fees,
         uint256 amountIn,
         address recipient
     ) internal returns (uint256 amountOut) {
-        require(tokenIn != address(0), "Invalid tokenIn address");
-        require(tokenOut != address(0), "Invalid tokenOut address");
         require(amountIn > 0, "Amount must be greater than zero");
-        if (poolFee > 0) {
-            amountOut = swapVersion3(uniswapRouter, poolFee, tokenIn, tokenOut, amountIn, recipient);
+        if (fees.length > 0) {
+            amountOut = swapVersion3(uniswapRouter, path, fees, amountIn, recipient);
         } else {
-            amountOut = swapTokensV2(uniswapRouterV2, tokenIn, tokenOut, amountIn, recipient);
+            amountOut = swapTokensV2(uniswapRouterV2, path, amountIn, recipient);
         }
     }
 
