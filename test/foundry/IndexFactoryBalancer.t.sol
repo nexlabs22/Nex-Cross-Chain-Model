@@ -352,7 +352,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         );
     }
 
-    /**
+    
     function showPercentages() public {
         console.log("****");
         uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
@@ -367,11 +367,15 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
                 uint vaultBalance = IERC20(tokenAddress).balanceOf(
                     address(vault)
                 );
+                address[] memory path = new address[](2);
+                path[0] = tokenAddress;
+                path[1] = address(weth);
+                uint24[] memory fees = new uint24[](1);
+                fees[0] = 3000;
                 uint tokenValue = indexFactoryStorage.getAmountOut(
-                    tokenAddress,
-                    address(weth),
-                    vaultBalance,
-                    3000
+                    path,
+                    fees,
+                    vaultBalance
                 );
                 totalPortfolioBalance += tokenValue;
             } else {
@@ -385,11 +389,15 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
                 uint vaultBalance = IERC20(tokenAddress).balanceOf(
                     address(vault)
                 );
+                address[] memory path = new address[](2);
+                path[0] = tokenAddress;
+                path[1] = address(weth);
+                uint24[] memory fees = new uint24[](1);
+                fees[0] = 3000;
                 uint tokenValue = indexFactoryStorage.getAmountOut(
-                    tokenAddress,
-                    address(weth),
-                    vaultBalance,
-                    3000
+                    path,
+                    fees,
+                    vaultBalance
                 );
                 totalPortfolioBalance += tokenValue;
             }
@@ -403,11 +411,15 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
                 uint vaultBalance = IERC20(tokenAddress).balanceOf(
                     address(vault)
                 );
+                address[] memory path = new address[](2);
+                path[0] = tokenAddress;
+                path[1] = address(weth);
+                uint24[] memory fees = new uint24[](1);
+                fees[0] = 3000;
                 uint tokenValue = indexFactoryStorage.getAmountOut(
-                    tokenAddress,
-                    address(weth),
-                    vaultBalance,
-                    3000
+                    path,
+                    fees,
+                    vaultBalance
                 );
                 uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
                 console.log("token", i, "percentage", percentage);
@@ -422,11 +434,15 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
                 uint vaultBalance = IERC20(tokenAddress).balanceOf(
                     address(vault)
                 );
+                address[] memory path = new address[](2);
+                path[0] = tokenAddress;
+                path[1] = address(weth);
+                uint24[] memory fees = new uint24[](1);
+                fees[0] = 3000;
                 uint tokenValue = indexFactoryStorage.getAmountOut(
-                    tokenAddress,
-                    address(weth),
-                    vaultBalance,
-                    3000
+                    path,
+                    fees,
+                    vaultBalance
                 );
                 uint percentage = (tokenValue * 1e18) / totalPortfolioBalance;
                 console.log("token", i, "percentage", percentage);
@@ -445,7 +461,8 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             token4.balanceOf(address(crossChainVault))
         );
     }
-
+    
+    
     function testRebalanceSameTokens() public {
         initializeOracleList();
 
@@ -460,7 +477,12 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             1e18,
             0
         );
-        factory.redemption(indexToken.balanceOf(add1), 0, address(usdt), 3000);
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(usdt);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
+        factory.redemption(indexToken.balanceOf(add1), 0, address(usdt), path, fees);
 
         vm.stopPrank();
 
@@ -485,6 +507,36 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         assetList[3] = address(token3);
         assetList[4] = address(token4);
 
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
+
+        bytes[] memory pathData = new bytes[](5);
+        //updating path data for token0
+        address[] memory path0 = new address[](2);
+        path0[0] = address(weth);
+        path0[1] = address(token0);
+        pathData[0] = abi.encode(path0, feesData);
+        //updating path data for token1
+        address[] memory path1 = new address[](2);
+        path1[0] = address(weth);
+        path1[1] = address(token1);
+        pathData[1] = abi.encode(path1, feesData);
+        //updating path data for token2
+        address[] memory path2 = new address[](2);
+        path2[0] = address(weth);
+        path2[1] = address(token2);
+        pathData[2] = abi.encode(path2, feesData);
+        //updating path data for token3
+        address[] memory path3 = new address[](2);
+        path3[0] = address(weth);
+        path3[1] = address(token3);
+        pathData[3] = abi.encode(path3, feesData);
+        //updating path data for token4
+        address[] memory path4 = new address[](2);
+        path4[0] = address(weth);
+        path4[1] = address(token4);
+        pathData[4] = abi.encode(path4, feesData);
+
         uint[] memory tokenShares = new uint[](5);
         tokenShares[0] = 30e18;
         tokenShares[1] = 20e18;
@@ -492,12 +544,6 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         tokenShares[3] = 20e18;
         tokenShares[4] = 10e18;
 
-        uint[] memory swapFees = new uint[](5);
-        swapFees[0] = 3000;
-        swapFees[1] = 3000;
-        swapFees[2] = 3000;
-        swapFees[3] = 3000;
-        swapFees[4] = 3000;
 
         uint64[] memory chains = new uint64[](5);
         chains[0] = 1;
@@ -506,22 +552,17 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         chains[3] = 1;
         chains[4] = 2;
 
-        updateOracleList(assetList, tokenShares, swapFees, chains);
+        updateOracleList(assetList, pathData, tokenShares, chains);
 
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
-        // console.log("reweightExtraPercentage", factoryBalancer.reweightExtraPercentage(1));
-        // console.log("cross chain weth balance", weth.balanceOf(address(crossChainIndexFactory)));
-        // showTokenBalances();
+        
         factoryBalancer.secondReweightAction();
-        // showTokenBalances();
-        // factoryBalancer.askValues();
+        
         showPercentages();
-        // console.log("testData", crossChainIndexFactory.testData());
-        // console.log("testData2", crossChainIndexFactory.testData2());
-        // console.log(weth.balanceOf(address(factoryBalancer)));
+       
     }
-
+    
     function testRebalanceSameTokens2() public {
         initializeOracleList();
 
@@ -536,7 +577,12 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             1e18,
             0
         );
-        factory.redemption(indexToken.balanceOf(add1), 0, address(usdt), 3000);
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(usdt);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
+        factory.redemption(indexToken.balanceOf(add1), 0, address(usdt), path, fees);
 
         vm.stopPrank();
 
@@ -561,6 +607,36 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         assetList[3] = address(token3);
         assetList[4] = address(token4);
 
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
+
+        bytes[] memory pathData = new bytes[](5);
+        //updating path data for token0
+        address[] memory path0 = new address[](2);
+        path0[0] = address(weth);
+        path0[1] = address(token0);
+        pathData[0] = abi.encode(path0, feesData);
+        //updating path data for token1
+        address[] memory path1 = new address[](2);
+        path1[0] = address(weth);
+        path1[1] = address(token1);
+        pathData[1] = abi.encode(path1, feesData);
+        //updating path data for token2
+        address[] memory path2 = new address[](2);
+        path2[0] = address(weth);
+        path2[1] = address(token2);
+        pathData[2] = abi.encode(path2, feesData);
+        //updating path data for token3
+        address[] memory path3 = new address[](2);
+        path3[0] = address(weth);
+        path3[1] = address(token3);
+        pathData[3] = abi.encode(path3, feesData);
+        //updating path data for token4
+        address[] memory path4 = new address[](2);
+        path4[0] = address(weth);
+        path4[1] = address(token4);
+        pathData[4] = abi.encode(path4, feesData);
+
         uint[] memory tokenShares = new uint[](5);
         tokenShares[0] = 10e18;
         tokenShares[1] = 20e18;
@@ -568,12 +644,6 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         tokenShares[3] = 20e18;
         tokenShares[4] = 30e18;
 
-        uint[] memory swapFees = new uint[](5);
-        swapFees[0] = 3000;
-        swapFees[1] = 3000;
-        swapFees[2] = 3000;
-        swapFees[3] = 3000;
-        swapFees[4] = 3000;
 
         uint64[] memory chains = new uint64[](5);
         chains[0] = 1;
@@ -582,7 +652,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         chains[3] = 1;
         chains[4] = 2;
 
-        updateOracleList(assetList, tokenShares, swapFees, chains);
+        updateOracleList(assetList, pathData, tokenShares, chains);
 
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
@@ -593,9 +663,9 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         // showTokenBalances();
         // factoryBalancer.askValues();
         showPercentages();
-        console.log("testData", crossChainIndexFactory.testData());
-        console.log("testData2", crossChainIndexFactory.testData2());
+        // console.log("testData", crossChainIndexFactory.testData());
+        // console.log("testData2", crossChainIndexFactory.testData2());
         // console.log(weth.balanceOf(address(factoryBalancer)));
     }
-    */
+    
 }
