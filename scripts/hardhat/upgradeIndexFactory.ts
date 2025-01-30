@@ -1,7 +1,7 @@
 // import { goerliAnfiIndexToken, goerliUsdtAddress, goerliAnfiFactory, goerliAnfiNFT } from "../network";
 // import { goerliAnfiFactoryAddress, goerliAnfiIndexTokenAddress, goerliEthUsdPriceFeed, goerliExternalJobIdBytes32, goerliFactoryV2Address, goerliFactoryV3Address, goerliLinkAddress, goerliOracleAdress, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress } from "../contractAddresses";
-import { ccipRouterAddresses, ChainSelectors, CR5IndexFactoryAddresses, CR5IndexTokenAddresses, LINKAddresses, WethAddresses } from "../contractAddresses";
-import { goerliFactoryV2Address, goerliRouterV2Address, mumbaiCR5CrossChainFactory, mumbaiCR5CrossChainVault, mumbaiChainSelector, mumbaiFactoryV3Address, mumbaiLinkTokenAddress, mumbaiRouterAddress, mumbaiRouterV3Address, mumbaiWmaticAddress, seploliaWethAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexToken, sepoliaChainSelector, sepoliaLinkTokenAddress, sepoliaRouterAddress } from "../network";
+import { ccipRouterAddresses, ChainSelectors, CR5IndexFactoryAddresses, CR5IndexTokenAddresses, LINKAddresses, WethAddresses } from "../../contractAddresses";
+import { goerliFactoryV2Address, goerliRouterV2Address, mumbaiCR5CrossChainFactory, mumbaiCR5CrossChainVault, mumbaiChainSelector, mumbaiFactoryV3Address, mumbaiLinkTokenAddress, mumbaiRouterAddress, mumbaiRouterV3Address, mumbaiWmaticAddress, seploliaWethAddress, sepoliaCR5IndexFactory, sepoliaCR5IndexToken, sepoliaChainSelector, sepoliaLinkTokenAddress, sepoliaRouterAddress } from "../../network";
 
 // import { ethers, upgrades } from "hardhat";
 const { ethers, upgrades, network, hre } = require('hardhat');

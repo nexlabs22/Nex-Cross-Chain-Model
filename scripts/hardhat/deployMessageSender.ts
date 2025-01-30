@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { arbitrumSepoliaLinkTokenAddress, arbitrumSepoliaRouterAddress, mumbaiLinkTokenAddress, mumbaiRouterAddress, sepoliaLinkTokenAddress, sepoliaRouterAddress } from "../network";
+import { arbitrumSepoliaLinkTokenAddress, arbitrumSepoliaRouterAddress, mumbaiLinkTokenAddress, mumbaiRouterAddress, sepoliaLinkTokenAddress, sepoliaRouterAddress } from "../../network";
 
 async function main() {
 //   const currentTimestampInSeconds = Math.round(Date.now() / 1000);

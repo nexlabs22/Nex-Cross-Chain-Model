@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { mumbaiRouterAddress, sepoliaRouterAddress } from "../network";
+import { mumbaiRouterAddress, sepoliaRouterAddress } from "../../network";
 
 async function main() {
 

@@ -6,11 +6,11 @@ import { ethers } from "hardhat";
 import {
     abi as Factory_ABI,
     bytecode as Factory_BYTECODE,
-  } from '../artifacts/contracts/factory/IndexFactoryStorage.sol/IndexFactoryStorage.json'
-import { ISwapRouter, IndexFactory } from "../typechain-types";
-import { mumbaiChainSelector, mumbaiFactoryV3Address, mumbaiWmaticAddress, seploliaWethAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaFactoryV3Address, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress } from "../network";
-import { UniswapV3Deployer } from "../test/uniswap/UniswapV3Deployer";
-import { FactoryV3Addresses, WethAddresses } from "../contractAddresses";
+  } from '../../artifacts/contracts/factory/IndexFactoryStorage.sol/IndexFactoryStorage.json'
+import { ISwapRouter, IndexFactory } from "../../typechain-types";
+import { mumbaiChainSelector, mumbaiFactoryV3Address, mumbaiWmaticAddress, seploliaWethAddress, sepoliaBitcoinAddress, sepoliaCR5IndexFactoryStorage, sepoliaChainSelector, sepoliaFactoryV3Address, sepoliaTestBinanceAddress, sepoliaTestEthereumAddress, sepoliaTestSolanaAddress } from "../../network";
+import { UniswapV3Deployer } from "../../test/uniswap/UniswapV3Deployer";
+import { FactoryV3Addresses, WethAddresses } from "../../contractAddresses";
 // import { goerliAnfiFactoryAddress } from "../contractAddresses";
 require("dotenv").config()
 

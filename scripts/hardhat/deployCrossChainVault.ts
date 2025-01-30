@@ -1,6 +1,6 @@
 import { ethers, upgrades } from "hardhat";
-import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress, mumbaiFactoryV3Address, mumbaiRouterV3Address, mumbaiWmaticAddress } from "../network";
-import { FactoryV2Addresses, FactoryV3Addresses, QouterAddresses, RouterV2Addresses, RouterV3Addresses, WethAddresses } from "../contractAddresses";
+import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress, mumbaiFactoryV3Address, mumbaiRouterV3Address, mumbaiWmaticAddress } from "../../network";
+import { FactoryV2Addresses, FactoryV3Addresses, QouterAddresses, RouterV2Addresses, RouterV3Addresses, WethAddresses } from "../../contractAddresses";
 // import { goerliFactoryV2Address, goerliFactoryV3Address, goerliQouterAddress, goerliRouterV2Address, goerliRouterV3Address, goerliWethAddress } from "../contractAddresses";
 // const { ethers, upgrades, network, hre } = require('hardhat');
 
