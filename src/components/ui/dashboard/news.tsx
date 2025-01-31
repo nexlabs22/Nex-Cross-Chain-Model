@@ -59,11 +59,11 @@ const CustomRightArrow = ({ onClick }: CustomRightArrowProps) => {
 const News = () => {
     const responsive = {
         superLargeDesktop: {
-            breakpoint: { max: 4000, min: 3000 },
+            breakpoint: { max: 4000, min: 1820 },
             items: 4,
         },
         desktop: {
-            breakpoint: { max: 3000, min: 1024 },
+            breakpoint: { max: 1820, min: 1024 },
             items: 3
         },
         tablet: {
@@ -108,7 +108,10 @@ const News = () => {
                             paddingX={{lg: 0.5 }}
                         >
                             <Stack width={'100%'} height={'100%'} position={'relative'} overflow={'hidden'} borderRadius={"1rem"} padding={3} sx={{
-                                backgroundImage: `url('${mediaBG.src}')`
+                                backgroundImage: `url('${mediaBG.src}')`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat'
                             }}>
                                 <Stack height={'100%'} width={'100%'} justifyContent={'end'} gap={1} paddingTop={8}>
                                     <Typography variant="subtitle2">{article.source}</Typography>
