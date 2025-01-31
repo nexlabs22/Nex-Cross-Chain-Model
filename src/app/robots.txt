@@ -1,0 +1,10 @@
+
+User-agent: *
+
+Allow: /
+
+Disallow: /private/
+Disallow: /cookies-policy/
+Disallow: /privacy-policy/
+
+Sitemap: https://app.nexlabs.io/sitemap.xml
