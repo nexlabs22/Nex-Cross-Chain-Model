@@ -27,7 +27,7 @@ const QuickActions = () => {
         {
             title: 'Convert',
             icon: <RiExchange2Line size={24} color={theme.palette.text.primary} />,
-            link: '/convert'
+            link: '/'
         },
         {
             title: 'Build',
