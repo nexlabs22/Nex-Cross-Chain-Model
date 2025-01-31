@@ -13,9 +13,12 @@ import theme from "@/theme/theme";
 import { Asset, TokenObject } from "@/types/indexTypes";
 import IndexDetailsTabbedTablesView from "@/components/ui/index-details/indexDetailsTabbedViewTables";
 import { useEffect, useState } from "react";
+import { formatToViewNumber } from "@/utils/conversionFunctions";
+import { useGlobal } from "@/providers/GlobalProvider";
 
 const Page = ({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
   const { nexTokens } = useDashboard();
+  const { activeChainSetting:{chain, network} } = useGlobal()
   const [defaultToken, setDefaultToken] = useState<TokenObject>(nexTokens[0]);
 
   useEffect(() => {
@@ -73,7 +76,7 @@ const Page = ({ searchParams }: { searchParams: Promise<{ [key: string]: string 
                         Price
                       </Typography>
                       <Typography variant="h6">
-                        ${defaultToken?.marketInfo?.price || 0}
+                        ${defaultToken?.marketInfo?.price ? formatToViewNumber({value: defaultToken.marketInfo.price, returnType: 'currency'}) : 0}
                       </Typography>
                     </Stack>
                   </Grid>
@@ -83,7 +86,7 @@ const Page = ({ searchParams }: { searchParams: Promise<{ [key: string]: string 
                         Market Cap
                       </Typography>
                       <Typography variant="h6">
-                        ${defaultToken?.marketInfo?.marketCap || 0}
+                      ${defaultToken?.marketInfo?.marketCap ? formatToViewNumber({value: defaultToken.marketInfo.marketCap, returnType: 'currency'}) : 0}
                       </Typography>
                     </Stack>
                   </Grid>
@@ -123,7 +126,7 @@ const Page = ({ searchParams }: { searchParams: Promise<{ [key: string]: string 
                         Token Address
                       </Typography>
                       <Typography variant="h6">
-                        {reduceAddress(defaultToken?.tokenAddresses?.Ethereum?.Mainnet?.index?.address || '0x0000000000000000000000000000000000000000')}
+                        {reduceAddress(defaultToken?.tokenAddresses?.[chain]?.[network]?.index?.address || '0x0000000000000000000000000000000000000000')}
                       </Typography>
                     </Stack>
                   </Grid>

@@ -95,16 +95,20 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 							params: [],
 						});
 						const totalSupply = totalSupplyRaw ? Number(totalSupplyRaw) / 1e18 : 0;
-
+						const price = marketPriceUSD !== Infinity ? Number(marketPriceUSD) : 0
 						// Construct the enhanced token object
 						return {
 							...token,
-							smartContractInfo: {
-								...token.smartContractInfo,
-								price: marketPriceUSD !== Infinity ? Number(marketPriceUSD) : 0,
-								managementFee,
-								totalSupply,
+							marketInfo: {
+								...token.marketInfo,
+								price: price,																
+								marketCap: totalSupply * price
 							},
+							smartContractInfo:{
+								...token.smartContractInfo,
+								managementFee,
+								totalSupply
+							}
 						};
 					} catch (error) {
 						console.error(`Error fetching data for token: ${token.symbol}`, error);
