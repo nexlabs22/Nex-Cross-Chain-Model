@@ -1,1 +1,0 @@
-export interface addressMapType { [key: string]: `0x${string}` }
