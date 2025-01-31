@@ -247,6 +247,15 @@ contract CrossChainIndexFactory is
         );
     }
 
+    function getTokenCurrentValue(address _tokenAddress, address[] memory _fromETHPath, uint24[] memory _fromETHFees) public view returns (uint) {
+        uint tokenValue = getAmountOut(
+                    PathHelpers.reverseAddressArray(_fromETHPath), // toETHPath
+                    PathHelpers.reverseUint24Array(_fromETHFees), // toETHFees
+                    IERC20(_tokenAddress).balanceOf(address(vault))
+                );
+        return tokenValue;
+    }
+
     function getAmountOut(
         address[] memory path,
         uint24[] memory fees,
@@ -512,11 +521,7 @@ contract CrossChainIndexFactory is
                 );
                 weth.transfer(address(vault), wethToSwap);
             } else {
-                oldTokenValue = getAmountOut(
-                    PathHelpers.reverseAddressArray(fromETHPath), // toETHPath
-                    PathHelpers.reverseUint24Array(fromETHFees), // toETHFees
-                    IERC20(targetAddresses[i]).balanceOf(address(vault))
-                );
+                oldTokenValue = getTokenCurrentValue(targetAddresses[i], fromETHPath, fromETHFees);
                 swap(
                     fromETHPath,
                     fromETHFees,
@@ -524,7 +529,9 @@ contract CrossChainIndexFactory is
                     address(vault)
                 );
             }
-            uint newTokenValue = oldTokenValue + wethToSwap;
+            // uint newTokenValue = oldTokenValue + wethToSwap;
+            uint newTokenValue = getTokenCurrentValue(targetAddresses[i], fromETHPath, fromETHFees);
+            
             vars.oldTokenValues[i] = convertEthToUsd(oldTokenValue);
             vars.newTokenValues[i] = convertEthToUsd(newTokenValue);
         }

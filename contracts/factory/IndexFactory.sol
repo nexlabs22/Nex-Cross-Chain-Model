@@ -435,7 +435,7 @@ contract IndexFactory is
             );
     }
 
-    function _getOldTokenValue(
+    function _getCurrentTokenValue(
         address tokenAddress
     ) internal returns(uint) {
         (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage.getToETHPathData(
@@ -472,7 +472,7 @@ contract IndexFactory is
                 tokenAddress
             );
             
-            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].oldTokenValue = _getOldTokenValue(tokenAddress);
+            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].oldTokenValue = _getCurrentTokenValue(tokenAddress);
             uint tokenMarketShare = factoryStorage.tokenCurrentMarketShare(tokenAddress);
             uint swapAmount = (_wethAmount * tokenMarketShare) / 100e18;
             if (tokenAddress != address(weth)) {
@@ -481,7 +481,7 @@ contract IndexFactory is
                 weth.transfer(address(factoryStorage.vault()), swapAmount);
             }
 
-            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].newTokenValue = issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].oldTokenValue + convertEthToUsd((_wethAmount * tokenMarketShare) / 100e18);
+            issuanceData[_issuanceNonce].tokenOldAndNewValues[tokenAddress].newTokenValue = _getCurrentTokenValue(tokenAddress);
             issuanceData[_issuanceNonce].completedTokensCount += 1;
         }
     }

@@ -46,13 +46,13 @@ contract IndexFactoryTest is Test, ContractDeployer {
     function setUp() public {
         
         deployAllContracts(1000000e18);
-        addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 1000e18, 1e18);
-        addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, 1000e18, 1e18);
-        addLiquidityETH(positionManager, factoryAddress, token2, wethAddress, 1000e18, 1e18);
-        addLiquidityETH(positionManager, factoryAddress, token3, wethAddress, 1000e18, 1e18);
-        addLiquidityETH(positionManager, factoryAddress, token4, wethAddress, 1000e18, 1e18);
-        addLiquidityETH(positionManager, factoryAddress, crossChainToken, wethAddress, 1000e18, 1e18);
-        addLiquidityETH(positionManager, factoryAddress, usdt, wethAddress, 1000e18, 1e18);
+        addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 100000e18, 100e18);
+        addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, 100000e18, 100e18);
+        addLiquidityETH(positionManager, factoryAddress, token2, wethAddress, 100000e18, 100e18);
+        addLiquidityETH(positionManager, factoryAddress, token3, wethAddress, 100000e18, 100e18);
+        addLiquidityETH(positionManager, factoryAddress, token4, wethAddress, 100000e18, 100e18);
+        addLiquidityETH(positionManager, factoryAddress, crossChainToken, wethAddress, 100000e18, 100e18);
+        addLiquidityETH(positionManager, factoryAddress, usdt, wethAddress, 100000e18, 1e18);
         
     }
 
