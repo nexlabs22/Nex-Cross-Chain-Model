@@ -63,14 +63,16 @@ const IndexCard = ({ index }: IndexCardProps) => {
                         {index.marketInfo?.change24h && index.marketInfo?.change24h > 0 ? 'More than' : 'Less than'} last 24 hours
                     </Typography>
                 </Stack>
-                <Stack width={'100%'} height={{ xs: '16vh', lg: 100 }} marginX={'auto'} paddingTop={{ xs: 3, lg: 0 }} direction={'row'} alignItems={'center'} justifyContent={'center'} sx={{
+                <Stack width={'100%'} marginX={'auto'} paddingTop={{ xs: 3, lg: 0 }} direction={'row'} alignItems={'center'} justifyContent={'center'} sx={{
                     position: 'absolute',
                     bottom: 0,
                     left: 0,
                     right: 0,
+                    aspectRatio: '3/1',
                 }}>
                     <GenericAreaLineChart label={index.symbol} />
                 </Stack>
+
 
             </Stack>
         </GenericCard>
