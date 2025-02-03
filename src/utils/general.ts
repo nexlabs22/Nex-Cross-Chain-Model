@@ -50,6 +50,29 @@ const isWETH = (address: Address): boolean =>{
   return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.index?.address
 }
 
+function getTokenSymbolByAddress(address: string): string | undefined {
+  const lowerCaseAddress = address.toLowerCase();
+
+  for (const [symbol, chains] of Object.entries(tokenAddresses)) {
+    if (!chains) continue;
+
+    for (const networks of Object.values(chains)) {
+      if (!networks) continue;
+
+      for (const contracts of Object.values(networks)) {
+        if (!contracts) continue;
+
+        for (const contract of Object.values(contracts)) {
+          if (contract.address.toLowerCase() === lowerCaseAddress) {
+            return symbol;
+          }
+        }
+      }
+    }
+  }
+
+  return undefined; // Return undefined if no match is found
+}
 export {
   getPreviousWeekday,
   SwapNumbers,
@@ -57,5 +80,6 @@ export {
   convertTime,
   calculateChange,
   getDecimals,
-  isWETH
+  isWETH,
+  getTokenSymbolByAddress
 }
