@@ -12,19 +12,9 @@ declare module "@mui/material/styles" {
     elevations?: typeof lightElevations | typeof darkElevations;
     brand: typeof brandColors;
   }
-
-  interface colorSchemes {
-    light: {
-      palette: Palette;
-    };
-    dark: {
-      palette: Palette;
-    };
-  }
 }
 
 const theme = createTheme({
-  cssVariables: { colorSchemeSelector: "class" },
   palette: {
     primary: {
       main: "#FFFFFF",
