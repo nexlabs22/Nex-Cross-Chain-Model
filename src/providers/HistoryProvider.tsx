@@ -10,8 +10,9 @@ import { NexIndices, PositionType, RequestType } from "@/types/indexTypes"
 import apolloIndexClient from "@/utils/graphqlClient"
 import { GET_ISSUANCED_ANFI_EVENT_LOGS } from "@/app/api/graphql/queries/uniswap"
 import { useGlobal } from "./GlobalProvider"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { nexTokensArray } from "@/constants/indices"
+import { parseQueryFromPath } from "@/utils/general"
 
 
 interface HistoryContextProps {
@@ -31,20 +32,9 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 	const { swapFromToken, swapToToken } = useTrade()
 	const { userAddress } = useGlobal()
 	const pathname = usePathname()
-    const searchParams = useSearchParams()
 
-    const [queryParams, setQueryParams] = useState<Record<string, string | undefined>>({})
-
-    useEffect(() => {
-        const params: Record<string, string | undefined> = {}
-
-        searchParams.forEach((value, key) => {
-            params[key] = value
-        })
-
-        setQueryParams(params) 
-    }, [searchParams])
-
+	const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
+	const queryParams = parseQueryFromPath(searchQuery)
 
 	const [positionHistoryData, setPositionHistoryData] = useState<PositionType[]>([])
 	const [activeTicker, setActiveTicker] = useState<NexIndices>('ANFI')
@@ -151,7 +141,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		positionHistoryStock,
 		totalPortfolioData,
 		userAddress,
-		queryParams.index
+		queryParams	
 	])
 
 
