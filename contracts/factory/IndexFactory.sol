@@ -66,6 +66,7 @@ contract IndexFactory is
 
     struct RedemptionData {
         uint totalValue;
+        uint totalPortfolioValues;
         uint completedTokensCount;
         address requester;
         address outputToken;
@@ -112,6 +113,7 @@ contract IndexFactory is
         address inputToken,
         uint inputAmount,
         uint outputAmount,
+        uint price,
         uint time
     );
 
@@ -132,6 +134,7 @@ contract IndexFactory is
         address outputToken,
         uint inputAmount,
         uint outputAmount,
+        uint price,
         uint time
     );
     event MessageSent(bytes32 messageId);
@@ -437,7 +440,7 @@ contract IndexFactory is
 
     function _getCurrentTokenValue(
         address tokenAddress
-    ) internal returns(uint) {
+    ) internal view returns(uint) {
         (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage.getToETHPathData(
                 tokenAddress
         );
@@ -617,7 +620,8 @@ contract IndexFactory is
             amountToMint = (totalNewVaules) * 100;
         }
         indexToken.mint(issuanceData[_issuanceNonce].requester, amountToMint);
-        emit Issuanced(_messageId, _issuanceNonce, issuanceData[_issuanceNonce].requester, issuanceData[_issuanceNonce].inputToken, issuanceData[_issuanceNonce].inputAmount, amountToMint, block.timestamp);
+        uint indexTokenPrice = (totalNewVaules * 1e18) / indexToken.totalSupply();
+        emit Issuanced(_messageId, _issuanceNonce, issuanceData[_issuanceNonce].requester, issuanceData[_issuanceNonce].inputToken, issuanceData[_issuanceNonce].inputAmount, amountToMint, indexTokenPrice, block.timestamp);
     }
 
     /**
@@ -706,6 +710,11 @@ contract IndexFactory is
                 // : _swapSingle(tokenAddress, address(weth), swapAmount, address(this), tokenSwapFee);
                 : swap(toETHPath, toETHFees, swapAmount, address(this));
             redemptionData[_redemptionNonce].totalValue += swapAmountOut;
+            redemptionData[_redemptionNonce].totalPortfolioValues += factoryStorage.getAmountOut(
+                toETHPath,
+                toETHFees,
+                IERC20(tokenAddress).balanceOf(address(factoryStorage.vault()))
+            );
             redemptionData[_redemptionNonce].completedTokensCount += 1;
         }
     }
@@ -760,6 +769,7 @@ contract IndexFactory is
      */
     function completeRedemptionRequest(uint nonce, bytes32 _messageId) internal {
         uint wethAmount = redemptionData[nonce].totalValue;
+        uint totalPortfolioValues = redemptionData[nonce].totalPortfolioValues;
         address requester = redemptionData[nonce].requester;
         address outputToken = redemptionData[nonce].outputToken;
         // uint24 outputTokenSwapFee = redemptionData[nonce].outputTokenSwapFee;
@@ -769,15 +779,16 @@ contract IndexFactory is
             weth.transfer(address(feeReceiver), fee),
             "Fee transfer failed"
         );
+        uint indexTokenPrice = indexToken.totalSupply() != 0 ? (totalPortfolioValues * 1e18) / indexToken.totalSupply() : 0;
         if(outputToken == address(weth)){
         // weth.transfer(requester, wethAmount - fee);
         weth.withdraw(wethAmount - fee);
         (bool _requesterSuccess, ) = requester.call{value: wethAmount - fee}("");
         require(_requesterSuccess, "transfer eth to the requester failed");
-        emit Redemption(_messageId, nonce, requester, outputToken,  redemptionData[nonce].inputAmount, wethAmount - fee, block.timestamp);
+        emit Redemption(_messageId, nonce, requester, outputToken,  redemptionData[nonce].inputAmount, wethAmount - fee, indexTokenPrice, block.timestamp);
         }else{
         uint reallOut = swap(redemptionData[nonce].outputTokenPath, redemptionData[nonce].outputTokenFees, wethAmount - fee, requester);
-        emit Redemption(_messageId, nonce, requester, outputToken, redemptionData[nonce].inputAmount, reallOut, block.timestamp);
+        emit Redemption(_messageId, nonce, requester, outputToken, redemptionData[nonce].inputAmount, reallOut, indexTokenPrice, block.timestamp);
         }
     }
     
@@ -928,6 +939,7 @@ contract IndexFactory is
                 any2EvmMessage,
                 tokenAddresses,
                 totalCurrentList,
+                value1[0],
                 sourceChainSelector,
                 messageId
             );
@@ -965,6 +977,7 @@ contract IndexFactory is
         Client.Any2EVMMessage memory any2EvmMessage,
         address[] memory tokenAddresses,
         uint totalCurrentList,
+        uint crossChainPortfolioValue,
         uint64 sourceChainSelector,
         bytes32 messageId
     ) private {
@@ -983,6 +996,7 @@ contract IndexFactory is
             address(this)
         );
         redemptionData[requestRedemptionNonce].totalValue += wethAmount;
+        redemptionData[requestRedemptionNonce].totalPortfolioValues += crossChainPortfolioValue;
         redemptionData[requestRedemptionNonce].completedTokensCount += tokenAddresses.length;
         if (
             redemptionData[requestRedemptionNonce].completedTokensCount ==

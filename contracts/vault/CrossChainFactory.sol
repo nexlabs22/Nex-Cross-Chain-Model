@@ -565,11 +565,12 @@ contract CrossChainIndexFactory is
         uint[] memory extraValues
     ) private {
         uint wethSwapAmountOut;
+        uint[] memory newTokenValues = new uint[](1);
         for (uint i = 0; i < targetAddresses.length; i++) {
             uint swapAmount = (extraValues[0] *
                 IERC20(address(targetAddresses[i])).balanceOf(address(vault))) /
                 1e18;
-            (address[] memory fromETHPath, uint24[] memory fromETHFees) = PathHelpers.decodePathBytes(
+            (address[] memory fromETHPath0, uint24[] memory fromETHFees0) = PathHelpers.decodePathBytes(
                 targetPaths[i]
             );
             if (address(targetAddresses[i]) == address(weth)) {
@@ -582,12 +583,14 @@ contract CrossChainIndexFactory is
                     swapAmount
                 );
                 wethSwapAmountOut += swap(
-                    PathHelpers.reverseAddressArray(fromETHPath), // toETHPath
-                    PathHelpers.reverseUint24Array(fromETHFees), // toETHFees
+                    PathHelpers.reverseAddressArray(fromETHPath0), // toETHPath
+                    PathHelpers.reverseUint24Array(fromETHFees0), // toETHFees
                     swapAmount,
                     address(this)
                 );
             }
+            newTokenValues[0] += getTokenCurrentValue(targetAddresses[i], fromETHPath0, fromETHFees0);
+            
         }
         uint crossChainTokenAmount = swap(
             fromETHPath[crossChainToken[sourceChainSelector]],
@@ -607,7 +610,7 @@ contract CrossChainIndexFactory is
             new bytes[](0),
             new bytes[](0),
             nonce,
-            zeroArr,
+            newTokenValues,
             zeroArr
         );
         bytes32 messageId = sendToken(
