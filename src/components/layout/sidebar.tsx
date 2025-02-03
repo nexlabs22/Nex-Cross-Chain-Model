@@ -6,7 +6,6 @@ import { useColorScheme } from "@mui/material/styles"
 import theme from "@/theme/theme"
 // project imports
 import { navItems, settingItems } from "@/utils/sideBarItems";
-import ModeSwitchButton from "./ModeSwitchButton";
 
 
 // assets
@@ -95,7 +94,6 @@ const Sidebar = () => {
                         )
                     })
                 }
-                <ModeSwitchButton />
             </Stack>
         </Stack>
     )
