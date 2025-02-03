@@ -31,17 +31,19 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 	const { swapFromToken, swapToToken } = useTrade()
 	const { userAddress } = useGlobal()
 	const pathname = usePathname()
-	const searchParams = useSearchParams()
+    const searchParams = useSearchParams()
 
-    const [queryParams, setQueryParams] = useState<Record<string, string | null>>({})
+    const [queryParams, setQueryParams] = useState<Record<string, string | undefined>>({})
 
     useEffect(() => {
-        const params: Record<string, string | null> = {}
+        const params: Record<string, string | undefined> = {}
+
         searchParams.forEach((value, key) => {
             params[key] = value
         })
-        setQueryParams(params)
-    }, [searchParams]) // Run only when searchParams change
+
+        setQueryParams(params) 
+    }, [searchParams])
 
 
 	const [positionHistoryData, setPositionHistoryData] = useState<PositionType[]>([])
@@ -126,7 +128,6 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		} else if (pathname === '/index-details') {
 			const indextype = nexTokensArray.find((token) => token.symbol === queryParams.index)?.smartContractType
 			const data = indextype === 'defi' ? positionHistoryDefi.data : indextype === 'crosschain' ? positionHistoryCrosschain.history: positionHistoryStock.history
-			console.log(combinedPositionTableCrosschainData)
 
 			const dataToShow = data.filter((data: PositionType) => {
 				return data.indexName === queryParams.index
