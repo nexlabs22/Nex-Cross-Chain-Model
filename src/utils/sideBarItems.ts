@@ -15,7 +15,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     { icon: PiHouseBold, label: "Dashboard", link: "/" },
     { icon: GoStack, label: "Catalogue", link: "/catalogue" },
-    { icon: RiExchange2Line, label: "Convert", link: "/swap" },
+    { icon: RiExchange2Line, label: "Swap", link: "/swap" },
     { icon: LuSquarePercent, label: "Stake", link: "/stake" },
     { icon: MdOutlineIndeterminateCheckBox, label: "Portfolio", link: "/portfolio" },
     { icon: GoSearch, label: "Search", link: "/search" },
