@@ -23,15 +23,17 @@ const MobileMenu = () => {
             <Drawer anchor="right" open={open} onClose={handleClose} sx={{
                 width: '75%',
                 height: '100%',
-                backgroundColor: theme.palette.elevations.elevation950.main,
+                backgroundColor: theme.palette.background.default,
                 '& .MuiDrawer-paper': {
-                    backgroundColor: theme.palette.elevations.elevation950.main,
+                    backgroundColor: theme.palette.background.default,
                     width: '100%',
                     height: '100%',
                 },
+
                 '& .MuiDrawer-root': {
-                    backgroundColor: theme.palette.elevations.elevation950.main,
+                    backgroundColor: theme.palette.background.default,
                 }
+
             }}>
                 <Stack direction={'row'} justifyContent={"end"} width={'100%'}>
                     <IconButton onClick={handleClose} sx={{
