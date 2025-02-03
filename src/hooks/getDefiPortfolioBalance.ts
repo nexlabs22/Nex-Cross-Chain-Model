@@ -19,7 +19,17 @@ export function GetDefiPortfolioBalance(
   )[0]
 
   const getPortfolioValue = useCallback(async () => {
-    const sepoliaPublicClient = getClient("sepolia")
+    let sepoliaPublicClient = null
+    try {
+      sepoliaPublicClient = getClient("sepolia")
+    } catch (error) {
+      console.error("Error getting sepolia client", error)
+    }
+
+    if (!sepoliaPublicClient) {
+      return
+    }
+
     const activeFactoryAddress = nexTokens.filter(
       (token) => token.symbol === activeTicker
     )[0].tokenAddresses?.Ethereum?.Sepolia?.factory?.address

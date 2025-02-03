@@ -1,5 +1,4 @@
 import { ReactElement } from "react"
-import { StaticImageData } from "next/image"
 export type Address = `0x${string}`
 
 export enum SmartContractType {
@@ -74,7 +73,7 @@ export type Asset = {
   name: string
   symbol: string
   columnName?: string //TODO: remove when no longer required
-  logoComponent?: ReactElement | StaticImageData
+  logoComponent?: ReactElement
   logoString?: string
   shortDescription?: string
   description?: string

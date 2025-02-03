@@ -62,7 +62,12 @@ const CompositionAvatarGroup = ({
             }}
           >
             {asset?.logoString && (
-              <Image src={asset?.logoString} alt={asset?.symbol} />
+              <Image
+                src={asset?.logoString}
+                alt={asset?.symbol}
+                width={size}
+                height={size}
+              />
             )}
           </Avatar>
         ))}
