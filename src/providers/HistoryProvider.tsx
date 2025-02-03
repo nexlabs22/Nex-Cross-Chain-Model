@@ -33,10 +33,15 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 
-	const queryParams: Record<string, string | null> = {}
-	searchParams.forEach((value, key) => {
-		queryParams[key] = value
-	})
+    const [queryParams, setQueryParams] = useState<Record<string, string | null>>({})
+
+    useEffect(() => {
+        const params: Record<string, string | null> = {}
+        searchParams.forEach((value, key) => {
+            params[key] = value
+        })
+        setQueryParams(params)
+    }, [searchParams]) // Run only when searchParams change
 
 
 	const [positionHistoryData, setPositionHistoryData] = useState<PositionType[]>([])
