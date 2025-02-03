@@ -41,11 +41,12 @@ const IndexCard = () => {
                        More than last 24 hours
                     </Typography>
                 </Stack>
-                <Stack width={'100%'} height={{ xs: '16vh', lg: 100 }} marginX={'auto'} paddingTop={{ xs: 3, lg: 0 }} direction={'row'} alignItems={'center'} justifyContent={'center'} sx={{
+                <Stack width={'100%'} marginX={'auto'} paddingTop={{ xs: 3, lg: 0 }} direction={'row'} alignItems={'center'} justifyContent={'center'} sx={{
                     position: 'absolute',
                     bottom: 0,
                     left: 0,
-                    right: 0
+                    right: 0,
+                    aspectRatio: '3/0.7',
                 }}>
                     <GenericAreaLineChart label={'Portfolio'} />
                 </Stack>
