@@ -1,5 +1,5 @@
 import { ReactElement } from "react"
-
+import { StaticImageData } from "next/image"
 export type Address = `0x${string}`
 
 export enum SmartContractType {
@@ -73,11 +73,14 @@ export type PoolAddressMap = {
 export type Asset = {
   name: string
   symbol: string
-  logoComponent?: ReactElement
+  columnName?: string //TODO: remove when no longer required
+  logoComponent?: ReactElement | StaticImageData
   logoString?: string
   shortDescription?: string
   description?: string
   category?: AssetCategory
+  bgColor?: string
+  hoverColor?: string
   marketInfo?: MarketInfo
 }
 
@@ -90,17 +93,15 @@ export type StockAsset = {
     category: "stock"
   }
 
-export type CryptoAsset = {
-  address: string
-  factoryAddress: string
-  decimals: number
+export type CryptoAsset = Asset & {
+  address?: string
+  factoryAddress?: string
+  decimals?: number
   marketInfo?: MarketInfo
-  tokenAddresses: TokenAddressMap[AllowedTickers]
+  tokenAddresses?: TokenAddressMap[AllowedTickers]
   poolAddresses?: PoolAddressMap
   smartContractInfo?: SmartContractInfo
-} & Omit<Asset, "category"> & {
-    category: "cryptocurrency"
-  }
+}
 
 export type MarketInfo = {
   marketCap?: number
@@ -114,6 +115,7 @@ export type SmartContractInfo = {
   totalSupply?: number
   stakedSupply?: number
   managementFee?: number
+  latestRebalanceUpdate?: string
 }
 
 export type AssetWithWeight = CryptoAsset & {
@@ -121,7 +123,7 @@ export type AssetWithWeight = CryptoAsset & {
 }
 
 export type IndexCryptoAsset = CryptoAsset & {
-  indexContractType?: SmartContractType
+  smartContractType?: SmartContractType
   assets?: AssetWithWeight[]
 }
 
