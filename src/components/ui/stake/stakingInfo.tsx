@@ -18,7 +18,7 @@ const StakingInfo = ({ index }: StakingInforProps) => {
             <Stack spacing={1}>
               <Typography variant="h6">Staked Amount</Typography>
               <Typography variant="body1">
-                {`12453.23 ${index.symbol}`}
+                {`${index.smartContractInfo?.stakedSupply}`}
               </Typography>
             </Stack>
           </Grid>
