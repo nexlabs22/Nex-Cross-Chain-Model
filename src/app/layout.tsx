@@ -5,6 +5,8 @@ import InitColorSchemeScript from "@mui/material/InitColorSchemeScript"
 import "@/fonts/satoshi/satoshi.css"
 import { DashboardProvider } from "@/providers/DashboardProvider";
 import { GlobalProvider } from "@/providers/GlobalProvider";
+import { TradeProvider } from "@/providers/TradeProvider";
+import { HistoryProvider } from "@/providers/HistoryProvider";
 
 export const metadata: Metadata = {
   title: "NexLabs - Index your trades, your investment, your future",
@@ -21,11 +23,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body style={{ overflowX: 'hidden', fontFamily: 'Satoshi-Variable' }}>
         <ThirdwebProvider>
-          <GlobalProvider>            
-              <DashboardProvider>
-                <InitColorSchemeScript attribute="class" />
-                <ClientThemeProvider>{children}</ClientThemeProvider>
-              </DashboardProvider>            
+          <GlobalProvider>
+            <DashboardProvider>
+              <TradeProvider>
+                <HistoryProvider>
+                  <InitColorSchemeScript attribute="class" />
+                  <ClientThemeProvider>{children}</ClientThemeProvider>
+                </HistoryProvider>
+              </TradeProvider>
+            </DashboardProvider>
           </GlobalProvider>
         </ThirdwebProvider>
       </body>
