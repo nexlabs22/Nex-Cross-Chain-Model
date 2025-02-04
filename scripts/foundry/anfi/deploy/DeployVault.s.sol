@@ -15,7 +15,6 @@ contract DeployVault is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         ProxyAdmin proxyAdmin = new ProxyAdmin();
-
         Vault vaultImplementation = new Vault();
 
         bytes memory data = abi.encodeWithSignature("initialize()");

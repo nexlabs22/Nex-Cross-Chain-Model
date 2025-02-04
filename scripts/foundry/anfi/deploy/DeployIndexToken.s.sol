@@ -11,17 +11,29 @@ import {IndexToken} from "../../../../contracts/token/IndexToken.sol";
 contract DeployIndexToken is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-
         string memory tokenName = "Anti Inflation Index";
         string memory tokenSymbol = "ANFI";
-        uint256 feeRatePerDayScaled = vm.envUint("SEPOLIA_FEE_RATE_PER_DAY_SCALED");
-        address feeReceiver = vm.envAddress("SEPOLIA_FEE_RECEIVER");
-        uint256 supplyCeiling = vm.envUint("SEPOLIA_SUPPLY_CEILING");
+
+        string memory targetChain = "sepolia";
+        uint256 feeRatePerDayScaled;
+        address feeReceiver;
+        uint256 supplyCeiling;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            feeRatePerDayScaled = vm.envUint("SEPOLIA_FEE_RATE_PER_DAY_SCALED");
+            feeReceiver = vm.envAddress("SEPOLIA_FEE_RECEIVER");
+            supplyCeiling = vm.envUint("SEPOLIA_SUPPLY_CEILING");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            feeRatePerDayScaled = vm.envUint("ARBITRUM_FEE_RATE_PER_DAY_SCALED");
+            feeReceiver = vm.envAddress("ARBITRUM_FEE_RECEIVER");
+            supplyCeiling = vm.envUint("ARBITRUM_SUPPLY_CEILING");
+        } else {
+            revert("Unsupported target chain");
+        }
 
         vm.startBroadcast(deployerPrivateKey);
 
         ProxyAdmin proxyAdmin = new ProxyAdmin();
-
         IndexToken indexTokenImplementation = new IndexToken();
 
         bytes memory data = abi.encodeWithSignature(

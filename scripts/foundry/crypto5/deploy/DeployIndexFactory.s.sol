@@ -11,17 +11,33 @@ import "../../../../contracts/factory/IndexFactory.sol";
 contract DeployIndexFactory is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        string memory targetChain = "sepolia";
 
-        uint64 currentChainSelector = vm.envUint("CURRENT_CHAIN_SELECTOR");
-        address indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
-        address chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
-        address router = vm.envAddress("SEPOLIA_FUNCTIONS_ROUTER_ADDRESS");
-        address wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+        uint64 currentChainSelector;
+        address indexTokenProxy;
+        address chainlinkToken;
+        address router;
+        address wethAddress;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            currentChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
+            indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+            chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
+            router = vm.envAddress("SEPOLIA_FUNCTIONS_ROUTER_ADDRESS");
+            wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            currentChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
+            indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+            chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
+            router = vm.envAddress("ARBITRUM_FUNCTIONS_ROUTER_ADDRESS");
+            wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+        } else {
+            revert("Unsupported target chain");
+        }
 
         vm.startBroadcast(deployerPrivateKey);
 
         ProxyAdmin proxyAdmin = new ProxyAdmin();
-
         IndexFactory indexFactoryImplementation = new IndexFactory();
 
         bytes memory data = abi.encodeWithSignature(
