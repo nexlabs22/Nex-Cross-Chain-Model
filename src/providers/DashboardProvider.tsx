@@ -82,35 +82,34 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             })
             const managementFee = feeRateRaw ? Number(feeRateRaw) / 1e18 : 0
 
-            // Fetch total supply
-            const totalSupplyRaw = await readContract({
-              contract,
-              method: "function totalSupply() returns (uint256)",
-              params: [],
-            })
-            const totalSupply = totalSupplyRaw
-              ? Number(totalSupplyRaw) / 1e18
-              : 0
-
-            // Construct the enhanced token object
-            return {
-              ...token,
-              smartContractInfo: {
-                ...token.smartContractInfo,
-                price: marketPriceUSD !== Infinity ? Number(marketPriceUSD) : 0,
-                managementFee,
-                totalSupply,
-              },
-            }
-          } catch (error) {
-            console.error(
-              `Error fetching data for token: ${token.symbol}`,
-              error
-            )
-            return token
-          }
-        })
-      )
+						// Fetch total supply
+						const totalSupplyRaw = await readContract({
+							contract,
+							method: "function totalSupply() returns (uint256)",
+							params: [],
+						});
+						const totalSupply = totalSupplyRaw ? Number(totalSupplyRaw) / 1e18 : 0;
+						const price = marketPriceUSD !== Infinity ? Number(marketPriceUSD) : 0
+						// Construct the enhanced token object
+						return {
+							...token,
+							marketInfo: {
+								...token.marketInfo,
+								price: price,																
+								marketCap: totalSupply * price
+							},
+							smartContractInfo:{
+								...token.smartContractInfo,
+								managementFee,
+								totalSupply
+							}
+						};
+					} catch (error) {
+						console.error(`Error fetching data for token: ${token.symbol}`, error);
+						return token;
+					}
+				})
+			);
 
       setNexTokens(nexTokens)
     }
