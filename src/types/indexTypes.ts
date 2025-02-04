@@ -110,7 +110,8 @@ export type MarketInfo = {
 }
 
 export type SmartContractInfo = {
-  onchainPrice?: number
+  poolPrice?: number
+  underlyingAssetPrice?: number
   totalSupply?: number
   stakedSupply?: number
   managementFee?: number

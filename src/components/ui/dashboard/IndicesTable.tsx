@@ -83,7 +83,7 @@ const IndicesTable = () => {
             height={40}
             borderRadius={1}
             sx={{
-              backgroundImage: `url(${params.row.logo})`,
+              backgroundImage: `url(${params.row.logoString})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -170,9 +170,9 @@ const IndicesTable = () => {
   const rows = nexTokens.map((token, index) => ({
     id: index, // Required unique ID for DataGrid
     ...token, // Spread existing fields
-    price: token.smartContractInfo?.onchainPrice
+    price: token.smartContractInfo?.poolPrice
       ? `$${formatToViewNumber({
-          value: token.smartContractInfo?.onchainPrice,
+          value: token.smartContractInfo?.poolPrice,
           returnType: "currency",
         })}`
       : token.marketInfo?.offChainPrice
@@ -189,7 +189,7 @@ const IndicesTable = () => {
       })}`,
     change24h: token.marketInfo?.change24h
       ? `${token.marketInfo?.change24h}%`
-      : "", // Replace with actual data
+      : "N/A", // Replace with actual data
     address: reduceAddress(
       token.tokenAddresses?.[chain]?.[network]?.index?.address as Address
     ),

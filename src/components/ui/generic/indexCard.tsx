@@ -21,18 +21,19 @@ interface IndexCardProps {
 }
 
 const IndexCard = ({ index }: IndexCardProps) => {
+
   const logo = index.logoString
-  const price = index.smartContractInfo?.onchainPrice
+  const price = index.smartContractInfo?.poolPrice
     ? `$${formatToViewNumber({
-        value: index.smartContractInfo?.onchainPrice,
-        returnType: "currency",
-      })}`
+      value: index.smartContractInfo?.poolPrice,
+      returnType: "currency",
+    })}`
     : index.marketInfo?.offChainPrice
-    ? `$${formatToViewNumber({
+      ? `$${formatToViewNumber({
         value: index.marketInfo?.offChainPrice,
         returnType: "currency",
       })}`
-    : "N/A"
+      : "N/A"
   const change24hString = index.marketInfo?.change24h
     ? `${index.marketInfo?.change24h}%`
     : "N/A"

@@ -4,6 +4,7 @@ import GenericCard from "@/components/ui/generic/genericCard"
 import theme from "@/theme/theme"
 import { IndexCryptoAsset } from "@/types/indexTypes"
 import { reduceAddress } from "@/utils/general"
+import { formatToViewNumber } from "@/utils/conversionFunctions"
 
 const MarketStats = ({ index }: { index: IndexCryptoAsset }) => {
   const address = reduceAddress(
@@ -12,11 +13,11 @@ const MarketStats = ({ index }: { index: IndexCryptoAsset }) => {
   const managementFee = index?.smartContractInfo?.managementFee
     ? `${index?.smartContractInfo?.managementFee}%`
     : "N/A"
-  const price = index?.marketInfo?.offChainPrice
-    ? `$${index?.marketInfo?.offChainPrice}`
+  const price = index?.smartContractInfo?.poolPrice
+    ? `$${formatToViewNumber({value: index?.smartContractInfo.poolPrice, returnType: 'currency'})}`
     : "N/A"
   const marketCap = index?.marketInfo?.marketCap
-    ? `$${index?.marketInfo?.marketCap}`
+    ? `$${formatToViewNumber({value: index?.marketInfo?.marketCap, returnType: 'currency'})}`
     : "N/A"
   const change24h = index?.marketInfo?.change24h
     ? `${index?.marketInfo?.change24h}%`

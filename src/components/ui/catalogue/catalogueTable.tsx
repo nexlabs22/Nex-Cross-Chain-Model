@@ -39,7 +39,7 @@ const CatalogueTable = () => {
             height={40}
             borderRadius={1}
             sx={{
-              backgroundImage: `url(${params.row.logo})`,
+              backgroundImage: `url(${params.row.logoString})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -80,7 +80,7 @@ const CatalogueTable = () => {
             height={40}
             borderRadius={1}
             sx={{
-              backgroundImage: `url(${params.row.logo})`,
+              backgroundImage: `url(${params.row.logoString})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -215,9 +215,9 @@ const CatalogueTable = () => {
     id: index,
     ...token,
     price:
-      token.smartContractInfo?.onchainPrice &&
+      token.smartContractInfo?.poolPrice &&
       `$${formatToViewNumber({
-        value: token.smartContractInfo.onchainPrice,
+        value: token.smartContractInfo.poolPrice,
         returnType: "currency",
       })}`,
     totalSupply:
@@ -226,7 +226,7 @@ const CatalogueTable = () => {
         value: token.smartContractInfo?.totalSupply,
         returnType: "string",
       })}`,
-    change24h: token.marketInfo?.change24h && `${token.marketInfo?.change24h}%`,
+    change24h: token.marketInfo?.change24h ? `${token.marketInfo?.change24h}%`: 'N/A',
     address: reduceAddress(
       token.tokenAddresses?.Ethereum?.Sepolia?.index?.address as Address
     ),
