@@ -53,7 +53,7 @@ contract DeployCrossChainFactory is Script {
         CrossChainFactory crossChainFactoryImplementation = new CrossChainFactory();
 
         bytes memory data = abi.encodeWithSignature(
-            "initialize(uint62,address,address,address,address,address,address,address,address)",
+            "initialize(uint64,address,address,address,address,address,address,address,address)",
             chainSelector,
             payable(vaultAddress),
             chainlinkToken,
