@@ -27,7 +27,7 @@ contract SetIndexFactoryValues is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        IndexFactory(indexFactoryProxy).setIndexFactoryStorage(indexFactoryStorageProxy);
+        IndexFactory(payable(indexFactoryProxy)).setIndexFactoryStorage(indexFactoryStorageProxy);
 
         vm.stopBroadcast();
     }

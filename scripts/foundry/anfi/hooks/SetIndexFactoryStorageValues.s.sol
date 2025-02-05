@@ -30,8 +30,8 @@ contract SetIndexFactoryStorageValues is Script {
             otherCrossChainTokenAddress = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
             crossChainFactoryProxy = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
             weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-            mainChainSelector = vm.envUnit("SEPOLIA_CHAIN_SELECTOR");
-            otherChainSelector = vm.envUnit("ARBITRUM_SEPOLIA_CHAIN_SELECTOR");
+            mainChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
+            otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
             indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
             priceOracle = vm.envAddress("SEPOLIA_PRICE_ORACLE");
             vaultProxy = vm.envAddress("SEPOLIA_VAULT_PROXY_ADDRESS");
@@ -42,8 +42,8 @@ contract SetIndexFactoryStorageValues is Script {
             otherCrossChainTokenAddress = vm.envAddress("ETHEREUM_CROSS_CHAIN_TOKEN_ADDRESS");
             crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
             weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-            mainChainSelector = vm.envUnit("ARBITRUM_CHAIN_SELECTOR");
-            otherChainSelector = vm.envUnit("ETHEREUM_CHAIN_SELECTOR");
+            mainChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
+            otherChainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
             indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
             priceOracle = vm.envAddress("ARBITRUM_PRICE_ORACLE");
             vaultProxy = vm.envAddress("ARBITRUM_VAULT_PROXY_ADDRESS");
@@ -66,7 +66,7 @@ contract SetIndexFactoryStorageValues is Script {
         IndexFactoryStorage(indexFactoryStorageProxy).setCrossChainFactory(crossChainFactoryProxy, otherChainSelector);
         IndexFactoryStorage(indexFactoryStorageProxy).setIndexFactory(indexFactoryProxy);
         IndexFactoryStorage(indexFactoryStorageProxy).setPriceOracle(priceOracle);
-        IndexFactoryStorage(indexFactoryStorageProxy).setVault(priceOracle);
+        IndexFactoryStorage(indexFactoryStorageProxy).setVault(vaultProxy);
         IndexFactoryStorage(indexFactoryStorageProxy).setIndexFactoryBalancer(indexFactoryBalancerProxy);
 
         vm.stopBroadcast();

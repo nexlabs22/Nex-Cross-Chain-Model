@@ -21,13 +21,13 @@ contract SetCrossChainFactoryValues is Script {
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
             crossChainFactoryProxy = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
             priceOracle = vm.envAddress("ARBITRUM_SEPOLIA_PRICE_ORACLE");
-            chainSelector = vm.envUint("SEPOLIA_CHAIN_SELECTOR");
+            chainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
             crossChainToken = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
             weth = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
             priceOracle = vm.envAddress("ETHEREUM_PRICE_ORACLE");
-            chainSelector = vm.envUint("ARBITRUM_CHAIN_SELECTOR");
+            chainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
             crossChainToken = vm.envAddress("ETHEREUM_CROSS_CHAIN_TOKEN_ADDRESS");
             weth = vm.envAddress("ETHEREUM_WETH_ADDRESS");
         } else {
@@ -42,8 +42,10 @@ contract SetCrossChainFactoryValues is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        CrossChainFactory(crossChainFactoryProxy).setCrossChainToken(chainSelector, crossChainToken, path, feesData);
-        CrossChainFactory(crossChainFactoryProxy).setPriceOracle(priceOracle);
+        CrossChainIndexFactory(payable(crossChainFactoryProxy)).setCrossChainToken(
+            chainSelector, crossChainToken, path, feesData
+        );
+        CrossChainIndexFactory(payable(crossChainFactoryProxy)).setPriceOracle(priceOracle);
 
         vm.stopBroadcast();
     }

@@ -27,7 +27,7 @@ contract DeployCrossChainFactory is Script {
             chainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
             vaultAddress = vm.envAddress("ARBITRUM_SEPOLIA_VAULT_PROXY_ADDRESS");
             chainlinkToken = vm.envAddress("ARBITRUM_SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("ARBITRUM_SEPOLIA_FUNCTIONS_ROUTER_ADDRESS");
+            router = vm.envAddress("ARBITRUM_SEPOLIA_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
             swapRouterV3 = vm.envAddress("ARBITRUM_SEPOLIA_ROUTER_V3_ADDRESS");
             factoryV3 = vm.envAddress("ARBITRUM_SEPOLIA_FACTORY_V3_ADDRESS");
@@ -37,7 +37,7 @@ contract DeployCrossChainFactory is Script {
             chainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
             vaultAddress = vm.envAddress("ETHEREUM_VAULT_PROXY_ADDRESS");
             chainlinkToken = vm.envAddress("ETHEREUM_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("ETHEREUM_FUNCTIONS_ROUTER_ADDRESS");
+            router = vm.envAddress("ETHEREUM_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ETHEREUM_WETH_ADDRESS");
             swapRouterV3 = vm.envAddress("ETHEREUM_ROUTER_V3_ADDRESS");
             factoryV3 = vm.envAddress("ETHEREUM_FACTORY_V3_ADDRESS");
@@ -50,7 +50,7 @@ contract DeployCrossChainFactory is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         ProxyAdmin proxyAdmin = new ProxyAdmin();
-        CrossChainFactory crossChainFactoryImplementation = new CrossChainFactory();
+        CrossChainIndexFactory crossChainFactoryImplementation = new CrossChainIndexFactory();
 
         bytes memory data = abi.encodeWithSignature(
             "initialize(uint64,address,address,address,address,address,address,address,address)",

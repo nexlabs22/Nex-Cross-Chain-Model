@@ -27,6 +27,8 @@ contract SetIndexTokenValues is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        IndexToken(indexTokenProxy).setMinter(indexFactoryProxy, true);
+        IndexToken(payable(indexTokenProxy)).setMinter(indexFactoryProxy, true);
+
+        vm.stopBroadcast();
     }
 }
