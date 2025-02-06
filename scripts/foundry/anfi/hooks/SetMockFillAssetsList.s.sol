@@ -1,84 +1,109 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.20;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-// import {Script} from "forge-std/Script.sol";
-// import {console} from "forge-std/Test.sol";
-// import {IndexFactoryStorage} from "../../../../contracts/factory/IndexFactoryStorage.sol";
+import {Script} from "forge-std/Script.sol";
+import {console} from "forge-std/Test.sol";
+import {IndexFactoryStorage} from "../../../../contracts/factory/IndexFactoryStorage.sol";
 
-// contract SetMockFillAssetsList is Script {
-//     // Mainnet
-//     address indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+contract SetMockFillAssetsList is Script {
+    uint64 mainChainSelector;
+    uint64 otherChainSelector;
+    address indexFactoryStorageProxy;
+    address wethAddress;
 
-//     // Testnet
-//     // address indexFactoryStorageProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+    function run() public {
+        string memory targetChain = "sepolia";
 
-//     function run() public {
-//         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            indexFactoryStorageProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            mainChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
+            otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
+            wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            mainChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
+            otherChainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
+            wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+        } else {
+            revert("Unsupported target chain");
+        }
 
-//         vm.startBroadcast(deployerPrivateKey);
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
-//         // Mainnet Mock
-//         fillMockAssetsListMainnet();
+        vm.startBroadcast(deployerPrivateKey);
 
-//         // Testnet Mock
-//         // fillMockAssetsListTestnet();
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            fillMockAssetsListTestnet();
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            fillMockAssetsListMainnet();
+        } else {
+            revert("Unsupported target chain");
+        }
 
-//         vm.stopBroadcast();
+        vm.stopBroadcast();
 
-//         console.log("Values set successfully.");
-//     }
+        console.log("Values set successfully.");
+    }
 
-//     function fillMockAssetsListMainnet() internal {
-//         address wethAddress = 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1;
+    function fillMockAssetsListMainnet() internal {
+        address[] memory assetList = new address[](2);
+        assetList[0] = 0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8; // BITCOIN
+        assetList[1] = 0x6694340fc020c5E6B96567843da2df01b2CE1eb6; // XAUT
 
-//         address[] memory assetList = new address[](2);
-//         assetList[0] = 0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8; // BITCOIN
-//         assetList[1] = 0x6694340fc020c5E6B96567843da2df01b2CE1eb6; // XAUT
+        uint256[] memory marketShares = new uint256[](2);
+        marketShares[0] = 700000000000000000;
+        marketShares[1] = 300000000000000000;
 
-//         uint256[] memory marketShares = new uint256[](2);
-//         marketShares[0] = 280000000000000000;
-//         marketShares[1] = 230000000000000000;
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
 
-//         uint24[] memory feesData = new uint24[](1);
-//         feesData[0] = 3000;
+        uint64[] memory chainSelectors = new uint64[](2);
+        chainSelectors[0] = mainChainSelector; // arbitrum
+        chainSelectors[1] = otherChainSelector; // ethereum
 
-//         bytes[] memory pathData = new bytes[](2);
-//         for (uint256 i = 0; i < 2; i++) {
-//             address[] memory path = new address[](2);
-//             path[0] = wethAddress;
-//             path[1] = assetList[i];
-//             pathData[i] = abi.encode(path, feesData);
-//         }
+        bytes[] memory pathData = new bytes[](2);
+        for (uint256 i = 0; i < 2; i++) {
+            address[] memory path = new address[](2);
+            path[0] = wethAddress;
+            path[1] = assetList[i];
+            pathData[i] = abi.encode(path, feesData);
+        }
 
-//         IndexFactoryStorage(indexFactoryStorageProxy).mockFillAssetsList(assetList, pathData, marketShares);
+        IndexFactoryStorage(indexFactoryStorageProxy).mockFillAssetsList(
+            assetList, pathData, marketShares, chainSelectors
+        );
 
-//         console.log("Called mockFillAssetsList() with your 2 assets data.");
-//     }
+        console.log("Called mockFillAssetsList() with your 2 assets data.");
+    }
 
-//     // function fillMockAssetsListTestnet() internal {
-//     //     address[] memory assetList = new address[](2);
-//     //     assetList[0] = 0x9CD4f9Bec89e00A560840174Dc8054Fb4b3e1858; // sepoliaBitcoin
-//     //     assetList[1] = 0x8B0D01137979e409Bba15098aA5665c647774003; // arbSepoliaVaut
+    function fillMockAssetsListTestnet() internal {
+        address[] memory assetList = new address[](2);
+        assetList[0] = 0x6Ea5aD162d5b74Bc9e4C3e4eEB18AE6861407221; // sepoliaBitcoin
+        assetList[1] = 0x8B0D01137979e409Bba15098aA5665c647774003; // arbSepoliaXaut
 
-//     //     uint256[] memory marketShares = new uint256[](2);
-//     //     marketShares[0] = 15000000000000000000; // 15e18
-//     //     marketShares[1] = 12500000000000000000; // 12.5e18
+        uint256[] memory marketShares = new uint256[](2);
+        marketShares[0] = 70000000000000000000;
+        marketShares[1] = 30000000000000000000;
 
-//     //     uint24[] memory feesData = new uint24[](1);
-//     //     feesData[0] = 3000;
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
 
-//     //     bytes[] memory pathData = new bytes[](11);
-//     //     for (uint256 i = 0; i < 2; i++) {
-//     //         address[] memory path = new address[](2);
-//     //         path[0] = wethAddress;
-//     //         path[1] = assetList[i];
-//     //         pathData[i] = abi.encode(path, feesData);
-//     //     }
+        uint64[] memory chainSelectors = new uint64[](2);
+        chainSelectors[0] = mainChainSelector; // sepolia
+        chainSelectors[1] = otherChainSelector; // arb sepolia
 
-//     //     IndexFactoryStorage(indexFactoryStorageProxy).mockFillAssetsList(
-//     //         assetList, pathData, marketShares
-//     //     );
+        bytes[] memory pathData = new bytes[](11);
+        for (uint256 i = 0; i < 2; i++) {
+            address[] memory path = new address[](2);
+            path[0] = wethAddress;
+            path[1] = assetList[i];
+            pathData[i] = abi.encode(path, feesData);
+        }
 
-//     //     console.log("Called mockFillAssetsList() with your 2 assets data.");
-//     // }
-// }
+        IndexFactoryStorage(indexFactoryStorageProxy).mockFillAssetsList(
+            assetList, pathData, marketShares, chainSelectors
+        );
+
+        console.log("Called mockFillAssetsList() with your 2 assets data.");
+    }
+}

@@ -1,0 +1,230 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
+
+import "forge-std/Script.sol";
+import "forge-std/Test.sol";
+
+import {IndexFactoryStorage} from "../../../../contracts/factory/IndexFactoryStorage.sol";
+import {IndexFactory} from "../../../../contracts/factory/IndexFactory.sol";
+import {IndexToken} from "../../../../contracts/token/IndexToken.sol";
+
+contract CombinedSetValuesScript is Script, Test {
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+
+        string memory targetChain = "sepolia";
+
+        _setIndexFactoryStorageValues(targetChain);
+
+        _setIndexFactoryValues(targetChain);
+
+        _setIndexTokenValues(targetChain);
+
+        _setMockFillAssetsList(targetChain);
+
+        vm.stopBroadcast();
+
+        console.log("All set functions completed successfully!");
+    }
+
+    function _setIndexFactoryStorageValues(string memory targetChain) internal {
+        address indexFactoryStorageProxy;
+        address mainCrossChainTokenAddress;
+        address otherCrossChainTokenAddress;
+        address crossChainFactoryProxy;
+        address weth;
+        uint64 mainChainSelector;
+        uint64 otherChainSelector;
+        address indexFactoryProxy;
+        address priceOracle;
+        address vaultProxy;
+        address indexFactoryBalancerProxy;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            indexFactoryStorageProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            mainCrossChainTokenAddress = vm.envAddress("SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
+            otherCrossChainTokenAddress = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
+            crossChainFactoryProxy = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
+            weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+            mainChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
+            otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
+            indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+            priceOracle = vm.envAddress("SEPOLIA_PRICE_ORACLE");
+            vaultProxy = vm.envAddress("SEPOLIA_VAULT_PROXY_ADDRESS");
+            indexFactoryBalancerProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            mainCrossChainTokenAddress = vm.envAddress("ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
+            otherCrossChainTokenAddress = vm.envAddress("ETHEREUM_CROSS_CHAIN_TOKEN_ADDRESS");
+            crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
+            weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+            mainChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
+            otherChainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
+            indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+            priceOracle = vm.envAddress("ARBITRUM_PRICE_ORACLE");
+            vaultProxy = vm.envAddress("ARBITRUM_VAULT_PROXY_ADDRESS");
+            indexFactoryBalancerProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+        } else {
+            revert("Unsupported target chain (FactoryStorageValues)");
+        }
+
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
+
+        address[] memory path = new address[](2);
+        path[0] = weth;
+        path[1] = mainCrossChainTokenAddress;
+
+        IndexFactoryStorage(indexFactoryStorageProxy).setCrossChainToken(
+            otherChainSelector, mainCrossChainTokenAddress, path, feesData
+        );
+
+        IndexFactoryStorage(indexFactoryStorageProxy).setCrossChainFactory(crossChainFactoryProxy, otherChainSelector);
+
+        IndexFactoryStorage(indexFactoryStorageProxy).setIndexFactory(indexFactoryProxy);
+        IndexFactoryStorage(indexFactoryStorageProxy).setPriceOracle(priceOracle);
+        IndexFactoryStorage(indexFactoryStorageProxy).setVault(vaultProxy);
+        IndexFactoryStorage(indexFactoryStorageProxy).setIndexFactoryBalancer(indexFactoryBalancerProxy);
+
+        console.log("Done: _setIndexFactoryStorageValues()");
+    }
+
+    function _setIndexFactoryValues(string memory targetChain) internal {
+        address indexFactoryProxy;
+        address indexFactoryStorageProxy;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+            indexFactoryStorageProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+            indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+        } else {
+            revert("Unsupported target chain (FactoryValues)");
+        }
+
+        IndexFactory(payable(indexFactoryProxy)).setIndexFactoryStorage(indexFactoryStorageProxy);
+
+        console.log("Done: _setIndexFactoryValues()");
+    }
+
+    function _setIndexTokenValues(string memory targetChain) internal {
+        address indexFactoryProxy;
+        address indexTokenProxy;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+            indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+            indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+        } else {
+            revert("Unsupported target chain (IndexTokenValues)");
+        }
+
+        IndexToken(payable(indexTokenProxy)).setMinter(indexFactoryProxy, true);
+
+        console.log("Done: _setIndexTokenValues()");
+    }
+
+    function _setMockFillAssetsList(string memory targetChain) internal {
+        address indexFactoryStorageProxy;
+        uint64 mainChainSelector;
+        uint64 otherChainSelector;
+        address wethAddress;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            indexFactoryStorageProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            mainChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
+            otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
+            wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+
+            _fillMockAssetsListTestnet(indexFactoryStorageProxy, mainChainSelector, otherChainSelector, wethAddress);
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            mainChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
+            otherChainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
+            wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+
+            _fillMockAssetsListMainnet(indexFactoryStorageProxy, mainChainSelector, otherChainSelector, wethAddress);
+        } else {
+            revert("Unsupported target chain (MockFillAssetsList)");
+        }
+
+        console.log("Done: _setMockFillAssetsList()");
+    }
+
+    function _fillMockAssetsListMainnet(
+        address indexFactoryStorageProxy,
+        uint64 mainChainSelector,
+        uint64 otherChainSelector,
+        address wethAddress
+    ) internal {
+        address[] memory assetList = new address[](2);
+        assetList[0] = 0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8; // BITCOIN
+        assetList[1] = 0x6694340fc020c5E6B96567843da2df01b2CE1eb6; // XAUT
+
+        uint256[] memory marketShares = new uint256[](2);
+        marketShares[0] = 70000000000000000000;
+        marketShares[1] = 30000000000000000000;
+
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
+
+        // chainSelectors array
+        uint64[] memory chainSelectors = new uint64[](2);
+        chainSelectors[0] = mainChainSelector;
+        chainSelectors[1] = otherChainSelector;
+
+        bytes[] memory pathData = new bytes[](2);
+        for (uint256 i = 0; i < 2; i++) {
+            address[] memory path = new address[](2);
+            path[0] = wethAddress;
+            path[1] = assetList[i];
+            pathData[i] = abi.encode(path, feesData);
+        }
+
+        IndexFactoryStorage(indexFactoryStorageProxy).mockFillAssetsList(
+            assetList, pathData, marketShares, chainSelectors
+        );
+
+        console.log("Called mockFillAssetsList() [mainnet style].");
+    }
+
+    function _fillMockAssetsListTestnet(
+        address indexFactoryStorageProxy,
+        uint64 mainChainSelector,
+        uint64 otherChainSelector,
+        address wethAddress
+    ) internal {
+        address[] memory assetList = new address[](2);
+        assetList[0] = 0x6Ea5aD162d5b74Bc9e4C3e4eEB18AE6861407221; // sepoliaBitcoin
+        assetList[1] = 0x8B0D01137979e409Bba15098aA5665c647774003; // arbSepoliaXaut
+
+        uint256[] memory marketShares = new uint256[](2);
+        marketShares[0] = 70000000000000000000;
+        marketShares[1] = 30000000000000000000;
+
+        uint24[] memory feesData = new uint24[](1);
+        feesData[0] = 3000;
+
+        uint64[] memory chainSelectors = new uint64[](2);
+        chainSelectors[0] = mainChainSelector;
+        chainSelectors[1] = otherChainSelector;
+
+        bytes[] memory pathData = new bytes[](11);
+        for (uint256 i = 0; i < 2; i++) {
+            address[] memory path = new address[](2);
+            path[0] = wethAddress;
+            path[1] = assetList[i];
+            pathData[i] = abi.encode(path, feesData);
+        }
+
+        IndexFactoryStorage(indexFactoryStorageProxy).mockFillAssetsList(
+            assetList, pathData, marketShares, chainSelectors
+        );
+
+        console.log("Called mockFillAssetsList() [testnet style].");
+    }
+}
