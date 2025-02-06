@@ -1,7 +1,5 @@
 'use client'
 
-// src/app/trade/[operation]/[index]/page.tsx
-
 import { Typography } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import GenericCard from "@/components/ui/generic/genericCard";
