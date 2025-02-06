@@ -113,7 +113,6 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 
       setNexTokens(nexTokens)
     }
-    console.log("fetching data")
 
     fetchIndexesData()
   }, [ethPriceUsd, network])
