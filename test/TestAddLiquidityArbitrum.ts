@@ -18,6 +18,7 @@ import SwapRouter from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol
 import NonfungiblePositionManager from "@uniswap/v3-periphery/artifacts/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json"
 import { arbitrumSepoliaTestRippleAddress, CrossChainTokenAddresses, FactoryV3Addresses, NonfungiblePositionManagers, RouterV3Addresses, WethAddresses } from "../contractAddresses";
 
+  const arbitrumSepoliaXautAddress = "0x0C3711069cf889Fc47B3Da3700fFFDc2e16A4DaD"
   describe("Swap", function () {
     // We define a fixture to reuse the same setup in every test.
     // We use loadFixture to run this setup once, snapshot that state,
@@ -31,7 +32,8 @@ import { arbitrumSepoliaTestRippleAddress, CrossChainTokenAddresses, FactoryV3Ad
     const v3Factory = new ethers.Contract(FactoryV3Addresses['arbitrumSepolia'], UniswapV3Factory.abi) as IUniswapV3Factory
     const v3Router = new ethers.Contract(RouterV3Addresses['arbitrumSepolia'], SwapRouter.abi) as ISwapRouter
     const nft = new ethers.Contract(NonfungiblePositionManagers['arbitrumSepolia'], NonfungiblePositionManager.abi) as INonfungiblePositionManager
-    const token = new ethers.Contract(CrossChainTokenAddresses['arbitrumSepolia'], WETH9.abi) as IWETH
+    // const token = new ethers.Contract(CrossChainTokenAddresses['arbitrumSepolia'], WETH9.abi) as IWETH
+    const token = new ethers.Contract(arbitrumSepoliaXautAddress, WETH9.abi) as IWETH
     //   const weth9 = res["weth9"] as IWETH
     //   const v3Factory = res["factory"] as IUniswapV3Factory
     //   const v3Router = res["router"] as ISwapRouter
@@ -58,28 +60,29 @@ import { arbitrumSepoliaTestRippleAddress, CrossChainTokenAddresses, FactoryV3Ad
         //   deploymentObj.token1.address,
         // )
         const signer = deploymentObj.owner;
-
+        const amount0 = "10000"
+        const amount1 = "0.2"
         let tokens = [];
         tokens[0] = deploymentObj.token.address < deploymentObj.weth9.address ? deploymentObj.token.address : deploymentObj.weth9.address
         tokens[1] = deploymentObj.token.address > deploymentObj.weth9.address ? deploymentObj.token.address : deploymentObj.weth9.address
 
         let amounts = []
-        amounts[0] = tokens[0] == deploymentObj.token.address ? ethers.utils.parseEther("10") : ethers.utils.parseEther("0.2")
-        amounts[1] = tokens[1] == deploymentObj.token.address ? ethers.utils.parseEther("10") : ethers.utils.parseEther("0.2")
+        amounts[0] = deploymentObj.token.address < deploymentObj.weth9.address ? ethers.utils.parseEther(amount0) : ethers.utils.parseEther(amount1)
+        amounts[1] = deploymentObj.token.address > deploymentObj.weth9.address ? ethers.utils.parseEther(amount0) : ethers.utils.parseEther(amount1)
 
         console.log("createAndInitializePoolIfNecessary..")
         await deploymentObj.nft.connect(signer).createAndInitializePoolIfNecessary(
           tokens[0],
           tokens[1],
           "3000",
-          encodePriceSqrt(1, 1)
+          encodePriceSqrt(Number(amounts[1])/1e10, Number(amounts[0])/1e10)
         )
       console.log("approve token ...")
-      await deploymentObj.token.connect(signer).approve(deploymentObj.nft.address, ethers.utils.parseEther("10000"));
+      await deploymentObj.token.connect(signer).approve(deploymentObj.nft.address, ethers.utils.parseEther(amount0));
       console.log("deposit weth ...")
-      await deploymentObj.weth9.connect(signer).deposit({value:ethers.utils.parseEther("0.2")});
+      await deploymentObj.weth9.connect(signer).deposit({value:ethers.utils.parseEther(amount1)});
       console.log("approve weth ...")
-      await deploymentObj.weth9.connect(signer).approve(deploymentObj.nft.address, ethers.utils.parseEther("0.2"));
+      await deploymentObj.weth9.connect(signer).approve(deploymentObj.nft.address, ethers.utils.parseEther(amount1));
       
       const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
     //   const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
