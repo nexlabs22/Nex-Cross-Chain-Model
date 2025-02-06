@@ -1323,7 +1323,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Typography variant="h6" color="text.secondary">
-            Testnet USDC
+            Testnet USDT
           </Typography>
           <Button sx={{
             color: theme.palette.brand.nex1.main
