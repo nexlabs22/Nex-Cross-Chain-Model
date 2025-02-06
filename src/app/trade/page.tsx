@@ -33,7 +33,7 @@ const Page = ({
           </GenericCard>
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Swap side={selectedSide} defaultToken={defaultToken} />
+          <Swap side={selectedSide} selectedIndex={defaultToken} />
         </Grid>
       </Grid>
       <TabbedTablesView />
