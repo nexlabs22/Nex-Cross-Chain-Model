@@ -37,12 +37,7 @@ const Page = ({
           <Header />
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 8 }}>
-              <TradingViewChart />
-              {/* <GenericCard> */}
-                {/* <Typography variant="h4" color="primary" marginBottom={2}>
-                  Chart space
-                </Typography> */}
-              {/* </GenericCard> */}
+              <TradingViewChart index={selectedIndex.symbol} />
             </Grid>
             <Grid size={{ xs: 12, sm: 4 }}>
               <Swap side={selectedSide} selectedIndex={selectedIndex} />

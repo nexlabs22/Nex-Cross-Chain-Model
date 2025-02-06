@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 import Datafeed from "@/utils/trading-view/datafeed";
 import TradingView from "../../../../public/charting_library/charting_library.standalone";
 
-const TradingViewChart = () => {
+const TradingViewChart = ({index}) => {
   const chartContainerRef = useRef();
   const mode = "dark";
 
@@ -13,9 +13,9 @@ const TradingViewChart = () => {
     script.type = "text/jsx";
     script.src = "public/charting_library/charting_library.js";
     document.head.appendChild(script);
-    // const ind = index ? index : 'CRYPTO5'
+    const ind = index || 'CRYPTO5'
     window.tvWidget = new TradingView.widget({
-      symbol: `Bitfinex:BTC/USD`,
+      symbol: `Nexlabs:${ind}/USD`,
       interval: "1D",
       height: chartContainerRef.current.clientHeight - 10,
       width: chartContainerRef.current.clientWidth,
@@ -27,10 +27,10 @@ const TradingViewChart = () => {
       datafeed: Datafeed,
       autosize: true,
       enabled_features: ["header_in_fullscreen_mode"],
-      overrides: {
-        "mainSeriesProperties.style": 2,
-        "paneProperties.background": "#020024",
-      },
+			overrides: {
+				'mainSeriesProperties.style': 2,
+				'paneProperties.background':'#020024',
+			},
       library_path: "/charting_library/",
       time_frames: [
         { text: "1M", resolution: "1D", description: "1 month", title: "1M" },
@@ -44,7 +44,7 @@ const TradingViewChart = () => {
     });
 
     return () => script.remove();
-  }, []);
+  }, [index]);
 
   return (
     <div

@@ -134,3 +134,31 @@ export const extractUniqueKeys = (
 
   return uniqueKeys
 }
+
+export const mongoDataToOHLC = (data: MongoDb[]) => {
+  return data.map((item) => {
+    return {
+      time: item.timestamp,
+      open: item.open || item.price,
+      high: item.high || item.price,
+      low: item.low || item.price,
+      close: item.close || item.price
+    }
+  })
+}
+
+export const mongoDataToChartData = (data: MongoDb[]): { xValue: number[], yValue: number[] } => {
+  if (data.length > 1) {
+
+    const xValue = data.sort((a, b) => a.timestamp - b.timestamp).map((obj) => {
+      return Number(obj.price)
+    })
+    const yValue = data.map((obj) => {
+      return obj.timestamp
+    })
+
+    return { xValue, yValue }
+  } else {
+    return { xValue: [], yValue: [] }
+  }
+}

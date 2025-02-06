@@ -1,3 +1,5 @@
+import axios from "axios";
+import { mongoDataToOHLC } from "../convertToMongo/parse.ts";
 import { makeApiRequest, generateSymbol, parseFullSymbol, generateNexSymbol } from "./helpers.js";
 import { subscribeOnStream, unsubscribeFromStream } from "./streaming.js";
 
@@ -232,24 +234,16 @@ const dataFeed = {
       .join("&");
     try {
 
-      // const data1 = await fetch(`/api/getChartData2?symbol=${urlParameters.fsym}`).then(res => res.json()).catch(error => console.log(error));
-      // const data1 = await fetch("/api/getChartData").then(res => res.json()).catch(error => console.log(error));
+      const filter = {
+        ticker: urlParameters.fsym
+      }
+      const data1 = await axios.post(`/api/chart-data`, filter).then( res => mongoDataToOHLC(res.data.data)).catch(error => console.log(error));
       const data2 = await makeApiRequest(`data/histoday?${query}`);
-      // const data = data2.Response === 'Error' ? data1.data : data2.Data
-      const data = data2.Data
-      // if (
-      //   (data.Response && data.Response === "Error") ||
-      //   data.Data.length === 0
-      // ) {
-      // if (data1.length > 0) {
-      //   // "noData" should be set if there is no data in the requested period.
-      //   onHistoryCallback([], {
-      //     noData: true,
-      //   });
-      //   return;
-      // }
+
+      const data = data2.Response === 'Error' ? data1 : data2.Data
+
       let bars = [];
-      // data.Data.forEach((bar) => {
+
       data.forEach((bar) => {
         if (bar.time >= from && bar.time < to) {
           bars = [
