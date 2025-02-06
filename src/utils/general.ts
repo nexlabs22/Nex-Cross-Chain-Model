@@ -1,5 +1,6 @@
 import { tokenAddresses } from "@/constants/contractAddresses"
 import { Address } from "@/types/indexTypes"
+import { MongoDb } from "@/types/mongoDb"
 import { sub, isWeekend } from "date-fns"
 
 function getPreviousWeekday(date: Date | string) {
@@ -51,6 +52,23 @@ const isWETH = (address: Address): boolean => {
   return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.index?.address
 }
 
+const get24hChange = (data: MongoDb[]) =>{
+
+  if(data.length>1){
+
+    const descSorted = data.sort((a,b)=> b.timestamp - a.timestamp)
+    const today = descSorted[0].open || descSorted[0].price as number
+    const yesterday = descSorted[1].open || descSorted[1].price as number
+    
+    const change24h = today-yesterday
+    const change24hPer = (((today - yesterday) / yesterday) * 100).toFixed(2)
+
+    return {change24h, change24hPer};
+  }else{ 
+    return {change24h : 0, change24hPer: Number(0).toFixed(2)};
+  }
+}
+
 export {
   getPreviousWeekday,
   SwapNumbers,
@@ -59,4 +77,5 @@ export {
   calculateChange,
   getDecimals,
   isWETH,
+  get24hChange
 }

@@ -1,4 +1,5 @@
 import { ReactElement } from "react"
+import { MongoDb } from "./mongoDb"
 export type Address = `0x${string}`
 
 export enum SmartContractType {
@@ -81,6 +82,7 @@ export type Asset = {
   bgColor?: string
   hoverColor?: string
   marketInfo?: MarketInfo
+  historicalPrice?: MongoDb[]
 }
 
 export type StockAsset = {
@@ -106,6 +108,7 @@ export type MarketInfo = {
   marketCap?: number
   offChainPrice?: number
   change24h?: number
+  change24hPer?: string
   volume?: number
 }
 

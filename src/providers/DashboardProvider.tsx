@@ -7,15 +7,16 @@ import convertToUSDUni from '@/utils/convertToUSDUni'
 import { sepolia } from 'thirdweb/chains'
 import { client } from '@/utils/thirdWebClient'
 import { getContract, readContract } from 'thirdweb'
-import { Address, TokenObject } from '@/types/indexTypes'
+import { Address, IndexCryptoAsset } from '@/types/indexTypes'
 import { useGlobal } from './GlobalProvider'
 
-import { getDecimals } from '@/utils/general'
+import { get24hChange, getDecimals } from '@/utils/general'
 import { nexTokensArray } from '@/constants/indices'
+import { MongoDb } from '@/types/mongoDb'
 
 interface DashboardContextProps {
 	ethPriceUsd: number
-	nexTokens: TokenObject[]
+	nexTokens: IndexCryptoAsset[]
 }
 
 const DashboardContext = createContext<DashboardContextProps>(({
@@ -49,7 +50,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 
 
 
-	const [nexTokens, setNexTokens] = useState<TokenObject[]>(nexTokensArray);
+	const [nexTokens, setNexTokens] = useState<IndexCryptoAsset[]>(nexTokensArray);
 
 
 	useEffect(() => {
@@ -96,19 +97,30 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 						});
 						const totalSupply = totalSupplyRaw ? Number(totalSupplyRaw) / 1e18 : 0;
 						const price = marketPriceUSD !== Infinity ? Number(marketPriceUSD) : 0
+
+						const filter = {
+							ticker: token.symbol
+						  }
+			
+						const historicalPrice: MongoDb[] = await axios.post(`/api/chart-data`,filter).then((res)=> res.data.data).catch(err=> console.log(err));
+						const { change24h, change24hPer} = get24hChange(historicalPrice)
+
 						// Construct the enhanced token object
 						return {
 							...token,
 							marketInfo: {
 								...token.marketInfo,
 								price: price,																
+								change24h,
+								change24hPer,
 								marketCap: totalSupply * price
 							},
 							smartContractInfo:{
 								...token.smartContractInfo,
 								managementFee,
 								totalSupply
-							}
+							},
+							historicalPrice
 						};
 					} catch (error) {
 						console.error(`Error fetching data for token: ${token.symbol}`, error);

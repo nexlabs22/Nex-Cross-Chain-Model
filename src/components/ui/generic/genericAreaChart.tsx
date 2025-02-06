@@ -1,5 +1,4 @@
 'use client'
-import * as React from 'react';
 import { areaElementClasses, LineChart } from '@mui/x-charts/LineChart';
 import { useYScale, useDrawingArea } from '@mui/x-charts/hooks';
 import { ScaleLinear } from 'd3-scale';
@@ -7,18 +6,9 @@ import theme from '@/theme/theme';
 
 interface GenericAreaLineChartProps {
     label: string;
+    chartData: {xValue: number[], yValue: number[]|string[]};
 }
 
-const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const xLabels = [
-    'Page A',
-    'Page B',
-    'Page C',
-    'Page D',
-    'Page E',
-    'Page F',
-    'Page G',
-];
 
 function ColorPalette({ id }: { id: string }) {
     const { top, height, bottom } = useDrawingArea();
@@ -37,7 +27,7 @@ function ColorPalette({ id }: { id: string }) {
                 gradientUnits="userSpaceOnUse" // Use the SVG coordinate instead of the component ones.
             >
                 <stop
-                    offset={scale(4000) / svgHeight}
+                    offset={scale(1000) / svgHeight}
                     stopColor={theme.palette.brand.greenAreaChart1.main}
                     stopOpacity={1}
                 />
@@ -48,11 +38,19 @@ function ColorPalette({ id }: { id: string }) {
     );
 }
 
-const GenericAreaLineChart = ({label}: GenericAreaLineChartProps) => {
+const GenericAreaLineChart = ({ label, chartData }: GenericAreaLineChartProps) => {
+
     return (
         <LineChart
-            series={[{ data: uData, label: label, area: true, showMark: false }]}
-            xAxis={[{ scaleType: 'point', data: xLabels, hideTooltip: true }]}
+            series={[{ data: chartData.xValue, label: label, area: true, showMark: false }]}
+            xAxis={[{ scaleType: 'point', data: chartData.yValue, hideTooltip: true }]}
+            yAxis={[
+                { 
+                    scaleType: 'linear', 
+                    min: Math.min(...chartData.xValue) * 0.9,  // Adds padding below the min value
+                    max: Math.max(...chartData.xValue) * 1.1,  // Adds padding above the max value
+                }
+            ]}
             leftAxis={null}
             bottomAxis={null}
             tooltip={undefined}
@@ -69,7 +67,7 @@ const GenericAreaLineChart = ({label}: GenericAreaLineChartProps) => {
             sx={{
                 [`& .${areaElementClasses.root}`]: {
                     fill: 'url(#swich-color-id-2)',
-                },                
+                },
             }}
         >
             <ColorPalette id="swich-color-id-2" />
