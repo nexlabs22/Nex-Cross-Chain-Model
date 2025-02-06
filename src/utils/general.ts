@@ -17,7 +17,8 @@ function SwapNumbers(a: number, b: number): [number, number] {
   return [a, b]
 }
 
-function reduceAddress(address: string) {
+function reduceAddress(address: string | undefined) {
+  if (!address) return
   return (
     address?.toString().slice(0, 5) +
     "..." +
@@ -43,10 +44,10 @@ const calculateChange = (prices: { value: number }[]) => {
 }
 
 const getDecimals = (type?: { address: string; decimals?: number }): number => {
-  return type?.decimals ?? 18; // Default to 18 if not specified
-};
+  return type?.decimals ?? 18 // Default to 18 if not specified
+}
 
-const isWETH = (address: Address): boolean =>{
+const isWETH = (address: Address): boolean => {
   return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.index?.address
 }
 
@@ -57,5 +58,5 @@ export {
   convertTime,
   calculateChange,
   getDecimals,
-  isWETH
+  isWETH,
 }
