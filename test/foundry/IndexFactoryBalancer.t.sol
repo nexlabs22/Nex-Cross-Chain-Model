@@ -663,8 +663,30 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         // showTokenBalances();
         // factoryBalancer.askValues();
         showPercentages();
-        // console.log("testData", crossChainIndexFactory.testData());
-        // console.log("testData2", crossChainIndexFactory.testData2());
+        console.log("testData", crossChainIndexFactory.testData());
+        console.log("testData2", crossChainIndexFactory.testData2());
+        // token shares
+        assertEq(
+            indexFactoryStorage.tokenCurrentMarketShare(address(token0)),
+            10e18
+        );
+        assertEq(
+            indexFactoryStorage.tokenCurrentMarketShare(address(token1)),
+            20e18
+        );
+        assertEq(
+            indexFactoryStorage.tokenCurrentMarketShare(address(token2)),
+            20e18
+        );
+        assertEq(
+            indexFactoryStorage.tokenCurrentMarketShare(address(token3)),
+            20e18
+        );
+        assertEq(
+            indexFactoryStorage.tokenCurrentMarketShare(address(token4)),
+            30e18
+        );
+        console.log("balancerAddress", address(factoryBalancer));
         // console.log(weth.balanceOf(address(factoryBalancer)));
     }
     

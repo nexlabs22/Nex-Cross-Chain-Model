@@ -29,6 +29,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
     IndexFactoryStorage public factoryStorage;
     address public i_link;
     uint16 public i_maxTokensLength;
+    uint16 public constant MAX_TOKENS_LENGTH = 5;
 
     uint64 public currentChainSelector;
 
@@ -259,57 +260,67 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         bytes memory _data,
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
-        PayFeesIn payFeesIn
-    ) internal {
-        uint256 length = tokensToSendDetails.length;
-        require(
-            length <= i_maxTokensLength,
-            "Maximum 5 different tokens can be sent per CCIP Message"
-        );
+        MessageSender.PayFeesIn payFeesIn
+    ) internal returns(bytes32) {
+        // uint256 length = tokensToSendDetails.length;
+        // require(
+        //     length <= i_maxTokensLength,
+        //     "Maximum 5 different tokens can be sent per CCIP Message"
+        // );
 
-        for (uint256 i = 0; i < length; ) {
-            if (tokensToSendDetails[i].token != i_link) {
-                IERC20(tokensToSendDetails[i].token).approve(
-                    i_router,
-                    tokensToSendDetails[i].amount
-                );
-            }
-            unchecked {
-                ++i;
-            }
-        }
+        // for (uint256 i = 0; i < length; ) {
+        //     if (tokensToSendDetails[i].token != i_link) {
+        //         IERC20(tokensToSendDetails[i].token).approve(
+        //             i_router,
+        //             tokensToSendDetails[i].amount
+        //         );
+        //     }
+        //     unchecked {
+        //         ++i;
+        //     }
+        // }
 
-        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
-            receiver: abi.encode(receiver),
-            data: _data,
-            tokenAmounts: tokensToSendDetails,
-            // extraArgs: "",
-            extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 900_000}) // Additional arguments, setting gas limit and non-strict sequency mode
-            ),
-            feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
-        });
+        // Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+        //     receiver: abi.encode(receiver),
+        //     data: _data,
+        //     tokenAmounts: tokensToSendDetails,
+        //     // extraArgs: "",
+        //     extraArgs: Client._argsToBytes(
+        //         Client.EVMExtraArgsV1({gasLimit: 3_000_000}) // Additional arguments, setting gas limit and non-strict sequency mode
+        //     ),
+        //     feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+        // });
 
-        uint256 fee = IRouterClient(i_router).getFee(
+        // uint256 fee = IRouterClient(i_router).getFee(
+        //     destinationChainSelector,
+        //     message
+        // );
+
+        // bytes32 messageId;
+
+        // if (payFeesIn == PayFeesIn.LINK) {
+        //     messageId = IRouterClient(i_router).ccipSend(
+        //         destinationChainSelector,
+        //         message
+        //     );
+        // } else {
+        //     messageId = IRouterClient(i_router).ccipSend{value: fee}(
+        //         destinationChainSelector,
+        //         message
+        //     );
+        // }
+        bytes32 messageId = MessageSender.sendToken(
+            i_router,
+            i_link,
+            MAX_TOKENS_LENGTH,
             destinationChainSelector,
-            message
+            _data,
+            receiver,
+            tokensToSendDetails,
+            payFeesIn
         );
-
-        bytes32 messageId;
-
-        if (payFeesIn == PayFeesIn.LINK) {
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
-        } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
-        }
-
         emit MessageSent(messageId);
+        return messageId;
     }
 
     /**
@@ -387,7 +398,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             );
             extraWethByNonce[nonce] += wethAmount;
         }else if(actionType == 4){
-            // factoryStorage.updateCurrentList();
+            factoryStorage.updateCurrentList();
         }
     }
 
@@ -786,9 +797,8 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
         uint totalChains = factoryStorage.oracleChainSelectorsCount();
         uint latestOracleCount = factoryStorage.oracleFilledCount();
         
-        uint totalCurrentChains = factoryStorage.currentChainSelectorsCount();
-        uint latestCurrentCount = factoryStorage.currentFilledCount();
-
+        
+        bool isOnlyOnCurrentChain = true;
         for (uint i = 0; i < totalChains; i++) {
             (,, uint64[] memory chainSelectors) = factoryStorage.getOracleData(latestOracleCount);
             // (,, , uint64[] memory chainSelectors) = factoryStorage.getCurrentData(latestCurrentCount);
@@ -803,7 +813,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             uint chainValue = chainValueByNonce[nonce][chainSelector];
             uint[] memory oracleTokenShares = factoryStorage
                 .allOracleChainSelectorTokenShares(chainSelector);
-
+            
             if (
                 (chainValue * 100e18) / portfolioValue <
                 oracleChainSelectorTotalShares
@@ -819,6 +829,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
                         oracleChainSelectorTotalShares
                     );
                 } else {
+                    isOnlyOnCurrentChain = false;
                     _sendLowerValueOtherChain(
                         nonce,
                         portfolioValue,
@@ -828,6 +839,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
                         oracleTokenShares
                     );
                 }
+                if (isOnlyOnCurrentChain) {factoryStorage.updateCurrentList();}
             }
         }
     }
@@ -1012,7 +1024,7 @@ contract IndexFactoryBalancer is Initializable, CCIPReceiver, ProposableOwnableU
             _data,
             crossChainIndexFactory,
             tokensToSendArray,
-            PayFeesIn.LINK
+            MessageSender.PayFeesIn.LINK
         );
     }
 

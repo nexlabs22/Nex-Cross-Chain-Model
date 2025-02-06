@@ -30,7 +30,7 @@ contract MockRouter2 is IRouter, IRouterClient {
 
   uint16 public constant GAS_FOR_CALL_EXACT_CHECK = 5_000;
   // uint32 public constant DEFAULT_GAS_LIMIT = 200_000;
-  uint32 public constant DEFAULT_GAS_LIMIT = 200_000;
+  uint32 public constant DEFAULT_GAS_LIMIT = 2000_000;
 
   uint256 internal s_mockFeeTokenAmount; //use setFee() to change to non-zero to test fees
 

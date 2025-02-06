@@ -466,8 +466,6 @@ contract CrossChainIndexFactory is
                     targetAddresses2,
                     targetPaths,
                     targetPaths2,
-                    // targetFees,
-                    // targetFees2,
                     percentages,
                     tokenAmounts[0].token,
                     tokenAmounts[0].amount,
@@ -863,7 +861,9 @@ contract CrossChainIndexFactory is
         uint nonce;
         uint[] extraData;
     }
-
+    address public testData;
+    uint64 public testData2;
+    bytes public testData3;
     function _handleSecondReweightAction(
         HandleSecondReweightActionInputs memory inputData
     ) internal {
@@ -884,8 +884,8 @@ contract CrossChainIndexFactory is
             inputData.extraData
         );
 
-        uint[] memory zeroUintArr = new uint[](1);
-        address[] memory zeroAddArr = new address[](1);
+        uint[] memory zeroUintArr = new uint[](0);
+        address[] memory zeroAddArr = new address[](0);
         
         bytes memory data = abi.encode(
             4,
@@ -897,12 +897,27 @@ contract CrossChainIndexFactory is
             zeroUintArr,
             zeroUintArr
         );
-        // sendMessage(
-        //     inputData.sourceChainSelector,
-        //     inputData.sender,
-        //     data,
-        //     PayFeesIn.LINK
+        // testData = inputData.sender;
+        // testData2 = inputData.sourceChainSelector;
+        // testData3 = data;
+        sendMessage(
+            inputData.sourceChainSelector,
+            inputData.sender,
+            data,
+            PayFeesIn.LINK
+        );
+
+        // bytes memory data = abi.encode(
+        //     4,
+        //     new address[](0),
+        //     new address[](0),
+        //     new bytes[](0),
+        //     new bytes[](0),
+        //     0,
+        //     new uint[](0),
+        //     new uint[](0)
         // );
+        // sendMessage(inputData.sourceChainSelector, inputData.sender, data, PayFeesIn.LINK);
     }
 
     struct SwapSecondReweightActionVars {
