@@ -13,15 +13,15 @@ import IndexDetailsTabbedTablesView from "@/components/ui/index-details/indexDet
 import CircularProgress from "@mui/material/CircularProgress"
 import MarketStats from "./marketStats"
 import Composition from "./composition"
-import { useSearchParams } from "next/navigation"
+import { parseQueryFromPath } from "@/utils/general"
 
 const Page = () => {
   const { nexTokens } = useDashboard()
   const [index, setIndex] = useState<IndexCryptoAsset | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const paramsRaw = useSearchParams()
-  const params = Object.fromEntries(paramsRaw.entries())  
+  const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
+	const params = parseQueryFromPath(searchQuery)
 
   useEffect(() => {
     setIndex(
