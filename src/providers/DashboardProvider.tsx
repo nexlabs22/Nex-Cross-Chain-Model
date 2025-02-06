@@ -109,14 +109,14 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 						return {
 							...token,
 							marketInfo: {
-								...token.marketInfo,
-								price: price,																
+								...token.marketInfo,																							
 								change24h,
 								change24hPer,
 								marketCap: totalSupply * price
 							},
 							smartContractInfo:{
 								...token.smartContractInfo,
+								poolPrice: price,
 								managementFee,
 								totalSupply
 							},

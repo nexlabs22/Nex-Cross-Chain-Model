@@ -19,9 +19,11 @@ import { Address } from "@/types/indexTypes"
 import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGroup"
 import { LuCopy } from "react-icons/lu"
 import copy from "copy-to-clipboard"
+import { useGlobal } from "@/providers/GlobalProvider"
 
 const CatalogueTable = () => {
   const { nexTokens } = useDashboard()
+  const { activeChainSetting:{chain, network} } = useGlobal()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -141,7 +143,7 @@ const CatalogueTable = () => {
         >
           <Typography variant={"body1"}>
             {reduceAddress(
-              params.row.tokenAddresses?.Ethereum?.Sepolia?.index
+              params.row.tokenAddresses?.[chain]?.[network]?.index
                 ?.address as Address
             )}
           </Typography>
@@ -149,7 +151,7 @@ const CatalogueTable = () => {
             sx={{ cursor: "pointer" }}
             onClick={() => {
               copy(
-                params.row.tokenAddresses?.Ethereum?.Sepolia?.index
+                params.row.tokenAddresses?.[chain]?.[network]?.index
                   ?.address as Address
               )
             }}
@@ -226,9 +228,9 @@ const CatalogueTable = () => {
         value: token.smartContractInfo?.totalSupply,
         returnType: "string",
       })}`,
-    change24h: token.marketInfo?.change24h ? `${token.marketInfo?.change24h}%`: 'N/A',
+    change24h: token.marketInfo?.change24hPer ? `${token.marketInfo?.change24hPer}%`: 'N/A',
     address: reduceAddress(
-      token.tokenAddresses?.Ethereum?.Sepolia?.index?.address as Address
+      token.tokenAddresses?.[chain]?.[network]?.index?.address as Address
     ),
   }))
 
