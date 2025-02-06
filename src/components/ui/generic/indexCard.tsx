@@ -1,24 +1,43 @@
-'use client'
+"use client"
 
 import GenericCard from "@/components/ui/generic/genericCard"
-import GenericAreaLineChart from "./genericAreaChart";
+import GenericAreaLineChart from "./genericAreaChart"
 import { Box, Typography, Stack } from "@mui/material"
-import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGroup";
+import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGroup"
 
-// assets
-import { MdOutlineArrowOutward, MdOutlineArrowUpward } from "react-icons/md";
+import {
+  MdOutlineArrowOutward,
+  MdOutlineArrowUpward,
+  MdOutlineArrowDownward,
+} from "react-icons/md"
 import theme from "@/theme/theme"
 
-//types
-import { TokenObject } from "@/types/indexTypes";
-import { formatToViewNumber } from "@/utils/conversionFunctions";
+import { IndexCryptoAsset } from "@/types/indexTypes"
+import { formatToViewNumber } from "@/utils/conversionFunctions"
 
 //interface
 interface IndexCardProps {
-    index: TokenObject
+  index: IndexCryptoAsset
 }
 
 const IndexCard = ({ index }: IndexCardProps) => {
+
+  const logo = index.logoString
+  const price = index.smartContractInfo?.poolPrice
+    ? `$${formatToViewNumber({
+      value: index.smartContractInfo?.poolPrice,
+      returnType: "currency",
+    })}`
+    : index.marketInfo?.offChainPrice
+      ? `$${formatToViewNumber({
+        value: index.marketInfo?.offChainPrice,
+        returnType: "currency",
+      })}`
+      : "N/A"
+  const change24hString = index.marketInfo?.change24h
+    ? `${index.marketInfo?.change24h}%`
+    : "N/A"
+  const change24hValue = index.marketInfo?.change24h
 
     return (
         <GenericCard>
