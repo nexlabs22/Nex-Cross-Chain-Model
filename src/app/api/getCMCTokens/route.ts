@@ -1,5 +1,3 @@
-// app/api/coinmarketcap/route.ts
-
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
@@ -9,31 +7,25 @@ const API_KEY = process.env.COINMARKETCAP_KEY;
 
 export async function GET() {
   try {
-    // First, fetch the mapping data which contains the coin IDs
     const mapResponse = await axios.get(COINMARKETCAP_MAP_API_URL, {
       headers: {
         'X-CMC_PRO_API_KEY': API_KEY!,
       },
     });
 
-    // Extract the coin mapping array from the response
     const coinMap = mapResponse.data.data;
     
-    // Optionally, limit the number of coins.
-    // For example, using the first 100 coins:
     const limitedCoinMap = coinMap.slice(0, 500);
     
-    // Extract the IDs and create a comma-separated string.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ids = limitedCoinMap.map((coin: any) => coin.id).join(',');
     console.log(ids)
-    // Now, use these IDs to call the info endpoint.
     const infoResponse = await axios.get(COINMARKETCAP_INFO_API_URL, {
       headers: {
         'X-CMC_PRO_API_KEY': API_KEY!,
       },
       params: {
-        id: ids, // Axios automatically URL-encodes this string.
+        id: ids,
       },
     });
 
