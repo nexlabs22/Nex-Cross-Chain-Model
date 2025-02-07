@@ -58,6 +58,7 @@ import { client } from "@/utils/thirdWebClient"
 import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
 import { getNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
+import { fetchCoinMarketCapTokens } from "@/utils/fetchCMCTokens"
 
 interface SwapProps {
   side?: "buy" | "sell"
@@ -1355,16 +1356,21 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
             onChange={changeFirstInputValue}
             value={firstInputValue}
           />
-          <Stack
-            direction="row"
-            alignItems="center"
-            gap={1}
-            paddingX={1}
-            paddingY={0.5}
+          <Button
+          variant="outlined"
             sx={{
               backgroundColor: theme.palette.elevations.elevation900.main,
+              border: "none",
               borderRadius: 2,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 1,
+              paddingX: 1,
+              paddingY: 0.5,
             }}
+            onClick={() => fetchCoinMarketCapTokens()}
           >
             <Box
               width={36}
@@ -1381,7 +1387,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
               <Typography variant="caption">{network}</Typography>
             </Stack>
             <LuChevronDown />
-          </Stack>
+          </Button>
         </Stack>
         <Stack
           direction="row"
