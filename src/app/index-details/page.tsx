@@ -13,15 +13,17 @@ import IndexDetailsTabbedTablesView from "@/components/ui/index-details/indexDet
 import CircularProgress from "@mui/material/CircularProgress"
 import MarketStats from "./marketStats"
 import Composition from "./composition"
+import { useSearchParams } from "next/navigation"
 
-const Page = ({ searchParams }: { searchParams: { index: string } }) => {
+const Page = () => {
+  const searchParams = useSearchParams();
   const { nexTokens } = useDashboard()
   const [index, setIndex] = useState<IndexCryptoAsset | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setIndex(
-      nexTokens.find((token) => token.symbol === searchParams.index) ?? null
+        nexTokens.find((token) => token.symbol === searchParams.get('index')) ?? null
     )
     setLoading(false)
   }, [searchParams, nexTokens])
@@ -38,7 +40,7 @@ const Page = ({ searchParams }: { searchParams: { index: string } }) => {
       </Box>
     )
 
-  if (!index) return <div>Index not found: {searchParams.index}</div>
+  if (!index) return <div>Index not found: {searchParams.get('index')}</div>
 
   return (
     <Box width="100vw" height="100vh" display="flex" flexDirection="row">
