@@ -327,7 +327,21 @@ contract ContractDeployer is
         mockRouter.setFactoryChainSelector(1, address(indexFactoryBalancer));
         indexFactoryStorage.setIndexFactoryBalancer(address(indexFactoryBalancer));
 
-        // indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), 3000);
+        // for cross chain index factory
+        crossChainIndexFactory.setVerifiedFactory(address(factory), 1, true);
+        crossChainIndexFactory.setVerifiedFactory(address(indexFactoryBalancer), 1, true);
+        // for cross chain index factory1
+        crossChainIndexFactory1.setVerifiedFactory(address(factory), 1, true);
+        crossChainIndexFactory1.setVerifiedFactory(address(indexFactoryBalancer), 1, true);
+        // for cross chain index factory2
+        crossChainIndexFactory2.setVerifiedFactory(address(factory), 1, true);
+        crossChainIndexFactory2.setVerifiedFactory(address(indexFactoryBalancer), 1, true);
+        // for cross chain index factory3
+        crossChainIndexFactory3.setVerifiedFactory(address(factory), 1, true);
+        crossChainIndexFactory3.setVerifiedFactory(address(indexFactoryBalancer), 1, true);
+        // for cross chain index factory4
+        crossChainIndexFactory4.setVerifiedFactory(address(factory), 1, true);
+        crossChainIndexFactory4.setVerifiedFactory(address(indexFactoryBalancer), 1, true);
 
         return (indexFactoryBalancer);
     }

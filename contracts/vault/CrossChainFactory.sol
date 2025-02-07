@@ -88,6 +88,8 @@ contract CrossChainIndexFactory is
     mapping(address => uint24[]) public fromETHFees;
     mapping(address => uint24[]) public toETHFees;
 
+    mapping(address => mapping(uint64 => bool)) public verifiedFactory;
+
     //nonce
     struct TokenOldAndNewValues {
         uint oldTokenValue;
@@ -208,6 +210,14 @@ contract CrossChainIndexFactory is
 
     function setVault(address payable _vault) public onlyOwner {
         vault = Vault(_vault);
+    }
+
+    function setVerifiedFactory(
+        address _factory,
+        uint64 _chainSelector,
+        bool _verified
+    ) public onlyOwner {
+        verifiedFactory[_factory][_chainSelector] = _verified;
     }
 
     /**
@@ -381,7 +391,10 @@ contract CrossChainIndexFactory is
         // bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
-
+        require(
+            verifiedFactory[sender][sourceChainSelector],
+            "sender to the cross chain is not verified"
+        );
         (
             uint actionType,
             address[] memory targetAddresses,
@@ -466,8 +479,6 @@ contract CrossChainIndexFactory is
                     targetAddresses2,
                     targetPaths,
                     targetPaths2,
-                    // targetFees,
-                    // targetFees2,
                     percentages,
                     tokenAmounts[0].token,
                     tokenAmounts[0].amount,
@@ -565,11 +576,12 @@ contract CrossChainIndexFactory is
         uint[] memory extraValues
     ) private {
         uint wethSwapAmountOut;
+        uint[] memory newTokenValues = new uint[](1);
         for (uint i = 0; i < targetAddresses.length; i++) {
             uint swapAmount = (extraValues[0] *
                 IERC20(address(targetAddresses[i])).balanceOf(address(vault))) /
                 1e18;
-            (address[] memory fromETHPath, uint24[] memory fromETHFees) = PathHelpers.decodePathBytes(
+            (address[] memory fromETHPath0, uint24[] memory fromETHFees0) = PathHelpers.decodePathBytes(
                 targetPaths[i]
             );
             if (address(targetAddresses[i]) == address(weth)) {
@@ -582,12 +594,14 @@ contract CrossChainIndexFactory is
                     swapAmount
                 );
                 wethSwapAmountOut += swap(
-                    PathHelpers.reverseAddressArray(fromETHPath), // toETHPath
-                    PathHelpers.reverseUint24Array(fromETHFees), // toETHFees
+                    PathHelpers.reverseAddressArray(fromETHPath0), // toETHPath
+                    PathHelpers.reverseUint24Array(fromETHFees0), // toETHFees
                     swapAmount,
                     address(this)
                 );
             }
+            newTokenValues[0] += getTokenCurrentValue(targetAddresses[i], fromETHPath0, fromETHFees0);
+            
         }
         uint crossChainTokenAmount = swap(
             fromETHPath[crossChainToken[sourceChainSelector]],
@@ -607,7 +621,7 @@ contract CrossChainIndexFactory is
             new bytes[](0),
             new bytes[](0),
             nonce,
-            zeroArr,
+            newTokenValues,
             zeroArr
         );
         bytes32 messageId = sendToken(
@@ -860,7 +874,7 @@ contract CrossChainIndexFactory is
         uint nonce;
         uint[] extraData;
     }
-
+    
     function _handleSecondReweightAction(
         HandleSecondReweightActionInputs memory inputData
     ) internal {
@@ -881,8 +895,8 @@ contract CrossChainIndexFactory is
             inputData.extraData
         );
 
-        uint[] memory zeroUintArr = new uint[](1);
-        address[] memory zeroAddArr = new address[](1);
+        uint[] memory zeroUintArr = new uint[](0);
+        address[] memory zeroAddArr = new address[](0);
         
         bytes memory data = abi.encode(
             4,
@@ -894,12 +908,13 @@ contract CrossChainIndexFactory is
             zeroUintArr,
             zeroUintArr
         );
-        // sendMessage(
-        //     inputData.sourceChainSelector,
-        //     inputData.sender,
-        //     data,
-        //     PayFeesIn.LINK
-        // );
+        sendMessage(
+            inputData.sourceChainSelector,
+            inputData.sender,
+            data,
+            PayFeesIn.LINK
+        );
+
     }
 
     struct SwapSecondReweightActionVars {
