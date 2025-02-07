@@ -47,12 +47,12 @@ contract SetMockFillAssetsList is Script {
 
     function fillMockAssetsListMainnet() internal {
         address[] memory assetList = new address[](2);
-        assetList[0] = 0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8; // BITCOIN
-        assetList[1] = 0x6694340fc020c5E6B96567843da2df01b2CE1eb6; // XAUT
+        assetList[0] = 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f; // BITCOIN
+        assetList[1] = 0x68749665FF8D2d112Fa859AA293F07A622782F38; // XAUT
 
         uint256[] memory marketShares = new uint256[](2);
-        marketShares[0] = 700000000000000000;
-        marketShares[1] = 300000000000000000;
+        marketShares[0] = 70000000000000000000;
+        marketShares[1] = 30000000000000000000;
 
         uint24[] memory feesData = new uint24[](1);
         feesData[0] = 3000;

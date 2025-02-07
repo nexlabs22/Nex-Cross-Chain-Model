@@ -21,7 +21,7 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
 
         address vaultProxy = _deployVault();
 
-        address crossChainFactoryProxy = _deployCrossChainFactory(targetChain);
+        address crossChainFactoryProxy = _deployCrossChainFactory(targetChain, vaultProxy);
 
         address priceOracle = _deployPriceOracle();
 
@@ -47,9 +47,8 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
         return address(proxy);
     }
 
-    function _deployCrossChainFactory(string memory targetChain) internal returns (address) {
+    function _deployCrossChainFactory(string memory targetChain, address vaultAddress) internal returns (address) {
         uint64 chainSelector;
-        address vaultAddress;
         address chainlinkToken;
         address router;
         address wethAddress;
@@ -60,7 +59,6 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
 
         if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
             chainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
-            vaultAddress = vm.envAddress("ARBITRUM_SEPOLIA_VAULT_PROXY_ADDRESS");
             chainlinkToken = vm.envAddress("ARBITRUM_SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
             router = vm.envAddress("ARBITRUM_SEPOLIA_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
@@ -70,7 +68,6 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
             toUsdPriceFeed = vm.envAddress("ARBITRUM_SEPOLIA_TO_USD_PRICE_FEED");
         } else if (keccak256(bytes(targetChain)) == keccak256("ethereum_mainnet")) {
             chainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
-            vaultAddress = vm.envAddress("ETHEREUM_VAULT_PROXY_ADDRESS");
             chainlinkToken = vm.envAddress("ETHEREUM_CHAINLINK_TOKEN_ADDRESS");
             router = vm.envAddress("ETHEREUM_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ETHEREUM_WETH_ADDRESS");
@@ -141,11 +138,11 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
 
         if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
             chainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
-            crossChainToken = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN");
+            crossChainToken = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
             wethAddress = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("ethereum_mainnet")) {
             chainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
-            crossChainToken = vm.envAddress("ETHEREUM_CROSS_CHAIN_TOKEN");
+            crossChainToken = vm.envAddress("ETHEREUM_CROSS_CHAIN_TOKEN_ADDRESS");
             wethAddress = vm.envAddress("ETHEREUM_WETH_ADDRESS");
         } else {
             revert("Unsupported chain for linking");
