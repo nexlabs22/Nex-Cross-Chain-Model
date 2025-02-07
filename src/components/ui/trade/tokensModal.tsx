@@ -3,8 +3,9 @@
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { Avatar, IconButton } from '@mui/material';
-import TextField from '@mui/material/TextField';
+import { Avatar, IconButton, Typography } from '@mui/material';
+import { OutlinedInput } from '@mui/material';
+import { IoSearch } from "react-icons/io5"; 
 import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -38,11 +39,11 @@ function renderRow(props: ListChildComponentProps<TokenData>) {
     if (index >= visibleCount) {
         return (
             <ListItem style={style} key={index} component="div" disablePadding>
-                <Stack width="100%" height={70} direction="row" alignItems="center" justifyContent="center">
-                    <Skeleton variant="circular" height={70} />
-                    <Stack width="100%" height={70} direction="row" alignItems="center" justifyContent="center">
-                        <Skeleton variant="rectangular" height={70} />
-                        <Skeleton variant="rectangular" height={70} />
+                <Stack width="100%" height={70} direction="row" alignItems="center" justifyContent="center" spacing={1}>
+                    <Skeleton variant="circular" width={40} height={40} />
+                    <Stack direction="row" spacing={1}>
+                        <Skeleton variant="rectangular" width={100} height={20} />
+                        <Skeleton variant="rectangular" width={50} height={20} />
                     </Stack>
                 </Stack>
             </ListItem>
@@ -51,10 +52,25 @@ function renderRow(props: ListChildComponentProps<TokenData>) {
 
     const token = tokens[index];
     return (
-        <ListItem style={style} key={token.id} component="div" disablePadding>
+        <ListItem style={style} key={token.id} component="div" disablePadding sx={{
+            borderRadius: '1rem',
+        }}>
             <ListItemButton>
                 <ListItemAvatar>
-                    {token.logo ? <Avatar alt={token.symbol} src={token.logo} sx={{ width: 40, height: 40, backgroundColor: theme.palette.elevations.elevation50.main }} /> : <Skeleton variant="circular" height={40} />}
+                    {token.logo ? (
+                        <Avatar
+                            alt={token.symbol}
+                            src={token.logo}
+                            sx={{
+                                width: 40,
+                                height: 40,
+                                backgroundColor: theme.palette.elevations.elevation50.main,
+                                border: 'none'
+                            }}
+                        />
+                    ) : (
+                        <Skeleton variant="circular" width={40} height={40} />
+                    )}
                 </ListItemAvatar>
                 <ListItemText primary={token.name} secondary={token.symbol} />
             </ListItemButton>
@@ -77,13 +93,26 @@ export default function TokensModal({ open, onClose }: { open: boolean; onClose:
             .catch((err) => console.error(err));
     }, []);
 
+    const handleInputChange = (event: React.SyntheticEvent, value: string) => {
+        if (!value) {
+            setFilteredTokens(tokens);
+            setVisibleCount(Math.min(50, tokens.length));
+        } else {
+            const filtered = tokens.filter((token) =>
+                token.name.toLowerCase().includes(value.toLowerCase())
+            );
+            setFilteredTokens(filtered);
+            setVisibleCount(Math.min(50, filtered.length));
+        }
+    };
+
     const isItemLoaded = (index: number) => index < visibleCount;
 
     const loadMoreItems = (startIndex: number, stopIndex: number) => {
         return new Promise<void>((resolve) => {
             setTimeout(() => {
                 setVisibleCount((prev) =>
-                    Math.min(tokens.length, prev + (stopIndex - startIndex + 1))
+                    Math.min(filteredTokens.length, prev + (stopIndex - startIndex + 1))
                 );
                 resolve();
             }, 500);
@@ -100,7 +129,6 @@ export default function TokensModal({ open, onClose }: { open: boolean; onClose:
                     alignItems: "start",
                     backgroundColor: theme.palette.elevations.elevation900.main,
                     width: "35vw",
-                    height: "80vh",
                     position: 'absolute',
                     top: '50%',
                     left: '50%',
@@ -110,41 +138,86 @@ export default function TokensModal({ open, onClose }: { open: boolean; onClose:
                     overflow: "hidden",
                 }}
             >
-                <Stack width="100%" direction="row" justifyContent="end">
-                    <IconButton onClick={onClose}>
+                <Stack
+                    width="100%"
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    <Typography variant="h6">Select a token</Typography>
+                    <IconButton
+                        onClick={onClose}
+                        sx={{
+                            padding: 0,
+                            margin: 0,
+                        }}
+                    >
                         <IoMdClose size={24} color={theme.palette.info.main} />
                     </IconButton>
                 </Stack>
-                <Stack width={"100%"} alignItems={"center"} gap={1} paddingTop={1}>
+                <Stack
+                    width={"100%"}
+                    alignItems={"center"}
+                    gap={1}
+                    paddingTop={1}
+                    sx={{
+                        '& .tokensInfiniteList': {
+                            scrollbarWidth: 'none',
+                            '&::-webkit-scrollbar': {
+                                display: 'none',
+                            },
+                        },
+                    }}
+                >
                     <Autocomplete
                         disablePortal
-                        options={tokens}
-                        sx={{ width: "100%", border: 'none', outline: 'none' }}
-                        getOptionLabel={(option) => option.name}
-                        renderInput={(params) => <TextField {...params} sx={{ 
-                            borderBottom: `none`,
+                        options={filteredTokens}
+                        sx={{
+                            width: "100%",
+                            border: 'none',
                             outline: 'none',
-                            backgroundColor: theme.palette.elevations.elevation900.main,
-                            borderRadius: '1rem',
-                            padding: '0.5rem',
-                            color: theme.palette.text.primary
-                         }} />}
+                            '& .MuiOutlinedInput-root': {
+                                border: 'none',
+                                outline: 'none',
+                            },
+                        }}
+                        getOptionLabel={(option) => option.name}
+                        onInputChange={handleInputChange}
+                        renderInput={(params) => (
+                            <OutlinedInput
+                                startAdornment={
+                                    <IconButton>
+                                        <IoSearch size={20} color={theme.palette.text.secondary} />
+                                    </IconButton>
+                                }
+                                {...params}
+                                sx={{
+                                    borderBottom: `none`,
+                                    outline: 'none',
+                                    backgroundColor: theme.palette.elevations.elevation900.main,
+                                    borderRadius: '1rem',
+                                    padding: '0.5rem',
+                                    color: theme.palette.info.main,
+                                }}
+                            />
+                        )}
                     />
                     <InfiniteLoader
                         isItemLoaded={isItemLoaded}
-                        itemCount={tokens.length}
+                        itemCount={filteredTokens.length}
                         loadMoreItems={loadMoreItems}
                     >
                         {({ onItemsRendered, ref }) => (
                             <FixedSizeList
                                 height={400}
                                 width={"100%"}
-                                itemCount={tokens.length}
+                                itemCount={filteredTokens.length}
                                 itemSize={70}
                                 overscanCount={5}
                                 itemData={{ tokens: filteredTokens, visibleCount }}
                                 onItemsRendered={onItemsRendered}
                                 ref={ref}
+                                className="tokensInfiniteList"
                             >
                                 {renderRow}
                             </FixedSizeList>
