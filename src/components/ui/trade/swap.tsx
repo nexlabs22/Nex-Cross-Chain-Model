@@ -58,7 +58,7 @@ import { client } from "@/utils/thirdWebClient"
 import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
 import { getNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
-import { fetchCoinMarketCapTokens } from "@/utils/fetchCMCTokens"
+import TokensModal from "./tokensModal"
 
 interface SwapProps {
   side?: "buy" | "sell"
@@ -82,6 +82,14 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
     "auto"
   )
+
+  const [openTokensModal, setOpenTokensModal] = useState(false)
+  const handleOpenTokensModal = () => {
+    setOpenTokensModal(true)
+  }
+  const handleCloseTokensModal = () => {
+    setOpenTokensModal(false)
+  }
 
   const [firstInputValue, setFirstInputValue] = useState("")
   const [secondInputValue, setSecondInputValue] = useState("")
@@ -1214,6 +1222,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
   }, [userAddress, activeThirdWebChain])
 
   return (
+    <>
     <Stack
       width="100%"
       gap={2}
@@ -1370,7 +1379,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
               paddingX: 1,
               paddingY: 0.5,
             }}
-            onClick={() => fetchCoinMarketCapTokens()}
+            onClick={() => handleOpenTokensModal()}
           >
             <Box
               width={36}
@@ -1565,5 +1574,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
         </Button>
       )}
     </Stack>
+    <TokensModal open={openTokensModal} onClose={handleCloseTokensModal} />
+    </>
   )
 }
