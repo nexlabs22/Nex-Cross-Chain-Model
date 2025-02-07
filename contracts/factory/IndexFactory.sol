@@ -908,6 +908,8 @@ contract IndexFactory is
         bytes32 messageId = any2EvmMessage.messageId;
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector;
         uint totalCurrentList = factoryStorage.totalCurrentList();
+        address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
+        require(sender == crossChainFactoryBySelector(sourceChainSelector), "Invalid sender for the factory ccip recieve");
         (
             uint actionType,
             address[] memory tokenAddresses,

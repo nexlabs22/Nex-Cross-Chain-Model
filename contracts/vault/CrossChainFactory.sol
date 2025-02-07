@@ -88,6 +88,8 @@ contract CrossChainIndexFactory is
     mapping(address => uint24[]) public fromETHFees;
     mapping(address => uint24[]) public toETHFees;
 
+    mapping(address => mapping(uint64 => bool)) public verifiedFactory;
+
     //nonce
     struct TokenOldAndNewValues {
         uint oldTokenValue;
@@ -208,6 +210,14 @@ contract CrossChainIndexFactory is
 
     function setVault(address payable _vault) public onlyOwner {
         vault = Vault(_vault);
+    }
+
+    function setVerifiedFactory(
+        address _factory,
+        uint64 _chainSelector,
+        bool _verified
+    ) public onlyOwner {
+        verifiedFactory[_factory][_chainSelector] = _verified;
     }
 
     /**
@@ -381,7 +391,10 @@ contract CrossChainIndexFactory is
         // bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
-
+        require(
+            verifiedFactory[sender][sourceChainSelector],
+            "sender to the cross chain is not verified"
+        );
         (
             uint actionType,
             address[] memory targetAddresses,
@@ -861,9 +874,7 @@ contract CrossChainIndexFactory is
         uint nonce;
         uint[] extraData;
     }
-    address public testData;
-    uint64 public testData2;
-    bytes public testData3;
+    
     function _handleSecondReweightAction(
         HandleSecondReweightActionInputs memory inputData
     ) internal {
@@ -897,9 +908,6 @@ contract CrossChainIndexFactory is
             zeroUintArr,
             zeroUintArr
         );
-        // testData = inputData.sender;
-        // testData2 = inputData.sourceChainSelector;
-        // testData3 = data;
         sendMessage(
             inputData.sourceChainSelector,
             inputData.sender,
@@ -907,17 +915,6 @@ contract CrossChainIndexFactory is
             PayFeesIn.LINK
         );
 
-        // bytes memory data = abi.encode(
-        //     4,
-        //     new address[](0),
-        //     new address[](0),
-        //     new bytes[](0),
-        //     new bytes[](0),
-        //     0,
-        //     new uint[](0),
-        //     new uint[](0)
-        // );
-        // sendMessage(inputData.sourceChainSelector, inputData.sender, data, PayFeesIn.LINK);
     }
 
     struct SwapSecondReweightActionVars {

@@ -565,7 +565,8 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
     
     function testRebalanceSameTokens2() public {
         initializeOracleList();
-
+        assertEq(crossChainIndexFactory.verifiedFactory(address(factory), 1), true);
+        assertEq(crossChainIndexFactory.verifiedFactory(address(factoryBalancer), 1), true);
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
@@ -656,15 +657,11 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
 
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
-        // console.log("reweightExtraPercentage", factoryBalancer.reweightExtraPercentage(1));
-        // console.log("cross chain weth balance", weth.balanceOf(address(crossChainIndexFactory)));
-        // showTokenBalances();
+        
         factoryBalancer.secondReweightAction();
-        // showTokenBalances();
-        // factoryBalancer.askValues();
+        
         showPercentages();
-        console.log("testData", crossChainIndexFactory.testData());
-        console.log("testData2", crossChainIndexFactory.testData2());
+        
         // token shares
         assertEq(
             indexFactoryStorage.tokenCurrentMarketShare(address(token0)),
