@@ -839,8 +839,8 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
     const currentPortfolioValue =
       (isIndexCryptoAsset(swapToToken) &&
         swapToToken?.smartContractType === "defi") ||
-      (isIndexCryptoAsset(swapFromToken) &&
-        swapFromToken?.smartContractType === "defi")
+        (isIndexCryptoAsset(swapFromToken) &&
+          swapFromToken?.smartContractType === "defi")
         ? defiPortfolioValue.data
         : (crossChainPortfolioValue.data as number)
     setCurrentPortfolioBalance(currentPortfolioValue as number)
@@ -1223,180 +1223,45 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
 
   return (
     <>
-    <Stack
-      width="100%"
-      gap={2}
-      sx={{
-        backgroundColor: theme.palette.elevations.elevation950.main,
-        border: `1px solid ${theme.palette.elevations.elevation800.main}`,
-        borderRadius: 2,
-        padding: 2,
-      }}
-    >
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography variant="h4" color="primary">
-          {side === "buy" ? "Buy" : "Sell"} {swapFromToken.symbol}
-        </Typography>
-        <Stack direction="row" alignItems="center" gap={1}>
-          <IconButton
-            size="small"
-            color="primary"
-            onClick={Switching}
-            sx={{
-              borderRadius: "50%",
-              border: `1px solid ${theme.palette.elevations.elevation700.main}`,
-              padding: 1,
-            }}
-          >
-            <TbArrowsExchange2 />
-          </IconButton>
-          <IconButton
-            size="small"
-            color="primary"
-            sx={{
-              borderRadius: "50%",
-              border: `1px solid ${theme.palette.elevations.elevation700.main}`,
-              padding: 1,
-            }}
-          >
-            <LuSettings2 />
-          </IconButton>
-        </Stack>
-      </Stack>
       <Stack
-        direction="row"
-        alignItems="end"
-        justifyContent="space-between"
+        width="100%"
         gap={2}
+        sx={{
+          backgroundColor: theme.palette.elevations.elevation950.main,
+          border: `1px solid ${theme.palette.elevations.elevation800.main}`,
+          borderRadius: 2,
+          padding: 2,
+        }}
       >
-        <Stack direction="row" alignItems="center" gap={1}>
-          <Button
-            variant="contained"
-            size="small"
-            sx={{
-              backgroundColor:
-                autoValue === "min"
-                  ? theme.palette.brand.nex1.main
-                  : theme.palette.elevations.elevation700.main,
-              padding: 0.5,
-            }}
-            onClick={() => {
-              setAutoValue("min")
-              if (
-                isWETH(
-                  swapFromToken.tokenAddresses?.[chain]?.[network]?.index
-                    ?.address as Address
-                )
-              ) {
-                setFirstInputValue("0.00001")
-              } else setFirstInputValue("1")
-            }}
-          >
-            MIN
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            sx={{
-              backgroundColor:
-                autoValue === "half"
-                  ? theme.palette.brand.nex1.main
-                  : theme.palette.elevations.elevation700.main,
-              padding: 0.5,
-            }}
-            onClick={() => {
-              setAutoValue("half")
-              setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
-            }}
-          >
-            HALF
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            sx={{
-              backgroundColor:
-                autoValue === "max"
-                  ? theme.palette.brand.nex1.main
-                  : theme.palette.elevations.elevation700.main,
-              padding: 0.5,
-            }}
-            onClick={() => {
-              setAutoValue("max")
-              setFirstInputValue(Number(getPrimaryBalance()).toString())
-            }}
-          >
-            MAX
-          </Button>
-        </Stack>
-        <Typography variant="subtitle2" color="text.secondary">
-          Balance :{" "}
-          <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
-            {getPrimaryBalance()}
-          </span>
-        </Typography>
-      </Stack>
-      <Stack gap={1}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          gap={1}
-          sx={{
-            border: `1px solid ${theme.palette.elevations.elevation700.main}`,
-            borderRadius: 2,
-            padding: 2,
-          }}
-        >
-          <Input
-            disableUnderline
-            size="small"
-            placeholder="0.00"
-            sx={{
-              width: "50%",
-              border: "none",
-              outline: "none",
-              "& .MuiInputBase-input": {
-                paddingY: 1,
-                paddingX: 0.5,
-                fontSize: 20,
-              },
-            }}
-            onChange={changeFirstInputValue}
-            value={firstInputValue}
-          />
-          <Button
-          variant="outlined"
-            sx={{
-              backgroundColor: theme.palette.elevations.elevation900.main,
-              border: "none",
-              borderRadius: 2,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 1,
-              paddingX: 1,
-              paddingY: 0.5,
-            }}
-            onClick={() => handleOpenTokensModal()}
-          >
-            <Box
-              width={36}
-              height={36}
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="h4" color="primary">
+            {side === "buy" ? "Buy" : "Sell"} {swapFromToken.symbol}
+          </Typography>
+          <Stack direction="row" alignItems="center" gap={1}>
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={Switching}
               sx={{
-                backgroundImage: `url(${swapFromToken.logoString})`,
-                backgroundSize: "contain",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
+                borderRadius: "50%",
+                border: `1px solid ${theme.palette.elevations.elevation700.main}`,
+                padding: 1,
               }}
-            ></Box>
-            <Stack>
-              <Typography variant="h6">{swapFromToken.symbol}</Typography>
-              <Typography variant="caption">{network}</Typography>
-            </Stack>
-            <LuChevronDown />
-          </Button>
+            >
+              <TbArrowsExchange2 />
+            </IconButton>
+            <IconButton
+              size="small"
+              color="primary"
+              sx={{
+                borderRadius: "50%",
+                border: `1px solid ${theme.palette.elevations.elevation700.main}`,
+                padding: 1,
+              }}
+            >
+              <LuSettings2 />
+            </IconButton>
+          </Stack>
         </Stack>
         <Stack
           direction="row"
@@ -1404,177 +1269,316 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
           justifyContent="space-between"
           gap={2}
         >
-          <Typography variant="subtitle2" color="text.secondary">
-            {/* Allowance : <span style={{ color: theme.palette.info.main, fontSize: 16 }}>{num(fromTokenAllowance.data)}</span> */}
-          </Typography>
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                backgroundColor:
+                  autoValue === "min"
+                    ? theme.palette.brand.nex1.main
+                    : theme.palette.elevations.elevation700.main,
+                padding: 0.5,
+              }}
+              onClick={() => {
+                setAutoValue("min")
+                if (
+                  isWETH(
+                    swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                      ?.address as Address
+                  )
+                ) {
+                  setFirstInputValue("0.00001")
+                } else setFirstInputValue("1")
+              }}
+            >
+              MIN
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                backgroundColor:
+                  autoValue === "half"
+                    ? theme.palette.brand.nex1.main
+                    : theme.palette.elevations.elevation700.main,
+                padding: 0.5,
+              }}
+              onClick={() => {
+                setAutoValue("half")
+                setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
+              }}
+            >
+              HALF
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                backgroundColor:
+                  autoValue === "max"
+                    ? theme.palette.brand.nex1.main
+                    : theme.palette.elevations.elevation700.main,
+                padding: 0.5,
+              }}
+              onClick={() => {
+                setAutoValue("max")
+                setFirstInputValue(Number(getPrimaryBalance()).toString())
+              }}
+            >
+              MAX
+            </Button>
+          </Stack>
           <Typography variant="subtitle2" color="text.secondary">
             Balance :{" "}
             <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
-              {getSecondaryBalance()}
+              {getPrimaryBalance()}
             </span>
           </Typography>
         </Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          gap={1}
-          sx={{
-            border: `1px solid ${theme.palette.elevations.elevation700.main}`,
-            borderRadius: 2,
-            padding: 2,
-          }}
-        >
-          <Input
-            disableUnderline
-            size="small"
-            placeholder="0.00"
-            sx={{
-              width: "50%",
-              border: "none",
-              outline: "none",
-              "& .MuiInputBase-input": {
-                paddingY: 1,
-                paddingX: 0.5,
-                fontSize: 20,
-              },
-            }}
-            onChange={changeSecondInputValue}
-            value={formatNumber(Number(secondInputValue))}
-          />
+        <Stack gap={1}>
           <Stack
             direction="row"
             alignItems="center"
+            justifyContent="space-between"
             gap={1}
-            paddingX={1}
-            paddingY={0.5}
             sx={{
-              backgroundColor: theme.palette.elevations.elevation900.main,
+              border: `1px solid ${theme.palette.elevations.elevation700.main}`,
               borderRadius: 2,
+              padding: 2,
             }}
           >
-            <Box
-              width={36}
-              height={36}
+            <Input
+              disableUnderline
+              size="small"
+              placeholder="0.00"
               sx={{
-                backgroundImage: `url(${swapToToken.logoString})`,
-                backgroundSize: "contain",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
+                width: "50%",
+                border: "none",
+                outline: "none",
+                "& .MuiInputBase-input": {
+                  paddingY: 1,
+                  paddingX: 0.5,
+                  fontSize: 20,
+                },
               }}
-            ></Box>
-            <Stack>
-              <Typography variant="h6">{swapToToken?.symbol}</Typography>
-              <Typography variant="caption">{network}</Typography>
+              onChange={changeFirstInputValue}
+              value={firstInputValue}
+            />
+            <Button
+              variant="outlined"
+              sx={{
+                backgroundColor: theme.palette.elevations.elevation900.main,
+                border: "none",
+                borderRadius: 2,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 1,
+                paddingX: 1,
+                paddingY: 0.5,
+              }}
+              onClick={() => handleOpenTokensModal()}
+            >
+              <Box
+                width={36}
+                height={36}
+                sx={{
+                  backgroundImage: `url(${swapFromToken.logoString})`,
+                  backgroundSize: "contain",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }}
+              ></Box>
+              <Stack>
+                <Typography variant="h6">{swapFromToken.symbol}</Typography>
+                <Typography variant="caption">{network}</Typography>
+              </Stack>
+              <LuChevronDown />
+            </Button>
+          </Stack>
+          <Stack
+            direction="row"
+            alignItems="end"
+            justifyContent="space-between"
+            gap={2}
+          >
+            <Typography variant="subtitle2" color="text.secondary">
+              {/* Allowance : <span style={{ color: theme.palette.info.main, fontSize: 16 }}>{num(fromTokenAllowance.data)}</span> */}
+            </Typography>
+            <Typography variant="subtitle2" color="text.secondary">
+              Balance :{" "}
+              <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
+                {getSecondaryBalance()}
+              </span>
+            </Typography>
+          </Stack>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            gap={1}
+            sx={{
+              border: `1px solid ${theme.palette.elevations.elevation700.main}`,
+              borderRadius: 2,
+              padding: 2,
+            }}
+          >
+            <Input
+              disableUnderline
+              size="small"
+              placeholder="0.00"
+              sx={{
+                width: "50%",
+                border: "none",
+                outline: "none",
+                "& .MuiInputBase-input": {
+                  paddingY: 1,
+                  paddingX: 0.5,
+                  fontSize: 20,
+                },
+              }}
+              onChange={changeSecondInputValue}
+              value={formatNumber(Number(secondInputValue))}
+            />
+            <Stack
+              direction="row"
+              alignItems="center"
+              gap={1}
+              paddingX={1}
+              paddingY={0.5}
+              sx={{
+                backgroundColor: theme.palette.elevations.elevation900.main,
+                borderRadius: 2,
+              }}
+            >
+              <Box
+                width={36}
+                height={36}
+                sx={{
+                  backgroundImage: `url(${swapToToken.logoString})`,
+                  backgroundSize: "contain",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }}
+              ></Box>
+              <Stack>
+                <Typography variant="h6">{swapToToken?.symbol}</Typography>
+                <Typography variant="caption">{network}</Typography>
+              </Stack>
+              <LuChevronDown />
             </Stack>
-            <LuChevronDown />
           </Stack>
         </Stack>
-      </Stack>
-      <Stack gap={0.5}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Typography variant="h6" color="text.secondary">
-            Platform Fees
-          </Typography>
-          <Typography variant="subtitle2">
-            {formatToViewNumber({
-              value: Number(firstInputValue) * feeRate,
-              returnType: "string",
-            })}{" "}
-            {swapFromToken.symbol} ({feeRate * 100} %)
-          </Typography>
-        </Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Typography variant="h6" color="text.secondary">
-            Testnet USDC
-          </Typography>
-          <Button
-            sx={{
-              color: theme.palette.brand.nex1.main,
-            }}
-            onClick={faucet}
+        <Stack gap={0.5}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
           >
-            <Stack direction="row" alignItems="center">
-              <Typography variant="subtitle2">Get USDT</Typography>
-              <LuArrowUpRight />
-            </Stack>
-          </Button>
-        </Stack>
-      </Stack>
-      {swapToToken.hasOwnProperty("smartContractType") ? (
-        <>
-          {weiToNum(
-            fromTokenAllowance.data,
-            getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
-          ) < Number(firstInputValue) &&
-          !isWETH(
-            swapFromToken.tokenAddresses?.[chain]?.[network]?.index
-              ?.address as Address
-          ) ? (
+            <Typography variant="h6" color="text.secondary">
+              Platform Fees
+            </Typography>
+            <Typography variant="subtitle2">
+              {formatToViewNumber({
+                value: Number(firstInputValue) * feeRate,
+                returnType: "string",
+              })}{" "}
+              {swapFromToken.symbol} ({feeRate * 100} %)
+            </Typography>
+          </Stack>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography variant="h6" color="text.secondary">
+              Testnet USDC
+            </Typography>
             <Button
-              fullWidth
-              variant="contained"
               sx={{
-                backgroundColor: Number(firstInputValue)
-                  ? theme.palette.brand.nex1.main
-                  : theme.palette.elevations.elevation800.main,
-                color: Number(firstInputValue)
-                  ? theme.palette.info.main
-                  : theme.palette.elevations.elevation400.main,
-                textTransform: "capitalize",
+                color: theme.palette.brand.nex1.main,
               }}
-              onClick={approve}
+              onClick={faucet}
             >
-              <Typography variant="h6">Approve</Typography>
+              <Stack direction="row" alignItems="center">
+                <Typography variant="subtitle2">Get USDT</Typography>
+                <LuArrowUpRight />
+              </Stack>
             </Button>
-          ) : (
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{
-                backgroundColor:
-                  Number(firstInputValue) > 0
+          </Stack>
+        </Stack>
+        {swapToToken.hasOwnProperty("smartContractType") ? (
+          <>
+            {weiToNum(
+              fromTokenAllowance.data,
+              getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+            ) < Number(firstInputValue) &&
+              !isWETH(
+                swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                  ?.address as Address
+              ) ? (
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{
+                  backgroundColor: Number(firstInputValue)
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation800.main,
-                color: Number(firstInputValue)
-                  ? theme.palette.info.main
-                  : theme.palette.elevations.elevation400.main,
-                textTransform: "capitalize",
-              }}
-              onClick={mintRequest}
-            >
-              <Typography variant="h6">Mint</Typography>
-            </Button>
-          )}
-        </>
-      ) : (
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{
-            backgroundColor: Number(firstInputValue)
-              ? theme.palette.brand.nexRed.main
-              : theme.palette.elevations.elevation800.main,
-            color: Number(firstInputValue)
-              ? theme.palette.info.main
-              : theme.palette.elevations.elevation400.main,
-            textTransform: "capitalize",
-          }}
-          onClick={burnRequest}
-        >
-          <Typography variant="h6">Burn</Typography>
-        </Button>
-      )}
-    </Stack>
-    <TokensModal open={openTokensModal} onClose={handleCloseTokensModal} />
+                  color: Number(firstInputValue)
+                    ? theme.palette.info.main
+                    : theme.palette.elevations.elevation400.main,
+                  textTransform: "capitalize",
+                }}
+                onClick={approve}
+              >
+                <Typography variant="h6">Approve</Typography>
+              </Button>
+            ) : (
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{
+                  backgroundColor:
+                    Number(firstInputValue) > 0
+                      ? theme.palette.brand.nex1.main
+                      : theme.palette.elevations.elevation800.main,
+                  color: Number(firstInputValue)
+                    ? theme.palette.info.main
+                    : theme.palette.elevations.elevation400.main,
+                  textTransform: "capitalize",
+                }}
+                onClick={mintRequest}
+              >
+                <Typography variant="h6">Mint</Typography>
+              </Button>
+            )}
+          </>
+        ) : (
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{
+              backgroundColor: Number(firstInputValue)
+                ? theme.palette.brand.nexRed.main
+                : theme.palette.elevations.elevation800.main,
+              color: Number(firstInputValue)
+                ? theme.palette.info.main
+                : theme.palette.elevations.elevation400.main,
+              textTransform: "capitalize",
+            }}
+            onClick={burnRequest}
+          >
+            <Typography variant="h6">Burn</Typography>
+          </Button>
+        )}
+      </Stack>
+      <TokensModal
+        open={openTokensModal}
+        onClose={handleCloseTokensModal}
+        onSelect={(selectedToken) => { console.log('Selected token:', selectedToken); handleCloseTokensModal(); }}
+      />
     </>
   )
 }

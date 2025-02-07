@@ -27,19 +27,28 @@ interface ExampleToken {
     logo: string;
 }
 
-interface TokenData {
+// This interface is used for passing data to the virtualized list.
+interface TokenListData {
     tokens: ExampleToken[];
     visibleCount: number;
+    onSelect: (token: ExampleToken) => void;
 }
 
-function renderRow(props: ListChildComponentProps<TokenData>) {
+function renderRow(props: ListChildComponentProps<TokenListData>) {
     const { index, style, data } = props;
-    const { tokens, visibleCount } = data;
+    const { tokens, visibleCount, onSelect } = data;
 
     if (index >= visibleCount) {
         return (
             <ListItem style={style} key={index} component="div" disablePadding>
-                <Stack width="100%" height={70} direction="row" alignItems="center" justifyContent="center" spacing={1}>
+                <Stack
+                    width="100%"
+                    height={70}
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="center"
+                    spacing={1}
+                >
                     <Skeleton variant="circular" width={40} height={40} />
                     <Stack direction="row" spacing={1}>
                         <Skeleton variant="rectangular" width={100} height={20} />
@@ -52,10 +61,13 @@ function renderRow(props: ListChildComponentProps<TokenData>) {
 
     const token = tokens[index];
     return (
-        <ListItem style={style} key={token.id} component="div" disablePadding sx={{
-            borderRadius: '1rem',
-        }}>
-            <ListItemButton>
+        <ListItem style={style} key={token.id} component="div" disablePadding sx={{ borderRadius: '1rem' }}>
+            <ListItemButton
+                onClick={() => {
+                    // When a token is clicked, call the onSelect callback.
+                    onSelect(token);
+                }}
+            >
                 <ListItemAvatar>
                     {token.logo ? (
                         <Avatar
@@ -78,7 +90,16 @@ function renderRow(props: ListChildComponentProps<TokenData>) {
     );
 }
 
-export default function TokensModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+// Notice the additional onSelect prop here.
+export default function TokensModal({
+    open,
+    onClose,
+    onSelect
+}: {
+    open: boolean;
+    onClose: () => void;
+    onSelect: (token: ExampleToken) => void;
+}) {
     const [tokens, setTokens] = useState<ExampleToken[]>([]);
     const [filteredTokens, setFilteredTokens] = useState<ExampleToken[]>([]);
     const [visibleCount, setVisibleCount] = useState<number>(0);
@@ -214,7 +235,8 @@ export default function TokensModal({ open, onClose }: { open: boolean; onClose:
                                 itemCount={filteredTokens.length}
                                 itemSize={70}
                                 overscanCount={5}
-                                itemData={{ tokens: filteredTokens, visibleCount }}
+                                // Pass onSelect as part of the itemData
+                                itemData={{ tokens: filteredTokens, visibleCount, onSelect }}
                                 onItemsRendered={onItemsRendered}
                                 ref={ref}
                                 className="tokensInfiniteList"
