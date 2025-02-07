@@ -3,6 +3,7 @@ import { indexFactoryV2Abi } from "@/constants/abi"
 import { getClient } from "@/utils/getRPCClient"
 import { useDashboard } from "@/providers/DashboardProvider"
 import { CryptoAsset } from "@/types/indexTypes"
+import { PublicClient } from 'viem'
 
 export function GetDefiPortfolioBalance(
   swapFromToken: CryptoAsset,
@@ -21,7 +22,7 @@ export function GetDefiPortfolioBalance(
   const getPortfolioValue = useCallback(async () => {
     let sepoliaPublicClient = null
     try {
-      sepoliaPublicClient = getClient("sepolia")
+      sepoliaPublicClient = getClient('Ethereum', 'Sepolia')
     } catch (error) {
       console.error("Error getting sepolia client", error)
     }
@@ -36,7 +37,7 @@ export function GetDefiPortfolioBalance(
 
     let totalPortfolioBalance: number = 0
 
-    const sepoliaPortfolioBalance = await sepoliaPublicClient.readContract({
+    const sepoliaPortfolioBalance = await (sepoliaPublicClient as PublicClient).readContract({
       address: activeFactoryAddress as `0x${string}`,
       abi: indexFactoryV2Abi,
       functionName: "getPortfolioBalance",

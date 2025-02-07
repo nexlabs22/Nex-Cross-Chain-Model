@@ -29,8 +29,7 @@ const useDashboard = () => {
 
 const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   const [ethPriceUsd, setEthPriceUsd] = useState<number>(0)
-  const { activeChainSetting } = useGlobal()
-  const { network } = activeChainSetting
+  const { activeChainSetting:{chain, network} } = useGlobal()
 
   useEffect(() => {
     async function getEthPrice() {
@@ -53,9 +52,9 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
         nexTokensArray.map(async (token) => {
           try {
             const { index, decimals } = {
-              index: token.tokenAddresses?.Ethereum?.Sepolia?.index?.address,
+              index: token.tokenAddresses?.[chain]?.[network]?.token?.address,
               decimals: getDecimals(
-                token.tokenAddresses?.Ethereum?.Sepolia?.index
+                token.tokenAddresses?.Ethereum?.Sepolia?.token
               ),
             }
 
@@ -116,7 +115,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
     console.log("fetching data")
 
     fetchIndexesData()
-  }, [ethPriceUsd, network])
+  }, [ethPriceUsd,chain, network])
 
   const contextValue = {
     ethPriceUsd,

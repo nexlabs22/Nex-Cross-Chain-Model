@@ -1,4 +1,5 @@
 import { ReactElement } from "react"
+import { PublicClient } from 'viem'
 export type Address = `0x${string}`
 
 export enum SmartContractType {
@@ -26,7 +27,6 @@ export type AllowedTickers =
   | "THETER" //Morteza's token
 
 export type ContractTypes =
-  | "index"
   | "factory"
   | "token"
   | "storage"
@@ -45,7 +45,7 @@ export type ChainNetwork = {
 
 export type ChainSelectorMap = {
   [chain in Chains]?: {
-    [network in Networks]?: string
+    [network in Networks]?: string | PublicClient
   }
 }
 
