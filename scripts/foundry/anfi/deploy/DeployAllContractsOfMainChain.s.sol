@@ -39,6 +39,7 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
         address priceOracle = _deployPriceOracle();
 
         _linkContracts(
+            targetChain,
             indexFactoryStorageProxy,
             indexFactoryProxy,
             indexTokenProxy,
@@ -46,7 +47,6 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
             priceOracle,
             indexFactoryBalancerProxy
         );
-        /* optionally crossChainFactoryProxy, if needed */
 
         vm.stopBroadcast();
     }
@@ -292,6 +292,7 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
     }
 
     function _linkContracts(
+        string memory targetChain,
         address indexFactoryStorageProxy,
         address indexFactoryProxy,
         address indexTokenProxy,
@@ -299,16 +300,30 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
         address priceOracle,
         address indexFactoryBalancerProxy
     ) internal {
-        uint64 otherChainSelector = 999; // e.g. 999 for demonstration
-        address mainCrossChainTokenAddress = 0x000000000000000000000000000000000000dEaD; // placeholder
+        uint64 otherChainSelector;
+        address mainCrossChainTokenAddress;
+        address wethAddress;
+        address crossChainFactoryProxy;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
+            mainCrossChainTokenAddress = vm.envAddress("SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
+            wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+            crossChainFactoryProxy = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            otherChainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
+            mainCrossChainTokenAddress = vm.envAddress("ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
+            wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+            crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
+        } else {
+            revert("Unsupported target chain");
+        }
 
         address[] memory path = new address[](2);
-        path[0] = 0x0000000000000000000000000000000000000000; // WETH or whatever
+        path[0] = wethAddress;
         path[1] = mainCrossChainTokenAddress;
         uint24[] memory feesData = new uint24[](1);
         feesData[0] = 3000;
-
-        address crossChainFactoryProxy = 0x000000000000000000000000000000000000bEEF; // placeholder
 
         IndexFactoryStorage(indexFactoryStorageProxy).setCrossChainToken(
             otherChainSelector, mainCrossChainTokenAddress, path, feesData

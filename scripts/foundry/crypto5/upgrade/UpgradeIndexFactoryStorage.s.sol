@@ -6,7 +6,7 @@ import {console} from "forge-std/console.sol";
 import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import {ITransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-import {IndexFactoryStorage} from "../../../contracts/factory/IndexFactoryStorage.sol";
+import {IndexFactoryStorage} from "../../../../contracts/factory/IndexFactoryStorage.sol";
 
 contract UpgradeIndexFactoryStorage is Script {
     function run() external {
