@@ -43,6 +43,7 @@ import { useReadContract, useSendTransaction } from "thirdweb/react"
 import { allowance, balanceOf, totalSupply } from "thirdweb/extensions/erc20"
 import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
 import { GetDefiPortfolioBalance } from "@/hooks/getDefiPortfolioBalance"
+import { GetNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
 import {
   prepareContractCall,
   readContract,
@@ -59,7 +60,6 @@ import { getWalletBalance } from "thirdweb/wallets"
 import { client } from "@/utils/thirdWebClient"
 import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
-import { getNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
 
 interface SwapProps {
   side?: "buy" | "sell"
@@ -896,10 +896,11 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 isIndexCryptoAsset(swapToToken) &&
                 swapToToken?.smartContractType === "crosschain"
               ) {
-                newPortfolioValue = await getNewCrossChainPortfolioBalance(
+                const {portfolioValue}  = GetNewCrossChainPortfolioBalance(
                   Number(currentPortfolioValue),
                   Number(inputValue)
                 )
+                newPortfolioValue = portfolioValue
               } else {
                 newPortfolioValue =
                   Number(currentPortfolioValue) + Number(inputValue)
