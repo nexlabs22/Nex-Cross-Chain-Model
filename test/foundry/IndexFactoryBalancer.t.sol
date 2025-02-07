@@ -565,8 +565,8 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
     
     function testRebalanceSameTokens2() public {
         initializeOracleList();
-        assertEq(crossChainIndexFactory.verifiedFactory(address(factory), 1), true);
-        assertEq(crossChainIndexFactory.verifiedFactory(address(factoryBalancer), 1), true);
+        assertEq(crossChainIndexFactoryStorage.verifiedFactory(address(factory), 1), true);
+        assertEq(crossChainIndexFactoryStorage.verifiedFactory(address(factoryBalancer), 1), true);
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
