@@ -21,7 +21,8 @@ library MessageSender {
         bytes memory _data,
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails,
-        PayFeesIn payFeesIn
+        PayFeesIn payFeesIn,
+        uint _gasLimit
     ) internal returns(bytes32) {
         uint256 length = tokensToSendDetails.length;
         require(
@@ -46,7 +47,8 @@ library MessageSender {
             data: _data,
             tokenAmounts: tokensToSendDetails,
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 3_000_000})
+                // Client.EVMExtraArgsV1({gasLimit: 3_000_000})
+                Client.EVMExtraArgsV1({gasLimit: _gasLimit})
             ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
         });
@@ -86,7 +88,8 @@ library MessageSender {
         uint64 destinationChainSelector,
         address receiver,
         bytes memory _data,
-        PayFeesIn payFeesIn
+        PayFeesIn payFeesIn,
+        uint _gasLimit
     ) internal returns(bytes32) {
         require(i_router != address(0), "Invalid i_router address");
         require(i_link != address(0), "Invalid i_link address");
@@ -98,9 +101,11 @@ library MessageSender {
             data: _data,
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 3_000_000})
+                // Client.EVMExtraArgsV1({gasLimit: 3_000_000})
+                Client.EVMExtraArgsV1({gasLimit: _gasLimit})
             ),
             feeToken: payFeesIn == PayFeesIn.LINK ? i_link : address(0)
+
         });
 
         uint256 fee = IRouterClient(i_router).getFee(

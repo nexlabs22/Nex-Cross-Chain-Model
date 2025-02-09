@@ -155,8 +155,8 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         chains[3] = 1;
         chains[4] = 2;
 
-        link.transfer(address(indexFactoryStorage), 1e17);
-        // bytes32 requestId = indexFactoryStorage.requestAssetsData();
+        link.transfer(address(functionsOracle), 1e17);
+        // bytes32 requestId = functionsOracle.requestAssetsData();
         // oracle.fulfillOracleFundingRateRequest(
         //     requestId,
         //     assetList,
@@ -164,7 +164,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         //     swapFees,
         //     chains
         // );
-        bytes32 requestId = indexFactoryStorage.requestAssetsData(
+        bytes32 requestId = functionsOracle.requestAssetsData(
             "console.log('Hello, World!');",
             // FunctionsConsumer.Location.Inline, // Use the imported enum directly
             abi.encodePacked("default"),
@@ -180,7 +180,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             chains
         );
         bool success = oracle.fulfillRequest(
-            address(indexFactoryStorage),
+            address(functionsOracle),
             requestId,
             data
         );
@@ -194,10 +194,10 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         uint64[] memory chains
     ) public returns(bool) {
         vm.warp(block.timestamp + 1);
-        link.transfer(address(indexFactoryStorage), 1e17);
-        // bytes32 requestId = indexFactoryStorage.requestAssetsData();
+        link.transfer(address(functionsOracle), 1e17);
+        // bytes32 requestId = functionsOracle.requestAssetsData();
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
-        bytes32 requestId = indexFactoryStorage.requestAssetsData(
+        bytes32 requestId = functionsOracle.requestAssetsData(
             "console.log('Hello, World!');",
             // FunctionsConsumer.Location.Inline, // Use the imported enum directly
             abi.encodePacked("default"),
@@ -213,7 +213,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             chains
         );
         bool success = oracle.fulfillRequest(
-            address(indexFactoryStorage),
+            address(functionsOracle),
             requestId,
             data
         );
@@ -224,56 +224,56 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
     function testOracleListForRebalancing() public {
         initializeOracleList();
         // token  oracle list
-        assertEq(indexFactoryStorage.oracleList(0), address(token0));
-        assertEq(indexFactoryStorage.oracleList(1), address(token1));
-        assertEq(indexFactoryStorage.oracleList(2), address(token2));
-        assertEq(indexFactoryStorage.oracleList(3), address(token3));
-        assertEq(indexFactoryStorage.oracleList(4), address(token4));
+        assertEq(functionsOracle.oracleList(0), address(token0));
+        assertEq(functionsOracle.oracleList(1), address(token1));
+        assertEq(functionsOracle.oracleList(2), address(token2));
+        assertEq(functionsOracle.oracleList(3), address(token3));
+        assertEq(functionsOracle.oracleList(4), address(token4));
         // token current list
-        assertEq(indexFactoryStorage.currentList(0), address(token0));
-        assertEq(indexFactoryStorage.currentList(1), address(token1));
-        assertEq(indexFactoryStorage.currentList(2), address(token2));
-        assertEq(indexFactoryStorage.currentList(3), address(token3));
-        assertEq(indexFactoryStorage.currentList(4), address(token4));
+        assertEq(functionsOracle.currentList(0), address(token0));
+        assertEq(functionsOracle.currentList(1), address(token1));
+        assertEq(functionsOracle.currentList(2), address(token2));
+        assertEq(functionsOracle.currentList(3), address(token3));
+        assertEq(functionsOracle.currentList(4), address(token4));
         // token shares
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token0)),
+            functionsOracle.tokenOracleMarketShare(address(token0)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token1)),
+            functionsOracle.tokenOracleMarketShare(address(token1)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token2)),
+            functionsOracle.tokenOracleMarketShare(address(token2)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token3)),
+            functionsOracle.tokenOracleMarketShare(address(token3)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token4)),
+            functionsOracle.tokenOracleMarketShare(address(token4)),
             20e18
         );
 
         // token shares
         // token from eth path data
-        (address[] memory path00, uint24[] memory fees00) = indexFactoryStorage.getFromETHPathData(address(token0));
+        (address[] memory path00, uint24[] memory fees00) = functionsOracle.getFromETHPathData(address(token0));
         assertEq(path00[0], address(weth));
         assertEq(path00[1], address(token0));
         assertEq(fees00[0], 3000);
-        (address[] memory path40, uint24[] memory fees40) = indexFactoryStorage.getFromETHPathData(address(token4));
+        (address[] memory path40, uint24[] memory fees40) = functionsOracle.getFromETHPathData(address(token4));
         assertEq(path40[0], address(weth));
         assertEq(path40[1], address(token4));
         assertEq(fees40[0], 3000);
 
         // token to eth path data
-        (address[] memory path50, uint24[] memory fees50) = indexFactoryStorage.getToETHPathData(address(token0));
+        (address[] memory path50, uint24[] memory fees50) = functionsOracle.getToETHPathData(address(token0));
         assertEq(path50[0], address(token0));
         assertEq(path50[1], address(weth));
         assertEq(fees50[0], 3000);
-        (address[] memory path90, uint24[] memory fees90) = indexFactoryStorage.getToETHPathData(address(token4));
+        (address[] memory path90, uint24[] memory fees90) = functionsOracle.getToETHPathData(address(token4));
         assertEq(path90[0], address(token4));
         assertEq(path90[1], address(weth));
         assertEq(fees90[0], 3000);
@@ -331,23 +331,23 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         bool success = updateOracleList(assetList2, pathData, tokenShares2, chains2);
         // token shares
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token0)),
+            functionsOracle.tokenOracleMarketShare(address(token0)),
             30e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token1)),
+            functionsOracle.tokenOracleMarketShare(address(token1)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token2)),
+            functionsOracle.tokenOracleMarketShare(address(token2)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token3)),
+            functionsOracle.tokenOracleMarketShare(address(token3)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token4)),
+            functionsOracle.tokenOracleMarketShare(address(token4)),
             10e18
         );
     }
@@ -357,10 +357,10 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         console.log("****");
         uint portfolioBalance = indexFactoryStorage.getPortfolioBalance();
         uint totalPortfolioBalance;
-        uint totalCurrentList = indexFactoryStorage.totalCurrentList();
+        uint totalCurrentList = functionsOracle.totalCurrentList();
         for (uint i = 0; i < totalCurrentList; i++) {
-            address tokenAddress = indexFactoryStorage.currentList(i);
-            uint64 chainSelector = indexFactoryStorage.tokenChainSelector(
+            address tokenAddress = functionsOracle.currentList(i);
+            uint64 chainSelector = functionsOracle.tokenChainSelector(
                 tokenAddress
             );
             if (chainSelector == 1) {
@@ -403,8 +403,8 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             }
         }
         for (uint i = 0; i < totalCurrentList; i++) {
-            address tokenAddress = indexFactoryStorage.currentList(i);
-            uint64 chainSelector = indexFactoryStorage.tokenChainSelector(
+            address tokenAddress = functionsOracle.currentList(i);
+            uint64 chainSelector = functionsOracle.tokenChainSelector(
                 tokenAddress
             );
             if (chainSelector == 1) {
@@ -565,8 +565,8 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
     
     function testRebalanceSameTokens2() public {
         initializeOracleList();
-        assertEq(crossChainIndexFactoryStorage.verifiedFactory(address(factory), 1), true);
-        assertEq(crossChainIndexFactoryStorage.verifiedFactory(address(factoryBalancer), 1), true);
+        assertEq(crossChainIndexFactoryStorage.verifiedFactory(address(coreSender), 1), true);
+        assertEq(crossChainIndexFactoryStorage.verifiedFactory(address(balancerSender), 1), true);
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
@@ -664,27 +664,26 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         
         // token shares
         assertEq(
-            indexFactoryStorage.tokenCurrentMarketShare(address(token0)),
+            functionsOracle.tokenCurrentMarketShare(address(token0)),
             10e18
         );
         assertEq(
-            indexFactoryStorage.tokenCurrentMarketShare(address(token1)),
+            functionsOracle.tokenCurrentMarketShare(address(token1)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenCurrentMarketShare(address(token2)),
+            functionsOracle.tokenCurrentMarketShare(address(token2)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenCurrentMarketShare(address(token3)),
+            functionsOracle.tokenCurrentMarketShare(address(token3)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenCurrentMarketShare(address(token4)),
+            functionsOracle.tokenCurrentMarketShare(address(token4)),
             30e18
         );
-        console.log("balancerAddress", address(factoryBalancer));
-        // console.log(weth.balanceOf(address(factoryBalancer)));
+        
     }
     
 }

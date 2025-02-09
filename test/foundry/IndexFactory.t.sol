@@ -127,9 +127,9 @@ contract IndexFactoryTest is Test, ContractDeployer {
         chains[4] = 2;
         
 
-        link.transfer(address(indexFactoryStorage), 1e17);
-        // bytes32 requestId = indexFactoryStorage.requestAssetsData();
-        bytes32 requestId = indexFactoryStorage.requestAssetsData(
+        link.transfer(address(functionsOracle), 1e17);
+        // bytes32 requestId = functionsOracle.requestAssetsData();
+        bytes32 requestId = functionsOracle.requestAssetsData(
             "console.log('Hello, World!');",
             // FunctionsConsumer.Location.Inline, // Use the imported enum directly
             abi.encodePacked("default"),
@@ -139,71 +139,71 @@ contract IndexFactoryTest is Test, ContractDeployer {
             0
         );
         bytes memory data = abi.encode(assetList, pathData, tokenShares, chains);
-        bool success = oracle.fulfillRequest(address(indexFactoryStorage), requestId, data);
+        bool success = oracle.fulfillRequest(address(functionsOracle), requestId, data);
         require(success, "oracle request failed");
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }
     function testOracleList() public {
         updateOracleList();
         // token  oracle list
-        assertEq(indexFactoryStorage.oracleList(0), address(token0));
-        assertEq(indexFactoryStorage.oracleList(1), address(token1));
-        assertEq(indexFactoryStorage.oracleList(2), address(token2));
-        assertEq(indexFactoryStorage.oracleList(3), address(token3));
-        assertEq(indexFactoryStorage.oracleList(4), address(token4));
+        assertEq(functionsOracle.oracleList(0), address(token0));
+        assertEq(functionsOracle.oracleList(1), address(token1));
+        assertEq(functionsOracle.oracleList(2), address(token2));
+        assertEq(functionsOracle.oracleList(3), address(token3));
+        assertEq(functionsOracle.oracleList(4), address(token4));
         // token current list
-        assertEq(indexFactoryStorage.currentList(0), address(token0));
-        assertEq(indexFactoryStorage.currentList(1), address(token1));
-        assertEq(indexFactoryStorage.currentList(2), address(token2));
-        assertEq(indexFactoryStorage.currentList(3), address(token3));
-        assertEq(indexFactoryStorage.currentList(4), address(token4));
+        assertEq(functionsOracle.currentList(0), address(token0));
+        assertEq(functionsOracle.currentList(1), address(token1));
+        assertEq(functionsOracle.currentList(2), address(token2));
+        assertEq(functionsOracle.currentList(3), address(token3));
+        assertEq(functionsOracle.currentList(4), address(token4));
         // token shares
-        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token0)), 20e18);
-        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token1)), 20e18);
-        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token2)), 20e18);
-        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token3)), 20e18);
-        assertEq(indexFactoryStorage.tokenOracleMarketShare(address(token4)), 20e18);
+        assertEq(functionsOracle.tokenOracleMarketShare(address(token0)), 20e18);
+        assertEq(functionsOracle.tokenOracleMarketShare(address(token1)), 20e18);
+        assertEq(functionsOracle.tokenOracleMarketShare(address(token2)), 20e18);
+        assertEq(functionsOracle.tokenOracleMarketShare(address(token3)), 20e18);
+        assertEq(functionsOracle.tokenOracleMarketShare(address(token4)), 20e18);
         
          // token from eth path data
-        (address[] memory path0, uint24[] memory fees0) = indexFactoryStorage.getFromETHPathData(address(token0));
+        (address[] memory path0, uint24[] memory fees0) = functionsOracle.getFromETHPathData(address(token0));
         assertEq(path0[0], address(weth));
         assertEq(path0[1], address(token0));
         assertEq(fees0[0], 3000);
-        (address[] memory path1, uint24[] memory fees1) = indexFactoryStorage.getFromETHPathData(address(token1));
+        (address[] memory path1, uint24[] memory fees1) = functionsOracle.getFromETHPathData(address(token1));
         assertEq(path1[0], address(weth));
         assertEq(path1[1], address(token1));
         assertEq(fees1[0], 3000);
-        (address[] memory path2, uint24[] memory fees2) = indexFactoryStorage.getFromETHPathData(address(token2));
+        (address[] memory path2, uint24[] memory fees2) = functionsOracle.getFromETHPathData(address(token2));
         assertEq(path2[0], address(weth));
         assertEq(path2[1], address(token2));
         assertEq(fees2[0], 3000);
-        (address[] memory path3, uint24[] memory fees3) = indexFactoryStorage.getFromETHPathData(address(token3));
+        (address[] memory path3, uint24[] memory fees3) = functionsOracle.getFromETHPathData(address(token3));
         assertEq(path3[0], address(weth));
         assertEq(path3[1], address(token3));
         assertEq(fees3[0], 3000);
-        (address[] memory path4, uint24[] memory fees4) = indexFactoryStorage.getFromETHPathData(address(token4));
+        (address[] memory path4, uint24[] memory fees4) = functionsOracle.getFromETHPathData(address(token4));
         assertEq(path4[0], address(weth));
         assertEq(path4[1], address(token4));
         assertEq(fees4[0], 3000);
 
         // token to eth path data
-        (address[] memory path5, uint24[] memory fees5) = indexFactoryStorage.getToETHPathData(address(token0));
+        (address[] memory path5, uint24[] memory fees5) = functionsOracle.getToETHPathData(address(token0));
         assertEq(path5[0], address(token0));
         assertEq(path5[1], address(weth));
         assertEq(fees5[0], 3000);
-        (address[] memory path6, uint24[] memory fees6) = indexFactoryStorage.getToETHPathData(address(token1));
+        (address[] memory path6, uint24[] memory fees6) = functionsOracle.getToETHPathData(address(token1));
         assertEq(path6[0], address(token1));
         assertEq(path6[1], address(weth));
         assertEq(fees6[0], 3000);
-        (address[] memory path7, uint24[] memory fees7) = indexFactoryStorage.getToETHPathData(address(token2));
+        (address[] memory path7, uint24[] memory fees7) = functionsOracle.getToETHPathData(address(token2));
         assertEq(path7[0], address(token2));
         assertEq(path7[1], address(weth));
         assertEq(fees7[0], 3000);
-        (address[] memory path8, uint24[] memory fees8) = indexFactoryStorage.getToETHPathData(address(token3));
+        (address[] memory path8, uint24[] memory fees8) = functionsOracle.getToETHPathData(address(token3));
         assertEq(path8[0], address(token3));
         assertEq(path8[1], address(weth));
         assertEq(fees8[0], 3000);
-        (address[] memory path9, uint24[] memory fees9) = indexFactoryStorage.getToETHPathData(address(token4));
+        (address[] memory path9, uint24[] memory fees9) = functionsOracle.getToETHPathData(address(token4));
         assertEq(path9[0], address(token4));
         assertEq(path9[1], address(weth));
         assertEq(fees9[0], 3000);
@@ -224,6 +224,12 @@ contract IndexFactoryTest is Test, ContractDeployer {
         payable(add1).transfer(11e18);
         vm.startPrank(add1);
         
+        assertEq(indexFactoryStorage.crossChainFactoryBySelector(2), address(crossChainIndexFactory));
+        // console.log(factory.getRouter());
+        // console.log(factory.i_link());
+        // console.log(crossChainIndexFactory.getRouter());
+        // console.log(crossChainIndexFactoryStorage.i_link());
+        // factory.sendMessageTest(2, address(crossChainIndexFactory));
         console.log(indexToken.balanceOf(add1));
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
         console.log(indexToken.balanceOf(add1));
@@ -316,6 +322,8 @@ contract IndexFactoryTest is Test, ContractDeployer {
         fees2[0] = 3000;
         factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), path2, fees2);
         console.log(indexToken.balanceOf(add1));
+        console.log(coreSender.testData());
+        console.log(coreSender.testData2());
     }
 
     

@@ -404,6 +404,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
   export async function updateOracleList(
     _linkToken: LinkToken,
     _indexFactoryStorage: IndexFactoryStorage,
+    _functionsOracle: FunctionsOracle,
     _oracle: MockApiOracle,
     assetList: string[], 
     percentages: string[], 
@@ -413,7 +414,7 @@ import { CrossChainVault } from "../typechain-types/artifacts/contracts/vault/Cr
 
   //update oracle list
   await _linkToken.transfer(_indexFactoryStorage.address, 1e17.toString());
-  const transaction: ContractTransaction = await _indexFactoryStorage.requestAssetsData();
+  const transaction: ContractTransaction = await _functionsOracle.requestAssetsData();
   const transactionReceipt:any = await transaction.wait(1);
   const requestId: string = transactionReceipt?.events[0]?.topics[1];
   await _oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);

@@ -155,7 +155,7 @@ contract CrossChainIndexFactoryStorage is
         return (_ethAmount * priceInWei()) / 1e18;
     }
 
-    function setCrosschainFactory(address _factory) public onlyOwner {
+    function setCrossChainFactory(address _factory) public onlyOwner {
         crossChainFactory = _factory;
     }
 
