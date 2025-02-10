@@ -18,6 +18,8 @@ contract SetIndexFactoryStorageValues is Script {
     address priceOracle;
     address vaultProxy;
     address indexFactoryBalancerProxy;
+    address coreSenderProxy;
+    address balancerSenderProxy;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -36,6 +38,8 @@ contract SetIndexFactoryStorageValues is Script {
             priceOracle = vm.envAddress("SEPOLIA_PRICE_ORACLE");
             vaultProxy = vm.envAddress("SEPOLIA_VAULT_PROXY_ADDRESS");
             indexFactoryBalancerProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+            coreSenderProxy = vm.envAddress("SEPOLIA_CORE_SENDER_PROXY_ADDRESS");
+            balancerSenderProxy = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             mainCrossChainTokenAddress = vm.envAddress("ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
@@ -48,6 +52,8 @@ contract SetIndexFactoryStorageValues is Script {
             priceOracle = vm.envAddress("ARBITRUM_PRICE_ORACLE");
             vaultProxy = vm.envAddress("ARBITRUM_VAULT_PROXY_ADDRESS");
             indexFactoryBalancerProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+            coreSenderProxy = vm.envAddress("ARBITRUM_CORE_SENDER_PROXY_ADDRESS");
+            balancerSenderProxy = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADDRESS");
         } else {
             revert("Unsupported target chain");
         }
@@ -68,6 +74,8 @@ contract SetIndexFactoryStorageValues is Script {
         IndexFactoryStorage(indexFactoryStorageProxy).setPriceOracle(priceOracle);
         IndexFactoryStorage(indexFactoryStorageProxy).setVault(vaultProxy);
         IndexFactoryStorage(indexFactoryStorageProxy).setIndexFactoryBalancer(indexFactoryBalancerProxy);
+        IndexFactoryStorage(indexFactoryStorageProxy).setCoreSender(coreSenderProxy);
+        IndexFactoryStorage(indexFactoryStorageProxy).setBalancerSender(balancerSenderProxy);
 
         vm.stopBroadcast();
     }

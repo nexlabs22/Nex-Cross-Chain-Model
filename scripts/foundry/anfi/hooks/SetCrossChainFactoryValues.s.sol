@@ -4,9 +4,10 @@ pragma solidity 0.8.20;
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/Test.sol";
 
-import "../../../../contracts/vault/CrossChainFactory.sol";
+import "../../../../contracts/vault/CrossChainIndexFactoryStorage.sol";
 
 contract SetCrossChainFactoryValues is Script {
+    address crossChainFactoryStorageProxy;
     address crossChainFactoryProxy;
     address priceOracle;
     uint64 chainSelector;
@@ -19,12 +20,15 @@ contract SetCrossChainFactoryValues is Script {
         string memory targetChain = "sepolia";
 
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            crossChainFactoryStorageProxy =
+                vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             crossChainFactoryProxy = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
             priceOracle = vm.envAddress("ARBITRUM_SEPOLIA_PRICE_ORACLE");
             chainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
             crossChainToken = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
             weth = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            crossChainFactoryStorageProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
             priceOracle = vm.envAddress("ETHEREUM_PRICE_ORACLE");
             chainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
@@ -42,10 +46,13 @@ contract SetCrossChainFactoryValues is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        CrossChainIndexFactory(payable(crossChainFactoryProxy)).setCrossChainToken(
+        CrossChainIndexFactoryStorage(payable(crossChainFactoryStorageProxy)).setCrossChainToken(
             chainSelector, crossChainToken, path, feesData
         );
-        CrossChainIndexFactory(payable(crossChainFactoryProxy)).setPriceOracle(priceOracle);
+        CrossChainIndexFactoryStorage(payable(crossChainFactoryStorageProxy)).setPriceOracle(priceOracle);
+        CrossChainIndexFactoryStorage(payable(crossChainFactoryStorageProxy)).setCrossChainFactory(
+            crossChainFactoryProxy
+        );
 
         vm.stopBroadcast();
     }

@@ -8,54 +8,62 @@ import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.s
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 import {IndexToken} from "../../../../contracts/token/IndexToken.sol";
+import {FunctionsOracle} from "../../../../contracts/factory/FunctionsOracle.sol";
 import {IndexFactoryStorage} from "../../../../contracts/factory/IndexFactoryStorage.sol";
+import {CoreSender} from "../../../../contracts/factory/CoreSender.sol";
+import {BalancerSender} from "../../../../contracts/factory/BalancerSender.sol";
 import {IndexFactory} from "../../../../contracts/factory/IndexFactory.sol";
 import {IndexFactoryBalancer} from "../../../../contracts/factory/IndexFactoryBalancer.sol";
 import {Vault} from "../../../../contracts/vault/Vault.sol";
 import {PriceOracleByteCode} from "../../../../contracts/test/PriceOracleByteCode.sol";
 
-contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
+contract DeployAllContractsScript is Script, Test, PriceOracleByteCode {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
         vm.startBroadcast(deployerPrivateKey);
+
         string memory targetChain = "sepolia";
 
-        // 1. Deploy IndexToken
         address indexTokenProxy = _deployIndexToken(targetChain);
 
-        // 2. Deploy IndexFactoryStorage (requires indexTokenProxy)
-        address indexFactoryStorageProxy = _deployIndexFactoryStorage(targetChain, indexTokenProxy);
+        address functionsOracleProxy = _deployFunctionsOracle(targetChain);
 
-        // 3. Deploy IndexFactory (requires indexTokenProxy)
-        address indexFactoryProxy = _deployIndexFactory(targetChain, indexTokenProxy);
+        address indexFactoryStorageProxy =
+            _deployIndexFactoryStorage(targetChain, indexTokenProxy, functionsOracleProxy);
 
-        // 4. Deploy IndexFactoryBalancer (requires indexTokenProxy)
-        address indexFactoryBalancerProxy = _deployIndexFactoryBalancer(targetChain, indexTokenProxy);
+        address coreSenderProxy =
+            _deployCoreSender(targetChain, indexTokenProxy, indexFactoryStorageProxy, functionsOracleProxy);
 
-        // 5. Deploy Vault
-        address vaultProxy = _deployVault();
+        address balancerSenderProxy = _deployBalancerSender(targetChain, indexFactoryStorageProxy, functionsOracleProxy);
 
-        // 6. Deploy PriceOracle
-        address priceOracle = _deployPriceOracle();
-
-        _linkContracts(
-            targetChain,
-            indexFactoryStorageProxy,
-            indexFactoryProxy,
-            indexTokenProxy,
-            vaultProxy,
-            priceOracle,
-            indexFactoryBalancerProxy
+        address indexFactoryProxy = _deployIndexFactory(
+            targetChain, indexTokenProxy, indexFactoryStorageProxy, functionsOracleProxy, coreSenderProxy
         );
 
+        address indexFactoryBalancerProxy = _deployIndexFactoryBalancer(
+            targetChain, indexFactoryStorageProxy, functionsOracleProxy, balancerSenderProxy
+        );
+
+        address vaultProxy = _deployVault();
+
+        address priceOracle = _deployPriceOracle();
+
         vm.stopBroadcast();
+
+        console.log("\n==== ALL CONTRACTS DEPLOYED ====");
+        console.log("indexTokenProxy:           ", indexTokenProxy);
+        console.log("functionsOracleProxy:      ", functionsOracleProxy);
+        console.log("indexFactoryStorageProxy:  ", indexFactoryStorageProxy);
+        console.log("coreSenderProxy:           ", coreSenderProxy);
+        console.log("balancerSenderProxy:       ", balancerSenderProxy);
+        console.log("indexFactoryProxy:         ", indexFactoryProxy);
+        console.log("indexFactoryBalancerProxy: ", indexFactoryBalancerProxy);
+        console.log("vaultProxy:                ", vaultProxy);
+        console.log("priceOracle:               ", priceOracle);
     }
 
-    // ---------------------------------------------------------------------
-    // DEPLOY FUNCTIONS
-    // ---------------------------------------------------------------------
     function _deployIndexToken(string memory targetChain) internal returns (address) {
-        // read from env
         uint256 feeRatePerDayScaled;
         address feeReceiver;
         uint256 supplyCeiling;
@@ -90,22 +98,55 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
         TransparentUpgradeableProxy proxy =
             new TransparentUpgradeableProxy(address(indexTokenImplementation), address(proxyAdmin), initData);
 
-        console.log("=== IndexToken ===");
+        console.log("\n=== IndexToken ===");
         console.log("Implementation:", address(indexTokenImplementation));
-        console.log("Proxy:", address(proxy));
-        console.log("ProxyAdmin:", address(proxyAdmin));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
 
         return address(proxy);
     }
 
-    function _deployIndexFactoryStorage(string memory targetChain, address indexTokenProxy)
-        internal
-        returns (address)
-    {
-        uint64 chainSelector;
+    function _deployFunctionsOracle(string memory targetChain) internal returns (address) {
         address chainlinkToken;
         address router;
         bytes32 newDonId;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
+            router = vm.envAddress("SEPOLIA_FUNCTIONS_ROUTER_ADDRESS");
+            newDonId = vm.envBytes32("SEPOLIA_NEW_DON_ID");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
+            router = vm.envAddress("ARBITRUM_FUNCTIONS_ROUTER_ADDRESS");
+            newDonId = vm.envBytes32("ARBITRUM_NEW_DON_ID");
+        } else {
+            revert("Unsupported target chain for FunctionsOracle");
+        }
+
+        ProxyAdmin proxyAdmin = new ProxyAdmin();
+        FunctionsOracle functionsOracleImplementation = new FunctionsOracle();
+
+        bytes memory initData =
+            abi.encodeWithSignature("initialize(address,address,bytes32)", chainlinkToken, router, newDonId);
+
+        TransparentUpgradeableProxy proxy =
+            new TransparentUpgradeableProxy(address(functionsOracleImplementation), address(proxyAdmin), initData);
+
+        console.log("\n=== FunctionsOracle ===");
+        console.log("Implementation:", address(functionsOracleImplementation));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
+
+        return address(proxy);
+    }
+
+    function _deployIndexFactoryStorage(
+        string memory targetChain,
+        address indexTokenProxy,
+        address functionsOracleProxy
+    ) internal returns (address) {
+        uint64 chainSelector;
+        address chainlinkToken;
         address toUsdPriceFeed;
         address wethAddress;
         address swapRouterV3;
@@ -115,9 +156,8 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
 
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
             chainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
+            indexTokenProxy = indexTokenProxy;
             chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("SEPOLIA_FUNCTIONS_ROUTER_ADDRESS");
-            newDonId = vm.envBytes32("SEPOLIA_NEW_DON_ID");
             toUsdPriceFeed = vm.envAddress("SEPOLIA_TO_USD_PRICE_FEED");
             wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
             swapRouterV3 = vm.envAddress("SEPOLIA_ROUTER_V3_ADDRESS");
@@ -126,9 +166,8 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
             factoryV2 = vm.envAddress("SEPOLIA_FACTORY_V2_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             chainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
+            indexTokenProxy = indexTokenProxy;
             chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("ARBITRUM_FUNCTIONS_ROUTER_ADDRESS");
-            newDonId = vm.envBytes32("ARBITRUM_NEW_DON_ID");
             toUsdPriceFeed = vm.envAddress("ARBITRUM_TO_USD_PRICE_FEED");
             wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
             swapRouterV3 = vm.envAddress("ARBITRUM_ROUTER_V3_ADDRESS");
@@ -139,17 +178,16 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
             revert("Unsupported target chain for IndexFactoryStorage");
         }
 
-        IndexFactoryStorage indexFactoryStorageImplementation = new IndexFactoryStorage();
         ProxyAdmin proxyAdmin = new ProxyAdmin();
+        IndexFactoryStorage indexFactoryStorageImplementation = new IndexFactoryStorage();
 
-        bytes memory data = abi.encodeWithSignature(
-            "initialize(uint64,address,address,address,bytes32,address,address,address,address,address,address)",
+        bytes memory initData = abi.encodeWithSignature(
+            "initialize(uint64,address,address,address,address,address,address,address,address,address)",
             chainSelector,
             indexTokenProxy,
-            chainlinkToken,
-            router,
-            newDonId,
+            functionsOracleProxy,
             toUsdPriceFeed,
+            chainlinkToken,
             wethAddress,
             swapRouterV3,
             factoryV3,
@@ -158,101 +196,192 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
         );
 
         TransparentUpgradeableProxy proxy =
-            new TransparentUpgradeableProxy(address(indexFactoryStorageImplementation), address(proxyAdmin), data);
+            new TransparentUpgradeableProxy(address(indexFactoryStorageImplementation), address(proxyAdmin), initData);
 
-        console.log("=== IndexFactoryStorage ===");
+        console.log("\n=== IndexFactoryStorage ===");
         console.log("Implementation:", address(indexFactoryStorageImplementation));
-        console.log("Proxy:", address(proxy));
-        console.log("ProxyAdmin:", address(proxyAdmin));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
 
         return address(proxy);
     }
 
-    function _deployIndexFactory(string memory targetChain, address indexTokenProxy) internal returns (address) {
-        uint64 currentChainSelector;
+    function _deployCoreSender(
+        string memory targetChain,
+        address indexTokenProxy,
+        address indexFactoryStorageProxy,
+        address functionsOracleProxy
+    ) internal returns (address) {
+        address router;
+        address wethAddress;
+        address chainlinkToken;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            router = vm.envAddress("SEPOLIA_CCIP_ROUTER_ADDRESS");
+            wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+            chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            router = vm.envAddress("ARBITRUM_CCIP_ROUTER_ADDRESS");
+            wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+            chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
+        } else {
+            revert("Unsupported target chain for CoreSender");
+        }
+
+        ProxyAdmin proxyAdmin = new ProxyAdmin();
+        CoreSender coreSenderImplementation = new CoreSender();
+
+        bytes memory initData = abi.encodeWithSignature(
+            "initialize(address,address,address,address,address,address)",
+            payable(indexTokenProxy),
+            indexFactoryStorageProxy,
+            functionsOracleProxy,
+            chainlinkToken,
+            router,
+            wethAddress
+        );
+
+        TransparentUpgradeableProxy proxy =
+            new TransparentUpgradeableProxy(address(coreSenderImplementation), address(proxyAdmin), initData);
+
+        console.log("\n=== CoreSender ===");
+        console.log("Implementation:", address(coreSenderImplementation));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
+
+        return address(proxy);
+    }
+
+    function _deployBalancerSender(
+        string memory targetChain,
+        address indexFactoryStorageProxy,
+        address functionsOracleProxy
+    ) internal returns (address) {
+        uint64 chainSelector;
         address chainlinkToken;
         address router;
         address wethAddress;
 
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
-            currentChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
+            chainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
             chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
             router = vm.envAddress("SEPOLIA_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
-            currentChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
+            chainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
             chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
             router = vm.envAddress("ARBITRUM_CCIP_ROUTER_ADDRESS");
+            wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+        } else {
+            revert("Unsupported target chain for BalancerSender");
+        }
+
+        ProxyAdmin proxyAdmin = new ProxyAdmin();
+        BalancerSender balancerSenderImplementation = new BalancerSender();
+
+        bytes memory initData = abi.encodeWithSignature(
+            "initialize(uint64,address,address,address,address,address)",
+            chainSelector,
+            indexFactoryStorageProxy,
+            functionsOracleProxy,
+            chainlinkToken,
+            router,
+            wethAddress
+        );
+
+        TransparentUpgradeableProxy proxy =
+            new TransparentUpgradeableProxy(address(balancerSenderImplementation), address(proxyAdmin), initData);
+
+        console.log("\n=== BalancerSender ===");
+        console.log("Implementation:", address(balancerSenderImplementation));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
+
+        return address(proxy);
+    }
+
+    function _deployIndexFactory(
+        string memory targetChain,
+        address indexTokenProxy,
+        address indexFactoryStorageProxy,
+        address functionsOracleProxy,
+        address coreSenderProxy
+    ) internal returns (address) {
+        uint64 currentChainSelector;
+        address wethAddress;
+
+        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
+            currentChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
+            wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
+            currentChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
             wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
         } else {
             revert("Unsupported target chain for IndexFactory");
         }
 
-        IndexFactory indexFactoryImplementation = new IndexFactory();
         ProxyAdmin proxyAdmin = new ProxyAdmin();
+        IndexFactory indexFactoryImplementation = new IndexFactory();
 
-        bytes memory data = abi.encodeWithSignature(
-            "initialize(uint64,address,address,address,address)",
+        bytes memory initData = abi.encodeWithSignature(
+            "initialize(uint64,address,address,address,address,address)",
             currentChainSelector,
             payable(indexTokenProxy),
-            chainlinkToken,
-            router,
+            indexFactoryStorageProxy,
+            functionsOracleProxy,
+            coreSenderProxy,
             wethAddress
         );
 
         TransparentUpgradeableProxy proxy =
-            new TransparentUpgradeableProxy(address(indexFactoryImplementation), address(proxyAdmin), data);
+            new TransparentUpgradeableProxy(address(indexFactoryImplementation), address(proxyAdmin), initData);
 
-        console.log("=== IndexFactory ===");
+        console.log("\n=== IndexFactory ===");
         console.log("Implementation:", address(indexFactoryImplementation));
-        console.log("Proxy:", address(proxy));
-        console.log("ProxyAdmin:", address(proxyAdmin));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
 
         return address(proxy);
     }
 
-    function _deployIndexFactoryBalancer(string memory targetChain, address indexTokenProxy)
-        internal
-        returns (address)
-    {
+    function _deployIndexFactoryBalancer(
+        string memory targetChain,
+        address indexFactoryStorageProxy,
+        address functionsOracleProxy,
+        address balancerSenderProxy
+    ) internal returns (address) {
         uint64 currentChainSelector;
-        address chainlinkToken;
-        address router;
         address wethAddress;
 
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
             currentChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
-            chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("SEPOLIA_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             currentChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
-            chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("ARBITRUM_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
         } else {
             revert("Unsupported target chain for IndexFactoryBalancer");
         }
 
-        IndexFactoryBalancer indexFactoryBalancerImplementation = new IndexFactoryBalancer();
         ProxyAdmin proxyAdmin = new ProxyAdmin();
+        IndexFactoryBalancer indexFactoryBalancerImplementation = new IndexFactoryBalancer();
 
-        bytes memory data = abi.encodeWithSignature(
+        bytes memory initData = abi.encodeWithSignature(
             "initialize(uint64,address,address,address,address)",
             currentChainSelector,
-            payable(indexTokenProxy),
-            chainlinkToken,
-            router,
+            indexFactoryStorageProxy,
+            functionsOracleProxy,
+            payable(balancerSenderProxy),
             wethAddress
         );
 
         TransparentUpgradeableProxy proxy =
-            new TransparentUpgradeableProxy(address(indexFactoryBalancerImplementation), address(proxyAdmin), data);
+            new TransparentUpgradeableProxy(address(indexFactoryBalancerImplementation), address(proxyAdmin), initData);
 
-        console.log("=== IndexFactoryBalancer ===");
+        console.log("\n=== IndexFactoryBalancer ===");
         console.log("Implementation:", address(indexFactoryBalancerImplementation));
-        console.log("Proxy:", address(proxy));
-        console.log("ProxyAdmin:", address(proxyAdmin));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
 
         return address(proxy);
     }
@@ -261,26 +390,26 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
         ProxyAdmin proxyAdmin = new ProxyAdmin();
         Vault vaultImplementation = new Vault();
 
-        bytes memory data = abi.encodeWithSignature("initialize()");
+        bytes memory initData = abi.encodeWithSignature("initialize()");
 
         TransparentUpgradeableProxy proxy =
-            new TransparentUpgradeableProxy(address(vaultImplementation), address(proxyAdmin), data);
+            new TransparentUpgradeableProxy(address(vaultImplementation), address(proxyAdmin), initData);
 
-        console.log("=== Vault ===");
+        console.log("\n=== Vault ===");
         console.log("Implementation:", address(vaultImplementation));
-        console.log("Proxy:", address(proxy));
-        console.log("ProxyAdmin:", address(proxyAdmin));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
 
         return address(proxy);
     }
 
     function _deployPriceOracle() internal returns (address) {
-        address deployed = _deployByteCode(priceOracleByteCode);
+        address priceOracle = _deployByteCode(priceOracleByteCode);
 
-        console.log("=== PriceOracle ===");
-        console.log("Implementation:", deployed);
+        console.log("\n=== PriceOracle ===");
+        console.log("Implementation:", address(priceOracle));
 
-        return deployed;
+        return priceOracle;
     }
 
     function _deployByteCode(bytes memory bytecode) internal returns (address) {
@@ -289,53 +418,5 @@ contract DeployAndLinkScript is Script, Test, PriceOracleByteCode {
             deployed := create(0, add(bytecode, 0x20), mload(bytecode))
         }
         return deployed;
-    }
-
-    function _linkContracts(
-        string memory targetChain,
-        address indexFactoryStorageProxy,
-        address indexFactoryProxy,
-        address indexTokenProxy,
-        address vaultProxy,
-        address priceOracle,
-        address indexFactoryBalancerProxy
-    ) internal {
-        uint64 otherChainSelector;
-        address mainCrossChainTokenAddress;
-        address wethAddress;
-        address crossChainFactoryProxy;
-
-        if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
-            otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
-            mainCrossChainTokenAddress = vm.envAddress("SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
-            wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-            crossChainFactoryProxy = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
-        } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
-            otherChainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
-            mainCrossChainTokenAddress = vm.envAddress("ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
-            wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-            crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
-        } else {
-            revert("Unsupported target chain");
-        }
-
-        address[] memory path = new address[](2);
-        path[0] = wethAddress;
-        path[1] = mainCrossChainTokenAddress;
-        uint24[] memory feesData = new uint24[](1);
-        feesData[0] = 3000;
-
-        IndexFactoryStorage(indexFactoryStorageProxy).setCrossChainToken(
-            otherChainSelector, mainCrossChainTokenAddress, path, feesData
-        );
-        IndexFactoryStorage(indexFactoryStorageProxy).setCrossChainFactory(crossChainFactoryProxy, otherChainSelector);
-        IndexFactoryStorage(indexFactoryStorageProxy).setIndexFactory(indexFactoryProxy);
-        IndexFactoryStorage(indexFactoryStorageProxy).setPriceOracle(priceOracle);
-        IndexFactoryStorage(indexFactoryStorageProxy).setVault(vaultProxy);
-        IndexFactoryStorage(indexFactoryStorageProxy).setIndexFactoryBalancer(indexFactoryBalancerProxy);
-        IndexFactory(payable(indexFactoryProxy)).setIndexFactoryStorage(indexFactoryStorageProxy);
-        IndexToken(payable(indexTokenProxy)).setMinter(indexFactoryProxy, true);
-
-        console.log("=== LINKING COMPLETE ===");
     }
 }

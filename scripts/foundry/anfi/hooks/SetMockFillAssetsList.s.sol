@@ -3,24 +3,24 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/Test.sol";
-import {IndexFactoryStorage} from "../../../../contracts/factory/IndexFactoryStorage.sol";
+import "../../../../contracts/factory/FunctionsOracle.sol";
 
 contract SetMockFillAssetsList is Script {
     uint64 mainChainSelector;
     uint64 otherChainSelector;
-    address indexFactoryStorageProxy;
+    address functionsOracleProxy;
     address wethAddress;
 
     function run() public {
         string memory targetChain = "sepolia";
 
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
-            indexFactoryStorageProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            functionsOracleProxy = vm.envAddress("SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADDRESS");
             mainChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
             otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
             wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
-            indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            functionsOracleProxy = vm.envAddress("ARBITRUM_FUNCTIONS_ORACLE_PROXY_ADDRESS");
             mainChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
             otherChainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
             wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
@@ -69,9 +69,7 @@ contract SetMockFillAssetsList is Script {
             pathData[i] = abi.encode(path, feesData);
         }
 
-        IndexFactoryStorage(indexFactoryStorageProxy).mockFillAssetsList(
-            assetList, pathData, marketShares, chainSelectors
-        );
+        FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
 
         console.log("Called mockFillAssetsList() with your 2 assets data.");
     }
@@ -100,9 +98,7 @@ contract SetMockFillAssetsList is Script {
             pathData[i] = abi.encode(path, feesData);
         }
 
-        IndexFactoryStorage(indexFactoryStorageProxy).mockFillAssetsList(
-            assetList, pathData, marketShares, chainSelectors
-        );
+        FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
 
         console.log("Called mockFillAssetsList() with your 2 assets data.");
     }

@@ -38,7 +38,7 @@ contract SetVaultValues is Script {
 
         Vault(vaultProxy).setOperator(indexFactoryProxy, true);
         Vault(vaultProxy).setOperator(indexFactoryBalancerProxy, true);
-        Vault(crossChainVault).setOperator(crossChainIndexFactoryProxy, true);
+        // Vault(crossChainVault).setOperator(crossChainIndexFactoryProxy, true);
 
         vm.stopBroadcast();
     }

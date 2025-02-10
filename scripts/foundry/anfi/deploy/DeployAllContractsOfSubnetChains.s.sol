@@ -8,10 +8,11 @@ import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.s
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 import {Vault} from "../../../../contracts/vault/Vault.sol";
-import {CrossChainIndexFactory} from "../../../../contracts/vault/CrossChainFactory.sol";
+import {CrossChainIndexFactoryStorage} from "../../../../contracts/vault/CrossChainIndexFactoryStorage.sol";
+import {CrossChainIndexFactory} from "../../../../contracts/vault/CrossChainIndexFactory.sol";
 import {PriceOracleByteCode} from "../../../../contracts/test/PriceOracleByteCode.sol";
 
-contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
+contract DeployCrossChainAllScript is Script, Test, PriceOracleByteCode {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
@@ -21,13 +22,19 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
 
         address vaultProxy = _deployVault();
 
-        address crossChainFactoryProxy = _deployCrossChainFactory(targetChain, vaultProxy);
+        address ccIFSProxy = _deployCrossChainIndexFactoryStorage(targetChain, vaultProxy);
+
+        address ccIFProxy = _deployCrossChainIndexFactory(targetChain, ccIFSProxy);
 
         address priceOracle = _deployPriceOracle();
 
-        _linkContracts(targetChain, vaultProxy, crossChainFactoryProxy, priceOracle);
-
         vm.stopBroadcast();
+
+        console.log("\n=== All Deployments Complete ===");
+        console.log("Vault Proxy:                    ", vaultProxy);
+        console.log("CrossChainIndexFactoryStorage:  ", ccIFSProxy);
+        console.log("CrossChainIndexFactory:         ", ccIFProxy);
+        console.log("PriceOracle:                    ", priceOracle);
     }
 
     function _deployVault() internal returns (address) {
@@ -39,15 +46,18 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
         TransparentUpgradeableProxy proxy =
             new TransparentUpgradeableProxy(address(vaultImplementation), address(proxyAdmin), initData);
 
-        console.log("=== Vault Deployment ===");
-        console.log("Vault Implementation:", address(vaultImplementation));
-        console.log("Vault Proxy:", address(proxy));
-        console.log("Vault ProxyAdmin:", address(proxyAdmin));
+        console.log("=== Vault ===");
+        console.log("Implementation:", address(vaultImplementation));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
 
         return address(proxy);
     }
 
-    function _deployCrossChainFactory(string memory targetChain, address vaultAddress) internal returns (address) {
+    function _deployCrossChainIndexFactoryStorage(string memory targetChain, address vaultProxy)
+        internal
+        returns (address)
+    {
         uint64 chainSelector;
         address chainlinkToken;
         address router;
@@ -76,16 +86,16 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
             swapRouterV2 = vm.envAddress("ETHEREUM_ROUTER_V2_ADDRESS");
             toUsdPriceFeed = vm.envAddress("ETHEREUM_TO_USD_PRICE_FEED");
         } else {
-            revert("Unsupported target chain");
+            revert("Unsupported target chain for CrossChainIndexFactoryStorage");
         }
 
         ProxyAdmin proxyAdmin = new ProxyAdmin();
-        CrossChainIndexFactory crossChainFactoryImplementation = new CrossChainIndexFactory();
+        CrossChainIndexFactoryStorage impl = new CrossChainIndexFactoryStorage();
 
         bytes memory initData = abi.encodeWithSignature(
             "initialize(uint64,address,address,address,address,address,address,address,address)",
             chainSelector,
-            payable(vaultAddress),
+            payable(vaultProxy),
             chainlinkToken,
             router,
             wethAddress,
@@ -96,23 +106,54 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
         );
 
         TransparentUpgradeableProxy proxy =
-            new TransparentUpgradeableProxy(address(crossChainFactoryImplementation), address(proxyAdmin), initData);
+            new TransparentUpgradeableProxy(address(impl), address(proxyAdmin), initData);
 
-        console.log("=== CrossChainFactory Deployment ===");
-        console.log("Implementation:", address(crossChainFactoryImplementation));
-        console.log("Proxy:", address(proxy));
-        console.log("ProxyAdmin:", address(proxyAdmin));
+        console.log("\n=== CrossChainIndexFactoryStorage ===");
+        console.log("Implementation:", address(impl));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
+
+        return address(proxy);
+    }
+
+    function _deployCrossChainIndexFactory(string memory targetChain, address ccIFSProxy) internal returns (address) {
+        address chainlinkToken;
+        address router;
+
+        if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
+            chainlinkToken = vm.envAddress("ARBITRUM_SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
+            router = vm.envAddress("ARBITRUM_SEPOLIA_CCIP_ROUTER_ADDRESS");
+        } else if (keccak256(bytes(targetChain)) == keccak256("ethereum_mainnet")) {
+            chainlinkToken = vm.envAddress("ETHEREUM_CHAINLINK_TOKEN_ADDRESS");
+            router = vm.envAddress("ETHEREUM_CCIP_ROUTER_ADDRESS");
+        } else {
+            revert("Unsupported target chain for CrossChainIndexFactory");
+        }
+
+        ProxyAdmin proxyAdmin = new ProxyAdmin();
+        CrossChainIndexFactory impl = new CrossChainIndexFactory();
+
+        bytes memory initData =
+            abi.encodeWithSignature("initialize(address,address,address)", ccIFSProxy, router, chainlinkToken);
+
+        TransparentUpgradeableProxy proxy =
+            new TransparentUpgradeableProxy(address(impl), address(proxyAdmin), initData);
+
+        console.log("\n=== CrossChainIndexFactory ===");
+        console.log("Implementation:", address(impl));
+        console.log("Proxy:         ", address(proxy));
+        console.log("ProxyAdmin:    ", address(proxyAdmin));
 
         return address(proxy);
     }
 
     function _deployPriceOracle() internal returns (address) {
-        address priceOracle = _deployByteCode(priceOracleByteCode);
+        address deployed = _deployByteCode(priceOracleByteCode);
 
-        console.log("=== PriceOracle Deployment ===");
-        console.log("PriceOracle Implementation:", priceOracle);
+        console.log("\n=== PriceOracle ===");
+        console.log("Implementation:", deployed);
 
-        return priceOracle;
+        return deployed;
     }
 
     function _deployByteCode(bytes memory bytecode) internal returns (address) {
@@ -121,48 +162,5 @@ contract DeployCrossChainVaultOracle is Script, Test, PriceOracleByteCode {
             deployed := create(0, add(bytecode, 0x20), mload(bytecode))
         }
         return deployed;
-    }
-
-    function _linkContracts(
-        string memory targetChain,
-        address newVaultProxy,
-        address crossChainFactoryProxy,
-        address priceOracle
-    ) internal {
-        Vault(newVaultProxy).setOperator(crossChainFactoryProxy, true);
-        console.log("Vault.setOperator() done for crossChainFactoryProxy");
-
-        uint64 chainSelector;
-        address crossChainToken;
-        address wethAddress;
-
-        if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
-            chainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
-            crossChainToken = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
-            wethAddress = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
-        } else if (keccak256(bytes(targetChain)) == keccak256("ethereum_mainnet")) {
-            chainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
-            crossChainToken = vm.envAddress("ETHEREUM_CROSS_CHAIN_TOKEN_ADDRESS");
-            wethAddress = vm.envAddress("ETHEREUM_WETH_ADDRESS");
-        } else {
-            revert("Unsupported chain for linking");
-        }
-
-        uint24[] memory feesData = new uint24[](1);
-        feesData[0] = 3000;
-
-        address[] memory path = new address[](2);
-        path[0] = wethAddress; // from WETH
-        path[1] = crossChainToken; // to crossChainToken
-
-        CrossChainIndexFactory(payable(crossChainFactoryProxy)).setCrossChainToken(
-            chainSelector, crossChainToken, path, feesData
-        );
-        console.log("CrossChainIndexFactory.setCrossChainToken() done");
-
-        CrossChainIndexFactory(payable(crossChainFactoryProxy)).setPriceOracle(priceOracle);
-        console.log("CrossChainIndexFactory.setPriceOracle() done");
-
-        console.log("=== All linking completed ===");
     }
 }

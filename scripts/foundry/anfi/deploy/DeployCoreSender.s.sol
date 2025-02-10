@@ -18,6 +18,7 @@ contract DeployCoreSender is Script {
         address wethAddress;
         address indexFactoryStorageProxy;
         address functionOracleProxy;
+        address chainlinkToken;
 
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
             indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
@@ -25,12 +26,14 @@ contract DeployCoreSender is Script {
             wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
             indexFactoryStorageProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             functionOracleProxy = vm.envAddress("SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADDRESS");
+            chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
             router = vm.envAddress("ARBITRUM_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
             indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             functionOracleProxy = vm.envAddress("ARBITRUM_FUNCTIONS_ORACLE_PROXY_ADDRESS");
+            chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
         } else {
             revert("Unsupported target chain");
         }
@@ -45,6 +48,7 @@ contract DeployCoreSender is Script {
             payable(indexTokenProxy),
             indexFactoryStorageProxy,
             functionOracleProxy,
+            chainlinkToken,
             router,
             wethAddress
         );
