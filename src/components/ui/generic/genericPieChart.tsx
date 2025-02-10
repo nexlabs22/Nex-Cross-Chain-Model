@@ -115,7 +115,7 @@ const GenericPieChart = () => {
               row: 'customTooltipRow',
               cell: 'customTooltipTableCell',
             },
-            trigger: 'item', // or 'axis' if desired
+            trigger: 'item',
           }}
           sx={{
             width: '100%',

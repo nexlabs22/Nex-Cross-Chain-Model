@@ -5,7 +5,6 @@ import theme from '@/theme/theme';
 import { Box, GlobalStyles } from '@mui/material';
 
 const GenericBarChart = () => {
-  // Create a ref to measure the container's dimensions.
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
 
@@ -26,7 +25,6 @@ const GenericBarChart = () => {
 
   const { width, height } = dimensions;
 
-  // Your unified data array.
   const exampleData = [
     {
       value: 3000,
@@ -45,10 +43,8 @@ const GenericBarChart = () => {
     },
   ];
 
-  // Extract labels.
   const labels = exampleData.map((item) => item.label);
 
-  // Transform data: one series per category with nulls for other positions.
   const series = exampleData.map((item, idx) => ({
     data: exampleData.map((_, j) => (j === idx ? item.value : null)),
     color: item.color,
@@ -138,7 +134,7 @@ const GenericBarChart = () => {
               row: 'customTooltipRow',
               cell: 'customTooltipTableCell',
             },
-            trigger: 'item', // or 'axis' if desired
+            trigger: 'item',
           }}
           borderRadius={10}
           slotProps={{
