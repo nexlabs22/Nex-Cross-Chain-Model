@@ -3,7 +3,6 @@ import { areaElementClasses, LineChart } from '@mui/x-charts/LineChart';
 import { useYScale, useDrawingArea } from '@mui/x-charts/hooks';
 import { ScaleLinear } from 'd3-scale';
 import theme from '@/theme/theme';
-import { Stack } from '@mui/material';
 
 interface GenericAreaLineChartProps {
     label: string;
@@ -12,8 +11,10 @@ interface GenericAreaLineChartProps {
 
 
 function ColorPalette({ id }: { id: string }) {
-    const { top, height } = useDrawingArea();
-    const scale = useYScale() as ScaleLinear<number, number>;
+    const { top, height, bottom } = useDrawingArea();
+    const svgHeight = top + bottom + height;
+
+    const scale = useYScale() as ScaleLinear<number, number>; // You can provide the axis Id if you have multiple ones
 
     return (
         <defs>
@@ -21,26 +22,23 @@ function ColorPalette({ id }: { id: string }) {
                 id={id}
                 x1="0"
                 x2="0"
-                y1={top}
-                y2={top + height}
-                gradientUnits="userSpaceOnUse"
+                y1="0"
+                y2={`${svgHeight}px`}
+                gradientUnits="userSpaceOnUse" // Use the SVG coordinate instead of the component ones.
             >
                 <stop
                     offset={scale(1000) / svgHeight}
                     stopColor={theme.palette.brand.greenAreaChart1.main}
                     stopOpacity={1}
                 />
-                <stop
-                    offset={(scale(0) - top) / height}
-                    stopColor={theme.palette.brand.greenAreaChart2.main}
-                    stopOpacity={1}
-                />
+                <stop offset={scale(0) / svgHeight} stopColor={theme.palette.brand.greenAreaChart2.main} stopOpacity={1} />
+
             </linearGradient>
         </defs>
     );
 }
 
-const GenericAreaLineChart = ({  label, chartData  }: GenericAreaLineChartProps) => {
+const GenericAreaLineChart = ({ label, chartData }: GenericAreaLineChartProps) => {
 
     return (
         <LineChart
@@ -77,26 +75,4 @@ const GenericAreaLineChart = ({  label, chartData  }: GenericAreaLineChartProps)
     );
 }
 
-export function ChartWrapper() {
-    return (
-        <Stack
-            width={'100%'}
-            height={{ xs: '16vh', lg: 100 }}
-            marginX={'auto'}
-            paddingTop={{ xs: 3, lg: 0 }}
-            direction={'row'}
-            alignItems={'center'}
-            justifyContent={'center'}
-            sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-            }}
-        >
-            <GenericAreaLineChart label="Your Label" />
-        </Stack>
-    );
-}
-
-export default GenericAreaLineChart;
+export default GenericAreaLineChart
