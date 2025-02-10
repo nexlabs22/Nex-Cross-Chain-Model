@@ -32,8 +32,9 @@ const CatalogueTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
       flex: 2,
+      minWidth: 200,
       renderCell: (params) => (
         <Stack direction={"row"} alignItems={"center"} gap={1}>
           <Box
@@ -41,7 +42,7 @@ const CatalogueTable = () => {
             height={40}
             borderRadius={1}
             sx={{
-              backgroundImage: `url(${params.row.logoString})`,
+              backgroundImage: `url(${params.row.logo})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -57,22 +58,25 @@ const CatalogueTable = () => {
       headerName: "Price",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
+      minWidth: 100,
     },
     {
       field: "change24h",
       headerName: "24h Change",
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
+      minWidth: 100,
     },
     {
       field: "action",
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
       sortable: false,
+      minWidth: 200,
       renderCell: (params) => (
         <Stack direction={"row"} justifyContent={"end"} gap={1}>
           <Link
@@ -121,10 +125,10 @@ const CatalogueTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
       flex: 2,
       renderCell: (params) => (
-        <Stack direction={"row"} alignItems={"center"} gap={1} py={2}>
+        <Stack direction={"row"} alignItems={"center"} gap={1}>
           <Box
             width={40}
             height={40}
@@ -160,21 +164,21 @@ const CatalogueTable = () => {
       headerName: "Price",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
     },
     {
       field: "totalSupply",
       headerName: "Total Supply",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
     },
     {
       field: "change24h",
       headerName: "24h Change",
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
     },
     {
       field: "address",
@@ -191,14 +195,16 @@ const CatalogueTable = () => {
         >
           <Typography variant={"body1"}>
             {reduceAddress(
-              params.row.tokenAddresses?.[chain]?.[network]?.token?.address as Address
+              params.row.tokenAddresses?.Ethereum?.Sepolia?.token
+                ?.address as Address
             )}
           </Typography>
           <IconButton
             sx={{ cursor: "pointer" }}
             onClick={() => {
               copy(
-                params.row.tokenAddresses?.[chain]?.[network]?.token?.address as Address
+                params.row.tokenAddresses?.Ethereum?.Sepolia?.token
+                  ?.address as Address
               )
             }}
           >
@@ -212,7 +218,7 @@ const CatalogueTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
       sortable: false,
       renderCell: (params) => (
         <Stack direction={"row"} justifyContent={"end"} gap={1}>
@@ -289,18 +295,11 @@ const CatalogueTable = () => {
         autoSizeOptions={{
           includeOutliers: true,
           includeHeaders: true,
-          outliersFactor: 3,
+          outliersFactor: 30,
           expand: true,
           columns: isMobile
             ? ["index", "price", "change24h", "action"]
-            : [
-                "index",
-                "price",
-                "totalSupply",
-                "change24h",
-                "address",
-                "action",
-              ],
+            : ["index", "price", "totalSupply", "change24h", "address", "action"],
         }}
       />
     </Stack>
