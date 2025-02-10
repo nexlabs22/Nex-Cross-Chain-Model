@@ -48,7 +48,7 @@ const getDecimals = (type?: { address: string; decimals?: number }): number => {
 }
 
 const isWETH = (address: Address): boolean => {
-  return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.index?.address
+  return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address
 }
 
 const parseQueryFromPath = (path: string): Record<string, string | undefined> => {
