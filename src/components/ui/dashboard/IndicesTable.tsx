@@ -6,6 +6,8 @@ import {
   Stack,
   Typography,
   IconButton,
+  Button,
+  Link,
   useMediaQuery,
   useTheme,
 } from "@mui/material"
@@ -21,7 +23,7 @@ import { useGlobal } from "@/providers/GlobalProvider"
 
 const IndicesTable = () => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md")) // Detect mobile screen size
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
   const { nexTokens } = useDashboard()
   const { activeChainSetting } = useGlobal()
@@ -32,8 +34,9 @@ const IndicesTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
       flex: 2,
+      minWidth: 200,
       renderCell: (params) => (
         <Stack direction={"row"} alignItems={"center"} gap={1}>
           <Box
@@ -57,18 +60,68 @@ const IndicesTable = () => {
       headerName: "Price",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
+      minWidth: 100,
     },
     {
       field: "change24h",
       headerName: "24h Change",
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
+      minWidth: 100,
+    },
+    {
+      field: "action",
+      headerName: "",
+      flex: 1,
+      disableColumnMenu: true,
+      resizable: true,
+      sortable: false,
+      minWidth: 200,
+      renderCell: (params) => (
+        <Stack direction={"row"} justifyContent={"end"} gap={1}>
+          <Link
+            href={`/trade?side=buy&index=${params.row.symbol}`}
+            style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: theme.palette.brand.nex1.main,
+                paddingY: 0.5,
+                paddingX: 1,
+                borderRadius: 2,
+                color: theme.palette.info.main,
+                textTransform: "none",
+              }}
+            >
+              <Typography variant={"h6"}>Trade</Typography>
+            </Button>
+          </Link>
+          <Link
+            href={`/index-details?index=${params.row.symbol}`}
+            style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: theme.palette.brand.nex1.main,
+                paddingY: 0.5,
+                paddingX: 1,
+                borderRadius: 2,
+                color: theme.palette.info.main,
+                textTransform: "none",
+              }}
+            >
+              <Typography variant={"h6"}>Details</Typography>
+            </Button>
+          </Link>
+        </Stack>
+      ),
     },
   ]
 
-  // Define columns for larger screens
   const desktopColumns: GridColDef[] = [
     {
       field: "index",
@@ -162,14 +215,61 @@ const IndicesTable = () => {
         </Stack>
       ),
     },
+    {
+      field: "action",
+      headerName: "",
+      flex: 1,
+      disableColumnMenu: true,
+      resizable: false,
+      sortable: false,
+      renderCell: (params) => (
+        <Stack direction={"row"} justifyContent={"end"} gap={1}>
+          <Link
+            href={`/trade?side=buy&index=${params.row.symbol}`}
+            style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: theme.palette.brand.nex1.main,
+                paddingY: 0.5,
+                paddingX: 1,
+                borderRadius: 2,
+                color: theme.palette.info.main,
+                textTransform: "none",
+              }}
+            >
+              <Typography variant={"h6"}>Trade</Typography>
+            </Button>
+          </Link>
+          <Link
+            href={`/index-details?index=${params.row.symbol}`}
+            style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: theme.palette.brand.nex1.main,
+                paddingY: 0.5,
+                paddingX: 1,
+                borderRadius: 2,
+                color: theme.palette.info.main,
+                textTransform: "none",
+              }}
+            >
+              <Typography variant={"h6"}>Details</Typography>
+            </Button>
+          </Link>
+        </Stack>
+      ),
+    },
   ]
 
-  // Use mobileColumns if on mobile, otherwise use desktopColumns
   const columns = isMobile ? mobileColumns : desktopColumns
 
   const rows = nexTokens.map((token, index) => ({
-    id: index, // Required unique ID for DataGrid
-    ...token, // Spread existing fields
+    id: index,
+    ...token,
     price: token.smartContractInfo?.poolPrice
       ? `$${formatToViewNumber({
           value: token.smartContractInfo?.poolPrice,
@@ -189,7 +289,7 @@ const IndicesTable = () => {
       })}`,
     change24h: token.marketInfo?.change24h
       ? `${token.marketInfo?.change24h}%`
-      : "N/A", // Replace with actual data
+      : "N/A",
     address: reduceAddress(
       token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
     ),
@@ -205,11 +305,11 @@ const IndicesTable = () => {
         autoSizeOptions={{
           includeOutliers: true,
           includeHeaders: true,
-          outliersFactor: 3,
+          outliersFactor: 30,
           expand: true,
           columns: isMobile
-            ? ["index", "price", "change24h"]
-            : ["index", "price", "totalSupply", "change24h", "address"],
+            ? ["index", "price", "change24h", "action"]
+            : ["index", "price", "totalSupply", "change24h", "address", "action"],
         }}
       />
     </Stack>

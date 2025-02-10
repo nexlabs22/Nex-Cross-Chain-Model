@@ -66,6 +66,54 @@ const CatalogueTable = () => {
       disableColumnMenu: true,
       resizable: false,
     },
+    {
+      field: "action",
+      headerName: "",
+      flex: 1,
+      disableColumnMenu: true,
+      resizable: false,
+      sortable: false,
+      renderCell: (params) => (
+        <Stack direction={"row"} justifyContent={"end"} gap={1}>
+          <Link
+            href={`/trade?side=buy&index=${params.row.symbol}`}
+            style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: theme.palette.brand.nex1.main,
+                paddingY: 0.5,
+                paddingX: 1,
+                borderRadius: 2,
+                color: theme.palette.info.main,
+                textTransform: "none",
+              }}
+            >
+              <Typography variant={"h6"}>Trade</Typography>
+            </Button>
+          </Link>
+          <Link
+            href={`/index-details?index=${params.row.symbol}`}
+            style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: theme.palette.brand.nex1.main,
+                paddingY: 0.5,
+                paddingX: 1,
+                borderRadius: 2,
+                color: theme.palette.info.main,
+                textTransform: "none",
+              }}
+            >
+              <Typography variant={"h6"}>Details</Typography>
+            </Button>
+          </Link>
+        </Stack>
+      ),
+    },
   ]
 
   const desktopColumns: GridColDef[] = [
@@ -167,7 +215,7 @@ const CatalogueTable = () => {
       resizable: false,
       sortable: false,
       renderCell: (params) => (
-        <Stack direction={"row"} gap={1}>
+        <Stack direction={"row"} justifyContent={"end"} gap={1}>
           <Link
             href={`/trade?side=buy&index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
@@ -244,7 +292,7 @@ const CatalogueTable = () => {
           outliersFactor: 3,
           expand: true,
           columns: isMobile
-            ? ["index", "price", "change24h"]
+            ? ["index", "price", "change24h", "action"]
             : [
                 "index",
                 "price",
