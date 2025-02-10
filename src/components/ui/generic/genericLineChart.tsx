@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { LineChart, lineElementClasses } from '@mui/x-charts/LineChart';
 import { chartsGridClasses } from '@mui/x-charts/ChartsGrid';
-import { Box } from '@mui/material';
+import { Box, GlobalStyles } from '@mui/material';
 import theme from '@/theme/theme';
 
 interface GenericLineChartProps {
@@ -51,6 +51,45 @@ const GenericLineChart = ({ label1, label2 }: GenericLineChartProps) => {
         alignItems: 'center',
       }}
     >
+        <GlobalStyles
+        styles={{
+          '.customTooltipRoot': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '4px',
+            width: 'fit-content',
+          },
+          '.customTooltipTable': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipPaper': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipRow': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipTableCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+        }}
+      />
       {width > 0 && height > 0 && (
         <LineChart
           width={width}
@@ -104,6 +143,16 @@ const GenericLineChart = ({ label1, label2 }: GenericLineChartProps) => {
               strokeWidth: 2,
               stroke: theme.palette.grey[600],
             },
+          }}
+          tooltip={{
+            classes: {
+              root: 'customTooltipRoot',
+              paper: 'customTooltipPaper',
+              table: 'customTooltipTable',
+              row: 'customTooltipRow',
+              cell: 'customTooltipTableCell',
+            },
+            trigger: 'axis',
           }}
           grid={{ vertical: true, horizontal: false }}
           slotProps={{
