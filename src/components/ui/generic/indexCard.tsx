@@ -8,7 +8,6 @@ import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGro
 import {
   MdOutlineArrowOutward,
   MdOutlineArrowUpward,
-  MdOutlineArrowDownward,
 } from "react-icons/md"
 import theme from "@/theme/theme"
 
@@ -21,30 +20,12 @@ interface IndexCardProps {
 }
 
 const IndexCard = ({ index }: IndexCardProps) => {
-
-  const logo = index.logoString
-  const price = index.smartContractInfo?.poolPrice
-    ? `$${formatToViewNumber({
-      value: index.smartContractInfo?.poolPrice,
-      returnType: "currency",
-    })}`
-    : index.marketInfo?.offChainPrice
-      ? `$${formatToViewNumber({
-        value: index.marketInfo?.offChainPrice,
-        returnType: "currency",
-      })}`
-      : "N/A"
-  const change24hString = index.marketInfo?.change24h
-    ? `${index.marketInfo?.change24h}%`
-    : "N/A"
-  const change24hValue = index.marketInfo?.change24h
-
     return (
         <GenericCard>
             <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
                 <Stack direction={'row'} alignItems={'center'} gap={1}>
                     <Box width={64} height={64} borderRadius={1} sx={{
-                        backgroundImage: `url(${index.logo})`,
+                        backgroundImage: `url(${index.logoString})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                     }}>
@@ -58,7 +39,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
             </Stack>
             <Stack gap={1} marginTop={3}>
                 <Typography variant={'h3'}>
-                    { index.smartContractInfo?.price ? `$${formatToViewNumber({value: index.smartContractInfo?.price, returnType: 'currency'})}` : '0.00'} <span style={{ color: theme.palette.text.secondary, fontSize: 12 }}>USD</span>
+                    { index.smartContractInfo?.poolPrice ? `$${formatToViewNumber({value: index.smartContractInfo?.poolPrice, returnType: 'currency'})}` : '0.00'} <span style={{ color: theme.palette.text.secondary, fontSize: 12 }}>USD</span>
                 </Typography>
                 <Stack gap={0} marginBottom={{xs: 16, lg: 12}}>
                     <Stack direction={'row'} gap={1} alignItems={'center'}>
