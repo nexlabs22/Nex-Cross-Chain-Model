@@ -1,25 +1,22 @@
+import { Chains, ChainSelectorMap, Networks } from '@/types/indexTypes'
 import { createPublicClient, http } from 'viem'
-import {  arbitrumSepolia, goerli, sepolia } from 'viem/chains'
+import { arbitrumSepolia, sepolia } from 'viem/chains'
 
-
-const clients = {
-    goerli: createPublicClient({
-        chain: goerli,
-        transport: http(`https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_GOERLI_KEY}`),
-    }),
-    sepolia: createPublicClient({
-        chain: sepolia,
-        transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_KEY}`),
-    }),
-    arbitrumSepolia: createPublicClient({
-        chain: arbitrumSepolia,
-        transport: http(`https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ARBITRUM_SEPOLIA_KEY}`),
-    }),
-    
+const clients: ChainSelectorMap = {
+    Ethereum: {
+        Sepolia: createPublicClient({
+            chain: sepolia,
+            transport: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_KEY}`),
+        }),
+    },
+    Arbitrum: {
+        Sepolia: createPublicClient({
+            chain: arbitrumSepolia,
+            transport: http(`https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ARBITRUM_SEPOLIA_KEY}`),
+        }),
+    }
 }
 
-type Chain = 'goerli' | 'sepolia' | 'arbitrumSepolia' 
-
-export const getClient = (chain: Chain) => {
-    return clients[chain]
+export const getClient = (chain: Chains, network: Networks)=> {
+    return clients?.[chain]?.[network]
 } 
