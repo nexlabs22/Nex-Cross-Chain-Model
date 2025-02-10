@@ -311,57 +311,6 @@ contract ContractDeployer is
         crossChainIndexFactoryStorage4.setVerifiedFactory(address(factoryBalancer), 1, true);
     }
 
-    function linkAllContracts() public {
-        indexToken.setMinter(address(factory), true);
-
-        uint24[] memory feesData = new uint24[](1);
-        feesData[0] = 3000;
-        address[] memory path = new address[](2);
-        path[0] = address(weth);
-        path[1] = address(crossChainToken);
-
-        indexFactoryStorage.setCrossChainToken(2, address(crossChainToken), path, feesData);
-        indexFactoryStorage.setCrossChainToken(1, address(crossChainToken), path, feesData);
-        indexFactoryStorage.setCrossChainFactory(address(crossChainIndexFactory), 2);
-        indexFactoryStorage.setIndexFactory(address(factory));
-        indexFactoryStorage.setPriceOracle(address(priceOracleAddress));
-        indexFactoryStorage.setVault(address(vault));
-        indexFactoryStorage.setIndexFactoryBalancer(address(factoryBalancer));
-
-        vault.setOperator(address(factory), true);
-        vault.setOperator(address(factoryBalancer), true);
-
-        factory.setIndexFactoryStorage(address(indexFactoryStorage));
-
-        crossChainIndexFactoryStorage.setCrossChainToken(1, address(crossChainToken), path, feesData);
-        crossChainIndexFactoryStorage.setPriceOracle(priceOracleAddress);
-
-        crossChainVault.setOperator(address(crossChainIndexFactory), true);
-
-        mockRouter.setFactoryChainSelector(1, address(factory));
-        mockRouter.setFactoryChainSelector(1, address(factoryBalancer));
-        mockRouter.setFactoryChainSelector(2, address(crossChainIndexFactory));
-
-        link.transfer(address(factory), 10e18);
-        link.transfer(address(crossChainIndexFactory), 10e18);
-
-        // for cross chain index factory
-        crossChainIndexFactoryStorage.setVerifiedFactory(address(factory), 1, true);
-        crossChainIndexFactoryStorage.setVerifiedFactory(address(factoryBalancer), 1, true);
-        // for cross chain index factory1
-        crossChainIndexFactoryStorage1.setVerifiedFactory(address(factory), 1, true);
-        crossChainIndexFactoryStorage1.setVerifiedFactory(address(factoryBalancer), 1, true);
-        // for cross chain index factory2
-        crossChainIndexFactoryStorage2.setVerifiedFactory(address(factory), 1, true);
-        crossChainIndexFactoryStorage2.setVerifiedFactory(address(factoryBalancer), 1, true);
-        // for cross chain index factory3
-        crossChainIndexFactoryStorage3.setVerifiedFactory(address(factory), 1, true);
-        crossChainIndexFactoryStorage3.setVerifiedFactory(address(factoryBalancer), 1, true);
-        // for cross chain index factory4
-        crossChainIndexFactoryStorage4.setVerifiedFactory(address(factory), 1, true);
-        crossChainIndexFactoryStorage4.setVerifiedFactory(address(factoryBalancer), 1, true);
-    }
-
     function deployTokens(uint256 initialSupply) public returns (Token[12] memory) {
         Token[12] memory tokens;
 
