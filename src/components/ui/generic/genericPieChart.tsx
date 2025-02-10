@@ -1,8 +1,8 @@
 'use client';
 import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
+import { Box, GlobalStyles } from '@mui/material';
 import theme from '@/theme/theme';
-import { Box } from '@mui/material';
 
 const GenericPieChart = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -24,7 +24,6 @@ const GenericPieChart = () => {
   }, [updateDimensions]);
 
   const { width, height } = dimensions;
-
   const cx = width / 2;
   const cy = height / 2;
   const outerRadius = Math.min(width, height) * 0.4;
@@ -39,7 +38,52 @@ const GenericPieChart = () => {
   ];
 
   return (
-    <Box ref={containerRef} sx={{ width: '100%', height: '100%' }}>
+    <Box
+      ref={containerRef}
+      sx={{
+        width: '100%',
+        height: '100%',
+      }}
+    >
+      <GlobalStyles
+        styles={{
+          '.customTooltipRoot': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '4px',
+            width: 'fit-content',
+          },
+          '.customTooltipTable': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipPaper': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipRow': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipTableCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+        }}
+      />
       {width > 0 && height > 0 && (
         <PieChart
           series={[
@@ -49,24 +93,29 @@ const GenericPieChart = () => {
                 label: labels[index],
                 color: colors[index],
               })),
-              innerRadius: innerRadius,
-              outerRadius: outerRadius,
+              innerRadius,
+              outerRadius,
               paddingAngle: 5,
               cornerRadius: 10,
               startAngle: 0,
               endAngle: 360,
-              cx: cx,
-              cy: cy,
+              cx,
+              cy,
             },
           ]}
           slotProps={{
-            legend: {
-              hidden: true,
+            legend: { hidden: true },
+            pieArc: { stroke: 'none', strokeWidth: 0 },
+          }}
+          tooltip={{
+            classes: {
+              root: 'customTooltipRoot',
+              paper: 'customTooltipPaper',
+              table: 'customTooltipTable',
+              row: 'customTooltipRow',
+              cell: 'customTooltipTableCell',
             },
-            pieArc: {
-              stroke: 'none',
-              strokeWidth: 0,
-            },
+            trigger: 'item', // or 'axis' if desired
           }}
           sx={{
             width: '100%',

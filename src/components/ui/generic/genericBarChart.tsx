@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import theme from '@/theme/theme';
-import { Box } from '@mui/material';
+import { Box, GlobalStyles } from '@mui/material';
 
 const GenericBarChart = () => {
   // Create a ref to measure the container's dimensions.
@@ -52,6 +52,7 @@ const GenericBarChart = () => {
   const series = exampleData.map((item, idx) => ({
     data: exampleData.map((_, j) => (j === idx ? item.value : null)),
     color: item.color,
+    label: item.label,
     stacked: true,
   }));
 
@@ -66,6 +67,45 @@ const GenericBarChart = () => {
         alignItems: 'center',
       }}
     >
+      <GlobalStyles
+        styles={{
+          '.customTooltipRoot': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '4px',
+            width: 'fit-content',
+          },
+          '.customTooltipTable': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipPaper': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipRow': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+          '.customTooltipTableCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+          },
+        }}
+      />
       {width > 0 && height > 0 && (
         <BarChart
           width={width}
@@ -90,7 +130,16 @@ const GenericBarChart = () => {
             top: 5,
             bottom: 5,
           }}
-          tooltip={undefined}
+          tooltip={{
+            classes: {
+              root: 'customTooltipRoot',
+              paper: 'customTooltipPaper',
+              table: 'customTooltipTable',
+              row: 'customTooltipRow',
+              cell: 'customTooltipTableCell',
+            },
+            trigger: 'item', // or 'axis' if desired
+          }}
           borderRadius={10}
           slotProps={{
             legend: { hidden: true },
