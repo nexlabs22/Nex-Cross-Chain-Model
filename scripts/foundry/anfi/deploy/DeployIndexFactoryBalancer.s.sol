@@ -14,23 +14,23 @@ contract DeployIndexFactoryBalancer is Script {
         string memory targetChain = "sepolia";
 
         uint64 currentChainSelector;
-        address indexTokenProxy;
-        address chainlinkToken;
-        address router;
         address wethAddress;
+        address indexFactoryStorageProxy;
+        address functionsOracleProxy;
+        address balancerSenderProxy;
 
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
             currentChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
-            indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
-            chainlinkToken = vm.envAddress("SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("SEPOLIA_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+            indexFactoryStorageProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            functionsOracleProxy = vm.envAddress("SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADDRESS");
+            balancerSenderProxy = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             currentChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
-            indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
-            chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("ARBITRUM_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+            indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            functionsOracleProxy = vm.envAddress("ARBITRUM_FUNCTIONS_ORACLE_PROXY_ADDRESS");
+            balancerSenderProxy = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADDRESS");
         } else {
             revert("Unsupported target chain");
         }
@@ -43,9 +43,9 @@ contract DeployIndexFactoryBalancer is Script {
         bytes memory data = abi.encodeWithSignature(
             "initialize(uint64,address,address,address,address)",
             currentChainSelector,
-            payable(indexTokenProxy),
-            chainlinkToken,
-            router,
+            indexFactoryStorageProxy,
+            functionsOracleProxy,
+            payable(balancerSenderProxy),
             wethAddress
         );
 
