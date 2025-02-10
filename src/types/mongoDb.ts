@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import { ObjectId, Sort } from "mongodb"
 
 import { AssetCategory } from "./indexTypes"
 
@@ -17,4 +17,10 @@ export type MongoDb = {
   volume?: number
   marketCap?: number
   activeAddressCount?: number
+}
+
+export type aggregateType = {
+  $match?: {[key:string]: number|string},
+  $sort?: {[key:string]: Sort},
+  $limit?: number
 }

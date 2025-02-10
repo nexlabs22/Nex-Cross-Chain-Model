@@ -7,13 +7,13 @@ import Header from "@/components/layout/Header"
 import Sidebar from "@/components/layout/sidebar"
 import Footer from "@/components/layout/Footer"
 import { useDashboard } from "@/providers/DashboardProvider"
-import GenericCard from "@/components/ui/generic/genericCard"
 import { IndexCryptoAsset } from "@/types/indexTypes"
 import IndexDetailsTabbedTablesView from "@/components/ui/index-details/indexDetailsTabbedViewTables"
 import CircularProgress from "@mui/material/CircularProgress"
 import MarketStats from "./marketStats"
 import Composition from "./composition"
 import { parseQueryFromPath } from "@/utils/general"
+import TradingViewChart from "@/components/ui/chart/TradingViewChart"
 
 const Page = () => {
   const { nexTokens } = useDashboard()
@@ -74,11 +74,7 @@ const Page = () => {
               </Typography>
             </Grid>
             <Grid size={{ xs: 12, sm: 8 }}>
-              <GenericCard>
-                <Typography variant="h4" color="primary" marginBottom={2}>
-                  Chart space
-                </Typography>
-              </GenericCard>
+              <TradingViewChart index={index.symbol} />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 4 }}>
