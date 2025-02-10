@@ -1,5 +1,6 @@
 import { Collection } from "mongodb"
 import { MongoDb } from "@/types/mongoDb"
+import { AssetOverviewDocument } from "@/types/indexTypes"
 
 export const parseCommaSeparated = (str: string) => {
   return str?.split(",").reduce((acc, item) => {
@@ -65,6 +66,38 @@ export const parseOHLC = (data: string) => {
   if (data?.split(",")?.length < 2) return { price: Number(data) }
   const [open, high, low, close, volume] = data?.split(",")?.map(Number)
   return { open, high, low, close, volume }
+}
+
+export const uploadToMongoDocument = async (
+  data: (AssetOverviewDocument | null)[],
+  collection: Collection<AssetOverviewDocument>
+) => {
+  const bulkOperations = []
+
+  console.log("Initiating upload to MongoDB Document")
+
+  for (const row of data) {
+    if (!row) continue
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { ticker, ...rest } = row as any // Assuming date and ticker are common fields
+    const bulkOperation = {
+      updateOne: {
+        filter: { ticker },
+        update: { $set: rest },
+        upsert: true,
+      },
+    }
+    bulkOperations.push(bulkOperation)
+  }
+
+  if (bulkOperations.length > 0) {
+    await collection.bulkWrite(bulkOperations)
+  }
+
+  // Return a row count
+  const rowCount = await collection.countDocuments()
+  console.log(`Successfully uploaded bulk, new row count: ${rowCount}`)
+  return
 }
 
 export const uploadToMongo = async (

@@ -143,16 +143,14 @@ const CatalogueTable = () => {
         >
           <Typography variant={"body1"}>
             {reduceAddress(
-              params.row.tokenAddresses?.[chain]?.[network]?.index
-                ?.address as Address
+              params.row.tokenAddresses?.[chain]?.[network]?.token?.address as Address
             )}
           </Typography>
           <IconButton
             sx={{ cursor: "pointer" }}
             onClick={() => {
               copy(
-                params.row.tokenAddresses?.[chain]?.[network]?.index
-                  ?.address as Address
+                params.row.tokenAddresses?.[chain]?.[network]?.token?.address as Address
               )
             }}
           >
@@ -230,7 +228,7 @@ const CatalogueTable = () => {
       })}`,
     change24h: token.marketInfo?.change24hPer ? `${token.marketInfo?.change24hPer}%`: 'N/A',
     address: reduceAddress(
-      token.tokenAddresses?.[chain]?.[network]?.index?.address as Address
+      token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
     ),
   }))
 

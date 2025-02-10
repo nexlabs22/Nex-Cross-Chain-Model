@@ -144,7 +144,7 @@ const IndicesTable = () => {
         >
           <Typography variant={"body1"}>
             {reduceAddress(
-              params.row.tokenAddresses?.Ethereum?.Sepolia?.index
+              params.row.tokenAddresses?.Ethereum?.Sepolia?.token
                 ?.address as Address
             )}
           </Typography>
@@ -152,7 +152,7 @@ const IndicesTable = () => {
             sx={{ cursor: "pointer" }}
             onClick={() => {
               copy(
-                params.row.tokenAddresses?.Ethereum?.Sepolia?.index
+                params.row.tokenAddresses?.Ethereum?.Sepolia?.token
                   ?.address as Address
               )
             }}
@@ -191,7 +191,7 @@ const IndicesTable = () => {
       ? `${token.marketInfo?.change24hPer}%`
       : "N/A", // Replace with actual data
     address: reduceAddress(
-      token.tokenAddresses?.[chain]?.[network]?.index?.address as Address
+      token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
     ),
   }))
 

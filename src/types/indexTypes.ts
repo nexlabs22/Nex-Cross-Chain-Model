@@ -1,5 +1,8 @@
 import { ReactElement } from "react"
 import { MongoDb } from "./mongoDb"
+import { PublicClient } from 'viem'
+import { ObjectId } from "mongodb"
+
 export type Address = `0x${string}`
 
 export enum SmartContractType {
@@ -27,7 +30,6 @@ export type AllowedTickers =
   | "THETER" //Morteza's token
 
 export type ContractTypes =
-  | "index"
   | "factory"
   | "token"
   | "storage"
@@ -46,7 +48,7 @@ export type ChainNetwork = {
 
 export type ChainSelectorMap = {
   [chain in Chains]?: {
-    [network in Networks]?: string
+    [network in Networks]?: string | PublicClient
   }
 }
 
@@ -150,6 +152,7 @@ export type thirdwebReadContract = {
   refetch: () => void
 }
 export type AssetOverviewDocument = {
+  _id?: ObjectId
   lastUpdate?: Date
   tradeStatus?: "active" | "upcoming" | "inactive"
   provider?: string[]
@@ -160,10 +163,12 @@ export type AssetOverviewDocument = {
   cusip?: string
   logo_url?: string
   ticker: string
+  coinmarketcap?: object
 }
 
 export type DinariAssetDetails = {
   isFractionable: boolean
+
   id: string
   chainInfo?: {
     address: string

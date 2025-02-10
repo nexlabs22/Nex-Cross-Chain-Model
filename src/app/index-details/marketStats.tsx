@@ -8,7 +8,7 @@ import { formatToViewNumber } from "@/utils/conversionFunctions"
 
 const MarketStats = ({ index }: { index: IndexCryptoAsset }) => {
   const address = reduceAddress(
-    index?.tokenAddresses?.Ethereum?.Mainnet?.index?.address
+    index?.tokenAddresses?.Ethereum?.Mainnet?.token?.address
   )
   const managementFee = index?.smartContractInfo?.managementFee
     ? `${index?.smartContractInfo?.managementFee}%`
