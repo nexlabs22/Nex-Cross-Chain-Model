@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material"
 
+
 const Page = () => {
   return (
     <Box>

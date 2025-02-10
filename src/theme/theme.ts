@@ -12,78 +12,35 @@ declare module "@mui/material/styles" {
     elevations?: typeof lightElevations | typeof darkElevations;
     brand: typeof brandColors;
   }
-
-  interface colorSchemes {
-    light: {
-      palette: Palette;
-    };
-    dark: {
-      palette: Palette;
-    };
-  }
 }
 
 const theme = createTheme({
-  cssVariables: { colorSchemeSelector: "class" },
-  colorSchemes: {
-    light: {
-      palette: {
-        primary: {
-          main: "#000000",
-        },
-        secondary: {
-          main: "#FAFAFA",
-        },
-        background: {
-          default: "#FFFFFF",
-        },
-        text: {
-          primary: "#000000",
-          secondary: "#737373",
-        },
-        info: {
-          main: "#FFFFFF",
-        },
-        error: {
-          main: "#DC2626",
-        },
-        success: {
-          main: "#389685",
-        },
-        brand: brandColors,
-        elevations: lightElevations,
-      },
+  palette: {
+    primary: {
+      main: "#FFFFFF",
     },
-    dark: {
-      palette: {
-        primary: {
-          main: "#FFFFFF",
-        },
-        secondary: {
-          main: "#0A0A0A",
-        },
-        background: {
-          default: "#000000",
-        },
-        text: {
-          primary: "#FFFFFF",
-          secondary: "#737373",
-        },
-        info: {
-          main: "#FFFFFF",
-        },
-        error: {
-          main: "#DC2626",
-        },
-        success: {
-          main: "#389685",
-        },
-        brand: brandColors,
+    secondary: {
+      main: "#0A0A0A",
+    },
+    background: {
+      default: "#000000",
+    },
+    text: {
+      primary: "#FFFFFF",
+      secondary: "#737373",
+    },
+    info: {
+      main: "#FFFFFF",
+    },
+    error: {
+      main: "#DC2626",
+    },
+    success: {
+      main: "#389685",
+    },
+    brand: brandColors,
 
-        elevations: darkElevations,
-      },
-    },
-    
+    elevations: darkElevations,
   },
   typography: {
     fontFamily: 'Satoshi-Variable',

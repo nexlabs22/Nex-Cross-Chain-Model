@@ -25,10 +25,11 @@ const QuickActions = () => {
             link: '/stake'
         },
         {
-            title: 'Convert',
+            title: 'Swap',
             icon: <RiExchange2Line size={24} color={theme.palette.text.primary} />,
-            link: '/'
+            link: '/swap'
         },
+
         {
             title: 'Build',
             icon: <LuBlocks size={24} color={theme.palette.text.primary} />,
