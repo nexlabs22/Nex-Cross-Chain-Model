@@ -10,7 +10,7 @@ import {
 } from "@chainlink/local/src/ccip/CCIPLocalSimulator.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {MockRouter2} from "contracts/test/MockRouter2.sol";
-contract Example01Test is Test {
+contract CCIPTest is Test {
     CCIPLocalSimulator public ccipLocalSimulator;
 
     address alice;

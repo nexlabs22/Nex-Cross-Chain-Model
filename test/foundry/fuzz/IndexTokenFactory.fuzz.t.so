@@ -210,9 +210,9 @@ contract IndexTokenFactoryFuzzTests is Test, ContractDeployer {
         chains[4] = 2;
 
         link.transfer(address(indexFactoryStorage), 1e17);
-        // bytes32 requestId = indexFactoryStorage.requestAssetsData();
+        // bytes32 requestId = functionsOracle.requestAssetsData();
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
-        bytes32 requestId = indexFactoryStorage.requestAssetsData(
+        bytes32 requestId = functionsOracle.requestAssetsData(
             "console.log('Hello, World!');",
             // FunctionsConsumer.Location.Inline, // Use the imported enum directly
             abi.encodePacked("default"),
@@ -228,7 +228,7 @@ contract IndexTokenFactoryFuzzTests is Test, ContractDeployer {
             chains
         );
         oracle.fulfillRequest(
-            address(indexFactoryStorage),
+            address(functionsOracle),
             requestId,
             data
         );
@@ -236,36 +236,36 @@ contract IndexTokenFactoryFuzzTests is Test, ContractDeployer {
     function testOracleList() public {
         updateOracleList();
         // token  oracle list
-        assertEq(indexFactoryStorage.oracleList(0), address(token0));
-        assertEq(indexFactoryStorage.oracleList(1), address(token1));
-        assertEq(indexFactoryStorage.oracleList(2), address(token2));
-        assertEq(indexFactoryStorage.oracleList(3), address(token3));
-        assertEq(indexFactoryStorage.oracleList(4), address(token4));
+        assertEq(functionsOracle.oracleList(0), address(token0));
+        assertEq(functionsOracle.oracleList(1), address(token1));
+        assertEq(functionsOracle.oracleList(2), address(token2));
+        assertEq(functionsOracle.oracleList(3), address(token3));
+        assertEq(functionsOracle.oracleList(4), address(token4));
         // token current list
-        assertEq(indexFactoryStorage.currentList(0), address(token0));
-        assertEq(indexFactoryStorage.currentList(1), address(token1));
-        assertEq(indexFactoryStorage.currentList(2), address(token2));
-        assertEq(indexFactoryStorage.currentList(3), address(token3));
-        assertEq(indexFactoryStorage.currentList(4), address(token4));
+        assertEq(functionsOracle.currentList(0), address(token0));
+        assertEq(functionsOracle.currentList(1), address(token1));
+        assertEq(functionsOracle.currentList(2), address(token2));
+        assertEq(functionsOracle.currentList(3), address(token3));
+        assertEq(functionsOracle.currentList(4), address(token4));
         // token shares
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token0)),
+            functionsOracle.tokenOracleMarketShare(address(token0)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token1)),
+            functionsOracle.tokenOracleMarketShare(address(token1)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token2)),
+            functionsOracle.tokenOracleMarketShare(address(token2)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token3)),
+            functionsOracle.tokenOracleMarketShare(address(token3)),
             20e18
         );
         assertEq(
-            indexFactoryStorage.tokenOracleMarketShare(address(token4)),
+            functionsOracle.tokenOracleMarketShare(address(token4)),
             20e18
         );
 

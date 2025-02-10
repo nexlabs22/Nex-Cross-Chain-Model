@@ -83,7 +83,7 @@ import {V3_CORE_FACTORY_ADDRESSES, SWAP_ROUTER_02_ADDRESSES, CHAIN_TO_ADDRESSES_
     // const chainSelectors = ["1", "2"]
     // //update oracle list
     // await linkToken.transfer(indexFactoryStorage.address, 1e17.toString());
-    // const transaction: ContractTransaction = await indexFactoryStorage.requestAssetsData();
+    // const transaction: ContractTransaction = await functionsOracle.requestAssetsData();
     // const transactionReceipt:any = await transaction.wait(1);
     // const requestId: string = transactionReceipt?.events[0]?.topics[1];
     // await oracle.fulfillOracleFundingRateRequest(requestId, assetList, percentages, swapVersions, chainSelectors);

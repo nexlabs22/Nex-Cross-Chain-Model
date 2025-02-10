@@ -76,8 +76,16 @@ contract CrossChainIndexFactory is
             _crossChainFactoryStorage != address(0),
             "CrossChainFactoryStorage address cannot be zero address"
         );
+        require(
+            _router != address(0),
+            "Router address cannot be zero address"
+        );
+        require(
+            _chainlinkToken != address(0),
+            "Chainlink token address cannot be zero address"
+        );
         factoryStorage = CrossChainIndexFactoryStorage(_crossChainFactoryStorage);
-        CCIPReceiver(_router);
+        __ccipReceiver_init(_router);
         __Ownable_init();
         __Pausable_init();
        
@@ -177,7 +185,8 @@ contract CrossChainIndexFactory is
             _data,
             receiver,
             tokensToSendDetails,
-            payFeesIn
+            payFeesIn,
+            2_000_000
         );
         emit MessageSent(messageId);
         return messageId;
@@ -189,6 +198,7 @@ contract CrossChainIndexFactory is
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
+        
         // bytes32 messageId = any2EvmMessage.messageId; // fetch the messageId
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector; // fetch the source chain identifier (aka selector)
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
@@ -285,6 +295,7 @@ contract CrossChainIndexFactory is
                 )
             );
         }
+        
     }
 
     struct HandleIssuanceLocalVars {
@@ -828,7 +839,8 @@ contract CrossChainIndexFactory is
                 destinationChainSelector,
                 receiver,
                 _data,
-                payFeesIn
+                payFeesIn,
+                2_000_000
             );
     }
 
