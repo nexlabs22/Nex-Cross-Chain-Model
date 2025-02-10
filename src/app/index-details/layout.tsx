@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   description: "View the details of our products",
 }
 
+
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return <Suspense fallback={<></>}>
     {children}
