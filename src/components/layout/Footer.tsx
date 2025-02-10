@@ -74,7 +74,7 @@ const Footer = () => {
                     </Stack>
                 </Stack>
             </Stack>
-            <Stack width={'100%'} direction={'row'} alignItems={'center'} justifyContent={'center'} paddingTop={6} gap={{ xs: 1, lg: 2 }} position={'relative'} zIndex={10}>
+            <Stack width={'100%'} direction={'row'} alignItems={'center'} justifyContent={'center'} paddingTop={{xs: 2, lg: 6}} gap={{ xs: 1, lg: 2 }} position={'relative'} zIndex={10}>
                 <Link href="/terms_and_conditions" target="_blank" underline="none">
                     <Typography variant="caption" sx={{ fontWeight: 700 }}>Terms & Conditions</Typography>
                 </Link>
