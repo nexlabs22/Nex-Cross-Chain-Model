@@ -8,6 +8,7 @@ import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGro
 import {
   MdOutlineArrowOutward,
   MdOutlineArrowUpward,
+  MdOutlineArrowDownward
 } from "react-icons/md"
 import theme from "@/theme/theme"
 
