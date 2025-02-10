@@ -21,7 +21,9 @@ import {
   IndexCryptoAsset,
   CryptoAsset,
   NexIndices,
+  AllowedTickers,
 } from "@/types/indexTypes"
+import { PublicClient } from 'viem'
 import { useDashboard } from "@/providers/DashboardProvider"
 import { sepoliaTokens } from "@/constants/tokens"
 import { getDecimals, isWETH } from "@/utils/general"
@@ -41,6 +43,7 @@ import { useReadContract, useSendTransaction } from "thirdweb/react"
 import { allowance, balanceOf, totalSupply } from "thirdweb/extensions/erc20"
 import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
 import { GetDefiPortfolioBalance } from "@/hooks/getDefiPortfolioBalance"
+import { GetNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
 import {
   prepareContractCall,
   readContract,
@@ -57,7 +60,6 @@ import { getWalletBalance } from "thirdweb/wallets"
 import { client } from "@/utils/thirdWebClient"
 import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
-import { getNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
 import TokensModal from "./tokensModal"
 
 interface SwapProps {
@@ -71,7 +73,7 @@ function isIndexCryptoAsset(
   return token && typeof token === "object" && "smartContractType" in token
 }
 
-export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
+export default function Swap({ selectedIndex }: SwapProps) {
   const {
     activeChainSetting: { network, chain },
     userAddress,
@@ -106,7 +108,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
   const [currentPortfolioValue, setCurrentPortfolioBalance] = useState(0)
   const [userEthBalance, setUserEthBalance] = useState(0)
 
-  const sepoliaPublicClient = getClient("sepolia")
+  const rpcClient = getClient(chain, network)
   const [swapFromToken, setSwapFromToken] = useState<
     CryptoAsset | IndexCryptoAsset
   >(
@@ -143,10 +145,10 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
       try {
-        const address = tokenDetails.tokenAddresses?.[chain]?.[network]?.index
+        const address = tokenDetails.tokenAddresses?.[chain]?.[network]?.token
           ?.address as Address
         const decimals = getDecimals(
-          tokenDetails.tokenAddresses?.[chain]?.[network]?.index
+          tokenDetails.tokenAddresses?.[chain]?.[network]?.token
         )
 
         const price = await convertToUSDUni(
@@ -339,7 +341,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
   function getPrimaryBalance() {
     if (
       isWETH(
-        swapFromToken.tokenAddresses?.Ethereum?.[network]?.index
+        swapFromToken.tokenAddresses?.Ethereum?.[network]?.token
           ?.address as Address
       )
     ) {
@@ -361,7 +363,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
             Number(fromTokenBalance?.data) /
             Number(
               `1e${getDecimals(
-                swapFromToken.tokenAddresses?.Ethereum?.[network]?.index
+                swapFromToken.tokenAddresses?.Ethereum?.[network]?.token
               )}`
             ),
           returnType: "string",
@@ -377,7 +379,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
   function getSecondaryBalance() {
     if (
       isWETH(
-        swapToToken.tokenAddresses?.Ethereum?.[network]?.index
+        swapToToken.tokenAddresses?.Ethereum?.[network]?.token
           ?.address as Address
       )
     ) {
@@ -399,7 +401,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
             Number(toTokenBalance.data) /
             Number(
               `1e${getDecimals(
-                swapToToken.tokenAddresses?.Ethereum?.[network]?.index
+                swapToToken.tokenAddresses?.Ethereum?.[network]?.token
               )}`
             ),
           returnType: "string",
@@ -407,28 +409,11 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
     }
   }
 
-  const factoryContract = swapFromToken.hasOwnProperty("smartContractType")
-    ? swapFromToken.tokenAddresses?.[chain]?.[network]?.factory?.address
-    : swapToToken.tokenAddresses?.[chain]?.[network]?.factory?.address
-  const indexTokenFactoryContract = GetContract(factoryContract as Address)
+  const indexTokenFactoryContract = GetContract(activeSymbol as AllowedTickers, 'factory')
+  const faucetContract = GetContract('USDT', 'faucet')
 
-  const faucetContract = GetContract(
-    tokenAddresses.USDT?.[chain]?.[network]?.faucet?.address as Address
-  )
-  // const mag7FactoryContract = GetContract(tokenAddresses.MAG7?.[chain]?.[network]?.factory?.address as Address)
-  const mag7StorageContract = GetContract(
-    tokenAddresses.MAG7?.[chain]?.[network]?.storage?.address as Address
-  )
-  const cr5FactoryContract = GetContract(
-    tokenAddresses.CRYPTO5?.[chain]?.[network]?.factory?.address as Address
-  )
-
-  const fromTokenContract = GetContract(
-    swapFromToken.tokenAddresses?.[chain]?.[network]?.index?.address as Address
-  )
-  const toTokenContract = GetContract(
-    swapToToken.tokenAddresses?.[chain]?.[network]?.index?.address as Address
-  )
+  const fromTokenContract = GetContract(swapFromToken.symbol as AllowedTickers, 'token')
+  const toTokenContract = GetContract(swapToToken.symbol as AllowedTickers, 'token')
 
   const fromTokenBalance = useReadContract(balanceOf, {
     contract: fromTokenContract,
@@ -467,7 +452,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
 
   async function approve() {
     if (
-      swapToToken.tokenAddresses?.[chain]?.[network]?.index?.address ==
+      swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address ==
       ZERO_ADDRESS
     ) {
       return GenericToast({
@@ -480,7 +465,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
       isIndexCryptoAsset(swapToToken) &&
       swapToToken?.smartContractType === "stocks"
     ) {
-      const feeAmountBigNumber = (await sepoliaPublicClient.readContract({
+      const feeAmountBigNumber = (await (rpcClient as PublicClient).readContract({
         address: tokenAddresses.MAG7?.[chain]?.[network]?.storage
           ?.address as Address,
         abi: stockFactoryStorageABI,
@@ -488,34 +473,34 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
         args: [
           numToWei(
             firstInputValue,
-            getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+            getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
           ),
         ],
       })) as BigNumber
 
       dinariFeeAmount = weiToNum(
         feeAmountBigNumber,
-        getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+        getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
       )
     }
 
     const firstInputValueNum = new Big(firstInputValue)
     const result = firstInputValueNum.times(1.001).plus(dinariFeeAmount)
     const valueWithCorrectDecimals = result.toFixed(
-      getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+      getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
     )
 
     // Convert to BigNumber using parseUnits
     const convertedValue = parseUnits(
       valueWithCorrectDecimals,
-      getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+      getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
     )
 
     try {
       if (
         weiToNum(
           fromTokenBalance.data,
-          getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+          getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
         ) < Number(firstInputValue)
       ) {
         return GenericToast({
@@ -555,7 +540,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
 
   async function mintRequest() {
     if (
-      swapToToken.tokenAddresses?.[chain]?.[network]?.index?.address ==
+      swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address ==
       ZERO_ADDRESS
     ) {
       return GenericToast({
@@ -566,7 +551,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
 
     if (
       isWETH(
-        swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+        swapFromToken.tokenAddresses?.[chain]?.[network]?.token
           ?.address as Address
       )
     ) {
@@ -580,7 +565,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
       if (
         weiToNum(
           fromTokenBalance.data,
-          getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+          getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
         ) < Number(firstInputValue)
       ) {
         return GenericToast({
@@ -611,7 +596,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: resolveMethod("issuanceIndexTokens"),
           params: [
-            swapFromToken.tokenAddresses?.[chain]?.[network]?.index?.address,
+            swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address,
             parseEther(Number(firstInputValue).toString()),
             "3",
           ],
@@ -629,7 +614,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
             parseUnits(
               Number(firstInputValue).toString(),
               getDecimals(
-                swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                swapFromToken.tokenAddresses?.[chain]?.[network]?.token
               )
             ).toString(),
           ],
@@ -640,7 +625,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: resolveMethod("issuanceIndexTokens"),
           params: [
-            swapFromToken.tokenAddresses?.[chain]?.[network]?.index?.address,
+            swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address,
             parseEther(Number(firstInputValue).toString()),
             "0",
             "3",
@@ -699,7 +684,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
       if (
         weiToNum(
           fromTokenBalance.data,
-          getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+          getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
         ) < Number(firstInputValue)
       ) {
         return GenericToast({
@@ -730,7 +715,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
           method: resolveMethod("redemption"),
           params: [
             parseEther(Number(firstInputValue).toString()),
-            swapToToken.tokenAddresses?.[chain]?.[network]?.index?.address,
+            swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address,
             "3",
           ],
         })
@@ -746,7 +731,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
             parseUnits(
               Number(firstInputValue).toString(),
               getDecimals(
-                swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                swapFromToken.tokenAddresses?.[chain]?.[network]?.token
               )
             ).toString(),
           ],
@@ -760,7 +745,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
             parseEther(Number(firstInputValue).toString()),
             "0",
             getDecimals(
-              swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+              swapFromToken.tokenAddresses?.[chain]?.[network]?.token
             ),
             "3",
           ],
@@ -810,7 +795,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
           contract: faucetContract,
           method: "function getToken(address)",
           params: [
-            tokenAddresses.USDT?.[chain]?.[network]?.index?.address as Address,
+            tokenAddresses.USDT?.[chain]?.[network]?.token?.address as Address,
           ],
         })
         faucetHook.mutate(transaction)
@@ -822,7 +807,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
 
   useEffect(() => {
     async function getFeeRate() {
-      const feeRate = await sepoliaPublicClient.readContract({
+      const feeRate = await (rpcClient as PublicClient).readContract({
         address: activeAddress,
         abi: stockFactoryStorageABI,
         functionName: "feeRate",
@@ -833,7 +818,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
     }
 
     getFeeRate()
-  }, [activeAddress, network, sepoliaPublicClient, chain])
+  }, [activeAddress, network, rpcClient, chain])
 
   useEffect(() => {
     const currentPortfolioValue =
@@ -866,7 +851,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
           let inputValue
           if (
             isWETH(
-              swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+              swapFromToken.tokenAddresses?.[chain]?.[network]?.token
                 ?.address as Address
             )
           ) {
@@ -876,7 +861,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
               isIndexCryptoAsset(swapToToken) &&
               swapToToken?.smartContractType === "stocks"
             ) {
-              const outAmount = await sepoliaPublicClient.readContract({
+              const outAmount = await (rpcClient as PublicClient).readContract({
                 address: tokenAddresses.MAG7?.[chain]?.[network]?.storage
                   ?.address as Address,
                 abi: stockFactoryStorageABI,
@@ -885,7 +870,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
                   numToWei(
                     firstInputValue,
                     getDecimals(
-                      swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                      swapFromToken.tokenAddresses?.[chain]?.[network]?.token
                     )
                   ),
                 ],
@@ -894,20 +879,20 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
                 weiToNum(
                   outAmount,
                   getDecimals(
-                    swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                    swapFromToken.tokenAddresses?.[chain]?.[network]?.token
                   )
                 ).toFixed(2)
               )
             } else if (convertedInputValue) {
-              const inputEthValue = await sepoliaPublicClient.readContract({
+              const inputEthValue = await (rpcClient as PublicClient).readContract({
                 address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.factory
                   ?.address as Address,
                 abi: crossChainIndexFactoryV2Abi,
                 functionName: "getAmountOut",
                 args: [
-                  swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                  swapFromToken.tokenAddresses?.[chain]?.[network]?.token
                     ?.address,
-                  tokenAddresses.WETH?.[chain]?.[network]?.index?.address,
+                  tokenAddresses.WETH?.[chain]?.[network]?.token?.address,
                   convertedInputValue,
                   3,
                 ],
@@ -920,10 +905,11 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
                 isIndexCryptoAsset(swapToToken) &&
                 swapToToken?.smartContractType === "crosschain"
               ) {
-                newPortfolioValue = await getNewCrossChainPortfolioBalance(
+                const {portfolioValue}  = GetNewCrossChainPortfolioBalance(
                   Number(currentPortfolioValue),
                   Number(inputValue)
                 )
+                newPortfolioValue = portfolioValue
               } else {
                 newPortfolioValue =
                   Number(currentPortfolioValue) + Number(inputValue)
@@ -952,7 +938,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
     crossChainPortfolioValue.data,
     network,
     currentPortfolioValue,
-    sepoliaPublicClient,
+    rpcClient,
   ])
 
   useEffect(() => {
@@ -977,7 +963,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
             (Number(currentPortfolioValue) - newPortfolioValue) * 0.999
           if (
             isWETH(
-              swapToToken.tokenAddresses?.[chain]?.[network]?.index
+              swapToToken.tokenAddresses?.[chain]?.[network]?.token
                 ?.address as Address
             )
           ) {
@@ -987,8 +973,10 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
               isIndexCryptoAsset(swapFromToken) &&
               swapFromToken?.smartContractType === "stocks"
             ) {
+
+              const storageContract = GetContract(swapFromToken.symbol as AllowedTickers, 'storage')
               const outAmount = await readContract({
-                contract: mag7StorageContract,
+                contract: storageContract,
                 method:
                   "function getRedemptionAmountOut(uint256) returns (uint256)",
                 params: [BigInt(firstInputValue)],
@@ -998,19 +986,20 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
                 weiToNum(
                   outAmount,
                   getDecimals(
-                    swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                    swapFromToken.tokenAddresses?.[chain]?.[network]?.token
                   )
                 ).toString()
               )
             } else {
+              const factoryContract = GetContract('CRYPTO5', 'factory')
               const outPutTokenValue = await readContract({
-                contract: cr5FactoryContract,
+                contract: factoryContract,
                 method:
                   "function getAmountOut(address, address, uint256, uint256 ) returns (uint256)",
                 params: [
-                  tokenAddresses.WETH?.[chain]?.[network]?.index
+                  tokenAddresses.WETH?.[chain]?.[network]?.token
                     ?.address as Address,
-                  swapToToken.tokenAddresses?.[chain]?.[network]?.index
+                  swapToToken.tokenAddresses?.[chain]?.[network]?.token
                     ?.address as Address,
                   BigInt(Math.floor(ethAmountOut)), // Convert ethAmountOut to bigint
                   BigInt(3),
@@ -1022,7 +1011,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
                 weiToNum(
                   outputValue,
                   getDecimals(
-                    swapToToken.tokenAddresses?.[chain]?.[network]?.index
+                    swapToToken.tokenAddresses?.[chain]?.[network]?.token
                   )
                 ).toString()
               )
@@ -1036,8 +1025,6 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
     getRedemptionOutput2()
   }, [
     firstInputValue,
-    cr5FactoryContract,
-    mag7StorageContract,
     swapFromToken,
     chain,
     swapToToken,
@@ -1045,7 +1032,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
     network,
     currentPortfolioValue,
     fromTokenTotalSupply.data,
-    sepoliaPublicClient,
+    rpcClient,
   ])
 
   useEffect(() => {
@@ -1235,7 +1222,10 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
       >
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" color="primary">
-            {side === "buy" ? "Buy" : "Sell"} {swapFromToken.symbol}
+            {isIndexCryptoAsset(swapFromToken) ?
+            `Sell ${swapFromToken.symbol} ` :
+            `Buy ${swapToToken.symbol} `
+          }
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <IconButton
@@ -1284,7 +1274,7 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
                 setAutoValue("min")
                 if (
                   isWETH(
-                    swapFromToken.tokenAddresses?.[chain]?.[network]?.index
+                    swapFromToken.tokenAddresses?.[chain]?.[network]?.token
                       ?.address as Address
                   )
                 ) {
@@ -1513,12 +1503,12 @@ export default function Swap({ side = "buy", selectedIndex }: SwapProps) {
           <>
             {weiToNum(
               fromTokenAllowance.data,
-              getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)
+              getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
             ) < Number(firstInputValue) &&
-              !isWETH(
-                swapFromToken.tokenAddresses?.[chain]?.[network]?.index
-                  ?.address as Address
-              ) ? (
+                !isWETH(
+                  swapFromToken.tokenAddresses?.[chain]?.[network]?.token
+                    ?.address as Address
+                ) ? (
               <Button
                 fullWidth
                 variant="contained"

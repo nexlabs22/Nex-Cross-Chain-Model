@@ -14,6 +14,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import MarketStats from "./marketStats"
 import Composition from "./composition"
 import { useSearchParams } from "next/navigation"
+import { parseQueryFromPath } from "@/utils/general"
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -21,12 +22,15 @@ const Page = () => {
   const [index, setIndex] = useState<IndexCryptoAsset | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
+	const params = parseQueryFromPath(searchQuery)
+
   useEffect(() => {
     setIndex(
-        nexTokens.find((token) => token.symbol === searchParams.get('index')) ?? null
+        nexTokens.find((token) => token.symbol === params.get('index')) ?? null
     )
     setLoading(false)
-  }, [searchParams, nexTokens])
+  }, [params, nexTokens])
 
   if (loading)
     return (
@@ -40,7 +44,7 @@ const Page = () => {
       </Box>
     )
 
-  if (!index) return <div>Index not found: {searchParams.get('index')}</div>
+  if (!index) return <div>Index not found: {params.get('index')}</div>
 
   return (
     <Box width="100vw" height="100vh" display="flex" flexDirection="row">
