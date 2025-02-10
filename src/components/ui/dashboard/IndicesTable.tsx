@@ -127,7 +127,7 @@ const IndicesTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
       flex: 2,
       renderCell: (params) => (
         <Stack direction={"row"} alignItems={"center"} gap={1}>
@@ -166,21 +166,21 @@ const IndicesTable = () => {
       headerName: "Price",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
     },
     {
       field: "totalSupply",
       headerName: "Total Supply",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
     },
     {
       field: "change24h",
       headerName: "24h Change",
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
     },
     {
       field: "address",
@@ -220,7 +220,7 @@ const IndicesTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      resizable: true,
       sortable: false,
       renderCell: (params) => (
         <Stack direction={"row"} justifyContent={"end"} gap={1}>
