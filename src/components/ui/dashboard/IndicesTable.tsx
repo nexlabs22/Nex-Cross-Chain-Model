@@ -44,7 +44,7 @@ const IndicesTable = () => {
             height={40}
             borderRadius={1}
             sx={{
-              backgroundImage: `url(${params.row.logo})`,
+              backgroundImage: `url(${params.row.logoString})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
