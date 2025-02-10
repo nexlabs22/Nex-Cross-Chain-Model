@@ -51,6 +51,19 @@ const isWETH = (address: Address): boolean => {
   return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address
 }
 
+const parseQueryFromPath = (path: string): Record<string, string | undefined> => {
+  const queryObject: Record<string, string | undefined> = {}
+  // Extract the query string (part after '?')
+  const queryString = path.split('?')[1]
+  if (!queryString) return queryObject // Return empty object if no query params
+  // Split query parameters and store them in an object
+  queryString.split('&').forEach(param => {
+      const [key, value] = param.split('=')
+      queryObject[key] = value ? decodeURIComponent(value) : undefined
+  })
+  return queryObject
+}
+
 export {
   getPreviousWeekday,
   SwapNumbers,
@@ -59,4 +72,5 @@ export {
   calculateChange,
   getDecimals,
   isWETH,
+  parseQueryFromPath
 }

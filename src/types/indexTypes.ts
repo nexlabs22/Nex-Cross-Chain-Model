@@ -1,5 +1,7 @@
 import { ReactElement } from "react"
 import { PublicClient } from 'viem'
+import { ObjectId } from "mongodb"
+
 export type Address = `0x${string}`
 
 export enum SmartContractType {
@@ -147,6 +149,7 @@ export type thirdwebReadContract = {
   refetch: () => void
 }
 export type AssetOverviewDocument = {
+  _id?: ObjectId
   lastUpdate?: Date
   tradeStatus?: "active" | "upcoming" | "inactive"
   provider?: string[]
@@ -157,10 +160,12 @@ export type AssetOverviewDocument = {
   cusip?: string
   logo_url?: string
   ticker: string
+  coinmarketcap?: object
 }
 
 export type DinariAssetDetails = {
   isFractionable: boolean
+
   id: string
   chainInfo?: {
     address: string
