@@ -1,16 +1,15 @@
 "use client"
 
 // src/app/trade/[operation]/[index]/page.tsx
-
-import { Box, Typography, Stack } from "@mui/material"
+import { Box,Stack } from "@mui/material";
 import Grid from "@mui/material/Grid2"
 import Header from "@/components/layout/Header"
 import Sidebar from "@/components/layout/sidebar"
 import Footer from "@/components/layout/Footer"
-import GenericCard from "@/components/ui/generic/genericCard"
 import Swap from "@/components/ui/trade/swap"
 import TabbedTablesView from "@/components/ui/trade/tabbedViewTables"
 import { useDashboard } from "@/providers/DashboardProvider"
+import TradingViewChart from "@/components/ui/chart/TradingViewChart"
 
 const Page = ({
   searchParams,
@@ -35,11 +34,7 @@ const Page = ({
           <Header />
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 8 }}>
-              <GenericCard>
-                <Typography variant="h4" color="primary" marginBottom={2}>
-                  Chart space
-                </Typography>
-              </GenericCard>
+              <TradingViewChart index={selectedIndex.symbol} />
             </Grid>
             <Grid size={{ xs: 12, sm: 4 }}>
               <Swap side={selectedSide} selectedIndex={selectedIndex} />

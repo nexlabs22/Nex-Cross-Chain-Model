@@ -274,7 +274,7 @@ const CatalogueTable = () => {
         value: token.smartContractInfo?.totalSupply,
         returnType: "string",
       })}`,
-    change24h: token.marketInfo?.change24h ? `${token.marketInfo?.change24h}%`: 'N/A',
+    change24h: token.marketInfo?.change24hFmt ? `${token.marketInfo?.change24hFmt}%`: 'N/A',
     address: reduceAddress(
       token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
     ),
