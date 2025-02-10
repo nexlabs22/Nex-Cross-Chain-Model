@@ -2,65 +2,82 @@
 import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 import theme from '@/theme/theme';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 
 const GenericPieChart = () => {
-    const data = [30, 40, 50]; // Pie slices values
-    const labels = ['ANFI', 'CR5', 'ARBEI']; // Pie slices labels
-    const colors = [theme.palette.brand.anfi.main, theme.palette.brand.cr5.main, theme.palette.brand.arbei.main];
-    return (
-        <Stack gap={3} height={'100%'} width={'100%'}>
-            <PieChart
-                series={[
-                    {
-                        data: data.map((value, index) => ({
-                            value, // The value of each slice
-                            label: labels[index],
-                            color: colors[index],// The label for each slice
-                        })),
-                        innerRadius: 40, // Inner radius for donut effect
-                        outerRadius: 90, // Outer radius of the pie
-                        paddingAngle: 5, // Space between slices
-                        cornerRadius: 10, // Rounded corners for slices
-                        startAngle: 0, // Starting angle for the chart
-                        endAngle: 360, // Ending angle for the chart
-                        cx: 150, // Center X position of the pie chart
-                        cy: 90, // Center Y position of the pie chart
-                    },
-                ]}
-                slotProps={{
-                    legend: {
-                        hidden: true,
-                    },
-                }}
-                sx={{
-                    width: '100%',
-                    height: '100%',
-                    marginBottom: 1,
-                    padding: 0,
-                    display: 'block',
-                    position: 'relative',
-                }}
-            />
-            <Stack direction={'row'} justifyContent={'center'} alignItems={'center'} gap={2}>
-                {
-                    labels.map((label, index) => (
-                        <Stack key={index} direction={'row'} alignItems={'center'} gap={1}>
-                            <Box sx={{
-                                width: 10,
-                                height: 10,
-                                backgroundColor: colors[index],
-                                borderRadius: '50%',
-                            }} />
-                            <Typography variant={'body1'} color={'text.secondary'}>
-                                {label}
-                            </Typography>
-                        </Stack>
-                    ))
-                }
-            </Stack>
-        </Stack>
-    );
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+
+  const updateDimensions = React.useCallback(() => {
+    if (containerRef.current) {
+      setDimensions({
+        width: containerRef.current.clientWidth,
+        height: containerRef.current.clientHeight,
+      });
+    }
+  }, []);
+
+  React.useEffect(() => {
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, [updateDimensions]);
+
+  const { width, height } = dimensions;
+
+  const cx = width / 2;
+  const cy = height / 2;
+  const outerRadius = Math.min(width, height) * 0.4;
+  const innerRadius = outerRadius * 0.4;
+
+  const data = [30, 40, 50];
+  const labels = ['ANFI', 'CR5', 'ARBEI'];
+  const colors = [
+    theme.palette.brand.anfi.main,
+    theme.palette.brand.cr5.main,
+    theme.palette.brand.arbei.main,
+  ];
+
+  return (
+    <Box ref={containerRef} sx={{ width: '100%', height: '100%' }}>
+      {width > 0 && height > 0 && (
+        <PieChart
+          series={[
+            {
+              data: data.map((value, index) => ({
+                value,
+                label: labels[index],
+                color: colors[index],
+              })),
+              innerRadius: innerRadius,
+              outerRadius: outerRadius,
+              paddingAngle: 5,
+              cornerRadius: 10,
+              startAngle: 0,
+              endAngle: 360,
+              cx: cx,
+              cy: cy,
+            },
+          ]}
+          slotProps={{
+            legend: {
+              hidden: true,
+            },
+            pieArc: {
+              stroke: 'none',
+              strokeWidth: 0,
+            },
+          }}
+          sx={{
+            width: '100%',
+            height: '100%',
+            display: 'block',
+            position: 'relative',
+          }}
+        />
+      )}
+    </Box>
+  );
 };
 
 export default GenericPieChart;
