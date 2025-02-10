@@ -1,7 +1,7 @@
 import { ReactElement } from "react"
-import { MongoDb } from "./mongoDb"
 import { PublicClient } from 'viem'
 import { ObjectId } from "mongodb"
+import { MongoDb } from "./mongoDb"
 
 export type Address = `0x${string}`
 
@@ -84,7 +84,6 @@ export type Asset = {
   bgColor?: string
   hoverColor?: string
   marketInfo?: MarketInfo
-  historicalPrice?: MongoDb[]
 }
 
 export type StockAsset = {
@@ -104,13 +103,14 @@ export type CryptoAsset = Asset & {
   tokenAddresses?: TokenAddressMap[AllowedTickers]
   poolAddresses?: PoolAddressMap
   smartContractInfo?: SmartContractInfo
+  historicalPrice?: MongoDb[]
 }
 
 export type MarketInfo = {
   marketCap?: number
   offChainPrice?: number
   change24h?: number
-  change24hPer?: string
+  change24hFmt?: string
   volume?: number
 }
 

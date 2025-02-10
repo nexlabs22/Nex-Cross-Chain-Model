@@ -35,8 +35,8 @@ const IndexCard = ({ index }: IndexCardProps) => {
         returnType: "currency",
       })}`
       : "N/A"
-  const change24hString = index.marketInfo?.change24hPer
-    ? `${index.marketInfo?.change24hPer}%`
+  const change24hString = index.marketInfo?.change24hFmt
+    ? `${index.marketInfo?.change24hFmt}%`
     : "N/A"
   const change24hValue = index.marketInfo?.change24h as number
   const monthPrices = index.historicalPrice?.slice(0,30).sort((a,b)=> a.timestamp - b.timestamp) || []

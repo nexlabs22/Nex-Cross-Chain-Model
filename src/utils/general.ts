@@ -74,11 +74,11 @@ const get24hChange = (data: MongoDb[]) =>{
     const yesterday = descSorted[1].open || descSorted[1].price as number
     
     const change24h = today-yesterday
-    const change24hPer = (((today - yesterday) / yesterday) * 100).toFixed(2)
+    const change24hFmt = (((today - yesterday) / yesterday) * 100).toFixed(2)
 
-    return {change24h, change24hPer};
+    return {change24h, change24hFmt};
   }else{ 
-    return {change24h : 0, change24hPer: Number(0).toFixed(2)};
+    return {change24h : 0, change24hFmt: Number(0).toFixed(2)};
   }
 }
 

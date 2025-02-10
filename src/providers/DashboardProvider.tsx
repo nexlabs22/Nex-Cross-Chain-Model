@@ -4,7 +4,6 @@ import React, { createContext, useState, useEffect, useContext } from 'react'
 import axios from 'axios'
 
 import convertToUSDUni from '@/utils/convertToUSDUni'
-import { sepolia } from 'thirdweb/chains'
 import { client } from '@/utils/thirdWebClient'
 import { getContract, readContract } from 'thirdweb'
 import { Address, IndexCryptoAsset } from '@/types/indexTypes'
@@ -30,7 +29,7 @@ const useDashboard = () => {
 
 const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   const [ethPriceUsd, setEthPriceUsd] = useState<number>(0)
-  const { activeChainSetting:{chain, network} } = useGlobal()
+  const { activeChainSetting:{chain, network}, activeThirdWebChain } = useGlobal()
 
 	useEffect(() => {
 		async function getEthPrice() {
@@ -74,7 +73,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 						// Fetch contract instance
 						const contract = getContract({
 							address: index as string,
-							chain: sepolia, // Assuming `sepolia` is defined
+							chain: activeThirdWebChain, 
 							client,
 						});
 
@@ -100,7 +99,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 						  }
 			
 						const historicalPrice: MongoDb[] = await axios.post(`/api/chart-data`,filter).then((res)=> res.data.data).catch(err=> console.log(err));
-						const { change24h, change24hPer} = get24hChange(historicalPrice)
+						const { change24h, change24hFmt} = get24hChange(historicalPrice)
 
 						// Construct the enhanced token object
 						return {
@@ -108,7 +107,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 							marketInfo: {
 								...token.marketInfo,																							
 								change24h,
-								change24hPer,
+								change24hFmt,
 								marketCap: totalSupply * price
 							},
 							smartContractInfo:{
@@ -131,7 +130,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 
     fetchIndexesData()
-  }, [ethPriceUsd,chain, network])
+  }, [ethPriceUsd,chain, network, activeThirdWebChain])
 
 	const contextValue = {
 		ethPriceUsd,

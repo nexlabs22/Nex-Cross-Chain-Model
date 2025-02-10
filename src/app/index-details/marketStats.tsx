@@ -19,8 +19,8 @@ const MarketStats = ({ index }: { index: IndexCryptoAsset }) => {
   const marketCap = index?.marketInfo?.marketCap
     ? `$${formatToViewNumber({value: index?.marketInfo?.marketCap, returnType: 'currency'})}`
     : "N/A"
-  const change24h = index?.marketInfo?.change24hPer
-    ? `${index?.marketInfo?.change24hPer}%`
+  const change24h = index?.marketInfo?.change24hFmt
+    ? `${index?.marketInfo?.change24hFmt}%`
     : "N/A"
 
   const latestRebalanceUpdate =

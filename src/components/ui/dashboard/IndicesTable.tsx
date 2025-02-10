@@ -188,7 +188,7 @@ const IndicesTable = () => {
         returnType: "string",
       })}`,
     change24h: token.marketInfo?.change24h
-      ? `${token.marketInfo?.change24hPer}%`
+      ? `${token.marketInfo?.change24hFmt}%`
       : "N/A", // Replace with actual data
     address: reduceAddress(
       token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
