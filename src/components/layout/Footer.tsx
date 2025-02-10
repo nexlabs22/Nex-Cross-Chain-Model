@@ -20,7 +20,7 @@ const Footer = () => {
                             }} />
                             <Typography variant="h2">NexLabs</Typography>
                         </Stack>
-                        <Typography variant="subtitle1" lineHeight={1.4}>Bring real-world assets (RWAs) on-chain and simplifying the investing process for users.</Typography>
+                        <Typography variant="subtitle1" lineHeight={1.4} width={{xs: '100%', sm: '50%', lg: '90%'}}>Bring real-world assets (RWAs) on-chain and simplifying the investing process for users.</Typography>
                     </Stack>
                     <Stack direction={'row'} gap={2} marginBottom={{xs: 2, lg: 0}}>
                         <Link href="https://www.linkedin.com/company/nex-labs/" target="_blank" underline="none">
@@ -37,7 +37,7 @@ const Footer = () => {
                         </Link>
                     </Stack>
                 </Stack>
-                <Stack width={{ xs: '100%', lg: '75%' }} height={'100%'} direction={{ xs: 'column', lg: 'row' }} gap={{xs: 4, lg: 10}} justifyContent={'end'} >
+                <Stack width={{ xs: '100%', lg: '75%' }} height={'100%'} direction={{ xs: 'row', sm: 'row', lg: 'row' }} gap={{xs: 4, lg: 10}} justifyContent={{xs: 'space-between', sm: 'start', lg: 'end'}} marginTop={{xs: 4, lg: 0}} >
                     <Stack gap={3}>
                         <Typography variant="h5">About Nex</Typography>
                         <Stack gap={2}>
