@@ -1,4 +1,6 @@
-import { ReactElement } from "react";
+import { ReactElement } from "react"
+import { PublicClient } from 'viem'
+import { ObjectId } from "mongodb"
 
 export type Address = `0x${string}`
 
@@ -27,7 +29,6 @@ export type AllowedTickers =
   | "THETER" //Morteza's token
 
 export type ContractTypes =
-  | "index"
   | "factory"
   | "token"
   | "storage"
@@ -40,113 +41,116 @@ export type Chains = "Ethereum" | "Arbitrum" | "Polygon"
 export type Networks = "Mainnet" | "Goerli" | "Sepolia" | "Mumbai"
 
 export type ChainNetwork = {
-  chain: Chains;
-  network: Networks;
-};
+  chain: Chains
+  network: Networks
+}
 
 export type ChainSelectorMap = {
   [chain in Chains]?: {
-    [network in Networks]?: string;
-  };
-};
+    [network in Networks]?: string | PublicClient
+  }
+}
 
 export type TokenAddressMap = {
   [ticker in AllowedTickers]?: {
     [chain in Chains]?: {
       [network in Networks]?: {
-        [type in ContractTypes]?: { address: Address; decimals?: number };
-      };
-    };
-  };
-};
+        [type in ContractTypes]?: { address: Address; decimals?: number }
+      }
+    }
+  }
+}
 
 export type PoolAddressMap = {
   [ticker in AllowedTickers]?: {
     [pairingToken in AllowedTickers]?: {
       [chain in Chains]?: {
-        [network in Networks]?: string;
-      };
-    };
-  };
-};
+        [network in Networks]?: string
+      }
+    }
+  }
+}
 
 export type Asset = {
-  name: string;
-  symbol: string;
-  logoComponent?: ReactElement;
-  logoString?: string;
-  category?: AssetCategory;
-  bgColor?: string;
-  hoverColor?: string;
-  weight?: number;
-};
-
-export type CryptoAsset = {
-  address: string;
-  factoryAddress: string;
-  decimals: number;
-} & Omit<Asset, "category"> & {
-    category: "cryptocurrency";
-  };
-
-export type MarketInfo = {
-  marketCap?: number;
-  price?: number;
-  change24h?: number;
-  volume?: number;
-};
-
-export type SmartContractInfo = {
-  price?: number
-  totalSupply?: number;
-  stakedSupply?: number;
-  composition?: Asset[];
-  managementFee?: number;
-};
-
-export type TokenObject = {
-  tokenAddresses: TokenAddressMap[AllowedTickers]
-  poolAddresses?: PoolAddressMap
-  smartContractType?: SmartContractType
   name: string
-  symbol: AllowedTickers
-  columnName?: string
-  logo: string
+  symbol: string
+  columnName?: string //TODO: remove when no longer required
+  logoComponent?: ReactElement
+  logoString?: string
   shortDescription?: string
   description?: string
+  category?: AssetCategory
+  bgColor?: string
+  hoverColor?: string
   marketInfo?: MarketInfo
-  smartContractInfo?: SmartContractInfo  
-  assets?: (Asset | CryptoAsset)[] | null
-};
+}
 
-export type Index = Omit<TokenObject, "tokenAddress" | "indexType"> & {
-  id: number;
-  assetCategory: AssetCategory;
-  selectionColor: string;
-  tokenAddress?: string;
-};
+export type StockAsset = {
+  symbol: string
+  name: string
+  cik?: string
+  isin?: string
+} & Omit<Asset, "category"> & {
+    category: "stock"
+  }
+
+export type CryptoAsset = Asset & {
+  address?: string
+  factoryAddress?: string
+  decimals?: number
+  marketInfo?: MarketInfo
+  tokenAddresses?: TokenAddressMap[AllowedTickers]
+  poolAddresses?: PoolAddressMap
+  smartContractInfo?: SmartContractInfo
+}
+
+export type MarketInfo = {
+  marketCap?: number
+  offChainPrice?: number
+  change24h?: number
+  volume?: number
+}
+
+export type SmartContractInfo = {
+  poolPrice?: number
+  underlyingAssetPrice?: number
+  totalSupply?: number
+  stakedSupply?: number
+  managementFee?: number
+  latestRebalanceUpdate?: string
+}
+
+export type AssetWithWeight = CryptoAsset & {
+  weight?: number
+}
+
+export type IndexCryptoAsset = CryptoAsset & {
+  smartContractType?: SmartContractType
+  assets?: AssetWithWeight[]
+}
 
 export type Transaction = {
-  side?: "send" | "receive";
-  userAddress: string;
-  tokenAddress: string;
-  timestamp?: number;
-  inputAmount?: number;
-  outputAmount?: number;
-  tokenName: NexIndices | AllowedTickers;
-  txHash?: string;
-  messageId?: string;
-  nonce?: number;
-  status?: string;
-  recieveSideMessageId?: string;
-};
+  side?: "send" | "receive"
+  userAddress: string
+  tokenAddress: string
+  timestamp?: number
+  inputAmount?: number
+  outputAmount?: number
+  tokenName: NexIndices | AllowedTickers
+  txHash?: string
+  messageId?: string
+  nonce?: number
+  status?: string
+  recieveSideMessageId?: string
+}
 
 export type thirdwebReadContract = {
-  data: bigint,
-  refetch:()=>void
+  data: bigint
+  refetch: () => void
 }
 
 export type AssetOverviewDocument = {
+  _id?: ObjectId
   lastUpdate?: Date
   tradeStatus?: "active" | "upcoming" | "inactive"
   provider?: string[]
@@ -157,10 +161,12 @@ export type AssetOverviewDocument = {
   cusip?: string
   logo_url?: string
   ticker: string
+  coinmarketcap?: object
 }
 
 export type DinariAssetDetails = {
   isFractionable: boolean
+
   id: string
   chainInfo?: {
     address: string

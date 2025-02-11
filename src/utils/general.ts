@@ -17,7 +17,8 @@ function SwapNumbers(a: number, b: number): [number, number] {
   return [a, b]
 }
 
-function reduceAddress(address: string) {
+function reduceAddress(address: string | undefined) {
+  if (!address) return
   return (
     address?.toString().slice(0, 5) +
     "..." +
@@ -43,11 +44,24 @@ const calculateChange = (prices: { value: number }[]) => {
 }
 
 const getDecimals = (type?: { address: string; decimals?: number }): number => {
-  return type?.decimals ?? 18; // Default to 18 if not specified
-};
+  return type?.decimals ?? 18 // Default to 18 if not specified
+}
 
-const isWETH = (address: Address): boolean =>{
-  return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.index?.address
+const isWETH = (address: Address): boolean => {
+  return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address
+}
+
+const parseQueryFromPath = (path: string): Record<string, string | undefined> => {
+  const queryObject: Record<string, string | undefined> = {}
+  // Extract the query string (part after '?')
+  const queryString = path.split('?')[1]
+  if (!queryString) return queryObject // Return empty object if no query params
+  // Split query parameters and store them in an object
+  queryString.split('&').forEach(param => {
+      const [key, value] = param.split('=')
+      queryObject[key] = value ? decodeURIComponent(value) : undefined
+  })
+  return queryObject
 }
 
 function getTokenSymbolByAddress(address: string): string | undefined {
@@ -74,21 +88,6 @@ function getTokenSymbolByAddress(address: string): string | undefined {
   return undefined; // Return undefined if no match is found
 }
 
-const parseQueryFromPath = (path: string): Record<string, string | undefined> => {
-  const queryObject: Record<string, string | undefined> = {}
-
-  // Extract the query string (part after '?')
-  const queryString = path.split('?')[1]
-  if (!queryString) return queryObject // Return empty object if no query params
-
-  // Split query parameters and store them in an object
-  queryString.split('&').forEach(param => {
-      const [key, value] = param.split('=')
-      queryObject[key] = value ? decodeURIComponent(value) : undefined
-  })
-
-  return queryObject
-}
 export {
   getPreviousWeekday,
   SwapNumbers,
