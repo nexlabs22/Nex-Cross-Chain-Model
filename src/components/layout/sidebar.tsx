@@ -1,11 +1,12 @@
 "use client"
 
-import { Stack, Paper, Typography, Link } from "@mui/material"
+import { Stack, Typography, Link } from "@mui/material"
 import Image from "next/image"
 import { useColorScheme } from "@mui/material/styles"
+import theme from "@/theme/theme"
 // project imports
 import { navItems, settingItems } from "@/utils/sideBarItems";
-import ModeSwitchButton from "./ModeSwitchButton";
+
 
 // assets
 import logo from '@/assets/images/logo.webp'
@@ -16,23 +17,23 @@ import { type NavItem } from "@/utils/sideBarItems";
 const Sidebar = () => {
     const { mode } = useColorScheme()
     return (
-        <Paper
-            component={'div'}
-            elevation={2}
+        <Stack
+            display={{xs: "none", lg: "block"}}
+            minWidth="4vw"
+            width={"fit-content"}
+            height="100vh"
+            maxHeight="100vh"
+            paddingY={4}
+            paddingX={2}
+            justifyContent={"space-between"}
             sx={{
-                display: { xs: "none", lg: "block" },
-                minWidth: { xs: "4vw", xl: "3vw" },
-                width: "fit-content",
-                height: "100vh",
-                maxHeight: "100vh",
-                paddingY: 4,
-                paddingX: 2,
-                justifyContent: "space-between",
+                backgroundColor: theme.palette.elevations.elevation950.main,
                 position: "fixed",
                 top: 0,
                 left: 0,
                 zIndex: 999,
                 ":hover": {
+
                     minWidth: "12vw",
                     transition: "min-width 0.1s ease",
                 },
@@ -93,10 +94,10 @@ const Sidebar = () => {
                         )
                     })
                 }
-                <ModeSwitchButton />
             </Stack>
-        </Paper>
+        </Stack>
     )
 }
+
 
 export default Sidebar

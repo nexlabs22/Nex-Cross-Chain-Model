@@ -8,12 +8,13 @@ import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGro
 import {
   MdOutlineArrowOutward,
   MdOutlineArrowUpward,
-  MdOutlineArrowDownward,
+  MdOutlineArrowDownward
 } from "react-icons/md"
 import theme from "@/theme/theme"
 
 import { IndexCryptoAsset } from "@/types/indexTypes"
 import { formatToViewNumber } from "@/utils/conversionFunctions"
+import { mongoDataToChartData } from "@/utils/convertToMongo/parse"
 
 //interface
 interface IndexCardProps {
@@ -34,10 +35,11 @@ const IndexCard = ({ index }: IndexCardProps) => {
         returnType: "currency",
       })}`
       : "N/A"
-  const change24hString = index.marketInfo?.change24h
-    ? `${index.marketInfo?.change24h}%`
+  const change24hString = index.marketInfo?.change24hFmt
+    ? `${index.marketInfo?.change24hFmt}%`
     : "N/A"
-  const change24hValue = index.marketInfo?.change24h
+  const change24hValue = index.marketInfo?.change24h as number
+  const monthPrices = index.historicalPrice?.slice(0,30).sort((a,b)=> a.timestamp - b.timestamp) || []
 
   return (
     <GenericCard>
@@ -108,7 +110,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
                   : "error.main"
               }
             >
-              {change24hString}
+              {formatToViewNumber({value:change24hValue, returnType: 'currency'})} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
             </Typography>
           </Stack>
           <Typography variant={"subtitle2"} color={"text.secondary"}>
@@ -133,7 +135,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
             right: 0,
           }}
         >
-          <GenericAreaLineChart label={index.symbol} />
+          <GenericAreaLineChart label={index.symbol} chartData={mongoDataToChartData(monthPrices)} />
         </Stack>
       </Stack>
     </GenericCard>
