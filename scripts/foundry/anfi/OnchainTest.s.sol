@@ -42,17 +42,17 @@ contract OnchainTest is Script {
     }
 
     function issuanceAndRedemptionWithEth() public {
-        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e14 * 1001) / 1000}(1e14, 0);
+        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e17 * 1001) / 1000}(1e17, 0);
 
-        // address[] memory path = new address[](2);
-        // path[0] = weth;
-        // path[1] = usdt;
-        // uint24[] memory fees = new uint24[](1);
-        // fees[0] = 3000;
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
 
-        // IndexFactory(payable(indexFactoryProxy)).redemption(
-        //     indexToken.balanceOf(address(user)), 0, address(weth), path, fees
-        // );
+        IndexFactory(payable(indexFactoryProxy)).redemption(
+            indexToken.balanceOf(address(user)), 0, address(weth), path, fees
+        );
     }
 
     // function issuanceAndRedemptionWithUsdt() public {

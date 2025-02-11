@@ -30,6 +30,8 @@ contract CombinedSetCrossChainValues is Script, Test {
         address crossChainToken;
         address weth;
         address crossChainIndexFactoryStorageProxy;
+        address coreSenderProxy;
+        address balancerSenderProxy;
 
         if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
             crossChainFactoryProxy = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");

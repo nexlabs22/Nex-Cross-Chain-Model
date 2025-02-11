@@ -77,7 +77,7 @@ contract DeployCrossChainAllScript is Script, Test, PriceOracleByteCode {
             swapRouterV2 = vm.envAddress("ARBITRUM_SEPOLIA_ROUTER_V2_ADDRESS");
             toUsdPriceFeed = vm.envAddress("ARBITRUM_SEPOLIA_TO_USD_PRICE_FEED");
         } else if (keccak256(bytes(targetChain)) == keccak256("ethereum_mainnet")) {
-            chainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
+            chainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
             chainlinkToken = vm.envAddress("ETHEREUM_CHAINLINK_TOKEN_ADDRESS");
             router = vm.envAddress("ETHEREUM_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ETHEREUM_WETH_ADDRESS");

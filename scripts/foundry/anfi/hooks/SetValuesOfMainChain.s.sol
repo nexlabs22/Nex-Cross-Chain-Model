@@ -26,6 +26,7 @@ contract CombinedSetValuesScript is Script, Test {
         address indexFactoryBalancerProxy;
         address coreSenderProxy;
         address balancerSenderProxy;
+        address wethAddressArbSepolia;
     }
 
     struct MockFillEnv {
@@ -34,6 +35,7 @@ contract CombinedSetValuesScript is Script, Test {
         address wethAddress;
         address functionsOracleProxy;
         bool isTestnet;
+        address wethAddressArbSepolia;
     }
 
     function run() external {
@@ -86,6 +88,7 @@ contract CombinedSetValuesScript is Script, Test {
             data.indexFactoryBalancerProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
             data.coreSenderProxy = vm.envAddress("SEPOLIA_CORE_SENDER_PROXY_ADDRESS");
             data.balancerSenderProxy = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
+            data.wethAddressArbSepolia = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             data.indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             data.mainCrossChainTokenAddress = vm.envAddress("ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
@@ -166,6 +169,7 @@ contract CombinedSetValuesScript is Script, Test {
             data.otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
             data.wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
             data.functionsOracleProxy = vm.envAddress("SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADDRESS");
+            data.wethAddressArbSepolia = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
             data.isTestnet = true;
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             data.mainChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
@@ -181,7 +185,11 @@ contract CombinedSetValuesScript is Script, Test {
     function _applyMockFillAssetsList(MockFillEnv memory data) internal {
         if (data.isTestnet) {
             _fillMockAssetsListTestnet(
-                data.functionsOracleProxy, data.mainChainSelector, data.otherChainSelector, data.wethAddress
+                data.functionsOracleProxy,
+                data.mainChainSelector,
+                data.otherChainSelector,
+                data.wethAddress,
+                data.wethAddressArbSepolia
             );
         } else {
             _fillMockAssetsListMainnet(
@@ -227,7 +235,8 @@ contract CombinedSetValuesScript is Script, Test {
         address functionsOracleProxy,
         uint64 mainChainSelector,
         uint64 otherChainSelector,
-        address wethAddress
+        address wethAddress,
+        address wethAddressArbSepolia
     ) internal {
         address[] memory assetList = new address[](2);
         assetList[0] = 0x6Ea5aD162d5b74Bc9e4C3e4eEB18AE6861407221; // sepoliaBitcoin
@@ -246,12 +255,16 @@ contract CombinedSetValuesScript is Script, Test {
         chainSelectors[1] = otherChainSelector;
 
         bytes[] memory pathData = new bytes[](2);
-        for (uint256 i = 0; i < 2; i++) {
-            address[] memory path = new address[](2);
-            path[0] = wethAddress;
-            path[1] = assetList[i];
-            pathData[i] = abi.encode(path, feesData);
-        }
+        address[] memory path = new address[](2);
+        path[0] = wethAddress;
+        path[1] = assetList[0];
+        pathData[0] = abi.encode(path, feesData);
+
+        // For Arb Sepolia
+        address[] memory path1 = new address[](2);
+        path1[0] = wethAddressArbSepolia;
+        path1[1] = assetList[1];
+        pathData[1] = abi.encode(path1, feesData);
 
         FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
         console.log("Called mockFillAssetsList() [testnet style].");
