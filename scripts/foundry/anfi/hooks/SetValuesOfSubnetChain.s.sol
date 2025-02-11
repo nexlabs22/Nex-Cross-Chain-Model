@@ -62,6 +62,9 @@ contract CombinedSetCrossChainValues is Script, Test {
             chainSelector, crossChainToken, path, feesData
         );
         CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setPriceOracle(priceOracle);
+        CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setCrossChainFactory(
+            crossChainFactoryProxy
+        );
 
         console.log("Done: _setCrossChainFactoryValues()");
     }
