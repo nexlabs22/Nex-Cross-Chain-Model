@@ -83,6 +83,30 @@ const get24hChange = (data: MongoDb[]) =>{
 }
 
 
+function getTokenSymbolByAddress(address: string): string | undefined {
+  const lowerCaseAddress = address.toLowerCase();
+
+  for (const [symbol, chains] of Object.entries(tokenAddresses)) {
+    if (!chains) continue;
+
+    for (const networks of Object.values(chains)) {
+      if (!networks) continue;
+
+      for (const contracts of Object.values(networks)) {
+        if (!contracts) continue;
+
+        for (const contract of Object.values(contracts)) {
+          if (contract.address.toLowerCase() === lowerCaseAddress) {
+            return symbol;
+          }
+        }
+      }
+    }
+  }
+
+  return undefined; // Return undefined if no match is found
+}
+
 export {
   getPreviousWeekday,
   SwapNumbers,
@@ -91,6 +115,7 @@ export {
   calculateChange,
   getDecimals,
   isWETH,
+  getTokenSymbolByAddress,
   get24hChange,
   parseQueryFromPath
 }

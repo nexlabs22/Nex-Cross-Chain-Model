@@ -61,6 +61,8 @@ import { client } from "@/utils/thirdWebClient"
 import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
 import TokensModal from "./tokensModal"
+import { useTrade } from "@/providers/TradeProvider";
+
 
 interface SwapProps {
   side?: "buy" | "sell"
@@ -80,6 +82,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
     activeThirdWebChain,
   } = useGlobal()
   const { ethPriceUsd, nexTokens } = useDashboard()
+  const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } = useTrade()
 
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
     "auto"
@@ -109,21 +112,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
   const [userEthBalance, setUserEthBalance] = useState(0)
 
   const rpcClient = getClient(chain, network)
-  const [swapFromToken, setSwapFromToken] = useState<
-    CryptoAsset | IndexCryptoAsset
-  >(
-    [...nexTokens, ...sepoliaTokens].find(
-      (token) => token.symbol === "USDT"
-    ) as CryptoAsset
-  )
-
-  const [swapToToken, setSwapToToken] = useState<
-    CryptoAsset | IndexCryptoAsset
-  >(
-    [...nexTokens, ...sepoliaTokens].find(
-      (token) => token.symbol === "ANFI"
-    ) as CryptoAsset
-  )
+ 
 
   const activeSymbol = isIndexCryptoAsset(swapFromToken)
     ? swapFromToken.symbol
@@ -247,33 +236,23 @@ export default function Swap({ selectedIndex }: SwapProps) {
     fetchData()
   }, [])
 
-  useEffect(() => {
-    const finalCoinList = network === "Mainnet" ? coinsList : sepoliaTokens
-    const OurIndexCoinList: CryptoAsset[] = finalCoinList.filter((coin) =>
-      coin.hasOwnProperty("smartContractType")
-    )
-    let OtherCoinList: CryptoAsset[] = finalCoinList.filter(
-      (coin) => !coin.hasOwnProperty("smartContractType")
-    )
+    useEffect(() => {
+      const finalCoinList = network === 'Mainnet' ? coinsList : ([...nexTokens, ...sepoliaTokens] as CryptoAsset[])
+      const OurIndexCoinList: CryptoAsset[] = finalCoinList.filter((coin) => coin.hasOwnProperty('smartContractType'))
+      const OtherCoinList: CryptoAsset[] = finalCoinList.filter((coin) => !coin.hasOwnProperty('smartContractType'))
 
-    if (swapToToken.symbol === "MAG7" || swapFromToken.symbol === "MAG7") {
-      OtherCoinList = OtherCoinList.filter((coin) => {
-        return coin.symbol !== "USDT"
-      })
-      const usdcDetails = OtherCoinList.filter((coin) => {
-        return coin.symbol === "USDC"
-      })[0]
-      const usdtDetails = OtherCoinList.filter((coin) => {
-        return coin.symbol === "USDT"
-      })[0]
-      if (swapToToken.symbol === "MAG7") {
-        setSwapFromToken(usdcDetails)
-      } else {
-        setSwapFromToken(usdtDetails)
-      }
-    }
-    setMergedCoinList([OtherCoinList, OurIndexCoinList])
-  }, [network, swapToToken.symbol, swapFromToken.symbol, coinsList])
+        if (swapToToken.symbol === 'MAG7' || swapFromToken.symbol === 'MAG7') {
+
+            const usdcDetails = OtherCoinList.filter((coin) => {
+                return coin.symbol === 'USDC'
+            })[0]
+
+            if (swapToToken.symbol === 'MAG7') {
+                setSwapFromToken(usdcDetails)
+            }
+        }
+        setMergedCoinList([OtherCoinList, OurIndexCoinList])
+    }, [network, swapToToken.symbol, swapFromToken.symbol, coinsList])
 
   function Switching() {
     const switchReserve = swapFromToken
@@ -433,7 +412,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
   }) as thirdwebReadContract
 
   const fromTokenAllowance = useReadContract(allowance, {
-    contract: toTokenContract,
+    contract: fromTokenContract,
     owner: userAddress as Address,
     spender: swapToToken.tokenAddresses?.[chain]?.[network]?.factory
       ?.address as Address,
@@ -609,29 +588,17 @@ export default function Swap({ selectedIndex }: SwapProps) {
       ) {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod("issuanceIndexTokens"),
-          params: [
-            parseUnits(
-              Number(firstInputValue).toString(),
-              getDecimals(
-                swapFromToken.tokenAddresses?.[chain]?.[network]?.token
-              )
-            ).toString(),
-          ],
-        })
+          method: 'function issuanceIndexTokens(uint256)',
+          params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)).toString())],
+      })
         mintRequestHook.mutate(transaction)
       } else {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod("issuanceIndexTokens"),
-          params: [
-            swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address,
-            parseEther(Number(firstInputValue).toString()),
-            "0",
-            "3",
-          ],
-        })
-        mintRequestHook.mutate(transaction)
+          method: resolveMethod('issuanceIndexTokens'),
+          params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.index?.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
+      })
+      mintRequestHook.mutate(transaction)
       }
     } catch (error) {
       console.log("mint error", error)
