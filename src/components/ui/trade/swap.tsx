@@ -74,7 +74,7 @@ function isIndexCryptoAsset(
   return token && typeof token === "object" && "smartContractType" in token
 }
 
-export default function Swap({ side = 'buy', defaultToken }: SwapProps) {
+export default function Swap({ selectedIndex }: SwapProps) {
 
     const { activeChainSetting: { network, chain }, userAddress, activeThirdWebChain } = useGlobal()
     const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } = useTrade()
@@ -109,12 +109,12 @@ export default function Swap({ side = 'buy', defaultToken }: SwapProps) {
   ]?.factory?.address as Address
 
     useEffect(() => {
-        const selectedCoin = defaultToken?.symbol || 'ANFI'
+        const selectedCoin = selectedIndex?.symbol || 'ANFI'
         const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
             return coin.symbol === selectedCoin
         })
         setSwapToToken(coinDetails[0])
-    }, [defaultToken, nexTokens])
+    }, [selectedIndex, nexTokens])
 
 
   useEffect(() => {
@@ -1427,7 +1427,7 @@ export default function Swap({ side = 'buy', defaultToken }: SwapProps) {
           justifyContent="space-between"
         >
           <Typography variant="h6" color="text.secondary">
-            Testnet USDC
+            Testnet USDT
           </Typography>
           <Button
             sx={{

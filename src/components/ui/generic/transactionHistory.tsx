@@ -25,16 +25,16 @@ const TransactionHistory = () => {
 
         const tokenAddressSymbol = getTokenSymbolByAddress(data.tokenAddress)
 
-        const inputTokenSymbol = data.tokenAddress ? (data.side.includes('Mint') ? tokenAddressSymbol : data.indexName) : ''
-        const outTokenSymbol = data.tokenAddress ? (data.side.includes('Burn') ? tokenAddressSymbol : data.indexName) : ''
+        const inputTokenSymbol = data.tokenAddress ? (data.side.includes('Mint') ? tokenAddressSymbol : data.tokenName) : ''
+        const outTokenSymbol = data.tokenAddress ? (data.side.includes('Burn') ? tokenAddressSymbol : data.tokenName) : ''
 
         return {
             id: index,
             time: convertTime(data.timestamp),
             requestSide: data.side,
-            pair: data.indexName,
-            inputAmount: `${formatToViewNumber({value: data.inputAmount,returnType: 'currency'})}  ${inputTokenSymbol}`,
-            outputAmount: `${formatToViewNumber({value: data.outputAmount,returnType: 'currency'})} ${outTokenSymbol}`,
+            pair: data.tokenName,
+            inputAmount: `${formatToViewNumber({value: Number(data.inputAmount),returnType: 'currency'})}  ${inputTokenSymbol}`,
+            outputAmount: `${formatToViewNumber({value: Number(data.outputAmount),returnType: 'currency'})} ${outTokenSymbol}`,
             status: data.sendStatus
         }
     })

@@ -1,169 +1,81 @@
-
-import { useEffect, useState, useCallback } from 'react'
-
-import { GetTradeHistoryStock } from './getTradeHistoryStock'
-import { PositionType, RequestType } from '@/types/indexTypes'
-import { getDecimals } from '@/utils/general'
-import { tokenAddresses } from '@/constants/contractAddresses'
-import { num, weiToNum } from '@/utils/conversionFunctions'
+import { useEffect, useState, useCallback } from "react";
+import { GetTradeHistoryStock } from "./getTradeHistoryStock";
+import { Transaction, RequestType, Address } from "@/types/indexTypes";
+import { getDecimals } from "@/utils/general";
+import { tokenAddresses } from "@/constants/contractAddresses";
+import { num, weiToNum } from "@/utils/conversionFunctions";
 
 export function GetPositionsHistoryStock(dataFromGraph: { [key: string]: RequestType[] }) {
+  const stockTradeHistory = GetTradeHistoryStock(dataFromGraph);
+  const [positions, setPositions] = useState<Transaction[]>([]);
 
-	const stockTradeHistory = GetTradeHistoryStock(dataFromGraph)
+  const getHistory = useCallback(() => {
+    try {
+      const allMintLogs = [...(dataFromGraph["mag7RequestIssuances"] ?? []), ...(dataFromGraph["mag7RequestCancelIssuances"] ?? [])];
+      const allBurnLogs = [...(dataFromGraph["mag7RequestRedemptions"] ?? []), ...(dataFromGraph["mag7RequestCancelRedemptions"] ?? [])];
 
-	const [positions, setPositions] = useState<PositionType[]>([])
+      const tradeHistoryData = new Set(stockTradeHistory.data.map(data => `${data.nonce}-${data.side}`));
 
+      const mapToTransaction = (log: RequestType, side: "Mint Request" | "Burn Request", cancelSide: "Cancelled Mint" | "Cancelled Burn") => {
+        const isCancelled = tradeHistoryData.has(`${log.nonce}-${cancelSide}`);
+        const isExecuted = tradeHistoryData.has(`${log.nonce}-${side}`);
 
-	const getHistory = useCallback(async () => {
-		try {
+        const status = log.__typename.includes("Cancel")
+          ? isCancelled ? "CANCELLED" : "CANCEL PENDING"
+          : isExecuted ? "SUCCESS" : side === "Mint Request" ? "MINT PENDING" : "BURN PENDING";
 
-			const userAllMintRequestLogs = [...(dataFromGraph['mag7RequestIssuances']?.length > 0 ? dataFromGraph['mag7RequestIssuances'] : []), ...(dataFromGraph['mag7RequestCancelIssuances']?.length > 0 ? dataFromGraph['mag7RequestCancelIssuances'] : [])]
-			const userAllBurnRequestLogs = [...(dataFromGraph['mag7RequestRedemptions']?.length > 0 ? dataFromGraph['mag7RequestRedemptions'] : []), ...(dataFromGraph['mag7RequestCancelRedemptions']?.length > 0 ? dataFromGraph['mag7RequestCancelRedemptions'] : [])]
+        const tokenDecimals = getDecimals(
+          Object.values(tokenAddresses)
+            .flatMap(chains => Object.values(chains))
+            .flatMap(networks => Object.values(networks))
+            .flatMap(contractTypes => Object.values(contractTypes))
+            .find(obj => obj.address.toLowerCase() === (side === "Mint Request" ? log.inputToken : log.outputToken)?.toLowerCase())
+        );
 
-			const mintData = userAllMintRequestLogs.map((log) => {
+        return {
+          side,
+          userAddress: log.user as Address,
+          inputAmount: side === "Mint Request" ? weiToNum(log.inputAmount, tokenDecimals) : num(log.inputAmount),
+          outputAmount: side === "Mint Request" ? num(log.outputAmount) : weiToNum(log.outputAmount, tokenDecimals),
+          tokenAddress: (side === "Mint Request" ? log.inputToken : log.outputToken) as Address,
+          timestamp: Number(log.time),
+          txHash: log.transactionHash,
+          tokenName: "MAG7",
+          nonce: Number(log.nonce),
+          sendStatus: status,
+          receiveStatus: status,
+        } as Transaction;
+      };
 
-				let status = ''
+      const mintData = allMintLogs.map(log => mapToTransaction(log, "Mint Request", "Cancelled Mint"));
+      const burnData = allBurnLogs.map(log => mapToTransaction(log, "Burn Request", "Cancelled Burn"));
 
-				const isCancelledExist = stockTradeHistory.data.find((data: PositionType) => {
-					return data.nonce === Number(log.nonce) && data.side === 'Cancelled Mint'
-				})
+      // Prioritize transactions where `sendStatus` includes "CANCEL"
+      const nonceMap = new Map<number, Transaction>();
+      [...mintData, ...burnData].forEach(obj => {
+        if (!nonceMap.has(obj.nonce!) || obj.sendStatus?.includes("CANCEL")) {
+          nonceMap.set(obj.nonce!, obj);
+        }
+      });
 
-				const isMintedExist = stockTradeHistory.data.find((data: PositionType) => {
-					return data.nonce === Number(log.nonce) && data.side === 'Mint Request'
-				})
+      setPositions([...nonceMap.values()].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)));
+    } catch (err) {
+      console.error(err);
+    }
+  }, [stockTradeHistory.data, dataFromGraph]);
 
+  useEffect(() => {
+    getHistory();
+  }, [getHistory]);
 
-				if (log.__typename === 'MAG7RequestCancelIssuance') {
-					if (isCancelledExist) {
-						status = 'CANCELLED'
-					} else {
-						status = 'CANCEL PENDING'
-					}
-				} else {
-					if (isMintedExist) {
-						status = 'SUCCESS'
-					} else {
-						status = 'MINT PENDING'
-					}
+  const handleReload = () => {
+    stockTradeHistory.reload();
+    getHistory();
+  };
 
-				}
-
-
-				const tokenDecimals = getDecimals(Object.values(tokenAddresses)
-					.flatMap(chains => Object.values(chains)
-						.flatMap(networks => Object.values(networks)
-							.flatMap(contractTypes => Object.values(contractTypes))))
-					.find(obj => obj.address.toLowerCase() === log.inputToken?.toLowerCase()));
-
-
-				const obj: PositionType = {
-					side: 'Mint Request',
-					user: log.user as `0x${string}`,
-					inputAmount: weiToNum(log.inputAmount, tokenDecimals),
-					outputAmount: num(log.outputAmount),
-					tokenAddress: log.inputToken as `0x${string}`,
-					timestamp: Number(log.time),
-					txHash: log.transactionHash,
-					indexName: 'MAG7',
-					nonce: Number(log.nonce),
-					sendStatus: status,
-					receiveStatus: status,
-				}
-
-				return obj
-			})
-
-			const burnData = userAllBurnRequestLogs.map((log) => {
-
-				let status = ''
-
-				const isCancelledExist = stockTradeHistory.data.find((data: PositionType) => {
-					return data.nonce === Number(log.nonce) && data.side === 'Cancelled Burn'
-				})
-
-				const isBurnedExist = stockTradeHistory.data.find((data: PositionType) => {
-					return data.nonce === Number(log.nonce) && data.side === 'Burn Request'
-				})
-
-
-				if (log.__typename === 'MAG7RequestCancelRedemption') {
-					if (isCancelledExist) {
-						status = 'CANCELLED'
-					} else {
-						status = 'CANCEL PENDING'
-					}
-				} else {
-					if (isBurnedExist) {
-						status = 'SUCCESS'
-					} else {
-						status = 'BURN PENDING'
-					}
-
-				}
-
-
-				const tokenDecimals = getDecimals(Object.values(tokenAddresses)
-					.flatMap(chains => Object.values(chains)
-						.flatMap(networks => Object.values(networks)
-							.flatMap(contractTypes => Object.values(contractTypes))))
-					.find(obj => obj.address.toLowerCase() === log.outputToken?.toLowerCase()));
-
-				const obj: PositionType = {
-					side: 'Burn Request',
-					user: log.user as `0x${string}`,
-					inputAmount: num(log.inputAmount),
-					outputAmount: weiToNum(log.outputAmount, tokenDecimals),
-					tokenAddress: log.outputToken as `0x${string}`,
-					timestamp: Number(log.time),
-					txHash: log.transactionHash,
-					indexName: 'MAG7',
-					nonce: Number(log.nonce),
-					sendStatus: status,
-					receiveStatus: status,
-				}
-
-				return obj
-			})
-
-			const combinedData = [...mintData, ...burnData]
-			const nonceMap = new Map();
-
-			combinedData.forEach(obj => {
-				const { nonce, sendStatus } = obj;
-
-				// If nonce is not in the map or sendStatus contains 'cancel', store/replace the object
-				if (!nonceMap.has(nonce) || sendStatus?.includes('CANCEL')) {
-					nonceMap.set(nonce, obj);
-				}
-			});
-
-			// Convert the map values to an array for sorting
-			const filteredData = Array.from(nonceMap.values());
-
-			const sortedPositionsData = filteredData.sort(function (a, b) {
-				if (!a.timestamp || !b.timestamp) return 0
-				return Number(b.timestamp) - Number(a.timestamp)
-			})
-
-			setPositions(sortedPositionsData)
-
-		} catch (err) {
-			console.log(err)
-		}
-	}, [stockTradeHistory.data, dataFromGraph])
-
-	useEffect(() => {
-		getHistory()
-	}, [getHistory])
-
-	function handleReload() {
-		stockTradeHistory.reload()
-		getHistory()
-	}
-
-	return {
-		history: stockTradeHistory.data,
-		requests: positions,
-		reload: handleReload,
-	}
+  return {
+    history: stockTradeHistory.data,
+    requests: positions,
+    reload: handleReload,
+  };
 }

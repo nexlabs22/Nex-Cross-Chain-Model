@@ -1,146 +1,58 @@
 import { useEffect, useState, useCallback } from "react";
 import { GetTradeHistoryCrossChain } from "./getTradeHistoryCrossChain";
-import { PositionType, RequestType } from "@/types/indexTypes";
+import { Transaction, RequestType, AllowedTickers, Address } from "@/types/indexTypes";
 import { useDashboard } from "@/providers/DashboardProvider";
 import { num } from "@/utils/conversionFunctions";
 
 export function GetPositionsHistoryCrossChain(dataFromGraph: { [key: string]: RequestType[] }) {
   const { nexTokens } = useDashboard();
   const crossChainpositionHistory = GetTradeHistoryCrossChain(dataFromGraph);
+  const [positions, setPositions] = useState<Transaction[]>([]);
 
-  const [positions, setPositions] = useState<PositionType[]>([]);
-
-  const getHistory = useCallback(async () => {
+  const getHistory = useCallback(() => {
     try {
-      const positions0: PositionType[] = []      
+      const crossChainTokensSet = new Set(
+        nexTokens
+          .filter(token => token.smartContractType === "crosschain")
+          .map(token => token.symbol.toLowerCase())
+      );
 
-      const crosschainTokens = nexTokens.filter((token) => {
-        return token.smartContractType === 'crosschain'
-      }).map((token) => {
-        return token.symbol.toLowerCase()
-      })
+      const positions0: Transaction[] = Object.entries(dataFromGraph)
+        .filter(([key]) => Array.from(crossChainTokensSet).some(token => key.includes(token)))
+        .flatMap(([key, logs]) => {
+          const isMint = key.includes("RequestIssuances");
+          const tokenName = key.split(isMint ? "RequestIssuances" : "RequestRedemptions")[0].toUpperCase() as AllowedTickers;
 
-      Object.entries(dataFromGraph).forEach(([key, logs]) => {
-        if (crosschainTokens.some(token => key.includes(token))) {          
-          if (key.includes('RequestIssuances')) {
-            
-            // const isExist = crossChainpositionHistory.data.find((data) => {
-            // 	return data.nonce === Number(log.nonce) && data.side === 'Mint Request'
-            // })
+          return logs.map(log => ({
+            side: isMint ? "Mint Request" : "Burn Request",
+            userAddress: log.user as Address,
+            inputAmount: num(log.inputAmount),
+            outputAmount: num(log.outputAmount),
+            tokenAddress: (isMint ? log.inputToken : log.outputToken) as Address,
+            timestamp: Number(log.time),
+            txHash: log.transactionHash,
+            tokenName,
+            messageId: log.messageId,
+            nonce: Number(log.nonce),
+            sendStatus: "SUCCESS",
+            receiveStatus: "SUCCESS",
+          }));
+        });
 
-            let sendStatus = "";
-            let receiveStatus = "";
-            // let recieveSideMessageId = ''
-
-            // if (!isExist) {
-            // 	sendStatus = await getCCIPStatusById(log.messageId as string, 'ethereumSepolia', 'arbitrumSepolia')
-            // 	if (sendStatus == 'SUCCESS') {
-            // 		const messageId = await client2.readContract({
-            // 			address: arbtirumSepoliaCR5CrossChainFactory,
-            // 			abi: crossChainIndexFactoryV2Abi,
-            // 			functionName: 'issuanceMessageIdByNonce',
-            // 			args: [log.nonce],
-            // 		})
-            // 		receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
-            // 		recieveSideMessageId = messageId as string
-            // 	}
-            // } else {
-            sendStatus = "SUCCESS";
-            receiveStatus = "SUCCESS";
-            // }
-
-            logs.forEach((log: RequestType) => {
-              const obj: PositionType = {
-                side: 'Mint Request',
-                user: log.user as `0x${string}`,
-                inputAmount: num(log.inputAmount),
-                outputAmount: num(log.outputAmount),
-                tokenAddress: log.inputToken as `0x${string}`,
-                timestamp: Number(log.time),
-                txHash: log.transactionHash,
-                indexName: key.split('RequestIssuances')[0].toUpperCase(),
-                messageId: log.messageId,
-                nonce: Number(log.nonce),
-                sendStatus,
-                receiveStatus,
-                // recieveSideMessageId,
-              }
-
-
-              positions0.push(obj)
-            })
-          }if (key.includes('RequestRedemptions')) {            
-
-            // const isExist = crossChainpositionHistory.data.find((data) => {
-            // 	return data.nonce === Number(log.nonce) && data.side === 'Burn Request'
-            // })
-
-            let sendStatus = "";
-            let receiveStatus = "";
-            // let recieveSideMessageId = ''
-
-            // if (!isExist) {
-            // 	sendStatus = await getCCIPStatusById(log.messageId as `0x${string}`, 'ethereumSepolia', 'arbitrumSepolia')
-            // 	if (sendStatus == 'SUCCESS') {
-            // 		const messageId = await client2.readContract({
-            // 			address: arbtirumSepoliaCR5CrossChainFactory,
-            // 			abi: crossChainIndexFactoryV2Abi,
-            // 			functionName: 'redemptionMessageIdByNonce',
-            // 			args: [log.nonce],
-            // 		})
-            // 		receiveStatus = (await getCCIPStatusById(messageId as string, 'arbitrumSepolia', 'ethereumSepolia')) as string
-            // 		recieveSideMessageId = messageId as string
-            // 	}
-            // } else {
-            sendStatus = "SUCCESS";
-            receiveStatus = "SUCCESS";
-            // }
-
-
-            logs.forEach(async (log: RequestType) => {
-              const obj: PositionType = {
-                side: 'Burn Request',
-                user: log.user as `0x${string}`,
-                inputAmount: num(log.inputAmount),
-                outputAmount: num(log.outputAmount),
-                tokenAddress: log.outputToken as `0x${string}`,
-                timestamp: Number(log.time),
-                txHash: log.transactionHash,
-                indexName: key.split('RequestRedemptions')[0].toUpperCase(),
-                messageId: log.messageId,
-                // recieveSideMessageId,
-                nonce: Number(log.nonce),
-                sendStatus,
-                receiveStatus,
-              }
-
-              positions0.push(obj)
-            })
-          }
-        }
-      })
-
-
-      const sortedPositionsData = positions0.sort(function (a, b) {
-        if (!a.timestamp || !b.timestamp) return 0;
-        return Number(b.timestamp) - Number(a.timestamp);
-      });
-
-      setPositions(sortedPositionsData);
-
+      setPositions(positions0.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)));
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }, [nexTokens, dataFromGraph]);
 
   useEffect(() => {
-    getHistory()
+    getHistory();
   }, [getHistory]);
 
-  function handleReload() {
+  const handleReload = () => {
     crossChainpositionHistory.reload();
     getHistory();
-  }
+  };
 
   return {
     history: crossChainpositionHistory.data,
