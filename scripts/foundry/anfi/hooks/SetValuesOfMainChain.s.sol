@@ -231,7 +231,8 @@ contract CombinedSetValuesScript is Script, Test {
     ) internal {
         address[] memory assetList = new address[](2);
         assetList[0] = 0x6Ea5aD162d5b74Bc9e4C3e4eEB18AE6861407221; // sepoliaBitcoin
-        assetList[1] = 0x8B0D01137979e409Bba15098aA5665c647774003; // arbSepoliaXaut
+        assetList[1] = 0x0C3711069cf889Fc47B3Da3700fFFDc2e16A4DaD; // arbSepoliaXaut
+        // assetList[1] = 0x8B0D01137979e409Bba15098aA5665c647774003; // arbSepoliaXaut
 
         uint256[] memory marketShares = new uint256[](2);
         marketShares[0] = 70000000000000000000;
