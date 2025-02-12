@@ -72,6 +72,7 @@ export const tokenAddresses: TokenAddressMap = {
       Mainnet: {
         token: { address: "0x40d284001E3f6501C3f59FA4719776f973Ef6F91" },
         factory: { address: "0x12A1d813f70025366B31B27582af902141b50484" },
+        storage: { address: "0x12A1d813f70025366B31B27582af902141b50484" },
       },
       Goerli: {
         token: { address: "0x40d284001E3f6501C3f59FA4719776f973Ef6F91" },
@@ -79,7 +80,8 @@ export const tokenAddresses: TokenAddressMap = {
       },
       Sepolia: {
         token: { address: "0x5Cd93F5C4ECE56b7faC31ABb3c1933f6a6FE7182" },
-        factory: { address: "0x7427E998D4db46E15f831e4Cff0393Ebb277c637" },        
+        factory: { address: "0x7427E998D4db46E15f831e4Cff0393Ebb277c637" },
+        storage: { address: "0x7427E998D4db46E15f831e4Cff0393Ebb277c637" },
       },
     },
   },
@@ -87,13 +89,13 @@ export const tokenAddresses: TokenAddressMap = {
     Ethereum: {
       Goerli: {
         token: { address: "0x63E7c9AD503973059D94EcCc0EB1daFC0fb7497c" },
-        factory: { address: "0x8a5e84A1B5e8640222A6Ae5A20B2740A060acCf4" },        
+        factory: { address: "0x8a5e84A1B5e8640222A6Ae5A20B2740A060acCf4" },
       },
       Sepolia: {
         token: { address: "0xA16FEC5964aDE6563624C16d0b2EDeC95bEEB63b" },
         factory: { address: "0xCd16eDa751CcC77f780E06B7Af9aeD0E90a51586" },
         storage: { address: "0x0fDB8A708E4Ab28DB78E0897Fc6bf3aF79Ef2271" },
-        ccip: { address: "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05" },        
+        ccip: { address: "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05" },
       },
     },
     Polygon: {
@@ -116,7 +118,7 @@ export const tokenAddresses: TokenAddressMap = {
         token: { address: "0x1e881F3c8bF7A161E884B4D86Fe8810290d3095D" },
         factory: { address: "0x5EBD4Ac25ADbb238941086b7e2a87672f93919a4" },
         storage: { address: "0xb9182570054598AC2a457E034f3C0bDfd6c60D73" },
-        processor: { address: "0x8250b30Ae818Ab30d5A03E893Cdc850bdA08E638" },        
+        processor: { address: "0x8250b30Ae818Ab30d5A03E893Cdc850bdA08E638" },
       },
     }
   },
@@ -193,7 +195,7 @@ export const poolAddresses: PoolAddressMap = {
 }
 
 export const factoryAddresses = {
-  UNISWAP:{
+  UNISWAP: {
     Ethereum: {
       Mainnet: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
       Sepolia: "0x0227628f3F023bb0B980b67D528571c95c6DaC1c",

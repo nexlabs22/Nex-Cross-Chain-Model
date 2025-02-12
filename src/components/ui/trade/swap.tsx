@@ -51,8 +51,7 @@ import {
   ZERO_ADDRESS,
 } from "thirdweb"
 import Big from "big.js"
-import {
-  crossChainIndexFactoryV2Abi,
+import {  
   stockFactoryStorageABI,
 } from "@/constants/abi"
 import { parseEther, parseUnits } from "@ethersproject/units"
@@ -114,9 +113,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
   const activeSymbol = isIndexCryptoAsset(swapFromToken)
     ? swapFromToken.symbol
     : swapToToken.symbol
-  const activeAddress = tokenAddresses[activeSymbol as NexIndices]?.[chainName]?.[
-    network
-  ]?.factory?.address as Address
+  const activeStorageAddress = tokenAddresses[activeSymbol as NexIndices]?.[chainName]?.[network]?.storage?.address as Address
+  
 
     useEffect(() => {
         const selectedCoin = selectedIndex?.symbol || 'ANFI'
@@ -383,10 +381,13 @@ export default function Swap({ selectedIndex }: SwapProps) {
   }
 
   const indexTokenFactoryContract = GetContract(activeSymbol as AllowedTickers, 'factory')
+  const indexTokenStorageContract = GetContract(activeSymbol as AllowedTickers, 'storage')
+
   const faucetContract = GetContract('USDT', 'faucet')
 
   const fromTokenContract = GetContract(swapFromToken.symbol as AllowedTickers, 'token')
   const toTokenContract = GetContract(swapToToken.symbol as AllowedTickers, 'token')
+
 
   const fromTokenBalance = useReadContract(balanceOf, {
     contract: fromTokenContract,
@@ -566,9 +567,18 @@ export default function Swap({ selectedIndex }: SwapProps) {
       ) {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod('issuanceIndexTokens'),
-          params: [swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '3'],
-      })
+          method: "function issuanceIndexTokens(address, address[], uint24[], uint256, uint24)",
+          params: [
+            swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
+            [
+              swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, 
+            tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address
+          ],
+            [3000],
+            BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),
+            3,
+          ],
+        })
 
         mintRequestHook.mutate(transaction)
 
@@ -669,11 +679,15 @@ export default function Swap({ selectedIndex }: SwapProps) {
       ) {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod("redemption"),
+          method: "function redemption(uint256, address, address[], uint24[], uint24)",
           params: [
-            parseEther(Number(firstInputValue).toString()),
-            swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address,
-            "3",
+            BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),
+            swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
+            [
+              tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,
+            swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address],
+            [3000],
+            3,
           ],
         })
         burnRequestHook.mutate(transaction)
@@ -765,7 +779,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
   useEffect(() => {
     async function getFeeRate() {
       const feeRate = await (rpcClient as PublicClient).readContract({
-        address: activeAddress,
+        address: activeStorageAddress,
         abi: stockFactoryStorageABI,
         functionName: "feeRate",
         args: [],
@@ -775,7 +789,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
     }
 
     getFeeRate()
-  }, [network, rpcClient, activeAddress,chainName])
+  }, [activeStorageAddress, network, rpcClient, chainName])
 
   useEffect(() => {
     const currentPortfolioValue =
@@ -799,10 +813,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
         if (firstInputValue === "") {
           resetSecondValue()
           return
-        }
-        const convertedInputValue = firstInputValue
-          ? parseEther(Number(firstInputValue)?.toString() as string)
-          : 0
+        }        
+
         if (swapToToken.hasOwnProperty("smartContractType")) {
           const currentTotalSupply = Number(toTokenTotalSupply.data)
           let inputValue
@@ -840,17 +852,28 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   )
                 ).toFixed(2)
               )
-            } else if (convertedInputValue) {
-              const inputEthValue = await (rpcClient as PublicClient).readContract({
-                address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.factory
-                  ?.address as Address,
-                abi: crossChainIndexFactoryV2Abi,
-                functionName: "getAmountOut",
-                args: [
-                  swapFromToken.tokenAddresses?.[chainName]?.[network]?.token
-                    ?.address,
-                  tokenAddresses.WETH?.[chainName]?.[network]?.token?.address,
-                  convertedInputValue,
+            } else if (firstInputValue) {
+              // const inputEthValue = await (rpcClient as PublicClient).readContract({
+              //   address: swapToToken.tokenAddresses?.[chain]?.[network]?.storage?.address,
+              //   abi: crossChainIndexFactoryV2Abi,
+              //   functionName: "getAmountOut",
+              //   args: [
+              //     swapFromToken.tokenAddresses?.[chain]?.[network]?.token
+              //       ?.address,
+              //     tokenAddresses.WETH?.[chain]?.[network]?.token?.address,
+              //     convertedInputValue,
+              //     3,
+              //   ],
+              // })
+
+              const inputEthValue = await readContract({
+                contract: indexTokenStorageContract,
+                method:
+                  "function getAmountOut(address[], uint24[], uint256, uint24 ) returns (uint256)",
+                params: [
+                  [swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address],
+                  [3000],                  
+                  BigInt(numToWei(firstInputValue, getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token))), // Convert ethAmountOut to bigint
                   3,
                 ],
               })
@@ -906,18 +929,13 @@ export default function Swap({ selectedIndex }: SwapProps) {
           return
         }
         if (swapFromToken.hasOwnProperty("smartContractType")) {
-          const convertedInputValue = firstInputValue
-            ? parseEther(Number(firstInputValue)?.toString() as string)
-            : 0
+          const convertedInputValue = parseEther(Number(firstInputValue)?.toString() as string) 
+          console.log({convertedInputValue})           
           let outputValue
           const currentTotalSupply = Number(fromTokenTotalSupply.data)
-          const newTotalSupply =
-            currentTotalSupply - Number(convertedInputValue)
-          const newPortfolioValue =
-            (Number(currentPortfolioValue) * newTotalSupply) /
-            currentTotalSupply
-          const ethAmountOut =
-            (Number(currentPortfolioValue) - newPortfolioValue) * 0.999
+          const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
+          const newPortfolioValue = (Number(currentPortfolioValue) * newTotalSupply) / currentTotalSupply
+          const ethAmountOut = (Number(currentPortfolioValue) - newPortfolioValue) * 0.999
           if (
             isWETH(
               swapToToken.tokenAddresses?.[chainName]?.[network]?.token
@@ -930,10 +948,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
               isIndexCryptoAsset(swapFromToken) &&
               swapFromToken?.smartContractType === "stocks"
             ) {
-
-              const storageContract = GetContract(swapFromToken.symbol as AllowedTickers, 'storage')
               const outAmount = await readContract({
-                contract: storageContract,
+                contract: indexTokenStorageContract,
                 method:
                   "function getRedemptionAmountOut(uint256) returns (uint256)",
                 params: [BigInt(firstInputValue)],
@@ -947,23 +963,20 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   )
                 ).toString()
               )
-            } else {
-              const factoryContract = GetContract('CRYPTO5', 'factory')
+            } else {                            
               const outPutTokenValue = await readContract({
-                contract: factoryContract,
+                contract: indexTokenStorageContract,
                 method:
-                  "function getAmountOut(address, address, uint256, uint256 ) returns (uint256)",
+                  "function getAmountOut(address[], uint24[], uint256, uint24 ) returns (uint256)",
                 params: [
-                  tokenAddresses.WETH?.[chainName]?.[network]?.token
-                    ?.address as Address,
-                  swapToToken.tokenAddresses?.[chainName]?.[network]?.token
-                    ?.address as Address,
+                  [tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address ],
+                  [3000],                  
                   BigInt(Math.floor(ethAmountOut)), // Convert ethAmountOut to bigint
-                  BigInt(3),
+                  3,
                 ],
               })
 
-              outputValue = Number(outPutTokenValue)
+              outputValue = Number(outPutTokenValue)              
               setSecondInputValue(
                 weiToNum(
                   outputValue,
