@@ -103,6 +103,12 @@ contract BalancerSender is
         functionsOracle = FunctionsOracle(_functionsOracle);
     }
 
+    function withdrawLink() external onlyOwner {
+        IERC20(factoryStorage.linkToken()).transfer(
+            msg.sender,
+            IERC20(factoryStorage.linkToken()).balanceOf(address(this))
+        );
+    }
     
     /**
      * @dev Fallback function to receive ETH.

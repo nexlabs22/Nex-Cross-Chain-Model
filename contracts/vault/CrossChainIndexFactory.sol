@@ -95,7 +95,12 @@ contract CrossChainIndexFactory is
         );
     }
 
-    
+    function withdrawLink() external onlyOwner {
+        IERC20(factoryStorage.i_link()).transfer(
+            msg.sender,
+            IERC20(factoryStorage.i_link()).balanceOf(address(this))
+        );
+    }
 
     /**
      * @dev The contract's fallback function that does not allow direct payments to the contract.

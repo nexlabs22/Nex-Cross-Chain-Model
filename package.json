@@ -10,7 +10,8 @@
     "ethers": "^5.7.2",
     "hardhat": "^2.14.1",
     "hardhat-contract-sizer": "^2.10.0",
-    "hardhat-gas-reporter": "^1.0.9"
+    "hardhat-gas-reporter": "^1.0.9",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@chainlink/local": "0.2.2",
