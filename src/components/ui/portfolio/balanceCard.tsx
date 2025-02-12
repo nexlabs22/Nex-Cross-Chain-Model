@@ -6,6 +6,17 @@ import { MdOutlineArrowUpward } from "react-icons/md";
 import theme from "@/theme/theme"
 import GenericAreaLineChart from "../generic/genericAreaChart";
 
+const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
+const xLabels = [
+    'Page A',
+    'Page B',
+    'Page C',
+    'Page D',
+    'Page E',
+    'Page F',
+    'Page G',
+];
+
 
 const PortfolioBalanceCard = () => {
     return (
@@ -45,7 +56,7 @@ const PortfolioBalanceCard = () => {
                     left: 0,
                     right: 0
                 }}>
-                    <GenericAreaLineChart label={'Portfolio'} />
+                    <GenericAreaLineChart label={'Portfolio'} chartData={{xValue: uData, yValue: xLabels}}/>
                 </Stack>
             </Stack>
             </Stack>

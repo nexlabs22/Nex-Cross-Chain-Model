@@ -1,5 +1,6 @@
 import { MongoClient, Collection } from "mongodb"
 import { MongoDb } from "@/types/mongoDb"
+import { AssetOverviewDocument } from "@/types/indexTypes"
 
 const connectToMongoDb = async (
   collectionName: string
@@ -11,9 +12,32 @@ const connectToMongoDb = async (
 
   try {
     await client.connect()
-    console.log("Connected successfully to MongoDB")
+    console.log("Connected successfully to MongoDB client check")
     const db = client.db("History")
     const collection = db.collection<MongoDb>(collectionName)
+    return { client, collection }
+  } catch (error) {
+    console.error("Cannot connect to MongoDB", error)
+    throw new Error("Cannot connect to MongoDB")
+  }
+}
+
+export const connectToMongoDbDocument = async (
+  collectionName: string
+): Promise<{
+  client: MongoClient
+  collection: Collection<AssetOverviewDocument>
+}> => {
+  const url = process.env.MONGO_PUBLIC_URL || ""
+  const client = new MongoClient(url, {
+    serverSelectionTimeoutMS: 30000,
+  })
+
+  try {
+    await client.connect()
+    console.log("Connected successfully to MongoDB document")
+    const db = client.db("History")
+    const collection = db.collection<AssetOverviewDocument>(collectionName)
     return { client, collection }
   } catch (error) {
     console.error("Cannot connect to MongoDB", error)

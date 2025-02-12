@@ -174,7 +174,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
         logoString: amznLogo.src,
       },
       {
-        symbol: "GOOGL",
+        symbol: "GOOG",
         name: "google",
         weight: 14.29,
         bgColor: "#4285F4",

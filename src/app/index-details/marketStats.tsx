@@ -8,7 +8,7 @@ import { formatToViewNumber } from "@/utils/conversionFunctions"
 
 const MarketStats = ({ index }: { index: IndexCryptoAsset }) => {
   const address = reduceAddress(
-    index?.tokenAddresses?.Ethereum?.Mainnet?.index?.address
+    index?.tokenAddresses?.Ethereum?.Mainnet?.token?.address
   )
   const managementFee = index?.smartContractInfo?.managementFee
     ? `${index?.smartContractInfo?.managementFee}%`
@@ -19,8 +19,8 @@ const MarketStats = ({ index }: { index: IndexCryptoAsset }) => {
   const marketCap = index?.marketInfo?.marketCap
     ? `$${formatToViewNumber({value: index?.marketInfo?.marketCap, returnType: 'currency'})}`
     : "N/A"
-  const change24h = index?.marketInfo?.change24h
-    ? `${index?.marketInfo?.change24h}%`
+  const change24h = index?.marketInfo?.change24hFmt
+    ? `${index?.marketInfo?.change24hFmt}%`
     : "N/A"
 
   const latestRebalanceUpdate =

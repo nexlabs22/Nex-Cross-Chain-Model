@@ -1,4 +1,4 @@
-export const darkElevations = {
+export const lightElevations = {
     elevation50: {main: "#0A0A0A"},
     elevation100: {main: "#171717"},
     elevation200: {main: "#262626"},
@@ -12,7 +12,7 @@ export const darkElevations = {
     elevation950: {main: "#FAFAFA"},
   }
 
-export const lightElevations = {
+export const darkElevations = {
     elevation50: {main: "#FAFAFA"},
     elevation100: {main: "#F5F5F5"},
     elevation200: {main: "#E5E5E5"},

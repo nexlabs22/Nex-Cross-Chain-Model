@@ -13,7 +13,7 @@ export default async function getPoolAddress(
   network: Networks
 ) {
   const tokenA = tokenAddress1;
-  const wethSepolia = tokenAddresses.WETH?.Ethereum?.Sepolia?.index?.address;
+  const wethSepolia = tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address;
 
   const tokenB = network === 'Mainnet' ? WETH9[1].address : (wethSepolia as Address);
   const uniswapFactory = factoryAddresses.UNISWAP.Ethereum;

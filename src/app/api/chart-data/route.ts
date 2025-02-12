@@ -1,10 +1,48 @@
-import { NextResponse } from "next/server"
+import { AssetCategory } from "@/types/indexTypes"
+import { aggregateType, MongoDb } from "@/types/mongoDb"
+import connectToMongoDb from "@/utils/connectToMongoDb"
+import { Collection } from "mongodb"
+import { NextRequest, NextResponse } from "next/server"
 
-export async function GET() {
-  return NextResponse.json({
-    data: [{ name: "A", value: 100 }],
-    meta: {
-      message: "Data fetched successfully",
-    },
-  })
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+
+    if (!body || !body.ticker) {
+      return NextResponse.json({ message: "Ticker is required" }, { status: 400 })
+    }
+
+    const { ticker, limit, sort, ...additionalFilters } = body
+
+    const { collection }: { collection: Collection<MongoDb> } =
+      await connectToMongoDb("DailyAssets")
+
+    const filter = {
+      type: "index" as AssetCategory,
+      ticker: ticker === "ARBEI" ? "rARBEI" : ticker,
+      ...additionalFilters,
+    }
+
+    const pipeline: aggregateType[] = [{ $match: filter }]
+
+    if (sort) {
+      pipeline.push({ $sort: sort })
+    }
+
+    if (limit) {
+      pipeline.push({ $limit: limit })
+    }
+
+    const data = await collection.aggregate(pipeline).toArray()
+
+    return NextResponse.json({
+      data,
+      meta: {
+        message: `Data fetched successfully`,
+      },
+    })
+  } catch (error) {
+    console.error("Error fetching data:", error)
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 })
+  }
 }
