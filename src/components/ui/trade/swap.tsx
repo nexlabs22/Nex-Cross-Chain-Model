@@ -569,7 +569,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: resolveMethod('issuanceIndexTokens'),
-          params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.index?.address, parseEther(Number(firstInputValue).toString()), '3'],
+          params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '3'],
       })
 
         mintRequestHook.mutate(transaction)
@@ -580,14 +580,14 @@ export default function Swap({ selectedIndex }: SwapProps) {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: 'function issuanceIndexTokens(uint256)',
-          params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.index)).toString())],
+          params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)).toString())],
       })
         mintRequestHook.mutate(transaction)
       } else {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: resolveMethod('issuanceIndexTokens'),
-          params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.index?.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
+          params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
       })
         mintRequestHook.mutate(transaction)
       }

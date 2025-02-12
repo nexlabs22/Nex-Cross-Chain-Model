@@ -1,23 +1,23 @@
 "use client"
 
 import { sepoliaTokens } from "@/constants/tokens"
-import { TokenObject } from "@/types/indexTypes"
 import React, { createContext, useState } from "react"
 import { useContext } from "react"
 import { useDashboard } from "./DashboardProvider"
 import { nexTokensArray } from "@/constants/indices"
+import { IndexCryptoAsset } from "@/types/indexTypes"
 
 
 interface TradeContextProps {
-    swapFromToken: TokenObject
-    swapToToken: TokenObject
-    setSwapFromToken: (token: TokenObject)=>void,
-    setSwapToToken: (token: TokenObject)=>void,
+    swapFromToken: IndexCryptoAsset
+    swapToToken: IndexCryptoAsset
+    setSwapFromToken: (token: IndexCryptoAsset)=>void,
+    setSwapToToken: (token: IndexCryptoAsset)=>void,
 }
 
 const TradeContext = createContext<TradeContextProps>({
-    swapFromToken: sepoliaTokens.find((token) => token.symbol === 'USDT') as TokenObject,
-    swapToToken: nexTokensArray.find((token) => token.symbol === 'ARBEI') as TokenObject,
+    swapFromToken: sepoliaTokens.find((token) => token.symbol === 'USDT') as IndexCryptoAsset,
+    swapToToken: nexTokensArray.find((token) => token.symbol === 'ARBEI') as IndexCryptoAsset,
     setSwapFromToken: ()=>{},
     setSwapToToken: ()=>{},
 })
@@ -30,18 +30,18 @@ const TradeProvider = ({ children }: { children: React.ReactNode }) => {
 
     const { nexTokens} = useDashboard()
 
-        const [swapFromToken, setSwapFrom] = useState<TokenObject>(
-            [...nexTokens, ...sepoliaTokens].find((token) => token.symbol === 'USDT') as TokenObject
+        const [swapFromToken, setSwapFrom] = useState<IndexCryptoAsset>(
+            [...nexTokens, ...sepoliaTokens].find((token) => token.symbol === 'USDT') as IndexCryptoAsset
         );
     
-        const [swapToToken, setSwapTo] = useState<TokenObject>(
-            [...nexTokens, ...sepoliaTokens].find((token) => token.symbol === 'ARBEI') as TokenObject
+        const [swapToToken, setSwapTo] = useState<IndexCryptoAsset>(
+            [...nexTokens, ...sepoliaTokens].find((token) => token.symbol === 'ARBEI') as IndexCryptoAsset
         );
 
-        const setSwapFromToken = (token: TokenObject) => {            
+        const setSwapFromToken = (token: IndexCryptoAsset) => {            
             setSwapFrom(token) 
         }
-        const setSwapToToken = (token: TokenObject) => {
+        const setSwapToToken = (token: IndexCryptoAsset) => {
             setSwapTo(token) 
         }
 
