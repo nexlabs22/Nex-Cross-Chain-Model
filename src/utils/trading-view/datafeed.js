@@ -218,61 +218,76 @@ const dataFeed = {
     periodParams,
     onHistoryCallback,
     onErrorCallback
-  ) => {
+) => {
     const { from, to, firstDataRequest } = periodParams;
-    // console.log("[getBars]: Method call", symbolInfo, resolution, from, to, periodParams);
     const parsedSymbol = parseFullSymbol(symbolInfo.full_name);
+    
+    // Construct API query parameters
     const urlParameters = {
-      e: parsedSymbol.exchange,
-      fsym: parsedSymbol.fromSymbol,
-      tsym: parsedSymbol.toSymbol,
-      toTs: to,
-      limit: 2000,
+        e: parsedSymbol.exchange,
+        fsym: parsedSymbol.fromSymbol,
+        tsym: parsedSymbol.toSymbol,
+        toTs: to,
+        limit: 2000,
     };
     const query = Object.keys(urlParameters)
-      .map((name) => `${name}=${encodeURIComponent(urlParameters[name])}`)
-      .join("&");
+        .map((name) => `${name}=${encodeURIComponent(urlParameters[name])}`)
+        .join("&");
+
     try {
+        let bars = [];
 
-      const filter = {
-        ticker: urlParameters.fsym
-      }
-      const data1 = await axios.post(`/api/chart-data`, filter).then( res => mongoDataToOHLC(res.data.data)).catch(error => console.log(error));
-      const data2 = await makeApiRequest(`data/histoday?${query}`);
+        // First, attempt to fetch data from your API
+        const filter = { ticker: urlParameters.fsym };
+        const dataFromDB = await axios.post(`/api/chart-data`, filter)
+            .then(res => mongoDataToOHLC(res.data.data))
+            .catch(error => {
+                console.log("[getBars]: Error fetching from database", error);
+                return [];  // Ensure we return an empty array on failure
+            });
 
-      const data = data2.Response === 'Error' ? data1 : data2.Data
+        // If no data is found in your API, fall back to the third-party API
+        if (!dataFromDB || dataFromDB.length === 0) {
+            console.log("[getBars]: No data from DB, fetching from third-party API...");
+            const dataFromAPI = await makeApiRequest(`data/histoday?${query}`);
 
-      let bars = [];
+            // Handle third-party API errors
+            if (!dataFromAPI || dataFromAPI.Response === "Error" || !dataFromAPI.Data.length) {
+                console.log("[getBars]: No data from third-party API either.");
+                onHistoryCallback([], { noData: true });
+                return;
+            }
 
-      data.forEach((bar) => {
-        if (bar.time >= from && bar.time < to) {
-          bars = [
-            ...bars,
-            {
-              time: bar.time * 1000,
-              low: bar.low,
-              high: bar.high,
-              open: bar.open,
-              close: bar.close,
-            },
-          ];
+            bars = dataFromAPI.Data;
+        } else {
+            console.log("[getBars]: Using data from database.");
+            bars = dataFromDB;
         }
-      });
-      if (firstDataRequest) {
-        lastBarsCache.set(symbolInfo.full_name, {
-          ...bars[bars.length - 1],
-        });
-      }
-      // console.log(`[getBars]: returned ${bars.length} bar(s)`);
-      onHistoryCallback(bars, {
-        noData: false,
-      });
-      return;
+
+        // Convert API response to TradingView's format
+        const formattedBars = bars
+            .filter(bar => bar.time >= from && bar.time < to)
+            .map(bar => ({
+                time: bar.time * 1000, // Convert to milliseconds
+                low: bar.low,
+                high: bar.high,
+                open: bar.open,
+                close: bar.close,
+            }));
+
+        // Cache last bar for reference
+        if (firstDataRequest && formattedBars.length > 0) {
+            lastBarsCache.set(symbolInfo.full_name, formattedBars[formattedBars.length - 1]);
+        }
+
+        console.log(`[getBars]: Returning ${formattedBars.length} bar(s).`);
+        onHistoryCallback(formattedBars, { noData: formattedBars.length > 0 ? false: true });
+
     } catch (error) {
-      console.log("[getBars]: Get error", error);
-      onErrorCallback(error);
+        console.log("[getBars]: Error", error);
+        onErrorCallback(error);
     }
-  },
+},
 
   subscribeBars: (
     symbolInfo,
