@@ -18,7 +18,8 @@ contract DeployCrossChainAllScript is Script, Test, PriceOracleByteCode {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        string memory targetChain = "arbitrum_sepolia";
+        // string memory targetChain = "arbitrum_sepolia";
+        string memory targetChain = "ethereum_mainnet";
 
         address vaultProxy = _deployVault();
 
