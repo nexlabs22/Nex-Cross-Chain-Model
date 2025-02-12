@@ -17,6 +17,7 @@ export function GetDefiPortfolioBalance(
   const allowedSymbols = nexTokens
     .filter((token) => token.smartContractType === "defi")
     .map((token) => token.symbol)
+
   const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
     (symbol) => allowedSymbols.includes(symbol)
   )[0]
@@ -33,14 +34,14 @@ export function GetDefiPortfolioBalance(
       return
     }
 
-    const activeFactoryAddress = nexTokens.filter(
+    const activeStorageAddress = nexTokens.filter(
       (token) => token.symbol === activeTicker
-    )[0].tokenAddresses?.[chain]?.[network]?.factory?.address
+    )[0].tokenAddresses?.[chain]?.[network]?.storage?.address
 
     let totalPortfolioBalance: number = 0
 
     const sepoliaPortfolioBalance = await (sepoliaPublicClient as PublicClient).readContract({
-      address: activeFactoryAddress as `0x${string}`,
+      address: activeStorageAddress as `0x${string}`,
       abi: indexFactoryV2Abi,
       functionName: "getPortfolioBalance",
     })
