@@ -79,6 +79,10 @@ contract CrossChainIndexFactory is
         IERC20(_chainlinkToken).approve(_router, type(uint256).max);
     }
 
+    function withdrawLink() external onlyOwner {
+        IERC20(factoryStorage.i_link()).transfer(msg.sender, IERC20(factoryStorage.i_link()).balanceOf(address(this)));
+    }
+
     /**
      * @dev The contract's fallback function that does not allow direct payments to the contract.
      * @notice Prevents users from sending ether directly to the contract by reverting the transaction.
