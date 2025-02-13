@@ -50,13 +50,14 @@ function isIndexCryptoAsset(
   return token && typeof token === "object" && "smartContractType" in token
 }
 
-export default function Swap({ selectedIndex }: SwapProps) {
+export default function Swap({ selectedIndex, side }: SwapProps) {
   const {
     activeChainSetting: { network, chain },
     userAddress,
     activeThirdWebChain,
   } = useGlobal()
   const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } = useTrade()
+  const [selectedSide , setSelectedSide] = useState<"buy" | "sell" | undefined>(side)
 
   const { ethPriceUsd, nexTokens } = useDashboard()
 
@@ -113,7 +114,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
       }
     )
     setSwapToToken(coinDetails[0])
-  }, [selectedIndex, nexTokens])
+  }, [selectedIndex, nexTokens, setSwapToToken])
 
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
@@ -234,12 +235,13 @@ export default function Swap({ selectedIndex }: SwapProps) {
       }
     }
     setMergedCoinList([OtherCoinList, OurIndexCoinList])
-  }, [network, swapToToken, swapFromToken, nexTokens, coinsList])
+  }, [network, swapToToken, swapFromToken, nexTokens, coinsList, setSwapFromToken])
 
   function Switching() {
     const switchReserve = swapFromToken
     setSwapFromToken(swapToToken)
     setSwapToToken(switchReserve)
+    setSelectedSide(selectedSide == 'buy' ? 'sell' : 'buy')
     if (switchReserve.hasOwnProperty("smartContractType")) {
       if (
         mergedCoinList[0].some((obj) => obj.hasOwnProperty("smartContractType"))
@@ -1526,12 +1528,16 @@ export default function Swap({ selectedIndex }: SwapProps) {
       {/* tokens modal for setting FromSwapToken */}
       <TokensModal
         open={openFromTokensModal}
+        showNexProducts={selectedSide == 'buy' ? true : false}
+        showTokens={selectedSide == 'buy' ? false : true}
         onClose={handleCloseFromTokensModal}
         onSelect={(selectedToken) => { setSwapFromToken(selectedToken); handleCloseFromTokensModal(); }}
       />
       {/* tokens modal for setting ToSwapToken */}
       <TokensModal
         open={openToTokensModal}
+        showNexProducts={selectedSide == 'buy' ? false : true}
+        showTokens={selectedSide == 'buy' ? true : false}
         onClose={handleCloseToTokensModal}
         onSelect={(selectedToken) => { setSwapToToken(selectedToken); handleCloseToTokensModal(); }}
       />

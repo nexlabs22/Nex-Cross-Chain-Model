@@ -91,10 +91,14 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
 
 export default function TokensModal({
   open,
+  showNexProducts,
+  showTokens,
   onClose,
   onSelect
 }: {
   open: boolean;
+  showNexProducts: boolean;
+  showTokens: boolean;
   onClose: () => void;
   onSelect: (token: CryptoAsset | IndexCryptoAsset) => void;
 }) {
@@ -105,10 +109,23 @@ export default function TokensModal({
   const { nexTokens } = useDashboard()
 
   useEffect(() => {
-    setTokens(nexTokens.concat(sepoliaTokens))
-    setFilteredTokens(nexTokens.concat(sepoliaTokens))
-    setVisibleCount(nexTokens.length + sepoliaTokens.length)
-  }, [nexTokens])
+    if(showNexProducts && !showTokens) {
+      setTokens(nexTokens);
+      setFilteredTokens(nexTokens)
+      setVisibleCount(nexTokens.length)
+    }
+    else if(!showNexProducts && showTokens) {
+      setTokens(sepoliaTokens)
+      setFilteredTokens(sepoliaTokens)
+      setVisibleCount(sepoliaTokens.length)
+    }
+    else if(showNexProducts && showTokens) {
+      setTokens(nexTokens.concat(sepoliaTokens))
+      setFilteredTokens(nexTokens.concat(sepoliaTokens))
+      setVisibleCount(nexTokens.length + sepoliaTokens.length)
+    }
+    
+  }, [nexTokens, showNexProducts, showTokens])
 
   const handleInputChange = (
     event: React.SyntheticEvent,
