@@ -132,21 +132,6 @@ export type IndexCryptoAsset = CryptoAsset & {
   assets?: AssetWithWeight[]
 }
 
-export type Transaction = {
-  side?: "send" | "receive"
-  userAddress: string
-  tokenAddress: string
-  timestamp?: number
-  inputAmount?: number
-  outputAmount?: number
-  tokenName: NexIndices | AllowedTickers
-  txHash?: string
-  messageId?: string
-  nonce?: number
-  status?: string
-  recieveSideMessageId?: string
-}
-
 export type thirdwebReadContract = {
   data: bigint
   refetch: () => void
@@ -180,34 +165,31 @@ export type DinariAssetDetails = {
   }[]
 }
 
-
-
-export type RequestType = {
-  __typename: string
-	time: string
-	user: string
+type BaseTransaction = {
   nonce?: number
-	transactionHash: string
-	inputToken?: string
-	outputToken?: string
-	inputAmount: string
-	outputAmount: string
   messageId?: string
+  inputAmount: number | string
+  outputAmount: number | string
 }
 
-
-export type PositionType = {
-	side: string
-	user: `0x${string}` | string
-	tokenAddress: `0x${string}` | string
-	timestamp: number
-	inputAmount: number
-	outputAmount: number
-	indexName: string
-	txHash: string
-	messageId?: string
-	nonce?: number
-	sendStatus?: string
-	receiveStatus?: string
-	recieveSideMessageId?: string
+export type Transaction = BaseTransaction & {
+  side: string
+  userAddress: Address
+  tokenAddress: Address
+  timestamp: number
+  tokenName: NexIndices | AllowedTickers
+  txHash?: string
+  sendStatus?: string
+  receiveStatus?: string
+  recieveSideMessageId?: string
 }
+
+export type RequestType = BaseTransaction & {
+  __typename: string
+  time: string
+  user: Address
+  transactionHash: string
+  inputToken?: Address
+  outputToken?: Address
+}
+

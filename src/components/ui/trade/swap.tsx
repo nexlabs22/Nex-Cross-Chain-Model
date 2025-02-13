@@ -1,41 +1,66 @@
 "use client"
 
-import { Stack, Box, Typography, Button, IconButton, Input } from "@mui/material";
-import theme from "@/theme/theme";
-import { useEffect, useState } from "react";
+import {
+  Stack,
+  Box,
+  Typography,
+  Button,
+  IconButton,
+  Input,
+} from "@mui/material"
+import theme from "@/theme/theme"
+import { useEffect, useState } from "react"
 
-// assets : 
-import { LuSettings2, LuChevronDown, LuArrowUpRight } from "react-icons/lu";
-import { TbArrowsExchange2 } from "react-icons/tb";
+import { LuSettings2, LuChevronDown, LuArrowUpRight } from "react-icons/lu"
+import { TbArrowsExchange2 } from "react-icons/tb"
+import { BigNumber, ethers } from "ethers"
 
-import { BigNumber, ethers } from 'ethers'
-
-// types:
-import { Address, CryptoAsset, IndexCryptoAsset, NexIndices, thirdwebReadContract ,AllowedTickers } from "@/types/indexTypes";
+import {
+  Address,
+  thirdwebReadContract,
+  IndexCryptoAsset,
+  CryptoAsset,
+  NexIndices,
+  AllowedTickers,
+} from "@/types/indexTypes"
 import { PublicClient } from 'viem'
-import { useDashboard } from "@/providers/DashboardProvider";
-import { sepoliaTokens } from "@/constants/tokens";
-import { getDecimals, isWETH } from "@/utils/general";
-import { useGlobal } from "@/providers/GlobalProvider";
-import convertToUSDUni from "@/utils/convertToUSDUni";
-import { GenericToast } from "../generic/genericToast";
-import { formatNumber, formatToViewNumber, num, numToWei, weiToNum } from "@/utils/conversionFunctions";
-import GetContract from "@/hooks/getContract";
-import { tokenAddresses } from "@/constants/contractAddresses";
-import { useReadContract, useSendTransaction } from "thirdweb/react";
-import { allowance, balanceOf, totalSupply } from "thirdweb/extensions/erc20";
-import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance";
-import { GetDefiPortfolioBalance } from "@/hooks/getDefiPortfolioBalance";
+import { useDashboard } from "@/providers/DashboardProvider"
+import { sepoliaTokens } from "@/constants/tokens"
+import { getDecimals, isWETH } from "@/utils/general"
+import { useGlobal } from "@/providers/GlobalProvider"
+import convertToUSDUni from "@/utils/convertToUSDUni"
+import { GenericToast } from "../generic/genericToast"
+import {
+  formatNumber,
+  formatToViewNumber,
+  num,
+  numToWei,
+  weiToNum,
+} from "@/utils/conversionFunctions"
+import GetContract from "@/hooks/getContract"
+import { tokenAddresses } from "@/constants/contractAddresses"
+import { useReadContract, useSendTransaction } from "thirdweb/react"
+import { allowance, balanceOf, totalSupply } from "thirdweb/extensions/erc20"
+import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
+import { GetDefiPortfolioBalance } from "@/hooks/getDefiPortfolioBalance"
 import { GetNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
-import { prepareContractCall, readContract, resolveMethod, ZERO_ADDRESS } from "thirdweb";
-import Big from "big.js";
-import { crossChainIndexFactoryV2Abi, stockFactoryStorageABI } from "@/constants/abi";
-import { parseEther, parseUnits } from "@ethersproject/units";
-import { getWalletBalance } from "thirdweb/wallets";
-import { client } from "@/utils/thirdWebClient";
-import { getClient } from "@/utils/getRPCClient";
-import { toast } from "react-toastify";
-import TokensModal from "./tokensModal";
+import {
+  prepareContractCall,
+  readContract,
+  resolveMethod,
+  ZERO_ADDRESS,
+} from "thirdweb"
+import Big from "big.js"
+import {
+  crossChainIndexFactoryV2Abi,
+  stockFactoryStorageABI,
+} from "@/constants/abi"
+import { parseEther, parseUnits } from "@ethersproject/units"
+import { getWalletBalance } from "thirdweb/wallets"
+import { client } from "@/utils/thirdWebClient"
+import { getClient } from "@/utils/getRPCClient"
+import { toast } from "react-toastify"
+import TokensModal from "./tokensModal"
 import { useTrade } from "@/providers/TradeProvider";
 
 
@@ -51,14 +76,10 @@ function isIndexCryptoAsset(
 }
 
 export default function Swap({ selectedIndex }: SwapProps) {
-  const {
-    activeChainSetting: { network, chain },
-    userAddress,
-    activeThirdWebChain,
-  } = useGlobal()
-  const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } = useTrade()
 
-  const { ethPriceUsd, nexTokens } = useDashboard()
+    const { activeChainSetting: { network, chain }, userAddress, activeThirdWebChain } = useGlobal()
+    const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } = useTrade()
+    const { ethPriceUsd, nexTokens } = useDashboard()
 
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
     "auto"
@@ -96,15 +117,14 @@ export default function Swap({ selectedIndex }: SwapProps) {
     network
   ]?.factory?.address as Address
 
-  useEffect(() => {
-    const selectedCoin = selectedIndex?.symbol || "ANFI"
-    const coinDetails = [...nexTokens, ...sepoliaTokens].filter(
-      (coin: CryptoAsset) => {
-        return coin.symbol === selectedCoin
-      }
-    )
-    setSwapToToken(coinDetails[0])
-  }, [selectedIndex, nexTokens])
+    useEffect(() => {
+        const selectedCoin = selectedIndex?.symbol || 'ANFI'
+        const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
+            return coin.symbol === selectedCoin
+        })
+        setSwapToToken(coinDetails[0])
+    }, [selectedIndex, nexTokens])
+
 
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
@@ -216,16 +236,16 @@ export default function Swap({ selectedIndex }: SwapProps) {
     const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => coin.hasOwnProperty('smartContractType'))
     const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => !coin.hasOwnProperty('smartContractType'))
 
-    if (swapToToken.symbol === 'MAG7' || swapFromToken.symbol === 'MAG7') {
+    if (swapToToken.symbol === "MAG7" || swapFromToken.symbol === "MAG7") {
       const usdcDetails = OtherCoinList.filter((coin) => {
         return coin.symbol === 'USDC'
       })[0]
-      if (swapToToken.symbol === 'MAG7') {
+      if (swapToToken.symbol === "MAG7") {
         setSwapFromToken(usdcDetails)
       }
     }
     setMergedCoinList([OtherCoinList, OurIndexCoinList])
-  }, [network, swapToToken, swapFromToken, nexTokens, coinsList])
+  }, [network, swapToToken.symbol, swapFromToken.symbol, coinsList, nexTokens])
 
   function Switching() {
     const switchReserve = swapFromToken
@@ -545,13 +565,9 @@ export default function Swap({ selectedIndex }: SwapProps) {
       ) {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod("issuanceIndexTokens"),
-          params: [
-            swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address,
-            parseEther(Number(firstInputValue).toString()),
-            "3",
-          ],
-        })
+          method: resolveMethod('issuanceIndexTokens'),
+          params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '3'],
+      })
 
         mintRequestHook.mutate(transaction)
 
@@ -560,7 +576,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: 'function issuanceIndexTokens(uint256)',
           params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)).toString())],
-        })
+      })
         mintRequestHook.mutate(transaction)
 
       } else {
@@ -570,7 +586,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: resolveMethod('issuanceIndexTokens'),
           params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
-        })
+      })
         mintRequestHook.mutate(transaction)
       }
     } catch (error) {
@@ -921,6 +937,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   "function getRedemptionAmountOut(uint256) returns (uint256)",
                 params: [BigInt(firstInputValue)],
               })
+
               setSecondInputValue(
                 weiToNum(
                   outAmount,
@@ -1429,7 +1446,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
             justifyContent="space-between"
           >
             <Typography variant="h6" color="text.secondary">
-              Testnet USDC
+              Testnet USDT
             </Typography>
             <Button
               sx={{
