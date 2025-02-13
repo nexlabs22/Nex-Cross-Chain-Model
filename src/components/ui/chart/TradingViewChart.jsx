@@ -3,12 +3,13 @@
 import React, { useEffect, useRef } from "react";
 import Datafeed from "@/utils/trading-view/datafeed";
 import TradingView from "../../../../public/charting_library/charting_library.standalone";
+import { Stack } from "@mui/material";
 
-const TradingViewChart = ({index}) => {
+const TradingViewChart = ({ index }) => {
   const chartContainerRef = useRef();
-  const mode = "dark";
-
+  
   useEffect(() => {
+
     const script = document.createElement("script");
     script.type = "text/jsx";
     script.src = "public/charting_library/charting_library.js";
@@ -21,16 +22,19 @@ const TradingViewChart = ({index}) => {
       width: chartContainerRef.current.clientWidth,
       style: "2",
       fullscreen: false,
-      theme: mode,
+      theme: "dark",
       container: chartContainerRef.current,
       allow_symbol_change: false,
       datafeed: Datafeed,
       autosize: true,
-      enabled_features: ["header_in_fullscreen_mode"],
-			overrides: {
-				'mainSeriesProperties.style': 2,
-				'paneProperties.background':'#020024',
-			},
+      enabled_features: ["header_in_fullscreen_mode", "library_custom_color_themes"],
+      overrides: {
+        'mainSeriesProperties.style': 2,
+        "paneProperties.backgroundType": "solid",
+        "paneProperties.background": "#0A0A0A",
+        "paneProperties.separatorColor": "#0A0A0A",
+      },
+      custom_css_url: "/static/tradingview-custom.css",
       library_path: "/charting_library/",
       time_frames: [
         { text: "1M", resolution: "1D", description: "1 month", title: "1M" },
@@ -41,18 +45,32 @@ const TradingViewChart = ({index}) => {
         { text: "5y", resolution: "1D", description: "5 year", title: "5Y" },
         { text: "100y", resolution: "1D", description: "All", title: "All" },
       ],
+      onChartReady: () => {
+        // Now that the chart is ready, the customThemes API should be available.
+        window.tvWidget.customThemes()
+          .then(api => {
+            // You can now use the API to update the theme dynamically.
+            console.log("Custom Themes API is available.", api);
+            api.applyCustomThemes({ dark: customDarkPalette });
+          })
+          .catch(error => {
+            console.error("Custom Themes API error:", error);
+          });
+      }
     });
+    
 
     return () => script.remove();
   }, [index]);
 
   return (
-    <div
+    <Stack
       ref={chartContainerRef}
-      style={{
+      sx={{
         width: "100%",
         height: "100%",
         zIndex: 1,
+        borderRadius: 2,
       }}
     />
   );
