@@ -1,8 +1,10 @@
 'use client'
+
 import { areaElementClasses, LineChart } from '@mui/x-charts/LineChart';
 import { useYScale, useDrawingArea } from '@mui/x-charts/hooks';
 import { ScaleLinear } from 'd3-scale';
 import theme from '@/theme/theme';
+import { GlobalStyles } from '@mui/material';
 
 interface GenericAreaLineChartProps {
     label: string;
@@ -41,6 +43,79 @@ function ColorPalette({ id }: { id: string }) {
 const GenericAreaLineChart = ({ label, chartData }: GenericAreaLineChartProps) => {
 
     return (
+        <>
+        <GlobalStyles
+        styles={{
+          '.customTooltipRoot': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '4px',
+            width: 'fit-content',
+            border: `none !important`,
+            minWidth: 'none !important',
+            boxShadow: `0px 0px 1px 1px ${theme.palette.elevations.elevation800.main} !important`,
+            maxWidth: 'fit-content !important',
+          },
+          '.customTooltipTable': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+            borderStyle: 'dotted',
+          },
+          '.customTooltipPaper': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+            maxWidth: 'fit-content !important',
+          },
+          '.customTooltipRow': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipTableCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipMarkCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipLabelCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipValueCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+        }}
+      />
         <LineChart
             series={[{ data: chartData.xValue, label: label, area: true, showMark: false }]}
             xAxis={[{ scaleType: 'point', data: chartData.yValue, hideTooltip: true }]}
@@ -53,7 +128,20 @@ const GenericAreaLineChart = ({ label, chartData }: GenericAreaLineChartProps) =
             ]}
             leftAxis={null}
             bottomAxis={null}
-            tooltip={undefined}
+            tooltip={{
+                classes: {
+                  root: 'customTooltipRoot',
+                  paper: 'customTooltipPaper',
+                  table: 'customTooltipTable',
+                  row: 'customTooltipRow',
+                  cell: 'customTooltipTableCell',
+                  mark: 'customTooltipMark',
+                  markCell: 'customTooltipMarkCell',
+                  labelCell: 'customTooltipLabelCell',
+                  valueCell: 'customTooltipValueCell',
+                },
+                trigger: 'axis',
+              }}
             slotProps={{
                 legend: { hidden: true },
                 area: { begin: 'url(#colorUv)' },
@@ -72,6 +160,7 @@ const GenericAreaLineChart = ({ label, chartData }: GenericAreaLineChartProps) =
         >
             <ColorPalette id="swich-color-id-2" />
         </LineChart>
+        </>
     );
 }
 

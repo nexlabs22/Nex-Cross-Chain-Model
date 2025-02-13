@@ -1259,7 +1259,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
           justifyContent="space-between"
           gap={2}
         >
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack direction="row" alignItems="center" gap={0.5}>
             <Button
               variant="contained"
               size="small"
@@ -1268,7 +1268,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   autoValue === "min"
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
-                padding: 0.5,
+                paddingY: 0.5,
+                paddingX: {xs: 0, sm: 0.5},
               }}
               onClick={() => {
                 setAutoValue("min")
@@ -1282,7 +1283,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 } else setFirstInputValue("1")
               }}
             >
-              MIN
+              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MIN</Typography>
+              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MIN</Typography>
             </Button>
             <Button
               variant="contained"
@@ -1292,14 +1294,16 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   autoValue === "half"
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
-                padding: 0.5,
+                paddingY: 0.5,
+                paddingX: {xs: 0, sm: 0.5},
               }}
               onClick={() => {
                 setAutoValue("half")
                 setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
               }}
             >
-              HALF
+              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>HALF</Typography>
+              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>HALF</Typography>
             </Button>
             <Button
               variant="contained"
@@ -1309,14 +1313,16 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   autoValue === "max"
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
-                padding: 0.5,
+                paddingY: 0.5,
+                paddingX: {xs: 0, sm: 0.5},
               }}
               onClick={() => {
                 setAutoValue("max")
                 setFirstInputValue(Number(getPrimaryBalance()).toString())
               }}
             >
-              MAX
+              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MAX</Typography>
+              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MAX</Typography>
             </Button>
           </Stack>
           <Typography variant="subtitle2" color="text.secondary">

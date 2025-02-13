@@ -182,7 +182,7 @@ export default function TokensModal({
           justifyContent: "start",
           alignItems: "start",
           backgroundColor: theme.palette.elevations.elevation900.main,
-          width: "35vw",
+          width: {xs: "90vw", lg: "35vw"},
           position: 'absolute',
           top: '50%',
           left: '50%',
