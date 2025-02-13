@@ -13,14 +13,15 @@ interface GenericTableProps {
 
 const GenericTable = ({ rows, columns, rowHeight, autoSizeOptions }: GenericTableProps) => {
   return (
-    <Stack width={'100%'} sx={{ overflowX: 'auto', maxWidth: '100%' }}>
-      <div style={{ width: '100%' }}>
+    <Stack width="100%" sx={{ overflowX: 'auto' }}>
+      <div style={{ width: 'fit-content', minWidth: '100%' }}>
         <DataGrid
           rows={rows}
           columns={columns}
           rowHeight={rowHeight}
           autosizeOptions={autoSizeOptions}
           rowSelection={false}
+          resizeThrottleMs={100}
           isRowSelectable={() => false}
           disableRowSelectionOnClick
           sx={{
@@ -43,14 +44,14 @@ const GenericTable = ({ rows, columns, rowHeight, autoSizeOptions }: GenericTabl
               backgroundColor: theme.palette.elevations.elevation900.main,
             },
             '& .MuiDataGrid-cell': {
-              paddingX: 2, // Horizontal padding
-              boxSizing: 'border-box', // Ensure padding doesn't overflow
+              px: 2,
+              boxSizing: 'border-box',
               display: 'flex',
               alignItems: 'center',
-              whiteSpace: 'nowrap', // Prevent text from wrapping
-              overflow: 'hidden', // Ensure the text doesn't overflow outside the cell
-              textOverflow: 'ellipsis', // Add ellipsis for truncated text
-              maxWidth: '100%', // Ensure cell expands with content
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%',
             },
             '& .MuiDataGrid-footerContainer': {
               display: 'none',
@@ -60,7 +61,7 @@ const GenericTable = ({ rows, columns, rowHeight, autoSizeOptions }: GenericTabl
             },
             '@media (max-width: 600px)': {
               '.MuiDataGrid-root': {
-                minWidth: '100%', // Ensure the grid fits smaller screens
+                // minWidth: '600px',
               }
             }
           }}

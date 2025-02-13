@@ -2,83 +2,193 @@
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import theme from '@/theme/theme';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, GlobalStyles } from '@mui/material';
 
 const GenericBarChart = () => {
-  // Hardcoded data for the bar chart
-  const data = [3000, 4000, 5000]; // Values for each bar
-  const labels = ['ANFI', 'CR5', 'ARBEI']; // Labels for each bar
-  const colors = [
-    theme.palette.brand.anfi.main,
-    theme.palette.brand.cr5.main,
-    theme.palette.brand.arbei.main,
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+
+  const updateDimensions = React.useCallback(() => {
+    if (containerRef.current) {
+      setDimensions({
+        width: containerRef.current.clientWidth,
+        height: containerRef.current.clientHeight,
+      });
+    }
+  }, []);
+
+  React.useEffect(() => {
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, [updateDimensions]);
+
+  const { width, height } = dimensions;
+
+  const exampleData = [
+    {
+      value: 3000,
+      label: 'ANFI',
+      color: theme.palette.brand.anfi.main,
+    },
+    {
+      value: 4000,
+      label: 'CR5',
+      color: theme.palette.brand.cr5.main,
+    },
+    {
+      value: 5000,
+      label: 'ARBEI',
+      color: theme.palette.brand.arbei.main,
+    },
   ];
 
+  const labels = exampleData.map((item) => item.label);
+
+  const series = exampleData.map((item, idx) => ({
+    data: exampleData.map((_, j) => (j === idx ? item.value : null)),
+    color: item.color,
+    label: item.label,
+    stacked: true,
+  }));
+
   return (
-    <Stack gap={3} height={'100%'} width={'100%'}>
-      <BarChart
-        xAxis={[{ scaleType: 'band', data: labels, disableLine: true, colorMap: {
-            type: 'piecewise',
-            thresholds: data,
-            colors: colors,
-          } }]} 
-        yAxis={[{ disableLine: true, valueFormatter: (value: number) => (value > 0 ? `${value / 1000}k` : '0') }]}
-        series={[
-          {
-            data: data,
+    <Box
+      ref={containerRef}
+      sx={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <GlobalStyles
+        styles={{
+          '.customTooltipRoot': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '4px',
+            width: 'fit-content',
+            border: `none !important`,
+            boxShadow: `0px 0px 1px 1px ${theme.palette.elevations.elevation800.main} !important`,
+            minWidth: 'none !important',
+            maxWidth: 'fit-content !important',
           },
-        ]}
-        margin={{
-          left: 40,
-          right: 20,
-          top: 5,
-          bottom: 5,
-        }}
-        tooltip={undefined}
-        borderRadius={10}
-        slotProps={{
-          legend: {
-            hidden: true,
+          '.customTooltipTable': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+            borderStyle: 'dotted',
           },
-          axisLine:{
-            opacity: 0
+          '.customTooltipPaper': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+            maxWidth: 'fit-content !important',
           },
-          axisLabel: {
-            opacity: 0
+          '.customTooltipRow': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
           },
-          axisTick: {
-            opacity: 0
+          '.customTooltipTableCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
           },
-          axisTickLabel: {
-            opacity: 0
+          '.customTooltipMarkCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
           },
-        }}
-        sx={{
-          width: '100%',
-          height: '100%',
-          padding: 0,
-          display: 'block',
-          position: 'relative',
+          '.customTooltipLabelCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipValueCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
         }}
       />
-      <Stack direction={'row'} justifyContent={'center'} alignItems={'center'} gap={2}>
-        {labels.map((label, index) => (
-          <Stack key={index} direction={'row'} alignItems={'center'} gap={1}>
-            <Box
-              sx={{
-                width: 10,
-                height: 10,
-                backgroundColor: colors[index],
-                borderRadius: '50%',
-              }}
-            />
-            <Typography variant={'body1'} color={'text.secondary'}>
-              {label}
-            </Typography>
-          </Stack>
-        ))}
-      </Stack>
-    </Stack>
+      {width > 0 && height > 0 && (
+        <BarChart
+          width={width}
+          height={height}
+          xAxis={[
+            {
+              scaleType: 'band',
+              data: labels,
+              disableLine: true
+            },
+          ]}
+          yAxis={[
+            {
+              disableLine: true,
+              valueFormatter: (value: number) => (value > 0 ? `${value / 1000}k` : '0'),
+            },
+          ]}
+          series={series}
+          margin={{
+            left: 40,
+            right: 20,
+            top: 5,
+            bottom: 5,
+          }}
+          tooltip={{
+            classes: {
+              root: 'customTooltipRoot',
+              paper: 'customTooltipPaper',
+              table: 'customTooltipTable',
+              row: 'customTooltipRow',
+              cell: 'customTooltipTableCell',
+              mark: 'customTooltipMark',
+              markCell: 'customTooltipMarkCell',
+              labelCell: 'customTooltipLabelCell',
+              valueCell: 'customTooltipValueCell',
+            },
+            trigger: 'item',
+          }}
+          borderRadius={10}
+          slotProps={{
+            legend: { hidden: true },
+            axisLine: { opacity: 0 },
+            axisLabel: { opacity: 0 },
+            axisTick: { opacity: 0 },
+            axisTickLabel: { opacity: 0 },
+          }}
+          sx={{
+            padding: 0,
+            display: 'block',
+            position: 'relative',
+          }}
+        />
+      )}
+    </Box>
   );
 };
 

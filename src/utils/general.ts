@@ -52,37 +52,6 @@ const isWETH = (address: Address): boolean => {
   return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address
 }
 
-const parseQueryFromPath = (path: string): Record<string, string | undefined> => {
-  const queryObject: Record<string, string | undefined> = {}
-  // Extract the query string (part after '?')
-  const queryString = path.split('?')[1]
-  if (!queryString) return queryObject // Return empty object if no query params
-  // Split query parameters and store them in an object
-  queryString.split('&').forEach(param => {
-      const [key, value] = param.split('=')
-      queryObject[key] = value ? decodeURIComponent(value) : undefined
-  })
-  return queryObject
-}
-
-const get24hChange = (data: MongoDb[]) =>{
-
-  if(data.length>1){
-
-    const descSorted = data.sort((a,b)=> b.timestamp - a.timestamp)
-    const today = descSorted[0].open || descSorted[0].price as number
-    const yesterday = descSorted[1].open || descSorted[1].price as number
-    
-    const change24h = today-yesterday
-    const change24hFmt = (((today - yesterday) / yesterday) * 100).toFixed(2)
-
-    return {change24h, change24hFmt};
-  }else{ 
-    return {change24h : 0, change24hFmt: Number(0).toFixed(2)};
-  }
-}
-
-
 function getTokenSymbolByAddress(address: string): string | undefined {
   const lowerCaseAddress = address.toLowerCase();
 
@@ -107,6 +76,38 @@ function getTokenSymbolByAddress(address: string): string | undefined {
   return undefined; // Return undefined if no match is found
 }
 
+const get24hChange = (data: MongoDb[]) =>{
+
+  if(data.length>1){
+
+    const descSorted = data.sort((a,b)=> b.timestamp - a.timestamp)
+    const today = descSorted[0].open || descSorted[0].price as number
+    const yesterday = descSorted[1].open || descSorted[1].price as number
+    
+    const change24h = today-yesterday
+    const change24hFmt = (((today - yesterday) / yesterday) * 100).toFixed(2)
+
+    return {change24h, change24hFmt};
+  }else{ 
+    return {change24h : 0, change24hFmt: Number(0).toFixed(2)};
+  }
+}
+
+const parseQueryFromPath = (path: string): Record<string, string | undefined> => {
+  const queryObject: Record<string, string | undefined> = {}
+
+  // Extract the query string (part after '?')
+  const queryString = path.split('?')[1]
+  if (!queryString) return queryObject // Return empty object if no query params
+
+  // Split query parameters and store them in an object
+  queryString.split('&').forEach(param => {
+      const [key, value] = param.split('=')
+      queryObject[key] = value ? decodeURIComponent(value) : undefined
+  })
+
+  return queryObject
+}
 export {
   getPreviousWeekday,
   SwapNumbers,

@@ -18,12 +18,12 @@ const PortfolioDistributionCard = () => {
                     Portfolio distribution
                 </Typography>
                 {
-                    chartType == 'pie' && <Stack width={'100%'} height={{ xs: '20vh', lg: 230 }} marginX={'auto'} paddingTop={{ xs: 3, lg: 0 }} direction={'row'} alignItems={'center'} justifyContent={'center'}>
+                    chartType == 'pie' && <Stack width={'100%'} height={{ xs: '30vh', lg: 230 }} marginX={'auto'} paddingTop={{ xs: 0, lg: 0 }} direction={'row'} alignItems={'center'} justifyContent={'center'}>
                         <GenericPieChart />
                     </Stack>
                 }
                 {
-                    chartType == 'bar' && <Stack width={'100%'} height={{ xs: '20vh', lg: 230 }} marginX={'auto'} paddingTop={{ xs: 3, lg: 0 }} direction={'row'} alignItems={'center'} justifyContent={'center'}>
+                    chartType == 'bar' && <Stack width={'100%'} height={{ xs: '30vh', lg: 230 }} marginX={'auto'} paddingTop={{ xs: 3, lg: 0 }} direction={'row'} alignItems={'center'} justifyContent={'center'}>
                         <GenericBarChart />
                     </Stack>
                 }

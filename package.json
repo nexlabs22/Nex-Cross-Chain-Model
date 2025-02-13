@@ -14,7 +14,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.6",
     "@mui/material": "^6.1.6",
-    "@mui/x-charts": "^7.23.6",
+    "@mui/x-charts": "^7.26.0",
     "@mui/x-data-grid": "^7.23.6",
     "@mui/x-date-pickers": "^7.23.6",
     "@thirdweb-dev/react": "^4.9.4",

@@ -1,66 +1,169 @@
 'use client';
 import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
+import { Box, GlobalStyles } from '@mui/material';
 import theme from '@/theme/theme';
-import { Box, Stack, Typography } from '@mui/material';
 
 const GenericPieChart = () => {
-    const data = [30, 40, 50]; // Pie slices values
-    const labels = ['ANFI', 'CR5', 'ARBEI']; // Pie slices labels
-    const colors = [theme.palette.brand.anfi.main, theme.palette.brand.cr5.main, theme.palette.brand.arbei.main];
-    return (
-        <Stack gap={3} height={'100%'} width={'100%'}>
-            <PieChart
-                series={[
-                    {
-                        data: data.map((value, index) => ({
-                            value, // The value of each slice
-                            label: labels[index],
-                            color: colors[index],// The label for each slice
-                        })),
-                        innerRadius: 40, // Inner radius for donut effect
-                        outerRadius: 90, // Outer radius of the pie
-                        paddingAngle: 5, // Space between slices
-                        cornerRadius: 10, // Rounded corners for slices
-                        startAngle: 0, // Starting angle for the chart
-                        endAngle: 360, // Ending angle for the chart
-                        cx: 150, // Center X position of the pie chart
-                        cy: 90, // Center Y position of the pie chart
-                    },
-                ]}
-                slotProps={{
-                    legend: {
-                        hidden: true,
-                    },
-                }}
-                sx={{
-                    width: '100%',
-                    height: '100%',
-                    marginBottom: 1,
-                    padding: 0,
-                    display: 'block',
-                    position: 'relative',
-                }}
-            />
-            <Stack direction={'row'} justifyContent={'center'} alignItems={'center'} gap={2}>
-                {
-                    labels.map((label, index) => (
-                        <Stack key={index} direction={'row'} alignItems={'center'} gap={1}>
-                            <Box sx={{
-                                width: 10,
-                                height: 10,
-                                backgroundColor: colors[index],
-                                borderRadius: '50%',
-                            }} />
-                            <Typography variant={'body1'} color={'text.secondary'}>
-                                {label}
-                            </Typography>
-                        </Stack>
-                    ))
-                }
-            </Stack>
-        </Stack>
-    );
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+
+  const updateDimensions = React.useCallback(() => {
+    if (containerRef.current) {
+      setDimensions({
+        width: containerRef.current.clientWidth,
+        height: containerRef.current.clientHeight,
+      });
+    }
+  }, []);
+
+  React.useEffect(() => {
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, [updateDimensions]);
+
+  const { width, height } = dimensions;
+  const cx = width / 2;
+  const cy = height / 2;
+  const outerRadius = Math.min(width, height) * 0.4;
+  const innerRadius = outerRadius * 0.4;
+
+  const data = [30, 40, 50];
+  const labels = ['ANFI', 'CR5', 'ARBEI'];
+  const colors = [
+    theme.palette.brand.anfi.main,
+    theme.palette.brand.cr5.main,
+    theme.palette.brand.arbei.main,
+  ];
+
+  return (
+    <Box
+      ref={containerRef}
+      sx={{
+        width: '100%',
+        height: '100%',
+      }}
+    >
+      <GlobalStyles
+        styles={{
+          '.customTooltipRoot': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '4px',
+            width: 'fit-content',
+            border: `none !important`,
+            boxShadow: `0px 0px 1px 1px ${theme.palette.elevations.elevation800.main} !important`,
+            minWidth: 'none !important',
+            maxWidth: 'fit-content !important',
+          },
+          '.customTooltipTable': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+            borderStyle: 'dotted',
+          },
+          '.customTooltipPaper': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+            maxWidth: 'fit-content !important',
+          },
+          '.customTooltipRow': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px 0px 0px 0px !important',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipTableCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: '100%',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipMarkCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipLabelCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+          '.customTooltipValueCell': {
+            backgroundColor: theme.palette.elevations.elevation900.main,
+            color: theme.palette.text.primary,
+            padding: '0px',
+            borderRadius: '0px',
+            width: 'fit-content',
+            border: `0px solid ${theme.palette.elevations.elevation900.main} !important`,
+          },
+        }}
+      />
+      {width > 0 && height > 0 && (
+        <PieChart
+          series={[
+            {
+              data: data.map((value, index) => ({
+                value,
+                label: labels[index],
+                color: colors[index],
+              })),
+              innerRadius,
+              outerRadius,
+              paddingAngle: 5,
+              cornerRadius: 10,
+              startAngle: 0,
+              endAngle: 360,
+              cx,
+              cy,
+            },
+          ]}
+          slotProps={{
+            legend: { hidden: true },
+            pieArc: { stroke: 'none', strokeWidth: 0 },
+          }}
+          tooltip={{
+            classes: {
+              root: 'customTooltipRoot',
+              paper: 'customTooltipPaper',
+              table: 'customTooltipTable',
+              row: 'customTooltipRow',
+              cell: 'customTooltipTableCell',
+              mark: 'customTooltipMark',
+              markCell: 'customTooltipMarkCell',
+              labelCell: 'customTooltipLabelCell',
+              valueCell: 'customTooltipValueCell',
+            },
+            trigger: 'item',
+          }}
+          sx={{
+            width: '100%',
+            height: '100%',
+            display: 'block',
+            position: 'relative',
+          }}
+        />
+      )}
+    </Box>
+  );
 };
 
 export default GenericPieChart;

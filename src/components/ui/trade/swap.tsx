@@ -232,15 +232,13 @@ export default function Swap({ selectedIndex }: SwapProps) {
   }, [])
 
   useEffect(() => {
-    const finalCoinList = network === 'Mainnet' ? coinsList : ([...nexTokens, ...sepoliaTokens] as CryptoAsset[])
-    const OurIndexCoinList: CryptoAsset[] = finalCoinList.filter((coin) =>
-      coin.hasOwnProperty("smartContractType")
-    )
-    const OtherCoinList: CryptoAsset[] = finalCoinList.filter((coin) => !coin.hasOwnProperty('smartContractType'))
+    const finalCoinList = network === 'Mainnet' ? coinsList : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
+    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => coin.hasOwnProperty('smartContractType'))
+    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => !coin.hasOwnProperty('smartContractType'))
 
     if (swapToToken.symbol === "MAG7" || swapFromToken.symbol === "MAG7") {
       const usdcDetails = OtherCoinList.filter((coin) => {
-        return coin.symbol === "USDC"
+        return coin.symbol === 'USDC'
       })[0]
       if (swapToToken.symbol === "MAG7") {
         setSwapFromToken(usdcDetails)
@@ -407,10 +405,9 @@ export default function Swap({ selectedIndex }: SwapProps) {
   }) as thirdwebReadContract
 
   const fromTokenAllowance = useReadContract(allowance, {
-    contract: toTokenContract,
+    contract: fromTokenContract,
     owner: userAddress as Address,
-    spender: swapToToken.tokenAddresses?.[chain]?.[network]?.factory
-      ?.address as Address,
+    spender: swapToToken.tokenAddresses?.[chain]?.[network]?.factory?.address as Address
   }) as thirdwebReadContract
 
   const approveHook = useSendTransaction()
@@ -573,17 +570,18 @@ export default function Swap({ selectedIndex }: SwapProps) {
       })
 
         mintRequestHook.mutate(transaction)
-      } else if (
-        isIndexCryptoAsset(swapToToken) &&
-        swapToToken?.smartContractType === "stocks"
-      ) {
+
+      } else if (swapToToken.smartContractType === 'stocks') {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: 'function issuanceIndexTokens(uint256)',
           params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)).toString())],
       })
         mintRequestHook.mutate(transaction)
+
       } else {
+
+
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: resolveMethod('issuanceIndexTokens'),
@@ -592,7 +590,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
         mintRequestHook.mutate(transaction)
       }
     } catch (error) {
-      console.log("mint error", error)
+      console.log('mint error', error)
     }
   }
 
@@ -776,7 +774,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
     }
 
     getFeeRate()
-  }, [activeAddress, network, rpcClient, chain])
+  }, [network, rpcClient, activeAddress,chain])
 
   useEffect(() => {
     const currentPortfolioValue =
@@ -1217,7 +1215,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
           justifyContent="space-between"
           gap={2}
         >
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack direction="row" alignItems="center" gap={0.5}>
             <Button
               variant="contained"
               size="small"
@@ -1226,7 +1224,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   autoValue === "min"
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
-                padding: 0.5,
+                paddingY: 0.5,
+                paddingX: {xs: 0, sm: 0.5},
               }}
               onClick={() => {
                 setAutoValue("min")
@@ -1240,7 +1239,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 } else setFirstInputValue("1")
               }}
             >
-              MIN
+              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MIN</Typography>
+              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MIN</Typography>
             </Button>
             <Button
               variant="contained"
@@ -1250,14 +1250,16 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   autoValue === "half"
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
-                padding: 0.5,
+                paddingY: 0.5,
+                paddingX: {xs: 0, sm: 0.5},
               }}
               onClick={() => {
                 setAutoValue("half")
                 setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
               }}
             >
-              HALF
+              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>HALF</Typography>
+              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>HALF</Typography>
             </Button>
             <Button
               variant="contained"
@@ -1267,14 +1269,16 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   autoValue === "max"
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
-                padding: 0.5,
+                paddingY: 0.5,
+                paddingX: {xs: 0, sm: 0.5},
               }}
               onClick={() => {
                 setAutoValue("max")
                 setFirstInputValue(Number(getPrimaryBalance()).toString())
               }}
             >
-              MAX
+              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MAX</Typography>
+              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MAX</Typography>
             </Button>
           </Stack>
           <Typography variant="subtitle2" color="text.secondary">
