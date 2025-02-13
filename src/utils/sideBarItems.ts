@@ -10,20 +10,21 @@ interface NavItem {
     icon: IconType;
     label: string;
     link: string;
+    available: boolean
 }
 
 const navItems: NavItem[] = [
-    { icon: PiHouseBold, label: "Dashboard", link: "/" },
-    { icon: GoStack, label: "Catalogue", link: "/catalogue" },
-    { icon: RiExchange2Line, label: "Swap", link: "/swap" },
-    { icon: LuSquarePercent, label: "Stake", link: "/stake" },
-    { icon: MdOutlineIndeterminateCheckBox, label: "Portfolio", link: "/portfolio" },
-    { icon: GoSearch, label: "Search", link: "/search" },
+    { icon: PiHouseBold, label: "Dashboard", link: "/", available: true },
+    { icon: GoStack, label: "Catalogue", link: "/catalogue", available: true },
+    { icon: RiExchange2Line, label: "Swap", link: "/swap", available: false },
+    { icon: LuSquarePercent, label: "Stake", link: "/stake", available: false },
+    { icon: MdOutlineIndeterminateCheckBox, label: "Portfolio", link: "/portfolio", available: true },
+    { icon: GoSearch, label: "Search", link: "/search", available: false },
 ];
 
 const settingItems: NavItem[] = [
-    { icon: MdHelpOutline, label: "Help", link: "/help-center" },
-    { icon: HiOutlineCog, label: "Settings", link: "/settings" },
+    { icon: MdHelpOutline, label: "Help", link: "/help-center", available: false },
+    { icon: HiOutlineCog, label: "Settings", link: "/settings", available: true },
 ];
 
 export { navItems, settingItems, type NavItem };
