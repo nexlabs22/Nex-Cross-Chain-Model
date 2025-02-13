@@ -2,7 +2,7 @@
 
 import GenericCard from "@/components/ui/generic/genericCard"
 import GenericAreaLineChart from "./genericAreaChart"
-import { Box, Typography, Stack } from "@mui/material"
+import { Box, Typography, Stack, Skeleton } from "@mui/material"
 import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGroup"
 
 import {
@@ -135,7 +135,15 @@ const IndexCard = ({ index }: IndexCardProps) => {
             right: 0,
           }}
         >
-          <GenericAreaLineChart label={index.symbol} chartData={mongoDataToChartData(monthPrices)} />
+          {
+            monthPrices.length > 0 ? (
+              <GenericAreaLineChart label={index.symbol} chartData={mongoDataToChartData(monthPrices)} />
+            ) : (
+              <Stack width={'100%'} height={'100%'} padding={2} alignItems={'center'} justifyContent={'center'}>
+                <Skeleton variant="rectangular" width={'100%'} height={'100%'} sx={{ borderRadius: 2 }} />
+              </Stack>
+            )
+          }
         </Stack>
       </Stack>
     </GenericCard>
