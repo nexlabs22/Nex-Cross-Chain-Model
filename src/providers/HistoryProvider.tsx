@@ -1,8 +1,8 @@
 "use client"
 
 import { GetPositionsHistoryDefi } from "@/hooks/getPositionsHistoryDefi"
-import { GetPositionsHistoryCrossChain } from "@/hooks/getPositiontHistoryCrosschain"
-import { GetPositionsHistoryStock } from "@/hooks/getPositiontHistoryStock"
+import { GetPositionsHistoryCrossChain } from "@/hooks/getPositionsHistoryCrosschain"
+import { GetPositionsHistoryStock } from "@/hooks/getPositionsHistoryStock"
 import React, { createContext, useEffect, useState } from "react"
 import { useContext } from "react"
 import { useTrade } from "./TradeProvider"
