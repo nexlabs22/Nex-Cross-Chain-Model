@@ -64,12 +64,21 @@ export default function Swap({ selectedIndex }: SwapProps) {
     "auto"
   )
 
-  const [openTokensModal, setOpenTokensModal] = useState(false)
-  const handleOpenTokensModal = () => {
-    setOpenTokensModal(true)
+  const [openFromTokensModal, setOpenFromTokensModal] = useState(false)
+  const [openToTokensModal, setOpenToTokensModal] = useState(false)
+
+  const handleOpenFromTokensModal = () => {
+    setOpenFromTokensModal(true)
   }
-  const handleCloseTokensModal = () => {
-    setOpenTokensModal(false)
+  const handleCloseFromTokensModal = () => {
+    setOpenFromTokensModal(false)
+  }
+
+  const handleOpenToTokensModal = () => {
+    setOpenToTokensModal(true)
+  }
+  const handleCloseToTokensModal = () => {
+    setOpenToTokensModal(false)
   }
 
   const [firstInputValue, setFirstInputValue] = useState("")
@@ -1314,7 +1323,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 paddingX: 1,
                 paddingY: 0.5,
               }}
-              onClick={() => handleOpenTokensModal()}
+              onClick={() => handleOpenFromTokensModal()}
             >
               <Box
                 width={36}
@@ -1377,16 +1386,21 @@ export default function Swap({ selectedIndex }: SwapProps) {
               onChange={changeSecondInputValue}
               value={formatNumber(Number(secondInputValue))}
             />
-            <Stack
-              direction="row"
-              alignItems="center"
-              gap={1}
-              paddingX={1}
-              paddingY={0.5}
+            <Button
+              variant="outlined"
               sx={{
                 backgroundColor: theme.palette.elevations.elevation900.main,
+                border: "none",
                 borderRadius: 2,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 1,
+                paddingX: 1,
+                paddingY: 0.5,
               }}
+              onClick={() => handleOpenToTokensModal()}
             >
               <Box
                 width={36}
@@ -1403,7 +1417,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 <Typography variant="caption">{network}</Typography>
               </Stack>
               <LuChevronDown />
-            </Stack>
+            </Button>
           </Stack>
         </Stack>
         <Stack gap={0.5}>
@@ -1509,10 +1523,17 @@ export default function Swap({ selectedIndex }: SwapProps) {
           </Button>
         )}
       </Stack>
+      {/* tokens modal for setting FromSwapToken */}
       <TokensModal
-        open={openTokensModal}
-        onClose={handleCloseTokensModal}
-        onSelect={(selectedToken) => { console.log('Selected token:', selectedToken); handleCloseTokensModal(); }}
+        open={openFromTokensModal}
+        onClose={handleCloseFromTokensModal}
+        onSelect={(selectedToken) => { setSwapFromToken(selectedToken); handleCloseFromTokensModal(); }}
+      />
+      {/* tokens modal for setting ToSwapToken */}
+      <TokensModal
+        open={openToTokensModal}
+        onClose={handleCloseToTokensModal}
+        onSelect={(selectedToken) => { setSwapToToken(selectedToken); handleCloseToTokensModal(); }}
       />
     </>
   )
