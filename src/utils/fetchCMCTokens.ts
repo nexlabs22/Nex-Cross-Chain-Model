@@ -1,5 +1,5 @@
 export async function fetchCoinMarketCapTokens() {
-  console.log("fetching")
+
     try {
       const response = await fetch('/api/getCMCTokens');
       
@@ -8,7 +8,7 @@ export async function fetchCoinMarketCapTokens() {
       }
       
       const data = await response.json();
-      console.log(data)
+
       return data;
     } catch (error) {
       console.error('Error in fetchCoinMarketCapTokens:', error);

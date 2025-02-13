@@ -27,7 +27,7 @@ const IndicesTable = () => {
 
   const { nexTokens } = useDashboard()
   const { activeChainSetting } = useGlobal()
-  const { chain, network } = activeChainSetting
+  const { chainName, network } = activeChainSetting
 
   const mobileColumns: GridColDef[] = [
     {
@@ -291,7 +291,7 @@ const IndicesTable = () => {
       ? `${token.marketInfo?.change24hFmt}%`
       : "N/A",
     address: reduceAddress(
-      token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
+      token.tokenAddresses?.[chainName]?.[network]?.token?.address as Address
     ),
   }))
 

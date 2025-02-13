@@ -12,7 +12,7 @@ export function GetDefiPortfolioBalance(
 ) {
   const [portfolioValue, setPortfolioValue] = useState<number>()
   const { nexTokens } = useDashboard()
-  const {activeChainSetting:{chain, network}} = useGlobal()
+  const {activeChainSetting:{chainName, network}} = useGlobal()
 
   const allowedSymbols = nexTokens
     .filter((token) => token.smartContractType === "defi")
@@ -35,7 +35,7 @@ export function GetDefiPortfolioBalance(
 
     const activeFactoryAddress = nexTokens.filter(
       (token) => token.symbol === activeTicker
-    )[0].tokenAddresses?.[chain]?.[network]?.factory?.address
+    )[0].tokenAddresses?.[chainName]?.[network]?.factory?.address
 
     let totalPortfolioBalance: number = 0
 
@@ -48,7 +48,7 @@ export function GetDefiPortfolioBalance(
     totalPortfolioBalance += Number(sepoliaPortfolioBalance)
 
     setPortfolioValue(totalPortfolioBalance)
-  }, [nexTokens, activeTicker,chain, network])
+  }, [nexTokens, activeTicker,chainName, network])
 
   useEffect(() => {
     if (activeTicker) {

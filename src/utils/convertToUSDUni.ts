@@ -2,25 +2,24 @@ import { isWETH, SwapNumbers } from "./general";
 import getPoolAddress from "./getPoolAddress";
 import { Address, getContract, readContract, ZERO_ADDRESS } from "thirdweb";
 import { client } from "./thirdWebClient";
-import { Networks } from "@/types/indexTypes";
-import { networkToChain } from "./mappings";
+import { ChainNetwork } from "@/types/indexTypes";
 
 export default async function convertToUSDUni(
   address: Address,
   decimals: number,
   ethPrice: number,
-  network: Networks
+  allowedChainNetworks: ChainNetwork
 ) {
   try {
     if (isWETH(address)) return ethPrice;
   
-    const poolAddress = await getPoolAddress(address, network);
+    const poolAddress = await getPoolAddress(address, allowedChainNetworks);
     
     if(poolAddress === ZERO_ADDRESS) return 0;
 
     let isRevPool = false;
 
-    const chain = networkToChain[network];
+    const chain = allowedChainNetworks.chain;
     const poolContract = getContract({
       address: poolAddress as string,
       chain,
@@ -64,7 +63,6 @@ export default async function convertToUSDUni(
 
     return priceInUSD as number;
   } catch (err) {
-    console.dir(err, { depth: null });
     console.log("Error in getting USD Price", err);
     return null;
   }

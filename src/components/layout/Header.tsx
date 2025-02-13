@@ -7,6 +7,7 @@ import Image from "next/image";
 import logo from '@/assets/images/logo.webp'
 import Search from "../ui/dashboard/Search";
 import ConnectWallet from "@/components/ui/generic/connectWallet";
+import NetworkSwitcher from "../ui/generic/networkSwitcher";
 
 const Header = () => {
     return (
@@ -21,6 +22,7 @@ const Header = () => {
             <Box display={{ xs: 'none', lg: 'none' }}>
                 <Search />
             </Box>
+            <NetworkSwitcher />
             <ConnectWallet />
         </Stack>
     )

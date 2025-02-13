@@ -2,6 +2,7 @@ import { ReactElement } from "react"
 import { PublicClient } from 'viem'
 import { ObjectId } from "mongodb"
 import { MongoDb } from "./mongoDb"
+import { Chain } from "thirdweb"
 
 export type Address = `0x${string}`
 
@@ -42,8 +43,9 @@ export type Chains = "Ethereum" | "Arbitrum" | "Polygon"
 export type Networks = "Mainnet" | "Goerli" | "Sepolia" | "Mumbai"
 
 export type ChainNetwork = {
-  chain: Chains
+  chainName: Chains
   network: Networks
+  chain: Chain
 }
 
 export type ChainSelectorMap = {

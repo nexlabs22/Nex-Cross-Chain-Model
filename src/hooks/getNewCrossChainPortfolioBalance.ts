@@ -8,7 +8,7 @@ import { PublicClient } from 'viem'
 
 export function GetNewCrossChainPortfolioBalance(totalPortfolioValue: number, wethAmount: number) {
 
-	const { activeChainSetting: { chain, network } } = useGlobal()
+	const { activeChainSetting: { chainName, network } } = useGlobal()
 	const [portfolioValue, setPortfolioValue] = useState(0)
 
 	const getPortfolioValue = useCallback(async () => {
@@ -18,26 +18,26 @@ export function GetNewCrossChainPortfolioBalance(totalPortfolioValue: number, we
 		let totalPortfolioBalance: number = totalPortfolioValue;
 
 		const totalCurrentList = await (sepoliaPublicClient as PublicClient).readContract({
-			address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.storage?.address as Address,
+			address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage?.address as Address,
 			abi: crossChainFactoryStorageAbi,
 			functionName: 'totalCurrentList',
 		})
 
 		for (let i = 0; i < Number(totalCurrentList); i++) {
 			const tokenAddress = await (sepoliaPublicClient as PublicClient).readContract({
-				address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.storage?.address as Address,
+				address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage?.address as Address,
 				abi: crossChainFactoryStorageAbi,
 				functionName: 'currentList',
 				args: [i]
 			})
 			const tokenChainSelector = await (sepoliaPublicClient as PublicClient).readContract({
-				address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.storage?.address as Address,
+				address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage?.address as Address,
 				abi: crossChainFactoryStorageAbi,
 				functionName: 'tokenChainSelector',
 				args: [tokenAddress]
 			})
 			const tokenMarketShare = await (sepoliaPublicClient as PublicClient).readContract({
-				address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.storage?.address as Address,
+				address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage?.address as Address,
 				abi: crossChainFactoryStorageAbi,
 				functionName: 'tokenCurrentMarketShare',
 				args: [tokenAddress]
@@ -45,10 +45,10 @@ export function GetNewCrossChainPortfolioBalance(totalPortfolioValue: number, we
 
 			if (tokenChainSelector == chainSelectorAddresses.Arbitrum?.Sepolia) {
 				const crossChainValue = await (sepoliaPublicClient as PublicClient).readContract({
-					address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.factory?.address as Address,
+					address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.factory?.address as Address,
 					abi: indexFactoryV2Abi,
 					functionName: 'getAmountOut',
-					args: [tokenAddresses.WETH?.[chain]?.[network]?.token?.address, tokenAddresses.CRYPTO5?.[chain]?.[network]?.ccip?.address as Address, (wethAmount * Number(tokenMarketShare) / 100e18).toFixed(0), 3]
+					args: [tokenAddresses.WETH?.[chainName]?.[network]?.token?.address, tokenAddresses.CRYPTO5?.[chainName]?.[network]?.ccip?.address as Address, (wethAmount * Number(tokenMarketShare) / 100e18).toFixed(0), 3]
 				})
 				const tokenValue = await (arbitrumSepoliaPublicClient as PublicClient).readContract({
 					address: tokenAddresses.CRYPTO5?.Arbitrum?.Sepolia?.factory?.address as Address,
@@ -63,7 +63,7 @@ export function GetNewCrossChainPortfolioBalance(totalPortfolioValue: number, we
 			}
 		}
 		setPortfolioValue(totalPortfolioBalance)
-	},[chain, network, totalPortfolioValue, wethAmount])
+	},[chainName, network, totalPortfolioValue, wethAmount])
 
 	  useEffect(() => {
 		getPortfolioValue()

@@ -18,7 +18,7 @@ export async function GET() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ids = limitedCoinMap.map((coin: any) => coin.id).join(',');
-    console.log('Fetching info for IDs:', ids);
+    // console.log('Fetching info for IDs:', ids);
 
     const infoResponse = await axios.get(COINMARKETCAP_INFO_API_URL, {
       headers: {

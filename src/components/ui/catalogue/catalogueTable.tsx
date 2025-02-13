@@ -23,7 +23,7 @@ import { useGlobal } from "@/providers/GlobalProvider"
 
 const CatalogueTable = () => {
   const { nexTokens } = useDashboard()
-  const { activeChainSetting:{chain, network} } = useGlobal()
+  const { activeChainSetting:{chainName, network} } = useGlobal()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -282,7 +282,7 @@ const CatalogueTable = () => {
       })}`,
     change24h: token.marketInfo?.change24hFmt ? `${token.marketInfo?.change24hFmt}%`: 'N/A',
     address: reduceAddress(
-      token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
+      token.tokenAddresses?.[chainName]?.[network]?.token?.address as Address
     ),
   }))
 

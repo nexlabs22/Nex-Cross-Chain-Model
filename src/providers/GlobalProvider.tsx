@@ -1,7 +1,7 @@
 "use client"
 
 import { Address, ChainNetwork } from "@/types/indexTypes"
-import { networkToChain } from "@/utils/mappings"
+import { allowedChainNetworks } from "@/utils/mappings"
 import React, { createContext, useState } from "react"
 import { useContext } from "react"
 import { Chain, sepolia } from "thirdweb/chains"
@@ -15,7 +15,7 @@ interface GlobalContextProps {
 }
 
 const GlobalContext = createContext<GlobalContextProps>({
-    activeChainSetting: {chain: 'Ethereum', network: 'Sepolia'},
+    activeChainSetting: allowedChainNetworks[0],
     activeThirdWebChain: sepolia,
     userAddress: null,
     setActiveChainSetting: () => { }
@@ -26,8 +26,8 @@ const useGlobal = () => {
 }
 
 const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
-    const [activeChainSetting, setActiveChainSetting] = useState<ChainNetwork>({chain: 'Ethereum', network: 'Sepolia'})
-    const activeThirdWebChain = networkToChain[activeChainSetting.network]
+    const [activeChainSetting, setActiveChainSetting] = useState<ChainNetwork>(allowedChainNetworks[0])
+    const activeThirdWebChain = activeChainSetting.chain
     const account = useActiveAccount()
     const userAddress = account?.address as Address
 
