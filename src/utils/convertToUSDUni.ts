@@ -1,6 +1,6 @@
 import { isWETH, SwapNumbers } from "./general";
 import getPoolAddress from "./getPoolAddress";
-import { Address, getContract, readContract } from "thirdweb";
+import { Address, getContract, readContract, ZERO_ADDRESS } from "thirdweb";
 import { client } from "./thirdWebClient";
 import { Networks } from "@/types/indexTypes";
 import { networkToChain } from "./mappings";
@@ -13,8 +13,11 @@ export default async function convertToUSDUni(
 ) {
   try {
     if (isWETH(address)) return ethPrice;
-
+  
     const poolAddress = await getPoolAddress(address, network);
+    
+    if(poolAddress === ZERO_ADDRESS) return 0;
+
     let isRevPool = false;
 
     const chain = networkToChain[network];

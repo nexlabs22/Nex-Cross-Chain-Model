@@ -1,15 +1,23 @@
-import { createClient } from "urql"
-import { cacheExchange, fetchExchange } from "@urql/core"
 
-const client = createClient({
-  url: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_GRAPH_QL_KEY}/subgraphs/id/B4QeFHkfWXjKCDzNn3BJtDRDfG6VeHzGXgkf4Jt3fRn5`,
-  exchanges: [cacheExchange, fetchExchange],
-})
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 
-const indexesClient = createClient({
-  url: `https://api.studio.thegraph.com/query/82654/nexlabs-subgraphs/version/latest`,
-  exchanges: [cacheExchange, fetchExchange],
-})
+const httpLink = createHttpLink({
+  uri: 'https://api.studio.thegraph.com/query/82654/nexlabs-subgraphs/version/latest', 
+});
+const httpLink_staking = createHttpLink({
+  uri: 'https://api.studio.thegraph.com/query/82654/nexlabs-subgraph-staking/version/latest', 
+});
 
-export default client
-export { indexesClient }
+const apolloIndexClient = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache(),
+});
+
+const apolloStakingClient = new ApolloClient({
+  link: httpLink_staking,
+  cache: new InMemoryCache(),
+});
+
+export default apolloIndexClient;
+
+export { apolloStakingClient };

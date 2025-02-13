@@ -151,6 +151,7 @@ export type thirdwebReadContract = {
   data: bigint
   refetch: () => void
 }
+
 export type AssetOverviewDocument = {
   _id?: ObjectId
   lastUpdate?: Date
@@ -177,4 +178,36 @@ export type DinariAssetDetails = {
     is_active: boolean
     is_primary: boolean
   }[]
+}
+
+
+
+export type RequestType = {
+  __typename: string
+	time: string
+	user: string
+  nonce?: number
+	transactionHash: string
+	inputToken?: string
+	outputToken?: string
+	inputAmount: string
+	outputAmount: string
+  messageId?: string
+}
+
+
+export type PositionType = {
+	side: string
+	user: `0x${string}` | string
+	tokenAddress: `0x${string}` | string
+	timestamp: number
+	inputAmount: number
+	outputAmount: number
+	indexName: string
+	txHash: string
+	messageId?: string
+	nonce?: number
+	sendStatus?: string
+	receiveStatus?: string
+	recieveSideMessageId?: string
 }
