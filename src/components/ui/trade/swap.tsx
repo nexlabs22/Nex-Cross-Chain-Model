@@ -1528,16 +1528,16 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
       {/* tokens modal for setting FromSwapToken */}
       <TokensModal
         open={openFromTokensModal}
-        showNexProducts={selectedSide == 'buy' ? true : false}
-        showTokens={selectedSide == 'buy' ? false : true}
+        showNexProducts={selectedSide == 'buy' ? false : true}
+        showTokens={selectedSide == 'buy' ? true : false}
         onClose={handleCloseFromTokensModal}
         onSelect={(selectedToken) => { setSwapFromToken(selectedToken); handleCloseFromTokensModal(); }}
       />
       {/* tokens modal for setting ToSwapToken */}
       <TokensModal
         open={openToTokensModal}
-        showNexProducts={selectedSide == 'buy' ? false : true}
-        showTokens={selectedSide == 'buy' ? true : false}
+        showNexProducts={selectedSide == 'buy' ? true : false}
+        showTokens={selectedSide == 'buy' ? false : true}
         onClose={handleCloseToTokensModal}
         onSelect={(selectedToken) => { setSwapToToken(selectedToken); handleCloseToTokensModal(); }}
       />
