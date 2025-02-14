@@ -2,11 +2,10 @@
 
 import GenericCard from "@/components/ui/generic/genericCard"
 import GenericAreaLineChart from "./genericAreaChart"
-import { Box, Typography, Stack, Skeleton, Button } from "@mui/material"
+import { Box, Typography, Stack, Skeleton, Button, Link } from "@mui/material"
 import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGroup"
 
 import {
-  MdOutlineArrowOutward,
   MdOutlineArrowUpward,
   MdOutlineArrowDownward
 } from "react-icons/md"
@@ -73,7 +72,6 @@ const IndexCard = ({ index }: IndexCardProps) => {
             />
           </Stack>
         </Stack>
-        <MdOutlineArrowOutward size={24} color={theme.palette.info.main} />
       </Stack>
       <Stack gap={1} marginTop={3}>
         <Typography variant={"h3"}>{price}</Typography>
@@ -114,30 +112,48 @@ const IndexCard = ({ index }: IndexCardProps) => {
             </Typography>
           </Stack>
           <Stack direction='row' alignItems='end' gap={0.5} marginTop={2}>
-            <Button
-              variant="contained"
-              size='medium'
-              sx={{
-                backgroundColor: theme.palette.brand.nex1.main,
-                borderRadius: 2,
-                color: theme.palette.info.main,
-                textTransform: "none",
+            <Link
+              href={`/trade?side=buy&index=${index.symbol}`}
+              style={{
+                textDecoration: "none",
+                width: "fit-content",
+                cursor: "pointer",
               }}
             >
-              <Typography variant={"h6"}>Trade</Typography>
-            </Button>
-            <Button
-              variant="contained"
-              size='medium'
-              sx={{
-                backgroundColor: theme.palette.brand.nex1.main,
-                borderRadius: 2,
-                color: theme.palette.info.main,
-                textTransform: "none",
+              <Button
+                variant="contained"
+                size='medium'
+                sx={{
+                  backgroundColor: theme.palette.brand.nex1.main,
+                  borderRadius: 30,
+                  color: theme.palette.info.main,
+                  textTransform: "none",
+                }}
+              >
+                <Typography variant={"h6"}>Trade</Typography>
+              </Button>
+            </Link>
+            <Link
+              href={`/index-details?index=${index.symbol}`}
+              style={{
+                textDecoration: "none",
+                width: "fit-content",
+                cursor: "pointer",
               }}
             >
-              <Typography variant={"h6"}>Details</Typography>
-            </Button>
+              <Button
+                variant="contained"
+                size='medium'
+                sx={{
+                  backgroundColor: theme.palette.brand.nex1.main,
+                  borderRadius: 30,
+                  color: theme.palette.info.main,
+                  textTransform: "none",
+                }}
+              >
+                <Typography variant={"h6"}>Details</Typography>
+              </Button>
+            </Link>
           </Stack>
         </Stack>
         <Stack
