@@ -1,73 +1,43 @@
-
 import { useEffect, useState, useCallback } from 'react'
 import { num } from '@/utils/conversionFunctions'
 import { useDashboard } from '@/providers/DashboardProvider'
-import { PositionType, RequestType } from '@/types/indexTypes'
-
-
+import { Transaction, RequestType, AllowedTickers, Address } from '@/types/indexTypes'
 
 export function GetPositionsHistoryDefi(dataFromGraph: { [key: string]: RequestType[] }) {
 	const { nexTokens } = useDashboard()
-
-	const [positions, setPositions] = useState<PositionType[]>([])
+	const [positions, setPositions] = useState<Transaction[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
 
-
-	const getHistory = useCallback(async () => {
-
+	const getHistory = useCallback(() => {
 		setLoading(true)
-		setPositions([])
 
-		const positions0: PositionType[] = []		
+		const defiTokensSet = new Set(
+			nexTokens
+				.filter(token => token.smartContractType === 'defi')
+				.map(token => token.symbol.toLowerCase())
+		)
 
-		const defiTokens = nexTokens.filter((token) => {
-			return token.smartContractType === 'defi'
-		}).map((token) => {
-			return token.symbol.toLowerCase()
-		})		
+		const positions0: Transaction[] = Object.entries(dataFromGraph)
+			.filter(([key]) => Array.from(defiTokensSet).some(token => key.includes(token)))
+			.flatMap(([key, logs]) => 
+				logs.map(log => {
+					const isMint = key.includes('issuanceds')
+					const tokenName = key.split(isMint ? 'issuanceds' : 'redemptions')[0].toUpperCase() as AllowedTickers
 
-		Object.entries(dataFromGraph).forEach(([key, logs]) => {
-			if (defiTokens.some(token => key.includes(token))) {
-				if (key.includes('issuanceds')) {									
-					logs.forEach((log: RequestType) => {
-						const obj: PositionType = {
-							side: 'Mint Request',
-							user: log.user as `0x${string}`,
-							inputAmount: num(log.inputAmount),
-							outputAmount: num(log.outputAmount),
-							tokenAddress: log.inputToken as `0x${string}`,
-							timestamp: Number(log.time),
-							txHash: log.transactionHash,
-							indexName: key.split('issuanceds')[0].toUpperCase(),
-						}
-						positions0.push(obj)
-					})
-				} else {					
-					logs.forEach(async (log: RequestType) => {
-						const obj: PositionType = {
-							side: 'Burn Request',
-							user: log.user as `0x${string}`,
-							inputAmount: num(log.inputAmount),
-							outputAmount: num(log.outputAmount),
-							tokenAddress: log.outputToken as `0x${string}`,
-							timestamp: Number(log.time),
-							txHash: log.transactionHash,
-							indexName: key.split('redemptions')[0].toUpperCase(),
-						}
-						positions0.push(obj)						
-					})
-				}
-			}
-		})
+					return {
+						side: isMint ? 'Mint Request' : 'Burn Request',
+						userAddress: log.user as Address,
+						inputAmount: num(log.inputAmount),
+						outputAmount: num(log.outputAmount),
+						tokenAddress: (isMint ? log.inputToken : log.outputToken) as Address,
+						timestamp: Number(log.time),
+						txHash: log.transactionHash,
+						tokenName,
+					}
+				})
+			)
 
-
-
-		const sortedPositionsData = positions0.sort(function (a, b) {
-			if (!a.timestamp || !b.timestamp) return 0
-			return Number(b.timestamp) - Number(a.timestamp)
-		})		
-
-		setPositions(sortedPositionsData)
+		setPositions(positions0.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)))
 		setLoading(false)
 	}, [nexTokens, dataFromGraph])
 

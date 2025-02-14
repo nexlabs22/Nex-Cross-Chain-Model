@@ -125,9 +125,8 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 				})
 			);
 
-			setNexTokens(nexTokens)
-
-		}
+      setNexTokens(nexTokens)
+    }
 
     fetchIndexesData()
   }, [ethPriceUsd,chain, network, activeThirdWebChain])

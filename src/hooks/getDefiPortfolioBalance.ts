@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react"
 import { indexFactoryV2Abi } from "@/constants/abi"
 import { getClient } from "@/utils/getRPCClient"
 import { useDashboard } from "@/providers/DashboardProvider"
-import { CryptoAsset } from "@/types/indexTypes"
+import { Address, CryptoAsset } from "@/types/indexTypes"
 import { PublicClient } from 'viem'
 import { useGlobal } from "@/providers/GlobalProvider"
 

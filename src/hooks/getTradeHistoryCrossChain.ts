@@ -1,90 +1,54 @@
 import { useDashboard } from '@/providers/DashboardProvider';
-import { PositionType, RequestType } from '@/types/indexTypes'
+import { Transaction, RequestType, AllowedTickers, Address } from '@/types/indexTypes';
 import { num } from '@/utils/conversionFunctions';
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react';
 
-export function GetTradeHistoryCrossChain(dataFromGraph: {[key:string]: RequestType[]}) {
-	
-	const [loading, setLoading] = useState<boolean>(false)
-	const [positions, setPositions] = useState<PositionType[]>([])
-	const { nexTokens } = useDashboard();
+export function GetTradeHistoryCrossChain(dataFromGraph: { [key: string]: RequestType[] }) {
+  const [loading, setLoading] = useState(false);
+  const [positions, setPositions] = useState<Transaction[]>([]);
+  const { nexTokens } = useDashboard();
 
-	const getHistory = useCallback(async () => {
+  const getHistory = useCallback(() => {
+    setLoading(true);
 
-		setLoading(true)
-		setPositions([])
+    const crosschainTokensSet = new Set(
+      nexTokens
+        .filter(token => token.smartContractType === 'crosschain')
+        .map(token => token.symbol.toLowerCase())
+    );
 
-		const positions0: PositionType[] = []		
+    const mapToTransaction = (log: RequestType, key: string, isMint: boolean): Transaction => ({
+      side: isMint ? 'Minted' : 'Burned',
+      userAddress: log.user as Address,
+      inputAmount: num(log.inputAmount),
+      outputAmount: num(log.outputAmount),
+      tokenAddress: (isMint ? log.inputToken : log.outputToken) as Address,
+      timestamp: Number(log.time),
+      txHash: log.transactionHash,
+      tokenName: key.split(isMint ? 'Issuanceds' : 'Redemptions')[0].toUpperCase() as AllowedTickers,
+      messageId: log.messageId,
+      nonce: Number(log.nonce),
+      sendStatus: 'SUCCESS',
+      receiveStatus: 'SUCCESS',
+    });
 
-		
-		const crosschainTokens = nexTokens.filter((token) => {
-			return token.smartContractType === 'crosschain'
-		  }).map((token) => {
-			return token.symbol.toLowerCase()
-		  })		
-		
-		  Object.entries(dataFromGraph).forEach(([key, logs]) => {
-			if (crosschainTokens.some(token => key.includes(token))) {				
-			  if (key.includes('Issuanceds')) {           	
+    const positionsData: Transaction[] = Object.entries(dataFromGraph)
+      .filter(([key]) => Array.from(crosschainTokensSet).some(token => key.includes(token)))
+      .flatMap(([key, logs]) =>
+        logs.map(log => mapToTransaction(log, key, key.includes('Issuanceds')))
+      );
 
-				logs.forEach((log: RequestType) => {
-				  const obj: PositionType = {
-					side: 'Minted',
-					user: log.user as `0x${string}`,
-					inputAmount: num(log.inputAmount),
-					outputAmount: num(log.outputAmount),
-					tokenAddress: log.inputToken as `0x${string}`,
-					timestamp: Number(log.time),
-					txHash: log.transactionHash,
-					indexName: key.split('Issuanceds')[0].toUpperCase(),
-					messageId: log.messageId,
-					nonce: Number(log.nonce),
-                    sendStatus: "SUCCESS",
-                    receiveStatus: "SUCCESS"					
-				  }
-	
-				  positions0.push(obj)
-				})
-			  } else if (key.includes('Redemptions')) {  				
-				logs.forEach(async (log: RequestType) => {
-				  const obj: PositionType = {
-					side: 'Burned',
-					user: log.user as `0x${string}`,
-					inputAmount: num(log.inputAmount),
-					outputAmount: num(log.outputAmount),
-					tokenAddress: log.outputToken as `0x${string}`,
-					timestamp: Number(log.time),
-					txHash: log.transactionHash,
-					indexName: key.split('Redemptions')[0].toUpperCase(),
-					messageId: log.messageId,				
-					nonce: Number(log.nonce),
-                    sendStatus: "SUCCESS",
-                    receiveStatus: "SUCCESS"
-				  }
-	
-				  positions0.push(obj)						
-				})
-			  }
-			}
-		  })
+    setPositions(positionsData.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)));
+    setLoading(false);
+  }, [nexTokens, dataFromGraph]);
 
-		
-		const sortedPositionsData = positions0.sort(function (a, b) {
-			if (!a.timestamp || !b.timestamp) return 0
-			return Number(b.timestamp) - Number(a.timestamp)
-		})
-		setPositions(sortedPositionsData)
-		setLoading(false)
-	}, [nexTokens, dataFromGraph])
+  useEffect(() => {
+    getHistory();
+  }, [getHistory]);
 
-	useEffect(() => {
-
-		getHistory()
-	}, [getHistory])
-
-	return {
-		data: positions,
-		reload: getHistory,
-		loading
-	}
+  return {
+    data: positions,
+    reload: getHistory,
+    loading,
+  };
 }

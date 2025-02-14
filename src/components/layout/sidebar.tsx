@@ -19,7 +19,7 @@ const Sidebar = () => {
     return (
         <Stack
             display={{xs: "none", lg: "block"}}
-            minWidth="4vw"
+            minWidth={{xs: "0vw", lg: "3vw", xl: "1vw"}}
             width={"fit-content"}
             height="100vh"
             maxHeight="100vh"
@@ -34,7 +34,7 @@ const Sidebar = () => {
                 zIndex: 999,
                 ":hover": {
 
-                    minWidth: "12vw",
+                    minWidth: {lg: "12vw", xl: "5vw"},
                     transition: "min-width 0.1s ease",
                 },
                 ":hover .sidebar-link-typography": {
