@@ -82,7 +82,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
             <Box
               borderRadius={"50%"}
               sx={{
-                backgroundColor: theme.palette.success.main,
+                backgroundColor: change24hValue > 0 ? theme.palette.success.main : theme.palette.error.main,
                 width: 24,
                 height: 24,
                 display: "flex",
