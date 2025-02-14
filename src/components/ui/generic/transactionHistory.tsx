@@ -3,7 +3,7 @@
 import GenericTable from "@/components/ui/generic/genericTable"
 import { useHistory } from "@/providers/HistoryProvider";
 import { formatToViewNumber } from "@/utils/conversionFunctions";
-import { convertTime, getTokenSymbolByAddress } from "@/utils/general";
+import { convertTime, getTokenInfoByAddress } from "@/utils/general";
 import { Stack } from "@mui/material";
 import { GridColDef } from '@mui/x-data-grid';
 
@@ -23,7 +23,7 @@ const TransactionHistory = () => {
 
     const dataToShow = positionHistoryData.map((data, index)=>{
 
-        const tokenAddressSymbol = getTokenSymbolByAddress(data.tokenAddress)
+        const tokenAddressSymbol = getTokenInfoByAddress(data.tokenAddress, 'symbol')
 
         const inputTokenSymbol = data.tokenAddress ? (data.side.includes('Mint') ? tokenAddressSymbol : data.tokenName) : ''
         const outTokenSymbol = data.tokenAddress ? (data.side.includes('Burn') ? tokenAddressSymbol : data.tokenName) : ''

@@ -52,7 +52,10 @@ const isWETH = (address: Address): boolean => {
   return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address
 }
 
-function getTokenSymbolByAddress(address: string): string | undefined {
+function getTokenInfoByAddress(
+  address: string,
+  infoType: "symbol" | "decimal"
+): string | number | undefined {
   const lowerCaseAddress = address.toLowerCase();
 
   for (const [symbol, chains] of Object.entries(tokenAddresses)) {
@@ -66,7 +69,12 @@ function getTokenSymbolByAddress(address: string): string | undefined {
 
         for (const contract of Object.values(contracts)) {
           if (contract.address.toLowerCase() === lowerCaseAddress) {
-            return symbol;
+            if (infoType === "symbol") {
+              return symbol;
+            }
+            if (infoType === "decimal") {
+              return contract.decimals !== undefined ? contract.decimals : 18;
+            }
           }
         }
       }
@@ -75,6 +83,8 @@ function getTokenSymbolByAddress(address: string): string | undefined {
 
   return undefined; // Return undefined if no match is found
 }
+
+
 
 const get24hChange = (data: MongoDb[]) =>{
 
@@ -116,7 +126,7 @@ export {
   calculateChange,
   getDecimals,
   isWETH,
-  getTokenSymbolByAddress,
+  getTokenInfoByAddress,
   get24hChange,
   parseQueryFromPath
 }

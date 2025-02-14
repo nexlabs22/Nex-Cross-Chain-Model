@@ -1,18 +1,16 @@
 import { useEffect, useState, useCallback } from "react"
-import { indexFactoryV2Abi } from "@/constants/abi"
 import { getClient } from "@/utils/getRPCClient"
 import { useDashboard } from "@/providers/DashboardProvider"
-import { Address, CryptoAsset } from "@/types/indexTypes"
-import { PublicClient } from 'viem'
-import { useGlobal } from "@/providers/GlobalProvider"
+import { AllowedTickers, CryptoAsset } from "@/types/indexTypes"
+import { readContract } from "thirdweb"
+import GetContract from "./getContract"
 
 export function GetDefiPortfolioBalance(
   swapFromToken: CryptoAsset,
   swapToToken: CryptoAsset
 ) {
   const [portfolioValue, setPortfolioValue] = useState<number>()
-  const { nexTokens } = useDashboard()
-  const {activeChainSetting:{chainName, network}} = useGlobal()
+  const { nexTokens } = useDashboard()  
 
   const allowedSymbols = nexTokens
     .filter((token) => token.smartContractType === "defi")
@@ -21,6 +19,8 @@ export function GetDefiPortfolioBalance(
   const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
     (symbol) => allowedSymbols.includes(symbol)
   )[0]
+
+  const storageContract = GetContract(activeTicker as AllowedTickers, 'storage')
 
   const getPortfolioValue = useCallback(async () => {
     let sepoliaPublicClient = null
@@ -34,22 +34,18 @@ export function GetDefiPortfolioBalance(
       return
     }
 
-    const activeStorageAddress = nexTokens.filter(
-      (token) => token.symbol === activeTicker
-    )[0].tokenAddresses?.[chainName]?.[network]?.storage?.address
-
     let totalPortfolioBalance: number = 0
 
-    const sepoliaPortfolioBalance = await (sepoliaPublicClient as PublicClient).readContract({
-      address: activeStorageAddress as Address,
-      abi: indexFactoryV2Abi,
-      functionName: "getPortfolioBalance",
+    const sepoliaPortfolioBalance = await readContract({
+      contract: storageContract,
+      method: "function getPortfolioBalance() returns (uint256)",
+      params: []
     })
 
     totalPortfolioBalance += Number(sepoliaPortfolioBalance)
 
     setPortfolioValue(totalPortfolioBalance)
-  }, [nexTokens, activeTicker,chainName, network])
+  }, [storageContract])
 
   useEffect(() => {
     if (activeTicker) {
