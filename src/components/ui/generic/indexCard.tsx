@@ -116,10 +116,9 @@ const IndexCard = ({ index }: IndexCardProps) => {
           <Stack direction='row' alignItems='end' gap={0.5} marginTop={2}>
             <Button
               variant="contained"
+              size='medium'
               sx={{
                 backgroundColor: theme.palette.brand.nex1.main,
-                paddingY: 0.5,
-                paddingX: 1,
                 borderRadius: 2,
                 color: theme.palette.info.main,
                 textTransform: "none",
@@ -129,10 +128,9 @@ const IndexCard = ({ index }: IndexCardProps) => {
             </Button>
             <Button
               variant="contained"
+              size='medium'
               sx={{
                 backgroundColor: theme.palette.brand.nex1.main,
-                paddingY: 0.5,
-                paddingX: 1,
                 borderRadius: 2,
                 color: theme.palette.info.main,
                 textTransform: "none",

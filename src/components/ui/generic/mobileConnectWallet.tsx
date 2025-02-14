@@ -16,7 +16,10 @@ const MobileConnectWallet = () => {
                 <IoWalletOutline size={32} color={theme.palette.info.main} />
             </IconButton>
             <Stack position={'absolute'} zIndex={2} sx={{
-                opacity: 0
+                opacity: 0,
+                top: 0,
+                left: 0,
+                maxWidth: 32
             }}>
                 <ConnectButton
                     client={client}
