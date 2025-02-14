@@ -26,7 +26,7 @@ const ConnectWallet = () => {
                     display: { xs: "none", lg: "block" },
                 },
                 '& .tw-connected-wallet': {
-                    display: {xs: 'none', lg: 'block'}
+                    display: {xs: 'none', lg: 'flex'}
                 }
             }}>
                 <ConnectButton

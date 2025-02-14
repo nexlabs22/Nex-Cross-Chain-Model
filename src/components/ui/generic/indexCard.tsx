@@ -122,15 +122,15 @@ const IndexCard = ({ index }: IndexCardProps) => {
             >
               <Button
                 variant="contained"
-                size='medium'
+                size='large'
                 sx={{
-                  backgroundColor: theme.palette.brand.nex1.main,
+                  backgroundColor: theme.palette.info.main,
                   borderRadius: 30,
-                  color: theme.palette.info.main,
+                  color: theme.palette.text.primary,
                   textTransform: "none",
                 }}
               >
-                <Typography variant={"h6"}>Trade</Typography>
+                <Typography variant={"h6"} fontWeight={700}>Trade</Typography>
               </Button>
             </Link>
             <Link
@@ -143,15 +143,15 @@ const IndexCard = ({ index }: IndexCardProps) => {
             >
               <Button
                 variant="contained"
-                size='medium'
+                size='large'
                 sx={{
-                  backgroundColor: theme.palette.brand.nex1.main,
+                  backgroundColor: theme.palette.info.main,
                   borderRadius: 30,
-                  color: theme.palette.info.main,
+                  color: theme.palette.text.primary,
                   textTransform: "none",
                 }}
               >
-                <Typography variant={"h6"}>Details</Typography>
+                <Typography variant={"h6"} fontWeight={700}>Details</Typography>
               </Button>
             </Link>
           </Stack>
