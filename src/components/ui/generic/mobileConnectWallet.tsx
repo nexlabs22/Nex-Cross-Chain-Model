@@ -32,8 +32,9 @@ const MobileConnectWallet = () => {
                             '& .MuiBadge-badge': {
                                 right: '25%',
                                 bottom: '25%',
-                                height: '.8rem',
-                                width: '.8rem'
+                                height: '.6rem',
+                                width: '.6rem',
+                                borderRadius: '50%'
                             }
                         }}
                     >
