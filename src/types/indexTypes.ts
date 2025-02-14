@@ -37,6 +37,7 @@ export type ContractTypes =
   | "vault"
   | "ccip"
   | "faucet"
+  | "dinari"
 
 export type Chains = "Ethereum" | "Arbitrum" | "Polygon"
 export type Networks = "Mainnet" | "Goerli" | "Sepolia" | "Mumbai"

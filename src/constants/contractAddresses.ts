@@ -34,16 +34,23 @@ export const tokenAddresses: TokenAddressMap = {
       },
       Sepolia: {
         token: { address: "0xE8888fE3Bde6f287BDd0922bEA6E0bF6e5f418e7" },
-        faucet: { address: "0x5Efe973Bc615112Bca43696483bd53Ce86E2B0ab" },
+        faucet: { address: "0xf7043384e395306de8356e486679e3EfAD1a6609" },
       },
     },
   },
   USDC: {
     Ethereum: {
       Sepolia: {
-        token: { address: "0x709CE4CB4b6c2A03a4f938bA8D198910E44c11ff", decimals: 6 },
+        token: { address: "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238", decimals: 6 },
+        dinari: { address: "0x709CE4CB4b6c2A03a4f938bA8D198910E44c11ff", decimals: 6 },
+        faucet: { address: "0xf7043384e395306de8356e486679e3EfAD1a6609" }
       },
     },
+    Arbitrum:{
+      Mainnet:{
+        token: { address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', decimals: 6}
+      }
+    }
   },
   LINK: {
     Ethereum: {
@@ -120,9 +127,9 @@ export const tokenAddresses: TokenAddressMap = {
   ARBEI: {
     Ethereum: {
       Sepolia: {
-        token: { address: "0xE22A1e2bf573B84E6E676C49D2b5742aFB9Ba935" },
-        factory: { address: "0x65B1DDD708dc7e169c831ae1F4Fd4Dc94bF0a417" },
-        storage: { address: "0x21C22BF96bd343B82E378b55D477d16D8f046427" },
+        token: { address: "0x66B13DbCC6B107668f46174d0964030f103C3D3a" },
+        factory: { address: "0xdB3EB6589B99439d549E8d2c089F42aB2954d9c0" },
+        storage: { address: "0xE7678443f01D4bf1032105F27bd8d08C3d4E11e0" },
       },
     },
     Arbitrum: {

@@ -16,7 +16,7 @@ interface TradeContextProps {
 }
 
 const TradeContext = createContext<TradeContextProps>({
-    swapFromToken: sepoliaTokens.find((token) => token.symbol === 'USDT') as IndexCryptoAsset,
+    swapFromToken: sepoliaTokens.find((token) => token.symbol === 'USDC') as IndexCryptoAsset,
     swapToToken: nexTokensArray.find((token) => token.symbol === 'ARBEI') as IndexCryptoAsset,
     setSwapFromToken: ()=>{},
     setSwapToToken: ()=>{},
@@ -31,7 +31,7 @@ const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     const { nexTokens} = useDashboard()
 
         const [swapFromToken, setSwapFrom] = useState<IndexCryptoAsset>(
-            [...nexTokens, ...sepoliaTokens].find((token) => token.symbol === 'USDT') as IndexCryptoAsset
+            [...nexTokens, ...sepoliaTokens].find((token) => token.symbol === 'USDC') as IndexCryptoAsset
         );
     
         const [swapToToken, setSwapTo] = useState<IndexCryptoAsset>(
