@@ -23,7 +23,8 @@ contract DeployAllContractsScript is Script, Test, PriceOracleByteCode {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        string memory targetChain = "sepolia";
+        // string memory targetChain = "sepolia";
+        string memory targetChain = "arbitrum_mainnet";
 
         address indexTokenProxy = _deployIndexToken(targetChain);
 

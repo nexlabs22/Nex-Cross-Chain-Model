@@ -44,7 +44,8 @@ contract SetIndexFactoryStorageValues is Script {
             indexFactoryStorageProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             mainCrossChainTokenAddress = vm.envAddress("ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
             otherCrossChainTokenAddress = vm.envAddress("ETHEREUM_CROSS_CHAIN_TOKEN_ADDRESS");
-            crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
+            // crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
+            crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
             weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
             mainChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
             otherChainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));

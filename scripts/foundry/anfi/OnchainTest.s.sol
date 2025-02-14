@@ -12,18 +12,18 @@ contract OnchainTest is Script {
     IndexToken indexToken;
 
     // Mainnet
-    // address user = vm.envAddress("USER");
-    // address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+    address user = vm.envAddress("USER");
+    address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
     // address usdt = vm.envAddress("SEPOLIA_USDC_ADDRESS");
-    // address indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
-    // address indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+    address indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+    address indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
 
     // Testnet
-    address user = vm.envAddress("USER");
-    address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-    address usdt = vm.envAddress("SEPOLIA_USDT_ADDRESS");
-    address indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
-    address indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+    // address user = vm.envAddress("USER");
+    // address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+    // address usdt = vm.envAddress("SEPOLIA_USDT_ADDRESS");
+    // address indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+    // address indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -42,17 +42,17 @@ contract OnchainTest is Script {
     }
 
     function issuanceAndRedemptionWithEth() public {
-        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e17 * 1001) / 1000}(1e17, 0);
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e15 * 1001) / 1000}(1e15, 0);
 
-        address[] memory path = new address[](2);
-        path[0] = address(weth);
-        path[1] = address(weth);
-        uint24[] memory fees = new uint24[](1);
-        fees[0] = 3000;
+        // address[] memory path = new address[](2);
+        // path[0] = address(weth);
+        // path[1] = address(weth);
+        // uint24[] memory fees = new uint24[](1);
+        // fees[0] = 3000;
 
-        IndexFactory(payable(indexFactoryProxy)).redemption(
-            indexToken.balanceOf(address(user)), 0, address(weth), path, fees
-        );
+        // IndexFactory(payable(indexFactoryProxy)).redemption(
+        //     indexToken.balanceOf(address(user)), 0, address(weth), path, fees
+        // );
     }
 
     // function issuanceAndRedemptionWithUsdt() public {

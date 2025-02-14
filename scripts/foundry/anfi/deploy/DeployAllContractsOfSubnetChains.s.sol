@@ -21,20 +21,22 @@ contract DeployCrossChainAllScript is Script, Test, PriceOracleByteCode {
         // string memory targetChain = "arbitrum_sepolia";
         string memory targetChain = "ethereum_mainnet";
 
-        address vaultProxy = _deployVault();
+        // address vaultProxy = _deployVault();
+        // address vaultProxy = 0x95e9FB1be73AAED5DaEfa504A77E59F5174552b3;
 
-        address ccIFSProxy = _deployCrossChainIndexFactoryStorage(targetChain, vaultProxy);
+        // address ccIFSProxy = _deployCrossChainIndexFactoryStorage(targetChain, vaultProxy);
+        // address ccIFSProxy = 0xE3Aa4bFBe8FEfD04C1bB3d01Cedf683a113e13d5;
 
-        address ccIFProxy = _deployCrossChainIndexFactory(targetChain, ccIFSProxy);
+        // address ccIFProxy = _deployCrossChainIndexFactory(targetChain, ccIFSProxy);
 
         address priceOracle = _deployPriceOracle();
 
         vm.stopBroadcast();
 
         console.log("\n=== All Deployments Complete ===");
-        console.log("Vault Proxy:                    ", vaultProxy);
-        console.log("CrossChainIndexFactoryStorage:  ", ccIFSProxy);
-        console.log("CrossChainIndexFactory:         ", ccIFProxy);
+        // console.log("Vault Proxy:                    ", vaultProxy);
+        // console.log("CrossChainIndexFactoryStorage:  ", ccIFSProxy);
+        // console.log("CrossChainIndexFactory:         ", ccIFProxy);
         console.log("PriceOracle:                    ", priceOracle);
     }
 
@@ -78,7 +80,7 @@ contract DeployCrossChainAllScript is Script, Test, PriceOracleByteCode {
             swapRouterV2 = vm.envAddress("ARBITRUM_SEPOLIA_ROUTER_V2_ADDRESS");
             toUsdPriceFeed = vm.envAddress("ARBITRUM_SEPOLIA_TO_USD_PRICE_FEED");
         } else if (keccak256(bytes(targetChain)) == keccak256("ethereum_mainnet")) {
-            chainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
+            chainSelector = uint64(vm.envUint("ETHEREUM_CHAIN_SELECTOR"));
             chainlinkToken = vm.envAddress("ETHEREUM_CHAINLINK_TOKEN_ADDRESS");
             router = vm.envAddress("ETHEREUM_CCIP_ROUTER_ADDRESS");
             wethAddress = vm.envAddress("ETHEREUM_WETH_ADDRESS");

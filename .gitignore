@@ -2,6 +2,7 @@ node_modules
 .env
 deployments.md
 broadcast/
+mainnetDeployments.md
 
 # Hardhat files
 /cache
