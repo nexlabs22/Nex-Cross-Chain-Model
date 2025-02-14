@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { Avatar, IconButton, Typography } from '@mui/material';
 import { OutlinedInput } from '@mui/material';
-import { IoSearch } from "react-icons/io5"; 
+import { IoSearch } from "react-icons/io5";
 import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -109,22 +109,13 @@ export default function TokensModal({
   const { nexTokens } = useDashboard()
 
   useEffect(() => {
-    if(showNexProducts && !showTokens) {
-      setTokens(nexTokens);
-      setFilteredTokens(nexTokens)
-      setVisibleCount(nexTokens.length)
-    }
-    else if(!showNexProducts && showTokens) {
-      setTokens(sepoliaTokens)
-      setFilteredTokens(sepoliaTokens)
-      setVisibleCount(sepoliaTokens.length)
-    }
-    else if(showNexProducts && showTokens) {
-      setTokens(nexTokens.concat(sepoliaTokens))
-      setFilteredTokens(nexTokens.concat(sepoliaTokens))
-      setVisibleCount(nexTokens.length + sepoliaTokens.length)
-    }
-    
+    const tokensContent = [
+      ...(showNexProducts ? nexTokens : []),
+      ...(showTokens ? sepoliaTokens : [])
+    ];
+    setTokens(tokensContent);
+    setFilteredTokens(tokensContent);
+    setVisibleCount(tokensContent.length)
   }, [nexTokens, showNexProducts, showTokens])
 
   const handleInputChange = (
@@ -190,7 +181,7 @@ export default function TokensModal({
           justifyContent: "start",
           alignItems: "start",
           backgroundColor: theme.palette.elevations.elevation900.main,
-          width: {xs: "90vw", lg: "35vw"},
+          width: { xs: "90vw", lg: "35vw" },
           position: 'absolute',
           top: '50%',
           left: '50%',
