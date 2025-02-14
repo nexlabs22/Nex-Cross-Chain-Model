@@ -6,7 +6,11 @@ import theme from '@/theme/theme'
 
 const MobileConnectWallet = () => {
     return (
-        <Box display={'block'} position={'relative'} overflow={'hidden'}>
+        <Box display={'block'} position={'relative'} overflow={'hidden'} sx={{
+            '& .tw-connected-wallet': {
+                display: 'none'
+            }
+        }}>
             <IconButton sx={{
                 position: 'relative',
                 top: 0,
