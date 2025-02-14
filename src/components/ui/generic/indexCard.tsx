@@ -113,7 +113,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
               {formatToViewNumber({ value: change24hValue, returnType: 'currency' })} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
             </Typography>
           </Stack>
-          <Stack direction='row' alignItems='end' gap={0.5} marginTop={1}>
+          <Stack direction='row' alignItems='end' gap={0.5} marginTop={2}>
             <Button
               variant="contained"
               sx={{
