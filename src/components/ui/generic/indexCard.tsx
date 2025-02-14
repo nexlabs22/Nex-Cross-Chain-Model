@@ -2,7 +2,7 @@
 
 import GenericCard from "@/components/ui/generic/genericCard"
 import GenericAreaLineChart from "./genericAreaChart"
-import { Box, Typography, Stack, Skeleton } from "@mui/material"
+import { Box, Typography, Stack, Skeleton, Button } from "@mui/material"
 import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGroup"
 
 import {
@@ -39,7 +39,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
     ? `${index.marketInfo?.change24hFmt}%`
     : "N/A"
   const change24hValue = index.marketInfo?.change24h as number
-  const monthPrices = index.historicalPrice?.slice(0,30).sort((a,b)=> a.timestamp - b.timestamp) || []
+  const monthPrices = index.historicalPrice?.slice(0, 30).sort((a, b) => a.timestamp - b.timestamp) || []
 
   return (
     <GenericCard>
@@ -110,15 +110,37 @@ const IndexCard = ({ index }: IndexCardProps) => {
                   : "error.main"
               }
             >
-              {formatToViewNumber({value:change24hValue, returnType: 'currency'})} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
+              {formatToViewNumber({ value: change24hValue, returnType: 'currency' })} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
             </Typography>
           </Stack>
-          <Typography variant={"subtitle2"} color={"text.secondary"}>
-            {index.marketInfo?.change24h && index.marketInfo?.change24h > 0
-              ? "More than"
-              : "Less than"}{" "}
-            last 24 hours
-          </Typography>
+          <Stack direction='row' alignItems='end' gap={0.5} marginTop={1}>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: theme.palette.brand.nex1.main,
+                paddingY: 0.5,
+                paddingX: 1,
+                borderRadius: 2,
+                color: theme.palette.info.main,
+                textTransform: "none",
+              }}
+            >
+              <Typography variant={"h6"}>Trade</Typography>
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: theme.palette.brand.nex1.main,
+                paddingY: 0.5,
+                paddingX: 1,
+                borderRadius: 2,
+                color: theme.palette.info.main,
+                textTransform: "none",
+              }}
+            >
+              <Typography variant={"h6"}>Details</Typography>
+            </Button>
+          </Stack>
         </Stack>
         <Stack
           width={"100%"}
