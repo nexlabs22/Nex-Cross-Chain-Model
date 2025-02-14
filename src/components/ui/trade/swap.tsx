@@ -51,7 +51,7 @@ import {
   ZERO_ADDRESS,
 } from "thirdweb"
 import Big from "big.js"
-import {  
+import {
   stockFactoryStorageABI,
 } from "@/constants/abi"
 import { parseEther, parseUnits } from "@ethersproject/units"
@@ -116,13 +116,13 @@ export default function Swap({ selectedIndex }: SwapProps) {
   const activeStorageAddress = tokenAddresses[activeSymbol as NexIndices]?.[chainName]?.[network]?.storage?.address as Address
   
 
-    useEffect(() => {
-        const selectedCoin = selectedIndex?.symbol || 'ANFI'
-        const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
-            return coin.symbol === selectedCoin
-        })
-        setSwapToToken(coinDetails[0])
-    }, [selectedIndex, nexTokens])
+  useEffect(() => {
+    const selectedCoin = selectedIndex?.symbol || 'ANFI'
+    const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
+      return coin.symbol === selectedCoin
+    })
+    setSwapToToken(coinDetails[0])
+  }, [selectedIndex, nexTokens])
 
 
   useEffect(() => {
@@ -813,7 +813,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
         if (firstInputValue === "") {
           resetSecondValue()
           return
-        }        
+        }
 
         if (swapToToken.hasOwnProperty("smartContractType")) {
           const currentTotalSupply = Number(toTokenTotalSupply.data)
@@ -885,7 +885,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 isIndexCryptoAsset(swapToToken) &&
                 swapToToken?.smartContractType === "crosschain"
               ) {
-                const {portfolioValue}  = GetNewCrossChainPortfolioBalance(
+                const { portfolioValue } = GetNewCrossChainPortfolioBalance(
                   Number(currentPortfolioValue),
                   Number(inputValue)
                 )
@@ -929,8 +929,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
           return
         }
         if (swapFromToken.hasOwnProperty("smartContractType")) {
-          const convertedInputValue = parseEther(Number(firstInputValue)?.toString() as string) 
-          console.log({convertedInputValue})           
+          const convertedInputValue = parseEther(Number(firstInputValue)?.toString() as string)
+          console.log({ convertedInputValue })
           let outputValue
           const currentTotalSupply = Number(fromTokenTotalSupply.data)
           const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
@@ -1193,9 +1193,9 @@ export default function Swap({ selectedIndex }: SwapProps) {
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" color="primary">
             {isIndexCryptoAsset(swapFromToken) ?
-            `Sell ${swapFromToken.symbol} ` :
-            `Buy ${swapToToken.symbol} `
-          }
+              `Sell ${swapFromToken.symbol} ` :
+              `Buy ${swapToToken.symbol} `
+            }
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <IconButton
@@ -1239,7 +1239,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("min")
@@ -1253,8 +1253,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 } else setFirstInputValue("1")
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MIN</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MIN</Typography>
+              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>MIN</Typography>
+              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>MIN</Typography>
             </Button>
             <Button
               variant="contained"
@@ -1265,15 +1265,15 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("half")
                 setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>HALF</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>HALF</Typography>
+              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>HALF</Typography>
+              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>HALF</Typography>
             </Button>
             <Button
               variant="contained"
@@ -1284,15 +1284,15 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("max")
                 setFirstInputValue(Number(getPrimaryBalance()).toString())
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MAX</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MAX</Typography>
+              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>MAX</Typography>
+              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>MAX</Typography>
             </Button>
           </Stack>
           <Typography variant="subtitle2" color="text.secondary">
