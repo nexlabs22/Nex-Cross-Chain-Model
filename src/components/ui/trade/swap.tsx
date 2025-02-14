@@ -52,7 +52,6 @@ import {
 } from "thirdweb"
 import Big from "big.js"
 import {
-  crossChainIndexFactoryV2Abi,
   stockFactoryStorageABI,
 } from "@/constants/abi"
 import { parseEther, parseUnits } from "@ethersproject/units"
@@ -112,7 +111,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
   const [userEthBalance, setUserEthBalance] = useState(0)
 
   const rpcClient = getClient(chain, network)
- 
+
 
   const activeSymbol = isIndexCryptoAsset(swapFromToken)
     ? swapFromToken.symbol
@@ -121,13 +120,13 @@ export default function Swap({ selectedIndex }: SwapProps) {
     network
   ]?.storage?.address as Address
 
-    useEffect(() => {
-        const selectedCoin = selectedIndex?.symbol || 'ANFI'
-        const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
-            return coin.symbol === selectedCoin
-        })
-        setSwapToToken(coinDetails[0])
-    }, [selectedIndex, nexTokens])
+  useEffect(() => {
+    const selectedCoin = selectedIndex?.symbol || 'ANFI'
+    const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
+      return coin.symbol === selectedCoin
+    })
+    setSwapToToken(coinDetails[0])
+  }, [selectedIndex, nexTokens])
 
 
   useEffect(() => {
@@ -574,8 +573,10 @@ export default function Swap({ selectedIndex }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: "function issuanceIndexTokens(address, address[], uint24[], uint256, uint24)",
           params: [
-            swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address,
-            [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address, tokenAddresses.WETH?.[chain]?.[network]?.token?.address],
+            swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address as Address,
+            [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address as Address,
+            tokenAddresses.WETH?.[chain]?.[network]?.token?.address as Address
+            ],
             [3000],
             BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)).toString()),
             3,
@@ -589,7 +590,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: 'function issuanceIndexTokens(uint256)',
           params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)).toString())],
-      })
+        })
         mintRequestHook.mutate(transaction)
 
       } else {
@@ -599,7 +600,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: resolveMethod('issuanceIndexTokens'),
           params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
-      })
+        })
         mintRequestHook.mutate(transaction)
       }
     } catch (error) {
@@ -684,8 +685,11 @@ export default function Swap({ selectedIndex }: SwapProps) {
           method: "function redemption(uint256, address, address[], uint24[], uint24)",
           params: [
             BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)).toString()),
-            swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address,
-            [tokenAddresses.WETH?.[chain]?.[network]?.token?.address,swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address],
+            swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address as Address,
+            [
+              tokenAddresses.WETH?.[chain]?.[network]?.token?.address as Address,
+              swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address as Address
+            ],
             [3000],
             3,
           ],
@@ -813,7 +817,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
         if (firstInputValue === "") {
           resetSecondValue()
           return
-        }        
+        }
 
         if (swapToToken.hasOwnProperty("smartContractType")) {
           const currentTotalSupply = Number(toTokenTotalSupply.data)
@@ -867,7 +871,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   "function getAmountOut(address[], uint24[], uint256, uint24 ) returns (uint256)",
                 params: [
                   [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address as Address, tokenAddresses.WETH?.[chain]?.[network]?.token?.address as Address],
-                  [3000],                  
+                  [3000],
                   BigInt(numToWei(firstInputValue, getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token))), // Convert ethAmountOut to bigint
                   3,
                 ],
@@ -880,7 +884,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 isIndexCryptoAsset(swapToToken) &&
                 swapToToken?.smartContractType === "crosschain"
               ) {
-                const {portfolioValue}  = GetNewCrossChainPortfolioBalance(
+                const { portfolioValue } = GetNewCrossChainPortfolioBalance(
                   Number(currentPortfolioValue),
                   Number(inputValue)
                 )
@@ -924,8 +928,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
           return
         }
         if (swapFromToken.hasOwnProperty("smartContractType")) {
-          const convertedInputValue = parseEther(Number(firstInputValue)?.toString() as string) 
-          console.log({convertedInputValue})           
+          const convertedInputValue = parseEther(Number(firstInputValue)?.toString() as string)
+          console.log({ convertedInputValue })
           let outputValue
           const currentTotalSupply = Number(fromTokenTotalSupply.data)
           const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
@@ -958,22 +962,22 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   )
                 ).toString()
               )
-            } else {              
-              console.log({ethAmountOut})
+            } else {
+              console.log({ ethAmountOut })
               const outPutTokenValue = await readContract({
                 contract: indexTokenStorageContract,
                 method:
                   "function getAmountOut(address[], uint24[], uint256, uint24 ) returns (uint256)",
                 params: [
-                  [tokenAddresses.WETH?.[chain]?.[network]?.token?.address as Address,swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address as Address ],
-                  [3000],                  
+                  [tokenAddresses.WETH?.[chain]?.[network]?.token?.address as Address, swapToToken.tokenAddresses?.[chain]?.[network]?.token?.address as Address],
+                  [3000],
                   BigInt(Math.floor(ethAmountOut)), // Convert ethAmountOut to bigint
                   3,
                 ],
               })
 
               outputValue = Number(outPutTokenValue)
-              console.log({outputValue, currentPortfolioValue, newPortfolioValue})
+              console.log({ outputValue, currentPortfolioValue, newPortfolioValue })
               setSecondInputValue(
                 weiToNum(
                   outputValue,
@@ -1190,9 +1194,9 @@ export default function Swap({ selectedIndex }: SwapProps) {
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" color="primary">
             {isIndexCryptoAsset(swapFromToken) ?
-            `Sell ${swapFromToken.symbol} ` :
-            `Buy ${swapToToken.symbol} `
-          }
+              `Sell ${swapFromToken.symbol} ` :
+              `Buy ${swapToToken.symbol} `
+            }
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <IconButton
@@ -1236,7 +1240,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("min")
@@ -1250,8 +1254,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 } else setFirstInputValue("1")
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MIN</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MIN</Typography>
+              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>MIN</Typography>
+              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>MIN</Typography>
             </Button>
             <Button
               variant="contained"
@@ -1262,15 +1266,15 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("half")
                 setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>HALF</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>HALF</Typography>
+              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>HALF</Typography>
+              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>HALF</Typography>
             </Button>
             <Button
               variant="contained"
@@ -1281,15 +1285,15 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("max")
                 setFirstInputValue(Number(getPrimaryBalance()).toString())
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MAX</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MAX</Typography>
+              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>MAX</Typography>
+              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>MAX</Typography>
             </Button>
           </Stack>
           <Typography variant="subtitle2" color="text.secondary">
@@ -1478,10 +1482,10 @@ export default function Swap({ selectedIndex }: SwapProps) {
               fromTokenAllowance.data,
               getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
             ) < Number(firstInputValue) &&
-                !isWETH(
-                  swapFromToken.tokenAddresses?.[chain]?.[network]?.token
-                    ?.address as Address
-                ) ? (
+              !isWETH(
+                swapFromToken.tokenAddresses?.[chain]?.[network]?.token
+                  ?.address as Address
+              ) ? (
               <Button
                 fullWidth
                 variant="contained"
