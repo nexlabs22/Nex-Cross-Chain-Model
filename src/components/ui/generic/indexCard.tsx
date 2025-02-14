@@ -126,7 +126,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
                 sx={{
                   backgroundColor: theme.palette.info.main,
                   borderRadius: 30,
-                  color: theme.palette.text.primary,
+                  color: theme.palette.background.default,
                   textTransform: "none",
                 }}
               >
@@ -147,7 +147,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
                 sx={{
                   backgroundColor: theme.palette.info.main,
                   borderRadius: 30,
-                  color: theme.palette.text.primary,
+                  color: theme.palette.background.default,
                   textTransform: "none",
                 }}
               >
