@@ -3,6 +3,7 @@ node_modules
 deployments.md
 broadcast/
 mainnetDeployments.md
+mainnetDeploymentForCR5.md
 
 # Hardhat files
 /cache
