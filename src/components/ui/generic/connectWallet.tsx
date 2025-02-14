@@ -24,6 +24,9 @@ const ConnectWallet = () => {
                     fontWeight: '500 !important',
                     textTransform: 'none !important',
                     display: { xs: "none", lg: "block" },
+                },
+                '& .tw-connected-wallet': {
+                    display: {xs: 'none', lg: 'block'}
                 }
             }}>
                 <ConnectButton
