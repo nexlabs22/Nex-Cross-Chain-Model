@@ -17,6 +17,7 @@ export type MongoDb = {
   volume?: number
   marketCap?: number
   activeAddressCount?: number
+  fullyDilutedValuation?: number
 }
 
 export type aggregateType = {

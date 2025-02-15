@@ -29,6 +29,9 @@ export const connectToMongoDbDocument = async (
   collection: Collection<AssetOverviewDocument>
 }> => {
   const url = process.env.MONGO_PUBLIC_URL || ""
+  if (!url || url === "") {
+    throw new Error("MONGO_PUBLIC_URL is not set")
+  }
   const client = new MongoClient(url, {
     serverSelectionTimeoutMS: 30000,
   })

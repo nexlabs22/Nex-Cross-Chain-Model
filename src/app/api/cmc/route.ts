@@ -5,12 +5,11 @@ import {
 } from "@/utils/convertToMongo/parse"
 import { AssetOverviewDocument } from "@/types/indexTypes"
 import { connectToMongoDbDocument } from "@/utils/connectToMongoDb"
-import { MongoClient } from "mongodb"
-import { fetchCmcListings, fetchCmcMetadata } from "./index"
+import { fetchCmcListings, fetchSplittedCmcMetadata } from "./index"
 
 const fetchCoinMarketCapData = async () => {
   const idList = await fetchCmcListings()
-  const metaData = await fetchCmcMetadata({ idList })
+  const metaData = await fetchSplittedCmcMetadata({ idList })
   const coinMarketCapData = Object.entries(metaData).map(([key, value]) => ({
     id: key,
     ...(value as object),
@@ -19,12 +18,10 @@ const fetchCoinMarketCapData = async () => {
 }
 
 export async function GET() {
-  let client: MongoClient | null = null
   try {
-    const { collection, client: localClient } = await connectToMongoDbDocument(
+    const { collection, client } = await connectToMongoDbDocument(
       "AssetOverview"
     )
-    client = localClient
 
     const coinMarketCapData = await fetchCoinMarketCapData()
     const mongoData: (AssetOverviewDocument | null)[] = []
@@ -43,10 +40,10 @@ export async function GET() {
       mongoData.push(storeObject)
     }
     await uploadToMongoDocument(mongoData, collection)
+    await client.close()
 
     return NextResponse.json({
-      message: "Assets updated successfully",
-      // data: coinMarketCapData.slice(0, 5),
+      message: "CMC Assets updated successfully",
     })
   } catch (error) {
     console.error("Error in asset update process:", error)
@@ -54,9 +51,5 @@ export async function GET() {
       { error: "Internal Server Error" },
       { status: 500 }
     )
-  } finally {
-    if (client) {
-      await client.close()
-    }
   }
 }
