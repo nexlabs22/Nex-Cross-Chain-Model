@@ -134,7 +134,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
               </Button>
             </Link>
             <Link
-              href={`/index-details?index=${index.symbol}`}
+              href={`catalogue/index-details?index=${index.symbol}`}
               style={{
                 textDecoration: "none",
                 width: "fit-content",
