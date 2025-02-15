@@ -150,6 +150,9 @@ export type AssetOverviewDocument = {
   logo_url?: string
   ticker: string
   coinmarketcap?: object
+  coingecko?: {
+    id: string
+  }
 }
 
 export type DinariAssetDetails = {

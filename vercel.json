@@ -1,8 +1,16 @@
 {
   "crons": [
     {
-      "path": "/api/fetch-assets",
+      "path": "/api/cmc",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/coingecko",
+      "schedule": "15 0 * * *"
+    },
+    {
+      "path": "/api/coingecko/fetch-daily",
+      "schedule": "30 0 * * *"
     }
   ]
 }

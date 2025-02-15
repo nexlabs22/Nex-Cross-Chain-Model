@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server"
+
 const COINMARKETCAP_API_URL =
   "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
 
@@ -9,7 +11,8 @@ if (!COINMARKETCAP_KEY) {
 
 export const fetchCmcListings = async () => {
   try {
-    const response = await fetch(`${COINMARKETCAP_API_URL}?limit=1000`, {
+    const response = await fetch(`${COINMARKETCAP_API_URL}?limit=5000`, {
+      cache: "no-cache",
       headers: {
         "X-CMC_PRO_API_KEY": COINMARKETCAP_KEY,
       },
@@ -25,7 +28,9 @@ export const fetchCmcListings = async () => {
 
     return idList
   } catch (error) {
-    console.error("Failed to fetch CoinMarketCap data:", error)
-    throw error
+    return NextResponse.json({
+      message: "Failed to fetch CoinMarketCap data",
+      error: error,
+    })
   }
 }
