@@ -20,6 +20,8 @@ export type MongoDb = {
   fullyDilutedValuation?: number
   chainTvls?: Record<string, number>
   tvl?: number
+  cmdId?: string
+  geckoId?: string
 }
 
 export type aggregateType = {

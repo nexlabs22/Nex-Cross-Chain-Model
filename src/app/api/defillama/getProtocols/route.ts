@@ -5,7 +5,7 @@ import { MongoDb } from "@/types/mongoDb"
 import { AssetCategory } from "@/types/indexTypes"
 const url = "https://api.llama.fi/protocols"
 
-interface Protocol {
+export interface Protocol {
   cmcId?: string
   name: string
   gecko_id?: string
@@ -15,6 +15,8 @@ interface Protocol {
   chainTvls?: Record<string, number>
   parentProtocol?: string
   url?: string
+  slug?: string
+  address?: string
 }
 
 export async function GET() {
