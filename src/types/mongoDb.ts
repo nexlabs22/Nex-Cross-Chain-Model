@@ -18,10 +18,12 @@ export type MongoDb = {
   marketCap?: number
   activeAddressCount?: number
   fullyDilutedValuation?: number
+  chainTvls?: Record<string, number>
+  tvl?: number
 }
 
 export type aggregateType = {
-  $match?: {[key:string]: number|string},
-  $sort?: {[key:string]: Sort},
+  $match?: { [key: string]: number | string }
+  $sort?: { [key: string]: Sort }
   $limit?: number
 }

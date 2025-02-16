@@ -9,6 +9,10 @@
       "schedule": "15 0 * * *"
     },
     {
+      "path": "/api/defillama/getProtocols",
+      "schedule": "0 20 * * *"
+    },
+    {
       "path": "/api/coingecko/fetch-daily",
       "schedule": "30 0 * * *"
     }
