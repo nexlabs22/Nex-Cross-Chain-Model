@@ -196,8 +196,8 @@ const IndexCard = ({ index }: IndexCardProps) => {
             monthPrices.length > 0 ? (
               <GenericAreaLineChart label={index.symbol} chartData={mongoDataToChartData(monthPrices)} />
             ) : (
-              <Stack width={'100%'} height={'100%'} padding={2} alignItems={'center'} justifyContent={'center'}>
-                <Skeleton variant="rectangular" width={'100%'} height={'100%'} sx={{ borderRadius: 2 }} />
+              <Stack width={'100%'} height={'100%'} padding={2} alignItems={'center'} justifyContent={'end'}>
+                <Skeleton variant="rectangular" width={'100%'} height={'70%'} sx={{ borderRadius: 2 }} />
               </Stack>
             )
           }
