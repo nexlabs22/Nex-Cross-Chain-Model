@@ -23,8 +23,8 @@ contract DeployAllContractsScript is Script, Test, PriceOracleByteCode {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        string memory targetChain = "sepolia";
-        // string memory targetChain = "arbitrum_mainnet";
+        // string memory targetChain = "sepolia";
+        string memory targetChain = "arbitrum_mainnet";
 
         address indexTokenProxy = _deployIndexToken(targetChain);
 
@@ -81,8 +81,8 @@ contract DeployAllContractsScript is Script, Test, PriceOracleByteCode {
             revert("Unsupported target chain for IndexToken");
         }
 
-        string memory tokenName = "Anti Inflation Index";
-        string memory tokenSymbol = "ANFI";
+        string memory tokenName = "CRYPTO5";
+        string memory tokenSymbol = "CR5";
 
         ProxyAdmin proxyAdmin = new ProxyAdmin();
         IndexToken indexTokenImplementation = new IndexToken();
@@ -171,10 +171,10 @@ contract DeployAllContractsScript is Script, Test, PriceOracleByteCode {
             chainlinkToken = vm.envAddress("ARBITRUM_CHAINLINK_TOKEN_ADDRESS");
             toUsdPriceFeed = vm.envAddress("ARBITRUM_TO_USD_PRICE_FEED");
             wethAddress = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-            swapRouterV3 = vm.envAddress("ARBITRUM_ROUTER_V3_ADDRESS");
-            factoryV3 = vm.envAddress("ARBITRUM_FACTORY_V3_ADDRESS");
-            swapRouterV2 = vm.envAddress("ARBITRUM_ROUTER_V2_ADDRESS");
-            factoryV2 = vm.envAddress("ARBITRUM_FACTORY_V2_ADDRESS");
+            swapRouterV3 = vm.envAddress("ARBITRUM_PANCAKESWAP_ROUTER_V3_ADDRESS");
+            factoryV3 = vm.envAddress("ARBITRUM_PANCAKESWAP_FACTORY_V3_ADDRESS");
+            swapRouterV2 = vm.envAddress("ARBITRUM_PANCAKESWAP_ROUTER_V2_ADDRESS");
+            factoryV2 = vm.envAddress("ARBITRUM_PANCAKESWAP_FACTORY_V2_ADDRESS");
         } else {
             revert("Unsupported target chain for IndexFactoryStorage");
         }

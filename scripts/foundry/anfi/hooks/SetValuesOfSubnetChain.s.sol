@@ -13,10 +13,10 @@ contract CombinedSetCrossChainValues is Script, Test {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // string memory targetChain = "arbitrum_sepolia";
-        string memory targetChain = "ethereum_mainnet";
+        string memory targetChain = "arbitrum_sepolia";
+        // string memory targetChain = "ethereum_mainnet";
 
-        // _setCrossChainFactoryValues(targetChain);
+        _setCrossChainFactoryValues(targetChain);
         _setVaultValues(targetChain);
 
         vm.stopBroadcast();

@@ -48,19 +48,19 @@ contract CombinedSetValuesScript is Script, Test {
         // string memory targetChain = "sepolia";
         string memory targetChain = "arbitrum_mainnet";
 
-        // 1. setIndexFactoryStorageValues
-        _setIndexFactoryStorageValues(targetChain);
+        // // 1. setIndexFactoryStorageValues
+        // _setIndexFactoryStorageValues(targetChain);
 
-        // 2. setIndexTokenValues
-        _setIndexTokenValues(targetChain);
+        // // 2. setIndexTokenValues
+        // _setIndexTokenValues(targetChain);
 
         // 3. setMockFillAssetsList
         _setMockFillAssetsList(targetChain);
 
-        // 4. setFunctionsOracle
-        _setFunctionsOracle(targetChain);
+        // // 4. setFunctionsOracle
+        // _setFunctionsOracle(targetChain);
 
-        _setVault(targetChain);
+        // _setVault(targetChain);
 
         vm.stopBroadcast();
 
@@ -235,8 +235,8 @@ contract CombinedSetValuesScript is Script, Test {
         assetList[1] = xautEthereumAddress; // XAUT
 
         uint256[] memory marketShares = new uint256[](2);
-        marketShares[0] = 70000000000000000000;
-        marketShares[1] = 30000000000000000000;
+        marketShares[0] = 23000000000000000000;
+        marketShares[1] = 77000000000000000000;
 
         uint64[] memory chainSelectors = new uint64[](2);
         chainSelectors[0] = mainChainSelector;
@@ -280,8 +280,8 @@ contract CombinedSetValuesScript is Script, Test {
         // assetList[1] = 0x8B0D01137979e409Bba15098aA5665c647774003; // arbSepoliaXaut
 
         uint256[] memory marketShares = new uint256[](2);
-        marketShares[0] = 70000000000000000000;
-        marketShares[1] = 30000000000000000000;
+        marketShares[0] = 30000000000000000000;
+        marketShares[1] = 70000000000000000000;
 
         uint24[] memory feesData = new uint24[](1);
         feesData[0] = 3000;

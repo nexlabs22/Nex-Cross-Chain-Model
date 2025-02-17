@@ -267,15 +267,18 @@ contract CrossChainIndexFactory is
             uint256 wethToSwap = (vars.wethAmount * percentages[i]) / extraValues[0];
             (address[] memory fromETHPath, uint24[] memory fromETHFees) = PathHelpers.decodePathBytes(targetPaths[i]);
             uint256 oldTokenValue;
+            uint256 newTokenValue;
             if (targetAddresses[i] == address(vars.weth)) {
                 oldTokenValue = IERC20(targetAddresses[i]).balanceOf(address(vars.vault));
                 vars.weth.transfer(address(vars.vault), wethToSwap);
+                newTokenValue = IERC20(targetAddresses[i]).balanceOf(address(vars.vault));
             } else {
                 oldTokenValue = factoryStorage.getTokenCurrentValue(targetAddresses[i], fromETHPath, fromETHFees);
                 swap(fromETHPath, fromETHFees, wethToSwap, address(vars.vault));
+                newTokenValue = factoryStorage.getTokenCurrentValue(targetAddresses[i], fromETHPath, fromETHFees);
             }
 
-            uint256 newTokenValue = factoryStorage.getTokenCurrentValue(targetAddresses[i], fromETHPath, fromETHFees);
+            // uint256 newTokenValue = factoryStorage.getTokenCurrentValue(targetAddresses[i], fromETHPath, fromETHFees);
 
             vars.oldTokenValues[i] = factoryStorage.convertEthToUsd(oldTokenValue);
             vars.newTokenValues[i] = factoryStorage.convertEthToUsd(newTokenValue);
@@ -293,7 +296,7 @@ contract CrossChainIndexFactory is
         );
 
         // bytes32 messageId = sendMessage(
-        //     16015286601757825753, 0x814Ece3dD68568014FA421e166C65097A5dD3d21, vars.data, MessageSender.PayFeesIn.LINK
+        //     4949039107694359620, 0xe7CDe099c0faFD2B9BbeB07FeD167737e8bDfd78, vars.data, MessageSender.PayFeesIn.LINK
         // );
         bytes32 messageId = sendMessage(sourceChainSelector, address(sender), vars.data, MessageSender.PayFeesIn.LINK);
         // issuanceMessageIdByNonce[nonce] = messageId;

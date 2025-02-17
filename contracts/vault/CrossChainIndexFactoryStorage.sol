@@ -36,26 +36,20 @@ contract CrossChainIndexFactoryStorage is
     ProposableOwnableUpgradeable,
     PausableUpgradeable
 {
-    
-
-   
-
     address public i_router;
     address public i_link;
     uint16 public i_maxTokensLength;
     uint16 public constant MAX_TOKENS_LENGTH = 5;
 
     address public crossChainFactory;
-    
+
     // IndexToken public indexToken;
     Vault public vault;
 
     uint64 public currentChainSelector;
 
     address public priceOracle;
-    
 
-    
     AggregatorV3Interface public toUsdPriceFeed;
 
     ISwapRouter public swapRouterV3;
@@ -75,10 +69,8 @@ contract CrossChainIndexFactoryStorage is
 
     mapping(address => mapping(uint64 => bool)) public verifiedFactory;
 
-    
-
-    mapping(uint => bytes32) public redemptionMessageIdByNonce;
-    mapping(uint => bytes32) public issuanceMessageIdByNonce;
+    mapping(uint256 => bytes32) public redemptionMessageIdByNonce;
+    mapping(uint256 => bytes32) public issuanceMessageIdByNonce;
 
     modifier onlyFactory() {
         require(msg.sender == crossChainFactory, "Only factory can call this function");
@@ -134,24 +126,22 @@ contract CrossChainIndexFactoryStorage is
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
     }
 
-    function _toWei(
-        int256 _amount,
-        uint8 _amountDecimals,
-        uint8 _chainDecimals
-    ) private pure returns (int256) {
-        if (_chainDecimals > _amountDecimals)
+    function _toWei(int256 _amount, uint8 _amountDecimals, uint8 _chainDecimals) private pure returns (int256) {
+        if (_chainDecimals > _amountDecimals) {
             return _amount * int256(10 ** (_chainDecimals - _amountDecimals));
-        else return _amount * int256(10 ** (_amountDecimals - _chainDecimals));
+        } else {
+            return _amount * int256(10 ** (_amountDecimals - _chainDecimals));
+        }
     }
 
     function priceInWei() public view returns (uint256) {
-        (, int price, , , ) = toUsdPriceFeed.latestRoundData();
+        (, int256 price,,,) = toUsdPriceFeed.latestRoundData();
         uint8 priceFeedDecimals = toUsdPriceFeed.decimals();
         price = _toWei(price, priceFeedDecimals, 18);
         return uint256(price);
     }
 
-    function convertEthToUsd(uint _ethAmount) public view returns (uint256) {
+    function convertEthToUsd(uint256 _ethAmount) public view returns (uint256) {
         return (_ethAmount * priceInWei()) / 1e18;
     }
 
@@ -160,10 +150,7 @@ contract CrossChainIndexFactoryStorage is
     }
 
     function setPriceOracle(address _priceOracle) external onlyOwner {
-        require(
-            _priceOracle != address(0),
-            "Price oracle address cannot be zero address"
-        );
+        require(_priceOracle != address(0), "Price oracle address cannot be zero address");
         priceOracle = _priceOracle;
     }
 
@@ -180,36 +167,30 @@ contract CrossChainIndexFactoryStorage is
         crossChainToken[_chainSelector] = _crossChainToken;
         fromETHPath[_crossChainToken] = _fromETHPath;
         fromETHFees[_crossChainToken] = _fromETHFees;
-        toETHPath[_crossChainToken] = PathHelpers.reverseAddressArray(
-            _fromETHPath
-        );
-        toETHFees[_crossChainToken] = PathHelpers.reverseUint24Array(
-            _fromETHFees
-        );
-
+        toETHPath[_crossChainToken] = PathHelpers.reverseAddressArray(_fromETHPath);
+        toETHFees[_crossChainToken] = PathHelpers.reverseUint24Array(_fromETHFees);
     }
 
     function setVault(address payable _vault) public onlyOwner {
         vault = Vault(_vault);
     }
 
-    function setVerifiedFactory(
-        address _factory,
-        uint64 _chainSelector,
-        bool _verified
-    ) public onlyOwner {
+    function setVerifiedFactory(address _factory, uint64 _chainSelector, bool _verified) public onlyOwner {
         verifiedFactory[_factory][_chainSelector] = _verified;
     }
 
-    function setIssuanceMessageIdByNonce(uint _nonce, bytes32 _messageId) public onlyFactory {
+    function setIssuanceMessageIdByNonce(uint256 _nonce, bytes32 _messageId) public onlyFactory {
         issuanceMessageIdByNonce[_nonce] = _messageId;
     }
 
-    function setRedemptionMessageIdByNonce(uint _nonce, bytes32 _messageId) public onlyFactory {
+    function setRedemptionMessageIdByNonce(uint256 _nonce, bytes32 _messageId) public onlyFactory {
         redemptionMessageIdByNonce[_nonce] = _messageId;
     }
 
-    
+    function setToUsdPriceFeed(address _newToUsdPriceFeed) public onlyOwner {
+        toUsdPriceFeed = AggregatorV3Interface(_newToUsdPriceFeed);
+    }
+
     function getAllFromETHPath(address _tokenAddress) public view returns (address[] memory) {
         return fromETHPath[_tokenAddress];
     }
@@ -226,78 +207,53 @@ contract CrossChainIndexFactoryStorage is
         return toETHFees[_tokenAddress];
     }
 
-
-
-
-    function getTokenCurrentValue(address _tokenAddress, address[] memory _fromETHPath, uint24[] memory _fromETHFees) public view returns (uint) {
-        uint tokenValue = getAmountOut(
-                    PathHelpers.reverseAddressArray(_fromETHPath), // toETHPath
-                    PathHelpers.reverseUint24Array(_fromETHFees), // toETHFees
-                    IERC20(_tokenAddress).balanceOf(address(vault))
-                );
+    function getTokenCurrentValue(address _tokenAddress, address[] memory _fromETHPath, uint24[] memory _fromETHFees)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 tokenValue = getAmountOut(
+            PathHelpers.reverseAddressArray(_fromETHPath), // toETHPath
+            PathHelpers.reverseUint24Array(_fromETHFees), // toETHFees
+            IERC20(_tokenAddress).balanceOf(address(vault))
+        );
         return tokenValue;
     }
 
-    function getAmountOut(
-        address[] memory path,
-        uint24[] memory fees,
-        uint amountIn
-    ) public view returns (uint finalAmountOut) {
+    function getAmountOut(address[] memory path, uint24[] memory fees, uint256 amountIn)
+        public
+        view
+        returns (uint256 finalAmountOut)
+    {
         if (amountIn > 0) {
             if (fees.length > 0) {
-                finalAmountOut = estimateAmountOutWithPath(
-                    path,
-                    fees,
-                    amountIn
-                );
+                finalAmountOut = estimateAmountOutWithPath(path, fees, amountIn);
             } else {
-                uint[] memory v2amountOut = swapRouterV2.getAmountsOut(
-                    amountIn,
-                    path
-                );
+                uint256[] memory v2amountOut = swapRouterV2.getAmountsOut(amountIn, path);
                 finalAmountOut = v2amountOut[v2amountOut.length - 1];
             }
         }
     }
 
-    function estimateAmountOut(
-        address tokenIn,
-        address tokenOut,
-        uint128 amountIn,
-        uint24 fee
-    ) public view returns (uint amountOut) {
-        amountOut = IPriceOracle(priceOracle).estimateAmountOut(
-            address(factoryV3),
-            tokenIn,
-            tokenOut,
-            amountIn,
-            fee
-        );
+    function estimateAmountOut(address tokenIn, address tokenOut, uint128 amountIn, uint24 fee)
+        public
+        view
+        returns (uint256 amountOut)
+    {
+        amountOut = IPriceOracle(priceOracle).estimateAmountOut(address(factoryV3), tokenIn, tokenOut, amountIn, fee);
     }
 
-    function estimateAmountOutWithPath(
-        address[] memory path,
-        uint24[] memory fees,
-        uint amountIn
-    ) public view returns (uint amountOut) {
-        uint lastAmount = amountIn;
-        for(uint i = 0; i < path.length - 1; i++) {
+    function estimateAmountOutWithPath(address[] memory path, uint24[] memory fees, uint256 amountIn)
+        public
+        view
+        returns (uint256 amountOut)
+    {
+        uint256 lastAmount = amountIn;
+        for (uint256 i = 0; i < path.length - 1; i++) {
             lastAmount = IPriceOracle(priceOracle).estimateAmountOut(
-                address(factoryV3),
-                path[i],
-                path[i+1],
-                uint128(lastAmount),
-                fees[i]
+                address(factoryV3), path[i], path[i + 1], uint128(lastAmount), fees[i]
             );
         }
         amountOut = lastAmount;
     }
-
-    
-
-
-
-    
-    
-
 }
