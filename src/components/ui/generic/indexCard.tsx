@@ -74,42 +74,63 @@ const IndexCard = ({ index }: IndexCardProps) => {
         </Stack>
       </Stack>
       <Stack gap={1} marginTop={3}>
-        <Typography variant={"h3"}>{price}</Typography>
+        {
+          price && price.toString() != "N/A" && <Typography variant={"h3"}>{price}</Typography>
+        }
+        {
+          !price || price.toString() == "N/A" && (
+            <Skeleton variant="text" width={100} height={24} />
+          )
+        }
         <Stack gap={0} marginBottom={{ xs: 16, lg: 12 }}>
           <Stack direction={"row"} gap={1} alignItems={"center"}>
-            <Box
-              borderRadius={"50%"}
-              sx={{
-                backgroundColor: change24hValue && change24hValue > 0 ? theme.palette.success.main : theme.palette.error.main,
-                width: 24,
-                height: 24,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {!!change24hValue && change24hValue > 0 ? (
-                <MdOutlineArrowUpward
-                  size={16}
-                  color={theme.palette.info.main}
-                />
-              ) : (
-                <MdOutlineArrowDownward
-                  size={16}
-                  color={theme.palette.info.main}
-                />
-              )}
-            </Box>
-            <Typography
-              variant={"h6"}
-              color={
-                change24hValue && change24hValue > 0
-                  ? "success.main"
-                  : "error.main"
-              }
-            >
-              {formatToViewNumber({ value: change24hValue, returnType: 'currency' })} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
-            </Typography>
+            {
+              !change24hValue && (
+                <Skeleton variant="circular" width={24} height={24} />
+              )
+            }
+            {
+              change24hValue && <Box
+                borderRadius={"50%"}
+                sx={{
+                  backgroundColor: change24hValue && change24hValue > 0 ? theme.palette.success.main : theme.palette.error.main,
+                  width: 24,
+                  height: 24,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {change24hValue > 0 ? (
+                  <MdOutlineArrowUpward
+                    size={16}
+                    color={theme.palette.info.main}
+                  />
+                ) : (
+                  <MdOutlineArrowDownward
+                    size={16}
+                    color={theme.palette.info.main}
+                  />
+                )}
+              </Box>
+            }
+            {
+              !change24hValue && (
+                <Skeleton variant="text" width={100} height={24} />
+              )
+            }
+            {
+              change24hValue && <Typography
+                variant={"h6"}
+                color={
+                  change24hValue && change24hValue > 0
+                    ? "success.main"
+                    : "error.main"
+                }
+              >
+                {formatToViewNumber({ value: change24hValue, returnType: 'currency' })} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
+              </Typography>
+            }
           </Stack>
           <Stack direction='row' alignItems='end' gap={0.5} marginTop={2}>
             <Link
@@ -124,9 +145,9 @@ const IndexCard = ({ index }: IndexCardProps) => {
                 variant="contained"
                 size='large'
                 sx={{
-                  backgroundColor: theme.palette.info.main,
+                  backgroundColor: theme.palette.brand.nex1.main,
                   borderRadius: 30,
-                  color: theme.palette.background.default,
+                  color: theme.palette.info.main,
                   textTransform: "none",
                 }}
               >
@@ -145,9 +166,9 @@ const IndexCard = ({ index }: IndexCardProps) => {
                 variant="contained"
                 size='large'
                 sx={{
-                  backgroundColor: theme.palette.info.main,
+                  backgroundColor: theme.palette.brand.nex1.main,
                   borderRadius: 30,
-                  color: theme.palette.background.default,
+                  color: theme.palette.info.main,
                   textTransform: "none",
                 }}
               >

@@ -1,5 +1,8 @@
 import { tokenAddresses, poolAddresses } from "@/constants/contractAddresses"
-import { anfi, cr5, mag7, arb } from "@/assets/images"
+import anfi from '@/assets/images/anfi.webp'
+import cr5 from '@/assets/images/cr5.webp'
+import mag7 from '@/assets/images/mag7.webp'
+import arb from '@/assets/images/arb.webp'
 import {
   AllowedTickers,
   IndexCryptoAsset,
