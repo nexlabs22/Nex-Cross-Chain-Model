@@ -130,6 +130,10 @@ const GenericAreaLineChart = ({ label, chartData }: GenericAreaLineChartProps) =
         ]}
         leftAxis={null}
         bottomAxis={null}
+        axisHighlight={{
+          x: 'none',
+          y: 'none',
+        }}
         tooltip={{
           classes: {
             root: 'customTooltipRoot',
@@ -147,6 +151,7 @@ const GenericAreaLineChart = ({ label, chartData }: GenericAreaLineChartProps) =
         slotProps={{
           legend: { hidden: true },
           area: { begin: 'url(#colorUv)' },
+          
         }}
         margin={{
           left: 0,
