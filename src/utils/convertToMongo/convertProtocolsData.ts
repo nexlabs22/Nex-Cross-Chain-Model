@@ -1,14 +1,14 @@
 //import { Collection } from "mongodb"
 
-import { MongoDb } from "@/types/mongoDb"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { DailyAsset } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
 import {
   parseOHLC,
   convertUnixToDate,
   filterValues,
-  uploadToMongo,
+  uploadToDailyAssets,
 } from "./parse"
 
 const protocolsDataMap = {
@@ -191,7 +191,7 @@ const protocolsDataMap = {
 }
 
 const convertProtocolsData = async () => {
-  const { collection } = await connectToMongoDb("DailyAssets")
+  const { collection } = await DailyAssetsClient("DailyAssets")
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query(
@@ -199,7 +199,7 @@ const convertProtocolsData = async () => {
   )
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parsedData: (MongoDb | null)[] = data.rows.flatMap((row: any) => {
+  const parsedData: (DailyAsset | null)[] = data.rows.flatMap((row: any) => {
     const timestamp = Number(row.stampsec) / 1000
     const date = convertUnixToDate(timestamp)
     // map over each column in the row that is not the stampsec or date column
@@ -212,7 +212,7 @@ const convertProtocolsData = async () => {
           protocolsDataMap[key as keyof typeof protocolsDataMap]?.name
         const ohlcData = parseOHLC(row[key])
 
-        const entry: MongoDb = {
+        const entry: DailyAsset = {
           ticker,
           name,
           date,
@@ -233,13 +233,13 @@ const convertProtocolsData = async () => {
           filteredEntry.type &&
           (filteredEntry.price || filteredEntry.close)
         ) {
-          return filteredEntry as MongoDb
+          return filteredEntry as DailyAsset
         }
         return null
       })
   })
 
-  await uploadToMongo(parsedData, collection)
+  await uploadToDailyAssets(parsedData, collection)
 
   return parsedData
 }

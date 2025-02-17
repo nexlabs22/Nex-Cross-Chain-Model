@@ -1,13 +1,13 @@
 //import { Collection } from "mongodb"
 
-import { MongoDb } from "@/types/mongoDb"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { DailyAsset } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
 import {
   convertUnixToDate,
   parseOHLC,
-  uploadToMongo,
+  uploadToDailyAssets,
   filterValues,
 } from "./parse"
 
@@ -409,7 +409,7 @@ const columnToNameAndtickerMap: {
 }
 
 const convertHistCompDataTable = async () => {
-  const { collection } = await connectToMongoDb("DailyAssets")
+  const { collection } = await DailyAssetsClient("DailyAssets")
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query(
@@ -417,7 +417,7 @@ const convertHistCompDataTable = async () => {
   )
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parsedData: (MongoDb | null)[] = data.rows.flatMap((row: any) => {
+  const parsedData: (DailyAsset | null)[] = data.rows.flatMap((row: any) => {
     const timestamp = Number(row.stampsec)
     const date = convertUnixToDate(timestamp)
 
@@ -428,7 +428,7 @@ const convertHistCompDataTable = async () => {
       const name = columnToNameAndtickerMap[column].name
       const type = columnToNameAndtickerMap[column].type
 
-      const entry: MongoDb = {
+      const entry: DailyAsset = {
         ticker,
         name,
         type,
@@ -445,13 +445,13 @@ const convertHistCompDataTable = async () => {
       const filteredEntry = filterValues(entry)
 
       if (filteredEntry.ticker && filteredEntry.date && filteredEntry.type) {
-        return filteredEntry as MongoDb
+        return filteredEntry as DailyAsset
       }
       return null
     })
   })
 
-  await uploadToMongo(parsedData, collection)
+  await uploadToDailyAssets(parsedData, collection)
 
   return parsedData
 }

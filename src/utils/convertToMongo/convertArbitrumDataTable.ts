@@ -1,14 +1,14 @@
 import { Collection } from "mongodb"
 
-import { MongoDb } from "@/types/mongoDb"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { DailyAsset } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
 
 import {
   parseCommaSeparated,
   convertUnixToDate,
-  uploadToMongo,
+  uploadToDailyAssets,
 } from "./parse"
 
 type ArbitrumData = {
@@ -1612,8 +1612,8 @@ const mapNameToTicker = {
 }
 
 const convertArbitrumDataTable = async () => {
-  const { collection }: { collection: Collection<MongoDb> } =
-    await connectToMongoDb("DailyAssets")
+  const { collection }: { collection: Collection<DailyAsset> } =
+    await DailyAssetsClient("DailyAssets")
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query("SELECT * FROM arbitrum_data")
@@ -1626,7 +1626,7 @@ const convertArbitrumDataTable = async () => {
     volume: parseCommaSeparated(row.volume),
   }))
 
-  const mongoDbData: MongoDb[] = []
+  const mongoDbData: DailyAsset[] = []
 
   for (const row of parsedData) {
     const { date, stampsec, active_add, volume } = row
@@ -1674,18 +1674,14 @@ const convertArbitrumDataTable = async () => {
 
   // console.log(mongoDbData, "mongoDbData")
 
-  await uploadToMongo(mongoDbData, collection)
+  await uploadToDailyAssets(mongoDbData, collection)
 
   // Now mongoDbData is an array of MongoDb objects with merged data and mapped tickers
   console.log("Data successfully processed and ready for MongoDB", mongoDbData)
 }
 
 export const getUniqueKeys = async () => {
-  /*const { collection }: { collection: Collection<MongoDb> } =
-    await connectToMongoDb("DailyAssets")*/
-
   const spotClient = await connectToSpotDb()
-
   const uniqueKeysSet = new Set<string>()
 
   const uniqueKeysData = await spotClient.query(

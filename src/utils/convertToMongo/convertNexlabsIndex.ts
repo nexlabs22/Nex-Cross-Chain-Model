@@ -1,8 +1,8 @@
-import { MongoDb } from "@/types/mongoDb"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { DailyAsset } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
-import { uploadToMongo, filterValues, convertUnixToDate } from "./parse"
+import { uploadToDailyAssets, filterValues, convertUnixToDate } from "./parse"
 
 const nexlabsIndexMap = {
   anfi: {
@@ -48,7 +48,7 @@ const nexlabsIndexMap = {
 }
 
 const convertNexlabsIndex = async () => {
-  const { collection } = await connectToMongoDb("DailyAssets")
+  const { collection } = await DailyAssetsClient("DailyAssets")
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query(
@@ -58,7 +58,7 @@ const convertNexlabsIndex = async () => {
   // console.log(data)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parsedData: (MongoDb | null)[] = data.rows.flatMap((row: any) => {
+  const parsedData: (DailyAsset | null)[] = data.rows.flatMap((row: any) => {
     // return a new document for each column in the row
     return Object.entries(row).map(([key, value]) => {
       if (key === "stampsec" || !value || key === "date") return null
@@ -68,7 +68,7 @@ const convertNexlabsIndex = async () => {
       const name = nexlabsIndexMap[key as keyof typeof nexlabsIndexMap].name
       const ticker = nexlabsIndexMap[key as keyof typeof nexlabsIndexMap].ticker
 
-      const entry: MongoDb = {
+      const entry: DailyAsset = {
         ticker,
         name,
         date,
@@ -85,13 +85,13 @@ const convertNexlabsIndex = async () => {
         filteredEntry.type &&
         filteredEntry.price
       ) {
-        return filteredEntry as MongoDb
+        return filteredEntry as DailyAsset
       }
       return null
     })
   })
 
-  await uploadToMongo(parsedData, collection)
+  await uploadToDailyAssets(parsedData, collection)
 }
 
 export default convertNexlabsIndex

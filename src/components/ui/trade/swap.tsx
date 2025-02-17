@@ -23,7 +23,7 @@ import {
   NexIndices,
   AllowedTickers,
 } from "@/types/indexTypes"
-import { PublicClient } from 'viem'
+import { PublicClient } from "viem"
 import { useDashboard } from "@/providers/DashboardProvider"
 import { sepoliaTokens } from "@/constants/tokens"
 import { getDecimals, isWETH } from "@/utils/general"
@@ -60,8 +60,7 @@ import { client } from "@/utils/thirdWebClient"
 import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
 import TokensModal from "./tokensModal"
-import { useTrade } from "@/providers/TradeProvider";
-
+import { useTrade } from "@/providers/TradeProvider"
 
 interface SwapProps {
   side?: "buy" | "sell"
@@ -120,6 +119,15 @@ export default function Swap({ selectedIndex }: SwapProps) {
     network
   ]?.storage?.address as Address
 
+  useEffect(() => {
+    const selectedCoin = selectedIndex?.symbol || "ANFI"
+    const coinDetails = [...nexTokens, ...sepoliaTokens].filter(
+      (coin: CryptoAsset) => {
+        return coin.symbol === selectedCoin
+      }
+    )
+    setSwapToToken(coinDetails[0])
+  }, [selectedIndex, nexTokens, setSwapToToken])
   useEffect(() => {
     const selectedCoin = selectedIndex?.symbol || 'ANFI'
     const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
@@ -235,20 +243,34 @@ export default function Swap({ selectedIndex }: SwapProps) {
   }, [])
 
   useEffect(() => {
-    const finalCoinList = network === 'Mainnet' ? coinsList : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
-    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => coin.hasOwnProperty('smartContractType'))
-    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => !coin.hasOwnProperty('smartContractType'))
+    const finalCoinList =
+      network === "Mainnet"
+        ? coinsList
+        : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
+    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) =>
+      coin.hasOwnProperty("smartContractType")
+    )
+    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter(
+      (coin) => !coin.hasOwnProperty("smartContractType")
+    )
 
     if (swapToToken.symbol === "MAG7" || swapFromToken.symbol === "MAG7") {
       const usdcDetails = OtherCoinList.filter((coin) => {
-        return coin.symbol === 'USDC'
+        return coin.symbol === "USDC"
       })[0]
       if (swapToToken.symbol === "MAG7") {
         setSwapFromToken(usdcDetails)
       }
     }
     setMergedCoinList([OtherCoinList, OurIndexCoinList])
-  }, [network, swapToToken.symbol, swapFromToken.symbol, coinsList, nexTokens])
+  }, [
+    network,
+    swapToToken.symbol,
+    swapFromToken.symbol,
+    coinsList,
+    nexTokens,
+    setSwapFromToken,
+  ])
 
   function Switching() {
     const switchReserve = swapFromToken
@@ -413,7 +435,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
   const fromTokenAllowance = useReadContract(allowance, {
     contract: fromTokenContract,
     owner: userAddress as Address,
-    spender: swapToToken.tokenAddresses?.[chain]?.[network]?.factory?.address as Address
+    spender: swapToToken.tokenAddresses?.[chain]?.[network]?.factory
+      ?.address as Address,
   }) as thirdwebReadContract
 
   const approveHook = useSendTransaction()
@@ -442,7 +465,9 @@ export default function Swap({ selectedIndex }: SwapProps) {
       isIndexCryptoAsset(swapToToken) &&
       swapToToken?.smartContractType === "stocks"
     ) {
-      const feeAmountBigNumber = (await (rpcClient as PublicClient).readContract({
+      const feeAmountBigNumber = (await (
+        rpcClient as PublicClient
+      ).readContract({
         address: tokenAddresses.MAG7?.[chain]?.[network]?.storage
           ?.address as Address,
         abi: stockFactoryStorageABI,
@@ -583,18 +608,14 @@ export default function Swap({ selectedIndex }: SwapProps) {
         })
 
         mintRequestHook.mutate(transaction)
-
-      } else if (swapToToken.smartContractType === 'stocks') {
+      } else if (swapToToken.smartContractType === "stocks") {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: 'function issuanceIndexTokens(uint256)',
           params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)).toString())],
         })
         mintRequestHook.mutate(transaction)
-
       } else {
-
-
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: resolveMethod('issuanceIndexTokens'),
@@ -603,7 +624,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
         mintRequestHook.mutate(transaction)
       }
     } catch (error) {
-      console.log('mint error', error)
+      console.log("mint error", error)
     }
   }
 
@@ -798,8 +819,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
     const currentPortfolioValue =
       (isIndexCryptoAsset(swapToToken) &&
         swapToToken?.smartContractType === "defi") ||
-        (isIndexCryptoAsset(swapFromToken) &&
-          swapFromToken?.smartContractType === "defi")
+      (isIndexCryptoAsset(swapFromToken) &&
+        swapFromToken?.smartContractType === "defi")
         ? defiPortfolioValue.data
         : (crossChainPortfolioValue.data as number)
     setCurrentPortfolioBalance(currentPortfolioValue as number)
@@ -1182,7 +1203,11 @@ export default function Swap({ selectedIndex }: SwapProps) {
           padding: 2,
         }}
       >
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Typography variant="h4" color="primary">
             {isIndexCryptoAsset(swapFromToken) ?
               `Sell ${swapFromToken.symbol} ` :
@@ -1231,7 +1256,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: { xs: 0, sm: 0.5 },
+                paddingX: { xs: 0, sm: 0.5 }
               }}
               onClick={() => {
                 setAutoValue("min")
@@ -1257,7 +1282,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: { xs: 0, sm: 0.5 },
+                paddingX: { xs: 0, sm: 0.5 }                
               }}
               onClick={() => {
                 setAutoValue("half")
@@ -1276,7 +1301,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: { xs: 0, sm: 0.5 },
+                paddingX: { xs: 0, sm: 0.5 }                
               }}
               onClick={() => {
                 setAutoValue("max")
@@ -1471,7 +1496,9 @@ export default function Swap({ selectedIndex }: SwapProps) {
           <>
             {weiToNum(
               fromTokenAllowance.data,
-              getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
+              getDecimals(
+                swapFromToken.tokenAddresses?.[chain]?.[network]?.token
+              )
             ) < Number(firstInputValue) &&
               !isWETH(
                 swapFromToken.tokenAddresses?.[chain]?.[network]?.token
@@ -1535,7 +1562,10 @@ export default function Swap({ selectedIndex }: SwapProps) {
       <TokensModal
         open={openTokensModal}
         onClose={handleCloseTokensModal}
-        onSelect={(selectedToken) => { console.log('Selected token:', selectedToken); handleCloseTokensModal(); }}
+        onSelect={(selectedToken) => {
+          console.log("Selected token:", selectedToken)
+          handleCloseTokensModal()
+        }}
       />
     </>
   )

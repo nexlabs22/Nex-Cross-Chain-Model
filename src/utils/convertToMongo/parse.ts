@@ -1,6 +1,6 @@
 import { Collection } from "mongodb"
-import { MongoDb } from "@/types/mongoDb"
-import { AssetOverviewDocument } from "@/types/indexTypes"
+import { DailyAsset } from "@/types/mongoDb"
+import { AssetOverviewDocument } from "@/types/mongoDb"
 
 export const parseCommaSeparated = (str: string) => {
   return str?.split(",").reduce((acc, item) => {
@@ -15,10 +15,10 @@ export const removeQuotes = (str: string): string => {
 }
 
 export const updateOrInsertDocument = async (
-  collection: Collection<MongoDb>,
+  collection: Collection<DailyAsset>,
   ticker: string,
   date: string,
-  updateData: Partial<MongoDb>
+  updateData: Partial<DailyAsset>
 ) => {
   if (!ticker || !date || Object.keys(updateData).length === 0) {
     console.warn(
@@ -68,7 +68,7 @@ export const parseOHLC = (data: string) => {
   return { open, high, low, close, volume }
 }
 
-export const uploadToMongoDocument = async (
+export const uploadToAssetOverview = async (
   data: (AssetOverviewDocument | null)[],
   collection: Collection<AssetOverviewDocument>
 ) => {
@@ -100,9 +100,43 @@ export const uploadToMongoDocument = async (
   return
 }
 
-export const uploadToMongo = async (
-  data: (MongoDb | null)[],
-  collection: Collection<MongoDb>
+export const uploadStocksToAssetOverview = async (
+  data: (AssetOverviewDocument | null)[],
+  collection: Collection<AssetOverviewDocument>
+) => {
+  const bulkOperations = []
+
+  console.log("Initiating upload to MongoDB Document")
+
+  for (const row of data) {
+    if (!row) continue
+
+    const address = row.address
+    const ticker = row.ticker
+
+    const bulkOperation = {
+      updateOne: {
+        filter: { ticker, address },
+        update: { $set: row },
+        upsert: true,
+      },
+    }
+    bulkOperations.push(bulkOperation)
+  }
+
+  if (bulkOperations.length > 0) {
+    await collection.bulkWrite(bulkOperations)
+  }
+
+  // Return a row count
+  const rowCount = await collection.countDocuments()
+  console.log(`Successfully uploaded bulk, new row count: ${rowCount}`)
+  return
+}
+
+export const uploadToDailyAssets = async (
+  data: (DailyAsset | null)[],
+  collection: Collection<DailyAsset>
 ) => {
   const bulkOperations = []
 
@@ -129,6 +163,38 @@ export const uploadToMongo = async (
   //return a row count
   const rowCount = await collection.countDocuments()
   console.log(`Successfully uploaded bulk, new row count: ${rowCount}`)
+  return
+}
+
+export const uploadStocksToDailyAssets = async (
+  data: (DailyAsset | null)[],
+  collection: Collection<DailyAsset>
+) => {
+  const bulkOperations = []
+
+  console.log("initiate upload stock to daily assets mongo")
+
+  for (const row of data) {
+    if (!row) continue
+    const { date, ticker, address, ...rest } = row
+    // concatentate the data
+    const bulkOperation = {
+      updateOne: {
+        filter: { date, ticker, address },
+        update: { $set: rest },
+        upsert: true,
+      },
+    }
+    bulkOperations.push(bulkOperation)
+  }
+
+  if (bulkOperations.length > 0) {
+    await collection.bulkWrite(bulkOperations)
+  }
+
+  //return a row count
+  const rowCount = await collection.countDocuments()
+  console.log(`Successfully uploaded stock to bulk, new row count: ${rowCount}`)
   return
 }
 
@@ -168,24 +234,27 @@ export const extractUniqueKeys = (
   return uniqueKeys
 }
 
-export const mongoDataToOHLC = (data: MongoDb[]) => {
+export const mongoDataToOHLC = (data: DailyAsset[]) => {
   return data.map((item) => {
     return {
       time: item.timestamp,
       open: item.open || item.price,
       high: item.high || item.price,
       low: item.low || item.price,
-      close: item.close || item.price
+      close: item.close || item.price,
     }
   })
 }
 
-export const mongoDataToChartData = (data: MongoDb[]): { xValue: number[], yValue: number[] } => {
+export const mongoDataToChartData = (
+  data: DailyAsset[]
+): { xValue: number[]; yValue: number[] } => {
   if (data.length > 1) {
-
-    const xValue = data.sort((a, b) => a.timestamp - b.timestamp).map((obj) => {
-      return Number(obj.price)
-    })
+    const xValue = data
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map((obj) => {
+        return Number(obj.price)
+      })
     const yValue = data.map((obj) => {
       return obj.timestamp
     })

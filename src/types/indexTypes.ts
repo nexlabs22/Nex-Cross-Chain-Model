@@ -1,7 +1,6 @@
 import { ReactElement } from "react"
-import { PublicClient } from 'viem'
-import { ObjectId } from "mongodb"
-import { MongoDb } from "./mongoDb"
+import { PublicClient } from "viem"
+import { DailyAsset } from "./mongoDb"
 
 export type Address = `0x${string}`
 
@@ -104,7 +103,7 @@ export type CryptoAsset = Asset & {
   tokenAddresses?: TokenAddressMap[AllowedTickers]
   poolAddresses?: PoolAddressMap
   smartContractInfo?: SmartContractInfo
-  historicalPrice?: MongoDb[]
+  historicalPrice?: DailyAsset[]
 }
 
 export type MarketInfo = {
@@ -136,21 +135,6 @@ export type IndexCryptoAsset = CryptoAsset & {
 export type thirdwebReadContract = {
   data: bigint
   refetch: () => void
-}
-
-export type AssetOverviewDocument = {
-  _id?: ObjectId
-  lastUpdate?: Date
-  tradeStatus?: "active" | "upcoming" | "inactive"
-  provider?: string[]
-  description?: string
-  name: string
-  cik?: string
-  isin?: string
-  cusip?: string
-  logo_url?: string
-  ticker: string
-  coinmarketcap?: object
 }
 
 export type DinariAssetDetails = {
@@ -193,4 +177,3 @@ export type RequestType = BaseTransaction & {
   inputToken?: Address
   outputToken?: Address
 }
-
