@@ -3,10 +3,10 @@ import {
   fetchDocumentsWithCoingeckoId,
   fetchDailyPricesSplitted,
 } from "./index"
-import { MongoDb } from "@/types/mongoDb"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { DailyAsset } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 import { AssetCategory } from "@/types/indexTypes"
-import { uploadToMongo } from "@/utils/convertToMongo/parse"
+import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
 
 interface DailyPrice {
   id: string
@@ -81,10 +81,10 @@ export async function GET() {
 }
 
 async function mapAndUploadDailyPrices(dailyPrices: DailyPrice[]) {
-  const { collection, client } = await connectToMongoDb("DailyAssets")
+  const { collection, client } = await DailyAssetsClient("DailyAssets")
 
   try {
-    const mongoDbData: MongoDb[] = dailyPrices.map((item) => ({
+    const mongoDbData: DailyAsset[] = dailyPrices.map((item) => ({
       ticker: item.symbol.toUpperCase(),
       name: item.name,
       type: AssetCategory.Cryptocurrency, // Assuming type is Cryptocurrency, adjust as needed
@@ -100,7 +100,7 @@ async function mapAndUploadDailyPrices(dailyPrices: DailyPrice[]) {
       fullyDilutedValuation: item.fully_diluted_valuation,
     }))
 
-    await uploadToMongo(mongoDbData, collection)
+    await uploadToDailyAssets(mongoDbData, collection)
     console.log("Data uploaded successfully")
   } catch (error) {
     console.error("Error uploading data:", error)

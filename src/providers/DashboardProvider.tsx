@@ -1,30 +1,30 @@
 "use client"
 
-import React, { createContext, useState, useEffect, useContext } from 'react'
-import axios from 'axios'
+import React, { createContext, useState, useEffect, useContext } from "react"
+import axios from "axios"
 
-import convertToUSDUni from '@/utils/convertToUSDUni'
-import { client } from '@/utils/thirdWebClient'
-import { getContract, readContract } from 'thirdweb'
-import { Address, IndexCryptoAsset } from '@/types/indexTypes'
-import { useGlobal } from './GlobalProvider'
+import convertToUSDUni from "@/utils/convertToUSDUni"
+import { client } from "@/utils/thirdWebClient"
+import { getContract, readContract } from "thirdweb"
+import { Address, IndexCryptoAsset } from "@/types/indexTypes"
+import { useGlobal } from "./GlobalProvider"
 
-import { get24hChange, getDecimals } from '@/utils/general'
-import { nexTokensArray } from '@/constants/indices'
-import { MongoDb } from '@/types/mongoDb'
+import { get24hChange, getDecimals } from "@/utils/general"
+import { nexTokensArray } from "@/constants/indices"
+import { DailyAsset } from "@/types/mongoDb"
 
 interface DashboardContextProps {
-	ethPriceUsd: number
-	nexTokens: IndexCryptoAsset[]
+  ethPriceUsd: number
+  nexTokens: IndexCryptoAsset[]
 }
 
-const DashboardContext = createContext<DashboardContextProps>(({
-	ethPriceUsd: 0,
-	nexTokens: nexTokensArray
-}))
+const DashboardContext = createContext<DashboardContextProps>({
+  ethPriceUsd: 0,
+  nexTokens: nexTokensArray,
+})
 
 const useDashboard = () => {
-	return useContext(DashboardContext)
+  return useContext(DashboardContext)
 }
 
 const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
@@ -32,24 +32,20 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   const { activeChainSetting, activeThirdWebChain } = useGlobal()
   const { chainName, network } = activeChainSetting
 
-	useEffect(() => {
-		async function getEthPrice() {
-			const wethPriceinUsd = await axios
-				.get('/api/getLatestPrice?ticker=ethereum&tableName=histcomp')
-				.then((res) => res.data.price)
-				.catch((err) => console.log(err))
+  useEffect(() => {
+    async function getEthPrice() {
+      const wethPriceinUsd = await axios
+        .get("/api/getLatestPrice?ticker=ethereum&tableName=histcomp")
+        .then((res) => res.data.price)
+        .catch((err) => console.log(err))
 
-			setEthPriceUsd(wethPriceinUsd)
-		}
+      setEthPriceUsd(wethPriceinUsd)
+    }
 
-		getEthPrice()
+    getEthPrice()
+  }, [])
 
-	}, [])
-
-
-
-	const [nexTokens, setNexTokens] = useState<IndexCryptoAsset[]>(nexTokensArray);
-
+  const [nexTokens, setNexTokens] = useState<IndexCryptoAsset[]>(nexTokensArray)
 
   useEffect(() => {
     async function fetchIndexesData() {
@@ -71,60 +67,69 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
 							activeChainSetting
 						);
 
-						// Fetch contract instance
-						const contract = getContract({
-							address: index as string,
-							chain: activeThirdWebChain, 
-							client,
-						});
+            // Fetch contract instance
+            const contract = getContract({
+              address: index as string,
+              chain: activeThirdWebChain,
+              client,
+            })
 
-						// Fetch fee rate
-						const feeRateRaw = await readContract({
-							contract,
-							method: "function feeRatePerDayScaled() returns (uint256)",
-							params: [],
-						});
-						const managementFee = feeRateRaw ? Number(feeRateRaw) / 1e18 : 0;
+            // Fetch fee rate
+            const feeRateRaw = await readContract({
+              contract,
+              method: "function feeRatePerDayScaled() returns (uint256)",
+              params: [],
+            })
+            const managementFee = feeRateRaw ? Number(feeRateRaw) / 1e18 : 0
 
-						// Fetch total supply
-						const totalSupplyRaw = await readContract({
-							contract,
-							method: "function totalSupply() returns (uint256)",
-							params: [],
-						});
-						const totalSupply = totalSupplyRaw ? Number(totalSupplyRaw) / 1e18 : 0;
-						const price = marketPriceUSD !== Infinity ? Number(marketPriceUSD) : 0
+            // Fetch total supply
+            const totalSupplyRaw = await readContract({
+              contract,
+              method: "function totalSupply() returns (uint256)",
+              params: [],
+            })
+            const totalSupply = totalSupplyRaw
+              ? Number(totalSupplyRaw) / 1e18
+              : 0
+            const price =
+              marketPriceUSD !== Infinity ? Number(marketPriceUSD) : 0
 
-						const filter = {
-							ticker: token.symbol
-						  }
-			
-						const historicalPrice: MongoDb[] = await axios.post(`/api/chart-data`,filter).then((res)=> res.data.data).catch(err=> console.log(err));
-						const { change24h, change24hFmt} = get24hChange(historicalPrice)
+            const filter = {
+              ticker: token.symbol,
+            }
 
-						// Construct the enhanced token object
-						return {
-							...token,
-							marketInfo: {
-								...token.marketInfo,																							
-								change24h,
-								change24hFmt,
-								marketCap: totalSupply * price
-							},
-							smartContractInfo:{
-								...token.smartContractInfo,
-								poolPrice: price,
-								managementFee,
-								totalSupply
-							},
-							historicalPrice
-						};
-					} catch (error) {
-						console.error(`Error fetching data for token: ${token.symbol}`, error);
-						return token;
-					}
-				})
-			);
+            const historicalPrice: DailyAsset[] = await axios
+              .post(`/api/chart-data`, filter)
+              .then((res) => res.data.data)
+              .catch((err) => console.log(err))
+            const { change24h, change24hFmt } = get24hChange(historicalPrice)
+
+            // Construct the enhanced token object
+            return {
+              ...token,
+              marketInfo: {
+                ...token.marketInfo,
+                change24h,
+                change24hFmt,
+                marketCap: totalSupply * price,
+              },
+              smartContractInfo: {
+                ...token.smartContractInfo,
+                poolPrice: price,
+                managementFee,
+                totalSupply,
+              },
+              historicalPrice,
+            }
+          } catch (error) {
+            console.error(
+              `Error fetching data for token: ${token.symbol}`,
+              error
+            )
+            return token
+          }
+        })
+      )
 
       setNexTokens(nexTokens)
     }
@@ -132,11 +137,15 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
     fetchIndexesData()
   }, [ethPriceUsd,chainName, network, activeChainSetting,activeThirdWebChain])
 
-	const contextValue = {
-		ethPriceUsd,
-		nexTokens,
-	}
-	return <DashboardContext.Provider value={contextValue}>{children}</DashboardContext.Provider>
+  const contextValue = {
+    ethPriceUsd,
+    nexTokens,
+  }
+  return (
+    <DashboardContext.Provider value={contextValue}>
+      {children}
+    </DashboardContext.Provider>
+  )
 }
 
 export { DashboardContext, DashboardProvider, useDashboard }

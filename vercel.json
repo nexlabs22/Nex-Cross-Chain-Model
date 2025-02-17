@@ -15,6 +15,14 @@
     {
       "path": "/api/coingecko/fetch-daily",
       "schedule": "30 0 * * *"
+    },
+    {
+      "path": "/api/dinari/get-stocks",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/dinari/get-stock-quotes",
+      "schedule": "0 10 * * *"
     }
   ]
 }

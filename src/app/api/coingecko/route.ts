@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { connectToMongoDbDocument } from "@/utils/connectToMongoDb"
-import { uploadToMongoDocument } from "@/utils/convertToMongo/parse"
+import { AssetOverviewClient } from "@/utils/MongoDbClient"
+import { uploadToAssetOverview } from "@/utils/convertToMongo/parse"
 import { MongoClient } from "mongodb"
 
 const fetchCoingeckoList = async () => {
@@ -17,7 +17,7 @@ const fetchCoingeckoList = async () => {
 export async function GET() {
   let client: MongoClient | null = null
   try {
-    const { collection, client: localClient } = await connectToMongoDbDocument(
+    const { collection, client: localClient } = await AssetOverviewClient(
       "AssetOverview"
     )
 
@@ -52,7 +52,7 @@ export async function GET() {
       }
     }
 
-    await uploadToMongoDocument(mongoData, collection)
+    await uploadToAssetOverview(mongoData, collection)
 
     return NextResponse.json({
       message: "Assets updated successfully",

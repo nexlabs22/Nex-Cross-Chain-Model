@@ -1,10 +1,8 @@
-import { connectToMongoDbDocument } from "@/utils/connectToMongoDb"
+import { AssetOverviewClient } from "@/utils/MongoDbClient"
 
 export async function fetchDocumentsWithCoingeckoId() {
   try {
-    const { collection, client } = await connectToMongoDbDocument(
-      "AssetOverview"
-    )
+    const { collection, client } = await AssetOverviewClient("AssetOverview")
 
     const query = { "coingecko.id": { $exists: true, $ne: null } }
     //coingecko rate limit is 5-15 calls per minute, with 250 requests per call

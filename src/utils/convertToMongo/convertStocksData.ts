@@ -1,12 +1,12 @@
 //import { Collection } from "mongodb"
 
-import { MongoDb } from "@/types/mongoDb"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { DailyAsset } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
 import {
   parseOHLC,
-  uploadToMongo,
+  uploadToDailyAssets,
   filterValues,
   convertUnixToDate,
 } from "./parse"
@@ -57,13 +57,13 @@ const stocks = {
 }
 
 export const convertStocksData = async () => {
-  const { collection } = await connectToMongoDb("DailyAssets")
+  const { collection } = await DailyAssetsClient("DailyAssets")
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query("SELECT * FROM stocks_data")
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parsedData: (MongoDb | null)[] = data.rows.flatMap((row: any) => {
+  const parsedData: (DailyAsset | null)[] = data.rows.flatMap((row: any) => {
     const timestamp = Number(row.stampsec)
     const date = convertUnixToDate(timestamp)
 
@@ -74,7 +74,7 @@ export const convertStocksData = async () => {
         const name = stocks[key as keyof typeof stocks]?.name
         const ohlcData = parseOHLC(row[key])
 
-        const entry: MongoDb = {
+        const entry: DailyAsset = {
           ticker,
           name,
           date,
@@ -95,13 +95,13 @@ export const convertStocksData = async () => {
           filteredEntry.type &&
           (filteredEntry.price || filteredEntry.close)
         ) {
-          return filteredEntry as MongoDb
+          return filteredEntry as DailyAsset
         }
         return null
       })
   })
 
-  await uploadToMongo(parsedData, collection)
+  await uploadToDailyAssets(parsedData, collection)
 
   return parsedData
 }

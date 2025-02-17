@@ -23,7 +23,7 @@ import {
   NexIndices,
   AllowedTickers,
 } from "@/types/indexTypes"
-import { PublicClient } from 'viem'
+import { PublicClient } from "viem"
 import { useDashboard } from "@/providers/DashboardProvider"
 import { sepoliaTokens } from "@/constants/tokens"
 import { getDecimals, isWETH } from "@/utils/general"
@@ -60,8 +60,7 @@ import { client } from "@/utils/thirdWebClient"
 import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
 import TokensModal from "./tokensModal"
-import { useTrade } from "@/providers/TradeProvider";
-
+import { useTrade } from "@/providers/TradeProvider"
 
 interface SwapProps {
   side?: "buy" | "sell"
@@ -75,11 +74,15 @@ function isIndexCryptoAsset(
 }
 
 export default function Swap({ selectedIndex }: SwapProps) {
-
-    const { activeChainSetting, userAddress, activeThirdWebChain } = useGlobal()
+  const {
+    activeChainSetting,
+    userAddress,
+    activeThirdWebChain,
+  } = useGlobal()
     const { network, chainName } = activeChainSetting
-    const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } = useTrade()
-    const { ethPriceUsd, nexTokens } = useDashboard()
+  const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } =
+    useTrade()
+  const { ethPriceUsd, nexTokens } = useDashboard()
 
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
     "auto"
@@ -117,13 +120,14 @@ export default function Swap({ selectedIndex }: SwapProps) {
   
 
   useEffect(() => {
-    const selectedCoin = selectedIndex?.symbol || 'ANFI'
-    const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
-      return coin.symbol === selectedCoin
-    })
+    const selectedCoin = selectedIndex?.symbol || "ANFI"
+    const coinDetails = [...nexTokens, ...sepoliaTokens].filter(
+      (coin: CryptoAsset) => {
+        return coin.symbol === selectedCoin
+      }
+    )
     setSwapToToken(coinDetails[0])
-  }, [selectedIndex, nexTokens])
-
+  }, [selectedIndex, nexTokens, setSwapToToken])
 
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
@@ -231,20 +235,34 @@ export default function Swap({ selectedIndex }: SwapProps) {
   }, [])
 
   useEffect(() => {
-    const finalCoinList = network === 'Mainnet' ? coinsList : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
-    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => coin.hasOwnProperty('smartContractType'))
-    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => !coin.hasOwnProperty('smartContractType'))
+    const finalCoinList =
+      network === "Mainnet"
+        ? coinsList
+        : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
+    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) =>
+      coin.hasOwnProperty("smartContractType")
+    )
+    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter(
+      (coin) => !coin.hasOwnProperty("smartContractType")
+    )
 
     if (swapToToken.symbol === "MAG7" || swapFromToken.symbol === "MAG7") {
       const usdcDetails = OtherCoinList.filter((coin) => {
-        return coin.symbol === 'USDC'
+        return coin.symbol === "USDC"
       })[0]
       if (swapToToken.symbol === "MAG7") {
         setSwapFromToken(usdcDetails)
       }
     }
     setMergedCoinList([OtherCoinList, OurIndexCoinList])
-  }, [network, swapToToken.symbol, swapFromToken.symbol, coinsList, nexTokens])
+  }, [
+    network,
+    swapToToken.symbol,
+    swapFromToken.symbol,
+    coinsList,
+    nexTokens,
+    setSwapFromToken,
+  ])
 
   function Switching() {
     const switchReserve = swapFromToken
@@ -580,18 +598,14 @@ export default function Swap({ selectedIndex }: SwapProps) {
         })
 
         mintRequestHook.mutate(transaction)
-
-      } else if (swapToToken.smartContractType === 'stocks') {
+      } else if (swapToToken.smartContractType === "stocks") {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: 'function issuanceIndexTokens(uint256)',
           params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString())],
       })
         mintRequestHook.mutate(transaction)
-
       } else {
-
-
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: resolveMethod('issuanceIndexTokens'),
@@ -600,7 +614,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
         mintRequestHook.mutate(transaction)
       }
     } catch (error) {
-      console.log('mint error', error)
+      console.log("mint error", error)
     }
   }
 
@@ -794,8 +808,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
     const currentPortfolioValue =
       (isIndexCryptoAsset(swapToToken) &&
         swapToToken?.smartContractType === "defi") ||
-        (isIndexCryptoAsset(swapFromToken) &&
-          swapFromToken?.smartContractType === "defi")
+      (isIndexCryptoAsset(swapFromToken) &&
+        swapFromToken?.smartContractType === "defi")
         ? defiPortfolioValue.data
         : (crossChainPortfolioValue.data as number)
     setCurrentPortfolioBalance(currentPortfolioValue as number)
@@ -1181,12 +1195,15 @@ export default function Swap({ selectedIndex }: SwapProps) {
           padding: 2,
         }}
       >
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Typography variant="h4" color="primary">
-            {isIndexCryptoAsset(swapFromToken) ?
-              `Sell ${swapFromToken.symbol} ` :
-              `Buy ${swapToToken.symbol} `
-            }
+            {isIndexCryptoAsset(swapFromToken)
+              ? `Sell ${swapFromToken.symbol} `
+              : `Buy ${swapToToken.symbol} `}
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <IconButton
@@ -1244,8 +1261,20 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 } else setFirstInputValue("1")
               }}
             >
-              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>MIN</Typography>
-              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>MIN</Typography>
+              <Typography
+                display={{ xs: "none", sm: "block" }}
+                variant="caption"
+                fontWeight={600}
+              >
+                MIN
+              </Typography>
+              <Typography
+                display={{ xs: "block", sm: "none" }}
+                variant="body2"
+                fontWeight={600}
+              >
+                MIN
+              </Typography>
             </Button>
             <Button
               variant="contained"
@@ -1263,8 +1292,20 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
               }}
             >
-              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>HALF</Typography>
-              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>HALF</Typography>
+              <Typography
+                display={{ xs: "none", sm: "block" }}
+                variant="caption"
+                fontWeight={600}
+              >
+                HALF
+              </Typography>
+              <Typography
+                display={{ xs: "block", sm: "none" }}
+                variant="body2"
+                fontWeight={600}
+              >
+                HALF
+              </Typography>
             </Button>
             <Button
               variant="contained"
@@ -1282,8 +1323,20 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 setFirstInputValue(Number(getPrimaryBalance()).toString())
               }}
             >
-              <Typography display={{ xs: "none", sm: "block" }} variant="caption" fontWeight={600}>MAX</Typography>
-              <Typography display={{ xs: "block", sm: "none" }} variant="body2" fontWeight={600}>MAX</Typography>
+              <Typography
+                display={{ xs: "none", sm: "block" }}
+                variant="caption"
+                fontWeight={600}
+              >
+                MAX
+              </Typography>
+              <Typography
+                display={{ xs: "block", sm: "none" }}
+                variant="body2"
+                fontWeight={600}
+              >
+                MAX
+              </Typography>
             </Button>
           </Stack>
           <Typography variant="subtitle2" color="text.secondary">
@@ -1534,7 +1587,10 @@ export default function Swap({ selectedIndex }: SwapProps) {
       <TokensModal
         open={openTokensModal}
         onClose={handleCloseTokensModal}
-        onSelect={(selectedToken) => { console.log('Selected token:', selectedToken); handleCloseTokensModal(); }}
+        onSelect={(selectedToken) => {
+          console.log("Selected token:", selectedToken)
+          handleCloseTokensModal()
+        }}
       />
     </>
   )

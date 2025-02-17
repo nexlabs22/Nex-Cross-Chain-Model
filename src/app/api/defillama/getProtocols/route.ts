@@ -1,7 +1,7 @@
-import { uploadToMongo } from "@/utils/convertToMongo/parse"
+import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
 import { NextResponse } from "next/server"
-import connectToMongoDb from "@/utils/connectToMongoDb"
-import { MongoDb } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAsset } from "@/types/mongoDb"
 import { AssetCategory } from "@/types/indexTypes"
 const url = "https://api.llama.fi/protocols"
 
@@ -51,7 +51,7 @@ export async function GET() {
     {}
   )
 
-  const processedProtocols: MongoDb[] = Object.values(protocolsByGroup)
+  const processedProtocols: DailyAsset[] = Object.values(protocolsByGroup)
     .filter(
       (protocols) =>
         protocols[0].cmcId &&
@@ -100,8 +100,8 @@ export async function GET() {
       }
     })
 
-  const { collection, client } = await connectToMongoDb("DailyAssets")
-  await uploadToMongo(processedProtocols, collection)
+  const { collection, client } = await DailyAssetsClient("DailyAssets")
+  await uploadToDailyAssets(processedProtocols, collection)
   client.close()
 
   return NextResponse.json({

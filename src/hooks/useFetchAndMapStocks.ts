@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { AssetOverviewDocument } from "@/types/indexTypes"
+import { AssetOverviewDocument } from "@/types/mongoDb"
 
 export function useFetchAndMapStocks() {
   const [data, setData] = useState<AssetOverviewDocument[]>([])
