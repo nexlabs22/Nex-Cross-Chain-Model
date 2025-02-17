@@ -38,21 +38,27 @@ const IndicesTable = () => {
       flex: 2,
       minWidth: 200,
       renderCell: (params) => (
-        <Stack direction={"row"} alignItems={"center"} gap={1}>
-          <Box
-            width={40}
-            height={40}
-            borderRadius={1}
-            sx={{
-              backgroundImage: `url(${params.row.logoString})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          ></Box>
-          <Stack direction={"column"}>
-            <Typography variant={"h6"}>{params.row.symbol}</Typography>
+        <Link
+          href={`/trade?side=buy&index=${params.row.symbol}`}
+          style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          underline="none"
+        >
+          <Stack direction={"row"} alignItems={"center"} gap={1}>
+            <Box
+              width={40}
+              height={40}
+              borderRadius={1}
+              sx={{
+                backgroundImage: `url(${params.row.logoString})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></Box>
+            <Stack direction={"column"}>
+              <Typography variant={"h6"}>{params.row.symbol}</Typography>
+            </Stack>
           </Stack>
-        </Stack>
+        </Link>
       ),
     },
     {
@@ -84,6 +90,7 @@ const IndicesTable = () => {
           <Link
             href={`/trade?side=buy&index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -102,6 +109,7 @@ const IndicesTable = () => {
           <Link
             href={`catalogue/index-details?index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -130,35 +138,41 @@ const IndicesTable = () => {
       resizable: true,
       flex: 2,
       renderCell: (params) => (
-        <Stack direction={"row"} alignItems={"center"} gap={1}>
-          <Box
-            width={40}
-            height={40}
-            borderRadius={1}
-            sx={{
-              backgroundImage: `url(${params.row.logoString})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          ></Box>
-          <Stack
-            direction={"column"}
-            alignItems={"start"}
-            justifyContent={"start"}
-          >
-            <Typography variant={"h6"} display={{ xs: "none", lg: "block" }}>
-              {params.row.name}
-            </Typography>
-            <Typography variant={"h6"} display={{ xs: "block", lg: "none" }}>
-              {params.row.symbol}
-            </Typography>
-            <CompositionAvatarGroup
-              index={params.row}
-              size={20}
-              borderColor={theme.palette.background.default}
-            />
+        <Link
+          href={`/trade?side=buy&index=${params.row.symbol}`}
+          style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          underline="none"
+        >
+          <Stack direction={"row"} alignItems={"center"} gap={1}>
+            <Box
+              width={40}
+              height={40}
+              borderRadius={1}
+              sx={{
+                backgroundImage: `url(${params.row.logoString})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></Box>
+            <Stack
+              direction={"column"}
+              alignItems={"start"}
+              justifyContent={"start"}
+            >
+              <Typography variant={"h6"} display={{ xs: "none", lg: "block" }}>
+                {params.row.name}
+              </Typography>
+              <Typography variant={"h6"} display={{ xs: "block", lg: "none" }}>
+                {params.row.symbol}
+              </Typography>
+              <CompositionAvatarGroup
+                index={params.row}
+                size={20}
+                borderColor={theme.palette.background.default}
+              />
+            </Stack>
           </Stack>
-        </Stack>
+        </Link>
       ),
     },
     {
@@ -227,6 +241,7 @@ const IndicesTable = () => {
           <Link
             href={`/trade?side=buy&index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -245,6 +260,7 @@ const IndicesTable = () => {
           <Link
             href={`catalogue/index-details?index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -272,15 +288,15 @@ const IndicesTable = () => {
     ...token,
     price: token.smartContractInfo?.poolPrice
       ? `$${formatToViewNumber({
-          value: token.smartContractInfo?.poolPrice,
-          returnType: "currency",
-        })}`
+        value: token.smartContractInfo?.poolPrice,
+        returnType: "currency",
+      })}`
       : token.marketInfo?.offChainPrice
-      ? `$${formatToViewNumber({
+        ? `$${formatToViewNumber({
           value: token.marketInfo?.offChainPrice,
           returnType: "currency",
         })}`
-      : "",
+        : "",
     totalSupply:
       token.smartContractInfo?.totalSupply &&
       `${formatToViewNumber({
