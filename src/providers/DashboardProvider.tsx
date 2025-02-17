@@ -24,7 +24,7 @@ const DashboardContext = createContext<DashboardContextProps>({
 })
 
 const useDashboard = () => {
-  return useContext(DashboardContext)
+  return useContext(DashboardContext)  
 }
 
 const DashboardProvider = ({ children }: { children: React.ReactNode }) => {

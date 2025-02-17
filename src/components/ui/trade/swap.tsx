@@ -970,9 +970,9 @@ export default function Swap({ selectedIndex }: SwapProps) {
               )
             } else {                            
               const outPutTokenValue = await readContract({
-                contract: indexTokenStorageContract,
+                contract: indexTokenStorageContract,                
                 method:
-                  "function getAmountOut(address[], uint24[], uint256 ) returns (uint256)",
+                  "function getAmountOut(address[], uint24[], uint256 ) returns (uint256)",                  
                 params: [
                   [tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address ],
                   [3000],                  
