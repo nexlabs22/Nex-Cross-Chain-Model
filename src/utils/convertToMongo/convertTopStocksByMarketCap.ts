@@ -5,11 +5,11 @@ import {
   parseCommaSeparated,
   convertUnixToDate,
   filterValues,
-  uploadToMongo,
+  uploadToDailyAssets,
 } from "./parse"
 import connectToSpotDb from "@/utils/connectToSpotDB"
-import connectToMongoDb from "@/utils/connectToMongoDb"
-import { MongoDb } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAsset } from "@/types/mongoDb"
 import { AssetCategory } from "@/types/indexTypes"
 
 /*const uniqueProtocols = [
@@ -126,8 +126,8 @@ export const getUniqueProtocols = async () => {
 }
 
 export const convertTopStocksByMarketCap = async () => {
-  const { collection }: { collection: Collection<MongoDb> } =
-    await connectToMongoDb("DailyAssets")
+  const { collection }: { collection: Collection<DailyAsset> } =
+    await DailyAssetsClient("DailyAssets")
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query("SELECT * FROM topstocksbymarketcap")
@@ -144,7 +144,7 @@ export const convertTopStocksByMarketCap = async () => {
     topstocks: parseCommaSeparated(row.topstocks),
   }))
 
-  const mongoDbData: MongoDb[] = []
+  const mongoDbData: DailyAsset[] = []
 
   // Iterate over each row in the parsed data
   for (const row of parsedData) {
@@ -162,7 +162,7 @@ export const convertTopStocksByMarketCap = async () => {
       const marketCap = entry[1]
       const type = AssetCategory.Stock
 
-      const mongoDbDocument: MongoDb = {
+      const mongoDbDocument: DailyAsset = {
         date,
         timestamp,
         ticker,
@@ -180,9 +180,9 @@ export const convertTopStocksByMarketCap = async () => {
         filteredEntry.type &&
         filteredEntry.marketCap
       ) {
-        mongoDbData.push(filteredEntry as MongoDb)
+        mongoDbData.push(filteredEntry as DailyAsset)
       }
     }
   }
-  await uploadToMongo(mongoDbData, collection)
+  await uploadToDailyAssets(mongoDbData, collection)
 }

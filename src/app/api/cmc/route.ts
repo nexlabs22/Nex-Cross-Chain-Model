@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 import {
   filterValues,
-  uploadToMongoDocument,
+  uploadToAssetOverview,
 } from "@/utils/convertToMongo/parse"
-import { AssetOverviewDocument } from "@/types/indexTypes"
-import { connectToMongoDbDocument } from "@/utils/connectToMongoDb"
+import { AssetOverviewDocument } from "@/types/mongoDb"
+import { AssetOverviewClient } from "@/utils/MongoDbClient"
 import { fetchCmcListings, fetchSplittedCmcMetadata } from "./index"
 
 const fetchCoinMarketCapData = async () => {
@@ -19,9 +19,7 @@ const fetchCoinMarketCapData = async () => {
 
 export async function GET() {
   try {
-    const { collection, client } = await connectToMongoDbDocument(
-      "AssetOverview"
-    )
+    const { collection, client } = await AssetOverviewClient("AssetOverview")
 
     const coinMarketCapData = await fetchCoinMarketCapData()
     const mongoData: (AssetOverviewDocument | null)[] = []
@@ -39,7 +37,7 @@ export async function GET() {
       }
       mongoData.push(storeObject)
     }
-    await uploadToMongoDocument(mongoData, collection)
+    await uploadToAssetOverview(mongoData, collection)
     await client.close()
 
     return NextResponse.json({

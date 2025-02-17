@@ -1,11 +1,11 @@
 import { ObjectId, Sort } from "mongodb"
-
 import { AssetCategory } from "./indexTypes"
 
-export type MongoDb = {
+export type DailyAsset = {
   _id?: ObjectId
   ticker: string
   name: string
+  address?: string
   type: AssetCategory
   date: string // YYYY-MM-DD
   timestamp: number // timestamp in seconds
@@ -28,4 +28,49 @@ export type aggregateType = {
   $match?: { [key: string]: number | string }
   $sort?: { [key: string]: Sort }
   $limit?: number
+}
+
+export type AssetOverviewDocument = {
+  _id?: ObjectId
+  lastUpdate?: Date
+  address?: string
+  tradeStatus?: "active" | "upcoming" | "inactive"
+  provider?: string[]
+  description?: string
+  name: string
+  cik?: string
+  isin?: string
+  cusip?: string
+  logo_url?: string
+  ticker: string
+  coinmarketcap?: object
+  coingecko?: {
+    id: string
+  }
+  dinari?: DinariAsset
+}
+
+export type DinariAsset = {
+  stock: {
+    id: string
+    cik: string
+    composite_figi: string
+    cusip: string
+    description: string
+    display_name: string
+    is_fractionable: boolean
+    logo_url: string
+    name: string
+    symbol: string //the actual symbol of the stock on the tradfi exchange
+  }
+  token: {
+    address: string
+    chain_id: number
+    decimals: number
+    image_url: string
+    is_active: boolean
+    is_primary: boolean
+    symbol: string //the dinari symobl, ending with XXX.d
+    version: string
+  }
 }

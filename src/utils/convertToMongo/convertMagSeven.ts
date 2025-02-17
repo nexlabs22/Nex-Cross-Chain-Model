@@ -1,10 +1,10 @@
 //import { Collection } from "mongodb"
 
-import { MongoDb } from "@/types/mongoDb"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { DailyAsset } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
-import { uploadToMongo, filterValues, convertUnixToDate } from "./parse"
+import { uploadToDailyAssets, filterValues, convertUnixToDate } from "./parse"
 
 /*type MagSeven = {
   stampsec: string
@@ -116,7 +116,7 @@ const parseTopStocks = (
 }
 
 const convertMagSeven = async () => {
-  const { collection } = await connectToMongoDb("DailyAssets")
+  const { collection } = await DailyAssetsClient("DailyAssets")
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query(
@@ -124,7 +124,7 @@ const convertMagSeven = async () => {
   )
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parsedData: (MongoDb | null)[] = data.rows.flatMap((row: any) => {
+  const parsedData: (DailyAsset | null)[] = data.rows.flatMap((row: any) => {
     const topstocks = parseTopStocks(row.topstocks)
 
     return topstocks.map((stock) => {
@@ -143,7 +143,7 @@ const convertMagSeven = async () => {
           stock.ticker as keyof typeof columnToNameAndtickerMap
         ]?.type
 
-      const entry: MongoDb = {
+      const entry: DailyAsset = {
         name,
         ticker,
         date,
@@ -160,14 +160,14 @@ const convertMagSeven = async () => {
         filteredEntry.type &&
         filteredEntry.marketCap
       ) {
-        return filteredEntry as MongoDb
+        return filteredEntry as DailyAsset
       }
 
       return null
     })
   })
 
-  await uploadToMongo(parsedData, collection)
+  await uploadToDailyAssets(parsedData, collection)
 
   return parsedData
 }

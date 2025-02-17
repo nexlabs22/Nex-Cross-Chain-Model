@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { Protocol } from "../getProtocols/route"
-import { MongoDb } from "@/types/mongoDb"
-import { uploadToMongo } from "@/utils/convertToMongo/parse"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { DailyAsset } from "@/types/mongoDb"
+import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 
 // interface Protocol {
 //   id: string
@@ -39,7 +39,7 @@ interface TVL {
 }
 
 export async function GET() {
-  const { collection, client } = await connectToMongoDb("DailyAssets")
+  const { collection, client } = await DailyAssetsClient("DailyAssets")
   const protocols = await fetch(`https://api.llama.fi/protocols`, {
     cache: "no-store",
     headers: {
@@ -78,7 +78,7 @@ export async function GET() {
   const oneYearAgo = Date.now() - 31536000000
   const oneYearAgoDate = new Date(oneYearAgo)
 
-  const convertedData: MongoDb[] = data.flatMap((protocol) =>
+  const convertedData: DailyAsset[] = data.flatMap((protocol) =>
     protocol.tvl
       .filter((tvl: TVL) => new Date(tvl.date * 1000) >= oneYearAgoDate)
       .map((tvl: TVL) => ({
@@ -92,7 +92,7 @@ export async function GET() {
   )
 
   //upload to mongo db
-  await uploadToMongo(convertedData, collection)
+  await uploadToDailyAssets(convertedData, collection)
 
   client.close()
 
