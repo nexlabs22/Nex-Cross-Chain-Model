@@ -63,6 +63,8 @@ import { toast } from "react-toastify"
 import TokensModal from "./tokensModal"
 import { useTrade } from "@/providers/TradeProvider"
 
+import TxnStatusModal from "../generic/txnStatusModal"
+
 interface SwapProps {
   side?: "buy" | "sell"
   selectedIndex?: IndexCryptoAsset
@@ -91,6 +93,8 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
 
   const [openFromTokensModal, setOpenFromTokensModal] = useState(false)
   const [openToTokensModal, setOpenToTokensModal] = useState(false)
+  const [txnSuccessModalOpen, setTxnSuccessModalOpen] = useState(false)
+
 
   const handleOpenFromTokensModal = () => {
     setOpenFromTokensModal(true)
@@ -104,6 +108,13 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
   }
   const handleCloseToTokensModal = () => {
     setOpenToTokensModal(false)
+  }
+
+  const handleTxnSuccessModalOpen = () => {
+    setTxnSuccessModalOpen(true)
+  }
+  const handleTxnSuccessModalClose = () => {
+    setTxnSuccessModalOpen(false)
   }
 
   const [firstInputValue, setFirstInputValue] = useState("")
@@ -1253,6 +1264,7 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
                 border: `1px solid ${theme.palette.elevations.elevation700.main}`,
                 padding: 1,
               }}
+              onClick={handleTxnSuccessModalOpen}
             >
               <LuSettings2 />
             </IconButton>
@@ -1662,6 +1674,12 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
         showTokens={selectedSide == 'buy' ? false : true}
         onClose={handleCloseToTokensModal}
         onSelect={(selectedToken) => { setSwapToToken(selectedToken); handleCloseToTokensModal(); }}
+      />
+      <TxnStatusModal
+        open={txnSuccessModalOpen}
+        onClose={handleTxnSuccessModalClose}
+        url={"txnSuccessUrl"}
+        type={'pending'}
       />
     </>
   )
