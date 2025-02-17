@@ -138,7 +138,7 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
       }
     )
     setSwapToToken(coinDetails[0])
-  }, [selectedIndex, nexTokens, setSwapToToken, setSwapToToken])
+  }, [selectedIndex, nexTokens, setSwapToToken])
 
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
@@ -270,7 +270,7 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
     network,
     swapToToken.symbol,
     swapFromToken.symbol,
-    coinsList, setSwapFromToken,
+    coinsList,
     nexTokens,
     setSwapFromToken,
   ])
