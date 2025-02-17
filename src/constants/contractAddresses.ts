@@ -19,6 +19,9 @@ export const tokenAddresses: TokenAddressMap = {
       },
     },
     Arbitrum: {
+      Mainnet:{
+        token: { address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1" }
+      },
       Sepolia: {
         token: { address: "0xE591bf0A0CF924A0674d7792db046B23CEbF5f34" },
       },
@@ -53,7 +56,8 @@ export const tokenAddresses: TokenAddressMap = {
     },
     Arbitrum:{
       Mainnet:{
-        token: { address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', decimals: 6}
+        token: { address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', decimals: 6},
+        faucet: { address: "0xf7043384e395306de8356e486679e3EfAD1a6609" }
       }
     }
   },
@@ -91,6 +95,13 @@ export const tokenAddresses: TokenAddressMap = {
         storage: { address: "0x7427E998D4db46E15f831e4Cff0393Ebb277c637" },
       },
     },
+    Arbitrum: {
+      Mainnet: {
+        token: { address: "0x4386741db5Aadec9201c997b9fD197b598ef1323" }, //ARBEI
+        factory: { address: "0xC261547547fb4b108db504FE200e20Db7612D5E9" }, //ARBEI
+        storage: { address: "0xB1ae3b1A08cf98f7e02342F8adD29b86021B1632" }, // ARBEI
+      },
+    }
   },
   CRYPTO5: {
     Ethereum: {
@@ -112,6 +123,11 @@ export const tokenAddresses: TokenAddressMap = {
       },
     },
     Arbitrum: {
+      Mainnet: {
+        token: { address: "0x4386741db5Aadec9201c997b9fD197b598ef1323" }, //ARBEI
+        factory: { address: "0xC261547547fb4b108db504FE200e20Db7612D5E9" }, //ARBEI
+        storage: { address: "0xB1ae3b1A08cf98f7e02342F8adD29b86021B1632" }, //ARBEI
+      },
       Sepolia: {
         factory: { address: "0xeB08A8CA65Bc5f5dD4D54841a55bb6949fab3548" },
         vault: { address: "0x04fddfb8b2EFaEaFc590505ffF0bA67E408d8A01" },
@@ -126,6 +142,14 @@ export const tokenAddresses: TokenAddressMap = {
         factory: { address: "0x5EBD4Ac25ADbb238941086b7e2a87672f93919a4" },
         storage: { address: "0xb9182570054598AC2a457E034f3C0bDfd6c60D73" },
         processor: { address: "0x8250b30Ae818Ab30d5A03E893Cdc850bdA08E638" },
+      },
+    },
+    Arbitrum: {
+      Mainnet: {
+        token: { address: "0x4386741db5Aadec9201c997b9fD197b598ef1323" }, //ARBEI
+        factory: { address: "0xC261547547fb4b108db504FE200e20Db7612D5E9" }, //ARBEI
+        storage: { address: "0xB1ae3b1A08cf98f7e02342F8adD29b86021B1632" }, // ARBEI
+        processor: { address: "0xB1ae3b1A08cf98f7e02342F8adD29b86021B1632" }, // ARBEI
       },
     }
   },
@@ -206,6 +230,9 @@ export const factoryAddresses = {
     Ethereum: {
       Mainnet: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
       Sepolia: "0x0227628f3F023bb0B980b67D528571c95c6DaC1c",
+    },
+    Arbitrum:{
+      Mainnet: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
     }
   }
 }
@@ -229,5 +256,6 @@ export const chainSelectorAddresses: ChainSelectorMap = {
   },
   Arbitrum: {
     Sepolia: "3478487238524512106",
+    Mainnet: "4949039107694359620",
   },
 }

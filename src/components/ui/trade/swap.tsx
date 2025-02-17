@@ -25,7 +25,6 @@ import {
 } from "@/types/indexTypes"
 import { PublicClient } from "viem"
 import { useDashboard } from "@/providers/DashboardProvider"
-import { sepoliaTokens } from "@/constants/tokens"
 import { getDecimals, isWETH } from "@/utils/general"
 import { useGlobal } from "@/providers/GlobalProvider"
 import convertToUSDUni from "@/utils/convertToUSDUni"
@@ -62,27 +61,22 @@ import { toast } from "react-toastify"
 import TokensModal from "./tokensModal"
 import { useTrade } from "@/providers/TradeProvider"
 
-interface SwapProps {
-  side?: "buy" | "sell"
-  selectedIndex?: IndexCryptoAsset
-}
-
 function isIndexCryptoAsset(
   token: CryptoAsset | IndexCryptoAsset
 ): token is IndexCryptoAsset {
   return token && typeof token === "object" && "smartContractType" in token
 }
 
-export default function Swap({ selectedIndex }: SwapProps) {
+export default function Swap() {
   const {
     activeChainSetting,
     userAddress,
     activeThirdWebChain,
   } = useGlobal()
-    const { network, chainName } = activeChainSetting
+  const { network, chainName } = activeChainSetting
   const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } =
     useTrade()
-  const { ethPriceUsd, nexTokens } = useDashboard()
+  const { ethPriceUsd } = useDashboard()
 
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
     "auto"
@@ -99,14 +93,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
   const [firstInputValue, setFirstInputValue] = useState("")
   const [secondInputValue, setSecondInputValue] = useState("")
   const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
-  // const [fromDollarPrice, setFromDollarPrice] = useState(0)
   const [to1UsdPrice, setTo1UsdPrice] = useState(0)
-  // const [toDollarPrice, setToDollarPrice] = useState(0)
-  const [coinsList, setCoinsList] = useState<CryptoAsset[]>([])
-  const [mergedCoinList, setMergedCoinList] = useState<CryptoAsset[][]>([
-    [],
-    [],
-  ])
   const [feeRate, setFeeRate] = useState(0)
   const [currentPortfolioValue, setCurrentPortfolioBalance] = useState(0)
   const [userEthBalance, setUserEthBalance] = useState(0)
@@ -117,17 +104,6 @@ export default function Swap({ selectedIndex }: SwapProps) {
     ? swapFromToken.symbol
     : swapToToken.symbol
   const activeStorageAddress = tokenAddresses[activeSymbol as NexIndices]?.[chainName]?.[network]?.storage?.address as Address
-  
-
-  useEffect(() => {
-    const selectedCoin = selectedIndex?.symbol || "ANFI"
-    const coinDetails = [...nexTokens, ...sepoliaTokens].filter(
-      (coin: CryptoAsset) => {
-        return coin.symbol === selectedCoin
-      }
-    )
-    setSwapToToken(coinDetails[0])
-  }, [selectedIndex, nexTokens, setSwapToToken])
 
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
@@ -167,7 +143,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
 
     // Call fetchTokenPrices when needed
     fetchTokenPrices()
-  }, [swapFromToken, swapToToken, ethPriceUsd,activeChainSetting, chainName, network])
+  }, [swapFromToken, swapToToken, ethPriceUsd, activeChainSetting, chainName, network])
 
   const resetFirstValue = () => {
     setFirstInputValue("")
@@ -176,119 +152,10 @@ export default function Swap({ selectedIndex }: SwapProps) {
     setSecondInputValue("")
   }
 
-  const fetchAllLiFiTokens = async () => {
-    const options = {
-      method: "GET",
-      headers: { accept: "application/json" },
-    }
-    try {
-      const response = await fetch(`https://li.quest/v1/tokens`, options)
-      const data = await response.json()
-
-      const tokenSets = data.tokens
-      const coins: CryptoAsset[] = Object.keys(tokenSets).flatMap((key) => {
-        const tokenSet = tokenSets[key]
-        return tokenSet.map(
-          (coin: {
-            address: Address
-            logoURI: string
-            name: string
-            symbol: string
-            decimals: number
-          }) => ({
-            id: coin.address,
-            logo:
-              coin.logoURI && coin.logoURI != ""
-                ? coin.logoURI
-                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU",
-            name: coin.name,
-            Symbol: coin.symbol,
-            address: coin.address,
-            decimals: coin.decimals,
-          })
-        )
-      })
-      return coins
-    } catch (error) {
-      console.error(error)
-      return [] // Ensure a value is returned even in case of an error
-    }
-  }
-
-  function chunkArray<T>(array: T[], chunkSize: number): T[][] {
-    const chunks: T[][] = []
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize))
-    }
-    return chunks
-  }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const initialCoins = await fetchAllLiFiTokens()
-      const dividedArrays = chunkArray(initialCoins, 100)
-
-      setCoinsList(dividedArrays[0])
-    }
-
-    fetchData()
-  }, [])
-
-  useEffect(() => {
-    const finalCoinList =
-      network === "Mainnet"
-        ? coinsList
-        : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
-    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) =>
-      coin.hasOwnProperty("smartContractType")
-    )
-    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter(
-      (coin) => !coin.hasOwnProperty("smartContractType")
-    )
-
-    if (swapToToken.symbol === "MAG7" || swapFromToken.symbol === "MAG7") {
-      const usdcDetails = OtherCoinList.filter((coin) => {
-        return coin.symbol === "USDC"
-      })[0]
-      if (swapToToken.symbol === "MAG7") {
-        setSwapFromToken(usdcDetails)
-      }
-    }
-    setMergedCoinList([OtherCoinList, OurIndexCoinList])
-  }, [
-    network,
-    swapToToken.symbol,
-    swapFromToken.symbol,
-    coinsList,
-    nexTokens,
-    setSwapFromToken,
-  ])
-
   function Switching() {
     const switchReserve = swapFromToken
     setSwapFromToken(swapToToken)
     setSwapToToken(switchReserve)
-    if (switchReserve.hasOwnProperty("smartContractType")) {
-      if (
-        mergedCoinList[0].some((obj) => obj.hasOwnProperty("smartContractType"))
-      ) {
-        const newArray = [mergedCoinList[1], mergedCoinList[0]]
-        setMergedCoinList(newArray)
-      } else {
-        const newArray = [mergedCoinList[0], mergedCoinList[1]]
-        setMergedCoinList(newArray)
-      }
-    } else {
-      if (
-        mergedCoinList[0].some((obj) => obj.hasOwnProperty("smartContractType"))
-      ) {
-        const newArray = [mergedCoinList[0], mergedCoinList[1]]
-        setMergedCoinList(newArray)
-      } else {
-        const newArray = [mergedCoinList[1], mergedCoinList[0]]
-        setMergedCoinList(newArray)
-      }
-    }
     setSecondInputValue(firstInputValue)
   }
 
@@ -305,15 +172,6 @@ export default function Swap({ selectedIndex }: SwapProps) {
     setFirstInputValue(e?.target?.value)
   }
 
-  // useEffect(() => {
-  //     const fromNewPrice = Number(firstInputValue) * Number(from1UsdPrice)
-  //     setFromDollarPrice(fromNewPrice)
-  // }, [from1UsdPrice, firstInputValue, secondInputValue, to1UsdPrice])
-
-  // useEffect(() => {
-  //     const toNewPrice = Number(secondInputValue) * Number(to1UsdPrice)
-  //     setToDollarPrice(toNewPrice)
-  // }, [secondInputValue, to1UsdPrice])
 
   useEffect(() => {
     const convertedAmout =
@@ -328,74 +186,48 @@ export default function Swap({ selectedIndex }: SwapProps) {
   }
 
   function getPrimaryBalance() {
-    if (
-      isWETH(
-        swapFromToken.tokenAddresses?.Ethereum?.[network]?.token
-          ?.address as Address
-      )
-    ) {
-      if (!userEthBalance) {
-        return 0
-      } else
-        return formatToViewNumber({
-          value: Number(
-            ethers.utils.formatEther(userEthBalance.toString())
-          ) as number,
-          returnType: "string",
-        })
-    } else {
-      if (!fromTokenBalance?.data) {
-        return 0
-      } else {
-        const bal = formatToViewNumber({
-          value:
-            Number(fromTokenBalance?.data) /
-            Number(
-              `1e${getDecimals(
-                swapFromToken.tokenAddresses?.Ethereum?.[network]?.token
-              )}`
-            ),
-          returnType: "string",
-        }).toString()
-        const balWithoutComma = bal.includes(",")
-          ? bal.split(",").join("")
-          : bal
-        return balWithoutComma
-      }
+    const tokenAddress = swapFromToken.tokenAddresses?.Ethereum?.[network]?.token?.address as Address
+    const isNativeETH = isWETH(tokenAddress)
+  
+    if (isNativeETH) {
+      return userEthBalance
+        ? formatToViewNumber({ value: parseFloat(ethers.utils.formatEther(userEthBalance.toString())), returnType: "currency" })
+        : 0
     }
+  
+    return fromTokenBalance?.data
+      ? formatToViewNumber({
+          value: weiToNum(fromTokenBalance.data, getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)),
+          returnType: "currency",
+        })
+      : 0
+  }
+  
+  function getSecondaryBalance() {
+    const tokenAddress = swapToToken.tokenAddresses?.Ethereum?.[network]?.token?.address as Address
+    const isNativeETH = isWETH(tokenAddress)
+  
+    if (isNativeETH) {
+      return userEthBalance
+        ? formatToViewNumber({ value: parseFloat(ethers.utils.formatEther(userEthBalance.toString())), returnType: "currency" })
+        : 0
+    }
+  
+    return toTokenBalance?.data
+      ? formatToViewNumber({
+          value: weiToNum(toTokenBalance.data, getDecimals(swapToToken.tokenAddresses?.[chainName]?.[network]?.token)),
+          returnType: "currency",
+        })
+      : 0
   }
 
-  function getSecondaryBalance() {
-    if (
-      isWETH(
-        swapToToken.tokenAddresses?.Ethereum?.[network]?.token
-          ?.address as Address
-      )
-    ) {
-      if (!userEthBalance) {
-        return 0
-      } else
-        return formatToViewNumber({
-          value: parseFloat(
-            ethers.utils.formatEther(userEthBalance.toString())
-          ) as number,
-          returnType: "string",
+  function getAllowance() {  
+    return fromTokenAllowance?.data
+      ? formatToViewNumber({
+          value: weiToNum(fromTokenAllowance.data, getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)),
+          returnType: "currency",
         })
-    } else {
-      if (!toTokenBalance?.data) {
-        return 0
-      } else
-        return formatToViewNumber({
-          value:
-            Number(toTokenBalance.data) /
-            Number(
-              `1e${getDecimals(
-                swapToToken.tokenAddresses?.Ethereum?.[network]?.token
-              )}`
-            ),
-          returnType: "string",
-        })
-    }
+      : 0
   }
 
   const indexTokenFactoryContract = GetContract(activeSymbol as AllowedTickers, 'factory')
@@ -405,7 +237,6 @@ export default function Swap({ selectedIndex }: SwapProps) {
 
   const fromTokenContract = GetContract(swapFromToken.symbol as AllowedTickers, 'token')
   const toTokenContract = GetContract(swapToToken.symbol as AllowedTickers, 'token')
-
 
   const fromTokenBalance = useReadContract(balanceOf, {
     contract: fromTokenContract,
@@ -438,7 +269,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
   const cancelMintRequestHook = useSendTransaction()
   const cancelBurnRequestHook = useSendTransaction()
 
-  const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
+  const crossChainPortfolioValue = GetCrossChainPortfolioBalance(swapFromToken, swapToToken)
   const defiPortfolioValue = GetDefiPortfolioBalance(swapFromToken, swapToToken)
 
   async function approve() {
@@ -589,11 +420,11 @@ export default function Swap({ selectedIndex }: SwapProps) {
           params: [
             swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
             [
-              swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, 
-            tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address
-          ],
+              swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
+              tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address
+            ],
             [3000],
-            BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString())            
+            BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString())
           ],
         })
 
@@ -603,14 +434,14 @@ export default function Swap({ selectedIndex }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: 'function issuanceIndexTokens(uint256)',
           params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString())],
-      })
+        })
         mintRequestHook.mutate(transaction)
       } else {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: resolveMethod('issuanceIndexTokens'),
           params: [swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
-      })
+        })
         mintRequestHook.mutate(transaction)
       }
     } catch (error) {
@@ -698,8 +529,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
             swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
             [
               tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,
-            swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address],
-            [3000]            
+              swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address],
+            [3000]
           ],
         })
         burnRequestHook.mutate(transaction)
@@ -739,7 +570,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
       console.log("burn error", error)
     }
   }
-
+//TODO
   // async function cancelMintRequest(nonce: number) {
   //     try {
   //         const transaction = prepareContractCall({
@@ -789,6 +620,16 @@ export default function Swap({ selectedIndex }: SwapProps) {
     }
   }
 
+  function refetchBalances() {
+    fromTokenBalance.refetch();
+    toTokenBalance.refetch();
+    fromTokenAllowance.refetch();
+  }
+
+  useEffect(() => {
+    refetchBalances();
+  }, [activeChainSetting])
+
   useEffect(() => {
     async function getFeeRate() {
       const feeRate = await (rpcClient as PublicClient).readContract({
@@ -808,8 +649,8 @@ export default function Swap({ selectedIndex }: SwapProps) {
     const currentPortfolioValue =
       (isIndexCryptoAsset(swapToToken) &&
         swapToToken?.smartContractType === "defi") ||
-      (isIndexCryptoAsset(swapFromToken) &&
-        swapFromToken?.smartContractType === "defi")
+        (isIndexCryptoAsset(swapFromToken) &&
+          swapFromToken?.smartContractType === "defi")
         ? defiPortfolioValue.data
         : (crossChainPortfolioValue.data as number)
     setCurrentPortfolioBalance(currentPortfolioValue as number)
@@ -866,18 +707,6 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 ).toFixed(2)
               )
             } else if (firstInputValue) {
-              // const inputEthValue = await (rpcClient as PublicClient).readContract({
-              //   address: swapToToken.tokenAddresses?.[chain]?.[network]?.storage?.address,
-              //   abi: crossChainIndexFactoryV2Abi,
-              //   functionName: "getAmountOut",
-              //   args: [
-              //     swapFromToken.tokenAddresses?.[chain]?.[network]?.token
-              //       ?.address,
-              //     tokenAddresses.WETH?.[chain]?.[network]?.token?.address,
-              //     convertedInputValue,
-              //     3,
-              //   ],
-              // })
 
               const inputEthValue = await readContract({
                 contract: indexTokenStorageContract,
@@ -885,23 +714,24 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   "function getAmountOut(address[], uint24[], uint256) returns (uint256)",
                 params: [
                   [swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address],
-                  [3000],                  
+                  [3000],
                   BigInt(numToWei(firstInputValue, getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token))), // Convert ethAmountOut to bigint                  
                 ],
-              })
+              })              
+
 
               inputValue = Number(inputEthValue)
 
               let newPortfolioValue: number = 0
               if (isIndexCryptoAsset(swapToToken) && swapToToken?.smartContractType === "crosschain") {
-                const { portfolioValue } = GetNewCrossChainPortfolioBalance(Number(currentPortfolioValue),Number(inputValue))
+                const { portfolioValue } = GetNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
                 newPortfolioValue = portfolioValue
-              } else {newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)}
-              
+              } else { newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue) }
+
               const newTotalSupply =
                 (currentTotalSupply * newPortfolioValue) /
                 Number(currentPortfolioValue)
-              const amountToMint = newTotalSupply - currentTotalSupply
+              const amountToMint = newTotalSupply - currentTotalSupply          
               setSecondInputValue(num(amountToMint).toString())
             }
           }
@@ -935,7 +765,6 @@ export default function Swap({ selectedIndex }: SwapProps) {
         }
         if (swapFromToken.hasOwnProperty("smartContractType")) {
           const convertedInputValue = parseEther(Number(firstInputValue)?.toString() as string)
-          console.log({ convertedInputValue })
           let outputValue
           const currentTotalSupply = Number(fromTokenTotalSupply.data)
           const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
@@ -968,19 +797,19 @@ export default function Swap({ selectedIndex }: SwapProps) {
                   )
                 ).toString()
               )
-            } else {                            
+            } else {
               const outPutTokenValue = await readContract({
-                contract: indexTokenStorageContract,                
+                contract: indexTokenStorageContract,
                 method:
-                  "function getAmountOut(address[], uint24[], uint256 ) returns (uint256)",                  
+                  "function getAmountOut(address[], uint24[], uint256 ) returns (uint256)",
                 params: [
-                  [tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address ],
-                  [3000],                  
+                  [tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address, swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address],
+                  [3000],
                   BigInt(Math.floor(ethAmountOut)), // Convert ethAmountOut to bigint                  
                 ],
               })
 
-              outputValue = Number(outPutTokenValue)              
+              outputValue = Number(outPutTokenValue)
               setSecondInputValue(
                 weiToNum(
                   outputValue,
@@ -1415,7 +1244,10 @@ export default function Swap({ selectedIndex }: SwapProps) {
             gap={2}
           >
             <Typography variant="subtitle2" color="text.secondary">
-              {/* Allowance : <span style={{ color: theme.palette.info.main, fontSize: 16 }}>{num(fromTokenAllowance.data)}</span> */}
+              {
+                isIndexCryptoAsset(swapToToken) &&
+              <>Allowance : <span style={{ color: theme.palette.info.main, fontSize: 16 }}>{getAllowance()}</span> </>
+              }
             </Typography>
             <Typography variant="subtitle2" color="text.secondary">
               Balance :{" "}
@@ -1525,10 +1357,10 @@ export default function Swap({ selectedIndex }: SwapProps) {
               fromTokenAllowance.data,
               getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)
             ) < Number(firstInputValue) &&
-                !isWETH(
-                  swapFromToken.tokenAddresses?.[chainName]?.[network]?.token
-                    ?.address as Address
-                ) ? (
+              !isWETH(
+                swapFromToken.tokenAddresses?.[chainName]?.[network]?.token
+                  ?.address as Address
+              ) ? (
               <Button
                 fullWidth
                 variant="contained"

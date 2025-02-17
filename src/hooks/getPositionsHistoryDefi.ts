@@ -8,7 +8,7 @@ import { useGlobal } from '@/providers/GlobalProvider'
 
 export function GetPositionsHistoryDefi(dataFromGraph: { [key: string]: RequestType[] }) {
 	const { nexTokens } = useDashboard()
-	const { activeChainSetting : {chain, network} } = useGlobal()
+	const { activeChainSetting : {chainName, network} } = useGlobal()
 	const [positions, setPositions] = useState<Transaction[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
 
@@ -28,8 +28,8 @@ export function GetPositionsHistoryDefi(dataFromGraph: { [key: string]: RequestT
 					const isMint = key.includes('issuanceds')
 					const tokenName = key.split(isMint ? 'issuanceds' : 'redemptions')[0].toUpperCase() as AllowedTickers
 					const tokenAddress = isMint ? log.inputToken : log.outputToken
-					const decimalsForInput = isMint ? Number(getTokenInfoByAddress(tokenAddress as Address, 'decimal')) : Number(getDecimals(tokenAddresses?.[tokenName]?.[chain]?.[network]?.token))
-					const decimalsForOutput = isMint ? Number(getDecimals(tokenAddresses?.[tokenName]?.[chain]?.[network]?.token)) : Number(getTokenInfoByAddress(tokenAddress as Address, 'decimal')) 
+					const decimalsForInput = isMint ? Number(getTokenInfoByAddress(tokenAddress as Address, 'decimal')) : Number(getDecimals(tokenAddresses?.[tokenName]?.[chainName]?.[network]?.token))
+					const decimalsForOutput = isMint ? Number(getDecimals(tokenAddresses?.[tokenName]?.[chainName]?.[network]?.token)) : Number(getTokenInfoByAddress(tokenAddress as Address, 'decimal')) 
 
 					return {
 						side: isMint ? 'Mint Request' : 'Burn Request',
@@ -46,7 +46,7 @@ export function GetPositionsHistoryDefi(dataFromGraph: { [key: string]: RequestT
 
 		setPositions(positions0.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)))
 		setLoading(false)
-	}, [nexTokens, dataFromGraph, chain, network])
+	}, [nexTokens, dataFromGraph, chainName, network])
 
 	useEffect(() => {
 		getHistory()

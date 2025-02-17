@@ -8,11 +8,13 @@ import { Address, AllowedTickers, ContractTypes } from "@/types/indexTypes";
 export default function GetContract(symbol: AllowedTickers, contractType: ContractTypes) {
   const { activeThirdWebChain, activeChainSetting:{chainName, network} } = useGlobal();
   
+  const contract = useCallback(() => {
   const address = tokenAddresses?.[symbol]?.[chainName]?.[network]?.[contractType]?.address as Address
 
-  const contract = useCallback(() => {
+  if(address == undefined) console.log({symbol, chainName, network, contractType, address})
+
     return getContract({ address, chain: activeThirdWebChain, client });
-  }, [address, activeThirdWebChain]);
+  }, [symbol,chainName,network,contractType, activeThirdWebChain]);
 
   return contract();
 }

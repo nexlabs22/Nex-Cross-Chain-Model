@@ -20,7 +20,7 @@ export default async function getPoolAddress(
 
   const factoryContractAddress = network === 'Mainnet'
     ? uniswapFactory.Mainnet
-    : uniswapFactory.Sepolia;
+    : uniswapFactory.Sepolia;    
 
   const factoryContract = getContract({
     address: factoryContractAddress as string,

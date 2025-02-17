@@ -11,6 +11,7 @@ export default async function convertToUSDUni(
   allowedChainNetworks: ChainNetwork
 ) {
   try {
+    if (!address) return 0;
     if (isWETH(address)) return ethPrice;
   
     const poolAddress = await getPoolAddress(address, allowedChainNetworks);
