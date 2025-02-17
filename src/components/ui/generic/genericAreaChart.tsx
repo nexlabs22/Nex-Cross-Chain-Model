@@ -56,6 +56,7 @@ const GenericAreaLineChart = ({ label, chartData }: GenericAreaLineChartProps) =
             minWidth: 'none !important',
             boxShadow: `0px 0px 1px 1px ${theme.palette.elevations.elevation800.main} !important`,
             maxWidth: 'fit-content !important',
+            display: 'none !important',
           },
           '.customTooltipTable': {
             backgroundColor: theme.palette.elevations.elevation900.main,

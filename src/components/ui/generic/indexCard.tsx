@@ -179,7 +179,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
         </Stack>
         <Stack
           width={"100%"}
-          height={{ xs: "16vh", lg: 100 }}
+          height={{ xs: "20vh", lg: 130 }}
           marginX={"auto"}
           paddingTop={{ xs: 3, lg: 0 }}
           direction={"row"}
