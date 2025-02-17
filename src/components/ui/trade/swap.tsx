@@ -74,7 +74,7 @@ function isIndexCryptoAsset(
   return token && typeof token === "object" && "smartContractType" in token
 }
 
-export default function Swap({ selectedIndex }: SwapProps) {
+export default function Swap({ selectedIndex, side }: SwapProps) {
   const {
     activeChainSetting: { network, chain },
     userAddress,
@@ -82,18 +82,28 @@ export default function Swap({ selectedIndex }: SwapProps) {
   } = useGlobal()
   const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } =
     useTrade()
+  const [selectedSide , setSelectedSide] = useState<"buy" | "sell" | undefined>(side)
   const { ethPriceUsd, nexTokens } = useDashboard()
 
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
     "auto"
   )
 
-  const [openTokensModal, setOpenTokensModal] = useState(false)
-  const handleOpenTokensModal = () => {
-    setOpenTokensModal(true)
+  const [openFromTokensModal, setOpenFromTokensModal] = useState(false)
+  const [openToTokensModal, setOpenToTokensModal] = useState(false)
+
+  const handleOpenFromTokensModal = () => {
+    setOpenFromTokensModal(true)
   }
-  const handleCloseTokensModal = () => {
-    setOpenTokensModal(false)
+  const handleCloseFromTokensModal = () => {
+    setOpenFromTokensModal(false)
+  }
+
+  const handleOpenToTokensModal = () => {
+    setOpenToTokensModal(true)
+  }
+  const handleCloseToTokensModal = () => {
+    setOpenToTokensModal(false)
   }
 
   const [firstInputValue, setFirstInputValue] = useState("")
@@ -128,7 +138,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
       }
     )
     setSwapToToken(coinDetails[0])
-  }, [selectedIndex, nexTokens, setSwapToToken])
+  }, [selectedIndex, nexTokens, setSwapToToken, setSwapToToken])
 
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
@@ -260,7 +270,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
     network,
     swapToToken.symbol,
     swapFromToken.symbol,
-    coinsList,
+    coinsList, setSwapFromToken,
     nexTokens,
     setSwapFromToken,
   ])
@@ -269,6 +279,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
     const switchReserve = swapFromToken
     setSwapFromToken(swapToToken)
     setSwapToToken(switchReserve)
+    setSelectedSide(selectedSide == 'buy' ? 'sell' : 'buy')
     if (switchReserve.hasOwnProperty("smartContractType")) {
       if (
         mergedCoinList[0].some((obj) => obj.hasOwnProperty("smartContractType"))
@@ -1418,7 +1429,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 paddingX: 1,
                 paddingY: 0.5,
               }}
-              onClick={() => handleOpenTokensModal()}
+              onClick={() => handleOpenFromTokensModal()}
             >
               <Box
                 width={36}
@@ -1481,16 +1492,21 @@ export default function Swap({ selectedIndex }: SwapProps) {
               onChange={changeSecondInputValue}
               value={formatNumber(Number(secondInputValue))}
             />
-            <Stack
-              direction="row"
-              alignItems="center"
-              gap={1}
-              paddingX={1}
-              paddingY={0.5}
+            <Button
+              variant="outlined"
               sx={{
                 backgroundColor: theme.palette.elevations.elevation900.main,
+                border: "none",
                 borderRadius: 2,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 1,
+                paddingX: 1,
+                paddingY: 0.5,
               }}
+              onClick={() => handleOpenToTokensModal()}
             >
               <Box
                 width={36}
@@ -1507,7 +1523,7 @@ export default function Swap({ selectedIndex }: SwapProps) {
                 <Typography variant="caption">{network}</Typography>
               </Stack>
               <LuChevronDown />
-            </Stack>
+            </Button>
           </Stack>
         </Stack>
         <Stack gap={0.5}>
@@ -1615,13 +1631,21 @@ export default function Swap({ selectedIndex }: SwapProps) {
           </Button>
         )}
       </Stack>
+      {/* tokens modal for setting FromSwapToken */}
       <TokensModal
-        open={openTokensModal}
-        onClose={handleCloseTokensModal}
-        onSelect={(selectedToken) => {
-          console.log("Selected token:", selectedToken)
-          handleCloseTokensModal()
-        }}
+        open={openFromTokensModal}
+        showNexProducts={selectedSide == 'buy' ? false : true}
+        showTokens={selectedSide == 'buy' ? true : false}
+        onClose={handleCloseFromTokensModal}
+        onSelect={(selectedToken) => { setSwapFromToken(selectedToken); handleCloseFromTokensModal(); }}
+      />
+      {/* tokens modal for setting ToSwapToken */}
+      <TokensModal
+        open={openToTokensModal}
+        showNexProducts={selectedSide == 'buy' ? true : false}
+        showTokens={selectedSide == 'buy' ? false : true}
+        onClose={handleCloseToTokensModal}
+        onSelect={(selectedToken) => { setSwapToToken(selectedToken); handleCloseToTokensModal(); }}
       />
     </>
   )

@@ -13,7 +13,7 @@ const Header = () => {
         <Stack width="100%" direction={'row'} justifyContent={{ xs: 'space-between', lg: 'end' }} alignItems={'center'} paddingY={{ xs: 1, lg: 2 }} gap={1}>
             <Box display={{ xs: 'flex', lg: 'none' }}>
                 <Link href="/">
-                    <Image src={logo} alt="logo" width={32} height={32} style={{
+                    <Image src={logo} alt="logo" width={26} height={26} style={{
                         filter: "brightness(0) invert(1)"
                     }} />
                 </Link>

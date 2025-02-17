@@ -100,7 +100,7 @@ const IndicesTable = () => {
             </Button>
           </Link>
           <Link
-            href={`/index-details?index=${params.row.symbol}`}
+            href={`catalogue/index-details?index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
           >
             <Button
@@ -243,7 +243,7 @@ const IndicesTable = () => {
             </Button>
           </Link>
           <Link
-            href={`/index-details?index=${params.row.symbol}`}
+            href={`catalogue/index-details?index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
           >
             <Button
