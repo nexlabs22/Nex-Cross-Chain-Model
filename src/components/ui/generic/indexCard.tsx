@@ -75,10 +75,10 @@ const IndexCard = ({ index }: IndexCardProps) => {
       </Stack>
       <Stack gap={1} marginTop={3}>
         {
-          price && <Typography variant={"h3"}>{price}</Typography>
+          price && change24hValue && <Typography variant={"h3"}>{price}</Typography>
         }
         {
-          !price && (
+          !price && !change24hValue && (
             <Skeleton variant="text" width={100} height={24} />
           )
         }
