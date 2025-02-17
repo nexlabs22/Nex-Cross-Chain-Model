@@ -23,7 +23,7 @@ import {
   NexIndices,
   AllowedTickers,
 } from "@/types/indexTypes"
-import { PublicClient } from 'viem'
+import { PublicClient } from "viem"
 import { useDashboard } from "@/providers/DashboardProvider"
 import { sepoliaTokens } from "@/constants/tokens"
 import { getDecimals, isWETH } from "@/utils/general"
@@ -61,8 +61,7 @@ import { client } from "@/utils/thirdWebClient"
 import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
 import TokensModal from "./tokensModal"
-import { useTrade } from "@/providers/TradeProvider";
-
+import { useTrade } from "@/providers/TradeProvider"
 
 interface SwapProps {
   side?: "buy" | "sell"
@@ -76,11 +75,15 @@ function isIndexCryptoAsset(
 }
 
 export default function Swap({ selectedIndex, side }: SwapProps) {
-
-    const { activeChainSetting: { network, chain }, userAddress, activeThirdWebChain } = useGlobal()
-    const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } = useTrade()
+  const {
+    activeChainSetting: { network, chain },
+    userAddress,
+    activeThirdWebChain,
+  } = useGlobal()
+  const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } =
+    useTrade()
   const [selectedSide , setSelectedSide] = useState<"buy" | "sell" | undefined>(side)
-    const { ethPriceUsd, nexTokens } = useDashboard()
+  const { ethPriceUsd, nexTokens } = useDashboard()
 
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
     "auto"
@@ -127,14 +130,15 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
     network
   ]?.factory?.address as Address
 
-    useEffect(() => {
-        const selectedCoin = selectedIndex?.symbol || 'ANFI'
-        const coinDetails = [...nexTokens, ...sepoliaTokens].filter((coin: CryptoAsset) => {
-            return coin.symbol === selectedCoin
-        })
-        setSwapToToken(coinDetails[0])
-    }, [selectedIndex, nexTokens, setSwapToToken])
-
+  useEffect(() => {
+    const selectedCoin = selectedIndex?.symbol || "ANFI"
+    const coinDetails = [...nexTokens, ...sepoliaTokens].filter(
+      (coin: CryptoAsset) => {
+        return coin.symbol === selectedCoin
+      }
+    )
+    setSwapToToken(coinDetails[0])
+  }, [selectedIndex, nexTokens, setSwapToToken, setSwapToToken])
 
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
@@ -242,20 +246,34 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
   }, [])
 
   useEffect(() => {
-    const finalCoinList = network === 'Mainnet' ? coinsList : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
-    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => coin.hasOwnProperty('smartContractType'))
-    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) => !coin.hasOwnProperty('smartContractType'))
+    const finalCoinList =
+      network === "Mainnet"
+        ? coinsList
+        : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
+    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) =>
+      coin.hasOwnProperty("smartContractType")
+    )
+    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter(
+      (coin) => !coin.hasOwnProperty("smartContractType")
+    )
 
     if (swapToToken.symbol === "MAG7" || swapFromToken.symbol === "MAG7") {
       const usdcDetails = OtherCoinList.filter((coin) => {
-        return coin.symbol === 'USDC'
+        return coin.symbol === "USDC"
       })[0]
       if (swapToToken.symbol === "MAG7") {
         setSwapFromToken(usdcDetails)
       }
     }
     setMergedCoinList([OtherCoinList, OurIndexCoinList])
-  }, [network, swapToToken.symbol, swapFromToken.symbol, coinsList, setSwapFromToken, nexTokens])
+  }, [
+    network,
+    swapToToken.symbol,
+    swapFromToken.symbol,
+    coinsList, setSwapFromToken,
+    nexTokens,
+    setSwapFromToken,
+  ])
 
   function Switching() {
     const switchReserve = swapFromToken
@@ -392,11 +410,20 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
     }
   }
 
-  const indexTokenFactoryContract = GetContract(activeSymbol as AllowedTickers, 'factory')
-  const faucetContract = GetContract('USDT', 'faucet')
+  const indexTokenFactoryContract = GetContract(
+    activeSymbol as AllowedTickers,
+    "factory"
+  )
+  const faucetContract = GetContract("USDT", "faucet")
 
-  const fromTokenContract = GetContract(swapFromToken.symbol as AllowedTickers, 'token')
-  const toTokenContract = GetContract(swapToToken.symbol as AllowedTickers, 'token')
+  const fromTokenContract = GetContract(
+    swapFromToken.symbol as AllowedTickers,
+    "token"
+  )
+  const toTokenContract = GetContract(
+    swapToToken.symbol as AllowedTickers,
+    "token"
+  )
 
   const fromTokenBalance = useReadContract(balanceOf, {
     contract: fromTokenContract,
@@ -418,7 +445,8 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
   const fromTokenAllowance = useReadContract(allowance, {
     contract: fromTokenContract,
     owner: userAddress as Address,
-    spender: swapToToken.tokenAddresses?.[chain]?.[network]?.factory?.address as Address
+    spender: swapToToken.tokenAddresses?.[chain]?.[network]?.factory
+      ?.address as Address,
   }) as thirdwebReadContract
 
   const approveHook = useSendTransaction()
@@ -447,7 +475,9 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
       isIndexCryptoAsset(swapToToken) &&
       swapToToken?.smartContractType === "stocks"
     ) {
-      const feeAmountBigNumber = (await (rpcClient as PublicClient).readContract({
+      const feeAmountBigNumber = (await (
+        rpcClient as PublicClient
+      ).readContract({
         address: tokenAddresses.MAG7?.[chain]?.[network]?.storage
           ?.address as Address,
         abi: stockFactoryStorageABI,
@@ -576,32 +606,46 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
       ) {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod('issuanceIndexTokens'),
-          params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '3'],
-      })
+          method: resolveMethod("issuanceIndexTokens"),
+          params: [
+            swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address,
+            parseEther(Number(firstInputValue).toString()),
+            "3",
+          ],
+        })
 
         mintRequestHook.mutate(transaction)
-
-      } else if (swapToToken.smartContractType === 'stocks') {
+      } else if (swapToToken.smartContractType === "stocks") {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: 'function issuanceIndexTokens(uint256)',
-          params: [BigInt(parseUnits(Number(firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)).toString())],
-      })
+          method: "function issuanceIndexTokens(uint256)",
+          params: [
+            BigInt(
+              parseUnits(
+                Number(firstInputValue).toString(),
+                getDecimals(
+                  swapFromToken.tokenAddresses?.[chain]?.[network]?.token
+                )
+              ).toString()
+            ),
+          ],
+        })
         mintRequestHook.mutate(transaction)
-
       } else {
-
-
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod('issuanceIndexTokens'),
-          params: [swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
-      })
+          method: resolveMethod("issuanceIndexTokens"),
+          params: [
+            swapFromToken.tokenAddresses?.[chain]?.[network]?.token?.address,
+            parseEther(Number(firstInputValue).toString()),
+            "0",
+            "3",
+          ],
+        })
         mintRequestHook.mutate(transaction)
       }
     } catch (error) {
-      console.log('mint error', error)
+      console.log("mint error", error)
     }
   }
 
@@ -785,14 +829,14 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
     }
 
     getFeeRate()
-  }, [network, rpcClient, activeAddress,chain])
+  }, [network, rpcClient, activeAddress, chain])
 
   useEffect(() => {
     const currentPortfolioValue =
       (isIndexCryptoAsset(swapToToken) &&
         swapToToken?.smartContractType === "defi") ||
-        (isIndexCryptoAsset(swapFromToken) &&
-          swapFromToken?.smartContractType === "defi")
+      (isIndexCryptoAsset(swapFromToken) &&
+        swapFromToken?.smartContractType === "defi")
         ? defiPortfolioValue.data
         : (crossChainPortfolioValue.data as number)
     setCurrentPortfolioBalance(currentPortfolioValue as number)
@@ -851,7 +895,9 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
                 ).toFixed(2)
               )
             } else if (convertedInputValue) {
-              const inputEthValue = await (rpcClient as PublicClient).readContract({
+              const inputEthValue = await (
+                rpcClient as PublicClient
+              ).readContract({
                 address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.factory
                   ?.address as Address,
                 abi: crossChainIndexFactoryV2Abi,
@@ -872,7 +918,7 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
                 isIndexCryptoAsset(swapToToken) &&
                 swapToToken?.smartContractType === "crosschain"
               ) {
-                const {portfolioValue}  = GetNewCrossChainPortfolioBalance(
+                const { portfolioValue } = GetNewCrossChainPortfolioBalance(
                   Number(currentPortfolioValue),
                   Number(inputValue)
                 )
@@ -940,8 +986,10 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
               isIndexCryptoAsset(swapFromToken) &&
               swapFromToken?.smartContractType === "stocks"
             ) {
-
-              const storageContract = GetContract(swapFromToken.symbol as AllowedTickers, 'storage')
+              const storageContract = GetContract(
+                swapFromToken.symbol as AllowedTickers,
+                "storage"
+              )
               const outAmount = await readContract({
                 contract: storageContract,
                 method:
@@ -958,7 +1006,7 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
                 ).toString()
               )
             } else {
-              const factoryContract = GetContract('CRYPTO5', 'factory')
+              const factoryContract = GetContract("CRYPTO5", "factory")
               const outPutTokenValue = await readContract({
                 contract: factoryContract,
                 method:
@@ -1187,12 +1235,15 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
           padding: 2,
         }}
       >
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Typography variant="h4" color="primary">
-            {isIndexCryptoAsset(swapFromToken) ?
-            `Sell ${swapFromToken.symbol} ` :
-            `Buy ${swapToToken.symbol} `
-          }
+            {isIndexCryptoAsset(swapFromToken)
+              ? `Sell ${swapFromToken.symbol} `
+              : `Buy ${swapToToken.symbol} `}
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <IconButton
@@ -1236,7 +1287,7 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("min")
@@ -1250,8 +1301,20 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
                 } else setFirstInputValue("1")
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MIN</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MIN</Typography>
+              <Typography
+                display={{ xs: "none", sm: "block" }}
+                variant="caption"
+                fontWeight={600}
+              >
+                MIN
+              </Typography>
+              <Typography
+                display={{ xs: "block", sm: "none" }}
+                variant="body2"
+                fontWeight={600}
+              >
+                MIN
+              </Typography>
             </Button>
             <Button
               variant="contained"
@@ -1262,15 +1325,27 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("half")
                 setFirstInputValue((Number(getPrimaryBalance()) / 2).toString())
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>HALF</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>HALF</Typography>
+              <Typography
+                display={{ xs: "none", sm: "block" }}
+                variant="caption"
+                fontWeight={600}
+              >
+                HALF
+              </Typography>
+              <Typography
+                display={{ xs: "block", sm: "none" }}
+                variant="body2"
+                fontWeight={600}
+              >
+                HALF
+              </Typography>
             </Button>
             <Button
               variant="contained"
@@ -1281,15 +1356,27 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
                     ? theme.palette.brand.nex1.main
                     : theme.palette.elevations.elevation700.main,
                 paddingY: 0.5,
-                paddingX: {xs: 0, sm: 0.5},
+                paddingX: { xs: 0, sm: 0.5 },
               }}
               onClick={() => {
                 setAutoValue("max")
                 setFirstInputValue(Number(getPrimaryBalance()).toString())
               }}
             >
-              <Typography display={{xs: "none", sm: "block"}} variant="caption" fontWeight={600}>MAX</Typography>
-              <Typography display={{xs: "block", sm: "none"}} variant="body2" fontWeight={600}>MAX</Typography>
+              <Typography
+                display={{ xs: "none", sm: "block" }}
+                variant="caption"
+                fontWeight={600}
+              >
+                MAX
+              </Typography>
+              <Typography
+                display={{ xs: "block", sm: "none" }}
+                variant="body2"
+                fontWeight={600}
+              >
+                MAX
+              </Typography>
             </Button>
           </Stack>
           <Typography variant="subtitle2" color="text.secondary">
@@ -1481,12 +1568,14 @@ export default function Swap({ selectedIndex, side }: SwapProps) {
           <>
             {weiToNum(
               fromTokenAllowance.data,
-              getDecimals(swapFromToken.tokenAddresses?.[chain]?.[network]?.token)
+              getDecimals(
+                swapFromToken.tokenAddresses?.[chain]?.[network]?.token
+              )
             ) < Number(firstInputValue) &&
-                !isWETH(
-                  swapFromToken.tokenAddresses?.[chain]?.[network]?.token
-                    ?.address as Address
-                ) ? (
+            !isWETH(
+              swapFromToken.tokenAddresses?.[chain]?.[network]?.token
+                ?.address as Address
+            ) ? (
               <Button
                 fullWidth
                 variant="contained"

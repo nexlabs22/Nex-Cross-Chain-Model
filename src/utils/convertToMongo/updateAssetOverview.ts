@@ -1,8 +1,8 @@
-import { AssetOverviewDocument } from "@/types/indexTypes"
-import { connectToMongoDbDocument } from "@/utils/connectToMongoDb"
+import { AssetOverviewDocument } from "@/types/mongoDb"
+import { AssetOverviewClient } from "@/utils/MongoDbClient"
 
 export const updateAssetOverview = async (asset: AssetOverviewDocument) => {
-  const { client, collection } = await connectToMongoDbDocument("AssetOverview")
+  const { client, collection } = await AssetOverviewClient("AssetOverview")
   try {
     const existingAsset = await collection.findOne({ ticker: asset.ticker })
 

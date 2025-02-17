@@ -1,6 +1,6 @@
 import { AssetCategory } from "@/types/indexTypes"
-import { aggregateType, MongoDb } from "@/types/mongoDb"
-import connectToMongoDb from "@/utils/connectToMongoDb"
+import { aggregateType, DailyAsset } from "@/types/mongoDb"
+import DailyAssetsClient from "@/utils/MongoDbClient"
 import { Collection } from "mongodb"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -9,13 +9,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
 
     if (!body || !body.ticker) {
-      return NextResponse.json({ message: "Ticker is required" }, { status: 400 })
+      return NextResponse.json(
+        { message: "Ticker is required" },
+        { status: 400 }
+      )
     }
 
     const { ticker, limit, sort, ...additionalFilters } = body
 
-    const { collection }: { collection: Collection<MongoDb> } =
-      await connectToMongoDb("DailyAssets")
+    const { collection }: { collection: Collection<DailyAsset> } =
+      await DailyAssetsClient("DailyAssets")
 
     const filter = {
       type: "index" as AssetCategory,
@@ -43,6 +46,9 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching data:", error)
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 })
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    )
   }
 }

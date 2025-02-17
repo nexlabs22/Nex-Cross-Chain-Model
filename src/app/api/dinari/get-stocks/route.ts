@@ -1,7 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { fetchAllPages } from "./index"
+import { AssetOverviewClient } from "@/utils/MongoDbClient"
+import { AssetOverviewDocument } from "@/types/mongoDb"
+import { uploadStocksToAssetOverview } from "@/utils/convertToMongo/parse"
 
 // const url = `https://api-enterprise.sbt.dinari.com/api/v1/stocks/?page=1&page_size=100`
 // testnet chainId = "11155111" // for mainnet use 1, nothing on polygon, 42161 for arbitrum
+
 // const url = `https://api-enterprise.sbt.dinari.com/api/v1/tokens/${chainId}`
 
 //Dinari supported chains, with same offering on each chain
@@ -11,48 +16,62 @@ import { type NextRequest, NextResponse } from "next/server"
 // Blast → 81457
 // Kinto → 3889
 
-async function fetchAllPages(request: NextRequest) {
-  const chainId = request.nextUrl.searchParams.get("chain-id") || "1"
-  const mainnet = request.nextUrl.searchParams.get("mainnet") || true
-  const pageSize = request.nextUrl.searchParams.get("page_size") || 100
+export interface Stock {
+  cik: string
+  composite_figi: string
+  cusip: string
+  description: string
+  display_name: string
+  id: string
+  is_fractionable: boolean
+  logo_url: string
+  name: string
+  symbol: string
+}
 
-  const apiKey = mainnet
-    ? process.env.DINARI_MAINNET_API_KEY
-    : process.env.DINARI_TESTNET_API_KEY
+interface Token {
+  address: string
+  chain_id: number
+  decimals: number
+  image_url: string
+  is_active: boolean
+  is_primary: boolean
+  symbol: string
+  version: string
+}
 
-  let allData: unknown[] = []
-
-  for (let page = 1; page <= 5; page++) {
-    const url = `https://api-enterprise.${
-      mainnet ? "sbt" : "sandbox"
-    }.dinari.com/api/v1/tokens/${chainId}?page=${page}&page_size=${pageSize}`
-
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          authorization: `Bearer ${apiKey}`,
-        },
-      })
-      const data = await response.json()
-      allData = allData.concat(data)
-    } catch (error) {
-      console.error(`Error fetching page ${page}:`, error)
-    }
-  }
-
-  return allData
+interface DinariObject {
+  stock: Stock
+  token: Token
 }
 
 export async function GET(request: NextRequest) {
   try {
     const allData = await fetchAllPages(request)
-    return NextResponse.json(allData, { status: 200 })
+
+    const { client, collection } = await AssetOverviewClient("AssetOverview")
+
+    const mongoData: (AssetOverviewDocument | null)[] = []
+    for (const data of allData) {
+      const dinariData = data as DinariObject
+      mongoData.push({
+        dinari: dinariData,
+        lastUpdate: new Date(),
+        name: dinariData.stock.name,
+        ticker: dinariData.stock.symbol,
+        address: dinariData.token.address,
+      })
+    }
+
+    await uploadStocksToAssetOverview(mongoData, collection)
+
+    await client.close()
+    return NextResponse.json(mongoData, { status: 200 })
   } catch (error) {
     console.error("Error in getStocks:", error)
     return NextResponse.json(
       { error: "Internal server error" },
+
       { status: 500 }
     )
   }
