@@ -8,7 +8,7 @@ import {ITransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transp
 
 import "../../../../contracts/vault/CrossChainIndexFactoryStorage.sol";
 
-contract UpgradeCrossChainIndexFactory is Script {
+contract UpgradeCrossChainIndexFactoryStorage is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -20,7 +20,7 @@ contract UpgradeCrossChainIndexFactory is Script {
         CrossChainIndexFactoryStorage newCrossChainIndexFactoryStorageImplementation =
             new CrossChainIndexFactoryStorage();
         console.log(
-            "New CrossChainIndexFactory implementation deployed at:",
+            "New CrossChainIndexFactoryStorage implementation deployed at:",
             address(newCrossChainIndexFactoryStorageImplementation)
         );
 

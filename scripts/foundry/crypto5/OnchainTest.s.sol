@@ -53,9 +53,7 @@ contract OnchainTest is Script {
         // uint24[] memory fees = new uint24[](1);
         // fees[0] = 3000;
 
-        // IndexFactory(payable(indexFactoryProxy)).redemption(
-        //     indexToken.balanceOf(address(user)), 0, address(weth), path, fees
-        // );
+        // IndexFactory(payable(indexFactoryProxy)).redemption(200000000000000000000, 0, address(weth), path, fees);
     }
 
     // function issuanceAndRedemptionWithUsdt() public {

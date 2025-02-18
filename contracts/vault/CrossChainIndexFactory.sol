@@ -91,6 +91,14 @@ contract CrossChainIndexFactory is
         // revert DoNotSendFundsDirectlyToTheContract();
     }
 
+    function withdrawEther() external onlyOwner {
+        uint256 balance = address(this).balance;
+        require(balance > 0, "No Ether to withdraw");
+
+        (bool success,) = payable(owner()).call{value: balance}("");
+        require(success, "Ether transfer failed");
+    }
+
     function pause() external onlyOwner {
         _pause();
     }
@@ -295,10 +303,7 @@ contract CrossChainIndexFactory is
             vars.newTokenValues
         );
 
-        // bytes32 messageId = sendMessage(
-        //     4949039107694359620, 0xe7CDe099c0faFD2B9BbeB07FeD167737e8bDfd78, vars.data, MessageSender.PayFeesIn.LINK
-        // );
-        bytes32 messageId = sendMessage(sourceChainSelector, address(sender), vars.data, MessageSender.PayFeesIn.LINK);
+        bytes32 messageId = sendMessage(sourceChainSelector, address(sender), vars.data, MessageSender.PayFeesIn.Native);
         // issuanceMessageIdByNonce[nonce] = messageId;
         factoryStorage.setIssuanceMessageIdByNonce(nonce, messageId);
         emit Issuanced(messageId, nonce, block.timestamp);
@@ -318,9 +323,10 @@ contract CrossChainIndexFactory is
             uint256 swapAmount =
                 (extraValues[0] * IERC20(address(targetAddresses[i])).balanceOf(address(vault()))) / 1e18;
             (address[] memory fromETHPath0, uint24[] memory fromETHFees0) = PathHelpers.decodePathBytes(targetPaths[i]);
-            if (address(targetAddresses[i]) == address(weth())) {
+            if (address(targetAddresses[i]) == address(factoryStorage.weth())) {
                 vault().withdrawFunds(address(weth()), address(this), swapAmount);
                 wethSwapAmountOut += swapAmount;
+                newTokenValues[0] += IERC20(address(targetAddresses[i])).balanceOf(address(vault()));
             } else {
                 vault().withdrawFunds(address(targetAddresses[i]), address(this), swapAmount);
                 wethSwapAmountOut += swap(
@@ -329,8 +335,9 @@ contract CrossChainIndexFactory is
                     swapAmount,
                     address(this)
                 );
+
+                newTokenValues[0] += factoryStorage.getTokenCurrentValue(targetAddresses[i], fromETHPath0, fromETHFees0);
             }
-            newTokenValues[0] += factoryStorage.getTokenCurrentValue(targetAddresses[i], fromETHPath0, fromETHFees0);
         }
         uint256 crossChainTokenAmount = swap(
             fromETHPath(factoryStorage.crossChainToken(sourceChainSelector)),
@@ -346,7 +353,8 @@ contract CrossChainIndexFactory is
             1, targetAddresses, new address[](0), new bytes[](0), new bytes[](0), nonce, newTokenValues, zeroArr
         );
         bytes32 messageId =
-            sendToken(sourceChainSelector, data, sender, tokensToSendArray, MessageSender.PayFeesIn.LINK);
+            sendToken(sourceChainSelector, data, sender, tokensToSendArray, MessageSender.PayFeesIn.Native);
+
         // redemptionMessageIdByNonce[nonce] = messageId;
         factoryStorage.setRedemptionMessageIdByNonce(nonce, messageId);
         emit Redemption(messageId, nonce, block.timestamp);
@@ -378,7 +386,7 @@ contract CrossChainIndexFactory is
         bytes memory data = abi.encode(
             2, targetAddresses, new address[](0), new bytes[](0), new bytes[](0), nonce, tokenValueArr, zeroArr
         );
-        sendMessage(sourceChainSelector, sender, data, MessageSender.PayFeesIn.LINK);
+        sendMessage(sourceChainSelector, sender, data, MessageSender.PayFeesIn.Native);
     }
 
     struct HandleFirstReweightActionInputs {
@@ -438,7 +446,7 @@ contract CrossChainIndexFactory is
             encodedData,
             inputData.sender,
             tokensToSendArray,
-            MessageSender.PayFeesIn.LINK
+            MessageSender.PayFeesIn.Native
         );
     }
 
@@ -581,7 +589,7 @@ contract CrossChainIndexFactory is
         bytes memory data = abi.encode(
             4, zeroAddArr, zeroAddArr, new bytes[](0), new bytes[](0), inputData.nonce, zeroUintArr, zeroUintArr
         );
-        sendMessage(inputData.sourceChainSelector, inputData.sender, data, MessageSender.PayFeesIn.LINK);
+        sendMessage(inputData.sourceChainSelector, inputData.sender, data, MessageSender.PayFeesIn.Native);
     }
 
     struct SwapSecondReweightActionVars {

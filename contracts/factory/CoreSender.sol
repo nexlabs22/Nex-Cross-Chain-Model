@@ -23,14 +23,9 @@ import "../interfaces/IWETH.sol";
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
-contract CoreSender is
-    Initializable,
-    CCIPReceiver,
-    ProposableOwnableUpgradeable,
-    ReentrancyGuardUpgradeable
-{
-    using MessageSender for *;
 
+contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable, ReentrancyGuardUpgradeable {
+    using MessageSender for *;
 
     IndexToken public indexToken;
     IndexFactoryStorage public factoryStorage;
@@ -38,37 +33,31 @@ contract CoreSender is
 
     IWETH public weth;
 
-    
-
     event Issuanced(
         bytes32 indexed messageId,
-        uint indexed nonce,
+        uint256 indexed nonce,
         address indexed user,
         address inputToken,
-        uint inputAmount,
-        uint outputAmount,
-        uint price,
-        uint time
+        uint256 inputAmount,
+        uint256 outputAmount,
+        uint256 price,
+        uint256 time
     );
-
 
     event Redemption(
         bytes32 indexed messageId,
-        uint indexed nonce,
+        uint256 indexed nonce,
         address indexed user,
         address outputToken,
-        uint inputAmount,
-        uint outputAmount,
-        uint price,
-        uint time
+        uint256 inputAmount,
+        uint256 outputAmount,
+        uint256 price,
+        uint256 time
     );
     event MessageSent(bytes32 messageId);
 
     modifier onlyFactory() {
-        require(
-            msg.sender == factoryStorage.indexFactory(),
-            "Only factory can call this function"
-        );
+        require(msg.sender == factoryStorage.indexFactory(), "Only factory can call this function");
         _;
     }
 
@@ -91,10 +80,7 @@ contract CoreSender is
     ) external initializer {
         // Validate input parameters
         require(_token != address(0), "Invalid token address");
-        require(
-            _chainlinkToken != address(0),
-            "Invalid Chainlink token address"
-        );
+        require(_chainlinkToken != address(0), "Invalid Chainlink token address");
         require(_router != address(0), "Invalid router address");
         require(_weth != address(0), "Invalid WETH address");
 
@@ -105,7 +91,7 @@ contract CoreSender is
         indexToken = IndexToken(_token);
         factoryStorage = IndexFactoryStorage(_indexFactoryStorage);
         functionsOracle = FunctionsOracle(_functionsOracle);
-        
+
         IERC20(_chainlinkToken).approve(i_router, type(uint256).max);
         //set addresses
         weth = IWETH(_weth);
@@ -129,8 +115,7 @@ contract CoreSender is
 
     function withdrawLink() external onlyOwner {
         IERC20(factoryStorage.linkToken()).transfer(
-            msg.sender,
-            IERC20(factoryStorage.linkToken()).balanceOf(address(this))
+            msg.sender, IERC20(factoryStorage.linkToken()).balanceOf(address(this))
         );
     }
 
@@ -138,6 +123,14 @@ contract CoreSender is
      * @dev Fallback function to receive ETH.
      */
     receive() external payable {}
+
+    function withdrawEther() external onlyOwner {
+        uint256 balance = address(this).balance;
+        require(balance > 0, "No Ether to withdraw");
+
+        (bool success,) = payable(owner()).call{value: balance}("");
+        require(success, "Ether transfer failed");
+    }
 
     /**
      * @dev Swaps tokens.
@@ -147,32 +140,22 @@ contract CoreSender is
      * @param _recipient The address of the recipient.
      * @return outputAmount The amount of output token.
      */
-    function swap(
-        address[] memory path,
-        uint24[] memory fees,
-        uint amountIn,
-        address _recipient
-    ) internal returns (uint outputAmount) {
+    function swap(address[] memory path, uint24[] memory fees, uint256 amountIn, address _recipient)
+        internal
+        returns (uint256 outputAmount)
+    {
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
-        outputAmount = SwapHelpers.swap(
-            swapRouterV3,
-            swapRouterV2,
-            path,
-            fees,
-            amountIn,
-            _recipient
-        );
+        outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, _recipient);
     }
 
     function _encodeIssuanceData(
-        uint _issuanceNonce,
+        uint256 _issuanceNonce,
         address[] memory _tokenAddresses,
-        uint[] memory _tokenShares,
-        uint[] memory _totalSharesArr
+        uint256[] memory _tokenShares,
+        uint256[] memory _totalSharesArr
     ) internal view returns (bytes memory) {
-        return
-            abi.encode(
+        return abi.encode(
             0,
             _tokenAddresses,
             new address[](0),
@@ -185,18 +168,16 @@ contract CoreSender is
     }
 
     function sendIssuanceRequest(
-        uint _wethAmount,
-        uint _issuanceNonce,
+        uint256 _wethAmount,
+        uint256 _issuanceNonce,
         uint64 _chainSelector,
-        uint _latestCount
+        uint256 _latestCount
     ) public onlyFactory {
         weth.transferFrom(msg.sender, address(this), _wethAmount);
         // swap to cross chain token
-        (
-            address[] memory fromETHPath,
-            uint24[] memory fromETHFees
-        ) = factoryStorage.getFromETHPathData(factoryStorage.crossChainToken(_chainSelector));
-        uint crossChainTokenAmount = swap(
+        (address[] memory fromETHPath, uint24[] memory fromETHFees) =
+            factoryStorage.getFromETHPathData(factoryStorage.crossChainToken(_chainSelector));
+        uint256 crossChainTokenAmount = swap(
             fromETHPath,
             fromETHFees,
             // (_wethAmount * totalShares) / 100e18,
@@ -204,15 +185,9 @@ contract CoreSender is
             address(this)
         );
 
-        
-        uint[] memory totalSharesArr = new uint[](1);
-        totalSharesArr[0] = functionsOracle.getCurrentChainSelectorTotalShares(
-            _latestCount,
-            _chainSelector
-        );
-        address crossChainIndexFactory = factoryStorage.crossChainFactoryBySelector(
-            _chainSelector
-        );
+        uint256[] memory totalSharesArr = new uint256[](1);
+        totalSharesArr[0] = functionsOracle.getCurrentChainSelectorTotalShares(_latestCount, _chainSelector);
+        address crossChainIndexFactory = factoryStorage.crossChainFactoryBySelector(_chainSelector);
         //encode data
         bytes memory data = _encodeIssuanceData(
             _issuanceNonce,
@@ -221,52 +196,35 @@ contract CoreSender is
             totalSharesArr
         );
         // send issuance request
-        Client.EVMTokenAmount[]
-            memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+        Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
         tokensToSendArray[0].token = factoryStorage.crossChainToken(_chainSelector);
         tokensToSendArray[0].amount = crossChainTokenAmount;
-        
+
         // send token and data
-        bytes32 messageId = sendToken(
-            _chainSelector,
-            data,
-            crossChainIndexFactory,
-            tokensToSendArray,
-            MessageSender.PayFeesIn.LINK
-        );
+        bytes32 messageId =
+            sendToken(_chainSelector, data, crossChainIndexFactory, tokensToSendArray, MessageSender.PayFeesIn.Native);
         emit MessageSent(messageId);
         factoryStorage.setIssuanceMessageId(_issuanceNonce, messageId);
-        
     }
 
-    function completeIssuanceRequest(uint _issuanceNonce, bytes32 _messageId) internal {
-        uint totalOldVaules;
-        uint totalNewVaules;
-        uint totalCurrentList = functionsOracle.totalCurrentList();
-        for (uint i = 0; i < totalCurrentList; i++) {
+    function completeIssuanceRequest(uint256 _issuanceNonce, bytes32 _messageId) internal {
+        uint256 totalOldVaules;
+        uint256 totalNewVaules;
+        uint256 totalCurrentList = functionsOracle.totalCurrentList();
+        for (uint256 i = 0; i < totalCurrentList; i++) {
             address tokenAddress = functionsOracle.currentList(i);
-            totalOldVaules += factoryStorage.getIssuanceOldTokenValue(
-                _issuanceNonce,
-                tokenAddress
-            );
-            totalNewVaules += factoryStorage.getIssuanceNewTokenValue(
-                _issuanceNonce,
-                tokenAddress
-            );
+            totalOldVaules += factoryStorage.getIssuanceOldTokenValue(_issuanceNonce, tokenAddress);
+            totalNewVaules += factoryStorage.getIssuanceNewTokenValue(_issuanceNonce, tokenAddress);
         }
 
-        uint amountToMint;
+        uint256 amountToMint;
         if (indexToken.totalSupply() > 0) {
-            amountToMint =
-                (indexToken.totalSupply() * totalNewVaules) /
-                totalOldVaules -
-                indexToken.totalSupply();
+            amountToMint = (indexToken.totalSupply() * totalNewVaules) / totalOldVaules - indexToken.totalSupply();
         } else {
             amountToMint = (totalNewVaules) * 100;
         }
         indexToken.mint(factoryStorage.getIssuanceRequester(_issuanceNonce), amountToMint);
-        uint indexTokenPrice = (totalNewVaules * 1e18) /
-            indexToken.totalSupply();
+        uint256 indexTokenPrice = (totalNewVaules * 1e18) / indexToken.totalSupply();
         emit Issuanced(
             _messageId,
             _issuanceNonce,
@@ -280,53 +238,37 @@ contract CoreSender is
     }
 
     function _handleReceivedIssuance(
-        uint nonce,
+        uint256 nonce,
         address[] memory tokenAddresses,
-        uint[] memory value1,
-        uint[] memory value2,
-        uint totalCurrentList,
+        uint256[] memory value1,
+        uint256[] memory value2,
+        uint256 totalCurrentList,
         bytes32 messageId
     ) internal {
-        uint requestIssuanceNonce = nonce;
-        for (uint i; i < tokenAddresses.length; i++) {
-            uint oldTokenValue = value1[i];
-            uint newTokenValue = value2[i];
-            factoryStorage.setIssuanceOldTokenValue(
-                requestIssuanceNonce,
-                tokenAddresses[i],
-                oldTokenValue
-            );
-            factoryStorage.setIssuanceNewTokenValue(
-                requestIssuanceNonce,
-                tokenAddresses[i],
-                newTokenValue
-            );
-            factoryStorage.issuanceIncreaseCompletedTokensCount(
-                requestIssuanceNonce
-            );
+        uint256 requestIssuanceNonce = nonce;
+        for (uint256 i; i < tokenAddresses.length; i++) {
+            uint256 oldTokenValue = value1[i];
+            uint256 newTokenValue = value2[i];
+            factoryStorage.setIssuanceOldTokenValue(requestIssuanceNonce, tokenAddresses[i], oldTokenValue);
+            factoryStorage.setIssuanceNewTokenValue(requestIssuanceNonce, tokenAddresses[i], newTokenValue);
+            factoryStorage.issuanceIncreaseCompletedTokensCount(requestIssuanceNonce);
         }
         if (
             // totalCurrentList
-            factoryStorage.getIssuanceCompletedTokensCount(
-                requestIssuanceNonce
-            ) == totalCurrentList
+            factoryStorage.getIssuanceCompletedTokensCount(requestIssuanceNonce) == totalCurrentList
         ) {
             completeIssuanceRequest(requestIssuanceNonce, messageId);
         }
     }
 
-    function sendRedemptionRequest(
-        uint _burnPercent,
-        uint _redemptionNonce,
-        uint64 _chainSelector
-    ) public onlyFactory {
+    function sendRedemptionRequest(uint256 _burnPercent, uint256 _redemptionNonce, uint64 _chainSelector)
+        public
+        onlyFactory
+    {
         // get data
-        address crossChainIndexFactory = factoryStorage.crossChainFactoryBySelector(
-            _chainSelector
-        );
-        address[] memory tokenAddresses = functionsOracle
-            .allCurrentChainSelectorTokens(_chainSelector);
-        uint[] memory burnPercentages = new uint[](1);
+        address crossChainIndexFactory = factoryStorage.crossChainFactoryBySelector(_chainSelector);
+        address[] memory tokenAddresses = functionsOracle.allCurrentChainSelectorTokens(_chainSelector);
+        uint256[] memory burnPercentages = new uint256[](1);
         burnPercentages[0] = _burnPercent;
         //encode data
         bytes memory data = abi.encode(
@@ -336,44 +278,30 @@ contract CoreSender is
             functionsOracle.getFromETHPathBytesForTokens(tokenAddresses),
             new bytes[](0),
             _redemptionNonce,
-            new uint[](0),
+            new uint256[](0),
             burnPercentages
         );
         // send message
-        bytes32 messageId = sendMessage(
-            _chainSelector,
-            crossChainIndexFactory,
-            data,
-            MessageSender.PayFeesIn.LINK
-        );
+        bytes32 messageId = sendMessage(_chainSelector, crossChainIndexFactory, data, MessageSender.PayFeesIn.Native);
+
         factoryStorage.setRedemptionMessageId(_redemptionNonce, messageId);
     }
 
-    uint public testData;
-    function completeRedemptionRequest(
-        uint nonce,
-        bytes32 _messageId
-    ) internal {
-        uint wethAmount = factoryStorage.getRedemptionTotalValue(nonce);
-        uint totalPortfolioValues = factoryStorage.getRedemptionTotalPortfolioValues(
-            nonce
-        );
+    uint256 public testData;
+
+    function completeRedemptionRequest(uint256 nonce, bytes32 _messageId) internal {
+        uint256 wethAmount = factoryStorage.getRedemptionTotalValue(nonce);
+        uint256 totalPortfolioValues = factoryStorage.getRedemptionTotalPortfolioValues(nonce);
         address requester = factoryStorage.getRedemptionRequester(nonce);
         address outputToken = factoryStorage.getRedemptionOutputToken(nonce);
-        uint fee = FeeCalculation.calculateFee(wethAmount, factoryStorage.feeRate());
+        uint256 fee = FeeCalculation.calculateFee(wethAmount, factoryStorage.feeRate());
         testData = fee;
-        require(
-            weth.transfer(address(factoryStorage.feeReceiver()), fee),
-            "Fee transfer failed"
-        );
-        uint indexTokenPrice = indexToken.totalSupply() != 0
-            ? (totalPortfolioValues * 1e18) / indexToken.totalSupply()
-            : 0;
+        require(weth.transfer(address(factoryStorage.feeReceiver()), fee), "Fee transfer failed");
+        uint256 indexTokenPrice =
+            indexToken.totalSupply() != 0 ? (totalPortfolioValues * 1e18) / indexToken.totalSupply() : 0;
         if (outputToken == address(weth)) {
             weth.withdraw(wethAmount - fee);
-            (bool _requesterSuccess, ) = requester.call{
-                value: wethAmount - fee
-            }("");
+            (bool _requesterSuccess,) = requester.call{value: wethAmount - fee}("");
             require(_requesterSuccess, "transfer eth to the requester failed");
             emit Redemption(
                 _messageId,
@@ -386,7 +314,7 @@ contract CoreSender is
                 block.timestamp
             );
         } else {
-            uint reallOut = swap(
+            uint256 reallOut = swap(
                 factoryStorage.getRedemptionOutputTokenPath(nonce),
                 factoryStorage.getRedemptionOutputTokenFees(nonce),
                 wethAmount - fee,
@@ -405,43 +333,29 @@ contract CoreSender is
         }
     }
 
-    uint public testData2;
+    uint256 public testData2;
+
     function _handleReceivedRedemption(
-        uint nonce,
+        uint256 nonce,
         Client.Any2EVMMessage memory any2EvmMessage,
         address[] memory tokenAddresses,
-        uint totalCurrentList,
-        uint crossChainPortfolioValue,
+        uint256 totalCurrentList,
+        uint256 crossChainPortfolioValue,
         uint64 sourceChainSelector,
         bytes32 messageId
     ) internal {
-        uint requestRedemptionNonce = nonce;
-        Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage
-            .destTokenAmounts;
+        uint256 requestRedemptionNonce = nonce;
+        Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage.destTokenAmounts;
         address token = tokenAmounts[0].token;
         uint256 amount = tokenAmounts[0].amount;
-        (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage
-            .getToETHPathData(token);
-        uint wethAmount = swap(toETHPath, toETHFees, amount, address(this));
-        
-        factoryStorage.increaseRedemptionTotalValue(
-            requestRedemptionNonce,
-            wethAmount
-        );
+        (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage.getToETHPathData(token);
+        uint256 wethAmount = swap(toETHPath, toETHFees, amount, address(this));
+
+        factoryStorage.increaseRedemptionTotalValue(requestRedemptionNonce, wethAmount);
         testData2 = factoryStorage.getRedemptionTotalValue(requestRedemptionNonce);
-        factoryStorage.increaseRedemptionTotalPortfolioValues(
-            requestRedemptionNonce,
-            crossChainPortfolioValue
-        );
-        factoryStorage.increaseRedemptionCompletedTokensCount(
-            requestRedemptionNonce,
-            tokenAddresses.length
-        );
-        if (
-            factoryStorage.getRedemptionCompletedTokensCount(
-                requestRedemptionNonce
-            ) == totalCurrentList
-        ) {
+        factoryStorage.increaseRedemptionTotalPortfolioValues(requestRedemptionNonce, crossChainPortfolioValue);
+        factoryStorage.increaseRedemptionCompletedTokensCount(requestRedemptionNonce, tokenAddresses.length);
+        if (factoryStorage.getRedemptionCompletedTokensCount(requestRedemptionNonce) == totalCurrentList) {
             completeRedemptionRequest(requestRedemptionNonce, messageId);
         }
     }
@@ -492,81 +406,45 @@ contract CoreSender is
         MessageSender.PayFeesIn payFeesIn
     ) internal returns (bytes32) {
         // Validate input parameters
-        require(
-            destinationChainSelector > 0,
-            "Invalid destination chain selector"
-        );
+        require(destinationChainSelector > 0, "Invalid destination chain selector");
         require(receiver != address(0), "Invalid receiver address");
         require(_data.length > 0, "Data cannot be empty");
-        return
-            MessageSender.sendMessage(
-                getRouter(),
-                factoryStorage.linkToken(),
-                destinationChainSelector,
-                receiver,
-                _data,
-                payFeesIn,
-                3_000_000
-            );
+        return MessageSender.sendMessage(
+            getRouter(), factoryStorage.linkToken(), destinationChainSelector, receiver, _data, payFeesIn, 3_000_000
+        );
     }
     /**
      * @dev Handles received messages.
      * @param any2EvmMessage The received message.
      */
-    function _ccipReceive(
-        Client.Any2EVMMessage memory any2EvmMessage
-    ) internal override {
+
+    function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage) internal override {
         bytes32 messageId = any2EvmMessage.messageId;
         uint64 sourceChainSelector = any2EvmMessage.sourceChainSelector;
-        uint totalCurrentList = functionsOracle.totalCurrentList();
+        uint256 totalCurrentList = functionsOracle.totalCurrentList();
         address sender = abi.decode(any2EvmMessage.sender, (address)); // abi-decoding of the sender address
         require(
             sender == factoryStorage.crossChainFactoryBySelector(sourceChainSelector),
             "Invalid sender for the factory ccip recieve"
         );
         (
-            uint actionType,
+            uint256 actionType,
             address[] memory tokenAddresses,
             ,
             ,
             ,
-            uint nonce,
-            uint[] memory value1,
-            uint[] memory value2
+            uint256 nonce,
+            uint256[] memory value1,
+            uint256[] memory value2
         ) = abi.decode(
-                any2EvmMessage.data,
-                (
-                    uint,
-                    address[],
-                    address[],
-                    bytes[],
-                    bytes[],
-                    uint,
-                    uint[],
-                    uint[]
-                )
-            );
+            any2EvmMessage.data, (uint256, address[], address[], bytes[], bytes[], uint256, uint256[], uint256[])
+        );
         if (actionType == 0) {
-            _handleReceivedIssuance(
-                nonce,
-                tokenAddresses,
-                value1,
-                value2,
-                totalCurrentList,
-                messageId
-            );
+            _handleReceivedIssuance(nonce, tokenAddresses, value1, value2, totalCurrentList, messageId);
         } else if (actionType == 1) {
             _handleReceivedRedemption(
-                nonce,
-                any2EvmMessage,
-                tokenAddresses,
-                totalCurrentList,
-                value1[0],
-                sourceChainSelector,
-                messageId
+                nonce, any2EvmMessage, tokenAddresses, totalCurrentList, value1[0], sourceChainSelector, messageId
             );
         }
     }
-
-    
 }
