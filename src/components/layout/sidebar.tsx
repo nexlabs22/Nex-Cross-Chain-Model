@@ -18,8 +18,8 @@ const Sidebar = () => {
     const { mode } = useColorScheme()
     return (
         <Stack
-            display={{xs: "none", lg: "block"}}
-            minWidth={{xs: "0vw", lg: "3vw", xl: "1vw"}}
+            display={{ xs: "none", lg: "block" }}
+            minWidth={{ xs: "0vw", lg: "3vw", xl: "1vw" }}
             width={"fit-content"}
             height="100vh"
             maxHeight="100vh"
@@ -34,7 +34,7 @@ const Sidebar = () => {
                 zIndex: 999,
                 ":hover": {
 
-                    minWidth: {lg: "12vw", xl: "5vw"},
+                    minWidth: { lg: "12vw", xl: "5vw" },
                     transition: "min-width 0.1s ease",
                 },
                 ":hover .sidebar-link-typography": {
@@ -60,17 +60,30 @@ const Sidebar = () => {
                     {
                         navItems.map((item: NavItem, key: number) => {
                             return (
-                                <Link key={key} href={item.link} width={'fit-content'} display={'flex'} underline="none">
+                                item.available ? (
+                                    <Link key={key} href={item.link} width={'fit-content'} display={'flex'} underline="none">
+                                        <Stack key={key} direction="row" alignItems={"center"} gap={1}>
+                                            <item.icon size={20} />
+                                            <Typography variant="h6" className="sidebar-link-typography" sx={{
+                                                width: 0,
+                                                overflow: "hidden",
+                                                whiteSpace: "nowrap",
+                                                transition: "width 0.3s ease",
+                                            }}>{item.label}</Typography>
+                                        </Stack>
+                                    </Link>
+                                ) : (
                                     <Stack key={key} direction="row" alignItems={"center"} gap={1}>
-                                        <item.icon size={20} />
+                                        <item.icon size={20} color={theme.palette.text.secondary} />
                                         <Typography variant="h6" className="sidebar-link-typography" sx={{
                                             width: 0,
                                             overflow: "hidden",
                                             whiteSpace: "nowrap",
                                             transition: "width 0.3s ease",
+                                            color: theme.palette.text.secondary
                                         }}>{item.label}</Typography>
                                     </Stack>
-                                </Link>
+                                )
                             )
                         })
                     }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Stack, Link } from "@mui/material"
+import { Stack } from "@mui/material"
 import Grid from "@mui/material/Grid2"
 import IndexCard from "@/components/ui/generic/indexCard"
 import { IndexCryptoAsset } from "@/types/indexTypes"
@@ -49,18 +49,7 @@ const MobileFeaturedIndices = () => {
           interval={5000}
         >
           {nexTokens.map((index: IndexCryptoAsset, key: number) => (
-            <Link
-              href={`/trade?side=buy&index=${index.symbol}`}
-              key={key}
-              sx={{
-                textDecoration: "none",
-                width: "100%",
-                height: "100%",
-                cursor: "pointer",
-              }}
-            >
-              <IndexCard index={index} />
-            </Link>
+            <IndexCard key={key} index={index} />
           ))}
         </Carousel>
       </Grid>

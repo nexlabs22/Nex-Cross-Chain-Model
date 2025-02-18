@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { Avatar, IconButton, Typography } from '@mui/material';
 import { OutlinedInput } from '@mui/material';
-import { IoSearch } from "react-icons/io5"; 
+import { IoSearch } from "react-icons/io5";
 import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -17,20 +17,14 @@ import Skeleton from '@mui/material/Skeleton';
 import theme from '@/theme/theme';
 import { IoMdClose } from "react-icons/io";
 import { useEffect, useState, useMemo } from 'react';
-
-import { fetchCoinMarketCapTokens } from '@/utils/fetchCMCTokens';
-
-interface ExampleToken {
-  id: string;
-  name: string;
-  symbol: string;
-  logo: string;
-}
+import { CryptoAsset, IndexCryptoAsset } from "@/types/indexTypes"
+import { sepoliaTokens } from '@/constants/tokens';
+import { useDashboard } from '@/providers/DashboardProvider';
 
 interface TokenListData {
-  tokens: ExampleToken[];
+  tokens: CryptoAsset[] | IndexCryptoAsset[];
   visibleCount: number;
-  onSelect: (token: ExampleToken) => void;
+  onSelect: (token: CryptoAsset | IndexCryptoAsset) => void;
 }
 
 function renderRow(props: ListChildComponentProps<TokenListData>) {
@@ -62,7 +56,7 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
   return (
     <ListItem
       style={style}
-      key={token.id}
+      key={token.symbol}
       component="div"
       disablePadding
       sx={{ borderRadius: '1rem' }}
@@ -74,14 +68,14 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
         }}
       >
         <ListItemAvatar>
-          {token.logo ? (
+          {token.logoString ? (
             <Avatar
               alt={token.symbol}
-              src={token.logo}
+              src={token.logoString}
               sx={{
                 width: 40,
                 height: 40,
-                backgroundColor: theme.palette.elevations.elevation50.main,
+                backgroundColor: 'transparent',
                 border: 'none'
               }}
             />
@@ -97,27 +91,32 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
 
 export default function TokensModal({
   open,
+  showNexProducts,
+  showTokens,
   onClose,
   onSelect
 }: {
   open: boolean;
+  showNexProducts: boolean;
+  showTokens: boolean;
   onClose: () => void;
-  onSelect: (token: ExampleToken) => void;
+  onSelect: (token: CryptoAsset | IndexCryptoAsset) => void;
 }) {
-  const [tokens, setTokens] = useState<ExampleToken[]>([]);
-  const [filteredTokens, setFilteredTokens] = useState<ExampleToken[]>([]);
+  const [tokens, setTokens] = useState<CryptoAsset[] | IndexCryptoAsset[]>([]);
+  const [filteredTokens, setFilteredTokens] = useState<CryptoAsset[] | IndexCryptoAsset[]>([]);
   const [visibleCount, setVisibleCount] = useState<number>(0);
   const [inputValue, setInputValue] = useState("");
+  const { nexTokens } = useDashboard()
 
   useEffect(() => {
-    fetchCoinMarketCapTokens()
-      .then((tokens) => {
-        setTokens(tokens);
-        setFilteredTokens(tokens);
-        setVisibleCount(Math.min(50, tokens.length));
-      })
-      .catch((err) => console.error(err));
-  }, []);
+    const tokensContent = [
+      ...(showNexProducts ? nexTokens : []),
+      ...(showTokens ? sepoliaTokens : [])
+    ];
+    setTokens(tokensContent);
+    setFilteredTokens(tokensContent);
+    setVisibleCount(tokensContent.length)
+  }, [nexTokens, showNexProducts, showTokens])
 
   const handleInputChange = (
     event: React.SyntheticEvent,
@@ -131,19 +130,19 @@ export default function TokensModal({
 
     if (!value) {
       setFilteredTokens(tokens);
-      setVisibleCount(Math.min(50, tokens.length));
+      setVisibleCount(tokens.length);
     } else {
       const filtered = tokens.filter((token) =>
         token.name.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredTokens(filtered);
-      setVisibleCount(Math.min(50, filtered.length));
+      setVisibleCount(filtered.length);
     }
   };
 
   const handleAutocompleteChange = (
     event: React.SyntheticEvent,
-    value: ExampleToken | null
+    value: CryptoAsset | IndexCryptoAsset | null
   ) => {
     if (value) {
       onSelect(value);
@@ -167,7 +166,7 @@ export default function TokensModal({
   const itemData = useMemo(() => ({
     tokens: filteredTokens,
     visibleCount,
-    onSelect: (token: ExampleToken) => {
+    onSelect: (token: CryptoAsset | IndexCryptoAsset) => {
       onSelect(token);
       onClose();
     }
@@ -182,7 +181,7 @@ export default function TokensModal({
           justifyContent: "start",
           alignItems: "start",
           backgroundColor: theme.palette.elevations.elevation900.main,
-          width: {xs: "90vw", lg: "35vw"},
+          width: { xs: "90vw", lg: "35vw" },
           position: 'absolute',
           top: '50%',
           left: '50%',
@@ -275,7 +274,7 @@ export default function TokensModal({
                 itemSize={70}
                 overscanCount={5}
                 itemKey={(index, data: TokenListData) =>
-                  data.tokens[index]?.id || index
+                  data.tokens[index]?.symbol || index
                 }
                 itemData={itemData}
                 onItemsRendered={onItemsRendered}

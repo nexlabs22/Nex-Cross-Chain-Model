@@ -2,11 +2,10 @@
 
 import GenericCard from "@/components/ui/generic/genericCard"
 import GenericAreaLineChart from "./genericAreaChart"
-import { Box, Typography, Stack } from "@mui/material"
+import { Box, Typography, Stack, Skeleton, Button, Link } from "@mui/material"
 import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGroup"
 
 import {
-  MdOutlineArrowOutward,
   MdOutlineArrowUpward,
   MdOutlineArrowDownward
 } from "react-icons/md"
@@ -39,7 +38,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
     ? `${index.marketInfo?.change24hFmt}%`
     : "N/A"
   const change24hValue = index.marketInfo?.change24h as number
-  const monthPrices = index.historicalPrice?.slice(0,30).sort((a,b)=> a.timestamp - b.timestamp) || []
+  const monthPrices = index.historicalPrice?.slice(0, 30).sort((a, b) => a.timestamp - b.timestamp) || []
 
   return (
     <GenericCard>
@@ -73,7 +72,6 @@ const IndexCard = ({ index }: IndexCardProps) => {
             />
           </Stack>
         </Stack>
-        <MdOutlineArrowOutward size={24} color={theme.palette.info.main} />
       </Stack>
       <Stack gap={1} marginTop={3}>
         <Typography variant={"h3"}>{price}</Typography>
@@ -82,7 +80,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
             <Box
               borderRadius={"50%"}
               sx={{
-                backgroundColor: theme.palette.success.main,
+                backgroundColor: change24hValue && change24hValue > 0 ? theme.palette.success.main : theme.palette.error.main,
                 width: 24,
                 height: 24,
                 display: "flex",
@@ -110,15 +108,53 @@ const IndexCard = ({ index }: IndexCardProps) => {
                   : "error.main"
               }
             >
-              {formatToViewNumber({value:change24hValue, returnType: 'currency'})} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
+              {formatToViewNumber({ value: change24hValue, returnType: 'currency' })} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
             </Typography>
           </Stack>
-          <Typography variant={"subtitle2"} color={"text.secondary"}>
-            {index.marketInfo?.change24h && index.marketInfo?.change24h > 0
-              ? "More than"
-              : "Less than"}{" "}
-            last 24 hours
-          </Typography>
+          <Stack direction='row' alignItems='end' gap={0.5} marginTop={2}>
+            <Link
+              href={`/trade?side=buy&index=${index.symbol}`}
+              style={{
+                textDecoration: "none",
+                width: "fit-content",
+                cursor: "pointer",
+              }}
+            >
+              <Button
+                variant="contained"
+                size='large'
+                sx={{
+                  backgroundColor: theme.palette.info.main,
+                  borderRadius: 30,
+                  color: theme.palette.background.default,
+                  textTransform: "none",
+                }}
+              >
+                <Typography variant={"h6"} fontWeight={700}>Trade</Typography>
+              </Button>
+            </Link>
+            <Link
+              href={`catalogue/index-details?index=${index.symbol}`}
+              style={{
+                textDecoration: "none",
+                width: "fit-content",
+                cursor: "pointer",
+              }}
+            >
+              <Button
+                variant="contained"
+                size='large'
+                sx={{
+                  backgroundColor: theme.palette.info.main,
+                  borderRadius: 30,
+                  color: theme.palette.background.default,
+                  textTransform: "none",
+                }}
+              >
+                <Typography variant={"h6"} fontWeight={700}>Details</Typography>
+              </Button>
+            </Link>
+          </Stack>
         </Stack>
         <Stack
           width={"100%"}
@@ -135,7 +171,15 @@ const IndexCard = ({ index }: IndexCardProps) => {
             right: 0,
           }}
         >
-          <GenericAreaLineChart label={index.symbol} chartData={mongoDataToChartData(monthPrices)} />
+          {
+            monthPrices.length > 0 ? (
+              <GenericAreaLineChart label={index.symbol} chartData={mongoDataToChartData(monthPrices)} />
+            ) : (
+              <Stack width={'100%'} height={'100%'} padding={2} alignItems={'center'} justifyContent={'center'}>
+                <Skeleton variant="rectangular" width={'100%'} height={'100%'} sx={{ borderRadius: 2 }} />
+              </Stack>
+            )
+          }
         </Stack>
       </Stack>
     </GenericCard>

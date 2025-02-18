@@ -60,6 +60,12 @@ import { getClient } from "@/utils/getRPCClient"
 import { toast } from "react-toastify"
 import TokensModal from "./tokensModal"
 import { useTrade } from "@/providers/TradeProvider"
+import { sepoliaTokens } from "@/constants/tokens"
+
+interface SwapProps {
+  side?: "buy" | "sell"
+  selectedIndex?: IndexCryptoAsset
+}
 
 function isIndexCryptoAsset(
   token: CryptoAsset | IndexCryptoAsset
@@ -67,7 +73,7 @@ function isIndexCryptoAsset(
   return token && typeof token === "object" && "smartContractType" in token
 }
 
-export default function Swap() {
+export default function Swap({ selectedIndex, side }: SwapProps) {
   const {
     activeChainSetting,
     userAddress,
@@ -76,24 +82,39 @@ export default function Swap() {
   const { network, chainName } = activeChainSetting
   const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } =
     useTrade()
-  const { ethPriceUsd } = useDashboard()
+  const [selectedSide , setSelectedSide] = useState<"buy" | "sell" | undefined>(side)
+  const { ethPriceUsd, nexTokens } = useDashboard()
 
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
     "auto"
   )
 
-  const [openTokensModal, setOpenTokensModal] = useState(false)
-  const handleOpenTokensModal = () => {
-    setOpenTokensModal(true)
+  const [openFromTokensModal, setOpenFromTokensModal] = useState(false)
+  const [openToTokensModal, setOpenToTokensModal] = useState(false)
+
+  const handleOpenFromTokensModal = () => {
+    setOpenFromTokensModal(true)
   }
-  const handleCloseTokensModal = () => {
-    setOpenTokensModal(false)
+  const handleCloseFromTokensModal = () => {
+    setOpenFromTokensModal(false)
+  }
+
+  const handleOpenToTokensModal = () => {
+    setOpenToTokensModal(true)
+  }
+  const handleCloseToTokensModal = () => {
+    setOpenToTokensModal(false)
   }
 
   const [firstInputValue, setFirstInputValue] = useState("")
   const [secondInputValue, setSecondInputValue] = useState("")
   const [from1UsdPrice, setFrom1UsdPrice] = useState(0)
   const [to1UsdPrice, setTo1UsdPrice] = useState(0)
+  const [coinsList, setCoinsList] = useState<CryptoAsset[]>([])
+  const [mergedCoinList, setMergedCoinList] = useState<CryptoAsset[][]>([
+    [],
+    [],
+  ])
   const [feeRate, setFeeRate] = useState(0)
   const [currentPortfolioValue, setCurrentPortfolioBalance] = useState(0)
   const [userEthBalance, setUserEthBalance] = useState(0)
@@ -104,6 +125,16 @@ export default function Swap() {
     ? swapFromToken.symbol
     : swapToToken.symbol
   const activeStorageAddress = tokenAddresses[activeSymbol as NexIndices]?.[chainName]?.[network]?.storage?.address as Address
+
+  useEffect(() => {
+    const selectedCoin = selectedIndex?.symbol || "ANFI"
+    const coinDetails = [...nexTokens, ...sepoliaTokens].filter(
+      (coin: CryptoAsset) => {
+        return coin.symbol === selectedCoin
+      }
+    )
+    setSwapToToken(coinDetails[0])
+  }, [selectedIndex, nexTokens, setSwapToToken, setSwapToToken])
 
   useEffect(() => {
     async function fetchData(tokenDetails: CryptoAsset) {
@@ -152,10 +183,120 @@ export default function Swap() {
     setSecondInputValue("")
   }
 
+  const fetchAllLiFiTokens = async () => {
+    const options = {
+      method: "GET",
+      headers: { accept: "application/json" },
+    }
+    try {
+      const response = await fetch(`https://li.quest/v1/tokens`, options)
+      const data = await response.json()
+
+      const tokenSets = data.tokens
+      const coins: CryptoAsset[] = Object.keys(tokenSets).flatMap((key) => {
+        const tokenSet = tokenSets[key]
+        return tokenSet.map(
+          (coin: {
+            address: Address
+            logoURI: string
+            name: string
+            symbol: string
+            decimals: number
+          }) => ({
+            id: coin.address,
+            logo:
+              coin.logoURI && coin.logoURI != ""
+                ? coin.logoURI
+                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFkV1AbgRiM148jZcCVDvdFhjx_vfKVS055A&usqp=CAU",
+            name: coin.name,
+            Symbol: coin.symbol,
+            address: coin.address,
+            decimals: coin.decimals,
+          })
+        )
+      })
+      return coins
+    } catch (error) {
+      console.error(error)
+      return [] // Ensure a value is returned even in case of an error
+    }
+  }
+
+  function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+    const chunks: T[][] = []
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize))
+    }
+    return chunks
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const initialCoins = await fetchAllLiFiTokens()
+      const dividedArrays = chunkArray(initialCoins, 100)
+
+      setCoinsList(dividedArrays[0])
+    }
+
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    const finalCoinList =
+      network === "Mainnet"
+        ? coinsList
+        : ([...nexTokens, ...sepoliaTokens] as IndexCryptoAsset[])
+    const OurIndexCoinList: IndexCryptoAsset[] = finalCoinList.filter((coin) =>
+      coin.hasOwnProperty("smartContractType")
+    )
+    const OtherCoinList: IndexCryptoAsset[] = finalCoinList.filter(
+      (coin) => !coin.hasOwnProperty("smartContractType")
+    )
+
+    if (swapToToken.symbol === "MAG7" || swapFromToken.symbol === "MAG7") {
+      const usdcDetails = OtherCoinList.filter((coin) => {
+        return coin.symbol === "USDC"
+      })[0]
+      if (swapToToken.symbol === "MAG7") {
+        setSwapFromToken(usdcDetails)
+      }
+    }
+    setMergedCoinList([OtherCoinList, OurIndexCoinList])
+  }, [
+    network,
+    swapToToken.symbol,
+    swapFromToken.symbol,
+    coinsList, setSwapFromToken,
+    nexTokens,
+    setSwapFromToken,
+  ])
+
   function Switching() {
     const switchReserve = swapFromToken
     setSwapFromToken(swapToToken)
     setSwapToToken(switchReserve)
+    setSelectedSide(selectedSide == 'buy' ? 'sell' : 'buy')
+    if (switchReserve.hasOwnProperty("smartContractType")) {
+      if (
+        mergedCoinList[0].some((obj) => obj.hasOwnProperty("smartContractType"))
+      ) {
+        const newArray = [mergedCoinList[1], mergedCoinList[0]]
+        setMergedCoinList(newArray)
+      } else {
+        const newArray = [mergedCoinList[0], mergedCoinList[1]]
+        setMergedCoinList(newArray)
+      }
+    } else {
+      if (
+        mergedCoinList[0].some((obj) => obj.hasOwnProperty("smartContractType"))
+      ) {
+        const newArray = [mergedCoinList[0], mergedCoinList[1]]
+        setMergedCoinList(newArray)
+      } else {
+        const newArray = [mergedCoinList[1], mergedCoinList[0]]
+        setMergedCoinList(newArray)
+      }
+    }
     setSecondInputValue(firstInputValue)
   }
 
@@ -1218,7 +1359,7 @@ export default function Swap() {
                 paddingX: 1,
                 paddingY: 0.5,
               }}
-              onClick={() => handleOpenTokensModal()}
+              onClick={() => handleOpenFromTokensModal()}
             >
               <Box
                 width={36}
@@ -1284,16 +1425,21 @@ export default function Swap() {
               onChange={changeSecondInputValue}
               value={formatNumber(Number(secondInputValue))}
             />
-            <Stack
-              direction="row"
-              alignItems="center"
-              gap={1}
-              paddingX={1}
-              paddingY={0.5}
+            <Button
+              variant="outlined"
               sx={{
                 backgroundColor: theme.palette.elevations.elevation900.main,
+                border: "none",
                 borderRadius: 2,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 1,
+                paddingX: 1,
+                paddingY: 0.5,
               }}
+              onClick={() => handleOpenToTokensModal()}
             >
               <Box
                 width={36}
@@ -1310,7 +1456,7 @@ export default function Swap() {
                 <Typography variant="caption">{network}</Typography>
               </Stack>
               <LuChevronDown />
-            </Stack>
+            </Button>
           </Stack>
         </Stack>
         <Stack gap={0.5}>
@@ -1416,13 +1562,21 @@ export default function Swap() {
           </Button>
         )}
       </Stack>
+      {/* tokens modal for setting FromSwapToken */}
       <TokensModal
-        open={openTokensModal}
-        onClose={handleCloseTokensModal}
-        onSelect={(selectedToken) => {
-          console.log("Selected token:", selectedToken)
-          handleCloseTokensModal()
-        }}
+        open={openFromTokensModal}
+        showNexProducts={selectedSide == 'buy' ? false : true}
+        showTokens={selectedSide == 'buy' ? true : false}
+        onClose={handleCloseFromTokensModal}
+        onSelect={(selectedToken) => { setSwapFromToken(selectedToken); handleCloseFromTokensModal(); }}
+      />
+      {/* tokens modal for setting ToSwapToken */}
+      <TokensModal
+        open={openToTokensModal}
+        showNexProducts={selectedSide == 'buy' ? true : false}
+        showTokens={selectedSide == 'buy' ? false : true}
+        onClose={handleCloseToTokensModal}
+        onSelect={(selectedToken) => { setSwapToToken(selectedToken); handleCloseToTokensModal(); }}
       />
     </>
   )
