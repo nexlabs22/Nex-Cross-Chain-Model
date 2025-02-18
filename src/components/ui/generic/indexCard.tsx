@@ -101,15 +101,21 @@ const IndexCard = ({ index }: IndexCardProps) => {
               )}
             </Box>
             <Typography
-              variant={"h6"}
-              color={
-                change24hValue && change24hValue > 0
-                  ? "success.main"
-                  : "error.main"
-              }
+              variant="h6"
+              color={change24hValue && change24hValue > 0 ? "success.main" : "error.main"}
+              title={change24hValue?.toString()} // Show actual value on hover
             >
-              {formatToViewNumber({ value: change24hValue, returnType: 'currency' })} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
+              ${change24hValue && Math.abs(change24hValue) < 0.01
+                ? "<0.01"
+                : formatToViewNumber({ value: change24hValue, returnType: "currency" })}
+
+              <span
+                style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}
+              >
+                {' '}({change24hString})
+              </span>
             </Typography>
+
           </Stack>
           <Stack direction='row' alignItems='end' gap={0.5} marginTop={2}>
             <Link

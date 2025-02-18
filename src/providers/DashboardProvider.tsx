@@ -104,14 +104,14 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
               .post(`/api/chart-data`, filter)
               .then((res) => res.data.data)
               .catch((err) => console.log(err))
-            const { change24h, change24hFmt } = get24hChange(historicalPrice)
+            const { change24hFmt } = get24hChange(historicalPrice)
 
             // Construct the enhanced token object
             return {
               ...token,
               marketInfo: {
                 ...token.marketInfo,
-                change24h,
+                change24h: price * (Number(change24hFmt)/100),
                 change24hFmt,
                 marketCap: totalSupply * price,
               },
