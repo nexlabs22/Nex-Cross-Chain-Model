@@ -19,14 +19,14 @@ export function GetDefiPortfolioBalance(
     (symbol) => allowedSymbols.includes(symbol)
   )[0]
 
-  const storageContract = GetContract(activeTicker as AllowedTickers, 'storage')
+  const storageContract = activeTicker ? GetContract(activeTicker as AllowedTickers, 'storage'): null
 
   const getPortfolioValue = useCallback(async () => {
 
     let totalPortfolioBalance: number = 0
 
     const sepoliaPortfolioBalance = await readContract({
-      contract: storageContract,
+      contract: storageContract!,
       method: "function getPortfolioBalance() returns (uint256)",
       params: []
     })
@@ -37,10 +37,10 @@ export function GetDefiPortfolioBalance(
   }, [storageContract])
 
   useEffect(() => {
-    if (activeTicker) {
+    if (activeTicker && storageContract) {
       getPortfolioValue()
     }
-  }, [getPortfolioValue, activeTicker])
+  }, [getPortfolioValue, activeTicker, storageContract])
 
   return {
     data: portfolioValue,

@@ -17,7 +17,7 @@ const Page = ({
   searchParams: { [key: string]: string | string[] | undefined }
 }) => {
   const { nexTokens } = useDashboard()
-  const { index } = searchParams;
+  const { index, side } = searchParams;
   let selectedIndex = nexTokens[0];
   if (index) {
     const foundToken = nexTokens.find(token => token.symbol === index);

@@ -1,5 +1,5 @@
 import { tokenAddresses } from "@/constants/contractAddresses"
-import { Address } from "@/types/indexTypes"
+import { Address, CryptoAsset, IndexCryptoAsset } from "@/types/indexTypes"
 import { DailyAsset } from "@/types/mongoDb"
 import { sub, isWeekend } from "date-fns"
 
@@ -118,6 +118,14 @@ const parseQueryFromPath = (
 
   return queryObject
 }
+
+function isIndexCryptoAsset(
+  token: CryptoAsset | IndexCryptoAsset
+): token is IndexCryptoAsset {
+  return token && typeof token === "object" && "smartContractType" in token
+}
+
+
 export {
   getPreviousWeekday,
   SwapNumbers,
@@ -129,4 +137,5 @@ export {
   getTokenInfoByAddress,
   get24hChange,
   parseQueryFromPath,
+  isIndexCryptoAsset
 }

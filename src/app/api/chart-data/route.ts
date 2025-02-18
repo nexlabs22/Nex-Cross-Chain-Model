@@ -1,4 +1,3 @@
-import { AssetCategory } from "@/types/indexTypes"
 import { aggregateType } from "@/types/mongoDb"
 import DailyAssetsClient from "@/utils/MongoDbClient"
 import { MongoClient } from "mongodb"
@@ -24,7 +23,6 @@ export async function POST(request: NextRequest) {
     client = localClient
 
     const filter = {
-      type: "index" as AssetCategory,
       ticker: ticker === "ARBEI" ? "rARBEI" : ticker,
       ...additionalFilters,
     }
