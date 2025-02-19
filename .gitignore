@@ -3,6 +3,9 @@ node_modules
 .env2
 deployments.md
 broadcast/
+mainnetDeployments.md
+mainnetDeploymentForCR5.md
+testnetDeploymentforANFI.md
 
 # Hardhat files
 /cache

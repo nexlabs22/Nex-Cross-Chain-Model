@@ -14,6 +14,7 @@ contract CombinedSetCrossChainValues is Script, Test {
         vm.startBroadcast(deployerPrivateKey);
 
         string memory targetChain = "arbitrum_sepolia";
+        // string memory targetChain = "ethereum_mainnet";
 
         _setCrossChainFactoryValues(targetChain);
         _setVaultValues(targetChain);
@@ -30,6 +31,10 @@ contract CombinedSetCrossChainValues is Script, Test {
         address crossChainToken;
         address weth;
         address crossChainIndexFactoryStorageProxy;
+        address coreSenderProxy;
+        address balancerSenderProxy;
+
+        uint24[] memory feesData = new uint24[](1);
 
         if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
             crossChainFactoryProxy = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
@@ -39,6 +44,9 @@ contract CombinedSetCrossChainValues is Script, Test {
             weth = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
             crossChainIndexFactoryStorageProxy =
                 vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            coreSenderProxy = vm.envAddress("SEPOLIA_CORE_SENDER_PROXY_ADDRESS");
+            balancerSenderProxy = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
+            feesData[0] = 3000;
         } else if (keccak256(bytes(targetChain)) == keccak256("ethereum_mainnet")) {
             crossChainFactoryProxy = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
             priceOracle = vm.envAddress("ETHEREUM_PRICE_ORACLE");
@@ -47,12 +55,12 @@ contract CombinedSetCrossChainValues is Script, Test {
             weth = vm.envAddress("ETHEREUM_WETH_ADDRESS");
             crossChainIndexFactoryStorageProxy =
                 vm.envAddress("ETHEREUM_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            coreSenderProxy = vm.envAddress("ARBITRUM_CORE_SENDER_PROXY_ADDRESS");
+            balancerSenderProxy = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADDRESS");
+            feesData[0] = 500;
         } else {
             revert("Unsupported target chain for _setCrossChainFactoryValues");
         }
-
-        uint24[] memory feesData = new uint24[](1);
-        feesData[0] = 3000;
 
         address[] memory path = new address[](2);
         path[0] = weth;
@@ -64,6 +72,13 @@ contract CombinedSetCrossChainValues is Script, Test {
         CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setPriceOracle(priceOracle);
         CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setCrossChainFactory(
             crossChainFactoryProxy
+        );
+
+        CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setVerifiedFactory(
+            coreSenderProxy, chainSelector, true
+        );
+        CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setVerifiedFactory(
+            balancerSenderProxy, chainSelector, true
         );
 
         console.log("Done: _setCrossChainFactoryValues()");
