@@ -12,8 +12,8 @@ interface GenericAreaLineChartProps {
 }
 
 function ColorPalette({ id }: { id: string }) {
-  const { top, height, bottom } = useDrawingArea()
-  const svgHeight = top + bottom + height
+  const { top, height, bottom } = useDrawingArea();
+  const svgHeight = top + bottom + height;
 
   const scale = useYScale() as ScaleLinear<number, number> // You can provide the axis Id if you have multiple ones
 
@@ -60,6 +60,7 @@ const GenericAreaLineChart = ({
             minWidth: "none !important",
             boxShadow: `0px 0px 1px 1px ${theme.palette.elevations.elevation800.main} !important`,
             maxWidth: "fit-content !important",
+            display: 'none !important',
           },
           ".customTooltipTable": {
             backgroundColor: theme.palette.elevations.elevation900.main,
@@ -159,6 +160,10 @@ const GenericAreaLineChart = ({
           right: 0,
           top: 0,
           bottom: 0,
+        }}
+        axisHighlight={{
+          x: 'none',
+          y: 'none',
         }}
         sx={{
           [`& .${areaElementClasses.root}`]: {

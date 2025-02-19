@@ -31,8 +31,8 @@ const TradingViewChart = ({ index }) => {
       overrides: {
         'mainSeriesProperties.style': 2,
         "paneProperties.backgroundType": "solid",
-        "paneProperties.background": "#0A0A0A",
-        "paneProperties.separatorColor": "#0A0A0A",
+        "paneProperties.background": "#171717",
+        "paneProperties.separatorColor": "#171717",
       },
       custom_css_url: "/static/tradingview-custom.css",
       library_path: "/charting_library/",

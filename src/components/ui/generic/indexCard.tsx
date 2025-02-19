@@ -11,9 +11,10 @@ import { calculateHistoricalTwentyFourHourChange } from "@/utils/calculateTwenty
 
 import { MdOutlineArrowUpward, MdOutlineArrowDownward } from "react-icons/md"
 import theme from "@/theme/theme"
-import HelpIcon from "@mui/icons-material/Help"
+import { IoIosHelpCircle } from "react-icons/io";
+
 import IconButton from "@mui/material/IconButton"
-import Tooltip from "@mui/material/Tooltip"
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 
 import { IndexCryptoAsset } from "@/types/indexTypes"
 import { formatToViewNumber } from "@/utils/conversionFunctions"
@@ -26,7 +27,16 @@ interface IndexCardProps {
 const InfoTooltip = () => {
   return (
     <Tooltip
-      sx={{ marginLeft: 0 }}
+      sx={{ 
+        marginLeft: 0, 
+        backgroundColor: theme.palette.elevations.elevation900.main, 
+        color: theme.palette.text.primary,
+        borderRadius: 1,
+        [`& .${tooltipClasses.tooltip}`]: {
+          backgroundColor: theme.palette.elevations.elevation900.main,
+          color: theme.palette.text.primary,
+        },
+      }}
       placement="top"
       title={
         <Typography variant="body2">
@@ -35,7 +45,7 @@ const InfoTooltip = () => {
       }
     >
       <IconButton>
-        <HelpIcon sx={{ color: "white", width: 12, height: 12 }} />
+        <IoIosHelpCircle color={theme.palette.elevations.elevation500.main} size={20} />
       </IconButton>
     </Tooltip>
   )
@@ -49,7 +59,7 @@ const arrowComponent = ({
   loadingHistoricalPrices: boolean
 }) => {
   let item = null
-  let bgColor = "white"
+  let bgColor = theme.palette.elevations.elevation50.main
   const change24hString = change24hValue
     ? change24hValue.toFixed(2) + "% 1Y"
     : "N/A"
@@ -58,9 +68,9 @@ const arrowComponent = ({
     item = <Skeleton variant="circular" width={16} height={16} />
     bgColor = "grey"
   } else if (change24hValue > 0) {
-    item = <MdOutlineArrowUpward size={16} color={"green"} />
+    item = <MdOutlineArrowUpward size={16} color={theme.palette.brand.nex1.main} />
   } else {
-    item = <MdOutlineArrowDownward size={16} color={"red"} />
+    item = <MdOutlineArrowDownward size={16} color={theme.palette.brand.nexRed.main} />
   }
 
   return (
@@ -169,13 +179,20 @@ const IndexCard = ({ index }: IndexCardProps) => {
         </Stack>
       </Stack>
       <Stack gap={1} marginTop={3}>
-        <Typography variant={"h3"}>
+        {
+          price && change24hValue && <Typography variant={"h3"}>
           {loadingHistoricalPrices ? (
             <Skeleton variant="text" width={50} height={32} />
           ) : (
             priceString
           )}
         </Typography>
+        }
+        {
+          !price && !change24hValue && (
+            <Skeleton variant="text" width={100} height={24} />
+          )
+        }
         <Stack gap={0} marginBottom={{ xs: 16, lg: 12 }}>
           <Stack direction={"row"} gap={1} alignItems={"center"}>
             {arrowComponent({ change24hValue, loadingHistoricalPrices })}
@@ -231,7 +248,7 @@ const IndexCard = ({ index }: IndexCardProps) => {
         </Stack>
         <Stack
           width={"100%"}
-          height={{ xs: "16vh", lg: 100 }}
+          height={{ xs: "20vh", lg: 130 }}
           marginX={"auto"}
           paddingTop={{ xs: 3, lg: 0 }}
           direction={"row"}

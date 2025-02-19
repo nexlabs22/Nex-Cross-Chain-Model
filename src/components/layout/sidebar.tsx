@@ -19,7 +19,6 @@ const Sidebar = () => {
     return (
         <Stack
             display={{ xs: "none", lg: "block" }}
-            minWidth={{ xs: "0vw", lg: "3vw", xl: "1vw" }}
             width={"fit-content"}
             height="100vh"
             maxHeight="100vh"
@@ -41,9 +40,13 @@ const Sidebar = () => {
                     width: "auto",
                     transition: "width 0.1s ease",
                 },
+                ":hover .navItemsBox": {
+                    alignItems: "start",
+                    transition: "alignItems 0.1s ease"
+                }
             }}
         >
-            <Stack justifyContent={"space-between"} gap={6}>
+            <Stack alignItems={'center'} justifyContent={"space-between"} gap={6} className="navItemsBox">
                 <Stack direction="row" alignItems={"baseline"} gap={1}>
                     <Image src={logo} alt="nexlabs nex logo" height={22} width={22} style={{
                         filter: mode === 'light' ? "brightness(0) invert(0)" : "brightness(0) invert(1)"
@@ -56,7 +59,7 @@ const Sidebar = () => {
                     }}>Nexlabs</Typography>
                 </Stack>
 
-                <Stack justifyContent={"space-between"} gap={3} height={'45%'}>
+                <Stack alignItems={'center'} justifyContent={"space-between"} gap={3} height={'45%'} className="navItemsBox">
                     {
                         navItems.map((item: NavItem, key: number) => {
                             return (
