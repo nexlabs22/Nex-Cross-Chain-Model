@@ -12,8 +12,6 @@ interface GenericAreaLineChartProps {
 }
 
 function ColorPalette({ id }: { id: string }) {
-  const { top, height, bottom } = useDrawingArea()
-  const svgHeight = top + bottom + height
   const { top, height, bottom } = useDrawingArea();
   const svgHeight = top + bottom + height;
 
@@ -162,6 +160,10 @@ const GenericAreaLineChart = ({
           right: 0,
           top: 0,
           bottom: 0,
+        }}
+        axisHighlight={{
+          x: 'none',
+          y: 'none',
         }}
         sx={{
           [`& .${areaElementClasses.root}`]: {
