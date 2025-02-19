@@ -32,8 +32,15 @@ const ConnectWallet = () => {
             }}>
                 <ConnectButton
                     client={client}
-                chains={allowedChainNetworks.map(({ chain }) => chain)}
+                    chains={allowedChainNetworks.map(({ chain }) => chain)}
                     connectButton={{ label: "Connect Wallet" }}
+                    detailsModal={{
+                        payOptions: {
+                          buyWithFiat: {
+                            testMode: true, // defaults to false
+                          },
+                        },
+                      }}
                 />
             </Stack>
             <Stack direction={'row'} gap={0.5} display={{ xs: 'flex', lg: 'none' }} justifyContent={'end'} alignItems={'center'}>

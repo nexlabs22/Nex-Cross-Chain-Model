@@ -1,5 +1,5 @@
 import { tokenAddresses } from "@/constants/contractAddresses"
-import { Address, CryptoAsset, IndexCryptoAsset } from "@/types/indexTypes"
+import { Address, CryptoAsset, IndexCryptoAsset, Chains, Networks } from "@/types/indexTypes"
 import { DailyAsset } from "@/types/mongoDb"
 import { sub, isWeekend } from "date-fns"
 
@@ -48,8 +48,8 @@ const getDecimals = (type?: { address: string; decimals?: number }): number => {
   return type?.decimals ?? 18 // Default to 18 if not specified
 }
 
-const isWETH = (address: Address): boolean => {
-  return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address
+const isWETH = (address: Address, chainName: Chains, network: Networks): boolean => {
+  return address === tokenAddresses.WETH?.[chainName]?.[network]?.token?.address
 }
 
 function getTokenInfoByAddress(

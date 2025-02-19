@@ -147,7 +147,8 @@ export default function TokensModal({
 
   function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset){
     const sepoliaNetwork = allowedChainNetworks[0];
-    if(token.symbol !== 'ARBEI'){
+    const tokensNotOnMainnet = nexTokens.filter((token)=> { return token.symbol.toLowerCase() !== 'arbei' }).map((token)=> {return token.symbol})
+    if(tokensNotOnMainnet.includes(token.symbol)){
       console.warn("Arbitrum is only allowed when index=arbei. Reverting to default.");
       switchChain(sepoliaNetwork.chain)
       setActiveChainSetting(sepoliaNetwork)
