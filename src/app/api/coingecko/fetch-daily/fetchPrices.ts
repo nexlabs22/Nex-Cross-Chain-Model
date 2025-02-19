@@ -21,7 +21,6 @@ export async function fetchDailyPrices(idList: (string | undefined)[]) {
     }
 
     const data = await response.json()
-    // console.log(data, "data idlist")
     return data
   } catch (error) {
     console.error("Error parsing JSON response:", error)

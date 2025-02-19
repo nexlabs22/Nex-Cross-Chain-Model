@@ -1,24 +1,27 @@
 import { NextResponse } from "next/server"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { MongoClient } from "mongodb"
-// async function getAssetOverviewClient() {
-//   const { client } = await AssetOverviewClient("AssetOverview")
-//   return client
-// }
+
+async function getConnectionStats(client: MongoClient) {
+  const item = await client.db().command({
+    serverStatus: 1,
+  })
+  console.log(item)
+  return item.connections.current
+}
 
 async function getDailyAssetsClient() {
-  const { client, collection } = await DailyAssetsClient("DailyAssets")
+  const { client, collection } = await DailyAssetsClient()
   return { client, collection }
 }
 
 export async function GET() {
-  let client: MongoClient | null = null
   try {
-    const { client: localClient } = await getDailyAssetsClient()
-    client = localClient
+    const { client } = await getDailyAssetsClient()
+    const stats = await getConnectionStats(client)
 
     return NextResponse.json(
-      { message: "MongoDB client connected" },
+      { message: "MongoDB client connected", stats },
       { status: 200 }
     )
   } catch (error) {
@@ -27,9 +30,5 @@ export async function GET() {
       { message: "MongoDB client connection error" },
       { status: 500 }
     )
-  } finally {
-    if (client) {
-      await client.close()
-    }
   }
 }

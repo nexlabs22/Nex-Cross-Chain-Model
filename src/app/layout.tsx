@@ -5,8 +5,8 @@ import InitColorSchemeScript from "@mui/material/InitColorSchemeScript"
 import "@/fonts/satoshi/satoshi.css"
 import { DashboardProvider } from "@/providers/DashboardProvider"
 import { GlobalProvider } from "@/providers/GlobalProvider"
-import { TradeProvider } from "@/providers/TradeProvider";
-import { HistoryProvider } from "@/providers/HistoryProvider";
+import { TradeProvider } from "@/providers/TradeProvider"
+import { HistoryProvider } from "@/providers/HistoryProvider"
 
 export const metadata: Metadata = {
   title: "NexLabs - Index your trades, your investment, your future",

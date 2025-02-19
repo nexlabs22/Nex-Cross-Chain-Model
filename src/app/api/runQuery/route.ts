@@ -1,15 +1,12 @@
 import { AssetCategory } from "@/types/indexTypes"
-import { DailyAsset } from "@/types/mongoDb"
-import DailyAssetsClient from "@/utils/MongoDbClient"
-import { Collection } from "mongodb"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const ticker = searchParams.get("index") || "ANFI"
 
-  const { collection }: { collection: Collection<DailyAsset> } =
-    await DailyAssetsClient("DailyAssets")
+  const { collection } = await DailyAssetsClient()
 
   const filter = {
     type: "index" as AssetCategory,

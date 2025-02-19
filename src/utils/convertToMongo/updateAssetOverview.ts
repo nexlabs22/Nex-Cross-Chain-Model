@@ -2,7 +2,7 @@ import { AssetOverviewDocument } from "@/types/mongoDb"
 import { AssetOverviewClient } from "@/utils/MongoDbClient"
 
 export const updateAssetOverview = async (asset: AssetOverviewDocument) => {
-  const { client, collection } = await AssetOverviewClient("AssetOverview")
+  const { collection } = await AssetOverviewClient()
   try {
     const existingAsset = await collection.findOne({ ticker: asset.ticker })
 
@@ -25,7 +25,5 @@ export const updateAssetOverview = async (asset: AssetOverviewDocument) => {
     }
   } catch (error) {
     console.error("Error updating or inserting asset:", error)
-  } finally {
-    await client.close()
   }
 }

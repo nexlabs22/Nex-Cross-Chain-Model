@@ -34,7 +34,7 @@ const IndicesTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       flex: 2,
       minWidth: 200,
       renderCell: (params) => (
@@ -60,7 +60,7 @@ const IndicesTable = () => {
       headerName: "Price",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       minWidth: 100,
     },
     {
@@ -68,7 +68,7 @@ const IndicesTable = () => {
       headerName: "24h Change",
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       minWidth: 100,
     },
     {
@@ -76,7 +76,7 @@ const IndicesTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       sortable: false,
       minWidth: 200,
       renderCell: (params) => (
@@ -127,8 +127,8 @@ const IndicesTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: true,
-      flex: 2,
+      // resizable: true,
+      flex: 1,
       renderCell: (params) => (
         <Stack direction={"row"} alignItems={"center"} gap={1}>
           <Box
@@ -165,29 +165,30 @@ const IndicesTable = () => {
       field: "price",
       headerName: "Price",
       flex: 1,
+      // width: 100,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "totalSupply",
       headerName: "Total Supply",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "change24h",
       headerName: "24h Change",
-      flex: 1.5,
+      flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "address",
       headerName: "Address",
-      flex: 1.5,
+      flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      // resizable: false,
       renderCell: (params) => (
         <Stack
           direction={"row"}
@@ -220,10 +221,10 @@ const IndicesTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       sortable: false,
       renderCell: (params) => (
-        <Stack direction={"row"} justifyContent={"end"} gap={1}>
+        <Stack direction={"row"} justifyContent={"start"} gap={1}>
           <Link
             href={`/trade?side=buy&index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
@@ -309,7 +310,14 @@ const IndicesTable = () => {
           expand: true,
           columns: isMobile
             ? ["index", "price", "change24h", "action"]
-            : ["index", "price", "totalSupply", "change24h", "address", "action"],
+            : [
+                "index",
+                "price",
+                "totalSupply",
+                "change24h",
+                "address",
+                "action",
+              ],
         }}
       />
     </Stack>

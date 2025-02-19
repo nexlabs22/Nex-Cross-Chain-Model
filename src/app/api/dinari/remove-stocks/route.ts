@@ -3,7 +3,7 @@ import { AssetOverviewClient } from "@/utils/MongoDbClient"
 
 export async function GET() {
   try {
-    const { collection, client } = await AssetOverviewClient("AssetOverview")
+    const { collection } = await AssetOverviewClient()
 
     await collection.updateMany(
       //   { dinari: { $exists: true } },
@@ -13,7 +13,6 @@ export async function GET() {
 
     console.log("Successfully removed dinari object from documents")
 
-    await client.close()
     return NextResponse.json({ status: 200, message: "Dinari objects removed" })
   } catch (error) {
     console.error("Error in removeStocks:", error)

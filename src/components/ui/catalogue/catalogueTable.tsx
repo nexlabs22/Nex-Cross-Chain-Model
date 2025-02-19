@@ -23,7 +23,9 @@ import { useGlobal } from "@/providers/GlobalProvider"
 
 const CatalogueTable = () => {
   const { nexTokens } = useDashboard()
-  const { activeChainSetting:{chain, network} } = useGlobal()
+  const {
+    activeChainSetting: { chain, network },
+  } = useGlobal()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -32,7 +34,7 @@ const CatalogueTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       flex: 2,
       minWidth: 200,
       renderCell: (params) => (
@@ -58,7 +60,7 @@ const CatalogueTable = () => {
       headerName: "Price",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       minWidth: 100,
     },
     {
@@ -66,7 +68,7 @@ const CatalogueTable = () => {
       headerName: "24h Change",
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       minWidth: 100,
     },
     {
@@ -74,7 +76,7 @@ const CatalogueTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       sortable: false,
       minWidth: 200,
       renderCell: (params) => (
@@ -125,7 +127,7 @@ const CatalogueTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       flex: 2,
       renderCell: (params) => (
         <Stack direction={"row"} alignItems={"center"} gap={1}>
@@ -163,29 +165,33 @@ const CatalogueTable = () => {
       field: "price",
       headerName: "Price",
       flex: 1,
+      width: 50,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "totalSupply",
       headerName: "Total Supply",
       flex: 1,
+      width: 50,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "change24h",
       headerName: "24h Change",
+      width: 50,
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "address",
       headerName: "Address",
+      width: 100,
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: false,
+      // resizable: false,
       renderCell: (params) => (
         <Stack
           direction={"row"}
@@ -218,7 +224,7 @@ const CatalogueTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       sortable: false,
       renderCell: (params) => (
         <Stack direction={"row"} justifyContent={"end"} gap={1}>
@@ -280,7 +286,9 @@ const CatalogueTable = () => {
         value: token.smartContractInfo?.totalSupply,
         returnType: "string",
       })}`,
-    change24h: token.marketInfo?.change24hFmt ? `${token.marketInfo?.change24hFmt}%`: 'N/A',
+    change24h: token.marketInfo?.change24hFmt
+      ? `${token.marketInfo?.change24hFmt}%`
+      : "N/A",
     address: reduceAddress(
       token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
     ),
@@ -299,7 +307,14 @@ const CatalogueTable = () => {
           expand: true,
           columns: isMobile
             ? ["index", "price", "change24h", "action"]
-            : ["index", "price", "totalSupply", "change24h", "address", "action"],
+            : [
+                "index",
+                "price",
+                "totalSupply",
+                "change24h",
+                "address",
+                "action",
+              ],
         }}
       />
     </Stack>

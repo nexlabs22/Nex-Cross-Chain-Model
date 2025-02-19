@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { Protocol } from "../getProtocols/route"
 import { DailyAsset } from "@/types/mongoDb"
 import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 
 // interface Protocol {
 //   id: string
@@ -39,7 +39,7 @@ interface TVL {
 }
 
 export async function GET() {
-  const { collection, client } = await DailyAssetsClient("DailyAssets")
+  const { collection } = await DailyAssetsClient()
   const protocols = await fetch(`https://api.llama.fi/protocols`, {
     cache: "no-store",
     headers: {
@@ -91,10 +91,7 @@ export async function GET() {
       }))
   )
 
-  //upload to mongo db
   await uploadToDailyAssets(convertedData, collection)
-
-  client.close()
 
   return NextResponse.json({
     message: "Historical Protocols fetched successfully",
