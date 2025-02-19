@@ -49,18 +49,18 @@ contract CombinedSetValuesScript is Script, Test {
         string memory targetChain = "arbitrum_mainnet";
 
         // 1. setIndexFactoryStorageValues
-        _setIndexFactoryStorageValues(targetChain);
+        // _setIndexFactoryStorageValues(targetChain);
 
         // 2. setIndexTokenValues
-        _setIndexTokenValues(targetChain);
+        // _setIndexTokenValues(targetChain);
 
         // 3. setMockFillAssetsList
         _setMockFillAssetsList(targetChain);
 
         // 4. setFunctionsOracle
-        _setFunctionsOracle(targetChain);
+        // _setFunctionsOracle(targetChain);
 
-        _setVault(targetChain);
+        // _setVault(targetChain);
 
         vm.stopBroadcast();
 
@@ -259,9 +259,16 @@ contract CombinedSetValuesScript is Script, Test {
         uint256[] memory marketShares = new uint256[](5);
         marketShares[0] = 72000000000000000000;
         marketShares[1] = 14000000000000000000;
-        marketShares[2] = 6000000000000000000;
+        marketShares[2] = 6500000000000000000;
         marketShares[3] = 4000000000000000000;
-        marketShares[4] = 4000000000000000000;
+        marketShares[4] = 3500000000000000000;
+
+        // uint256[] memory marketShares = new uint256[](5);
+        // marketShares[0] = 72000000000000000000;
+        // marketShares[1] = 14000000000000000000;
+        // marketShares[2] = 6000000000000000000;
+        // marketShares[3] = 4000000000000000000;
+        // marketShares[4] = 4000000000000000000;
 
         uint64[] memory chainSelectors = new uint64[](5);
         chainSelectors[0] = mainChainSelector;
