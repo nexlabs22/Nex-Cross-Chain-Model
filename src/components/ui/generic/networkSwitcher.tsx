@@ -41,9 +41,9 @@ const NetworkSwitcher = () => {
         enforceAllowedChain(chain);
       });
 
-      return () => unsubscribe(); // Cleanup on unmount
+      return () => unsubscribe(); 
     }
-  }, [wallet, queryIndexSymbol]); // Re-run if wallet or query param changes
+  }, [wallet, queryIndexSymbol]);
 
   const networkSwitcher = useNetworkSwitcherModal();
 

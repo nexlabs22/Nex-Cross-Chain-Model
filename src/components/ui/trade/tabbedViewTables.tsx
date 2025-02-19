@@ -1,14 +1,17 @@
 'use client'
 
-import { Box } from "@mui/material"
+import { Box, IconButton } from "@mui/material"
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
 // project imports : 
 import TransactionHistory from "@/components/ui/generic/transactionHistory"
-import ActiveOrders from "@/components/ui/generic/activeOrders"
+// import ActiveOrders from "@/components/ui/generic/activeOrders"
 
 import { useState } from "react";
+import { IoReload } from "react-icons/io5";
+import { useHistory } from "@/providers/HistoryProvider";
+import theme from "@/theme/theme";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -41,6 +44,7 @@ function a11yProps(index: number) {
 
 const TabbedTablesView = () => {
     const [value, setValue] = useState(0);
+    const { reloadData } = useHistory();
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -60,15 +64,27 @@ const TabbedTablesView = () => {
                     }
                 }}>
                     <Tab label="Transaction History" {...a11yProps(0)} />
-                    <Tab label="Active orders" {...a11yProps(1)} />
+                    {/* <Tab label="Active orders" {...a11yProps(1)} /> */}
                 </Tabs>
+                <IconButton
+                size="small"
+                color="primary"
+                onClick={reloadData}
+                sx={{
+                    borderRadius: "50%",
+                    border: `1px solid ${theme.palette.elevations.elevation700.main}`,
+                    padding: 1,
+                }}
+            >
+                <IoReload />
+            </IconButton>
             </Box>
             <CustomTabPanel value={value} index={0}>
                 <TransactionHistory />
             </CustomTabPanel>
-            <CustomTabPanel value={value} index={1}>
+            {/* <CustomTabPanel value={value} index={1}>
                 <ActiveOrders />
-            </CustomTabPanel>
+            </CustomTabPanel> */}
         </>
     )
 }

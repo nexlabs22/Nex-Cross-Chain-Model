@@ -198,10 +198,6 @@ export default function Swap({ side }: SwapProps) {
   }
 
   useEffect(() => {
-    console.log(userEthBalance)
-  }, [userEthBalance])
-
-  useEffect(() => {
     const convertedAmout =
       (Number(from1UsdPrice) / Number(to1UsdPrice)) * Number(firstInputValue)
     if (network == "Mainnet") {
@@ -214,7 +210,7 @@ export default function Swap({ side }: SwapProps) {
   }
 
   function getPrimaryBalance() {
-    const tokenAddress = swapFromToken.tokenAddresses?.Ethereum?.[network]?.token?.address as Address
+    const tokenAddress = swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address
     const isNativeETH = isWETH(tokenAddress, chainName, network)
 
     if (isNativeETH) {
@@ -237,7 +233,7 @@ export default function Swap({ side }: SwapProps) {
   }
 
   function getSecondaryBalance() {
-    const tokenAddress = swapToToken.tokenAddresses?.Ethereum?.[network]?.token?.address as Address
+    const tokenAddress = swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address
     const isNativeETH = isWETH(tokenAddress, chainName, network)
 
     if (isNativeETH) {
@@ -299,13 +295,7 @@ export default function Swap({ side }: SwapProps) {
   }) as thirdwebReadContract
 
 
-  const approveHook = useSendTransaction({
-    payModal:{
-      buyWithFiat:{
-        testMode: true
-      }
-    }
-  })
+  const approveHook = useSendTransaction()
   const mintRequestHook = useSendTransaction()
   const mintRequestEthHook = useSendTransaction()
   const burnRequestHook = useSendTransaction()
@@ -501,7 +491,6 @@ export default function Swap({ side }: SwapProps) {
       }
 
       if (isIndexCryptoAsset(swapToToken) && swapToToken?.smartContractType === "defi") {
-        console.log(firstInputValue, parseEther(Number(firstInputValue).toString()), BigInt(valueWithFee.toString()))
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
           method: resolveMethod("issuanceIndexTokensWithEth"),
@@ -708,8 +697,7 @@ export default function Swap({ side }: SwapProps) {
           let inputValue
           if (isWETH(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, chainName, network)) {
             inputValue = Number(firstInputValue) * 1e18
-          } else {
-            console.log(indexTokenStorageContract)
+          } else {            
             const inputEthValue = await readContract({
               contract: indexTokenStorageContract,
               method:
@@ -721,9 +709,7 @@ export default function Swap({ side }: SwapProps) {
               ],
             })
 
-            inputValue = Number(inputEthValue)
-
-            console.log({ inputValue })
+            inputValue = Number(inputEthValue)            
           }
           if (isIndexCryptoAsset(swapToToken) && swapToToken?.smartContractType === "stocks") {
             const outAmount = await (rpcClient as PublicClient).readContract({
@@ -1162,7 +1148,7 @@ export default function Swap({ side }: SwapProps) {
           <Typography variant="subtitle2" color="text.secondary" title={getPrimaryBalance().real.toString()}>
             Balance :{" "}
             <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
-              {(0 > Number(getPrimaryBalance().real)) && (Number(getPrimaryBalance().real) < 0.01) ? '<0.01' : getPrimaryBalance().fmt}
+              {(0 < Number(getPrimaryBalance().real)) && (Number(getPrimaryBalance().real) < 0.01) ? '< 0.01' : getPrimaryBalance().fmt}
             </span>
           </Typography>
         </Stack>
@@ -1233,17 +1219,17 @@ export default function Swap({ side }: SwapProps) {
             alignItems="end"
             justifyContent="space-between"
             gap={2}
-          >
+          >             
             <Typography variant="subtitle2" color="text.secondary">
               {
-                isIndexCryptoAsset(swapToToken) &&
+                (isIndexCryptoAsset(swapToToken) && swapFromToken.symbol ==='USDC') &&
                 <>Allowance : <span style={{ color: theme.palette.info.main, fontSize: 16 }}>{getAllowance()}</span> </>
               }
             </Typography>
             <Typography variant="subtitle2" color="text.secondary" title={getSecondaryBalance().real.toString()}>
               Balance :{" "}
               <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
-                {(0 > Number(getSecondaryBalance().real)) && (Number(getSecondaryBalance().real) < 0.01) ? '<0.01' : getSecondaryBalance().fmt}
+                {(0 < Number(getSecondaryBalance().real)) && (Number(getSecondaryBalance().real) < 0.01) ? '< 0.01' : getSecondaryBalance().fmt}
               </span>
             </Typography>
           </Stack>
@@ -1326,26 +1312,30 @@ export default function Swap({ side }: SwapProps) {
               {swapFromToken.symbol} ({feeRate * 100} %)
             </Typography>
           </Stack>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography variant="h6" color="text.secondary">
-              Testnet USDC
-            </Typography>
-            <Button
-              sx={{
-                color: theme.palette.brand.nex1.main,
-              }}
-              onClick={faucet}
+          {
+            [swapFromToken.symbol, swapToToken.symbol].includes('USDC') &&
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
             >
-              <Stack direction="row" alignItems="center">
-                <Typography variant="subtitle2">Get USDC</Typography>
-                <LuArrowUpRight />
-              </Stack>
-            </Button>
-          </Stack>
+              <Typography variant="h6" color="text.secondary">
+                Testnet USDC
+              </Typography>
+              <Button
+                sx={{
+                  color: theme.palette.brand.nex1.main,
+                }}
+                onClick={faucet}
+              >
+                <Stack direction="row" alignItems="center">
+                  <Typography variant="subtitle2">Get USDC</Typography>
+                  <LuArrowUpRight />
+                </Stack>
+              </Button>
+            </Stack>
+          }
+
           <Stack
             direction="row"
             alignItems="center"
@@ -1437,10 +1427,10 @@ export default function Swap({ side }: SwapProps) {
         onSelect={(selectedToken) => { setSwapToToken(selectedToken); handleCloseToTokensModal(); }}
       />
 
-    <FiatPaymentModal
-    open={isFiatPayment}
-    onClose={handleFiatPaymentChange}
-    />
+      <FiatPaymentModal
+        open={isFiatPayment}
+        onClose={handleFiatPaymentChange}
+      />
     </>
   )
 }

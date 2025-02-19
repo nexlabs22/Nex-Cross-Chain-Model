@@ -23,6 +23,7 @@ import { useDashboard } from '@/providers/DashboardProvider';
 import { useGlobal } from '@/providers/GlobalProvider';
 import { useSwitchActiveWalletChain } from 'thirdweb/react';
 import { allowedChainNetworks } from '@/utils/mappings';
+import { isIndexCryptoAsset } from '@/utils/general';
 
 interface TokenListData {
   tokens: CryptoAsset[] | IndexCryptoAsset[];
@@ -69,6 +70,7 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
           event.stopPropagation();
           onSelect(token);
         }}
+        disabled={isIndexCryptoAsset(token) && token.symbol.toLowerCase() !== 'arbei'}
       >
         <ListItemAvatar>
           {token.logoString ? (

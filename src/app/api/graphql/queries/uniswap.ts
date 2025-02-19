@@ -167,6 +167,28 @@ export const GET_ISSUANCED_ANFI_EVENT_LOGS = gql`
 
 	}
 `
+export const GET_ISSUANCED_ARBEI_EVENT_LOGS = gql`
+	query {
+		arbeiissuanceds(orderBy: time, orderDirection: desc) {
+			time
+			user
+			network
+			transactionHash
+			inputToken
+			inputAmount
+			outputAmount
+		},
+		arbeiredemptions(orderBy: time, orderDirection: desc) {
+			time
+			user
+			network
+			transactionHash
+			outputToken
+			inputAmount
+			outputAmount
+		}
+	}
+`
 export const GET_REDEMPTION_ANFI_EVENT_LOGS = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		anfiredemptions(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
@@ -179,7 +201,7 @@ export const GET_REDEMPTION_ANFI_EVENT_LOGS = gql`
 		}
 	}
 `
-export const GET_ISSUANCED_ARBEI_EVENT_LOGS = gql`
+export const GET_ISSUANCED_ARBEI_EVENT_LOG = gql`
 	query GetHistoricalEventLogs($accountAddress: String!) {
 		arbeiissuanceds(orderBy: time, orderDirection: desc, where: { user: $accountAddress }) {
 			time
