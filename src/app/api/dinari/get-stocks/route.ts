@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
   try {
     const allData = await fetchAllPages(request)
 
-    const { client, collection } = await AssetOverviewClient("AssetOverview")
+    const { collection } = await AssetOverviewClient()
 
     const mongoData: (AssetOverviewDocument | null)[] = []
     for (const data of allData) {
@@ -65,7 +65,6 @@ export async function GET(request: NextRequest) {
 
     await uploadStocksToAssetOverview(mongoData, collection)
 
-    await client.close()
     return NextResponse.json(mongoData, { status: 200 })
   } catch (error) {
     console.error("Error in getStocks:", error)

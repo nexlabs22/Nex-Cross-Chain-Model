@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 
 interface Query {
   date: string
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const chain = url.searchParams.get("chain")
   const limit = parseInt(url.searchParams.get("limit") || "0", 10)
 
-  const { collection } = await DailyAssetsClient("DailyAssets")
+  const { collection } = await DailyAssetsClient()
 
   // Get today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0]

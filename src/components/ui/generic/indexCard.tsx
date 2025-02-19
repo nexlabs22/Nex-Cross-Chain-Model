@@ -1,44 +1,139 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import GenericCard from "@/components/ui/generic/genericCard"
 import GenericAreaLineChart from "./genericAreaChart"
 import { Box, Typography, Stack, Skeleton, Button, Link } from "@mui/material"
 import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGroup"
+import { useDashboard } from "@/providers/DashboardProvider"
+import { DailyAsset } from "@/types/mongoDb"
+import { calculateHistoricalTwentyFourHourChange } from "@/utils/calculateTwentyFourHourChange"
 
-import {
-  MdOutlineArrowUpward,
-  MdOutlineArrowDownward
-} from "react-icons/md"
+import { MdOutlineArrowUpward, MdOutlineArrowDownward } from "react-icons/md"
 import theme from "@/theme/theme"
+import HelpIcon from "@mui/icons-material/Help"
+import IconButton from "@mui/material/IconButton"
+import Tooltip from "@mui/material/Tooltip"
 
 import { IndexCryptoAsset } from "@/types/indexTypes"
 import { formatToViewNumber } from "@/utils/conversionFunctions"
 import { mongoDataToChartData } from "@/utils/convertToMongo/parse"
 
-//interface
 interface IndexCardProps {
   index: IndexCryptoAsset
 }
 
+const InfoTooltip = () => {
+  return (
+    <Tooltip
+      sx={{ marginLeft: 0 }}
+      placement="top"
+      title={
+        <Typography variant="body2">
+          Date range from 365 days ago to present
+        </Typography>
+      }
+    >
+      <IconButton>
+        <HelpIcon sx={{ color: "white", width: 12, height: 12 }} />
+      </IconButton>
+    </Tooltip>
+  )
+}
+
+const arrowComponent = ({
+  change24hValue,
+  loadingHistoricalPrices,
+}: {
+  change24hValue: number | null | undefined
+  loadingHistoricalPrices: boolean
+}) => {
+  let item = null
+  let bgColor = "white"
+  const change24hString = change24hValue
+    ? change24hValue.toFixed(2) + "% 1Y"
+    : "N/A"
+
+  if (!change24hValue) {
+    item = <Skeleton variant="circular" width={16} height={16} />
+    bgColor = "grey"
+  } else if (change24hValue > 0) {
+    item = <MdOutlineArrowUpward size={16} color={"green"} />
+  } else {
+    item = <MdOutlineArrowDownward size={16} color={"red"} />
+  }
+
+  return (
+    <>
+      <Box
+        borderRadius={"50%"}
+        sx={{
+          backgroundColor: bgColor,
+          width: 24,
+          height: 24,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {item}
+      </Box>
+      {loadingHistoricalPrices ? (
+        <Skeleton variant="text" width={100} height={40} />
+      ) : (
+        <>
+          <Typography
+            variant={"h6"}
+            color={
+              loadingHistoricalPrices
+                ? "text.secondary"
+                : change24hValue && change24hValue > 0
+                ? "success.main"
+                : "error.main"
+            }
+          >
+            {change24hValue
+              ? change24hString
+              : loadingHistoricalPrices
+              ? "..."
+              : "N/A"}
+          </Typography>
+          <InfoTooltip />
+        </>
+      )}
+    </>
+  )
+}
+
 const IndexCard = ({ index }: IndexCardProps) => {
+  const { historicalPrices, loadingHistoricalPrices } = useDashboard()
+  const tokenPrices = historicalPrices?.filter(
+    (asset: DailyAsset) => asset.ticker === index.symbol
+  )
+  const [change24hValue, setChange24hValue] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (!historicalPrices) {
+      return
+    }
+    const value = calculateHistoricalTwentyFourHourChange(tokenPrices)
+    setChange24hValue(value)
+  }, [tokenPrices, historicalPrices])
 
   const logo = index.logoString
-  const price = index.smartContractInfo?.poolPrice
+  const price = tokenPrices?.[tokenPrices.length - 1]?.price
+  const priceString = price
     ? `$${formatToViewNumber({
-      value: index.smartContractInfo?.poolPrice,
-      returnType: "currency",
-    })}`
+        // value: index.smartContractInfo?.poolPrice,
+        value: price,
+        returnType: "currency",
+      })}`
     : index.marketInfo?.offChainPrice
-      ? `$${formatToViewNumber({
+    ? `$${formatToViewNumber({
         value: index.marketInfo?.offChainPrice,
         returnType: "currency",
       })}`
-      : "N/A"
-  const change24hString = index.marketInfo?.change24hFmt
-    ? `${index.marketInfo?.change24hFmt}%`
     : "N/A"
-  const change24hValue = index.marketInfo?.change24h as number
-  const monthPrices = index.historicalPrice?.slice(0, 30).sort((a, b) => a.timestamp - b.timestamp) || []
 
   return (
     <GenericCard>
@@ -75,7 +170,13 @@ const IndexCard = ({ index }: IndexCardProps) => {
       </Stack>
       <Stack gap={1} marginTop={3}>
         {
-          price && change24hValue && <Typography variant={"h3"}>{price}</Typography>
+          price && change24hValue && <Typography variant={"h3"}>
+          {loadingHistoricalPrices ? (
+            <Skeleton variant="text" width={50} height={32} />
+          ) : (
+            priceString
+          )}
+        </Typography>
         }
         {
           !price && !change24hValue && (
@@ -84,55 +185,9 @@ const IndexCard = ({ index }: IndexCardProps) => {
         }
         <Stack gap={0} marginBottom={{ xs: 16, lg: 12 }}>
           <Stack direction={"row"} gap={1} alignItems={"center"}>
-            {
-              !change24hValue && (
-                <Skeleton variant="circular" width={24} height={24} />
-              )
-            }
-            {
-              change24hValue && <Box
-                borderRadius={"50%"}
-                sx={{
-                  backgroundColor: change24hValue && change24hValue > 0 ? theme.palette.success.main : theme.palette.error.main,
-                  width: 24,
-                  height: 24,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {change24hValue > 0 ? (
-                  <MdOutlineArrowUpward
-                    size={16}
-                    color={theme.palette.info.main}
-                  />
-                ) : (
-                  <MdOutlineArrowDownward
-                    size={16}
-                    color={theme.palette.info.main}
-                  />
-                )}
-              </Box>
-            }
-            {
-              !change24hValue && (
-                <Skeleton variant="text" width={100} height={24} />
-              )
-            }
-            {
-              change24hValue && <Typography
-                variant={"h6"}
-                color={
-                  change24hValue && change24hValue > 0
-                    ? "success.main"
-                    : "error.main"
-                }
-              >
-                {formatToViewNumber({ value: change24hValue, returnType: 'currency' })} <span style={{ color: theme.palette.info.main, fontSize: 12, fontWeight: 400 }}>({change24hString})</span>
-              </Typography>
-            }
+            {arrowComponent({ change24hValue, loadingHistoricalPrices })}
           </Stack>
-          <Stack direction='row' alignItems='end' gap={0.5} marginTop={2}>
+          <Stack direction="row" alignItems="end" gap={1} marginTop={2}>
             <Link
               href={`/trade?side=buy&index=${index.symbol}`}
               style={{
@@ -143,15 +198,17 @@ const IndexCard = ({ index }: IndexCardProps) => {
             >
               <Button
                 variant="contained"
-                size='large'
+                size="large"
                 sx={{
                   backgroundColor: theme.palette.brand.nex1.main,
-                  borderRadius: 30,
+                  paddingY: 0.5,
+                  paddingX: 1,
+                  borderRadius: 2,
                   color: theme.palette.info.main,
                   textTransform: "none",
                 }}
               >
-                <Typography variant={"h6"} fontWeight={700}>Trade</Typography>
+                <Typography variant={"h6"}>Trade</Typography>
               </Button>
             </Link>
             <Link
@@ -164,15 +221,17 @@ const IndexCard = ({ index }: IndexCardProps) => {
             >
               <Button
                 variant="contained"
-                size='large'
+                size="large"
                 sx={{
                   backgroundColor: theme.palette.brand.nex1.main,
-                  borderRadius: 30,
+                  paddingY: 0.5,
+                  paddingX: 1,
+                  borderRadius: 2,
                   color: theme.palette.info.main,
                   textTransform: "none",
                 }}
               >
-                <Typography variant={"h6"} fontWeight={700}>Details</Typography>
+                <Typography variant={"h6"}>Details</Typography>
               </Button>
             </Link>
           </Stack>
@@ -192,15 +251,27 @@ const IndexCard = ({ index }: IndexCardProps) => {
             right: 0,
           }}
         >
-          {
-            monthPrices.length > 0 ? (
-              <GenericAreaLineChart label={index.symbol} chartData={mongoDataToChartData(monthPrices)} />
-            ) : (
-              <Stack width={'100%'} height={'100%'} padding={2} alignItems={'center'} justifyContent={'end'}>
-                <Skeleton variant="rectangular" width={'100%'} height={'70%'} sx={{ borderRadius: 2 }} />
-              </Stack>
-            )
-          }
+          {tokenPrices?.length > 0 ? (
+            <GenericAreaLineChart
+              label={index.symbol}
+              chartData={mongoDataToChartData(tokenPrices)}
+            />
+          ) : (
+            <Stack
+              width={"100%"}
+              height={"100%"}
+              padding={2}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <Skeleton
+                variant="rectangular"
+                width={"100%"}
+                height={"100%"}
+                sx={{ borderRadius: 2 }}
+              />
+            </Stack>
+          )}
         </Stack>
       </Stack>
     </GenericCard>

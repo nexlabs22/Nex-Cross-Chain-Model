@@ -1,7 +1,6 @@
 import { AssetCategory } from "@/types/indexTypes"
-import { aggregateType, DailyAsset } from "@/types/mongoDb"
-import DailyAssetsClient from "@/utils/MongoDbClient"
-import { Collection } from "mongodb"
+import { aggregateType } from "@/types/mongoDb"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
@@ -17,8 +16,7 @@ export async function POST(request: NextRequest) {
 
     const { ticker, limit, sort, ...additionalFilters } = body
 
-    const { collection }: { collection: Collection<DailyAsset> } =
-      await DailyAssetsClient("DailyAssets")
+    const { collection } = await DailyAssetsClient()
 
     const filter = {
       type: "index" as AssetCategory,

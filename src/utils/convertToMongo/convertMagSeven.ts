@@ -1,7 +1,5 @@
-//import { Collection } from "mongodb"
-
 import { DailyAsset } from "@/types/mongoDb"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
 import { uploadToDailyAssets, filterValues, convertUnixToDate } from "./parse"
@@ -116,7 +114,7 @@ const parseTopStocks = (
 }
 
 const convertMagSeven = async () => {
-  const { collection } = await DailyAssetsClient("DailyAssets")
+  const { collection } = await DailyAssetsClient()
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query(

@@ -8,7 +8,7 @@ import {
   uploadToDailyAssets,
 } from "./parse"
 import connectToSpotDb from "@/utils/connectToSpotDB"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { DailyAsset } from "@/types/mongoDb"
 import { AssetCategory } from "@/types/indexTypes"
 
@@ -70,7 +70,7 @@ export const getUniqueProtocols = async () => {
 
 export const convertTopFiveCrypto = async () => {
   const { collection }: { collection: Collection<DailyAsset> } =
-    await DailyAssetsClient("DailyAssets")
+    await DailyAssetsClient()
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query("SELECT * FROM top5crypto")

@@ -1,7 +1,6 @@
 import { Collection } from "mongodb"
-
 import { DailyAsset } from "@/types/mongoDb"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
 
@@ -1613,7 +1612,7 @@ const mapNameToTicker = {
 
 const convertArbitrumDataTable = async () => {
   const { collection }: { collection: Collection<DailyAsset> } =
-    await DailyAssetsClient("DailyAssets")
+    await DailyAssetsClient()
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query("SELECT * FROM arbitrum_data")
@@ -1671,8 +1670,6 @@ const convertArbitrumDataTable = async () => {
       }
     }
   }
-
-  // console.log(mongoDbData, "mongoDbData")
 
   await uploadToDailyAssets(mongoDbData, collection)
 

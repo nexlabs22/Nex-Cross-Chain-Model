@@ -1,7 +1,5 @@
-//import { Collection } from "mongodb"
-
 import { DailyAsset } from "@/types/mongoDb"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import connectToSpotDb from "@/utils/connectToSpotDB"
 import { AssetCategory } from "@/types/indexTypes"
 import {
@@ -57,7 +55,7 @@ const stocks = {
 }
 
 export const convertStocksData = async () => {
-  const { collection } = await DailyAssetsClient("DailyAssets")
+  const { collection } = await DailyAssetsClient()
   const spotClient = await connectToSpotDb()
 
   const data = await spotClient.query("SELECT * FROM stocks_data")
