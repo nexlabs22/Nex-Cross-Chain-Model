@@ -22,6 +22,15 @@ export type DailyAsset = {
   tvl?: number
   cmdId?: string
   geckoId?: string
+  onChain: onChainDataType[]
+  chain?: string
+  network?: string
+}
+
+export type onChainDataType = {
+  timestamp: number,
+  price: number,
+  totalSupply: number
 }
 
 export type aggregateType = {

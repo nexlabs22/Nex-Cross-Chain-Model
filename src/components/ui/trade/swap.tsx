@@ -257,14 +257,14 @@ export default function Swap({ side }: SwapProps) {
       : { real: 0, fmt: '0.00' }
   }
 
-  function getAllowance() {
-    return fromTokenAllowance?.data
-      ? formatToViewNumber({
-        value: weiToNum(fromTokenAllowance.data, getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)),
-        returnType: "currency",
-      })
-      : 0
-  }
+  // function getAllowance() {
+  //   return fromTokenAllowance?.data
+  //     ? formatToViewNumber({
+  //       value: weiToNum(fromTokenAllowance.data, getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)),
+  //       returnType: "currency",
+  //     })
+  //     : 0
+  // }
 
   const indexTokenFactoryContract = GetContract(activeSymbol as AllowedTickers, 'factory')
   const indexTokenStorageContract = GetContract(activeSymbol as AllowedTickers, 'storage')
@@ -518,22 +518,23 @@ export default function Swap({ side }: SwapProps) {
 
   async function burnRequest() {
     try {
-      if (
-        weiToNum(
-          fromTokenBalance.data,
-          getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)
-        ) < Number(firstInputValue)
-      ) {
-        return GenericToast({
-          type: "error",
-          message: `You don't have enough ${swapFromToken.symbol} balance!`,
-        })
-      } else if (Number(firstInputValue) <= 0) {
-        return GenericToast({
-          type: "error",
-          message: `Please enter amount you want to burn`,
-        })
-      } else if (
+      // if (
+      //   weiToNum(
+      //     fromTokenBalance.data,
+      //     getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)
+      //   ) < Number(firstInputValue)
+      // ) {
+      //   return GenericToast({
+      //     type: "error",
+      //     message: `You don't have enough ${swapFromToken.symbol} balance!`,
+      //   })
+      // } else if (Number(firstInputValue) <= 0) {
+      //   return GenericToast({
+      //     type: "error",
+      //     message: `Please enter amount you want to burn`,
+      //   })
+      // } else
+       if (
         Number(secondInputValue) <= 15 &&
         isIndexCryptoAsset(swapFromToken) &&
         swapFromToken?.smartContractType === "stocks"
@@ -551,7 +552,8 @@ export default function Swap({ side }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: "function redemption(uint256, address, address[], uint24[])",
           params: [
-            BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),
+            // BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),
+            BigInt(fromTokenBalance.data),
             swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
             [
               tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,
