@@ -6,7 +6,7 @@ import { useContext } from "react"
 import { useDashboard } from "./DashboardProvider"
 import { nexTokensArray } from "@/constants/indices"
 import { IndexCryptoAsset } from "@/types/indexTypes"
-import { useSearchParams } from "next/navigation"
+import { parseQueryFromPath } from "@/utils/general"
 
 interface TradeContextProps {
     swapFromToken: IndexCryptoAsset
@@ -29,7 +29,8 @@ const useTrade = () => useContext(TradeContext)
 
 const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     const { nexTokens } = useDashboard()
-    const searchParams = useSearchParams()
+    const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
+	const queryParams = parseQueryFromPath(searchQuery)
 
     const allTokens = useMemo(() => [...nexTokens, ...sepoliaTokens], [nexTokens])
 
@@ -38,8 +39,8 @@ const TradeProvider = ({ children }: { children: React.ReactNode }) => {
         [allTokens]
     )
 
-    const queryIndexSymbol = searchParams.get("index")
-    const querySide = searchParams.get("side")
+    const queryIndexSymbol = queryParams?.index || null
+    const querySide = queryParams?.side 
 
     const [swapFromToken, setSwapFrom] = useState<IndexCryptoAsset>(() =>
         querySide === "buy" ? defaultFromToken : getTokenBySymbol(queryIndexSymbol) || defaultToToken

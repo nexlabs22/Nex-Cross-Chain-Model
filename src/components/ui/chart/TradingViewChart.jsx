@@ -57,15 +57,15 @@ const TradingViewChart = ({ index }) => {
     widget.onChartReady(() => {
       setWid(widget);
       // Now that the chart is ready, the customThemes API should be available.
-      window.tvWidget.customThemes()
-        .then(api => {
-          // You can now use the API to update the theme dynamically.
-          console.log("Custom Themes API is available.", api);
-          api.applyCustomThemes({ dark: customDarkPalette });
-        })
-        .catch(error => {
-          console.error("Custom Themes API error:", error);
-        });
+      // window.tvWidget.customThemes()
+      //   .then(api => {
+      //     // You can now use the API to update the theme dynamically.
+      //     console.log("Custom Themes API is available.", api);
+      //     api.applyCustomThemes({ dark: customDarkPalette });
+      //   })
+      //   .catch(error => {
+      //     console.error("Custom Themes API error:", error);
+      //   });
     });
 
     return () => script.remove();
