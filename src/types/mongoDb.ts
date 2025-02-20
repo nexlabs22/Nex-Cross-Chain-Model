@@ -22,7 +22,7 @@ export type DailyAsset = {
   tvl?: number
   cmdId?: string
   geckoId?: string
-  onChain: onChainDataType[]
+  onChain?: onChainDataType[]
   chain?: string
   network?: string
 }
