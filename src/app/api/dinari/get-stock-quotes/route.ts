@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Stock } from "../get-stocks/route"
-import DailyAssetsClient, { AssetOverviewClient } from "@/utils/MongoDbClient"
+import { AssetOverviewClient, DailyAssetsClient } from "@/utils/MongoDbClient"
 import { uploadStocksToDailyAssets } from "@/utils/convertToMongo/parse"
 import { DailyAsset } from "@/types/mongoDb"
 import { AssetCategory } from "@/types/indexTypes"
@@ -19,9 +19,8 @@ type QuoteResponse = {
 }
 
 export async function GET(request: NextRequest) {
-  const { collection, client } = await AssetOverviewClient("AssetOverview")
-  const { collection: dailyAssetsCollection, client: dailyAssetsClient } =
-    await DailyAssetsClient("DailyAssets")
+  const { collection } = await AssetOverviewClient()
+  const { collection: dailyAssetsCollection } = await DailyAssetsClient()
 
   const dinariAssets = await collection
     .find({ dinari: { $exists: true } })
@@ -83,9 +82,6 @@ export async function GET(request: NextRequest) {
   })
 
   await uploadStocksToDailyAssets(matchedStocks, dailyAssetsCollection)
-
-  await dailyAssetsClient.close()
-  await client.close()
 
   return NextResponse.json({
     status: 200,

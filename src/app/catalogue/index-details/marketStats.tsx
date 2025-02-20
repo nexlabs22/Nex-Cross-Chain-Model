@@ -6,7 +6,18 @@ import { IndexCryptoAsset } from "@/types/indexTypes"
 import { reduceAddress } from "@/utils/general"
 import { formatToViewNumber } from "@/utils/conversionFunctions"
 
+function calculateTwentyFourHourChange(index: IndexCryptoAsset) {
+  const lastPrice =
+    index?.historicalPrice?.[index?.historicalPrice?.length - 1]?.price
+  const firstPrice = index?.historicalPrice?.[0]?.price
+  if (!lastPrice || !firstPrice) return null
+  const TwentyFourHourChange = ((lastPrice - firstPrice) / firstPrice) * 100
+  return TwentyFourHourChange
+}
+
 const MarketStats = ({ index }: { index: IndexCryptoAsset }) => {
+  const TwentyFourHourChange = calculateTwentyFourHourChange(index)
+
   const address = reduceAddress(
     index?.tokenAddresses?.Ethereum?.Mainnet?.token?.address
   )
@@ -14,14 +25,18 @@ const MarketStats = ({ index }: { index: IndexCryptoAsset }) => {
     ? `${index?.smartContractInfo?.managementFee}%`
     : "N/A"
   const price = index?.smartContractInfo?.poolPrice
-    ? `$${formatToViewNumber({value: index?.smartContractInfo.poolPrice, returnType: 'currency'})}`
+    ? `$${formatToViewNumber({
+        value: index?.smartContractInfo.poolPrice,
+        returnType: "currency",
+      })}`
     : "N/A"
   const marketCap = index?.marketInfo?.marketCap
-    ? `$${formatToViewNumber({value: index?.marketInfo?.marketCap, returnType: 'currency'})}`
+    ? `$${formatToViewNumber({
+        value: index?.marketInfo?.marketCap,
+        returnType: "currency",
+      })}`
     : "N/A"
-  const change24h = index?.marketInfo?.change24hFmt
-    ? `${index?.marketInfo?.change24hFmt}%`
-    : "N/A"
+  const change24h = TwentyFourHourChange ? `${TwentyFourHourChange}%` : "N/A"
 
   const latestRebalanceUpdate =
     index?.smartContractInfo?.latestRebalanceUpdate || "N/A"

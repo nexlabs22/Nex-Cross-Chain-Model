@@ -2,11 +2,11 @@
 
 import {
   Stack,
-  Box,
   Typography,
   Button,
   IconButton,
   Input,
+  Avatar,
   Switch,
 } from "@mui/material"
 import theme from "@/theme/theme"
@@ -77,7 +77,9 @@ export default function Swap({ side }: SwapProps) {
   const { network, chainName } = activeChainSetting
   const { swapFromToken, swapToToken, setSwapFromToken, setSwapToToken } =
     useTrade()
-  const [selectedSide, setSelectedSide] = useState<"buy" | "sell" | undefined>(side)
+  const [selectedSide, setSelectedSide] = useState<"buy" | "sell" | undefined>(
+    side
+  )
   const { ethPriceUsd } = useDashboard()
 
   const [autoValue, setAutoValue] = useState<"min" | "half" | "max" | "auto">(
@@ -86,6 +88,7 @@ export default function Swap({ side }: SwapProps) {
 
   const [openFromTokensModal, setOpenFromTokensModal] = useState(false)
   const [openToTokensModal, setOpenToTokensModal] = useState(false)
+
   const [isFiatPayment, setFiatPayment] = useState(false)
   const [showNexProductsFrom, setShowNexProductsFrom] = useState<boolean>(selectedSide == 'buy' ? false : true)
 
@@ -1020,18 +1023,6 @@ export default function Swap({ side }: SwapProps) {
             <IconButton
               size="small"
               color="primary"
-              onClick={Switching}
-              sx={{
-                borderRadius: "50%",
-                border: `1px solid ${theme.palette.elevations.elevation700.main}`,
-                padding: 1,
-              }}
-            >
-              <TbArrowsExchange2 />
-            </IconButton>
-            <IconButton
-              size="small"
-              color="primary"
               sx={{
                 borderRadius: "50%",
                 border: `1px solid ${theme.palette.elevations.elevation700.main}`,
@@ -1145,154 +1136,176 @@ export default function Swap({ side }: SwapProps) {
               </Typography>
             </Button>
           </Stack>
-          <Typography variant="subtitle2" color="text.secondary" title={getPrimaryBalance().real.toString()}>
+
+        </Stack>
+        <Stack gap={1} alignItems="center" position="relative">
+          <Stack
+            alignItems="center"
+            justifyContent="space-between"
+            gap={1}
+            width={'100%'}
+            sx={{
+              backgroundColor: theme.palette.elevations.elevation900.main,
+              borderRadius: 2,
+              padding: 2,
+            }}
+          >
+            <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1} width="100%">
+              <Input
+                disableUnderline
+                size="small"
+                placeholder="0.00"
+                sx={{
+                  width: "50%",
+                  border: "none",
+                  outline: "none",
+                  "& .MuiInputBase-input": {
+                    paddingY: 1,
+                    paddingX: 0.5,
+                    fontSize: 20,
+                  },
+                }}
+                onChange={changeFirstInputValue}
+                value={firstInputValue}
+              />
+              <Button
+                variant="outlined"
+                sx={{
+                  backgroundColor: theme.palette.elevations.elevation900.main,
+                  border: `1px solid ${theme.palette.elevations.elevation700.main}`,
+                  borderRadius: 2,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: 1,
+                  paddingX: 1.5,
+                  paddingY: 1,
+                  width: '40%',
+                }}
+                onClick={() => handleOpenFromTokensModal()}
+              >
+                <Avatar
+                  src={swapFromToken.logoString}
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    border: `none`,
+                    backgroundColor: 'transparent',
+                  }}
+                />
+                <Stack>
+                  <Typography variant="h6">{swapFromToken.symbol}</Typography>
+                  <Typography variant="caption">{network}</Typography>
+                </Stack>
+                <LuChevronDown />
+              </Button>
+            </Stack>
+            <Stack width="100%">
+            <Typography variant="subtitle2" color="text.secondary" title={getPrimaryBalance().real.toString()}>
             Balance :{" "}
             <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
               {(0 < Number(getPrimaryBalance().real)) && (Number(getPrimaryBalance().real) < 0.01) ? '< 0.01' : getPrimaryBalance().fmt}
             </span>
           </Typography>
-        </Stack>
-        <Stack gap={1}>
+            </Stack>
+          </Stack>
+          <IconButton
+            size="medium"
+            color="primary"
+            onClick={Switching}
+            sx={{
+              borderRadius: "50%",
+              border: `3px solid ${theme.palette.elevations.elevation950.main}`,
+              backgroundColor: theme.palette.elevations.elevation950.main,
+              padding: 1,
+
+              position: "absolute",
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              '&:hover': {
+                backgroundColor: theme.palette.elevations.elevation950.main,
+                border: `3px solid ${theme.palette.elevations.elevation950.main}`,
+              },
+            }}
+          >
+            <Stack sx={{
+              transform: 'rotate(90deg)',
+            }}>
+              <TbArrowsExchange2 />
+            </Stack>
+          </IconButton>
           <Stack
-            direction="row"
             alignItems="center"
             justifyContent="space-between"
             gap={1}
+            width={'100%'}
             sx={{
-              border: `1px solid ${theme.palette.elevations.elevation700.main}`,
+              backgroundColor: theme.palette.elevations.elevation900.main,
               borderRadius: 2,
               padding: 2,
             }}
           >
-            <Input
-              disableUnderline
-              size="small"
-              placeholder="0.00"
-              sx={{
-                width: "50%",
-                border: "none",
-                outline: "none",
-                "& .MuiInputBase-input": {
-                  paddingY: 1,
-                  paddingX: 0.5,
-                  fontSize: 20,
-                },
-              }}
-              onChange={changeFirstInputValue}
-              value={firstInputValue}
-            />
-            <Button
-              variant="outlined"
-              sx={{
-                backgroundColor: theme.palette.elevations.elevation900.main,
-                border: "none",
-                borderRadius: 2,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 1,
-                paddingX: 1,
-                paddingY: 0.5,
-              }}
-              onClick={() => handleOpenFromTokensModal()}
-            >
-              <Box
-                width={36}
-                height={36}
+            <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1} width="100%">
+              <Input
+                disableUnderline
+                size="small"
+                placeholder="0.00"
                 sx={{
-                  backgroundImage: `url(${swapFromToken.logoString})`,
-                  backgroundSize: "contain",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
+                  width: "50%",
+                  border: "none",
+                  outline: "none",
+                  "& .MuiInputBase-input": {
+                    paddingY: 1.5,
+                    paddingX: 1,
+                    fontSize: 20,
+                  },
                 }}
-              ></Box>
-              <Stack>
-                <Typography variant="h6">{swapFromToken.symbol}</Typography>
-                <Typography variant="caption">{network}</Typography>
-              </Stack>
-              <LuChevronDown />
-            </Button>
-          </Stack>
-          <Stack
-            direction="row"
-            alignItems="end"
-            justifyContent="space-between"
-            gap={2}
-          >             
-            <Typography variant="subtitle2" color="text.secondary">
-              {
-                (isIndexCryptoAsset(swapToToken) && swapFromToken.symbol ==='USDC') &&
-                <>Allowance : <span style={{ color: theme.palette.info.main, fontSize: 16 }}>{getAllowance()}</span> </>
-              }
-            </Typography>
+                onChange={changeSecondInputValue}
+                value={formatNumber(Number(secondInputValue))}
+              />
+              <Button
+                variant="outlined"
+                sx={{
+                  backgroundColor: theme.palette.elevations.elevation900.main,
+                  border: `1px solid ${theme.palette.elevations.elevation700.main}`,
+                  borderRadius: 2,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: 1,
+                  paddingX: 1,
+                  paddingY: 0.5,
+                  width: '40%',
+                }}
+                onClick={() => handleOpenToTokensModal()}
+              >
+                <Avatar
+                  src={swapToToken.logoString}
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    border: `none`,
+                    backgroundColor: 'transparent',
+                  }}
+                />
+                <Stack>
+                  <Typography variant="h6">{swapToToken?.symbol}</Typography>
+                  <Typography variant="caption">{network}</Typography>
+                </Stack>
+                <LuChevronDown />
+              </Button>
+            </Stack>
+            <Stack width="100%">
             <Typography variant="subtitle2" color="text.secondary" title={getSecondaryBalance().real.toString()}>
               Balance :{" "}
               <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
                 {(0 < Number(getSecondaryBalance().real)) && (Number(getSecondaryBalance().real) < 0.01) ? '< 0.01' : getSecondaryBalance().fmt}
               </span>
             </Typography>
-          </Stack>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            gap={1}
-            sx={{
-              border: `1px solid ${theme.palette.elevations.elevation700.main}`,
-              borderRadius: 2,
-              padding: 2,
-            }}
-          >
-            <Input
-              disableUnderline
-              size="small"
-              placeholder="0.00"
-              sx={{
-                width: "50%",
-                border: "none",
-                outline: "none",
-                "& .MuiInputBase-input": {
-                  paddingY: 1,
-                  paddingX: 0.5,
-                  fontSize: 20,
-                },
-              }}
-              onChange={changeSecondInputValue}
-              value={formatNumber(Number(secondInputValue))}
-            />
-            <Button
-              variant="outlined"
-              sx={{
-                backgroundColor: theme.palette.elevations.elevation900.main,
-                border: "none",
-                borderRadius: 2,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 1,
-                paddingX: 1,
-                paddingY: 0.5,
-              }}
-              onClick={() => handleOpenToTokensModal()}
-            >
-              <Box
-                width={36}
-                height={36}
-                sx={{
-                  backgroundImage: `url(${swapToToken.logoString})`,
-                  backgroundSize: "contain",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                }}
-              ></Box>
-              <Stack>
-                <Typography variant="h6">{swapToToken?.symbol}</Typography>
-                <Typography variant="caption">{network}</Typography>
-              </Stack>
-              <LuChevronDown />
-            </Button>
+            </Stack>
           </Stack>
         </Stack>
         <Stack gap={0.5}>
@@ -1325,6 +1338,10 @@ export default function Swap({ side }: SwapProps) {
               <Button
                 sx={{
                   color: theme.palette.brand.nex1.main,
+                  paddingRight: 0,
+                  '&:hover': {
+                    backgroundColor: 'transparent',
+                  },
                 }}
                 onClick={faucet}
               >
@@ -1416,7 +1433,10 @@ export default function Swap({ side }: SwapProps) {
         showNexProducts={showNexProductsFrom}
         showTokens={!showNexProductsFrom}
         onClose={handleCloseFromTokensModal}
-        onSelect={(selectedToken) => { setSwapFromToken(selectedToken); handleCloseFromTokensModal(); }}
+        onSelect={(selectedToken) => {
+          setSwapFromToken(selectedToken)
+          handleCloseFromTokensModal()
+        }}
       />
       {/* tokens modal for setting ToSwapToken */}
       <TokensModal
@@ -1424,7 +1444,15 @@ export default function Swap({ side }: SwapProps) {
         showNexProducts={!showNexProductsFrom}
         showTokens={showNexProductsFrom}
         onClose={handleCloseToTokensModal}
-        onSelect={(selectedToken) => { setSwapToToken(selectedToken); handleCloseToTokensModal(); }}
+        onSelect={(selectedToken) => {
+          setSwapToToken(selectedToken)
+          handleCloseToTokensModal()
+        }}
+      />
+
+      <FiatPaymentModal
+        open={isFiatPayment}
+        onClose={handleFiatPaymentChange}
       />
 
       <FiatPaymentModal

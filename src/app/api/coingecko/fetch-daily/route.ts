@@ -4,7 +4,7 @@ import {
   fetchDailyPricesSplitted,
 } from "./index"
 import { DailyAsset } from "@/types/mongoDb"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { AssetCategory } from "@/types/indexTypes"
 import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
 
@@ -57,8 +57,6 @@ export async function GET() {
       })
     }
 
-    // console.log(idList, "idList")
-
     const dailyPrices = await fetchDailyPricesSplitted(idList)
     if (!dailyPrices) {
       return NextResponse.json({
@@ -81,7 +79,7 @@ export async function GET() {
 }
 
 async function mapAndUploadDailyPrices(dailyPrices: DailyPrice[]) {
-  const { collection, client } = await DailyAssetsClient("DailyAssets")
+  const { collection } = await DailyAssetsClient()
 
   try {
     const mongoDbData: DailyAsset[] = dailyPrices.map((item) => ({
@@ -104,7 +102,5 @@ async function mapAndUploadDailyPrices(dailyPrices: DailyPrice[]) {
     console.log("Data uploaded successfully")
   } catch (error) {
     console.error("Error uploading data:", error)
-  } finally {
-    client.close()
   }
 }

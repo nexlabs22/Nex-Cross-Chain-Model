@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { AssetOverviewClient } from "@/utils/MongoDbClient"
 import { uploadToAssetOverview } from "@/utils/convertToMongo/parse"
-import { MongoClient } from "mongodb"
 
 const fetchCoingeckoList = async () => {
   const response = await fetch("https://api.coingecko.com/api/v3/coins/list", {
@@ -15,17 +14,12 @@ const fetchCoingeckoList = async () => {
 }
 
 export async function GET() {
-  let client: MongoClient | null = null
   try {
-    const { collection, client: localClient } = await AssetOverviewClient(
-      "AssetOverview"
-    )
+    const { collection } = await AssetOverviewClient()
 
     const existingAssets = await collection
       .find({}, { projection: { ticker: 1, name: 1 } })
       .toArray()
-
-    client = localClient
 
     const coingeckoList = await fetchCoingeckoList()
     const mongoData = []
@@ -63,9 +57,5 @@ export async function GET() {
       { error: "Internal Server Error" },
       { status: 500 }
     )
-  } finally {
-    if (client) {
-      await client.close()
-    }
   }
 }

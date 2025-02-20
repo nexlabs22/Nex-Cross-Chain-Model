@@ -34,25 +34,31 @@ const IndicesTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       flex: 2,
       minWidth: 200,
       renderCell: (params) => (
-        <Stack direction={"row"} alignItems={"center"} gap={1}>
-          <Box
-            width={40}
-            height={40}
-            borderRadius={1}
-            sx={{
-              backgroundImage: `url(${params.row.logoString})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          ></Box>
-          <Stack direction={"column"}>
-            <Typography variant={"h6"}>{params.row.symbol}</Typography>
+        <Link
+          href={`/trade?side=buy&index=${params.row.symbol}`}
+          style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          underline="none"
+        >
+          <Stack direction={"row"} alignItems={"center"} gap={1}>
+            <Box
+              width={40}
+              height={40}
+              borderRadius={1}
+              sx={{
+                backgroundImage: `url(${params.row.logoString})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></Box>
+            <Stack direction={"column"}>
+              <Typography variant={"h6"}>{params.row.symbol}</Typography>
+            </Stack>
           </Stack>
-        </Stack>
+        </Link>
       ),
     },
     {
@@ -60,7 +66,7 @@ const IndicesTable = () => {
       headerName: "Price",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       minWidth: 100,
     },
     {
@@ -68,7 +74,7 @@ const IndicesTable = () => {
       headerName: "24h Change",
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       minWidth: 100,
     },
     {
@@ -76,7 +82,7 @@ const IndicesTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       sortable: false,
       minWidth: 200,
       renderCell: (params) => (
@@ -84,6 +90,7 @@ const IndicesTable = () => {
           <Link
             href={`/trade?side=buy&index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -102,6 +109,7 @@ const IndicesTable = () => {
           <Link
             href={`catalogue/index-details?index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -127,67 +135,74 @@ const IndicesTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: true,
-      flex: 2,
+      // resizable: true,
+      flex: 1,
       renderCell: (params) => (
-        <Stack direction={"row"} alignItems={"center"} gap={1}>
-          <Box
-            width={40}
-            height={40}
-            borderRadius={1}
-            sx={{
-              backgroundImage: `url(${params.row.logoString})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          ></Box>
-          <Stack
-            direction={"column"}
-            alignItems={"start"}
-            justifyContent={"start"}
-          >
-            <Typography variant={"h6"} display={{ xs: "none", lg: "block" }}>
-              {params.row.name}
-            </Typography>
-            <Typography variant={"h6"} display={{ xs: "block", lg: "none" }}>
-              {params.row.symbol}
-            </Typography>
-            <CompositionAvatarGroup
-              index={params.row}
-              size={20}
-              borderColor={theme.palette.background.default}
-            />
+        <Link
+          href={`/trade?side=buy&index=${params.row.symbol}`}
+          style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          underline="none"
+        >
+          <Stack direction={"row"} alignItems={"center"} gap={1}>
+            <Box
+              width={40}
+              height={40}
+              borderRadius={1}
+              sx={{
+                backgroundImage: `url(${params.row.logoString})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></Box>
+            <Stack
+              direction={"column"}
+              alignItems={"start"}
+              justifyContent={"start"}
+            >
+              <Typography variant={"h6"} display={{ xs: "none", lg: "block" }}>
+                {params.row.name}
+              </Typography>
+              <Typography variant={"h6"} display={{ xs: "block", lg: "none" }}>
+                {params.row.symbol}
+              </Typography>
+              <CompositionAvatarGroup
+                index={params.row}
+                size={20}
+                borderColor={theme.palette.background.default}
+              />
+            </Stack>
           </Stack>
-        </Stack>
+        </Link>
       ),
     },
     {
       field: "price",
       headerName: "Price",
       flex: 1,
+      // width: 100,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "totalSupply",
       headerName: "Total Supply",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "change24h",
       headerName: "24h Change",
-      flex: 1.5,
+      flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "address",
       headerName: "Address",
-      flex: 1.5,
+      flex: 1,
       disableColumnMenu: true,
-      resizable: false,
+      // resizable: false,
       renderCell: (params) => (
         <Stack
           direction={"row"}
@@ -220,13 +235,14 @@ const IndicesTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       sortable: false,
       renderCell: (params) => (
-        <Stack direction={"row"} justifyContent={"end"} gap={1}>
+        <Stack direction={"row"} justifyContent={"start"} gap={1}>
           <Link
             href={`/trade?side=buy&index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -245,6 +261,7 @@ const IndicesTable = () => {
           <Link
             href={`catalogue/index-details?index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -272,15 +289,15 @@ const IndicesTable = () => {
     ...token,
     price: token.smartContractInfo?.poolPrice
       ? `$${formatToViewNumber({
-          value: token.smartContractInfo?.poolPrice,
-          returnType: "currency",
-        })}`
+        value: token.smartContractInfo?.poolPrice,
+        returnType: "currency",
+      })}`
       : token.marketInfo?.offChainPrice
-      ? `$${formatToViewNumber({
+        ? `$${formatToViewNumber({
           value: token.marketInfo?.offChainPrice,
           returnType: "currency",
         })}`
-      : "",
+        : "",
     totalSupply:
       token.smartContractInfo?.totalSupply &&
       `${formatToViewNumber({
@@ -309,7 +326,14 @@ const IndicesTable = () => {
           expand: true,
           columns: isMobile
             ? ["index", "price", "change24h", "action"]
-            : ["index", "price", "totalSupply", "change24h", "address", "action"],
+            : [
+                "index",
+                "price",
+                "totalSupply",
+                "change24h",
+                "address",
+                "action",
+              ],
         }}
       />
     </Stack>

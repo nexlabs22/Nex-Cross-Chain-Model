@@ -1,6 +1,6 @@
 import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
 import { NextResponse } from "next/server"
-import DailyAssetsClient from "@/utils/MongoDbClient"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { DailyAsset } from "@/types/mongoDb"
 import { AssetCategory } from "@/types/indexTypes"
 const url = "https://api.llama.fi/protocols"
@@ -100,9 +100,8 @@ export async function GET() {
       }
     })
 
-  const { collection, client } = await DailyAssetsClient("DailyAssets")
+  const { collection } = await DailyAssetsClient()
   await uploadToDailyAssets(processedProtocols, collection)
-  client.close()
 
   return NextResponse.json({
     message: "Protocols processed successfully",

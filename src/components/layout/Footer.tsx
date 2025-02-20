@@ -11,7 +11,7 @@ import { FaMedium } from "react-icons/fa6";
 const Footer = () => {
     return (
         <Stack width={'100%'}>
-            <Stack width={'100%'} direction={{ xs: 'column', lg: 'row' }} alignItems={'start'} justifyContent={{ xs: 'start', lg: 'space-between' }} paddingY={{ xs: 4, lg: 4 }}>
+            <Stack width={'100%'} direction={{ xs: 'column', lg: 'row' }} alignItems={'start'} justifyContent={{ xs: 'start', lg: 'space-between' }} paddingY={4}>
                 <Stack width={{ xs: '100%', lg: '25%' }} height={'100%'} gap={3}>
                     <Stack gap={0.5}>
                         <Stack direction={'row'} alignItems={'center'} gap={1}>
@@ -37,7 +37,7 @@ const Footer = () => {
                         </Link>
                     </Stack>
                 </Stack>
-                <Stack width={{ xs: '100%', lg: '75%' }} height={'100%'} direction={{ xs: 'row', sm: 'row', lg: 'row' }} gap={{xs: 4, lg: 10}} justifyContent={{xs: 'space-between', sm: 'start', lg: 'end'}} marginTop={{xs: 4, lg: 0}} >
+                <Stack width={{ xs: '100%', lg: '75%' }} height={'100%'} direction={'row'} gap={{xs: 4, lg: 10}} justifyContent={{xs: 'space-between', sm: 'start', lg: 'end'}} marginTop={{xs: 4, lg: 0}} >
                     <Stack gap={3}>
                         <Typography variant="h5">About Nex</Typography>
                         <Stack gap={2}>

@@ -1,10 +1,8 @@
 import { aggregateType } from "@/types/mongoDb"
-import DailyAssetsClient from "@/utils/MongoDbClient"
-import { MongoClient } from "mongodb"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
-  let client: MongoClient | null = null
   try {
     const body = await request.json()
 
@@ -17,10 +15,7 @@ export async function POST(request: NextRequest) {
 
     const { ticker, limit, sort, ...additionalFilters } = body
 
-    const { client: localClient, collection } = await DailyAssetsClient(
-      "DailyAssets"
-    )
-    client = localClient
+    const { collection } = await DailyAssetsClient()
 
     const filter = {
       ticker: ticker === "ARBEI" ? "rARBEI" : ticker,
@@ -39,8 +34,6 @@ export async function POST(request: NextRequest) {
 
     const data = await collection.aggregate(pipeline).toArray()
 
-    await client.close()
-
     return NextResponse.json({
       data,
       meta: {
@@ -53,9 +46,5 @@ export async function POST(request: NextRequest) {
       { message: "Internal Server Error" },
       { status: 500 }
     )
-  } finally {
-    if (client) {
-      await client.close()
-    }
   }
 }

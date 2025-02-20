@@ -23,7 +23,9 @@ import { useGlobal } from "@/providers/GlobalProvider"
 
 const CatalogueTable = () => {
   const { nexTokens } = useDashboard()
-  const { activeChainSetting:{chainName, network} } = useGlobal()
+  const {
+    activeChainSetting: { chainName, network },
+  } = useGlobal()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -32,25 +34,31 @@ const CatalogueTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       flex: 2,
       minWidth: 200,
       renderCell: (params) => (
-        <Stack direction={"row"} alignItems={"center"} gap={1}>
-          <Box
-            width={40}
-            height={40}
-            borderRadius={1}
-            sx={{
-              backgroundImage: `url(${params.row.logoString})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          ></Box>
-          <Stack direction={"column"}>
-            <Typography variant={"h6"}>{params.row.symbol}</Typography>
+        <Link
+          href={`/trade?side=buy&index=${params.row.symbol}`}
+          style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          underline="none"
+        >
+          <Stack direction={"row"} alignItems={"center"} gap={1}>
+            <Box
+              width={40}
+              height={40}
+              borderRadius={1}
+              sx={{
+                backgroundImage: `url(${params.row.logoString})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></Box>
+            <Stack direction={"column"}>
+              <Typography variant={"h6"}>{params.row.symbol}</Typography>
+            </Stack>
           </Stack>
-        </Stack>
+        </Link>
       ),
     },
     {
@@ -58,7 +66,7 @@ const CatalogueTable = () => {
       headerName: "Price",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       minWidth: 100,
     },
     {
@@ -66,7 +74,7 @@ const CatalogueTable = () => {
       headerName: "24h Change",
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       minWidth: 100,
     },
     {
@@ -74,7 +82,7 @@ const CatalogueTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       sortable: false,
       minWidth: 200,
       renderCell: (params) => (
@@ -82,6 +90,7 @@ const CatalogueTable = () => {
           <Link
             href={`/trade?side=buy&index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -100,6 +109,7 @@ const CatalogueTable = () => {
           <Link
             href={`catalogue/index-details?index=${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+            underline="none"
           >
             <Button
               variant="contained"
@@ -125,67 +135,77 @@ const CatalogueTable = () => {
       field: "index",
       headerName: "Index",
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       flex: 2,
       renderCell: (params) => (
-        <Stack direction={"row"} alignItems={"center"} gap={1}>
-          <Box
-            width={40}
-            height={40}
-            borderRadius={1}
-            sx={{
-              backgroundImage: `url(${params.row.logoString})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          ></Box>
-          <Stack
-            direction={"column"}
-            alignItems={"start"}
-            justifyContent={"start"}
-          >
-            <Typography variant={"h6"} display={{ xs: "none", lg: "block" }}>
-              {params.row.name}
-            </Typography>
-            <Typography variant={"h6"} display={{ xs: "block", lg: "none" }}>
-              {params.row.symbol}
-            </Typography>
-            <CompositionAvatarGroup
-              index={params.row}
-              size={20}
-              borderColor={theme.palette.background.default}
-            />
+        <Link
+          href={`/trade?side=buy&index=${params.row.symbol}`}
+          style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
+          underline="none"
+        >
+          <Stack direction={"row"} alignItems={"center"} gap={1}>
+            <Box
+              width={40}
+              height={40}
+              borderRadius={1}
+              sx={{
+                backgroundImage: `url(${params.row.logoString})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></Box>
+            <Stack
+              direction={"column"}
+              alignItems={"start"}
+              justifyContent={"start"}
+            >
+              <Typography variant={"h6"} display={{ xs: "none", lg: "block" }}>
+                {params.row.name}
+              </Typography>
+              <Typography variant={"h6"} display={{ xs: "block", lg: "none" }}>
+                {params.row.symbol}
+              </Typography>
+              <CompositionAvatarGroup
+                index={params.row}
+                size={20}
+                borderColor={theme.palette.background.default}
+              />
+            </Stack>
           </Stack>
-        </Stack>
+        </Link>
       ),
     },
     {
       field: "price",
       headerName: "Price",
       flex: 1,
+      width: 50,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "totalSupply",
       headerName: "Total Supply",
       flex: 1,
+      width: 50,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "change24h",
       headerName: "24h Change",
+      width: 50,
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
     },
     {
       field: "address",
       headerName: "Address",
+      width: 100,
       flex: 1.5,
       disableColumnMenu: true,
-      resizable: false,
+      // resizable: false,
       renderCell: (params) => (
         <Stack
           direction={"row"}
@@ -218,7 +238,7 @@ const CatalogueTable = () => {
       headerName: "",
       flex: 1,
       disableColumnMenu: true,
-      resizable: true,
+      // resizable: true,
       sortable: false,
       renderCell: (params) => (
         <Stack direction={"row"} justifyContent={"end"} gap={1}>
@@ -280,7 +300,9 @@ const CatalogueTable = () => {
         value: token.smartContractInfo?.totalSupply,
         returnType: "string",
       })}`,
-    change24h: token.marketInfo?.change24hFmt ? `${token.marketInfo?.change24hFmt}%`: 'N/A',
+    change24h: token.marketInfo?.change24hFmt
+      ? `${token.marketInfo?.change24hFmt}%` 
+      : "N/A",
     address: reduceAddress(
       token.tokenAddresses?.[chainName]?.[network]?.token?.address as Address
     ),
@@ -299,7 +321,14 @@ const CatalogueTable = () => {
           expand: true,
           columns: isMobile
             ? ["index", "price", "change24h", "action"]
-            : ["index", "price", "totalSupply", "change24h", "address", "action"],
+            : [
+                "index",
+                "price",
+                "totalSupply",
+                "change24h",
+                "address",
+                "action",
+              ],
         }}
       />
     </Stack>

@@ -10,7 +10,7 @@ import { PiHouseBold } from 'react-icons/pi';
 import { BreadcrumbItem } from '@/utils/breadcrumbsItems';
 import { TbArrowsExchange } from "react-icons/tb";
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
-
+import theme from '@/theme/theme';
 const Page = ({
   searchParams,
 }: {
@@ -36,7 +36,7 @@ const Page = ({
       <Breadcrumbs items={breadcrumbsItems} />
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 8 }}>
-          <Stack width="100%" height="100%" borderRadius={2} overflow="hidden">
+          <Stack width="100%" height={{xs: '60vh', sm: '100%'}} borderRadius={2} overflow="hidden" border={`1px solid ${theme.palette.elevations.elevation700.main}`}>
             <TradingViewChart index={selectedIndex.symbol} />
           </Stack>
         </Grid>

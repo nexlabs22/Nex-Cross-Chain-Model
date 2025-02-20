@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   //   const address =
   //     searchParams.get("address") || "0x68E670D2f9B792f034a1826cF4A8F180C9952Cb6"
 
-  const { client, collection } = await AssetOverviewClient("AssetOverview")
+  const { collection } = await AssetOverviewClient()
 
   if (!ticker) {
     return NextResponse.json({ error: "Ticker is required" }, { status: 400 })
@@ -22,8 +22,6 @@ export async function GET(request: NextRequest) {
       { status: 404 }
     )
   }
-
-  await client.close()
 
   return NextResponse.json({ assetOverview, status: 200 })
 }

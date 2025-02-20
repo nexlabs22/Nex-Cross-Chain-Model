@@ -19,7 +19,7 @@ const fetchCoinMarketCapData = async () => {
 
 export async function GET() {
   try {
-    const { collection, client } = await AssetOverviewClient("AssetOverview")
+    const { collection } = await AssetOverviewClient()
 
     const coinMarketCapData = await fetchCoinMarketCapData()
     const mongoData: (AssetOverviewDocument | null)[] = []
@@ -38,7 +38,6 @@ export async function GET() {
       mongoData.push(storeObject)
     }
     await uploadToAssetOverview(mongoData, collection)
-    await client.close()
 
     return NextResponse.json({
       message: "CMC Assets updated successfully",
