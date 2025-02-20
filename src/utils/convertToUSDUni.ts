@@ -11,8 +11,9 @@ export default async function convertToUSDUni(
   allowedChainNetworks: ChainNetwork
 ) {
   try {
+    const {chain, chainName, network} = allowedChainNetworks
     if (!address) return 0;
-    if (isWETH(address)) return ethPrice;
+    if (isWETH(address, chainName, network)) return ethPrice;
   
     const poolAddress = await getPoolAddress(address, allowedChainNetworks);
     
@@ -20,7 +21,6 @@ export default async function convertToUSDUni(
 
     let isRevPool = false;
 
-    const chain = allowedChainNetworks.chain;
     const poolContract = getContract({
       address: poolAddress as string,
       chain,
