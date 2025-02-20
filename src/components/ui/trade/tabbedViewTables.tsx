@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, IconButton } from "@mui/material"
+import { Box, IconButton, Stack } from "@mui/material"
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
@@ -53,31 +53,38 @@ const TabbedTablesView = () => {
     return (
         <>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" sx={{
-                    width: '100%',
-                    alignItems: 'center',
-                    justifyContent: {xs: 'center', lg: 'start'},
-                    '& .MuiTabs-flexContainer':{
+                <Stack
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"start"}
+                    gap={1}
+                >
+                    <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" sx={{
                         width: '100%',
-                        alignItems: {xs: 'center', lg: 'start'},
-                        justifyContent: {xs: 'center', lg: 'start'},
-                    }
-                }}>
-                    <Tab label="Transaction History" {...a11yProps(0)} />
-                    {/* <Tab label="Active orders" {...a11yProps(1)} /> */}
-                </Tabs>
-                <IconButton
-                size="small"
-                color="primary"
-                onClick={reloadData}
-                sx={{
-                    borderRadius: "50%",
-                    border: `1px solid ${theme.palette.elevations.elevation700.main}`,
-                    padding: 1,
-                }}
-            >
-                <IoReload />
-            </IconButton>
+                        alignItems: 'center',
+                        justifyContent: { xs: 'center', lg: 'start' },
+                        '& .MuiTabs-flexContainer': {
+                            width: '100%',
+                            alignItems: { xs: 'center', lg: 'start' },
+                            justifyContent: { xs: 'center', lg: 'start' },
+                        }
+                    }}>
+                        <Tab label="Transaction History" {...a11yProps(0)} />
+                        {/* <Tab label="Active orders" {...a11yProps(1)} /> */}
+                    </Tabs>
+                    <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={reloadData}
+                        sx={{
+                            borderRadius: "50%",
+                            border: `1px solid ${theme.palette.elevations.elevation700.main}`,
+                            padding: 1,
+                        }}
+                    >
+                        <IoReload />
+                    </IconButton>
+                </Stack>
             </Box>
             <CustomTabPanel value={value} index={0}>
                 <TransactionHistory />
