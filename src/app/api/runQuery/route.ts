@@ -8,7 +8,8 @@ export async function GET(request: NextRequest) {
   const { collection } = await DailyAssetsClient()
 
   const filter = {
-    ticker: ticker === "ARBEI" ? "rARBEI" : ticker,
+    // ticker: ticker === "ARBEI" ? "rARBEI" : ticker,
+    chain : 'Arbitrum'
   }
 
   const data = await collection

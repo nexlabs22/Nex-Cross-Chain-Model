@@ -107,6 +107,17 @@ export async function GET() {
                     { _id: todayDoc._id },
                     { $set: { open, high, low, close } }
                 );
+            }else{
+                await collection.updateOne(
+                    { _id: todayDoc._id },
+                    { $set: { 
+                        open: Number(price), 
+                        high: Number(price), 
+                        low: Number(price), 
+                        close: Number(price) 
+                    } }
+                );
+
             }
         }
 
