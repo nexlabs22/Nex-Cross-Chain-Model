@@ -1,17 +1,15 @@
 import { nexTokensArray } from "@/constants/indices";
 import { Address, AssetCategory, IndexCryptoAsset } from "@/types/indexTypes";
 import { DailyAsset } from "@/types/mongoDb";
+import { uploadToDailyAssets } from "@/utils/convertToMongo/parse";
 import { DailyAssetsClient } from "@/utils/MongoDbClient";
 import { client } from "@/utils/thirdWebClient";
-import { Collection, ObjectId } from "mongodb";
+import { Collection } from "mongodb";
 import { NextResponse } from "next/server";
 import { getContract, readContract } from "thirdweb";
 import { arbitrum } from "thirdweb/chains";
 
-const getDate = () => {
-    return new Date().toISOString().split("T")[0];
-};
-
+const getDate = () => new Date().toISOString().split("T")[0];
 const getTimestamp = () => Math.floor(Date.now() / 1000);
 
 async function getDocument(collection: Collection<DailyAsset>, token: IndexCryptoAsset) {
@@ -19,8 +17,7 @@ async function getDocument(collection: Collection<DailyAsset>, token: IndexCrypt
     let doc = await collection.findOne({ date: today, ticker: token.symbol });
 
     if (!doc) {
-        const newDoc: DailyAsset & { _id: ObjectId } = {
-            _id: new ObjectId(),
+        const newDoc: DailyAsset = {            
             date: today,
             ticker: token.symbol,
             name: token.name,
@@ -39,15 +36,14 @@ async function getDocument(collection: Collection<DailyAsset>, token: IndexCrypt
     return doc;
 }
 
-// Function to calculate OHLC from on-chain data
 function calculateOHLC(prices: number[]) {
     if (prices.length === 0) return null;
-    
+
     return {
-        open: prices[0], // First recorded price of the day
-        high: Math.max(...prices), // Highest price of the day
-        low: Math.min(...prices), // Lowest price of the day
-        close: prices[prices.length - 1], // Last recorded price of the day
+        open: prices[0], 
+        high: Math.max(...prices),
+        low: Math.min(...prices),
+        close: prices[prices.length - 1],
     };
 }
 
@@ -55,7 +51,7 @@ export async function GET() {
     try {
         const { collection } = await DailyAssetsClient();
         const time = getTimestamp();
-        const updates = [];
+        const dataToUpload: DailyAsset[] = [];
 
         for (const token of nexTokensArray.filter((token) => token.symbol === "ARBEI")) {
             const todayDoc = await getDocument(collection, token);
@@ -88,46 +84,31 @@ export async function GET() {
                 totalSupply: Number(totalSupply),
             };
 
-            updates.push({
-                updateOne: {
-                    filter: { _id: todayDoc._id },
-                    update: { $push: { onChain: entry } },
-                },
-            });
+            todayDoc.onChain?.push(entry);
 
-            // Fetch updated document to calculate OHLC
-            const updatedDoc = await collection.findOne({ _id: todayDoc._id });
-            const prices = updatedDoc?.onChain?.map((entry) => entry.price) || [];
-            const ohlc = calculateOHLC(prices);
+            // Compute OHLC values
+            const prices = todayDoc.onChain?.map((entry) => entry.price);
+            const ohlc = calculateOHLC(prices as number[]);
 
-            // Update the document with OHLC values
-            if (ohlc) {
-                const {open, high, low, close} = ohlc
-                await collection.updateOne(
-                    { _id: todayDoc._id },
-                    { $set: { open, high, low, close } }
-                );
-            }else{
-                await collection.updateOne(
-                    { _id: todayDoc._id },
-                    { $set: { 
-                        open: Number(price), 
-                        high: Number(price), 
-                        low: Number(price), 
-                        close: Number(price) 
-                    } }
-                );
+            // Prepare document for upload
+            const updatedDoc = {
+                ...todayDoc,
+                open: ohlc?.open ?? Number(price),
+                high: ohlc?.high ?? Number(price),
+                low: ohlc?.low ?? Number(price),
+                close: ohlc?.close ?? Number(price),
+            };
 
-            }
+            dataToUpload.push(updatedDoc);
         }
 
-        if (updates.length > 0) {
-            await collection.bulkWrite(updates);
+        if (dataToUpload.length > 0) {
+            await uploadToDailyAssets(dataToUpload, collection);
             console.log("On-chain data updated.");
         }
 
         // Fetch and return the latest document with OHLC included
-        const responseDocs = await collection.find({ date: getDate(), chain: 'Arbitrum' }).toArray();
+        const responseDocs = await collection.find({ date: getDate(), chain: "Arbitrum" }).toArray();
 
         return NextResponse.json({ data: responseDocs });
 
