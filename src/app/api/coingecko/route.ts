@@ -22,6 +22,7 @@ export async function GET() {
       .toArray()
 
     const coingeckoList = await fetchCoingeckoList()
+
     const mongoData = []
 
     for (const asset of coingeckoList) {
@@ -33,12 +34,14 @@ export async function GET() {
       const storeObject = {
         coingecko: coingeckoObject,
         lastUpdate: new Date(),
-        name,
+        name: name.toLowerCase(),
         ticker: symbol.toUpperCase(),
       }
 
       const existingAsset = existingAssets.find(
-        (asset) => asset.ticker === symbol.toUpperCase() && asset.name === name
+        (asset) =>
+          asset.ticker === symbol.toUpperCase() &&
+          asset.name === name.toLowerCase()
       )
 
       if (existingAsset) {

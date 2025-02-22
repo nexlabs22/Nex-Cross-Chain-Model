@@ -1,11 +1,12 @@
 import { ObjectId, Sort } from "mongodb"
 import { AssetCategory } from "./indexTypes"
+import { CmcV2Metadata } from "@/app/api/cmc/fetchCmcMetadata"
 
 export type DailyAsset = {
   _id?: ObjectId
-  ticker: string
-  name: string
-  address?: string
+  ticker: string //uppercase === symbol
+  name: string //lowercase
+  tokenAddress?: string
   type: AssetCategory
   date: string // YYYY-MM-DD
   timestamp: number // timestamp in seconds
@@ -33,17 +34,16 @@ export type aggregateType = {
 export type AssetOverviewDocument = {
   _id?: ObjectId
   lastUpdate?: Date
-  address?: string
+  tokenAddress?: string
   tradeStatus?: "active" | "upcoming" | "inactive"
-  provider?: string[]
   description?: string
-  name: string
+  name: string //lowercase
   cik?: string
   isin?: string
   cusip?: string
   logo_url?: string
-  ticker: string
-  coinmarketcap?: object
+  ticker: string //uppercase
+  coinmarketcap?: CmcV2Metadata["data"][string]
   coingecko?: {
     id: string
   }

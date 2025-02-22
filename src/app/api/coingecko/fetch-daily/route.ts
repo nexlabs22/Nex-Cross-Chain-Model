@@ -8,7 +8,7 @@ import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { AssetCategory } from "@/types/indexTypes"
 import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
 
-interface DailyPrice {
+export interface DailyPrice {
   id: string
   symbol: string
   name: string
@@ -64,27 +64,11 @@ export async function GET() {
       })
     }
 
-    await mapAndUploadDailyPrices(dailyPrices)
+    const { collection } = await DailyAssetsClient()
 
-    return NextResponse.json({
-      status: "success",
-      dailyPrices,
-    })
-  } catch (error) {
-    return NextResponse.json({
-      status: "error",
-      error: error,
-    })
-  }
-}
-
-async function mapAndUploadDailyPrices(dailyPrices: DailyPrice[]) {
-  const { collection } = await DailyAssetsClient()
-
-  try {
     const mongoDbData: DailyAsset[] = dailyPrices.map((item) => ({
       ticker: item.symbol.toUpperCase(),
-      name: item.name,
+      name: item.name.toLowerCase(),
       type: AssetCategory.Cryptocurrency, // Assuming type is Cryptocurrency, adjust as needed
       date: new Date(item.last_updated).toISOString().split("T")[0], // Convert to YYYY-MM-DD
       timestamp: Math.floor(new Date(item.last_updated).getTime() / 1000), // Convert to seconds
@@ -99,8 +83,16 @@ async function mapAndUploadDailyPrices(dailyPrices: DailyPrice[]) {
     }))
 
     await uploadToDailyAssets(mongoDbData, collection)
-    console.log("Data uploaded successfully")
+
+    return NextResponse.json({
+      message: "Data uploaded successfully",
+      // data: dailyPrices.slice(0, 20),
+      status: 200,
+    })
   } catch (error) {
-    console.error("Error uploading data:", error)
+    return NextResponse.json({
+      status: "error",
+      error: error,
+    })
   }
 }

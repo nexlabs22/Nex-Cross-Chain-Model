@@ -1,4 +1,4 @@
-import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
+import { uploadDefiLLamaToDailyAssets } from "@/utils/convertToMongo/parse"
 import { NextResponse } from "next/server"
 import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { DailyAsset } from "@/types/mongoDb"
@@ -77,7 +77,7 @@ export async function GET() {
       const marketCap = protocols[0]?.mcap
 
       return {
-        name: protocols[0].name,
+        name: protocols[0].name.toLowerCase(),
         cmcId: protocols[0].cmcId,
         gecko_id: protocols[0].gecko_id,
         ticker: protocols[0].symbol.toUpperCase(),
@@ -101,7 +101,7 @@ export async function GET() {
     })
 
   const { collection } = await DailyAssetsClient()
-  await uploadToDailyAssets(processedProtocols, collection)
+  await uploadDefiLLamaToDailyAssets(processedProtocols, collection)
 
   return NextResponse.json({
     message: "Protocols processed successfully",

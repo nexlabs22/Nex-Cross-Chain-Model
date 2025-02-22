@@ -1,4 +1,8 @@
-export async function fetchDailyPrices(idList: (string | undefined)[]) {
+import { DailyPrice } from "./route"
+
+export async function fetchDailyPrices(
+  idList: (string | undefined)[]
+): Promise<DailyPrice[] | null> {
   const idListShortString = idList
     .map((id: string | undefined) => id?.replace(/"/g, ""))
     .join(",")
@@ -14,12 +18,6 @@ export async function fetchDailyPrices(idList: (string | undefined)[]) {
       },
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`Error fetching prices: ${response.status} - ${errorText}`)
-      return null
-    }
-
     const data = await response.json()
     return data
   } catch (error) {
@@ -28,7 +26,9 @@ export async function fetchDailyPrices(idList: (string | undefined)[]) {
   }
 }
 
-export async function fetchDailyPricesSplitted(idList: (string | undefined)[]) {
+export async function fetchDailyPricesSplitted(
+  idList: (string | undefined)[]
+): Promise<DailyPrice[] | null> {
   // go from 0-100, 100-200, 200-300 etc.
   const idListSplitted = []
   for (let i = 0; i < idList.length; i += 250) {
@@ -41,5 +41,5 @@ export async function fetchDailyPricesSplitted(idList: (string | undefined)[]) {
     })
   )
 
-  return data.flat()
+  return data.flat().filter((item): item is DailyPrice => item !== null)
 }
