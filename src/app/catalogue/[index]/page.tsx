@@ -10,6 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import MarketStats from "@/app/catalogue/index-details/marketStats"
 import Composition from "@/app/catalogue/index-details/composition"
 import { parseQueryFromPath } from "@/utils/general"
+import { useParams } from 'next/navigation';
 import TradingViewChart from "@/components/ui/chart/TradingViewChart"
 import { PiHouseBold } from 'react-icons/pi';
 import { GoStack } from "react-icons/go";
@@ -20,18 +21,19 @@ const Page = () => {
   const { nexTokens } = useDashboard()
   const [index, setIndex] = useState<IndexCryptoAsset | null>(null)
   const [loading, setLoading] = useState(true)
+  const searchParams = useParams()
+  const paramsIndex = searchParams.index.toString().toLocaleUpperCase()
 
   const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
   const params = parseQueryFromPath(searchQuery)
-  console.log(params)
 
 
   useEffect(() => {
     setIndex(
-      nexTokens.find((token) => token.symbol === params.index) ?? null
+      nexTokens.find((token) => token.symbol === paramsIndex) ?? null
     )
     setLoading(false)
-  }, [params, nexTokens])
+  }, [nexTokens, paramsIndex])
 
   if (loading)
     return (
