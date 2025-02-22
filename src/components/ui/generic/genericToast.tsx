@@ -5,8 +5,8 @@ import 'react-toastify/dist/ReactToastify.css'
 import { RiLoader2Line } from 'react-icons/ri'
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { VscError } from "react-icons/vsc";
-
 import { GoInfo } from 'react-icons/go'
+import theme from "@/theme/theme"
 
 type ToastType = 'success' | 'info' | 'warning' | 'error' | 'loading'
 
@@ -19,43 +19,38 @@ export const GenericToast = ({ type, message }: ToastProps) => {
 	switch (type) {
 		case 'success':
 			toast.success(message, {
-				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2', fontWeight: '900',},
-				icon: <IoIosCheckmarkCircleOutline size={20} color="#5E869B"/>,
+				style: { color: theme.palette.text.primary, fontWeight: '600', fontFamily: 'Satoshi-Variable' },
+				icon: <IoIosCheckmarkCircleOutline size={20} color={theme.palette.success.main} />,
 			})
 			break
 		case 'info':
 			toast.info(message, {
-				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2', fontWeight: '900' },
-				icon: <GoInfo size={20} color="#5E869B"/>,
+				style: { color: theme.palette.text.primary, fontWeight: '600', fontFamily: 'Satoshi-Variable' },
+				icon: <GoInfo size={20} color={theme.palette.info.main} />,
 			})
 			break
 		case 'warning':
 			toast.warning(message, {
-				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2', fontWeight: '900' },
-				icon: <TiWarningOutline size={20} color="#5E869B"/>,
+				style: { color: theme.palette.text.primary, fontWeight: '600', fontFamily: 'Satoshi-Variable' },
+				icon: <TiWarningOutline size={20} color={theme.palette.warning.main} />,
 			})
 			break
 		case 'error':
 			toast.error(message, {
-				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2', fontWeight: '900' },
-				icon: <VscError size={20} color="#5E869B"/>,
+				style: { color: theme.palette.text.primary, fontWeight: '600', fontFamily: 'Satoshi-Variable' },
+				icon: <VscError size={20} color={theme.palette.error.main} />,
 			})
 			break
 		case 'loading':
 			toast.loading(message, {
-				bodyStyle: { backgroundColor: '#2A2A2A' },
-				style: { color: '#F2F2F2', fontWeight: '900' },
-				icon: (
-					
-					<RiLoader2Line size={20} color="#5E869B"/>
-				),
+				style: { color: theme.palette.text.primary, fontWeight: '600', fontFamily: 'Satoshi-Variable' },
+				icon: <RiLoader2Line size={20} color={theme.palette.info.main} />,
 			})
 			break
 		default:
-			toast(message, { bodyStyle: { backgroundColor: '#2A2A2A' }, style: { color: '#F2F2F2', fontWeight: '900' }, progressClassName: 'custom-toast-progress' })
+			toast(message, {
+				style: { color: theme.palette.text.primary, fontWeight: '600', fontFamily: 'Satoshi-Variable' },
+				progressClassName: 'custom-toast-progress'
+			})
 	}
 }

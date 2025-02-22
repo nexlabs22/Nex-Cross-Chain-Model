@@ -20,6 +20,7 @@ import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGro
 import { LuCopy } from "react-icons/lu"
 import copy from "copy-to-clipboard"
 import { useGlobal } from "@/providers/GlobalProvider"
+import { GenericToast } from "../generic/genericToast"
 
 const IndicesTable = () => {
   const theme = useTheme()
@@ -28,6 +29,7 @@ const IndicesTable = () => {
   const { nexTokens } = useDashboard()
   const { activeChainSetting } = useGlobal()
   const { chain, network } = activeChainSetting
+  
 
   const mobileColumns: GridColDef[] = [
     {
@@ -223,6 +225,10 @@ const IndicesTable = () => {
                 params.row.tokenAddresses?.Ethereum?.Sepolia?.token
                   ?.address as Address
               )
+              GenericToast({
+                type: "info",
+                message: "Address copied to clipboard",
+              })
             }}
           >
             <LuCopy size={16} color={theme.palette.info.main} />
