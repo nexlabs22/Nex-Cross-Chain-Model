@@ -52,7 +52,7 @@ const Page = () => {
   const breadcrumbsItems: BreadcrumbItem[] = [
     { icon: PiHouseBold, label: "Home", link: "/", available: true },
     { icon: GoStack, label: "Catalogue", link: `/catalogue`, available: true },
-    { label: index.symbol.toLocaleUpperCase(), link: `/catalogue/index-details?&index=${index.symbol}`, available: true }
+    { label: index.symbol.toLocaleUpperCase(), link: `/catalogue/${index.symbol}`, available: true }
   ]
 
   return (

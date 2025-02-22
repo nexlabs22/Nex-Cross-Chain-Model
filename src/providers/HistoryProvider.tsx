@@ -115,7 +115,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 			if (JSON.stringify(dataToShow) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(dataToShow)
 			}
-		} else if (pathname === 'catalogue/index-details') {
+		} else if (pathname.includes('catalogue/')) {
 			const indextype = nexTokensArray.find((token) => token.symbol === queryParams.index)?.smartContractType
 			const data = indextype === 'defi' ? positionHistoryDefi.data : indextype === 'crosschain' ? positionHistoryCrosschain.history: positionHistoryStock.history
 
