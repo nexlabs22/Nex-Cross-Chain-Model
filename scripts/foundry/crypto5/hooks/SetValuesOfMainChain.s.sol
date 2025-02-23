@@ -83,18 +83,18 @@ contract CombinedSetValuesScript is Script, Test {
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
             data.indexFactoryStorageProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             data.mainCrossChainTokenAddress = vm.envAddress("SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
-            data.otherCrossChainTokenAddress = vm.envAddress("UNICHAIN_CROSS_CHAIN_TOKEN_ADDRESS");
-            data.crossChainFactoryProxy = vm.envAddress("UNICHAIN_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
+            data.otherCrossChainTokenAddress = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
+            data.crossChainFactoryProxy = vm.envAddress("CR5_ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
             data.weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
             data.mainChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
-            data.otherChainSelector = uint64(vm.envUint("UNICHAIN_CHAIN_SELECTOR"));
+            data.otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
             data.indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
             data.priceOracle = vm.envAddress("CR5_SEPOLIA_PRICE_ORACLE");
             data.vaultProxy = vm.envAddress("CR5_SEPOLIA_VAULT_PROXY_ADDRESS");
             data.indexFactoryBalancerProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
             data.coreSenderProxy = vm.envAddress("CR5_SEPOLIA_CORE_SENDER_PROXY_ADDRESS");
             data.balancerSenderProxy = vm.envAddress("CR5_SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
-            data.wethAddressArbSepolia = vm.envAddress("UNICHAIN_WETH_ADDRESS");
+            data.wethAddressArbSepolia = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             data.indexFactoryStorageProxy = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
             data.mainCrossChainTokenAddress = vm.envAddress("CR5_ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
@@ -185,10 +185,10 @@ contract CombinedSetValuesScript is Script, Test {
     {
         if (keccak256(bytes(targetChain)) == keccak256("sepolia")) {
             data.mainChainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
-            data.otherChainSelector = uint64(vm.envUint("UNICHAIN_CHAIN_SELECTOR"));
+            data.otherChainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
             data.wethAddress = vm.envAddress("SEPOLIA_WETH_ADDRESS");
             data.functionsOracleProxy = vm.envAddress("CR5_SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADDRESS");
-            data.wethAddressArbSepolia = vm.envAddress("UNICHAIN_WETH_ADDRESS");
+            data.wethAddressArbSepolia = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
             data.isTestnet = true;
         } else if (keccak256(bytes(targetChain)) == keccak256("arbitrum_mainnet")) {
             data.mainChainSelector = uint64(vm.envUint("ARBITRUM_CHAIN_SELECTOR"));
@@ -398,7 +398,7 @@ contract CombinedSetValuesScript is Script, Test {
         assetList[1] = 0x3eb804cd437c27f5aEB6Be7AbbB32D21a69Ca49e; // sepoliaTestBinanceAddress
         assetList[2] = 0x357ECA9754fDc02A9860973E261FB08DE0f3b094; // sepoliaTestSolanaAddress
         assetList[3] = 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14; // sepoliaWeth
-        assetList[4] = 0xE24D95E308E486B3Ae3e71dA6ce7b9A7A5636f0F; // unichainTestRippleAddress
+        assetList[4] = 0xf4A357354fab7DEAC6fAa1992d84138704C01f45; // arnSepoliaRippleAddress
 
         uint256[] memory marketShares = new uint256[](5);
         marketShares[0] = 72000000000000000000;
@@ -438,7 +438,7 @@ contract CombinedSetValuesScript is Script, Test {
         path3[1] = assetList[3];
         pathData[3] = abi.encode(path3, feesData);
 
-        // For Unichain testnet
+        // For ARBSEPOLIA testnet
         address[] memory path4 = new address[](2);
         path4[0] = wethAddressArbSepolia;
         path4[1] = assetList[4];

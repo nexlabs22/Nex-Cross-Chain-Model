@@ -18,7 +18,7 @@ contract DeployCrossChainAllScript is Script, Test, PriceOracleByteCode {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // string memory targetChain = "unichain_testnet";
+        // string memory targetChain = "arbitrum_sepolia";
         string memory targetChain = "bsc_mainnet";
 
         address vaultProxy = _deployVault();
@@ -68,15 +68,15 @@ contract DeployCrossChainAllScript is Script, Test, PriceOracleByteCode {
         address swapRouterV2;
         address toUsdPriceFeed;
 
-        if (keccak256(bytes(targetChain)) == keccak256("unichain_testnet")) {
-            chainSelector = uint64(vm.envUint("UNICHAIN_CHAIN_SELECTOR"));
-            chainlinkToken = vm.envAddress("UNICHAIN_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("UNICHAIN_CCIP_ROUTER_ADDRESS");
-            wethAddress = vm.envAddress("UNICHAIN_WETH_ADDRESS");
-            swapRouterV3 = vm.envAddress("UNICHAIN_ROUTER_V3_ADDRESS");
-            factoryV3 = vm.envAddress("UNICHAIN_FACTORY_V3_ADDRESS");
-            swapRouterV2 = vm.envAddress("UNICHAIN_ROUTER_V2_ADDRESS");
-            toUsdPriceFeed = vm.envAddress("UNICHAIN_TO_USD_PRICE_FEED");
+        if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
+            chainSelector = uint64(vm.envUint("ARBITRUM_SEPOLIA_CHAIN_SELECTOR"));
+            chainlinkToken = vm.envAddress("ARBITRUM_SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
+            router = vm.envAddress("ARBITRUM_SEPOLIA_CCIP_ROUTER_ADDRESS");
+            wethAddress = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
+            swapRouterV3 = vm.envAddress("ARBITRUM_SEPOLIA_ROUTER_V3_ADDRESS");
+            factoryV3 = vm.envAddress("ARBITRUM_SEPOLIA_FACTORY_V3_ADDRESS");
+            swapRouterV2 = vm.envAddress("ARBITRUM_SEPOLIA_ROUTER_V2_ADDRESS");
+            toUsdPriceFeed = vm.envAddress("ARBITRUM_SEPOLIA_TO_USD_PRICE_FEED");
         } else if (keccak256(bytes(targetChain)) == keccak256("bsc_mainnet")) {
             chainSelector = uint64(vm.envUint("BSC_CHAIN_SELECTOR"));
             chainlinkToken = vm.envAddress("BSC_CHAINLINK_TOKEN_ADDRESS");
@@ -121,9 +121,9 @@ contract DeployCrossChainAllScript is Script, Test, PriceOracleByteCode {
         address chainlinkToken;
         address router;
 
-        if (keccak256(bytes(targetChain)) == keccak256("unichain_testnet")) {
-            chainlinkToken = vm.envAddress("UNICHAIN_CHAINLINK_TOKEN_ADDRESS");
-            router = vm.envAddress("UNICHAIN_CCIP_ROUTER_ADDRESS");
+        if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
+            chainlinkToken = vm.envAddress("ARBITRUM_SEPOLIA_CHAINLINK_TOKEN_ADDRESS");
+            router = vm.envAddress("ARBITRUM_SEPOLIA_CCIP_ROUTER_ADDRESS");
         } else if (keccak256(bytes(targetChain)) == keccak256("bsc_mainnet")) {
             chainlinkToken = vm.envAddress("BSC_CHAINLINK_TOKEN_ADDRESS");
             router = vm.envAddress("BSC_CCIP_ROUTER_ADDRESS");
