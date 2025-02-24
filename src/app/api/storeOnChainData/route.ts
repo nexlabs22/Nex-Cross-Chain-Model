@@ -16,12 +16,12 @@ async function getDocument(collection: Collection<DailyAsset>, token: IndexCrypt
     const today = getDate();
     let doc = await collection.findOne({ date: today, ticker: token.symbol });
 
-    if (!doc) {
+    if (!doc) {        
         const newDoc: DailyAsset = {            
             date: today,
             ticker: token.symbol,
             name: token.name,
-            address: token.tokenAddresses?.Arbitrum?.Mainnet?.token?.address,
+            tokenAddress: token.tokenAddresses?.Arbitrum?.Mainnet?.token?.address,
             type: AssetCategory.Index,
             timestamp: getTimestamp(),
             chain: "Arbitrum",
@@ -55,6 +55,7 @@ export async function GET() {
 
         for (const token of nexTokensArray.filter((token) => token.symbol === "ARBEI")) {
             const todayDoc = await getDocument(collection, token);
+
             const storageContract = getContract({
                 address: token?.tokenAddresses?.Arbitrum?.Mainnet?.storage?.address as Address,
                 chain: arbitrum,
@@ -85,12 +86,10 @@ export async function GET() {
             };
 
             todayDoc.onChain?.push(entry);
-
-            // Compute OHLC values
+            
             const prices = todayDoc.onChain?.map((entry) => entry.price);
             const ohlc = calculateOHLC(prices as number[]);
 
-            // Prepare document for upload
             const updatedDoc = {
                 ...todayDoc,
                 open: ohlc?.open ?? Number(price),
@@ -100,14 +99,13 @@ export async function GET() {
             };
 
             dataToUpload.push(updatedDoc);
-        }
+        }   
 
         if (dataToUpload.length > 0) {
             await uploadToDailyAssets(dataToUpload, collection);
             console.log("On-chain data updated.");
         }
-
-        // Fetch and return the latest document with OHLC included
+        
         const responseDocs = await collection.find({ date: getDate(), chain: "Arbitrum" }).toArray();
 
         return NextResponse.json({ data: responseDocs });

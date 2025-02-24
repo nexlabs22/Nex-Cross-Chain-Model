@@ -178,18 +178,18 @@ export const uploadToDailyAssets = async (
 ) => {
   const bulkOperations = []
 
-  console.log("initiate upload to mongo")
+  console.log("initiate upload to mongo", data)
 
   for (const row of data) {
     if (!row) continue
-    const { date, ticker, name } = row
+    const { date, ticker} = row
     // concatentate the data
     const bulkOperation = {
       updateOne: {
         filter: {
           date,
           ticker,
-          name: name.toLowerCase(),
+          // name: name.toLowerCase(),
         },
         update: { $set: row },
         upsert: true,
@@ -205,7 +205,7 @@ export const uploadToDailyAssets = async (
   //return a row count
   const rowCount = await collection.countDocuments()
   console.log(
-    `Successfully uploaded Defillama to bulk, new row count: ${rowCount}`
+    `Successfully uploaded bulk, new row count: ${rowCount}`
   )
   return
 }
