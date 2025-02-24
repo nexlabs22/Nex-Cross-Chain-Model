@@ -20,6 +20,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { CryptoAsset, IndexCryptoAsset } from "@/types/indexTypes"
 import { sepoliaTokens } from '@/constants/tokens';
 import { useDashboard } from '@/providers/DashboardProvider';
+import { useGlobal } from '@/providers/GlobalProvider';
+import { useSwitchActiveWalletChain } from 'thirdweb/react';
+import { allowedChainNetworks } from '@/utils/mappings';
+import { isIndexCryptoAsset } from '@/utils/general';
 
 interface TokenListData {
   tokens: CryptoAsset[] | IndexCryptoAsset[];
@@ -66,6 +70,7 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
           event.stopPropagation();
           onSelect(token);
         }}
+        disabled={isIndexCryptoAsset(token) && token.symbol.toLowerCase() !== 'arbei'}
       >
         <ListItemAvatar>
           {token.logoString ? (
@@ -107,12 +112,14 @@ export default function TokensModal({
   const [visibleCount, setVisibleCount] = useState<number>(0);
   const [inputValue, setInputValue] = useState("");
   const { nexTokens } = useDashboard()
+  const { setActiveChainSetting } = useGlobal()
+  const switchChain = useSwitchActiveWalletChain();
 
   useEffect(() => {
     const tokensContent = [
       ...(showNexProducts ? nexTokens : []),
-      ...(showTokens ? sepoliaTokens : [])
-    ];
+      ...(showTokens ? sepoliaTokens.filter(token => token.symbol !== 'USDT') : [])
+    ];    
     setTokens(tokensContent);
     setFilteredTokens(tokensContent);
     setVisibleCount(tokensContent.length)
@@ -140,11 +147,23 @@ export default function TokensModal({
     }
   };
 
+  function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset){
+    const sepoliaNetwork = allowedChainNetworks[0];
+    const tokensNotOnMainnet = nexTokens.filter((token)=> { return token.symbol.toLowerCase() !== 'arbei' }).map((token)=> {return token.symbol})
+    if(tokensNotOnMainnet.includes(token.symbol)){
+      console.warn("Arbitrum is only allowed when index=arbei. Reverting to default.");
+      switchChain(sepoliaNetwork.chain)
+      setActiveChainSetting(sepoliaNetwork)
+    }
+  }
+  
+
   const handleAutocompleteChange = (
     event: React.SyntheticEvent,
     value: CryptoAsset | IndexCryptoAsset | null
   ) => {
     if (value) {
+      networkCheckpoint(value);
       onSelect(value);
       onClose();
     }
@@ -167,6 +186,7 @@ export default function TokensModal({
     tokens: filteredTokens,
     visibleCount,
     onSelect: (token: CryptoAsset | IndexCryptoAsset) => {
+      networkCheckpoint(token)
       onSelect(token);
       onClose();
     }

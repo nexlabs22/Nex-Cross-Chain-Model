@@ -1,5 +1,5 @@
 import { tokenAddresses } from "@/constants/contractAddresses"
-import { Address } from "@/types/indexTypes"
+import { Address, CryptoAsset, IndexCryptoAsset, Chains, Networks } from "@/types/indexTypes"
 import { DailyAsset } from "@/types/mongoDb"
 import { sub, isWeekend } from "date-fns"
 
@@ -48,12 +48,15 @@ const getDecimals = (type?: { address: string; decimals?: number }): number => {
   return type?.decimals ?? 18 // Default to 18 if not specified
 }
 
-const isWETH = (address: Address): boolean => {
-  return address === tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address
+const isWETH = (address: Address, chainName: Chains, network: Networks): boolean => {
+  return address === tokenAddresses.WETH?.[chainName]?.[network]?.token?.address
 }
 
-function getTokenSymbolByAddress(address: string): string | undefined {
-  const lowerCaseAddress = address.toLowerCase()
+function getTokenInfoByAddress(
+  address: string,
+  infoType: "symbol" | "decimal"
+): string | number | undefined {
+  const lowerCaseAddress = address.toLowerCase();
 
   for (const [symbol, chains] of Object.entries(tokenAddresses)) {
     if (!chains) continue
@@ -66,7 +69,12 @@ function getTokenSymbolByAddress(address: string): string | undefined {
 
         for (const contract of Object.values(contracts)) {
           if (contract.address.toLowerCase() === lowerCaseAddress) {
-            return symbol
+            if (infoType === "symbol") {
+              return symbol;
+            }
+            if (infoType === "decimal") {
+              return contract.decimals !== undefined ? contract.decimals : 18;
+            }
           }
         }
       }
@@ -75,6 +83,8 @@ function getTokenSymbolByAddress(address: string): string | undefined {
 
   return undefined // Return undefined if no match is found
 }
+
+
 
 const get24hChange = (data: DailyAsset[]) => {
   if (data.length > 1) {
@@ -108,6 +118,14 @@ const parseQueryFromPath = (
 
   return queryObject
 }
+
+function isIndexCryptoAsset(
+  token: CryptoAsset | IndexCryptoAsset
+): token is IndexCryptoAsset {
+  return token && typeof token === "object" && "smartContractType" in token
+}
+
+
 export {
   getPreviousWeekday,
   SwapNumbers,
@@ -116,7 +134,8 @@ export {
   calculateChange,
   getDecimals,
   isWETH,
-  getTokenSymbolByAddress,
+  getTokenInfoByAddress,
   get24hChange,
   parseQueryFromPath,
+  isIndexCryptoAsset
 }

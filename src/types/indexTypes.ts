@@ -1,6 +1,7 @@
 import { ReactElement } from "react"
 import { PublicClient } from "viem"
 import { DailyAsset } from "./mongoDb"
+import { Chain } from "thirdweb"
 
 export type Address = `0x${string}`
 
@@ -36,13 +37,15 @@ export type ContractTypes =
   | "vault"
   | "ccip"
   | "faucet"
+  | "dinari"
 
 export type Chains = "Ethereum" | "Arbitrum" | "Polygon"
 export type Networks = "Mainnet" | "Goerli" | "Sepolia" | "Mumbai"
 
 export type ChainNetwork = {
-  chain: Chains
+  chainName: Chains
   network: Networks
+  chain: Chain
 }
 
 export type ChainSelectorMap = {

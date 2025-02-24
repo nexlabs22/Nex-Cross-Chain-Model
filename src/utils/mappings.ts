@@ -1,7 +1,7 @@
-import { ethereum, sepolia, mumbai, Chain } from "thirdweb/chains";
+import { ChainNetwork } from "@/types/indexTypes";
+import { sepolia, arbitrum } from "thirdweb/chains";
 
-export const networkToChain: { [key: string]: Chain } = {
-  Mainnet: ethereum,
-  Sepolia: sepolia,
-  Mumbai: mumbai,
-}
+export const allowedChainNetworks: ChainNetwork[] = [
+  {chainName: 'Ethereum', network: 'Sepolia', chain: sepolia},
+  {chainName: 'Arbitrum', network: 'Mainnet', chain: arbitrum},
+]

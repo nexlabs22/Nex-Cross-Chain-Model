@@ -7,8 +7,8 @@ import React, { createContext, useEffect, useState } from "react"
 import { useContext } from "react"
 import { useTrade } from "./TradeProvider"
 import { NexIndices, Transaction, RequestType } from "@/types/indexTypes"
-import apolloIndexClient from "@/utils/graphqlClient"
-import { GET_ISSUANCED_ANFI_EVENT_LOGS } from "@/app/api/graphql/queries/uniswap"
+import {apolloIndexClient} from "@/utils/graphqlClient"
+import { GET_ISSUANCED_ARBEI_EVENT_LOGS } from "@/app/api/graphql/queries/uniswap"
 import { useGlobal } from "./GlobalProvider"
 import { usePathname } from "next/navigation"
 import { nexTokensArray } from "@/constants/indices"
@@ -16,11 +16,13 @@ import { parseQueryFromPath } from "@/utils/general"
 
 
 interface HistoryContextProps {
-	positionHistoryData: Transaction[]
+	positionHistoryData: Transaction[],
+	reloadData: () => void
 }
 
 const HistoryContext = createContext<HistoryContextProps>({
-	positionHistoryData: []
+	positionHistoryData: [],
+	reloadData: () => {}
 })
 
 const useHistory = () => {
@@ -30,7 +32,7 @@ const useHistory = () => {
 const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const { swapFromToken, swapToToken } = useTrade()
-	const { userAddress } = useGlobal()
+	const { userAddress, activeChainSetting:{ network} } = useGlobal()
 	const pathname = usePathname()
 
 	const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
@@ -44,16 +46,15 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 	useEffect(() => {
 		async function fetchData() {
-			const { data: testData }: { data: { [key: string]: RequestType[] } } = await apolloIndexClient.query({
-				query: GET_ISSUANCED_ANFI_EVENT_LOGS,
+			const { data: testData }: { data: { [key: string]: RequestType[] } } = await apolloIndexClient(network).query({
+				query: GET_ISSUANCED_ARBEI_EVENT_LOGS,
 				fetchPolicy: 'network-only',
 			});
 			setDataFromGraph(testData)
 		}
 
 		fetchData()
-	}, [userAddress])
-
+	}, [userAddress, network])
 
 	const positionHistoryDefi = GetPositionsHistoryDefi(dataFromGraph)
 	const positionHistoryCrosschain = GetPositionsHistoryCrossChain(dataFromGraph)
@@ -115,7 +116,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 			if (JSON.stringify(dataToShow) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(dataToShow)
 			}
-		} else if (pathname === 'catalogue/index-details') {
+		} else if (pathname === '/catalogue/index-details') {
 			const indextype = nexTokensArray.find((token) => token.symbol === queryParams.index)?.smartContractType
 			const data = indextype === 'defi' ? positionHistoryDefi.data : indextype === 'crosschain' ? positionHistoryCrosschain.history: positionHistoryStock.history
 
@@ -146,7 +147,8 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 
 	const contextValue = {
-		positionHistoryData
+		positionHistoryData,
+		reloadData: positionHistoryDefi.reload
 	}
 
 	return <HistoryContext.Provider value={contextValue}>{children}</HistoryContext.Provider>

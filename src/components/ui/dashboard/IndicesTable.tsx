@@ -20,14 +20,16 @@ import CompositionAvatarGroup from "@/components/ui/generic/compositionAvatarGro
 import { LuCopy } from "react-icons/lu"
 import copy from "copy-to-clipboard"
 import { useGlobal } from "@/providers/GlobalProvider"
+import { DailyAsset } from "@/types/mongoDb"
 
 const IndicesTable = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
-  const { nexTokens } = useDashboard()
+  const { nexTokens,historicalPrices } = useDashboard()
   const { activeChainSetting } = useGlobal()
-  const { chain, network } = activeChainSetting
+  const { chainName, network } = activeChainSetting
+
 
   const mobileColumns: GridColDef[] = [
     {
@@ -284,12 +286,17 @@ const IndicesTable = () => {
 
   const columns = isMobile ? mobileColumns : desktopColumns
 
-  const rows = nexTokens.map((token, index) => ({
+  const rows = nexTokens.map((token, index) => {
+      const tokenPrices = historicalPrices?.filter(
+        (asset: DailyAsset) => asset.ticker === token.symbol
+      )
+      const price = tokenPrices?.[tokenPrices.length - 1]?.price
+    return {
     id: index,
     ...token,
-    price: token.smartContractInfo?.poolPrice
+    price: price
       ? `$${formatToViewNumber({
-        value: token.smartContractInfo?.poolPrice,
+        value: price,
         returnType: "currency",
       })}`
       : token.marketInfo?.offChainPrice
@@ -308,9 +315,9 @@ const IndicesTable = () => {
       ? `${token.marketInfo?.change24hFmt}%`
       : "N/A",
     address: reduceAddress(
-      token.tokenAddresses?.[chain]?.[network]?.token?.address as Address
+      token.tokenAddresses?.[chainName]?.[network]?.token?.address as Address
     ),
-  }))
+  }})
 
   return (
     <Stack width="100%" gap={2} paddingX={{ xs: "2px", lg: 0 }}>
