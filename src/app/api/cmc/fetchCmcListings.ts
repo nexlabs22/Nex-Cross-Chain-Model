@@ -11,7 +11,7 @@ if (!COINMARKETCAP_KEY) {
 
 export const fetchCmcListings = async () => {
   try {
-    const response = await fetch(`${COINMARKETCAP_API_URL}?limit=5000`, {
+    const response = await fetch(`${COINMARKETCAP_API_URL}?limit=2500`, {
       cache: "no-cache",
       headers: {
         "X-CMC_PRO_API_KEY": COINMARKETCAP_KEY,

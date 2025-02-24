@@ -12,3 +12,5 @@ https://mui.com/material-ui/customization/css-theme-variables/configuration/#pre
 dAPP refactored
 uses npm
 using branch: main
+
+The Coingecko api endpoint has managed to match 2072 out of 2500 coinmarketcap tokens

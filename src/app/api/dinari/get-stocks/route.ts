@@ -57,15 +57,18 @@ export async function GET(request: NextRequest) {
       mongoData.push({
         dinari: dinariData,
         lastUpdate: new Date(),
-        name: dinariData.stock.name,
+        name: dinariData.stock.name.toLowerCase(),
         ticker: dinariData.stock.symbol,
-        address: dinariData.token.address,
+        tokenAddress: dinariData.token.address,
       })
     }
 
     await uploadStocksToAssetOverview(mongoData, collection)
 
-    return NextResponse.json(mongoData, { status: 200 })
+    return NextResponse.json(
+      { message: "Stocks updated successfully" },
+      { status: 200 }
+    )
   } catch (error) {
     console.error("Error in getStocks:", error)
     return NextResponse.json(

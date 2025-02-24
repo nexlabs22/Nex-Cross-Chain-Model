@@ -66,7 +66,8 @@ export async function GET(request: NextRequest) {
     }
 
     return {
-      name: asset.dinari?.stock.name,
+      name: asset.dinari?.stock.name.toLowerCase(),
+      ticker: asset.dinari?.stock.symbol,
       type: AssetCategory.Stock,
       date: new Date().toISOString().split("T")[0],
       timestamp: Math.floor(new Date().getTime() / 1000),
@@ -75,9 +76,7 @@ export async function GET(request: NextRequest) {
       high: quote.high,
       low: quote.low,
       close: quote.close,
-      ticker: asset.dinari?.stock.symbol,
-      dinariSymbol: asset.dinari?.token.symbol,
-      address: asset.dinari?.token.address,
+      tokenAddress: asset.dinari?.token.address,
     }
   })
 
@@ -86,7 +85,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     status: 200,
     message: "success",
-    matchedStocks: matchedStocks,
+    // matchedStocks: matchedStocks,
   })
 }
 
