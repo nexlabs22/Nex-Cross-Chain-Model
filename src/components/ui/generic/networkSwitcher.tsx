@@ -5,15 +5,17 @@ import { allowedChainNetworks } from "@/utils/mappings";
 import { Chain } from "thirdweb";
 import { useGlobal } from "@/providers/GlobalProvider";
 import { useEffect } from "react";
-import { parseQueryFromPath } from "@/utils/general";
+import { useSearchParams } from "next/navigation";
 
 const NetworkSwitcher = () => {
   const activeChain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
   const wallet = useActiveWallet();
+  const queryParams = useSearchParams()
+  const index = queryParams?.get('index')
   
-  const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
-	const queryParams = parseQueryFromPath(searchQuery)
+  // const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
+	// const queryParams = parseQueryFromPath(searchQuery)
   const { setActiveChainSetting } = useGlobal();
 
   const defaultChain = allowedChainNetworks[0].chain;
@@ -27,7 +29,7 @@ const NetworkSwitcher = () => {
       return;
       
       //below condition is temporary condition, as all indexes are not on mainnet
-    }else if (chain.name === "Arbitrum One" && queryParams.index?.toLowerCase() !== "arbei") {
+    }else if (chain.name === "Arbitrum One" && index?.toLowerCase() !== "arbei") {
       console.warn("Arbitrum is only allowed when index=arbei. Reverting to default.");
       switchChain(defaultChain);
       return;
