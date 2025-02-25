@@ -58,7 +58,7 @@ const Page = () => {
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12 }}>
-      <Breadcrumbs items={breadcrumbsItems} />
+        <Breadcrumbs items={breadcrumbsItems} />
       </Grid>
       <Grid size={{ xs: 12, sm: 8 }}>
 
@@ -66,13 +66,17 @@ const Page = () => {
           <Box
             width={60}
             height={60}
-            borderRadius={1}
+            overflow='hidden'
+            display='flex'
+            alignItems='center'
+            justifyContent='center'
+            borderRadius={'50%'}
             sx={{
-              backgroundImage: `url(${index?.logoString})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              aspectRatio: 1
             }}
-          />
+          >
+            {index?.logoComponent}
+          </Box>
           <Stack direction={"column"}>
             <Typography variant={"h3"}>{index?.name}</Typography>
           </Stack>

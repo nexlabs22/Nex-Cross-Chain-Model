@@ -44,16 +44,20 @@ const CatalogueTable = () => {
           underline="none"
         >
           <Stack direction={"row"} alignItems={"center"} gap={1}>
-            <Box
+          <Box
               width={40}
               height={40}
-              borderRadius={1}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center' 
+              borderRadius={'50%'}
               sx={{
-                backgroundImage: `url(${params.row.logoString})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                aspectRatio: 1
               }}
-            ></Box>
+            >
+              {params.row.logoComponent}
+            </Box>
             <Stack direction={"column"}>
               <Typography variant={"h6"}>{params.row.symbol}</Typography>
             </Stack>
@@ -144,16 +148,20 @@ const CatalogueTable = () => {
           underline="none"
         >
           <Stack direction={"row"} alignItems={"center"} gap={1}>
-            <Box
+          <Box
               width={40}
               height={40}
-              borderRadius={1}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center' 
+              borderRadius={'50%'}
               sx={{
-                backgroundImage: `url(${params.row.logoString})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                aspectRatio: 1
               }}
-            ></Box>
+            >
+              {params.row.logoComponent}
+            </Box>
             <Stack
               direction={"column"}
               alignItems={"start"}

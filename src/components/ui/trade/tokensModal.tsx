@@ -3,7 +3,7 @@
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { Avatar, IconButton, Typography } from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
 import { OutlinedInput } from '@mui/material';
 import { IoSearch } from "react-icons/io5";
 import Autocomplete from '@mui/material/Autocomplete';
@@ -73,17 +73,21 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
         disabled={isIndexCryptoAsset(token) && token.symbol.toLowerCase() !== 'arbei'}
       >
         <ListItemAvatar>
-          {token.logoString ? (
-            <Avatar
-              alt={token.symbol}
-              src={token.logoString}
+          {token.logoComponent ? (
+            <Box
+              width={40}
+              height={40}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center'
+              borderRadius={'50%'}
               sx={{
-                width: 40,
-                height: 40,
-                backgroundColor: 'transparent',
-                border: 'none'
+                aspectRatio: 1
               }}
-            />
+            >
+              {token.logoComponent}
+            </Box>
           ) : (
             <Skeleton variant="circular" width={40} height={40} />
           )}
@@ -119,7 +123,7 @@ export default function TokensModal({
     const tokensContent = [
       ...(showNexProducts ? nexTokens : []),
       ...(showTokens ? sepoliaTokens.filter(token => token.symbol !== 'USDT') : [])
-    ];    
+    ];
     setTokens(tokensContent);
     setFilteredTokens(tokensContent);
     setVisibleCount(tokensContent.length)
@@ -147,16 +151,16 @@ export default function TokensModal({
     }
   };
 
-  function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset){
+  function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset) {
     const sepoliaNetwork = allowedChainNetworks[0];
-    const tokensNotOnMainnet = nexTokens.filter((token)=> { return token.symbol.toLowerCase() !== 'arbei' }).map((token)=> {return token.symbol})
-    if(tokensNotOnMainnet.includes(token.symbol)){
+    const tokensNotOnMainnet = nexTokens.filter((token) => { return token.symbol.toLowerCase() !== 'arbei' }).map((token) => { return token.symbol })
+    if (tokensNotOnMainnet.includes(token.symbol)) {
       console.warn("Arbitrum is only allowed when index=arbei. Reverting to default.");
       switchChain(sepoliaNetwork.chain)
       setActiveChainSetting(sepoliaNetwork)
     }
   }
-  
+
 
   const handleAutocompleteChange = (
     event: React.SyntheticEvent,

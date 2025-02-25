@@ -6,8 +6,8 @@ import {
   Button,
   IconButton,
   Input,
-  Avatar,
   Switch,
+  Box
 } from "@mui/material"
 import theme from "@/theme/theme"
 import { useEffect, useState } from "react"
@@ -534,7 +534,7 @@ export default function Swap({ side }: SwapProps) {
       //     message: `Please enter amount you want to burn`,
       //   })
       // } else
-       if (
+      if (
         Number(secondInputValue) <= 15 &&
         isIndexCryptoAsset(swapFromToken) &&
         swapFromToken?.smartContractType === "stocks"
@@ -702,7 +702,7 @@ export default function Swap({ side }: SwapProps) {
           let inputValue
           if (isWETH(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, chainName, network)) {
             inputValue = Number(firstInputValue) * 1e18
-          } else {            
+          } else {
             const inputEthValue = await readContract({
               contract: indexTokenStorageContract,
               method:
@@ -714,7 +714,7 @@ export default function Swap({ side }: SwapProps) {
               ],
             })
 
-            inputValue = Number(inputEthValue)            
+            inputValue = Number(inputEthValue)
           }
           if (isIndexCryptoAsset(swapToToken) && swapToToken?.smartContractType === "stocks") {
             const outAmount = await (rpcClient as PublicClient).readContract({
@@ -1187,15 +1187,20 @@ export default function Swap({ side }: SwapProps) {
                 }}
                 onClick={() => handleOpenFromTokensModal()}
               >
-                <Avatar
-                  src={swapFromToken.logoString}
+                <Box
+                  width={36}
+                  height={36}
+                  overflow='hidden'
+                  display='flex'
+                  alignItems='center'
+                  justifyContent='center'
+                  borderRadius={'50%'}
                   sx={{
-                    width: 36,
-                    height: 36,
-                    border: `none`,
-                    backgroundColor: 'transparent',
+                    aspectRatio: 1
                   }}
-                />
+                >
+                  {swapFromToken.logoComponent}
+                </Box>
                 <Stack>
                   <Typography variant="h6">{swapFromToken.symbol}</Typography>
                   <Typography variant="caption">{network}</Typography>
@@ -1204,12 +1209,12 @@ export default function Swap({ side }: SwapProps) {
               </Button>
             </Stack>
             <Stack width="100%">
-            <Typography variant="subtitle2" color="text.secondary" title={getPrimaryBalance().real.toString()}>
-            Balance :{" "}
-            <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
-              {(0 < Number(getPrimaryBalance().real)) && (Number(getPrimaryBalance().real) < 0.01) ? '< 0.01' : getPrimaryBalance().fmt}
-            </span>
-          </Typography>
+              <Typography variant="subtitle2" color="text.secondary" title={getPrimaryBalance().real.toString()}>
+                Balance :{" "}
+                <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
+                  {(0 < Number(getPrimaryBalance().real)) && (Number(getPrimaryBalance().real) < 0.01) ? '< 0.01' : getPrimaryBalance().fmt}
+                </span>
+              </Typography>
             </Stack>
           </Stack>
           <IconButton
@@ -1284,15 +1289,20 @@ export default function Swap({ side }: SwapProps) {
                 }}
                 onClick={() => handleOpenToTokensModal()}
               >
-                <Avatar
-                  src={swapToToken.logoString}
+                <Box
+                  width={36}
+                  height={36}
+                  overflow='hidden'
+                  display='flex'
+                  alignItems='center'
+                  justifyContent='center'
+                  borderRadius={'50%'}
                   sx={{
-                    width: 36,
-                    height: 36,
-                    border: `none`,
-                    backgroundColor: 'transparent',
+                    aspectRatio: 1
                   }}
-                />
+                >
+                  {swapFromToken.logoComponent}
+                </Box>
                 <Stack>
                   <Typography variant="h6">{swapToToken?.symbol}</Typography>
                   <Typography variant="caption">{network}</Typography>
@@ -1301,12 +1311,12 @@ export default function Swap({ side }: SwapProps) {
               </Button>
             </Stack>
             <Stack width="100%">
-            <Typography variant="subtitle2" color="text.secondary" title={getSecondaryBalance().real.toString()}>
-              Balance :{" "}
-              <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
-                {(0 < Number(getSecondaryBalance().real)) && (Number(getSecondaryBalance().real) < 0.01) ? '< 0.01' : getSecondaryBalance().fmt}
-              </span>
-            </Typography>
+              <Typography variant="subtitle2" color="text.secondary" title={getSecondaryBalance().real.toString()}>
+                Balance :{" "}
+                <span style={{ color: theme.palette.info.main, fontSize: 16 }}>
+                  {(0 < Number(getSecondaryBalance().real)) && (Number(getSecondaryBalance().real) < 0.01) ? '< 0.01' : getSecondaryBalance().fmt}
+                </span>
+              </Typography>
             </Stack>
           </Stack>
         </Stack>

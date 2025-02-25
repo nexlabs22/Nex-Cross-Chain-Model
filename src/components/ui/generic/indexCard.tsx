@@ -27,9 +27,9 @@ interface IndexCardProps {
 const InfoTooltip = () => {
   return (
     <Tooltip
-      sx={{ 
-        marginLeft: 0, 
-        backgroundColor: theme.palette.elevations.elevation900.main, 
+      sx={{
+        marginLeft: 0,
+        backgroundColor: theme.palette.elevations.elevation900.main,
         color: theme.palette.text.primary,
         borderRadius: 1,
         [`& .${tooltipClasses.tooltip}`]: {
@@ -98,15 +98,15 @@ const arrowComponent = ({
               loadingHistoricalPrices
                 ? "text.secondary"
                 : change24hValue && change24hValue > 0
-                ? "success.main"
-                : "error.main"
+                  ? "success.main"
+                  : "error.main"
             }
           >
             {change24hValue
               ? change24hString
               : loadingHistoricalPrices
-              ? "..."
-              : "N/A"}
+                ? "..."
+                : "N/A"}
           </Typography>
           <InfoTooltip />
         </>
@@ -130,20 +130,19 @@ const IndexCard = ({ index }: IndexCardProps) => {
     setChange24hValue(value)
   }, [tokenPrices, historicalPrices])
 
-  const logo = index.logoString
   const price = tokenPrices?.[tokenPrices.length - 1]?.price
   const priceString = price
     ? `$${formatToViewNumber({
-        // value: index.smartContractInfo?.poolPrice,
-        value: price,
-        returnType: "currency",
-      })}`
+      // value: index.smartContractInfo?.poolPrice,
+      value: price,
+      returnType: "currency",
+    })}`
     : index.marketInfo?.offChainPrice
-    ? `$${formatToViewNumber({
+      ? `$${formatToViewNumber({
         value: index.marketInfo?.offChainPrice,
         returnType: "currency",
       })}`
-    : "N/A"
+      : "N/A"
 
   return (
     <GenericCard>
@@ -156,13 +155,17 @@ const IndexCard = ({ index }: IndexCardProps) => {
           <Box
             width={64}
             height={64}
-            borderRadius={1}
+            overflow='hidden'
+            display='flex'
+            alignItems='center'
+            justifyContent='center'
+            borderRadius={'50%'}
             sx={{
-              backgroundImage: `url(${logo})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              aspectRatio: 1
             }}
-          ></Box>
+          >
+            {index.logoComponent}
+          </Box>
           <Stack
             direction={"column"}
             alignItems={"start"}
@@ -181,12 +184,12 @@ const IndexCard = ({ index }: IndexCardProps) => {
       <Stack gap={1} marginTop={3}>
         {
           price && change24hValue && <Typography variant={"h3"}>
-          {loadingHistoricalPrices ? (
-            <Skeleton variant="text" width={50} height={32} />
-          ) : (
-            priceString
-          )}
-        </Typography>
+            {loadingHistoricalPrices ? (
+              <Skeleton variant="text" width={50} height={32} />
+            ) : (
+              priceString
+            )}
+          </Typography>
         }
         {
           !price && !change24hValue && (
