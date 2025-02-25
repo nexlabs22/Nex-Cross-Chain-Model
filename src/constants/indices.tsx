@@ -48,10 +48,7 @@ import {
   XAUTLogo,
 } from "@/assets/icons/crypto/cryptoLogos"
 
-import AnfiLogo from "@/constants/logos/anfi"
-import Crypto5Logo from "@/constants/logos/crytpo5"
-import Mag7Logo from '@/constants/logos/mag7'
-import ArbeiLogo from '@/constants/logos/arbei'
+import { AnfiLogo, Crypto5Logo, Mag7Logo, ArbeiLogo } from "@/constants/indicesLogos"
 
 export const nexTokensArray: IndexCryptoAsset[] = [
   {
