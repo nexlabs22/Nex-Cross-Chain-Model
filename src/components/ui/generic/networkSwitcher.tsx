@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { client } from "@/utils/thirdWebClient";
 import { useActiveWallet, useActiveWalletChain, useNetworkSwitcherModal, useSwitchActiveWalletChain } from "thirdweb/react";
@@ -9,7 +9,7 @@ import { allowedChainNetworks } from "@/utils/mappings";
 import { Chain } from "thirdweb";
 import { useGlobal } from "@/providers/GlobalProvider";
 
-const NetworkSwitcherContent = () => {
+const NetworkSwitcher = () => {
   const activeChain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
   const wallet = useActiveWallet();
@@ -62,12 +62,12 @@ const NetworkSwitcherContent = () => {
   return <Button onClick={handleClick}>{activeChain?.name}</Button>;
 };
 
-const NetworkSwitcher = () => {
-  return (
-    <Suspense fallback={null}>
-      <NetworkSwitcherContent />
-    </Suspense>
-  );
-};
+// const NetworkSwitcher = () => {
+//   return (
+//     <Suspense fallback={null}>
+//       <NetworkSwitcherContent />
+//     </Suspense>
+//   );
+// };
 
 export default NetworkSwitcher;

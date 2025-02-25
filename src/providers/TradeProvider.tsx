@@ -1,7 +1,7 @@
 "use client"
 
 import { sepoliaTokens } from "@/constants/tokens"
-import React, { createContext, useState, useEffect, useMemo, useCallback, Suspense } from "react"
+import React, { createContext, useState, useEffect, useMemo, useCallback } from "react"
 import { useContext } from "react"
 import { useDashboard } from "./DashboardProvider"
 import { nexTokensArray } from "@/constants/indices"
@@ -27,7 +27,7 @@ const TradeContext = createContext<TradeContextProps>({
 
 const useTrade = () => useContext(TradeContext)
 
-const TradeProviderContent = ({ children }: { children: React.ReactNode }) => {
+const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     const { nexTokens } = useDashboard()
     const searchQuery = useSearchParams()
 
@@ -70,12 +70,12 @@ const TradeProviderContent = ({ children }: { children: React.ReactNode }) => {
     return <TradeContext.Provider value={contextValue}>{children}</TradeContext.Provider>
 }
 
-const TradeProvider = ({ children }: { children: React.ReactNode }) => {
-    return (
-      <Suspense fallback={null}>
-        <TradeProviderContent>{children}</TradeProviderContent>
-      </Suspense>
-    );
-  };
+// const TradeProvider = ({ children }: { children: React.ReactNode }) => {
+//     return (
+//       <Suspense fallback={null}>
+//         <TradeProviderContent>{children}</TradeProviderContent>
+//       </Suspense>
+//     );
+//   };
 
 export { TradeProvider, TradeContext, useTrade }

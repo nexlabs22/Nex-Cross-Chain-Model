@@ -3,7 +3,7 @@
 import { GetPositionsHistoryDefi } from "@/hooks/getPositionsHistoryDefi"
 import { GetPositionsHistoryCrossChain } from "@/hooks/getPositionsHistoryCrosschain"
 import { GetPositionsHistoryStock } from "@/hooks/getPositionsHistoryStock"
-import React, { createContext, Suspense, useEffect, useState } from "react"
+import React, { createContext, useEffect, useState } from "react"
 import { useContext } from "react"
 import { useTrade } from "./TradeProvider"
 import { NexIndices, Transaction, RequestType } from "@/types/indexTypes"
@@ -29,7 +29,7 @@ const useHistory = () => {
 	return useContext(HistoryContext)
 }
 
-const HistoryProviderContent  = ({ children }: { children: React.ReactNode }) => {
+const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const { swapFromToken, swapToToken } = useTrade()
 	const { userAddress, activeChainSetting:{ network} } = useGlobal()
@@ -153,11 +153,11 @@ const HistoryProviderContent  = ({ children }: { children: React.ReactNode }) =>
 	return <HistoryContext.Provider value={contextValue}>{children}</HistoryContext.Provider>
 }
 
-const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
-	return (
-	  <Suspense fallback={null}>
-		<HistoryProviderContent>{children}</HistoryProviderContent>
-	  </Suspense>
-	);
-  };
+// const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
+// 	return (
+// 	  <Suspense fallback={null}>
+// 		<HistoryProviderContent>{children}</HistoryProviderContent>
+// 	  </Suspense>
+// 	);
+//   };
 export { HistoryProvider, HistoryContext, useHistory }
