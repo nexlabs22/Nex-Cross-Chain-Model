@@ -48,6 +48,11 @@ import {
   XAUTLogo,
 } from "@/assets/icons/crypto/cryptoLogos"
 
+import AnfiLogo from "@/constants/logos/anfi"
+import Crypto5Logo from "@/constants/logos/crytpo5"
+import Mag7Logo from '@/constants/logos/mag7'
+import ArbeiLogo from '@/constants/logos/arbei'
+
 export const nexTokensArray: IndexCryptoAsset[] = [
   {
     symbol: "ANFI",
@@ -61,6 +66,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
     tokenAddresses: tokenAddresses["ANFI"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.ANFI as PoolAddressMap,
     logoString: anfi.src,
+    logoComponent: <AnfiLogo />,
     assets: [
       {
         symbol: "XAUT",
@@ -96,6 +102,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
     ] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.CRYPTO5 as PoolAddressMap,
     logoString: cr5.src,
+    logoComponent: <Crypto5Logo />,
     assets: [
       {
         symbol: "BTC",
@@ -157,6 +164,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
     tokenAddresses: tokenAddresses["MAG7"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.MAG7 as PoolAddressMap,
     logoString: mag7.src,
+    logoComponent: <Mag7Logo />,
     assets: [
       {
         symbol: "AAPL",
@@ -234,6 +242,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
     tokenAddresses: tokenAddresses["ARBEI"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.ARBEI as PoolAddressMap,
     logoString: arb.src,
+    logoComponent: <ArbeiLogo />,
     assets: [
       {
         symbol: "ARB",

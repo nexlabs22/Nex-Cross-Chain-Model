@@ -51,13 +51,17 @@ const IndicesTable = () => {
             <Box
               width={40}
               height={40}
-              borderRadius={1}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center' 
+              borderRadius={'50%'}
               sx={{
-                backgroundImage: `url(${params.row.logoString})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                aspectRatio: 1
               }}
-            ></Box>
+            >
+              {params.row.logoComponent}
+            </Box>
             <Stack direction={"column"}>
               <Typography variant={"h6"}>{params.row.symbol}</Typography>
             </Stack>
@@ -149,15 +153,19 @@ const IndicesTable = () => {
         >
           <Stack direction={"row"} alignItems={"center"} gap={1}>
             <Box
-              width={40}
-              height={40}
-              borderRadius={1}
+              width={50}
+              height={50}
+              borderRadius={'50%'}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center'
               sx={{
-                backgroundImage: `url(${params.row.logoString})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                aspectRatio: 1
               }}
-            ></Box>
+            >
+              {params.row.logoComponent}
+            </Box>
             <Stack
               direction={"column"}
               alignItems={"start"}
