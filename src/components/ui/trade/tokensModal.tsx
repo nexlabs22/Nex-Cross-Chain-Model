@@ -3,7 +3,7 @@
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { IconButton, Typography } from '@mui/material';
+import { Avatar, IconButton, Typography } from '@mui/material';
 import { OutlinedInput } from '@mui/material';
 import { IoSearch } from "react-icons/io5";
 import Autocomplete from '@mui/material/Autocomplete';
@@ -88,6 +88,17 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
             >
               {token.logoComponent}
             </Box>
+          ) : token.logoString ? (
+            <Avatar
+              alt={token.symbol}
+              src={token.logoString}
+              sx={{
+                width: 40,
+                height: 40,
+                backgroundColor: 'transparent',
+                border: 'none'
+              }}
+            />
           ) : (
             <Skeleton variant="circular" width={40} height={40} />
           )}

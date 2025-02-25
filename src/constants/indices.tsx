@@ -1,8 +1,4 @@
 import { tokenAddresses, poolAddresses } from "@/constants/contractAddresses"
-import anfi from '@/assets/images/anfi.webp'
-import cr5 from '@/assets/images/cr5.webp'
-import mag7 from '@/assets/images/mag7.webp'
-import arb from '@/assets/images/arb.webp'
 import {
   AllowedTickers,
   IndexCryptoAsset,
@@ -62,7 +58,6 @@ export const nexTokensArray: IndexCryptoAsset[] = [
       "The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures. Gold has traditionally been a reliable investment. Nevertheless, it's worth considering that Bitcoin, often referred to as 'digital gold,' has the potential to assume a prominent role in everyday life in the future.",
     tokenAddresses: tokenAddresses["ANFI"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.ANFI as PoolAddressMap,
-    logoString: anfi.src,
     logoComponent: <AnfiLogo />,
     assets: [
       {
@@ -98,7 +93,6 @@ export const nexTokensArray: IndexCryptoAsset[] = [
       "CRYPTO5"
     ] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.CRYPTO5 as PoolAddressMap,
-    logoString: cr5.src,
     logoComponent: <Crypto5Logo />,
     assets: [
       {
@@ -160,7 +154,6 @@ export const nexTokensArray: IndexCryptoAsset[] = [
       "The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.",
     tokenAddresses: tokenAddresses["MAG7"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.MAG7 as PoolAddressMap,
-    logoString: mag7.src,
     logoComponent: <Mag7Logo />,
     assets: [
       {
@@ -238,7 +231,6 @@ export const nexTokensArray: IndexCryptoAsset[] = [
       "Tracks the top defi protocols most used/native to Arbitrum and includes the ARB blockchain token itself. Uses a proprietary collection of alpha generating variables.",
     tokenAddresses: tokenAddresses["ARBEI"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.ARBEI as PoolAddressMap,
-    logoString: arb.src,
     logoComponent: <ArbeiLogo />,
     assets: [
       {

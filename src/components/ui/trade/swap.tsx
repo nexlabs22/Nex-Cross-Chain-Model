@@ -7,7 +7,9 @@ import {
   IconButton,
   Input,
   Switch,
-  Box
+  Box,
+  Avatar,
+  Skeleton
 } from "@mui/material"
 import theme from "@/theme/theme"
 import { useEffect, useState } from "react"
@@ -1187,20 +1189,36 @@ export default function Swap({ side }: SwapProps) {
                 }}
                 onClick={() => handleOpenFromTokensModal()}
               >
-                <Box
-                  width={36}
-                  height={36}
-                  overflow='hidden'
-                  display='flex'
-                  alignItems='center'
-                  justifyContent='center'
-                  borderRadius={'50%'}
-                  sx={{
-                    aspectRatio: 1
-                  }}
-                >
-                  {swapFromToken.logoComponent}
-                </Box>
+                {
+                  swapFromToken.logoComponent ? (
+                    <Box
+                      width={36}
+                      height={36}
+                      overflow='hidden'
+                      display='flex'
+                      alignItems='center'
+                      justifyContent='center'
+                      borderRadius={'50%'}
+                      sx={{
+                        aspectRatio: 1
+                      }}
+                    >
+                      {swapFromToken.logoComponent}
+                    </Box>
+                  ) : swapFromToken.logoString ? (
+                    <Avatar
+                      src={swapFromToken.logoString}
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        border: `none`,
+                        backgroundColor: 'transparent',
+                      }}
+                    />
+                  ) : (
+                    <Skeleton variant="circular" width={36} height={36} />
+                  )
+                }
                 <Stack>
                   <Typography variant="h6">{swapFromToken.symbol}</Typography>
                   <Typography variant="caption">{network}</Typography>
@@ -1289,20 +1307,36 @@ export default function Swap({ side }: SwapProps) {
                 }}
                 onClick={() => handleOpenToTokensModal()}
               >
-                <Box
-                  width={36}
-                  height={36}
-                  overflow='hidden'
-                  display='flex'
-                  alignItems='center'
-                  justifyContent='center'
-                  borderRadius={'50%'}
-                  sx={{
-                    aspectRatio: 1
-                  }}
-                >
-                  {swapFromToken.logoComponent}
-                </Box>
+                {
+                  swapToToken.logoComponent ? (
+                    <Box
+                      width={36}
+                      height={36}
+                      overflow='hidden'
+                      display='flex'
+                      alignItems='center'
+                      justifyContent='center'
+                      borderRadius={'50%'}
+                      sx={{
+                        aspectRatio: 1
+                      }}
+                    >
+                      {swapToToken.logoComponent}
+                    </Box>
+                  ) : swapToToken.logoString ? (
+                    <Avatar
+                      src={swapToToken.logoString}
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        border: `none`,
+                        backgroundColor: 'transparent',
+                      }}
+                    />
+                  ) : (
+                    <Skeleton variant="circular" width={36} height={36} />
+                  )
+                }
                 <Stack>
                   <Typography variant="h6">{swapToToken?.symbol}</Typography>
                   <Typography variant="caption">{network}</Typography>

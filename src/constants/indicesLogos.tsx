@@ -14,7 +14,7 @@ function AnfiLogo() {
             maxWidth: "100%",
             aspectRatio: 1
         }}>
-            <Typography variant="caption" fontWeight={600}>ANFI</Typography>
+            <Typography variant="caption" fontWeight={600} fontSize={{xs: '0.6rem'}}>ANFI</Typography>
         </Box>
     )
 }
@@ -32,7 +32,7 @@ function Crypto5Logo() {
             maxWidth: "100%",
             aspectRatio: 1
         }}>
-            <Typography variant="caption" fontWeight={600}>CR5</Typography>
+            <Typography variant="caption" fontWeight={600} fontSize={{xs: '0.6rem'}}>CR5</Typography>
         </Box>
     )
 }
@@ -50,7 +50,7 @@ function Mag7Logo() {
             maxWidth: "100%",
             aspectRatio: 1
         }}>
-            <Typography variant="caption" fontWeight={600}>MAG7</Typography>
+            <Typography variant="caption" fontWeight={600} fontSize={{xs: '0.6rem'}}>MAG7</Typography>
         </Box>
     )
 }
@@ -68,7 +68,7 @@ function ArbeiLogo() {
             maxWidth: "100%",
             aspectRatio: 1
         }}>
-            <Typography variant="caption" fontWeight={600} fontSize={{xs: '0.5rem'}}>ARBEI</Typography>
+            <Typography variant="caption" fontWeight={600} fontSize={{xs: '0.6rem'}}>ARBEI</Typography>
         </Box>
     )
 }
