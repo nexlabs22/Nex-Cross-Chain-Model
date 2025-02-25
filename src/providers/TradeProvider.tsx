@@ -70,12 +70,4 @@ const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     return <TradeContext.Provider value={contextValue}>{children}</TradeContext.Provider>
 }
 
-// const TradeProvider = ({ children }: { children: React.ReactNode }) => {
-//     return (
-//       <Suspense fallback={null}>
-//         <TradeProviderContent>{children}</TradeProviderContent>
-//       </Suspense>
-//     );
-//   };
-
 export { TradeProvider, TradeContext, useTrade }

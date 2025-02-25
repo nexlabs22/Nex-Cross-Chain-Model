@@ -62,12 +62,4 @@ const NetworkSwitcher = () => {
   return <Button onClick={handleClick}>{activeChain?.name}</Button>;
 };
 
-// const NetworkSwitcher = () => {
-//   return (
-//     <Suspense fallback={null}>
-//       <NetworkSwitcherContent />
-//     </Suspense>
-//   );
-// };
-
 export default NetworkSwitcher;

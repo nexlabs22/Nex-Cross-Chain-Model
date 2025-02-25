@@ -12,9 +12,6 @@ import { GET_ISSUANCED_ARBEI_EVENT_LOGS } from "@/app/api/graphql/queries/uniswa
 import { useGlobal } from "./GlobalProvider"
 import { usePathname, useSearchParams } from "next/navigation"
 import { nexTokensArray } from "@/constants/indices"
-// import { parseQueryFromPath } from "@/utils/general"
-
-
 interface HistoryContextProps {
 	positionHistoryData: Transaction[],
 	reloadData: () => void
@@ -153,11 +150,4 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 	return <HistoryContext.Provider value={contextValue}>{children}</HistoryContext.Provider>
 }
 
-// const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
-// 	return (
-// 	  <Suspense fallback={null}>
-// 		<HistoryProviderContent>{children}</HistoryProviderContent>
-// 	  </Suspense>
-// 	);
-//   };
 export { HistoryProvider, HistoryContext, useHistory }
