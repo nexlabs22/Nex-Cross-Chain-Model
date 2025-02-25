@@ -1,23 +1,22 @@
+"use client";
+
+import { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { client } from "@/utils/thirdWebClient";
 import { useActiveWallet, useActiveWalletChain, useNetworkSwitcherModal, useSwitchActiveWalletChain } from "thirdweb/react";
 import { Button } from "@mui/material";
 import { allowedChainNetworks } from "@/utils/mappings";
 import { Chain } from "thirdweb";
 import { useGlobal } from "@/providers/GlobalProvider";
-import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 
-const NetworkSwitcher = () => {
+const NetworkSwitcherContent = () => {
   const activeChain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
   const wallet = useActiveWallet();
-  const queryParams = useSearchParams()
-  const index = queryParams?.get('index')
-  
-  // const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
-	// const queryParams = parseQueryFromPath(searchQuery)
-  const { setActiveChainSetting } = useGlobal();
+  const queryParams = useSearchParams();
+  const index = queryParams?.get("index");
 
+  const { setActiveChainSetting } = useGlobal();
   const defaultChain = allowedChainNetworks[0].chain;
 
   const enforceAllowedChain = (chain: Chain) => {
@@ -27,13 +26,11 @@ const NetworkSwitcher = () => {
       console.warn("Unsupported chain detected. Reverting to default.");
       switchChain(defaultChain);
       return;
-      
-      //below condition is temporary condition, as all indexes are not on mainnet
-    }else if (chain.name === "Arbitrum One" && index?.toLowerCase() !== "arbei") {
+    } else if (chain.name === "Arbitrum One" && index?.toLowerCase() !== "arbei") {
       console.warn("Arbitrum is only allowed when index=arbei. Reverting to default.");
       switchChain(defaultChain);
       return;
-    }else{
+    } else {
       setActiveChainSetting(allowed);
     }
   };
@@ -44,7 +41,7 @@ const NetworkSwitcher = () => {
         enforceAllowedChain(chain);
       });
 
-      return () => unsubscribe(); 
+      return () => unsubscribe();
     }
   }, [wallet]);
 
@@ -63,6 +60,14 @@ const NetworkSwitcher = () => {
   }
 
   return <Button onClick={handleClick}>{activeChain?.name}</Button>;
+};
+
+const NetworkSwitcher = () => {
+  return (
+    <Suspense fallback={null}>
+      <NetworkSwitcherContent />
+    </Suspense>
+  );
 };
 
 export default NetworkSwitcher;
