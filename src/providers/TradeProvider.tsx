@@ -1,12 +1,12 @@
 "use client"
 
 import { sepoliaTokens } from "@/constants/tokens"
-import React, { createContext, useState, useEffect, useMemo, useCallback } from "react"
+import React, { createContext, useState, useEffect, useMemo, useCallback, Suspense } from "react"
 import { useContext } from "react"
 import { useDashboard } from "./DashboardProvider"
 import { nexTokensArray } from "@/constants/indices"
 import { IndexCryptoAsset } from "@/types/indexTypes"
-import { parseQueryFromPath } from "@/utils/general"
+import { useSearchParams } from "next/navigation"
 
 interface TradeContextProps {
     swapFromToken: IndexCryptoAsset
@@ -27,10 +27,9 @@ const TradeContext = createContext<TradeContextProps>({
 
 const useTrade = () => useContext(TradeContext)
 
-const TradeProvider = ({ children }: { children: React.ReactNode }) => {
+const TradeProviderContent = ({ children }: { children: React.ReactNode }) => {
     const { nexTokens } = useDashboard()
-    const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
-	const queryParams = parseQueryFromPath(searchQuery)
+    const searchQuery = useSearchParams()
 
     const allTokens = useMemo(() => [...nexTokens, ...sepoliaTokens], [nexTokens])
 
@@ -39,8 +38,8 @@ const TradeProvider = ({ children }: { children: React.ReactNode }) => {
         [allTokens]
     )
 
-    const queryIndexSymbol = queryParams?.index || null
-    const querySide = queryParams?.side 
+    const queryIndexSymbol = searchQuery?.get('index') ||  null
+    const querySide = searchQuery?.get('side')
 
     const [swapFromToken, setSwapFrom] = useState<IndexCryptoAsset>(() =>
         querySide === "buy" ? defaultFromToken : getTokenBySymbol(queryIndexSymbol) || defaultToToken
@@ -70,5 +69,13 @@ const TradeProvider = ({ children }: { children: React.ReactNode }) => {
 
     return <TradeContext.Provider value={contextValue}>{children}</TradeContext.Provider>
 }
+
+const TradeProvider = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <Suspense fallback={null}>
+        <TradeProviderContent>{children}</TradeProviderContent>
+      </Suspense>
+    );
+  };
 
 export { TradeProvider, TradeContext, useTrade }

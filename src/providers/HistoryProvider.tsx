@@ -3,16 +3,16 @@
 import { GetPositionsHistoryDefi } from "@/hooks/getPositionsHistoryDefi"
 import { GetPositionsHistoryCrossChain } from "@/hooks/getPositionsHistoryCrosschain"
 import { GetPositionsHistoryStock } from "@/hooks/getPositionsHistoryStock"
-import React, { createContext, useEffect, useState } from "react"
+import React, { createContext, Suspense, useEffect, useState } from "react"
 import { useContext } from "react"
 import { useTrade } from "./TradeProvider"
 import { NexIndices, Transaction, RequestType } from "@/types/indexTypes"
 import {apolloIndexClient} from "@/utils/graphqlClient"
 import { GET_ISSUANCED_ARBEI_EVENT_LOGS } from "@/app/api/graphql/queries/uniswap"
 import { useGlobal } from "./GlobalProvider"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { nexTokensArray } from "@/constants/indices"
-import { parseQueryFromPath } from "@/utils/general"
+// import { parseQueryFromPath } from "@/utils/general"
 
 
 interface HistoryContextProps {
@@ -29,14 +29,13 @@ const useHistory = () => {
 	return useContext(HistoryContext)
 }
 
-const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
+const HistoryProviderContent  = ({ children }: { children: React.ReactNode }) => {
 
 	const { swapFromToken, swapToToken } = useTrade()
 	const { userAddress, activeChainSetting:{ network} } = useGlobal()
 	const pathname = usePathname()
-
-	const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
-	const queryParams = parseQueryFromPath(searchQuery)
+	const queryParams = useSearchParams()
+	const index = queryParams?.get('index')
 
 	const [positionHistoryData, setPositionHistoryData] = useState<Transaction[]>([])
 	const [activeTicker, setActiveTicker] = useState<NexIndices>('ANFI')
@@ -117,11 +116,11 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 				setPositionHistoryData(dataToShow)
 			}
 		} else if (pathname === '/catalogue/index-details') {
-			const indextype = nexTokensArray.find((token) => token.symbol === queryParams.index)?.smartContractType
+			const indextype = nexTokensArray.find((token) => token.symbol === index)?.smartContractType
 			const data = indextype === 'defi' ? positionHistoryDefi.data : indextype === 'crosschain' ? positionHistoryCrosschain.history: positionHistoryStock.history
 
 			const dataToShow = data.filter((data: Transaction) => {
-				return data.tokenName === queryParams.index
+				return data.tokenName === index
 			})
 			if (JSON.stringify(dataToShow) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(dataToShow)
@@ -142,7 +141,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		positionHistoryStock,
 		totalPortfolioData,
 		userAddress,
-		queryParams	
+		index
 	])
 
 
@@ -154,4 +153,11 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 	return <HistoryContext.Provider value={contextValue}>{children}</HistoryContext.Provider>
 }
 
+const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
+	return (
+	  <Suspense fallback={null}>
+		<HistoryProviderContent>{children}</HistoryProviderContent>
+	  </Suspense>
+	);
+  };
 export { HistoryProvider, HistoryContext, useHistory }
