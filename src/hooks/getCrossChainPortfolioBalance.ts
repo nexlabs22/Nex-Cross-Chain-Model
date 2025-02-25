@@ -17,7 +17,7 @@ import { useGlobal } from "@/providers/GlobalProvider"
 
 
 export function GetCrossChainPortfolioBalance() {
-  const {activeChainSetting: {chain, network}} = useGlobal()
+  const {activeChainSetting: {chainName, network}} = useGlobal()
   const [portfolioValue, setPortfolioValue] = useState<number>()
 
   const getPortfolioValue = useCallback(async () => {
@@ -42,14 +42,14 @@ export function GetCrossChainPortfolioBalance() {
     let totalPortfolioBalance: number = 0
 
     const sepoliaPortfolioBalance = await (sepoliaPublicClient as PublicClient).readContract({
-      address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.factory
+      address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.factory
         ?.address as Address,
       abi: crossChainIndexFactoryV2Abi,
       functionName: "getPortfolioBalance",
     })
     totalPortfolioBalance += Number(sepoliaPortfolioBalance)
     const totalCurrentList = await (sepoliaPublicClient as PublicClient).readContract({
-      address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.storage
+      address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage
         ?.address as Address,
       abi: crossChainFactoryStorageAbi,
       functionName: "totalCurrentList",
@@ -57,7 +57,7 @@ export function GetCrossChainPortfolioBalance() {
 
     for (let i = 0; i < Number(totalCurrentList); i++) {
       const tokenAddress = await (sepoliaPublicClient as PublicClient).readContract({
-        address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.storage
+        address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage
           ?.address as Address,
         abi: crossChainFactoryStorageAbi,
         functionName: "currentList",
@@ -65,7 +65,7 @@ export function GetCrossChainPortfolioBalance() {
       })
 
       const tokenChainSelector = await (sepoliaPublicClient as PublicClient).readContract({
-        address: tokenAddresses.CRYPTO5?.[chain]?.[network]?.storage
+        address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage
           ?.address as Address,
         abi: crossChainFactoryStorageAbi,
         functionName: "tokenChainSelector",
@@ -95,7 +95,7 @@ export function GetCrossChainPortfolioBalance() {
       }
     }
     setPortfolioValue(totalPortfolioBalance)
-  }, [chain, network])
+  }, [chainName, network])
 
   useEffect(() => {
     getPortfolioValue()

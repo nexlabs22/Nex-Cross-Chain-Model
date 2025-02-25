@@ -79,12 +79,15 @@ export const uploadToAssetOverview = async (
   for (const row of data) {
     if (!row) continue
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { ticker, ...rest } = row as any // Assuming date and ticker are common fields
+    const { ticker, tokenAddress, name } = row as any // Assuming date and ticker are common fields
     const bulkOperation = {
       updateOne: {
-        filter: { ticker },
-        update: { $set: rest },
-        upsert: true,
+        filter: {
+          ticker,
+          $or: [{ tokenAddress }, { name: name.toLowerCase() }],
+        },
+        update: { $set: row },
+        upsert: true, //if the document does not exist, it will be created using both the filter and the update fields
       },
     }
     bulkOperations.push(bulkOperation)
@@ -111,12 +114,14 @@ export const uploadStocksToAssetOverview = async (
   for (const row of data) {
     if (!row) continue
 
-    const address = row.address
-    const ticker = row.ticker
+    const { ticker, name, tokenAddress } = row
 
     const bulkOperation = {
       updateOne: {
-        filter: { ticker, address },
+        filter: {
+          ticker,
+          $or: [{ tokenAddress }, { name: name.toLowerCase() }],
+        },
         update: { $set: row },
         upsert: true,
       },
@@ -134,22 +139,59 @@ export const uploadStocksToAssetOverview = async (
   return
 }
 
+export const uploadDefiLLamaToDailyAssets = async (
+  data: (DailyAsset | null)[],
+  collection: Collection<DailyAsset>
+) => {
+  const bulkOperations = []
+  for (const row of data) {
+    if (!row) continue
+    const { date, ticker, name } = row
+    const bulkOperation = {
+      updateOne: {
+        filter: {
+          date,
+          ticker,
+          name,
+        },
+        update: { $set: row },
+        upsert: true,
+      },
+    }
+    bulkOperations.push(bulkOperation)
+  }
+
+  if (bulkOperations.length > 0) {
+    await collection.bulkWrite(bulkOperations)
+  }
+
+  const rowCount = await collection.countDocuments()
+  console.log(
+    `Successfully uploaded Defillama to bulk, new row count: ${rowCount}`
+  )
+  return
+}
+
 export const uploadToDailyAssets = async (
   data: (DailyAsset | null)[],
   collection: Collection<DailyAsset>
 ) => {
   const bulkOperations = []
 
-  console.log("initiate upload to mongo")
+  console.log("initiate upload to mongo", data)
 
   for (const row of data) {
     if (!row) continue
-    const { date, ticker, ...rest } = row
+    const { date, ticker} = row
     // concatentate the data
     const bulkOperation = {
       updateOne: {
-        filter: { date, ticker },
-        update: { $set: rest },
+        filter: {
+          date,
+          ticker,
+          // name: name.toLowerCase(),
+        },
+        update: { $set: row },
         upsert: true,
       },
     }
@@ -162,7 +204,9 @@ export const uploadToDailyAssets = async (
 
   //return a row count
   const rowCount = await collection.countDocuments()
-  console.log(`Successfully uploaded bulk, new row count: ${rowCount}`)
+  console.log(
+    `Successfully uploaded bulk, new row count: ${rowCount}`
+  )
   return
 }
 
@@ -176,12 +220,16 @@ export const uploadStocksToDailyAssets = async (
 
   for (const row of data) {
     if (!row) continue
-    const { date, ticker, address, ...rest } = row
+    const { date, ticker, tokenAddress, name } = row
     // concatentate the data
     const bulkOperation = {
       updateOne: {
-        filter: { date, ticker, address },
-        update: { $set: rest },
+        filter: {
+          date,
+          ticker,
+          $or: [{ tokenAddress }, { name: name.toLowerCase() }],
+        },
+        update: { $set: row },
         upsert: true,
       },
     }

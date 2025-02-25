@@ -17,14 +17,13 @@ const Page = ({
   searchParams: { [key: string]: string | string[] | undefined }
 }) => {
   const { nexTokens } = useDashboard()
-  const { side, index } = searchParams;
+  const { index, side } = searchParams;
   let selectedIndex = nexTokens[0];
   if (index) {
     const foundToken = nexTokens.find(token => token.symbol === index);
     selectedIndex = foundToken || nexTokens[0];
   }
 
-  const selectedSide = side && side === 'buy' ? 'buy' : 'sell';
 
   const breadcrumbsItems: BreadcrumbItem[] = [
     { icon: PiHouseBold, label: "Home", link: "/", available: true },
@@ -42,7 +41,7 @@ const Page = ({
           </Stack>
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Swap side={selectedSide} selectedIndex={selectedIndex} />
+          <Swap/>
         </Grid>
       </Grid>
       <TabbedTablesView />

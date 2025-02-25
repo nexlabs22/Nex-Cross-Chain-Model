@@ -5,24 +5,22 @@ import {
 } from "@/constants/contractAddresses";
 import { getContract, readContract } from "thirdweb";
 import { client } from "./thirdWebClient";
-import { Address, Networks } from "@/types/indexTypes";
-import { networkToChain } from "./mappings";
+import { Address, ChainNetwork } from "@/types/indexTypes";
 
 export default async function getPoolAddress(
   tokenAddress1: string,  
-  network: Networks
+  allowedChainNetworks: ChainNetwork
 ) {
+  const {network, chain} = allowedChainNetworks
   const tokenA = tokenAddress1;
   const wethSepolia = tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address;
 
-  const tokenB = network === 'Mainnet' ? WETH9[1].address : (wethSepolia as Address);
+  const tokenB = network === 'Mainnet' ? WETH9[chain.id].address : (wethSepolia as Address);
   const uniswapFactory = factoryAddresses.UNISWAP.Ethereum;
 
   const factoryContractAddress = network === 'Mainnet'
     ? uniswapFactory.Mainnet
-    : uniswapFactory.Sepolia;
-
-  const chain = networkToChain[network];
+    : uniswapFactory.Sepolia;    
 
   const factoryContract = getContract({
     address: factoryContractAddress as string,

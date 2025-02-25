@@ -5,7 +5,7 @@ import { DailyAssetsClient } from "@/utils/MongoDbClient"
 export async function GET() {
   console.log("fetching data assets")
   try {
-    const tickers = nexTokensArray.map((index) => index.symbol)
+    const tickers = nexTokensArray.map((index) => index.symbol === 'ARBEI' ? 'rARBEI' : index.symbol)
     const { collection } = await DailyAssetsClient()
 
     const filter = {
@@ -15,7 +15,7 @@ export async function GET() {
       },
     }
 
-    const data = await collection.find(filter).toArray()
+    const data = (await collection.find(filter).toArray()).map((token)=> token.ticker === 'rARBEI' ? {...token, ticker: 'ARBEI'}: token)
 
     return NextResponse.json({ data })
   } catch (error) {

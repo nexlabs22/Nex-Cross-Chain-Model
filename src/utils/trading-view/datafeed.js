@@ -56,11 +56,11 @@ async function getAllSymbols() {
     isTopTier: true,
     pairs: {
       ANFI: ['USD'], CRYPTO5: ['USD'],
-      MAG7: ['USD'], ARBIn: ['USD'], ARBEI: ['USD'],
-      GSPC: ['USD'],
-      IXIC: ['USD'],
+      MAG7: ['USD'], ARBEI: ['USD'],
+      SPDR: ['USD'],
+      NASDAQ: ['USD'],
       DJI: ['USD'],
-      NYA: ['USD'],
+      NYSE: ['USD'],
       ASML: ['USD'],
       PYPL: ['USD'],
       MSFT: ['USD'],
@@ -68,13 +68,13 @@ async function getAllSymbols() {
       GOOGL: ['USD'],
       AMZN: ['USD'],
       V: ['USD'],
-      TCEHY: ['USD'],
+      '0700': ['USD'],
       TSM: ['USD'],
       XOM: ['USD'],
       NVDA: ['USD'],
       UNH: ['USD'],
       JNJ: ['USD'],
-      LVMHF: ['USD'],
+      MC: ['USD'],
       TSLA: ['USD'],
       JPM: ['USD'],
       WMT: ['USD'],
@@ -82,21 +82,17 @@ async function getAllSymbols() {
       SPY: ['USD'],
       MA: ['USD'],
       CVX: ['USD'],
-      BRKA: ['USD'],
-      GOLD: ['USD'],
-      COPPER: ['USD'],
+      'BRK.A': ['USD'],
+      XAU: ['USD'],
+      HG: ['USD'],
       LITHIUM: ['USD'],
-      CRUDEOIL: ['USD'],
-      SILVER: ['USD'],
-      BTC: ['USD'],
-      ARB: ['USD'],
-      ETH: ['USD']
-
+      CL: ['USD'],
+      SI: ['USD'],
     }
   }
-  const indexes = ['ANFI', 'CRYPTO5', 'GSPC', 'IXIC', 'DJI', 'NYA','MAG7', 'ARBEI']
-  const stocks = ['V', 'ASML', 'PYPL', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', 'TCEHY', 'TSM', 'XOM', 'NVDA', 'UNH', 'JNJ', 'LVMHF', 'TSLA', 'JPM', 'WMT', 'META', 'SPY', 'MA', 'CVX', 'BRKA']
-  const commodities = ['GOLD', 'COPPER', 'LITHIUM', 'CRUDEOIL', 'SILVER']
+  const indexes = ['ANFI', 'CRYPTO5','MAG7', 'ARBEI', 'SPDR', 'NASDAQ', 'DJI', 'NYSE']
+  const stocks = ['V', 'ASML', 'PYPL', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', '0700', 'TSM', 'XOM', 'NVDA', 'UNH', 'JNJ', 'MC', 'TSLA', 'JPM', 'WMT', 'META', 'SPY', 'MA', 'CVX', 'BRK.A']
+  const commodities = ['XAU', 'HG', 'LITHIUM', 'CL', 'SI']
   data.Data.Nexlabs = nexLabsData;
   let allSymbols = [];
 
@@ -238,7 +234,7 @@ const dataFeed = {
         let bars = [];
 
         // First, attempt to fetch data from your API
-        const filter = { ticker: urlParameters.fsym };
+        const filter = { ticker: urlParameters.fsym.toString() };
         const dataFromDB = await axios.post(`/api/chart-data`, filter)
             .then(res => mongoDataToOHLC(res.data.data))
             .catch(error => {

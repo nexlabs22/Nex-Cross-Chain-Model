@@ -4,38 +4,69 @@ import { DailyAsset } from "@/types/mongoDb"
 import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
 import { DailyAssetsClient } from "@/utils/MongoDbClient"
 
-// interface Protocol {
-//   id: string
-//   name: string
-//   url: string
-//   description: string
-//   logo: string
-//   chains: string[]
-//   gecko_id: string
-//   cmcId: string
-//   treasury: string
-//   twitter: string
-//   governanceID: string[]
-//   wrongLiquidity: boolean
-//   github: string[]
-//   currentChainTvls: Record<string, number>
-//   chainTvls: Record<string, any>
-//   tokens: any[]
-//   tokensInUsd: any[]
-//   tvl: any[]
-//   isParentProtocol: boolean
-//   raises: any[]
-//   metrics: Record<string, any>
-//   symbol: string
-//   mcap: number
-//   otherProtocols: string[]
-//   hallmarks: any[]
-// }
+interface TVLEntry {
+  date: number
+  totalLiquidityUSD: number
+}
+
+interface ChainTVLData {
+  tvl: TVLEntry[]
+}
+
+interface DefillamaProtocol {
+  id: string
+  name: string
+  url: string
+  description: string
+  logo: string
+  chains: string[]
+  gecko_id: string
+  cmcId: string
+  treasury: string
+  twitter: string
+  governanceID: string[]
+  wrongLiquidity: boolean
+  github: string[]
+  currentChainTvls: Record<string, number>
+  chainTvls: Record<string, ChainTVLData>
+  // tokens: any[]
+  // tokensInUsd: any[]
+  tvl: TVLEntry[]
+  isParentProtocol: boolean
+  // raises: any[]
+  // metrics: Record<string, any>
+  symbol: string
+  mcap: number
+  otherProtocols: string[]
+  // hallmarks: any[]
+}
 
 interface TVL {
   date: number
   tvl: number
   totalLiquidityUSD: number
+}
+
+// New helper function to process chain TVLs for a specific timestamp
+const processChainTVLs = (
+  protocol: DefillamaProtocol,
+  timestamp: number
+): Record<string, number> => {
+  const chainTvls: Record<string, number> = {}
+
+  if (protocol?.chainTvls) {
+    Object.entries(protocol.chainTvls).forEach(
+      ([chain, data]: [string, ChainTVLData]) => {
+        if (!data) return
+        const tvlEntry = data.tvl.find((entry) => entry.date === timestamp)
+        if (tvlEntry && tvlEntry.totalLiquidityUSD !== 0) {
+          chainTvls[chain] = Number(tvlEntry.totalLiquidityUSD.toFixed(0))
+        }
+      }
+    )
+  }
+
+  return chainTvls
 }
 
 export async function GET() {
@@ -47,7 +78,7 @@ export async function GET() {
     },
   })
   const protocolsData = await protocols.json()
-  //return only the protocols that have a cmcId and slug
+
   const filteredProtocols = protocolsData
     .filter(
       (protocol: Protocol) =>
@@ -57,7 +88,7 @@ export async function GET() {
         protocol.symbol !== "-" &&
         protocol.address !== undefined
     )
-    .slice(0, 250)
+    .slice(0, 2)
 
   const baseUrl = `https://api.llama.fi/protocol/`
   const data = []
@@ -78,6 +109,7 @@ export async function GET() {
   const oneYearAgo = Date.now() - 31536000000
   const oneYearAgoDate = new Date(oneYearAgo)
 
+  // Modified existing conversion to include chainTvls
   const convertedData: DailyAsset[] = data.flatMap((protocol) =>
     protocol.tvl
       .filter((tvl: TVL) => new Date(tvl.date * 1000) >= oneYearAgoDate)
@@ -88,6 +120,8 @@ export async function GET() {
         ticker: protocol.symbol,
         cmdId: protocol.cmcId,
         geckoId: protocol.gecko_id,
+        chainTvls: processChainTVLs(protocol, tvl.date),
+        address: protocol.address,
       }))
   )
 
@@ -95,5 +129,6 @@ export async function GET() {
 
   return NextResponse.json({
     message: "Historical Protocols fetched successfully",
+    // convertedData: convertedData,
   })
 }

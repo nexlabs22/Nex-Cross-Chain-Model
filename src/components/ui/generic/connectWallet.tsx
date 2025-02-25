@@ -7,6 +7,7 @@ import MobileConnectWallet from "./mobileConnectWallet";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/utils/thirdWebClient";
 import theme from "@/theme/theme";
+import { allowedChainNetworks } from "@/utils/mappings";
 
 const ConnectWallet = () => {
     return (
@@ -31,7 +32,15 @@ const ConnectWallet = () => {
             }}>
                 <ConnectButton
                     client={client}
+                    chains={allowedChainNetworks.map(({ chain }) => chain)}
                     connectButton={{ label: "Connect Wallet" }}
+                    detailsModal={{
+                        payOptions: {
+                          buyWithFiat: {
+                            testMode: true, // defaults to false
+                          },
+                        },
+                      }}
                 />
             </Stack>
             <Stack direction={'row'} gap={0.5} display={{ xs: 'flex', lg: 'none' }} justifyContent={'end'} alignItems={'center'}>

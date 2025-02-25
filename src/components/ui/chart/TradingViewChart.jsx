@@ -1,21 +1,26 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Datafeed from "@/utils/trading-view/datafeed";
 import TradingView from "../../../../public/charting_library/charting_library.standalone";
 import { Stack } from "@mui/material";
+import { usePathname } from "next/navigation";
+import { useTrade } from "@/providers/TradeProvider";
+import { isIndexCryptoAsset } from "@/utils/general";
 
 const TradingViewChart = ({ index }) => {
   const chartContainerRef = useRef();
-  
-  useEffect(() => {
+  const pathname = usePathname();
+  const [wid, setWid] = useState();
+  const { swapFromToken, swapToToken } = useTrade();
 
+  useEffect(() => {
     const script = document.createElement("script");
     script.type = "text/jsx";
     script.src = "public/charting_library/charting_library.js";
     document.head.appendChild(script);
-    const ind = index || 'CRYPTO5'
-    window.tvWidget = new TradingView.widget({
+    const ind = index || "CRYPTO5";
+    const widget = (window.tvWidget = new TradingView.widget({
       symbol: `Nexlabs:${ind}/USD`,
       interval: "1D",
       height: chartContainerRef.current.clientHeight - 10,
@@ -27,9 +32,12 @@ const TradingViewChart = ({ index }) => {
       allow_symbol_change: false,
       datafeed: Datafeed,
       autosize: true,
-      enabled_features: ["header_in_fullscreen_mode", "library_custom_color_themes"],
+      enabled_features: [
+        "header_in_fullscreen_mode",
+        "library_custom_color_themes",
+      ],
       overrides: {
-        'mainSeriesProperties.style': 2,
+        "mainSeriesProperties.style": 2,
         "paneProperties.backgroundType": "solid",
         "paneProperties.background": "#171717",
         "paneProperties.separatorColor": "#171717",
@@ -45,23 +53,22 @@ const TradingViewChart = ({ index }) => {
         { text: "5y", resolution: "1D", description: "5 year", title: "5Y" },
         { text: "100y", resolution: "1D", description: "All", title: "All" },
       ],
-      onChartReady: () => {
-        // Now that the chart is ready, the customThemes API should be available.
-        window.tvWidget.customThemes()
-          .then(api => {
-            // You can now use the API to update the theme dynamically.
-            console.log("Custom Themes API is available.", api);
-            api.applyCustomThemes({ dark: customDarkPalette });
-          })
-          .catch(error => {
-            console.error("Custom Themes API error:", error);
-          });
-      }
+    }));
+    widget.onChartReady(() => {
+      setWid(widget);
     });
-    
 
     return () => script.remove();
   }, [index]);
+
+  useEffect(() => {
+    if (wid && pathname === "/trade") {
+      const symbolToSet = isIndexCryptoAsset(swapFromToken)
+        ? swapFromToken.symbol
+        : swapToToken.symbol;
+      wid.setSymbol(`Nexlabs:${symbolToSet}/USD`, "D");
+    }
+  }, [pathname, wid, swapFromToken, swapToToken]);
 
   return (
     <Stack

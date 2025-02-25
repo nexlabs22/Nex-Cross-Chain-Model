@@ -1,4 +1,3 @@
-import { AssetCategory } from "@/types/indexTypes"
 import { aggregateType } from "@/types/mongoDb"
 import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { NextRequest, NextResponse } from "next/server"
@@ -19,7 +18,6 @@ export async function POST(request: NextRequest) {
     const { collection } = await DailyAssetsClient()
 
     const filter = {
-      type: "index" as AssetCategory,
       ticker: ticker === "ARBEI" ? "rARBEI" : ticker,
       ...additionalFilters,
     }

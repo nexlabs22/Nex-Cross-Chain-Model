@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server"
-import {
-  filterValues,
-  uploadToAssetOverview,
-} from "@/utils/convertToMongo/parse"
+import { uploadToAssetOverview } from "@/utils/convertToMongo/parse"
 import { AssetOverviewDocument } from "@/types/mongoDb"
 import { AssetOverviewClient } from "@/utils/MongoDbClient"
 import { fetchCmcListings, fetchSplittedCmcMetadata } from "./index"
@@ -10,11 +7,7 @@ import { fetchCmcListings, fetchSplittedCmcMetadata } from "./index"
 const fetchCoinMarketCapData = async () => {
   const idList = await fetchCmcListings()
   const metaData = await fetchSplittedCmcMetadata({ idList })
-  const coinMarketCapData = Object.entries(metaData).map(([key, value]) => ({
-    id: key,
-    ...(value as object),
-  }))
-  return coinMarketCapData
+  return metaData
 }
 
 export async function GET() {
@@ -25,18 +18,16 @@ export async function GET() {
     const mongoData: (AssetOverviewDocument | null)[] = []
 
     for (const asset of coinMarketCapData) {
-      const filteredAsset = filterValues(asset)
       const storeObject: AssetOverviewDocument = {
-        coinmarketcap: {
-          ...filteredAsset,
-        },
+        name: asset.name.toLowerCase(),
+        ticker: asset.symbol,
         lastUpdate: new Date(),
-        provider: ["coinmarketcap"],
-        name: filteredAsset.name,
-        ticker: filteredAsset.symbol,
+        tokenAddress: asset.platform?.token_address,
+        coinmarketcap: asset,
       }
       mongoData.push(storeObject)
     }
+
     await uploadToAssetOverview(mongoData, collection)
 
     return NextResponse.json({

@@ -1,6 +1,6 @@
 import { Chains, ChainSelectorMap, Networks } from '@/types/indexTypes'
 import { createPublicClient, http } from 'viem'
-import { arbitrumSepolia, sepolia } from 'viem/chains'
+import { arbitrumSepolia, sepolia, arbitrum } from 'viem/chains'
 
 const clients: ChainSelectorMap = {
     Ethereum: {
@@ -14,7 +14,12 @@ const clients: ChainSelectorMap = {
             chain: arbitrumSepolia,
             transport: http(`https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ARBITRUM_SEPOLIA_KEY}`),
         }),
+        Mainnet: createPublicClient({
+            chain: arbitrum,
+            transport: http(`https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ARBITRUM_SEPOLIA_KEY}`),
+        })
     }
+
 }
 
 export const getClient = (chain: Chains, network: Networks)=> {
