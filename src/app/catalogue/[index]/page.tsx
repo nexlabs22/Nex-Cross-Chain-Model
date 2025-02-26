@@ -16,6 +16,7 @@ import { PiHouseBold } from 'react-icons/pi';
 import { GoStack } from "react-icons/go";
 import { BreadcrumbItem } from '@/utils/breadcrumbsItems';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import VaultScale from "@/components/ui/generic/vaultScale";
 
 const Page = () => {
   const { nexTokens } = useDashboard()
@@ -53,6 +54,21 @@ const Page = () => {
     { icon: PiHouseBold, label: "Home", link: "/", available: true },
     { icon: GoStack, label: "Catalogue", link: `/catalogue`, available: true },
     { label: index.symbol.toLocaleUpperCase(), link: `/catalogue/${index.symbol}`, available: true }
+  ]
+
+  const vaultData = [
+    {
+      index: nexTokens[0],
+      weight: 50
+    },
+    {
+      index: nexTokens[1],
+      weight: 30
+    },
+    {
+      index: nexTokens[2],
+      weight: 20
+    }   
   ]
 
   return (
@@ -97,6 +113,10 @@ const Page = () => {
 
       <Grid size={{ xs: 12, sm: 12 }} marginTop={2}>
         <Composition index={index} />
+      </Grid>
+
+      <Grid size={{ xs: 12, sm: 12 }} marginTop={2}>
+        <VaultScale data={vaultData} />
       </Grid>
 
       <Grid size={{ xs: 12, sm: 12 }} marginTop={2}>

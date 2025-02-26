@@ -71,6 +71,9 @@ const Composition = ({ index }: { index: IndexCryptoAsset }) => {
                       alt={asset.symbol}
                       width={50}
                       height={50}
+                      style={{
+                        borderRadius: '50%'
+                      }}
                     />
                   </Box>
                   <Stack direction="column">
