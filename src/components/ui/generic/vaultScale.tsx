@@ -100,7 +100,7 @@ const VaultScale = ({ data }: VaultScaleProps) => {
                                                 height={
                                                     isHovered && unitIndex !== 0 ? '35%' :
                                                     (isPrev || isNext) && unitIndex !== 0 ? '32%' :
-                                                    unitIndex === 0 ? '80%' : '30%'
+                                                    unitIndex === 0 ? '100%' : '30%'
                                                 }
                                                 bgcolor={colors[segmentIndex % colors.length]}
                                                 sx={{
