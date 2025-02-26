@@ -55,8 +55,6 @@ const convertNexlabsIndex = async () => {
     "SELECT * FROM nexlabindex ORDER BY stampsec DESC"
   )
 
-  // console.log(data)
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsedData: (DailyAsset | null)[] = data.rows.flatMap((row: any) => {
     // return a new document for each column in the row
@@ -70,7 +68,7 @@ const convertNexlabsIndex = async () => {
 
       const entry: DailyAsset = {
         ticker,
-        name,
+        name: name?.toLowerCase(),
         date,
         timestamp,
         price: Number(value),
@@ -81,6 +79,7 @@ const convertNexlabsIndex = async () => {
 
       if (
         filteredEntry.ticker &&
+        filteredEntry.name &&
         filteredEntry.date &&
         filteredEntry.type &&
         filteredEntry.price

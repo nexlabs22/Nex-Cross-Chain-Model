@@ -1,9 +1,11 @@
+//TODO: remove this endpoint, use protocols/fetch-daily-asset instead then convert to chart data.
 import { aggregateType } from "@/types/mongoDb"
 import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { NextRequest, NextResponse } from "next/server"
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
+    //TODO: update using request const { searchParams } = new URL(request.url) const ticker = searchParams.get("ticker") || "AAPL"
     const body = await request.json()
 
     if (!body || !body.ticker) {

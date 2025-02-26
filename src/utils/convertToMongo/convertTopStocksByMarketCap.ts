@@ -1,5 +1,4 @@
 //Todo: convert ten protocols data new
-import { Collection } from "mongodb"
 import {
   extractUniqueKeys,
   parseCommaSeparated,
@@ -126,9 +125,8 @@ export const getUniqueProtocols = async () => {
 }
 
 export const convertTopStocksByMarketCap = async () => {
-  const { collection }: { collection: Collection<DailyAsset> } =
-    await DailyAssetsClient()
   const spotClient = await connectToSpotDb()
+  const { collection } = await DailyAssetsClient()
 
   const data = await spotClient.query("SELECT * FROM topstocksbymarketcap")
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,32 +153,37 @@ export const convertTopStocksByMarketCap = async () => {
     for (const entry of topstocksEntries) {
       const date = row.date
       const timestamp = row.timestamp
-      const ticker =
-        mapNameToTicker[entry[0] as keyof typeof mapNameToTicker].ticker
-      const name =
-        mapNameToTicker[entry[0] as keyof typeof mapNameToTicker].name
-      const marketCap = entry[1]
-      const type = AssetCategory.Stock
+      const tickerInfo =
+        mapNameToTicker[entry[0] as keyof typeof mapNameToTicker]
 
-      const mongoDbDocument: DailyAsset = {
-        date,
-        timestamp,
-        ticker,
-        name,
-        marketCap,
-        type,
-      }
+      if (tickerInfo) {
+        const ticker = tickerInfo.ticker
+        const name = tickerInfo.name.toLowerCase()
+        const marketCap = entry[1]
+        const type = AssetCategory.Stock
 
-      const filteredEntry = filterValues(mongoDbDocument)
+        const mongoDbDocument: DailyAsset = {
+          date,
+          timestamp,
+          ticker,
+          name,
+          marketCap,
+          type,
+        }
 
-      if (
-        filteredEntry.ticker &&
-        filteredEntry.name &&
-        filteredEntry.date &&
-        filteredEntry.type &&
-        filteredEntry.marketCap
-      ) {
-        mongoDbData.push(filteredEntry as DailyAsset)
+        const filteredEntry = filterValues(mongoDbDocument)
+
+        if (
+          filteredEntry.ticker &&
+          filteredEntry.name &&
+          filteredEntry.date &&
+          filteredEntry.type &&
+          filteredEntry.marketCap
+        ) {
+          mongoDbData.push(filteredEntry as DailyAsset)
+        }
+      } else {
+        console.warn(`Ticker information not found for key: ${entry[0]}`)
       }
     }
   }

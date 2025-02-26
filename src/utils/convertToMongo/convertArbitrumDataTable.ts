@@ -8,6 +8,7 @@ import {
   parseCommaSeparated,
   convertUnixToDate,
   uploadToDailyAssets,
+  filterValues,
 } from "./parse"
 
 type ArbitrumData = {
@@ -1636,7 +1637,7 @@ const convertArbitrumDataTable = async () => {
         if (mapping) {
           mongoDbData.push({
             ticker: mapping.ticker,
-            name: mapping.name,
+            name: mapping.name.toLowerCase(),
             date,
             timestamp: stampsec,
             activeAddressCount: activeAddressCount,
@@ -1659,7 +1660,7 @@ const convertArbitrumDataTable = async () => {
           } else {
             mongoDbData.push({
               ticker: mapping.ticker,
-              name: mapping.name,
+              name: mapping.name.toLowerCase(),
               date,
               timestamp: stampsec,
               volume: volumeValue,
@@ -1671,10 +1672,20 @@ const convertArbitrumDataTable = async () => {
     }
   }
 
-  await uploadToDailyAssets(mongoDbData, collection)
+  const filteredMongoDbData = mongoDbData.map((row) => {
+    const filteredEntry = filterValues(row)
+    if (
+      filteredEntry.name &&
+      filteredEntry.ticker &&
+      filteredEntry.date &&
+      filteredEntry.timestamp
+    ) {
+      return filteredEntry as DailyAsset
+    }
+    return null
+  })
 
-  // Now mongoDbData is an array of MongoDb objects with merged data and mapped tickers
-  console.log("Data successfully processed and ready for MongoDB", mongoDbData)
+  await uploadToDailyAssets(filteredMongoDbData, collection)
 }
 
 export const getUniqueKeys = async () => {
@@ -1699,8 +1710,6 @@ export const getUniqueKeys = async () => {
   })
 
   const uniqueKeys = Array.from(uniqueKeysSet)
-  // console.log(uniqueKeys, "uniqueKeys")
-
   return uniqueKeys
 }
 

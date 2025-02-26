@@ -131,7 +131,7 @@ const convertMagSeven = async () => {
       const name =
         columnToNameAndtickerMap[
           stock.ticker as keyof typeof columnToNameAndtickerMap
-        ]?.name
+        ]?.name.toLowerCase()
       const ticker =
         columnToNameAndtickerMap[
           stock.ticker as keyof typeof columnToNameAndtickerMap
@@ -142,7 +142,7 @@ const convertMagSeven = async () => {
         ]?.type
 
       const entry: DailyAsset = {
-        name,
+        name: name?.toLowerCase(),
         ticker,
         date,
         timestamp,
@@ -156,6 +156,7 @@ const convertMagSeven = async () => {
         filteredEntry.ticker &&
         filteredEntry.date &&
         filteredEntry.type &&
+        filteredEntry.name &&
         filteredEntry.marketCap
       ) {
         return filteredEntry as DailyAsset

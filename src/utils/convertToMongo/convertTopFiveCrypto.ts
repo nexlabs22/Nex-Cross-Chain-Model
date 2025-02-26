@@ -87,8 +87,6 @@ export const convertTopFiveCrypto = async () => {
     top5: parseCommaSeparated(row.top5),
   }))
 
-  console.log(parsedData, "parsedData")
-
   const mongoDbData: DailyAsset[] = []
 
   // Iterate over each row in the parsed data
@@ -111,7 +109,7 @@ export const convertTopFiveCrypto = async () => {
         date,
         timestamp,
         ticker,
-        name,
+        name: name?.toLowerCase(),
         marketCap,
         type,
       }
@@ -129,6 +127,5 @@ export const convertTopFiveCrypto = async () => {
       }
     }
   }
-  console.log(mongoDbData, "first ten mongoDbData")
   await uploadToDailyAssets(mongoDbData, collection)
 }
