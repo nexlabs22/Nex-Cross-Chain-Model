@@ -88,6 +88,12 @@ export default function Swap({ side }: SwapProps) {
 
   const [openFromTokensModal, setOpenFromTokensModal] = useState(false)
   const [openToTokensModal, setOpenToTokensModal] = useState(false)
+  const [title, setTitle] = useState('')
+
+  useEffect(()=>{
+    if(isIndexCryptoAsset(swapFromToken)) setTitle(`Sell ${swapFromToken.symbol} `)
+      else setTitle(`Buy ${swapToToken.symbol} `)
+  },[swapFromToken, swapToToken])
 
   const [isFiatPayment, setFiatPayment] = useState(false)
   const [showNexProductsFrom, setShowNexProductsFrom] = useState<boolean>(selectedSide == 'buy' ? false : true)
@@ -1017,9 +1023,7 @@ export default function Swap({ side }: SwapProps) {
           alignItems="center"
         >
           <Typography variant="h4" color="primary">
-            {isIndexCryptoAsset(swapFromToken)
-              ? `Sell ${swapFromToken.symbol} `
-              : `Buy ${swapToToken.symbol} `}
+            {title}
           </Typography>
           <Stack direction="row" alignItems="center" gap={1}>
             <IconButton
