@@ -37,13 +37,12 @@ import {
   numToWei,
   weiToNum,
 } from "@/utils/conversionFunctions"
-import GetContract from "@/hooks/getContract"
+import {GetContract} from "@/hooks/getContract"
 import { tokenAddresses } from "@/constants/contractAddresses"
 import { useReadContract, useSendTransaction } from "thirdweb/react"
 import { allowance, balanceOf, totalSupply } from "thirdweb/extensions/erc20"
-// import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
+import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
 import { GetDefiPortfolioBalance } from "@/hooks/getDefiPortfolioBalance"
-import { GetNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
 import {
   prepareContractCall,
   readContract,
@@ -62,6 +61,7 @@ import { toast } from "react-toastify"
 import TokensModal from "./tokensModal"
 import { useTrade } from "@/providers/TradeProvider"
 import FiatPaymentModal from "./FiatPaymentModal"
+import { getNewCrossChainPortfolioBalance } from "@/hooks/getNewCrossChainPortfolioBalance"
 
 interface SwapProps {
   side?: "buy" | "sell"
@@ -306,8 +306,8 @@ export default function Swap({ side }: SwapProps) {
   const cancelMintRequestHook = useSendTransaction()
   const cancelBurnRequestHook = useSendTransaction()
 
-  const crossChainPortfolioValue = { data: 0 }
-  // const crossChainPortfolioValue = GetCrossChainPortfolioBalance()
+  // const crossChainPortfolioValue = { data: 0 }
+  const crossChainPortfolioValue = GetCrossChainPortfolioBalance(swapFromToken, swapToToken)
   const defiPortfolioValue = GetDefiPortfolioBalance(swapFromToken, swapToToken)
 
   async function approve() {
@@ -459,8 +459,17 @@ export default function Swap({ side }: SwapProps) {
       } else {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod('issuanceIndexTokens'),
-          params: [swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address, parseEther(Number(firstInputValue).toString()), '0', '3'],
+          method: "function issuanceIndexTokens(address, address[], uint24[], uint256, uint256)",
+          params: [
+            swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, 
+            [
+              swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
+              tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address
+            ],
+            [3000],
+            BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),
+            BigInt(0)
+          ]
         })
         mintRequestHook.mutate(transaction)
       }
@@ -552,8 +561,7 @@ export default function Swap({ side }: SwapProps) {
           contract: indexTokenFactoryContract,
           method: "function redemption(uint256, address, address[], uint24[])",
           params: [
-            // BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),
-            BigInt(fromTokenBalance.data),
+            BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),            
             swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
             [
               tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,
@@ -582,14 +590,14 @@ export default function Swap({ side }: SwapProps) {
       } else {
         const transaction = prepareContractCall({
           contract: indexTokenFactoryContract,
-          method: resolveMethod("redemption"),
+          method: "function redemption(uint256, uint256, address, address[], uint24[])",
           params: [
-            parseEther(Number(firstInputValue).toString()),
-            "0",
-            getDecimals(
-              swapFromToken.tokenAddresses?.[chainName]?.[network]?.token
-            ),
-            "3",
+            BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),
+            BigInt(0),
+            swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
+            [ tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,
+              swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address],
+            [3000]
           ],
         })
         burnRequestHook.mutate(transaction)
@@ -702,7 +710,7 @@ export default function Swap({ side }: SwapProps) {
           let inputValue
           if (isWETH(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, chainName, network)) {
             inputValue = Number(firstInputValue) * 1e18
-          } else {            
+          } else {
             const inputEthValue = await readContract({
               contract: indexTokenStorageContract,
               method:
@@ -714,7 +722,8 @@ export default function Swap({ side }: SwapProps) {
               ],
             })
 
-            inputValue = Number(inputEthValue)            
+            inputValue = Number(inputEthValue)      
+                 
           }
           if (isIndexCryptoAsset(swapToToken) && swapToToken?.smartContractType === "stocks") {
             const outAmount = await (rpcClient as PublicClient).readContract({
@@ -742,11 +751,14 @@ export default function Swap({ side }: SwapProps) {
           } else if (firstInputValue) {
             let newPortfolioValue: number = 0
             if (isIndexCryptoAsset(swapToToken) && swapToToken?.smartContractType === "crosschain") {
-              const { portfolioValue } = GetNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue))
+              console.log('---->',{inputValue})
+              const portfolioValue  = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue), chainName, network, swapToToken.symbol)
               newPortfolioValue = portfolioValue
             } else {
               newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
             }
+
+            console.log({currentTotalSupply, newPortfolioValue, currentPortfolioValue})
 
             const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
             const amountToMint = Math.abs(newTotalSupply - currentTotalSupply)

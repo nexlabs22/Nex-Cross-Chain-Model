@@ -291,7 +291,7 @@ export const indexTokenAbi = [
         type: "address",
       },
     ],
-    name: "balanceOf",
+    name: "",
     outputs: [
       {
         internalType: "uint256",
@@ -1136,7 +1136,7 @@ export const indexTokenV2Abi = [
         type: "address",
       },
     ],
-    name: "balanceOf",
+    name: "",
     outputs: [
       {
         internalType: "uint256",
@@ -2150,7 +2150,7 @@ export const nftAbi = [
         type: "address",
       },
     ],
-    name: "balanceOf",
+    name: "",
     outputs: [
       {
         internalType: "uint256",
@@ -2631,7 +2631,7 @@ export const tokenAbi = [
         type: "address",
       },
     ],
-    name: "balanceOf",
+    name: "",
     outputs: [
       {
         internalType: "uint256",

@@ -52,7 +52,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
   {
     symbol: "ANFI",
     columnName: "ANFI",
-    smartContractType: SmartContractType.Defi,
+    smartContractType: SmartContractType.Crosschain,
     name: "Anti-Inflation Index",
     shortDescription:
       "The Anti-Inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures.",

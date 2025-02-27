@@ -70,7 +70,7 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
           event.stopPropagation();
           onSelect(token);
         }}
-        disabled={isIndexCryptoAsset(token) && token.symbol.toLowerCase() !== 'arbei'}
+        disabled={isIndexCryptoAsset(token) && token.symbol.toLowerCase() === 'mag7'}
       >
         <ListItemAvatar>
           {token.logoString ? (
@@ -149,7 +149,7 @@ export default function TokensModal({
 
   function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset){
     const sepoliaNetwork = allowedChainNetworks[0];
-    const tokensNotOnMainnet = nexTokens.filter((token)=> { return token.symbol.toLowerCase() !== 'arbei' }).map((token)=> {return token.symbol})
+    const tokensNotOnMainnet = nexTokens.filter((token)=> { return token.symbol.toLowerCase() === 'mag7' }).map((token)=> {return token.symbol})
     if(tokensNotOnMainnet.includes(token.symbol)){
       console.warn("Arbitrum is only allowed when index=arbei. Reverting to default.");
       switchChain(sepoliaNetwork.chain)

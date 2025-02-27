@@ -11,9 +11,6 @@ export const tokenAddresses: TokenAddressMap = {
         token: { address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" },
         factory: { address: "0x1F98431c8aD98523631AE4a59f267346ea31F984" },
       },
-      Goerli: {
-        token: { address: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6" },
-      },
       Sepolia: {
         token: { address: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14" },
       },
@@ -31,9 +28,6 @@ export const tokenAddresses: TokenAddressMap = {
     Ethereum: {
       Mainnet: {
         token: { address: "0xdAC17F958D2ee523a2206206994597C13D831ec7" },
-      },
-      Goerli: {
-        token: { address: "0x636b346942ee09Ee6383C22290e89742b55797c5" },
       },
       Sepolia: {
         token: { address: "0xE8888fE3Bde6f287BDd0922bEA6E0bF6e5f418e7" },
@@ -63,75 +57,69 @@ export const tokenAddresses: TokenAddressMap = {
   },
   LINK: {
     Ethereum: {
-      Goerli: {
-        token: { address: "0x326C977E6efc84E512bB9C30f76E30c160eD06FB" },
-      },
       Sepolia: {
         token: { address: "0x779877A7B0D9E8603169DdbD7836e478b4624789" },
-      },
-    },
-  },
-  MATIC: {
-    Polygon: {
-      Mumbai: {
-        token: { address: "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889" },
       },
     },
   },
   ANFI: {
     Ethereum: {
       Mainnet: {
-        token: { address: "0x40d284001E3f6501C3f59FA4719776f973Ef6F91" },
-        factory: { address: "0x12A1d813f70025366B31B27582af902141b50484" },
-        storage: { address: "0x12A1d813f70025366B31B27582af902141b50484" },
-      },
-      Goerli: {
-        token: { address: "0x40d284001E3f6501C3f59FA4719776f973Ef6F91" },
-        factory: { address: "0xfb5BBb9a17eA7eFf0dA692EF60f961af49345606" },
+        vault: { address: "0x95e9FB1be73AAED5DaEfa504A77E59F5174552b3" },
+        factory: { address: "0xE2fBE16888dED5616934E603f6f03CFD8486140b" },
+        storage: { address: "0xE3Aa4bFBe8FEfD04C1bB3d01Cedf683a113e13d5" },
       },
       Sepolia: {
-        token: { address: "0x5Cd93F5C4ECE56b7faC31ABb3c1933f6a6FE7182" },
-        factory: { address: "0x7427E998D4db46E15f831e4Cff0393Ebb277c637" },
-        storage: { address: "0x7427E998D4db46E15f831e4Cff0393Ebb277c637" },
+        token: { address: "0xD01eA42518fcCf1d6D1A12ceD4fEBCE6bc19d4d7" },
+        factory: { address: "0x722e226f39e68889603f3BD758b5bF1c23683b59" },
+        storage: { address: "0x694cC7E980CBc450C18cF5D719D63cD9D01d5497" },
+        ccip: { address: "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05" },
+        functions_oracle: { address: "0xa192d894681bC286C59bdAB101d08fe45d89E552" },
       },
     },
     Arbitrum: {
       Mainnet: {
-        token: { address: "0x4386741db5Aadec9201c997b9fD197b598ef1323" }, //ARBEI
-        factory: { address: "0xC261547547fb4b108db504FE200e20Db7612D5E9" }, //ARBEI
-        storage: { address: "0xB1ae3b1A08cf98f7e02342F8adD29b86021B1632" }, // ARBEI
+        token: { address: "0x41Fecfb0E330E5FE13452B80049127991248345C" },
+        factory: { address: "0x6a41A7431556B5F14a3c0872175302B7A5B4D110" },
+        storage: { address: "0x8Dcb7aAe8486dEC33729a4bf15906646693af191" },
+        functions_oracle: { address: "0x21B15A5c6829d62ca93aa1c8db837D5A7A0e7187"}
+      },
+      Sepolia: {
+        vault: { address: "0x70195bd938bb6F558D8d688D4A45335e073d20Af" },
+        factory: { address: "0x7C846a936c512D56B60e0Ec285dE091c369c61C4" },
+        storage: { address: "0x4Fd9D5C4Bb077eBf39B8Ad4F71576D3CE32bf168" },
+        ccip: {address: "0xA8C0c11bf64AF62CDCA6f93D3769B88BdD7cb93D"}
       },
     }
   },
   CRYPTO5: {
     Ethereum: {
-      Goerli: {
-        token: { address: "0x63E7c9AD503973059D94EcCc0EB1daFC0fb7497c" },
-        factory: { address: "0x8a5e84A1B5e8640222A6Ae5A20B2740A060acCf4" },
-      },
       Sepolia: {
-        token: { address: "0xA16FEC5964aDE6563624C16d0b2EDeC95bEEB63b" },
-        factory: { address: "0xCd16eDa751CcC77f780E06B7Af9aeD0E90a51586" },
-        storage: { address: "0x0fDB8A708E4Ab28DB78E0897Fc6bf3aF79Ef2271" },
+        token: { address: "0x4F96a57451A045b016B17D634727FB03f95c3fed" },
+        factory: { address: "0xc9111A8ad0AB1426533518463Aa175A251e571e7" },
+        storage: { address: "0x1DBde877b2Fa4106D944386BF0E8b92D1Fb69D8F" },
         ccip: { address: "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05" },
+        functions_oracle: {address: "0xeB5bBC63C3B90E9ff22D85E2da5f1fBB2339FAc0"}
       },
     },
-    Polygon: {
-      Mumbai: {
-        factory: { address: "0xe0c7EC4711EEa139Eaa5F04f6549C2dc9b5bF5Cf" },
-        storage: { address: "0x53B8876a23C057630c487D5a7B394EF45e64f2fA" },
-      },
+    Binance:{
+      Mainnet:{
+        vault: {address: "0x963Da1C59Ed32a36451CeCA761A3e0f5f9C333d9"},
+        factory: {address: "0xFE501505DA469ff0134D9e3d9dA27674A92c3234"},
+        storage: {address: "0x8e977fE53f4cDDBDdB69664027253b7d7f362971"}
+      }
     },
     Arbitrum: {
       Mainnet: {
-        token: { address: "0x4386741db5Aadec9201c997b9fD197b598ef1323" }, //ARBEI
-        factory: { address: "0xC261547547fb4b108db504FE200e20Db7612D5E9" }, //ARBEI
-        storage: { address: "0xB1ae3b1A08cf98f7e02342F8adD29b86021B1632" }, //ARBEI
+        token: { address: "0xdA184FC12cCe81dF499561E88f3d9a06cb229dfC" },
+        factory: { address: "0xA00be13EbfaCa5ADB3780096F88dEA42d6a021c8" },
+        storage: { address: "0x3CE7E36B62e2F26E4427dB7112d4E4aE9D3CF5C4" },
       },
       Sepolia: {
-        factory: { address: "0xeB08A8CA65Bc5f5dD4D54841a55bb6949fab3548" },
-        vault: { address: "0x04fddfb8b2EFaEaFc590505ffF0bA67E408d8A01" },
-        ccip: { address: "0xA8C0c11bf64AF62CDCA6f93D3769B88BdD7cb93D" },
+        factory: { address: "0x66531Bc6205573F962aB4d0F26Eb75C8bC8Aea1B" },
+        vault: { address: "0xAd47d2ba2c05ada5B15F84F6EfFA8f37BE63Bd6E" },
+        storage: { address: "0x54D331905CD37Eb2e47F0dE3DD24A5cC869853d5" },
+        ccip: {address: "0xA8C0c11bf64AF62CDCA6f93D3769B88BdD7cb93D"}
       },
     },
   },
@@ -175,16 +163,14 @@ export const tokenAddresses: TokenAddressMap = {
 export const poolAddresses: PoolAddressMap = {
   ANFI: {
     THETER: {
-      Ethereum: {
-        Goerli: "0xEdFEEeFf1DAF631b4aBC8C021Cff4b1267547eF2",
+      Ethereum: {        
         Sepolia: "0x37214b0039e9b12711e9dbb5420e47d5a35f3aa2",
       },
     },
   },
   CRYPTO5: {
     WETH: {
-      Ethereum: {
-        Goerli: "0x9329c764A2d8B02b01F5eC8fb6F4BB0a7155cFc0",
+      Ethereum: {        
         Sepolia: "0x3222bd13ba8bf8241a752a6907aeb8d769ebb63b",
       },
     },
@@ -196,8 +182,7 @@ export const poolAddresses: PoolAddressMap = {
   },
   LINK: {
     WETH: {
-      Ethereum: {
-        Goerli: "0x4Cff90F02897259E1aB69FF6bbD370EA14529bD8",
+      Ethereum: {        
         Sepolia: "0xdd7cc9a0da070fb8b60dc6680b596133fb4a7100",
       },
     },
@@ -215,14 +200,7 @@ export const poolAddresses: PoolAddressMap = {
         Sepolia: "0x3dB55b9fD6E407140E568e7F902aF9a3472Ec882",
       },
     },
-  },
-  MATIC: {
-    WETH: {
-      Polygon: {
-        Mumbai: "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889",
-      },
-    },
-  },
+  }
 }
 
 export const factoryAddresses = {
@@ -250,8 +228,7 @@ export const factoryAddresses = {
 // }
 
 export const chainSelectorAddresses: ChainSelectorMap = {
-  Ethereum: {
-    Mumbai: "12532609583862916517",
+  Ethereum: {    
     Sepolia: "16015286601757825753",
   },
   Arbitrum: {

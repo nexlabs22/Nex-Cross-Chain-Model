@@ -38,9 +38,10 @@ export type ContractTypes =
   | "ccip"
   | "faucet"
   | "dinari"
+  | "functions_oracle"
 
-export type Chains = "Ethereum" | "Arbitrum" | "Polygon"
-export type Networks = "Mainnet" | "Goerli" | "Sepolia" | "Mumbai"
+export type Chains = "Ethereum" | "Arbitrum" | "Binance"
+export type Networks = "Mainnet" | "Sepolia" 
 
 export type ChainNetwork = {
   chainName: Chains

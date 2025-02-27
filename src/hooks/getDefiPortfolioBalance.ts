@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react"
 import { useDashboard } from "@/providers/DashboardProvider"
 import { AllowedTickers, CryptoAsset } from "@/types/indexTypes"
 import { readContract } from "thirdweb"
-import GetContract from "./getContract"
+import {GetContract} from "./getContract"
 
 export function GetDefiPortfolioBalance(
   swapFromToken: CryptoAsset,

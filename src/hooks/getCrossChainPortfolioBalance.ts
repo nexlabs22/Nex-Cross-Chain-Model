@@ -1,101 +1,115 @@
 import { useEffect, useState, useCallback } from "react"
 import {
-  crossChainFactoryStorageAbi,
-  crossChainIndexFactoryV2Abi,
-  indexFactoryV2Abi,
-  tokenAbi,
-} from "@/constants/abi"
-import { getClient } from "@/utils/getRPCClient"
-import { PublicClient } from 'viem'
-
-import {
   chainSelectorAddresses,
   tokenAddresses,
 } from "@/constants/contractAddresses"
-import { Address } from "@/types/indexTypes"
+import { Address, AllowedTickers, CryptoAsset } from "@/types/indexTypes"
 import { useGlobal } from "@/providers/GlobalProvider"
+import { getContractByNetwork } from "./getContract"
+import { getContract, readContract } from "thirdweb"
+import { arbitrumSepolia } from "thirdweb/chains"
+import { client } from "@/utils/thirdWebClient"
+import { nexTokensArray } from "@/constants/indices"
 
 
-export function GetCrossChainPortfolioBalance() {
+export function GetCrossChainPortfolioBalance(
+    swapFromToken: CryptoAsset,
+  swapToToken: CryptoAsset
+) {
+  console.log('Inside GetCrossChainPortfolioBalance----->')
   const {activeChainSetting: {chainName, network}} = useGlobal()
   const [portfolioValue, setPortfolioValue] = useState<number>()
+  const allowedSymbols = nexTokensArray
+  .filter((token) => token.smartContractType === "crosschain")
+  .map((token) => token.symbol)
+
+const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
+  (symbol) => allowedSymbols.includes(symbol)
+)[0]
 
   const getPortfolioValue = useCallback(async () => {
-    let sepoliaPublicClient
-    try {
-      sepoliaPublicClient = getClient('Ethereum', 'Sepolia')
-    } catch (error) {
-      console.error("Error getting sepolia client", error)
-    }
+    console.log("inside callback function")
 
-    let arbitrumSepoliaPublicClient
-    try {
-      arbitrumSepoliaPublicClient = getClient('Arbitrum', 'Sepolia')
-    } catch (error) {
-      console.error("Error getting arbitrumSepolia client", error)
-    }
 
-    if (!sepoliaPublicClient || !arbitrumSepoliaPublicClient) {
+  console.log(activeTicker)
+    
+    const functionsOracleContract = activeTicker ? getContractByNetwork(activeTicker as AllowedTickers, 'functions_oracle', chainName, network) : null
+    const storageContract = activeTicker ? getContractByNetwork(activeTicker as AllowedTickers, 'storage', chainName, network): null
+    const arbitrumSepoliaStorageContract = activeTicker ? getContractByNetwork(activeTicker as AllowedTickers, 'storage', 'Arbitrum', 'Sepolia'): null
+    console.log({functionsOracleContract})
+    console.log({storageContract})
+    console.log({arbitrumSepoliaStorageContract})
+
+    if (!functionsOracleContract || !storageContract) {
+      console.log('contracts not found, returning!')
       return
     }
 
     let totalPortfolioBalance: number = 0
 
-    const sepoliaPortfolioBalance = await (sepoliaPublicClient as PublicClient).readContract({
-      address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.factory
-        ?.address as Address,
-      abi: crossChainIndexFactoryV2Abi,
-      functionName: "getPortfolioBalance",
+    const sepoliaPortfolioBalance = await readContract({
+      contract: storageContract,      
+      method: "function getPortfolioBalance() returns(uint256)",
+      params: []
     })
+    console.log({sepoliaPortfolioBalance})
+    
     totalPortfolioBalance += Number(sepoliaPortfolioBalance)
-    const totalCurrentList = await (sepoliaPublicClient as PublicClient).readContract({
-      address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage
-        ?.address as Address,
-      abi: crossChainFactoryStorageAbi,
-      functionName: "totalCurrentList",
-    })
+    console.log({totalPortfolioBalance})
 
+		const totalCurrentList = await readContract({
+			contract: functionsOracleContract,
+			method: 'function totalCurrentList() returns(uint256)',
+			params: []
+		})
+		console.log({totalCurrentList})
+    
     for (let i = 0; i < Number(totalCurrentList); i++) {
-      const tokenAddress = await (sepoliaPublicClient as PublicClient).readContract({
-        address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage
-          ?.address as Address,
-        abi: crossChainFactoryStorageAbi,
-        functionName: "currentList",
-        args: [i],
-      })
-
-      const tokenChainSelector = await (sepoliaPublicClient as PublicClient).readContract({
-        address: tokenAddresses.CRYPTO5?.[chainName]?.[network]?.storage
-          ?.address as Address,
-        abi: crossChainFactoryStorageAbi,
-        functionName: "tokenChainSelector",
-        args: [tokenAddress],
-      })
-
-      if (tokenChainSelector == chainSelectorAddresses.Arbitrum?.Sepolia) {
-        const tokenBalance = await (arbitrumSepoliaPublicClient as PublicClient).readContract({
+      const tokenAddress = await readContract({
+        contract: functionsOracleContract,
+				method: 'function currentList(uint256) returns(address)',
+				params: [BigInt(i)]
+			})
+      console.log({tokenAddress})
+      
+			const tokenChainSelector = await readContract({
+        contract: functionsOracleContract,
+				method: 'function tokenChainSelector(address) returns(uint64)',
+				params: [tokenAddress as Address]
+			})
+      console.log({tokenChainSelector})
+      
+      if (Number(tokenChainSelector) == Number(chainSelectorAddresses.Arbitrum?.Sepolia) && arbitrumSepoliaStorageContract) {
+        const arbitrumSepoliaTokenContract = getContract({
           address: tokenAddress as Address,
-          abi: tokenAbi,
-          functionName: "balanceOf",
-          args: [tokenAddresses.CRYPTO5?.Arbitrum?.Sepolia?.vault?.address],
+          client,
+          chain: arbitrumSepolia,
         })
-        const tokenValue = await (arbitrumSepoliaPublicClient as PublicClient).readContract({
-          address: tokenAddresses.CRYPTO5?.Arbitrum?.Sepolia?.factory
-            ?.address as Address,
-          abi: indexFactoryV2Abi,
-          functionName: "getAmountOut",
-          args: [
-            tokenAddress,
-            tokenAddresses.WETH?.Arbitrum?.Sepolia?.token?.address,
-            tokenBalance,
-            3,
+        const tokenBalance = await readContract({
+          contract: arbitrumSepoliaTokenContract,
+          method: "function balanceOf(address) returns(uint256)",
+          params: [tokenAddresses?.[activeTicker as AllowedTickers]?.Arbitrum?.Sepolia?.vault?.address as Address],
+        })
+        console.log({tokenBalance})
+        
+        const tokenValue = await readContract({
+          contract: arbitrumSepoliaStorageContract,
+          method:
+          "function getAmountOut(address[], uint24[], uint256) returns (uint256)",
+          params: [
+            [tokenAddress as Address, tokenAddresses.WETH?.Arbitrum?.Sepolia?.token?.address as Address],
+            [3000],
+            tokenBalance
           ],
         })
+        console.log({tokenValue})
+
         totalPortfolioBalance += Number(tokenValue)
       }
     }
+    console.log({totalPortfolioBalance})
     setPortfolioValue(totalPortfolioBalance)
-  }, [chainName, network])
+  }, [chainName, network, activeTicker])
 
   useEffect(() => {
     getPortfolioValue()
