@@ -20,7 +20,9 @@ const NetworkSwitcher = () => {
   const defaultChain = allowedChainNetworks[0].chain;
 
   const enforceAllowedChain = (chain: Chain) => {
-    const allowed = allowedChainNetworks.find((option) => option.chain === chain);
+    const allowed = allowedChainNetworks.find(
+      (option) => option.chain === chain
+    )
 
     if (!allowed) {
       console.warn("Unsupported chain detected. Reverting to default.");
@@ -33,33 +35,39 @@ const NetworkSwitcher = () => {
     } else {
       setActiveChainSetting(allowed);
     }
-  };
+  }
 
   useEffect(() => {
     if (wallet) {
       const unsubscribe = wallet.subscribe("chainChanged", (chain) => {
-        enforceAllowedChain(chain);
-      });
+        enforceAllowedChain(chain)
+      })
 
       return () => unsubscribe();
     }
-  }, [wallet]);
+    //TODO: fix dependency
+  }, [wallet])
 
-  const networkSwitcher = useNetworkSwitcherModal();
+  const networkSwitcher = useNetworkSwitcherModal()
 
   function handleClick() {
     try {
       networkSwitcher.open({
         client,
         theme: "dark",
-        sections: [{ label: "Popular", chains: allowedChainNetworks.map(({ chain }) => chain) }],
-      });
+        sections: [
+          {
+            label: "Popular",
+            chains: allowedChainNetworks.map(({ chain }) => chain),
+          },
+        ],
+      })
     } catch (err) {
-      console.error("Error opening network switcher", err);
+      console.error("Error opening network switcher", err)
     }
   }
 
-  return <Button onClick={handleClick}>{activeChain?.name}</Button>;
-};
+  return <Button onClick={handleClick}>{activeChain?.name}</Button>
+}
 
-export default NetworkSwitcher;
+export default NetworkSwitcher

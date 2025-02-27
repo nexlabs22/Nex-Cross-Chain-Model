@@ -430,7 +430,7 @@ const convertHistCompDataTable = async () => {
 
       const entry: DailyAsset = {
         ticker,
-        name,
+        name: name.toLowerCase(),
         type,
         date,
         timestamp,
@@ -444,7 +444,13 @@ const convertHistCompDataTable = async () => {
 
       const filteredEntry = filterValues(entry)
 
-      if (filteredEntry.ticker && filteredEntry.date && filteredEntry.type) {
+      if (
+        filteredEntry.ticker &&
+        filteredEntry.date &&
+        filteredEntry.type &&
+        filteredEntry.name &&
+        (filteredEntry.price || filteredEntry.open || filteredEntry.volume)
+      ) {
         return filteredEntry as DailyAsset
       }
       return null

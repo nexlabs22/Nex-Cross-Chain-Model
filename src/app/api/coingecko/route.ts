@@ -1,61 +1,19 @@
 import { NextResponse } from "next/server"
-import { AssetOverviewClient } from "@/utils/MongoDbClient"
-import { uploadToAssetOverview } from "@/utils/convertToMongo/parse"
-
-const fetchCoingeckoList = async () => {
-  const response = await fetch("https://api.coingecko.com/api/v3/coins/list", {
-    headers: {
-      Accept: "application/json",
-      "x-cg-demo-api-key": process.env.COINGECKO_API_KEY || "",
-    },
-  })
-  const data = await response.json()
-  return data
-}
+import { processCoingeckoData } from "./index"
 
 export async function GET() {
   try {
-    const { collection } = await AssetOverviewClient()
-
-    const existingAssets = await collection
-      .find({}, { projection: { ticker: 1, name: 1 } })
-      .toArray()
-
-    const coingeckoList = await fetchCoingeckoList()
-
-    const mongoData = []
-
-    for (const asset of coingeckoList) {
-      const { id, symbol, name } = asset
-      const coingeckoObject = {
-        id,
-      }
-
-      const storeObject = {
-        coingecko: coingeckoObject,
-        lastUpdate: new Date(),
-        name: name.toLowerCase(),
-        ticker: symbol.toUpperCase(),
-      }
-
-      const existingAsset = existingAssets.find(
-        (asset) =>
-          asset.ticker === symbol.toUpperCase() &&
-          asset.name === name.toLowerCase()
-      )
-
-      if (existingAsset) {
-        mongoData.push(storeObject)
-      }
-    }
-
-    await uploadToAssetOverview(mongoData, collection)
+    const { mongoData, existingAssets, coingeckoList } =
+      await processCoingeckoData()
 
     return NextResponse.json({
-      message: "Assets updated successfully",
+      message: "Assets fetched successfully",
+      data: mongoData.slice(0, 30),
+      existingAssets: existingAssets.slice(0, 30),
+      coingeckoList: coingeckoList.slice(0, 30),
     })
   } catch (error) {
-    console.error("Error in asset update process:", error)
+    console.error("Error in asset fetch process:", error)
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

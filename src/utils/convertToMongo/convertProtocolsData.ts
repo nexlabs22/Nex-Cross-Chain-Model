@@ -212,7 +212,7 @@ const convertProtocolsData = async () => {
 
         const entry: DailyAsset = {
           ticker,
-          name,
+          name: name?.toLowerCase(),
           date,
           timestamp,
           price: ohlcData?.price,
@@ -229,6 +229,7 @@ const convertProtocolsData = async () => {
           filteredEntry.ticker &&
           filteredEntry.date &&
           filteredEntry.type &&
+          filteredEntry.name &&
           (filteredEntry.price || filteredEntry.close)
         ) {
           return filteredEntry as DailyAsset

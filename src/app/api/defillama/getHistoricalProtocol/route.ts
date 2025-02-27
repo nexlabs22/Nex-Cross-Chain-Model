@@ -79,16 +79,14 @@ export async function GET() {
   })
   const protocolsData = await protocols.json()
 
-  const filteredProtocols = protocolsData
-    .filter(
-      (protocol: Protocol) =>
-        protocol.cmcId &&
-        protocol.slug &&
-        protocol.symbol &&
-        protocol.symbol !== "-" &&
-        protocol.address !== undefined
-    )
-    .slice(0, 2)
+  const filteredProtocols = protocolsData.filter(
+    (protocol: Protocol) =>
+      protocol.cmcId &&
+      protocol.slug &&
+      protocol.symbol &&
+      protocol.symbol !== "-" &&
+      protocol.address !== undefined
+  )
 
   const baseUrl = `https://api.llama.fi/protocol/`
   const data = []
@@ -110,6 +108,7 @@ export async function GET() {
   const oneYearAgoDate = new Date(oneYearAgo)
 
   // Modified existing conversion to include chainTvls
+  //TODO: Add name to the converted data and make sure values are not null using filterValues
   const convertedData: DailyAsset[] = data.flatMap((protocol) =>
     protocol.tvl
       .filter((tvl: TVL) => new Date(tvl.date * 1000) >= oneYearAgoDate)
