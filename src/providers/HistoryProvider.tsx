@@ -6,10 +6,9 @@ import { NexIndices, Transaction, RequestType } from "@/types/indexTypes"
 import { apolloIndexClient } from "@/utils/graphqlClient"
 import { generateGraphQLQuery } from "@/app/api/graphql/queries/uniswap"
 import { useGlobal } from "./GlobalProvider"
-import { usePathname } from "next/navigation"
-import { parseQueryFromPath } from "@/utils/general"
-import { useDashboard } from "./DashboardProvider"
+import { usePathname, useSearchParams } from "next/navigation"
 import { UsePositionsHistory } from "@/hooks/usePositionHistory"
+import { nexTokensArray } from "@/constants/indices"
 
 
 interface HistoryContextProps {
@@ -30,15 +29,11 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const { swapFromToken, swapToToken } = useTrade()
 	const { userAddress, activeChainSetting: { network } } = useGlobal()
-	const { nexTokens } = useDashboard()
 	const pathname = usePathname()
+	const queryParams = useSearchParams()
+	const index = queryParams?.get('index') || 'ANFI'
 
-	//Will update in issue #293
-	const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
-	const queryParams = parseQueryFromPath(searchQuery)
-
-	const index = queryParams.index || 'ANFI'
-	const tokenDetails = nexTokens.filter((token) => { return token.symbol === index })[0]
+	const tokenDetails = nexTokensArray.filter((token) => { return token.symbol === index })[0]
 	const activeSmartContractType = tokenDetails.smartContractType || 'defi'
 
 	const [positionHistoryData, setPositionHistoryData] = useState<Transaction[]>([])
@@ -77,7 +72,7 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		} else if (pathname === '/catalogue/index-details') {
 
 			const dataToShow = processedData.data.finalData.filter((data: Transaction) => {
-				return data.tokenName === queryParams.index
+				return data.tokenName === index
 			})
 			if (JSON.stringify(dataToShow) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(dataToShow)
@@ -93,7 +88,8 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 		swapToToken,
 		userAddress,
 		queryParams,
-		processedData
+		processedData,
+		index
 	])
 
 

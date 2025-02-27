@@ -6,29 +6,28 @@ import Grid from "@mui/material/Grid2"
 import Header from "@/components/layout/Header"
 import Sidebar from "@/components/layout/sidebar"
 import Footer from "@/components/layout/Footer"
-import { useDashboard } from "@/providers/DashboardProvider"
 import { IndexCryptoAsset } from "@/types/indexTypes"
 import IndexDetailsTabbedTablesView from "@/components/ui/index-details/indexDetailsTabbedViewTables"
 import CircularProgress from "@mui/material/CircularProgress"
 import MarketStats from "./marketStats"
 import Composition from "./composition"
-import { parseQueryFromPath } from "@/utils/general"
 import TradingViewChart from "@/components/ui/chart/TradingViewChart"
+import { nexTokensArray } from "@/constants/indices"
 
-const Page = () => {
-  const { nexTokens } = useDashboard()
-  const [index, setIndex] = useState<IndexCryptoAsset | null>(null)
+const Page = ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string }
+}) => {
+  const [selectedIndex, setSelectedIndex] = useState<IndexCryptoAsset>(nexTokensArray[0])
   const [loading, setLoading] = useState(true)
 
-  const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
-	const params = parseQueryFromPath(searchQuery)
+  const { index } = searchParams;
 
   useEffect(() => {
-    setIndex(
-      nexTokens.find((token) => token.symbol === params.index) ?? null
-    )
+    setSelectedIndex( nexTokensArray.find((token) => token.symbol === index) ?? nexTokensArray[0] )
     setLoading(false)
-  }, [params, nexTokens])
+  }, [index])
 
   if (loading)
     return (
@@ -42,7 +41,7 @@ const Page = () => {
       </Box>
     )
 
-  if (!index) return <div>Index not found: {params.index}</div>
+  if (!index) return <div>Index not found: {index}</div>
 
   return (
     <Box width="100vw" height="100vh" display="flex" flexDirection="row">
@@ -58,31 +57,31 @@ const Page = () => {
                   height={60}
                   borderRadius={1}
                   sx={{
-                    backgroundImage: `url(${index?.logoString})`,
+                    backgroundImage: `url(${selectedIndex?.logoString})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
                 />
                 <Stack direction={"column"}>
-                  <Typography variant={"h3"}>{index?.name}</Typography>
+                  <Typography variant={"h3"}>{selectedIndex?.name}</Typography>
                 </Stack>
               </Stack>
             </Grid>
             <Grid size={{ xs: 12, sm: 8 }}>
               <Typography variant="h6" color="primary" marginBottom={2}>
-                {index?.description}
+                {selectedIndex?.description}
               </Typography>
             </Grid>
             <Grid size={{ xs: 12, sm: 8 }}>
-              <TradingViewChart index={index.symbol} />
+              <TradingViewChart index={selectedIndex.symbol} />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 4 }}>
-              <MarketStats index={index} />
+              <MarketStats index={selectedIndex} />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 12 }} marginTop={2}>
-              <Composition index={index} />
+              <Composition index={selectedIndex} />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 12 }} marginTop={2}>
