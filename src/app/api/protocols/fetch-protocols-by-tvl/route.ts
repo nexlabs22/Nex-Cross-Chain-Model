@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url)
   const chain = url.searchParams.get("chain")
   const nativeTokenParam = url.searchParams.get("nativeToken")
+  const nativeTokenWeight = parseFloat(url.searchParams.get("nativeTokenWeight") || "0.15");
   const limit = parseInt(url.searchParams.get("limit") || "0", 10)
 
   let nativeToken: boolean | null = null;
@@ -33,6 +34,13 @@ export async function GET(request: NextRequest) {
   if (chain === null && nativeToken === true) {
     return NextResponse.json(
       { message: "mention chain for native token" },
+      { status: 400 }
+    );
+  }
+
+  if (isNaN(nativeTokenWeight) || nativeTokenWeight <= 0 || nativeTokenWeight >= 1) {
+    return NextResponse.json(
+      { message: "percentage should lie between 0 and 1" },
       { status: 400 }
     );
   }
@@ -61,7 +69,8 @@ export async function GET(request: NextRequest) {
 
   const commaSeparatedSymbols = protocolsWithTvl.map(protocol => protocol.ticker).join(',');
 
-  const protocolsData = await axios.get(`https://app.nexlabs.io/api/protocols/fetch-asset-overview?tickers=${commaSeparatedSymbols}`)
+  const baseUrl = 'http://localhost:3000/api'
+  const protocolsData = await axios.get(`${baseUrl}/protocols/fetch-asset-overview?tickers=${commaSeparatedSymbols}`)
 
   const protocolAvailableAddresses = protocolsData.data.assetOverview.filter((data: AssetOverviewDocument) => {
     const coinmarketCapContractAddressObj = data.coinmarketcap?.contract_address
@@ -102,7 +111,7 @@ export async function GET(request: NextRequest) {
     result.push({
       name: chain,
       ticker: evmChainsNativeTokens[chain].nativeToken,
-      weight: 0.15,
+      weight: nativeTokenWeight,
       arbitrumOneAddress: evmChainsNativeTokens[chain].address,
     })
   }
@@ -113,7 +122,7 @@ export async function GET(request: NextRequest) {
     name: protocol?.name,
     ticker: protocol?.ticker,
     tvl: protocol?.tvl,
-    weight: nativeToken && chain ? 0.85 * protocolWeight : protocolWeight,
+    weight: nativeToken && chain ? (1- nativeTokenWeight) * protocolWeight : protocolWeight,
     arbitrumOneAddress: protocol?.arbitrum_address    
   })
 })
