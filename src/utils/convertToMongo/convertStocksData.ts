@@ -74,7 +74,7 @@ export const convertStocksData = async () => {
 
         const entry: DailyAsset = {
           ticker,
-          name,
+          name: name?.toLowerCase(),
           date,
           timestamp,
           price: ohlcData?.price,
@@ -89,6 +89,7 @@ export const convertStocksData = async () => {
 
         if (
           filteredEntry.ticker &&
+          filteredEntry.name &&
           filteredEntry.date &&
           filteredEntry.type &&
           (filteredEntry.price || filteredEntry.close)

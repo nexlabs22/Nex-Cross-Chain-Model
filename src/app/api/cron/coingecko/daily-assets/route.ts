@@ -2,42 +2,11 @@ import { NextResponse } from "next/server"
 import {
   fetchDocumentsWithCoingeckoId,
   fetchDailyPricesSplitted,
-} from "./index"
+} from "@/app/api/coingecko/fetch-daily"
 import { DailyAsset } from "@/types/mongoDb"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { AssetCategory } from "@/types/indexTypes"
-
-export interface DailyPrice {
-  id: string
-  symbol: string
-  name: string
-  image: string
-  current_price: number
-  market_cap: number
-  market_cap_rank: number
-  fully_diluted_valuation: number
-  total_volume: number
-  high_24h: number
-  low_24h: number
-  price_change_24h: number
-  price_change_percentage_24h: number
-  market_cap_change_24h: number
-  market_cap_change_percentage_24h: number
-  circulating_supply: number
-  total_supply: number
-  max_supply: number
-  ath: number
-  ath_change_percentage: number
-  ath_date: string // ISO date string
-  atl: number
-  atl_change_percentage: number
-  atl_date: string // ISO date string
-  roi: null | {
-    times: number
-    currency: string
-    percentage: number
-  }
-  last_updated: string // ISO date string
-}
+import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
 
 export async function GET() {
   try {
@@ -62,6 +31,9 @@ export async function GET() {
       })
     }
 
+    const { collection } = await DailyAssetsClient()
+
+    //TODO filter if the data is given and otherwise don't upload it
     const mongoDbData: DailyAsset[] = dailyPrices.map((item) => ({
       ticker: item.symbol.toUpperCase(),
       name: item.name.toLowerCase(),
@@ -78,10 +50,15 @@ export async function GET() {
       fullyDilutedValuation: item.fully_diluted_valuation,
     }))
 
+    const filteredMongoDbData = mongoDbData.filter(
+      (item) => item.name && item.ticker
+    )
+
+    await uploadToDailyAssets(filteredMongoDbData, collection)
+
     return NextResponse.json({
       message: "Data uploaded successfully",
-      data: mongoDbData.slice(0, 20),
-      dailyPrices: dailyPrices.slice(0, 20),
+      // data: filteredMongoDbData.slice(0, 20),
       status: 200,
     })
   } catch (error) {

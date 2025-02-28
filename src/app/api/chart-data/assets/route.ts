@@ -1,3 +1,4 @@
+//TODO: remove this endpoint, use protocols/fetch-daily-asset instead then convert to chart data.
 import { NextResponse } from "next/server"
 import { nexTokensArray } from "@/constants/indices"
 import { DailyAssetsClient } from "@/utils/MongoDbClient"
@@ -5,7 +6,9 @@ import { DailyAssetsClient } from "@/utils/MongoDbClient"
 export async function GET() {
   console.log("fetching data assets")
   try {
-    const tickers = nexTokensArray.map((index) => index.symbol === 'ARBEI' ? 'rARBEI' : index.symbol)
+    const tickers = nexTokensArray.map((index) =>
+      index.symbol === "ARBEI" ? "rARBEI" : index.symbol
+    )
     const { collection } = await DailyAssetsClient()
 
     const filter = {
@@ -15,7 +18,9 @@ export async function GET() {
       },
     }
 
-    const data = (await collection.find(filter).toArray()).map((token)=> token.ticker === 'rARBEI' ? {...token, ticker: 'ARBEI'}: token)
+    const data = (await collection.find(filter).toArray()).map((token) =>
+      token.ticker === "rARBEI" ? { ...token, ticker: "ARBEI" } : token
+    )
 
     return NextResponse.json({ data })
   } catch (error) {

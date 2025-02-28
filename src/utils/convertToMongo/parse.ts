@@ -178,8 +178,6 @@ export const uploadToDailyAssets = async (
 ) => {
   const bulkOperations = []
 
-  console.log("initiate upload to mongo", data)
-
   for (const row of data) {
     if (!row) continue
     const { date, ticker, name, ...rest} = row
@@ -204,9 +202,7 @@ export const uploadToDailyAssets = async (
 
   //return a row count
   const rowCount = await collection.countDocuments()
-  console.log(
-    `Successfully uploaded bulk, new row count: ${rowCount}`
-  )
+  console.log(`Successfully uploaded bulk, new row count: ${rowCount}`)
   return
 }
 

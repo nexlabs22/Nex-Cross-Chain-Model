@@ -1,31 +1,31 @@
 {
   "crons": [
     {
-      "path": "/api/cmc",
+      "path": "/api/cron/cmc/asset-overview",
       "schedule": "0 0 * * 1"
     },
     {
-      "path": "/api/coingecko",
+      "path": "/api/cron/coingecko/asset-overview",
       "schedule": "5 0 * * 1"
     },
     {
-      "path": "/api/dinari/get-stocks",
+      "path": "/api/cron/dinari/asset-overview",
       "schedule": "0 0 * * 1"
     },
     {
-      "path": "/api/defillama/getProtocols",
+      "path": "/api/cron/defillama/daily-assets",
       "schedule": "10 0 * * *"
     },
     {
-      "path": "/api/coingecko/fetch-daily",
+      "path": "/api/cron/coingecko/daily-assets",
       "schedule": "15 0 * * *"
     },
     {
-      "path": "/api/dinari/get-stock-quotes",
+      "path": "/api/cron/dinari/daily-assets",
       "schedule": "5 0 * * *"
     },
     {
-      "path": "/api/storeOnChainData",
+      "path": "/api/cron/thirdweb/daily-assets",
       "schedule": "0 * * * *"
     }
   ]

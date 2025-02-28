@@ -1,4 +1,6 @@
+import { uploadDefiLLamaToDailyAssets } from "@/utils/convertToMongo/parse"
 import { NextResponse } from "next/server"
+import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { DailyAsset } from "@/types/mongoDb"
 import { AssetCategory } from "@/types/indexTypes"
 const url = "https://api.llama.fi/protocols"
@@ -98,8 +100,15 @@ export async function GET() {
       }
     })
 
+  const filteredProtocols = processedProtocols.filter(
+    (protocol) => protocol.name && protocol.ticker
+  )
+
+  const { collection } = await DailyAssetsClient()
+  await uploadDefiLLamaToDailyAssets(filteredProtocols, collection)
+
   return NextResponse.json({
     message: "Protocols processed successfully",
-    processedProtocols: processedProtocols.slice(0, 20),
+    // data: filteredProtocols.slice(0, 20),
   })
 }
