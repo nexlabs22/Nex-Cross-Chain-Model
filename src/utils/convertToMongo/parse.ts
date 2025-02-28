@@ -182,16 +182,16 @@ export const uploadToDailyAssets = async (
 
   for (const row of data) {
     if (!row) continue
-    const { date, ticker} = row
+    const { date, ticker, name, ...rest} = row
     // concatentate the data
     const bulkOperation = {
       updateOne: {
         filter: {
           date,
           ticker,
-          // name: name.toLowerCase(),
+          name: name.toLowerCase(),
         },
-        update: { $set: row },
+        update: { $set: rest },
         upsert: true,
       },
     }
