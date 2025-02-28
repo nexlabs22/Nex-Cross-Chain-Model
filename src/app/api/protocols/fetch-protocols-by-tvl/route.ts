@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 
   const commaSeparatedSymbols = protocolsWithTvl.map(protocol => protocol.ticker).join(',');
 
-  const baseUrl = 'http://localhost:3000/api'
+  const baseUrl = 'https://app.nexlabs.io/api'
   const protocolsData = await axios.get(`${baseUrl}/protocols/fetch-asset-overview?tickers=${commaSeparatedSymbols}`)
 
   const protocolAvailableAddresses = protocolsData.data.assetOverview.filter((data: AssetOverviewDocument) => {
