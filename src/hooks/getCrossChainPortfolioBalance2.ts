@@ -10,7 +10,6 @@ import { getContract, readContract } from "thirdweb"
 import { arbitrumSepolia } from "thirdweb/chains"
 import { client } from "@/utils/thirdWebClient"
 import { nexTokensArray } from "@/constants/indices"
-import { cross } from "d3"
 
 
 export function GetCrossChainPortfolioBalance2(
@@ -42,7 +41,7 @@ const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
     console.log({storageContract})
     console.log({arbitrumSepoliaStorageContract})
 
-    if (!functionsOracleContract || !storageContract) {
+    if (!functionsOracleContract || !storageContract || !arbitrumSepoliaStorageContract) {
       console.log('contracts not found, returning!')
       return
     }
@@ -85,7 +84,7 @@ const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
 			})
       console.log({tokenChainSelector})
       
-      if (Number(tokenChainSelector) == Number(chainSelectorAddresses.Arbitrum?.Sepolia) && arbitrumSepoliaStorageContract) {
+      if (Number(tokenChainSelector) == Number(chainSelectorAddresses.Arbitrum?.Sepolia)) {
         const arbitrumSepoliaTokenContract = getContract({
           address: tokenAddress as Address,
           client,
@@ -121,7 +120,7 @@ const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
         params: [
             [
             tokenAddresses.WETH?.Arbitrum?.Sepolia?.token?.address as Address,
-            tokenAddresses?.ANFI?.Arbitrum?.Sepolia?.ccip?.address as Address 
+            tokenAddresses?.[activeTicker as AllowedTickers]?.Arbitrum?.Sepolia?.ccip?.address as Address 
             ],
             [3000],
             BigInt((crossChainPortfolioBalance).toFixed(0))
