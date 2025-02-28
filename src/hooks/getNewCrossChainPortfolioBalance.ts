@@ -54,7 +54,7 @@ export async function getNewCrossChainPortfolioBalance(totalPortfolioValue: numb
 					"function getAmountOut(address[], uint24[], uint256) returns (uint256)",
 					params: [
 						[
-							tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,
+						tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address,
 						tokenAddresses?.[activeTicker as AllowedTickers]?.[chainName]?.[network]?.ccip?.address as Address ],
 						[3000],
 						BigInt((wethAmount * Number(tokenMarketShare) / 100e18).toFixed(0))

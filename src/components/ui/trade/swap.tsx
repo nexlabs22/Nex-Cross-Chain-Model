@@ -42,6 +42,7 @@ import { tokenAddresses } from "@/constants/contractAddresses"
 import { useReadContract, useSendTransaction } from "thirdweb/react"
 import { allowance, balanceOf, totalSupply } from "thirdweb/extensions/erc20"
 import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
+import { GetCrossChainPortfolioBalance2 } from "@/hooks/getCrossChainPortfolioBalance2"
 import { GetDefiPortfolioBalance } from "@/hooks/getDefiPortfolioBalance"
 import {
   prepareContractCall,
@@ -123,6 +124,7 @@ export default function Swap({ side }: SwapProps) {
   const [to1UsdPrice, setTo1UsdPrice] = useState(0)
   const [feeRate, setFeeRate] = useState(0)
   const [currentPortfolioValue, setCurrentPortfolioBalance] = useState(0)
+  const [currentPortfolioValue2, setCurrentPortfolioBalance2] = useState(0)
   const [userEthBalance, setUserEthBalance] = useState(0)
 
   const rpcClient = getClient(chainName, network)
@@ -307,7 +309,8 @@ export default function Swap({ side }: SwapProps) {
   const cancelBurnRequestHook = useSendTransaction()
 
   // const crossChainPortfolioValue = { data: 0 }
-  const crossChainPortfolioValue = GetCrossChainPortfolioBalance(swapFromToken, swapToToken)
+  // const crossChainPortfolioValue = GetCrossChainPortfolioBalance(swapFromToken, swapToToken)
+  const crossChainPortfolioValue = GetCrossChainPortfolioBalance2(swapFromToken, swapToToken)
   const defiPortfolioValue = GetDefiPortfolioBalance(swapFromToken, swapToToken)
 
   async function approve() {
@@ -690,8 +693,19 @@ export default function Swap({ side }: SwapProps) {
         ? defiPortfolioValue.data
         : (crossChainPortfolioValue.data as number)
     setCurrentPortfolioBalance(currentPortfolioValue as number)
+
+    // setPortfolioValue2
+    const currentPortfolioValue2 =
+    (isIndexCryptoAsset(swapToToken) &&
+    swapToToken?.smartContractType === "defi") ||
+    (isIndexCryptoAsset(swapFromToken) &&
+      swapFromToken?.smartContractType === "defi")
+    ? defiPortfolioValue.data
+    : (crossChainPortfolioValue.data2 as number)
+    setCurrentPortfolioBalance2(currentPortfolioValue2 as number)
   }, [
     crossChainPortfolioValue.data,
+    crossChainPortfolioValue.data2,
     defiPortfolioValue.data,
     swapToToken,
     swapFromToken,
@@ -780,12 +794,14 @@ export default function Swap({ side }: SwapProps) {
     toTokenTotalSupply.data,
     defiPortfolioValue.data,
     crossChainPortfolioValue.data,
+    crossChainPortfolioValue.data2,
     network,
     currentPortfolioValue,
     rpcClient,
     indexTokenStorageContract
   ])
 
+  /**
   useEffect(() => {
     async function getRedemptionOutput2() {
       try {
@@ -800,6 +816,68 @@ export default function Swap({ side }: SwapProps) {
           const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
           const newPortfolioValue = (Number(currentPortfolioValue) * newTotalSupply) / currentTotalSupply
           const ethAmountOut = (Number(currentPortfolioValue) - newPortfolioValue) * 0.999
+          if (isWETH(swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, chainName, network)) {
+            outputValue = ethAmountOut
+          } else {
+            const outPutTokenValue = await readContract({
+              contract: indexTokenStorageContract,
+              method:
+                "function getAmountOut(address[], uint24[], uint256 ) returns (uint256)",
+              params: [
+                [tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address, swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address],
+                [3000],
+                BigInt(Math.floor(ethAmountOut)), // Convert ethAmountOut to bigint                  
+              ],
+            })
+
+            outputValue = Number(outPutTokenValue)
+          }
+          if (isIndexCryptoAsset(swapFromToken) && swapFromToken?.smartContractType === "stocks") {
+            const outAmount = await readContract({
+              contract: indexTokenStorageContract,
+              method:
+                "function getRedemptionAmountOut(uint256) returns (uint256)",
+              params: [BigInt(firstInputValue)],
+            })
+
+            setSecondInputValue(weiToNum(outAmount, getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString())
+          } else {
+            setSecondInputValue(weiToNum(outputValue, getDecimals(swapToToken.tokenAddresses?.[chainName]?.[network]?.token)).toString())
+          }
+        }
+      } catch (error) {
+        console.log("getRedemptionOutput error:", error)
+      }
+    }
+    getRedemptionOutput2()
+  }, [
+    firstInputValue,
+    swapFromToken,
+    chainName,
+    swapToToken,
+    setSecondInputValue,
+    network,
+    currentPortfolioValue,
+    fromTokenTotalSupply.data,
+    rpcClient,
+    indexTokenStorageContract
+  ])
+  */
+
+  useEffect(() => {
+    async function getRedemptionOutput2() {
+      try {
+        if (firstInputValue === "") {
+          resetSecondValue()
+          return
+        }
+        if (swapFromToken.hasOwnProperty("smartContractType")) {
+          const convertedInputValue = parseEther(Number(firstInputValue)?.toString() as string)
+          let outputValue
+          const currentTotalSupply = Number(fromTokenTotalSupply.data)
+          const newTotalSupply = currentTotalSupply - Number(convertedInputValue)
+          const newPortfolioValue = (Number(currentPortfolioValue2) * newTotalSupply) / currentTotalSupply
+          const ethAmountOut = (Number(currentPortfolioValue2) - newPortfolioValue) * 0.999
           if (isWETH(swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, chainName, network)) {
             outputValue = ethAmountOut
           } else {
