@@ -8,7 +8,6 @@ import { GlobalProvider } from "@/providers/GlobalProvider"
 import { TradeProvider } from "@/providers/TradeProvider"
 import { HistoryProvider } from "@/providers/HistoryProvider"
 import { Suspense } from "react"
-import { ToastContainer } from 'react-toastify';
 
 export const metadata: Metadata = {
   title: "NexLabs - Index your trades, your investment, your future",
@@ -33,8 +32,7 @@ export default function RootLayout({
                   <HistoryProvider>
                     <InitColorSchemeScript attribute="class" />
                     <ClientThemeProvider>{children}</ClientThemeProvider>
-                    <ToastContainer position="bottom-right" theme="dark" />
-                </HistoryProvider>
+                  </HistoryProvider>
                 </TradeProvider>
               </DashboardProvider>
             </GlobalProvider>
