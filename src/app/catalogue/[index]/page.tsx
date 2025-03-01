@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react"
 import { Box, Typography, Stack } from "@mui/material"
 import Grid from "@mui/material/Grid2"
+import { useDashboard } from "@/providers/DashboardProvider"
 import { IndexCryptoAsset } from "@/types/indexTypes"
 import IndexDetailsTabbedTablesView from "@/components/ui/index-details/indexDetailsTabbedViewTables"
 import CircularProgress from "@mui/material/CircularProgress"
 import MarketStats from "@/app/catalogue/[index]/marketStats"
 import Composition from "@/app/catalogue/[index]/compositions"
+import { parseQueryFromPath } from "@/utils/general"
 import { useParams } from 'next/navigation';
 import TradingViewChart from "@/components/ui/chart/TradingViewChart"
 import { PiHouseBold } from 'react-icons/pi';
@@ -15,24 +17,24 @@ import { GoStack } from "react-icons/go";
 import { BreadcrumbItem } from '@/utils/breadcrumbsItems';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import VaultScale from "@/components/ui/generic/vaultScale";
-import { nexTokensArray } from "@/constants/indices"
 
-const Page = ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string }
-}) => {
-  const [selectedIndex, setSelectedIndex] = useState<IndexCryptoAsset>(nexTokensArray[0])
+const Page = () => {
+  const { nexTokens } = useDashboard()
+  const [index, setIndex] = useState<IndexCryptoAsset | null>(null)
   const [loading, setLoading] = useState(true)
   const searchParams = useParams()
   const paramsIndex = searchParams.index.toString().toLocaleUpperCase()
 
-  const { index } = searchParams;
+  const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
+  const params = parseQueryFromPath(searchQuery)
+
 
   useEffect(() => {
-    setSelectedIndex( nexTokensArray.find((token) => token.symbol === index) ?? nexTokensArray[0] )
+    setIndex(
+      nexTokens.find((token) => token.symbol === paramsIndex) ?? null
+    )
     setLoading(false)
-  }, [index])
+  }, [nexTokens, paramsIndex])
 
   if (loading)
     return (
@@ -45,11 +47,13 @@ const Page = ({
         <CircularProgress />
       </Box>
     )
-    
+
+  if (!index) return <div>Index not found: {params.index}</div>
+
   const breadcrumbsItems: BreadcrumbItem[] = [
     { icon: PiHouseBold, label: "Home", link: "/", available: true },
     { icon: GoStack, label: "Catalogue", link: `/catalogue`, available: true },
-    { label: (selectedIndex?.symbol || 'ANFI').toLocaleUpperCase(), link: `/catalogue/${selectedIndex?.symbol}`, available: true }
+    { label: index.symbol.toLocaleUpperCase(), link: `/catalogue/${index.symbol}`, available: true }
   ]
 
   const vaultData = [
@@ -84,25 +88,23 @@ const Page = ({
             justifyContent='center'
             borderRadius={'50%'}
             sx={{
-              backgroundImage: `url(${selectedIndex?.logoString})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              aspectRatio: 1
             }}
           >
             {index?.logoComponent}
           </Box>
           <Stack direction={"column"}>
-            <Typography variant={"h3"}>{selectedIndex?.name}</Typography>
+            <Typography variant={"h3"}>{index?.name}</Typography>
           </Stack>
         </Stack>
       </Grid>
       <Grid size={{ xs: 12, sm: 8 }}>
         <Typography variant="h6" color="primary" marginBottom={2}>
-          {selectedIndex?.description}
+          {index?.description}
         </Typography>
       </Grid>
       <Grid size={{ xs: 12, sm: 8 }}>
-        <TradingViewChart index={selectedIndex.symbol} />
+        <TradingViewChart index={index.symbol} />
       </Grid>
 
       <Grid size={{ xs: 12, sm: 4 }}>

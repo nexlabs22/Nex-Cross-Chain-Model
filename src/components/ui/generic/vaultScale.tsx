@@ -47,7 +47,7 @@ const VaultScale = ({ data }: VaultScaleProps) => {
                                 justifyContent="center"
                                 gap={2}
                                 position="absolute"
-                                left="3%"
+                                left="20px"
                                 bottom="45%"
                             >
                                 <Box width={40} height={40} borderRadius="50%">
@@ -92,7 +92,7 @@ const VaultScale = ({ data }: VaultScaleProps) => {
                                                 height={
                                                     isHovered && unitIndex !== 0 ? '35%' :
                                                     (isPrev || isNext) && unitIndex !== 0 ? '32%' :
-                                                    unitIndex === 0 ? '85%' : '30%'
+                                                    unitIndex === 0 ? '80%' : '30%'
                                                 }
                                                 bgcolor={colors[segmentIndex % colors.length]}
                                                 sx={{

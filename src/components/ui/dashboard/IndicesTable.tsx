@@ -236,7 +236,7 @@ const IndicesTable = () => {
                   ?.address as Address
               )
               GenericToast({
-                type: "info",
+                type: "success",
                 message: "Address copied to clipboard",
               })
             }}
