@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { fetchAllPages } from "./index"
-import { AssetOverviewClient } from "@/utils/MongoDbClient"
 import { AssetOverviewDocument } from "@/types/mongoDb"
-import { uploadStocksToAssetOverview } from "@/utils/convertToMongo/parse"
+import { filterValues } from "@/utils/convertToMongo/parse"
 
 // const url = `https://api-enterprise.sbt.dinari.com/api/v1/stocks/?page=1&page_size=100`
 // testnet chainId = "11155111" // for mainnet use 1, nothing on polygon, 42161 for arbitrum
@@ -49,21 +48,21 @@ export async function GET(request: NextRequest) {
   try {
     const allData = await fetchAllPages(request)
 
-    const { collection } = await AssetOverviewClient()
-
     const mongoData: (AssetOverviewDocument | null)[] = []
     for (const data of allData) {
       const dinariData = data as DinariObject
-      mongoData.push({
-        dinari: dinariData,
-        lastUpdate: new Date(),
-        name: dinariData.stock.name.toLowerCase(),
-        ticker: dinariData.stock.symbol,
-        tokenAddress: dinariData.token.address,
-      })
-    }
+      const filterObject = filterValues(dinariData)
 
-    await uploadStocksToAssetOverview(mongoData, collection)
+      if (filterObject.name && filterObject.ticker) {
+        mongoData.push({
+          dinari: dinariData,
+          lastUpdate: new Date(),
+          name: dinariData.stock.name.toLowerCase(),
+          ticker: dinariData.stock.symbol.toUpperCase(),
+          tokenAddress: dinariData.token.address,
+        })
+      }
+    }
 
     return NextResponse.json(
       { message: "Stocks updated successfully" },

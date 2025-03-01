@@ -235,7 +235,7 @@ const dataFeed = {
 
         // First, attempt to fetch data from your API
         const filter = { ticker: urlParameters.fsym.toString() };
-        const dataFromDB = await axios.post(`/api/chart-data`, filter)
+        const dataFromDB = await axios.get(`/api/chart-data`, filter)
             .then(res => mongoDataToOHLC(res.data.data))
             .catch(error => {
                 console.log("[getBars]: Error fetching from database", error);

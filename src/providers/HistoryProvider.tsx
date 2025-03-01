@@ -1,18 +1,14 @@
 "use client"
-
-import { GetPositionsHistoryDefi } from "@/hooks/getPositionsHistoryDefi"
-import { GetPositionsHistoryCrossChain } from "@/hooks/getPositionsHistoryCrosschain"
-import { GetPositionsHistoryStock } from "@/hooks/getPositionsHistoryStock"
 import React, { createContext, useEffect, useState } from "react"
 import { useContext } from "react"
 import { useTrade } from "./TradeProvider"
 import { NexIndices, Transaction, RequestType } from "@/types/indexTypes"
-import {apolloIndexClient} from "@/utils/graphqlClient"
-import { GET_ISSUANCED_ARBEI_EVENT_LOGS } from "@/app/api/graphql/queries/uniswap"
+import { apolloIndexClient } from "@/utils/graphqlClient"
+import { generateGraphQLQuery } from "@/app/api/graphql/queries/uniswap"
 import { useGlobal } from "./GlobalProvider"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
+import { UsePositionsHistory } from "@/hooks/usePositionHistory"
 import { nexTokensArray } from "@/constants/indices"
-import { parseQueryFromPath } from "@/utils/general"
 
 
 interface HistoryContextProps {
@@ -22,7 +18,7 @@ interface HistoryContextProps {
 
 const HistoryContext = createContext<HistoryContextProps>({
 	positionHistoryData: [],
-	reloadData: () => {}
+	reloadData: () => { }
 })
 
 const useHistory = () => {
@@ -32,96 +28,51 @@ const useHistory = () => {
 const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const { swapFromToken, swapToToken } = useTrade()
-	const { userAddress, activeChainSetting:{ network} } = useGlobal()
+	const { userAddress, activeChainSetting: { network } } = useGlobal()
 	const pathname = usePathname()
+	const queryParams = useSearchParams()
+	const index = queryParams?.get('index') || 'ANFI'
 
-	const searchQuery = typeof window !== 'undefined' ? window.location.search : '/'
-	const queryParams = parseQueryFromPath(searchQuery)
+	const tokenDetails = nexTokensArray.filter((token) => { return token.symbol === index })[0]
+	const activeSmartContractType = tokenDetails.smartContractType || 'defi'
 
 	const [positionHistoryData, setPositionHistoryData] = useState<Transaction[]>([])
-	const [activeTicker, setActiveTicker] = useState<NexIndices>('ANFI')
-	const [combinedPositionTableCrosschainData, setCombinedPositionTableCrosschainData] = useState<Transaction[]>([])
-	const [combinedPositionTableStockData, setCombinedPositionTableStockData] = useState<Transaction[]>([])
+	const [activeTicker, setActiveTicker] = useState<NexIndices>(index as NexIndices)
 	const [dataFromGraph, setDataFromGraph] = useState({})
 
 	useEffect(() => {
 		async function fetchData() {
-			const { data: testData }: { data: { [key: string]: RequestType[] } } = await apolloIndexClient(network).query({
-				query: GET_ISSUANCED_ARBEI_EVENT_LOGS,
+			const { data: graphData }: { data: { [key: string]: RequestType[] } } = await apolloIndexClient(network).query({
+				query: generateGraphQLQuery(tokenDetails.symbol.toLowerCase(), activeSmartContractType),
 				fetchPolicy: 'network-only',
 			});
-			setDataFromGraph(testData)
+			setDataFromGraph(graphData)
 		}
 
 		fetchData()
-	}, [userAddress, network])
+	}, [tokenDetails, activeSmartContractType, network])
 
-	const positionHistoryDefi = GetPositionsHistoryDefi(dataFromGraph)
-	const positionHistoryCrosschain = GetPositionsHistoryCrossChain(dataFromGraph)
-	const positionHistoryStock = GetPositionsHistoryStock(dataFromGraph)
-
+	const processedData = UsePositionsHistory(dataFromGraph, index)
 	const activeIndexType = swapFromToken.smartContractType || swapToToken.smartContractType
-
-	useEffect(() => {
-		const crossChainRequests = positionHistoryCrosschain.requests
-		const crossChainHistory = positionHistoryCrosschain.history
-
-		const activeRequests = crossChainRequests.filter((data) => {
-			const isExist = crossChainHistory.find((hist) => {
-				return hist.nonce === data.nonce && hist.side === data.side
-			})
-			return !isExist
-		})
-
-		const combinedData = [...crossChainHistory, ...activeRequests].sort((a, b) => b.timestamp - a.timestamp)
-
-		if (JSON.stringify(combinedData) !== JSON.stringify(combinedPositionTableCrosschainData)) {
-			setCombinedPositionTableCrosschainData(combinedData)
-		}
-	}, [positionHistoryCrosschain, combinedPositionTableCrosschainData])
-
-	useEffect(() => {
-		const stockRequests = positionHistoryStock.requests
-		const stockHistory = positionHistoryStock.history
-
-		const activeRequests = stockRequests.filter((data) => {
-			const isExist = stockHistory.find((hist) => {
-				return hist.nonce === data.nonce && hist.side === data.side
-			})
-			return !isExist
-		})
-
-		const combinedData = [...stockHistory, ...activeRequests].sort((a, b) => b.timestamp - a.timestamp)
-
-		if (JSON.stringify(combinedData) !== JSON.stringify(combinedPositionTableStockData)) {
-			setCombinedPositionTableStockData(combinedData)
-		}
-	}, [positionHistoryStock, combinedPositionTableStockData])
-
 
 	useEffect(() => {
 		const activeTicker = swapFromToken.hasOwnProperty('smartContractType') ? swapFromToken.symbol : swapToToken.symbol
 		setActiveTicker(activeTicker as NexIndices)
 	}, [swapFromToken, swapToToken])
-	const totalPortfolioData = [...positionHistoryDefi.data, ...positionHistoryCrosschain.history, ...positionHistoryStock.history].sort((a, b) => b.timestamp - a.timestamp)
 
 
 	useEffect(() => {
 		if (pathname === '/trade') {
-			const data = activeIndexType === 'defi' ? positionHistoryDefi.data : activeIndexType === 'crosschain' ? combinedPositionTableCrosschainData : combinedPositionTableStockData
-
-			const dataToShow = data.filter((data: Transaction) => {
+			const dataToShow = processedData.data.finalData.filter((data: Transaction) => {
 				return data.tokenName === activeTicker && data.userAddress.toLowerCase() === userAddress?.toLowerCase()
 			})
 			if (JSON.stringify(dataToShow) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(dataToShow)
 			}
-		} else if (pathname.includes('/catalogue/')) {
-			const indextype = nexTokensArray.find((token) => token.symbol === queryParams.index)?.smartContractType
-			const data = indextype === 'defi' ? positionHistoryDefi.data : indextype === 'crosschain' ? positionHistoryCrosschain.history: positionHistoryStock.history
+		} else if (pathname === '/catalogue/index-details') {
 
-			const dataToShow = data.filter((data: Transaction) => {
-				return data.tokenName === queryParams.index
+			const dataToShow = processedData.data.finalData.filter((data: Transaction) => {
+				return data.tokenName === index
 			})
 			if (JSON.stringify(dataToShow) !== JSON.stringify(positionHistoryData)) {
 				setPositionHistoryData(dataToShow)
@@ -130,25 +81,21 @@ const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
 
 	}, [
 		pathname,
-		positionHistoryDefi.data,
 		positionHistoryData,
 		activeIndexType,
 		activeTicker,
-		combinedPositionTableCrosschainData,
 		swapFromToken,
 		swapToToken,
-		combinedPositionTableStockData,
-		positionHistoryCrosschain,
-		positionHistoryStock,
-		totalPortfolioData,
 		userAddress,
-		queryParams	
+		queryParams,
+		processedData,
+		index
 	])
 
 
 	const contextValue = {
 		positionHistoryData,
-		reloadData: positionHistoryDefi.reload
+		reloadData: processedData.reload
 	}
 
 	return <HistoryContext.Provider value={contextValue}>{children}</HistoryContext.Provider>

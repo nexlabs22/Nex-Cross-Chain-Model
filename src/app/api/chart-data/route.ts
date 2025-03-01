@@ -1,36 +1,21 @@
+//TODO: remove this endpoint, use protocols/fetch-daily-asset instead then convert to chart data.
 import { aggregateType } from "@/types/mongoDb"
 import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { NextRequest, NextResponse } from "next/server"
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const body = await request.json()
-
-    if (!body || !body.ticker) {
-      return NextResponse.json(
-        { message: "Ticker is required" },
-        { status: 400 }
-      )
-    }
-
-    const { ticker, limit, sort, ...additionalFilters } = body
+    
+    const { searchParams } = new URL(request.url) 
+    const ticker = searchParams.get("ticker") || "ANFI"
 
     const { collection } = await DailyAssetsClient()
 
     const filter = {
-      ticker: ticker === "ARBEI" ? "rARBEI" : ticker,
-      ...additionalFilters,
+      ticker: ticker === "ARBEI" ? "rARBEI" : ticker,    
     }
 
     const pipeline: aggregateType[] = [{ $match: filter }]
-
-    if (sort) {
-      pipeline.push({ $sort: sort })
-    }
-
-    if (limit) {
-      pipeline.push({ $limit: limit })
-    }
 
     const data = await collection.aggregate(pipeline).toArray()
 

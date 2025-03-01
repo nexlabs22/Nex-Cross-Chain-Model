@@ -1,7 +1,7 @@
+//TODO: Remove this file, it's required, one can use the api call directly.
 export async function fetchCoinMarketCapTokens() {
-  console.log("fetching cmc tokens")
   try {
-    const response = await fetch("/api/getCMCTokens")
+    const response = await fetch("/api/cmc/fetch-tokens")
 
     if (!response.ok) {
       throw new Error(`API error: ${response.statusText}`)

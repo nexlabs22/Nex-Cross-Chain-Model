@@ -4,9 +4,7 @@ import {
   fetchDailyPricesSplitted,
 } from "./index"
 import { DailyAsset } from "@/types/mongoDb"
-import { DailyAssetsClient } from "@/utils/MongoDbClient"
 import { AssetCategory } from "@/types/indexTypes"
-import { uploadToDailyAssets } from "@/utils/convertToMongo/parse"
 
 export interface DailyPrice {
   id: string
@@ -64,8 +62,6 @@ export async function GET() {
       })
     }
 
-    const { collection } = await DailyAssetsClient()
-
     const mongoDbData: DailyAsset[] = dailyPrices.map((item) => ({
       ticker: item.symbol.toUpperCase(),
       name: item.name.toLowerCase(),
@@ -82,11 +78,10 @@ export async function GET() {
       fullyDilutedValuation: item.fully_diluted_valuation,
     }))
 
-    await uploadToDailyAssets(mongoDbData, collection)
-
     return NextResponse.json({
       message: "Data uploaded successfully",
-      // data: dailyPrices.slice(0, 20),
+      data: mongoDbData.slice(0, 20),
+      dailyPrices: dailyPrices.slice(0, 20),
       status: 200,
     })
   } catch (error) {
