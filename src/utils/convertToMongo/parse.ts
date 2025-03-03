@@ -79,14 +79,15 @@ export const uploadToAssetOverview = async (
   for (const row of data) {
     if (!row) continue
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { ticker, tokenAddress, name } = row as any // Assuming date and ticker are common fields
+    const { ticker,name, ...rest } = row as any // Assuming date and ticker are common fields
+
     const bulkOperation = {
       updateOne: {
         filter: {
           ticker,
-          $or: [{ tokenAddress }, { name: name.toLowerCase() }],
+          $or: [{ tokenAddress:row.tokenAddress }, { name: name.toLowerCase() }],
         },
-        update: { $set: row },
+        update: { $set: rest },
         upsert: true, //if the document does not exist, it will be created using both the filter and the update fields
       },
     }
@@ -180,7 +181,7 @@ export const uploadToDailyAssets = async (
 
   for (const row of data) {
     if (!row) continue
-    const { date, ticker, name } = row
+    const { date, ticker, name, ...rest} = row
     // concatentate the data
     const bulkOperation = {
       updateOne: {
@@ -189,7 +190,7 @@ export const uploadToDailyAssets = async (
           ticker,
           name: name.toLowerCase(),
         },
-        update: { $set: row },
+        update: { $set: rest },
         upsert: true,
       },
     }

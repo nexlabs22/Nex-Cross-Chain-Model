@@ -20,7 +20,7 @@ async function getDocument(collection: Collection<DailyAsset>, token: IndexCrypt
         const newDoc: DailyAsset = {            
             date: today,
             ticker: token.symbol,
-            name: token.name,
+            name: token.name.toLowerCase(),
             tokenAddress: token.tokenAddresses?.Arbitrum?.Mainnet?.token?.address,
             type: AssetCategory.Index,
             timestamp: getTimestamp(),
@@ -54,7 +54,9 @@ export async function GET() {
         const dataToUpload: DailyAsset[] = [];
 
         for (const token of nexTokensArray.filter((token) => token.symbol === "ARBEI")) {
-            const todayDoc = await getDocument(collection, token);
+            const todayDocument = await getDocument(collection, token);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { _id, ...todayDoc} = todayDocument
 
             const storageContract = getContract({
                 address: token?.tokenAddresses?.Arbitrum?.Mainnet?.storage?.address as Address,

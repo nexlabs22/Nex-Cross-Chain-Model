@@ -7,6 +7,7 @@ import { DashboardProvider } from "@/providers/DashboardProvider"
 import { GlobalProvider } from "@/providers/GlobalProvider"
 import { TradeProvider } from "@/providers/TradeProvider"
 import { HistoryProvider } from "@/providers/HistoryProvider"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "NexLabs - Index your trades, your investment, your future",
@@ -23,18 +24,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body style={{ overflowX: "hidden", fontFamily: "Satoshi-Variable" }}>
-        <ThirdwebProvider>
-          <GlobalProvider>
-            <DashboardProvider>
-              <TradeProvider>
-                <HistoryProvider>
-                  <InitColorSchemeScript attribute="class" />
-                  <ClientThemeProvider>{children}</ClientThemeProvider>
-                </HistoryProvider>
-              </TradeProvider>
-            </DashboardProvider>
-          </GlobalProvider>
-        </ThirdwebProvider>
+        <Suspense fallback={null}>
+          <ThirdwebProvider>
+            <GlobalProvider>
+              <DashboardProvider>
+                <TradeProvider>
+                  <HistoryProvider>
+                    <InitColorSchemeScript attribute="class" />
+                    <ClientThemeProvider>{children}</ClientThemeProvider>
+                  </HistoryProvider>
+                </TradeProvider>
+              </DashboardProvider>
+            </GlobalProvider>
+          </ThirdwebProvider>
+        </Suspense>
       </body>
     </html>
   )
