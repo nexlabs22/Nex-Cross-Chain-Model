@@ -43,7 +43,7 @@ const theme = createTheme({
     elevations: darkElevations,
   },
   typography: {
-    fontFamily: 'Satoshi',
+    fontFamily: 'Satoshi-variable',
     h1: { fontWeight: 700, fontSize: '5rem' },
     h2: { fontWeight: 700, fontSize: '2.5rem' },
     h3: { fontWeight: 700, fontSize: '1.75rem' },
