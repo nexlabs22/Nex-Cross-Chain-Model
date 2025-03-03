@@ -1,8 +1,4 @@
 import { tokenAddresses, poolAddresses } from "@/constants/contractAddresses"
-import anfi from '@/assets/images/anfi.webp'
-import cr5 from '@/assets/images/cr5.webp'
-import mag7 from '@/assets/images/mag7.webp'
-import arb from '@/assets/images/arb.webp'
 import {
   AllowedTickers,
   IndexCryptoAsset,
@@ -15,22 +11,22 @@ import { FaEthereum } from "react-icons/fa"
 import { TbCurrencySolana } from "react-icons/tb"
 import { PoolAddressMap } from "@/types/indexTypes"
 
-import btcLogo from "@/assets/images/webpLogos/btc.webp"
-import xautLogo from "@/assets/images/webpLogos/xaut.webp"
-import ethLogo from "@/assets/images/webpLogos/eth.webp"
-import bnbLogo from "@/assets/images/webpLogos/bnb.webp"
-import xrpLogo from "@/assets/images/webpLogos/xrp.webp"
-import solLogo from "@/assets/images/webpLogos/solana.webp"
-import aaplLogo from "@/assets/images/webpLogos/apple.webp"
-import amznLogo from "@/assets/images/webpLogos/amazon.webp"
-import googlLogo from "@/assets/images/webpLogos/google.webp"
-import msftLogo from "@/assets/images/webpLogos/microsoft.webp"
-import tslaLogo from "@/assets/images/webpLogos/tesla.webp"
-import nvdaLogo from "@/assets/images/webpLogos/nvidia.webp"
-import metaLogo from "@/assets/images/webpLogos/meta.webp"
-import arbLogo from "@/assets/images/webpLogos/arb.webp"
-import aaveLogo from "@/assets/images/webpLogos/aave.webp"
-import clipperLogo from "@/assets/images/webpLogos/clipper.webp"
+import btcLogo from "@/assets/images/newLogos/btc.jpg"
+import xautLogo from "@/assets/images/newLogos/xaut.jpg"
+import ethLogo from "@/assets/images/newLogos/eth.jpg"
+import bnbLogo from "@/assets/images/newLogos/bnb.jpg"
+import xrpLogo from "@/assets/images/newLogos/xrp.jpg"
+import solLogo from "@/assets/images/newLogos/solana.jpg"
+import aaplLogo from "@/assets/images/newLogos/apple.jpg"
+import amznLogo from "@/assets/images/newLogos/amazon.jpg"
+import googlLogo from "@/assets/images/newLogos/google.jpg"
+import msftLogo from "@/assets/images/newLogos/microsoft.jpg"
+import tslaLogo from "@/assets/images/newLogos/tesla.jpg"
+import nvdaLogo from "@/assets/images/newLogos/nvidia.jpg"
+import metaLogo from "@/assets/images/newLogos/meta.jpg"
+import arbLogo from "@/assets/images/newLogos/arb.jpg"
+import aaveLogo from "@/assets/images/newLogos/aave.jpg"
+import clipperLogo from "@/assets/images/newLogos/clipper.jpg"
 
 import {
   AMAZONLogo,
@@ -48,6 +44,8 @@ import {
   XAUTLogo,
 } from "@/assets/icons/crypto/cryptoLogos"
 
+import { AnfiLogo, Crypto5Logo, Mag7Logo, ArbeiLogo } from "@/constants/indicesLogos"
+
 export const nexTokensArray: IndexCryptoAsset[] = [
   {
     symbol: "ANFI",
@@ -60,7 +58,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
       "The Anti-inflation Index provides investors with an innovative and resilient strategy, combining two assets to offer a hedge against inflationary pressures. Gold has traditionally been a reliable investment. Nevertheless, it's worth considering that Bitcoin, often referred to as 'digital gold,' has the potential to assume a prominent role in everyday life in the future.",
     tokenAddresses: tokenAddresses["ANFI"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.ANFI as PoolAddressMap,
-    logoString: anfi.src,
+    logoComponent: <AnfiLogo />,
     assets: [
       {
         symbol: "XAUT",
@@ -95,7 +93,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
       "CRYPTO5"
     ] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.CRYPTO5 as PoolAddressMap,
-    logoString: cr5.src,
+    logoComponent: <Crypto5Logo />,
     assets: [
       {
         symbol: "BTC",
@@ -156,7 +154,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
       "The Magnificent 7 (MG7) refers to the top seven tech-driven companies dominating the stock market: Meta Platforms, Amazon, Apple, Netflix, Alphabet, Microsoft, and Nvidia. These companies hold significant market power, robust pricing, and strong earnings potential. The term, coined in 2023 by Michael Hartnett of Bank of America, reflects their innovative capabilities and dominant positions. MG7 is the first tokenized stocks index of this type, offering new digital investment opportunities on blockchain platforms.",
     tokenAddresses: tokenAddresses["MAG7"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.MAG7 as PoolAddressMap,
-    logoString: mag7.src,
+    logoComponent: <Mag7Logo />,
     assets: [
       {
         symbol: "AAPL",
@@ -233,7 +231,7 @@ export const nexTokensArray: IndexCryptoAsset[] = [
       "Tracks the top defi protocols most used/native to Arbitrum and includes the ARB blockchain token itself. Uses a proprietary collection of alpha generating variables.",
     tokenAddresses: tokenAddresses["ARBEI"] as TokenAddressMap[AllowedTickers],
     poolAddresses: poolAddresses.ARBEI as PoolAddressMap,
-    logoString: arb.src,
+    logoComponent: <ArbeiLogo />,
     assets: [
       {
         symbol: "ARB",

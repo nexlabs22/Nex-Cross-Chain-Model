@@ -21,6 +21,7 @@ import { LuCopy } from "react-icons/lu"
 import copy from "copy-to-clipboard"
 import { useGlobal } from "@/providers/GlobalProvider"
 import { DailyAsset } from "@/types/mongoDb"
+import { GenericToast } from "../generic/genericToast"
 
 const IndicesTable = () => {
   const theme = useTheme()
@@ -30,6 +31,7 @@ const IndicesTable = () => {
   const { activeChainSetting } = useGlobal()
   const { chainName, network } = activeChainSetting
 
+  
 
   const mobileColumns: GridColDef[] = [
     {
@@ -49,13 +51,17 @@ const IndicesTable = () => {
             <Box
               width={40}
               height={40}
-              borderRadius={1}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center' 
+              borderRadius={'50%'}
               sx={{
-                backgroundImage: `url(${params.row.logoString})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                aspectRatio: 1
               }}
-            ></Box>
+            >
+              {params.row.logoComponent}
+            </Box>
             <Stack direction={"column"}>
               <Typography variant={"h6"}>{params.row.symbol}</Typography>
             </Stack>
@@ -109,7 +115,7 @@ const IndicesTable = () => {
             </Button>
           </Link>
           <Link
-            href={`catalogue/index-details?index=${params.row.symbol}`}
+            href={`catalogue/${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
             underline="none"
           >
@@ -147,15 +153,19 @@ const IndicesTable = () => {
         >
           <Stack direction={"row"} alignItems={"center"} gap={1}>
             <Box
-              width={40}
-              height={40}
-              borderRadius={1}
+              width={50}
+              height={50}
+              borderRadius={'50%'}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center'
               sx={{
-                backgroundImage: `url(${params.row.logoString})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                aspectRatio: 1
               }}
-            ></Box>
+            >
+              {params.row.logoComponent}
+            </Box>
             <Stack
               direction={"column"}
               alignItems={"start"}
@@ -225,6 +235,10 @@ const IndicesTable = () => {
                 params.row.tokenAddresses?.Ethereum?.Sepolia?.token
                   ?.address as Address
               )
+              GenericToast({
+                type: "success",
+                message: "Address copied to clipboard",
+              })
             }}
           >
             <LuCopy size={16} color={theme.palette.info.main} />
@@ -261,7 +275,7 @@ const IndicesTable = () => {
             </Button>
           </Link>
           <Link
-            href={`catalogue/index-details?index=${params.row.symbol}`}
+            href={`catalogue/${params.row.symbol}`}
             style={{ textDecoration: "none", width: "100%", cursor: "pointer" }}
             underline="none"
           >

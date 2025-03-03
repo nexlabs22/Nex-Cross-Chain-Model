@@ -14,6 +14,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <Sidebar />
     <Box
       marginLeft={{xs:0, lg:"5vw"}}
+      paddingRight={{xs:0, xl:"1.5vw"}}
       flexGrow={1}
       overflow="auto"
     >

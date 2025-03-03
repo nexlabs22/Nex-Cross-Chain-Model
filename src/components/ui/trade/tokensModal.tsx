@@ -73,7 +73,22 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
         disabled={isIndexCryptoAsset(token) && token.symbol.toLowerCase() !== 'arbei'}
       >
         <ListItemAvatar>
-          {token.logoString ? (
+          {token.logoComponent ? (
+            <Box
+              width={40}
+              height={40}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center'
+              borderRadius={'50%'}
+              sx={{
+                aspectRatio: 1
+              }}
+            >
+              {token.logoComponent}
+            </Box>
+          ) : token.logoString ? (
             <Avatar
               alt={token.symbol}
               src={token.logoString}
@@ -119,7 +134,7 @@ export default function TokensModal({
     const tokensContent = [
       ...(showNexProducts ? nexTokens : []),
       ...(showTokens ? sepoliaTokens.filter(token => token.symbol !== 'USDT') : [])
-    ];    
+    ];
     setTokens(tokensContent);
     setFilteredTokens(tokensContent);
     setVisibleCount(tokensContent.length)
@@ -147,16 +162,16 @@ export default function TokensModal({
     }
   };
 
-  function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset){
+  function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset) {
     const sepoliaNetwork = allowedChainNetworks[0];
-    const tokensNotOnMainnet = nexTokens.filter((token)=> { return token.symbol.toLowerCase() !== 'arbei' }).map((token)=> {return token.symbol})
-    if(tokensNotOnMainnet.includes(token.symbol)){
+    const tokensNotOnMainnet = nexTokens.filter((token) => { return token.symbol.toLowerCase() !== 'arbei' }).map((token) => { return token.symbol })
+    if (tokensNotOnMainnet.includes(token.symbol)) {
       console.warn("Arbitrum is only allowed when index=arbei. Reverting to default.");
       switchChain(sepoliaNetwork.chain)
       setActiveChainSetting(sepoliaNetwork)
     }
   }
-  
+
 
   const handleAutocompleteChange = (
     event: React.SyntheticEvent,
