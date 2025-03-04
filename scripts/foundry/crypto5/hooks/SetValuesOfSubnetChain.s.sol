@@ -13,11 +13,11 @@ contract CombinedSetCrossChainValues is Script, Test {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // string memory targetChain = "arbitrum_sepolia";
-        string memory targetChain = "bsc_mainnet";
+        string memory targetChain = "arbitrum_sepolia";
+        // string memory targetChain = "bsc_mainnet";
 
         _setCrossChainFactoryValues(targetChain);
-        _setVaultValues(targetChain);
+        // _setVaultValues(targetChain);
 
         vm.stopBroadcast();
 
@@ -38,7 +38,7 @@ contract CombinedSetCrossChainValues is Script, Test {
 
         if (keccak256(bytes(targetChain)) == keccak256("arbitrum_sepolia")) {
             crossChainFactoryProxy = vm.envAddress("CR5_ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
-            priceOracle = vm.envAddress("ARBITRUM_SEPOLIA_PRICE_ORACLE");
+            priceOracle = vm.envAddress("CR5_ARBITRUM_SEPOLIA_PRICE_ORACLE");
             chainSelector = uint64(vm.envUint("SEPOLIA_CHAIN_SELECTOR"));
             crossChainToken = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_TOKEN_ADDRESS");
             weth = vm.envAddress("ARBITRUM_SEPOLIA_WETH_ADDRESS");
@@ -75,6 +75,7 @@ contract CombinedSetCrossChainValues is Script, Test {
         CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setCrossChainToken(
             chainSelector, crossChainToken, path, bnbFeesData
         );
+
         // address[] memory path = new address[](2);
         // path[0] = weth;
         // path[1] = crossChainToken;
@@ -82,6 +83,7 @@ contract CombinedSetCrossChainValues is Script, Test {
         // CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setCrossChainToken(
         //     chainSelector, crossChainToken, path, feesData
         // );
+
         CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setPriceOracle(priceOracle);
         CrossChainIndexFactoryStorage(payable(crossChainIndexFactoryStorageProxy)).setCrossChainFactory(
             crossChainFactoryProxy

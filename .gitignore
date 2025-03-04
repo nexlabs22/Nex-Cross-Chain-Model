@@ -6,6 +6,7 @@ broadcast/
 mainnetDeployments.md
 mainnetDeploymentForCR5.md
 testnetDeploymentforANFI.md
+testnetDeploymentForCR5.md
 
 # Hardhat files
 /cache

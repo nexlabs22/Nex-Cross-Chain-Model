@@ -45,22 +45,22 @@ contract CombinedSetValuesScript is Script, Test {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        // string memory targetChain = "sepolia";
-        string memory targetChain = "arbitrum_mainnet";
+        string memory targetChain = "sepolia";
+        // string memory targetChain = "arbitrum_mainnet";
 
         // 1. setIndexFactoryStorageValues
-        // _setIndexFactoryStorageValues(targetChain);
+        _setIndexFactoryStorageValues(targetChain);
 
         // 2. setIndexTokenValues
-        // _setIndexTokenValues(targetChain);
+        _setIndexTokenValues(targetChain);
 
         // 3. setMockFillAssetsList
         _setMockFillAssetsList(targetChain);
 
         // 4. setFunctionsOracle
-        // _setFunctionsOracle(targetChain);
+        _setFunctionsOracle(targetChain);
 
-        // _setVault(targetChain);
+        _setVault(targetChain);
 
         vm.stopBroadcast();
 
@@ -126,14 +126,21 @@ contract CombinedSetValuesScript is Script, Test {
         arbitrumFeesData[0] = 100;
         arbitrumFeesData[1] = 500;
 
-        address[] memory path = new address[](3);
+        address[] memory path = new address[](2);
         path[0] = data.weth;
-        path[1] = wbtcAddress;
-        path[2] = data.mainCrossChainTokenAddress;
+        path[1] = data.mainCrossChainTokenAddress;
+
+        // address[] memory path = new address[](3);
+        // path[0] = data.weth;
+        // path[1] = wbtcAddress;
+        // path[2] = data.mainCrossChainTokenAddress;
 
         IndexFactoryStorage(data.indexFactoryStorageProxy).setCrossChainToken(
-            data.otherChainSelector, data.mainCrossChainTokenAddress, path, arbitrumFeesData
+            data.otherChainSelector, data.mainCrossChainTokenAddress, path, sepoliaFeesData
         );
+        // IndexFactoryStorage(data.indexFactoryStorageProxy).setCrossChainToken(
+        //     data.otherChainSelector, data.mainCrossChainTokenAddress, path, arbitrumFeesData
+        // );
 
         IndexFactoryStorage(data.indexFactoryStorageProxy).setCrossChainFactory(
             data.crossChainFactoryProxy, data.otherChainSelector
