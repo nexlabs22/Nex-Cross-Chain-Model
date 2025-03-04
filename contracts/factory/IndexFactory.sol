@@ -25,7 +25,7 @@ import "../interfaces/IWETH.sol";
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
 
-contract IndexFactory is Initializable, ProposableOwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract IndexFactory is Initializable, ProposableOwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
     // using MessageSender for *;
 
     struct IssuanceSendLocalVars {
@@ -69,6 +69,20 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         uint256 outputAmount,
         uint256 time
     );
+
+    /**
+     * @dev Pauses the contract.
+     */
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /**
+     * @dev Unpauses the contract.
+     */
+    function unpause() external onlyOwner {
+        _unpause();
+    }
 
     /**
      * @dev Initializes the contract with the given parameters.
@@ -159,7 +173,7 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         uint24[] memory _tokenInFees,
         uint256 _inputAmount,
         uint256 _crossChainFee
-    ) public {
+    ) public whenNotPaused {
         // Validate input parameters
         require(_tokenIn != address(0), "Invalid input token address");
         require(_inputAmount > 0, "Input amount must be greater than zero");
@@ -192,7 +206,7 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
      * @param _inputAmount The amount of input token.
      * @param _crossChainFee The cross-chain fee.
      */
-    function issuanceIndexTokensWithEth(uint256 _inputAmount, uint256 _crossChainFee) external payable {
+    function issuanceIndexTokensWithEth(uint256 _inputAmount, uint256 _crossChainFee) external whenNotPaused payable {
         // Validate input parameters
         require(_inputAmount > 0, "Input amount must be greater than zero");
         require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
@@ -314,7 +328,7 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         address _tokenOut,
         address[] memory _tokenOutPath,
         uint24[] memory _tokenOutFees
-    ) public {
+    ) public whenNotPaused {
         // Validate input parameters
         require(amountIn > 0, "Amount must be greater than zero");
         require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");

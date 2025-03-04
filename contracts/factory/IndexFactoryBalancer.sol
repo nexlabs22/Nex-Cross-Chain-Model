@@ -22,7 +22,8 @@ import "./BalancerSender.sol";
 /// @dev This contract uses an upgradeable pattern
 contract IndexFactoryBalancer is
     Initializable,
-    ProposableOwnableUpgradeable
+    ProposableOwnableUpgradeable,
+    PausableUpgradeable
 {
 
     IndexFactoryStorage public factoryStorage;
@@ -52,7 +53,19 @@ contract IndexFactoryBalancer is
     }
 
     
+    /**
+     * @dev Pauses the contract.
+     */
+    function pause() external onlyOwner {
+        _pause();
+    }
 
+    /**
+     * @dev Unpauses the contract.
+     */
+    function unpause() external onlyOwner {
+        _unpause();
+    }
 
 
     /**
@@ -183,7 +196,7 @@ contract IndexFactoryBalancer is
     /**
      * @dev Requests values for the portfolio.
      */
-    function askValues() public onlyOwner {
+    function askValues() public whenNotPaused onlyOwner {
         factoryStorage.increaseUpdatePortfolioNonce();
 
         uint totalChains = functionsOracle.currentChainSelectorsCount();
@@ -209,7 +222,7 @@ contract IndexFactoryBalancer is
     /**
      * @dev Performs the first reweight action.
      */
-    function firstReweightAction() public onlyOwner {
+    function firstReweightAction() public whenNotPaused onlyOwner {
         uint nonce = factoryStorage.updatePortfolioNonce();
         uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
@@ -460,7 +473,7 @@ contract IndexFactoryBalancer is
     /**
      * @dev Performs the second reweight action.
      */
-    function secondReweightAction() public onlyOwner {
+    function secondReweightAction() public whenNotPaused onlyOwner {
         uint nonce = factoryStorage.updatePortfolioNonce();
         uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
