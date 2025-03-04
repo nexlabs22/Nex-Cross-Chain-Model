@@ -28,8 +28,8 @@ const NetworkSwitcher = () => {
       console.warn("Unsupported chain detected. Reverting to default.");
       switchChain(defaultChain);
       return;
-    } else if (chain.name === "Arbitrum One" && index?.toLowerCase() !== "arbei") {
-      console.warn("Arbitrum is only allowed when index=arbei. Reverting to default.");
+    } else if (chain.name === "Arbitrum One" && index?.toLowerCase() === "mag7") {
+      console.warn("Mag7 is not yet on Mainnet. Reverting to default.");
       switchChain(defaultChain);
       return;
     } else {

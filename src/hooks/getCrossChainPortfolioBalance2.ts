@@ -3,20 +3,19 @@ import {
   chainSelectorAddresses,
   tokenAddresses,
 } from "@/constants/contractAddresses"
-import { Address, AllowedTickers, CryptoAsset } from "@/types/indexTypes"
+import { Address, AllowedTickers, CryptoAsset, NexIndices } from "@/types/indexTypes"
 import { useGlobal } from "@/providers/GlobalProvider"
 import { getContractByNetwork } from "./getContract"
 import { getContract, readContract } from "thirdweb"
-import { arbitrumSepolia } from "thirdweb/chains"
 import { client } from "@/utils/thirdWebClient"
 import { nexTokensArray } from "@/constants/indices"
+import { sideChainMap } from "@/utils/mappings"
 
 
 export function GetCrossChainPortfolioBalance2(
     swapFromToken: CryptoAsset,
   swapToToken: CryptoAsset
 ) {
-  console.log('Inside GetCrossChainPortfolioBalance----->')
   const {activeChainSetting: {chainName, network}} = useGlobal()
   const [portfolioValue, setPortfolioValue] = useState<number>()
   const [portfolioValue2, setPortfolioValue2] = useState<number>()
@@ -34,40 +33,40 @@ const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
 
   console.log(activeTicker)
     
+    const sideChain = activeTicker ? sideChainMap[chainName]?.[network]?.[activeTicker as NexIndices]: null
     const functionsOracleContract = activeTicker ? getContractByNetwork(activeTicker as AllowedTickers, 'functions_oracle', chainName, network) : null
     const storageContract = activeTicker ? getContractByNetwork(activeTicker as AllowedTickers, 'storage', chainName, network): null
-    const arbitrumSepoliaStorageContract = activeTicker ? getContractByNetwork(activeTicker as AllowedTickers, 'storage', 'Arbitrum', 'Sepolia'): null
-    console.log({functionsOracleContract})
-    console.log({storageContract})
-    console.log({arbitrumSepoliaStorageContract})
+    const sideChainStorageContract = activeTicker && sideChain ? getContractByNetwork(activeTicker as AllowedTickers, 'storage', sideChain?.chainName, sideChain?.network): null
 
-    if (!functionsOracleContract || !storageContract || !arbitrumSepoliaStorageContract) {
+
+    if (!functionsOracleContract || !storageContract || !sideChainStorageContract) {
       console.log('contracts not found, returning!')
       return
+    }
+
+    if( !sideChain){
+      console.log('No side chain found, retunring')
+      return 
     }
 
     let totalPortfolioBalance: number = 0
     let mainChainPortfolioBalance: number = 0
     let crossChainPortfolioBalance: number = 0
 
-    const sepoliaPortfolioBalance = await readContract({
+    const portfolioBalance = await readContract({
       contract: storageContract,      
       method: "function getPortfolioBalance() returns(uint256)",
       params: []
     })
-    console.log({sepoliaPortfolioBalance})
     
-    totalPortfolioBalance += Number(sepoliaPortfolioBalance)
-    mainChainPortfolioBalance += Number(sepoliaPortfolioBalance)
-
-    console.log({totalPortfolioBalance})
+    totalPortfolioBalance += Number(portfolioBalance)
+    mainChainPortfolioBalance += Number(portfolioBalance)
 
 		const totalCurrentList = await readContract({
 			contract: functionsOracleContract,
 			method: 'function totalCurrentList() returns(uint256)',
 			params: []
 		})
-		console.log({totalCurrentList})
     
     for (let i = 0; i < Number(totalCurrentList); i++) {
       const tokenAddress = await readContract({
@@ -75,39 +74,35 @@ const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
 				method: 'function currentList(uint256) returns(address)',
 				params: [BigInt(i)]
 			})
-      console.log({tokenAddress})
       
 			const tokenChainSelector = await readContract({
         contract: functionsOracleContract,
 				method: 'function tokenChainSelector(address) returns(uint64)',
 				params: [tokenAddress as Address]
-			})
-      console.log({tokenChainSelector})
+			})      
       
-      if (Number(tokenChainSelector) == Number(chainSelectorAddresses.Arbitrum?.Sepolia)) {
-        const arbitrumSepoliaTokenContract = getContract({
+      if (Number(tokenChainSelector) == Number(chainSelectorAddresses?.[sideChain.chainName]?.[sideChain.network])) {
+        const sideChainTokenContract = getContract({
           address: tokenAddress as Address,
           client,
-          chain: arbitrumSepolia,
+          chain: sideChain.chain,
         })
         const tokenBalance = await readContract({
-          contract: arbitrumSepoliaTokenContract,
+          contract: sideChainTokenContract,
           method: "function balanceOf(address) returns(uint256)",
-          params: [tokenAddresses?.[activeTicker as AllowedTickers]?.Arbitrum?.Sepolia?.vault?.address as Address],
-        })
-        console.log({tokenBalance})
+          params: [tokenAddresses?.[activeTicker as AllowedTickers]?.[sideChain.chainName]?.[sideChain.network]?.vault?.address as Address],
+        })        
         
         const tokenValue = await readContract({
-          contract: arbitrumSepoliaStorageContract,
+          contract: sideChainStorageContract,
           method:
           "function getAmountOut(address[], uint24[], uint256) returns (uint256)",
           params: [
-            [tokenAddress as Address, tokenAddresses.WETH?.Arbitrum?.Sepolia?.token?.address as Address],
+            [tokenAddress as Address, tokenAddresses.WETH?.[sideChain.chainName]?.[sideChain.network]?.token?.address as Address],
             [3000],
             tokenBalance
           ],
-        })
-        console.log({tokenValue})
+        })        
 
         totalPortfolioBalance += Number(tokenValue)
         crossChainPortfolioBalance += Number(tokenValue)
@@ -115,18 +110,17 @@ const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
     }
 
     const ccipTokenValue = await readContract({
-        contract: arbitrumSepoliaStorageContract,
+        contract: sideChainStorageContract,
         method: "function getAmountOut(address[], uint24[], uint256) returns (uint256)",
         params: [
             [
-            tokenAddresses.WETH?.Arbitrum?.Sepolia?.token?.address as Address,
-            tokenAddresses?.[activeTicker as AllowedTickers]?.Arbitrum?.Sepolia?.ccip?.address as Address 
+            tokenAddresses.WETH?.[sideChain.chainName]?.[sideChain.network]?.token?.address as Address,
+            tokenAddresses?.[activeTicker as AllowedTickers]?.[sideChain.chainName]?.[sideChain.network]?.ccip?.address as Address 
             ],
             [3000],
             BigInt((crossChainPortfolioBalance).toFixed(0))
         ],
-    })					  
-    console.log("ccipTokenValue: ",{ccipTokenValue})
+    })				  
     
     const crossChainRealPortfolioBalance = await readContract({
         contract: storageContract,
@@ -134,8 +128,8 @@ const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
               "function getAmountOut(address[], uint24[], uint256) returns (uint256)",
               params: [
                   [
-                    tokenAddresses?.ANFI?.Ethereum?.Sepolia?.ccip?.address as Address,
-                    tokenAddresses.WETH?.Ethereum?.Sepolia?.token?.address as Address
+                    tokenAddresses?.[activeTicker as AllowedTickers]?.[chainName]?.[network]?.ccip?.address as Address,
+                    tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address
                 ],
                   [3000],
                   ccipTokenValue
@@ -162,3 +156,14 @@ const activeTicker = [swapFromToken.symbol, swapToToken.symbol].filter(
     reload: getPortfolioValue,
   }
 }
+
+//Testnet
+//Mainchain - Ethereum Sepolia - ANFI, CR5
+//Second chain - Arbitrum Sepolia - ANFI , CR5
+
+//Mainnet
+// Mainchain - Arbitrum - ANFI, CR5
+// Sidechain - Ethereum Mainnet - ANFI
+// Sidechain - Binance Mainnet - CR5
+
+

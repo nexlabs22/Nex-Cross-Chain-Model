@@ -2,6 +2,7 @@ import {
   TokenAddressMap,
   PoolAddressMap,
   ChainSelectorMap,
+  FeeMap,
 } from "@/types/indexTypes"
 
 export const tokenAddresses: TokenAddressMap = {
@@ -23,6 +24,11 @@ export const tokenAddresses: TokenAddressMap = {
         token: { address: "0xE591bf0A0CF924A0674d7792db046B23CEbF5f34" },
       },
     },
+    Binance:{
+      Mainnet: {
+        token: { address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"}
+      }
+    }
   },
   USDT: {
     Ethereum: {
@@ -68,6 +74,7 @@ export const tokenAddresses: TokenAddressMap = {
         vault: { address: "0x95e9FB1be73AAED5DaEfa504A77E59F5174552b3" },
         factory: { address: "0xE2fBE16888dED5616934E603f6f03CFD8486140b" },
         storage: { address: "0xE3Aa4bFBe8FEfD04C1bB3d01Cedf683a113e13d5" },
+        ccip: { address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
       },
       Sepolia: {
         token: { address: "0xD01eA42518fcCf1d6D1A12ceD4fEBCE6bc19d4d7" },
@@ -82,7 +89,8 @@ export const tokenAddresses: TokenAddressMap = {
         token: { address: "0x41Fecfb0E330E5FE13452B80049127991248345C" },
         factory: { address: "0x6a41A7431556B5F14a3c0872175302B7A5B4D110" },
         storage: { address: "0x8Dcb7aAe8486dEC33729a4bf15906646693af191" },
-        functions_oracle: { address: "0x21B15A5c6829d62ca93aa1c8db837D5A7A0e7187"}
+        functions_oracle: { address: "0x21B15A5c6829d62ca93aa1c8db837D5A7A0e7187"},
+        ccip: { address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"}
       },
       Sepolia: {
         vault: { address: "0x70195bd938bb6F558D8d688D4A45335e073d20Af" },
@@ -106,7 +114,8 @@ export const tokenAddresses: TokenAddressMap = {
       Mainnet:{
         vault: {address: "0x963Da1C59Ed32a36451CeCA761A3e0f5f9C333d9"},
         factory: {address: "0xFE501505DA469ff0134D9e3d9dA27674A92c3234"},
-        storage: {address: "0x8e977fE53f4cDDBDdB69664027253b7d7f362971"}
+        storage: {address: "0x8e977fE53f4cDDBDdB69664027253b7d7f362971"},
+        ccip: {address: "0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7"}
       }
     },
     Arbitrum: {
@@ -114,6 +123,8 @@ export const tokenAddresses: TokenAddressMap = {
         token: { address: "0xdA184FC12cCe81dF499561E88f3d9a06cb229dfC" },
         factory: { address: "0xA00be13EbfaCa5ADB3780096F88dEA42d6a021c8" },
         storage: { address: "0x3CE7E36B62e2F26E4427dB7112d4E4aE9D3CF5C4" },
+        functions_oracle: {address: "0x873798d59FBA2d0B0C1Cd049740c7b40fb5D84CF"},
+        ccip: {address: "0x92f9239D8950c2088Aeed3d01A4F7229cA72d93F"}
       },
       Sepolia: {
         factory: { address: "0x66531Bc6205573F962aB4d0F26Eb75C8bC8Aea1B" },
@@ -121,7 +132,7 @@ export const tokenAddresses: TokenAddressMap = {
         storage: { address: "0x54D331905CD37Eb2e47F0dE3DD24A5cC869853d5" },
         ccip: {address: "0xA8C0c11bf64AF62CDCA6f93D3769B88BdD7cb93D"}
       },
-    },
+    }
   },
   MAG7: {
     Ethereum: {
@@ -230,9 +241,34 @@ export const factoryAddresses = {
 export const chainSelectorAddresses: ChainSelectorMap = {
   Ethereum: {    
     Sepolia: "16015286601757825753",
+    Mainnet: "5009297550715157269",
   },
   Arbitrum: {
     Sepolia: "3478487238524512106",
     Mainnet: "4949039107694359620",
   },
+  Binance: {
+    Mainnet: "11344663589394136015"
+  }
 }
+
+const defaultFees = {
+  CRYPTO5: 3000,
+  ANFI: 3000,
+  MAG7: 3000,
+  ARBEI: 3000,
+};
+
+export const feeMap: FeeMap = {
+  Ethereum: {
+    Sepolia: { ...defaultFees },
+    Mainnet: { ...defaultFees },
+  },
+  Arbitrum: {
+    Sepolia: { ...defaultFees },
+    Mainnet: { 
+      ...defaultFees, 
+      CRYPTO5: 100,
+    },
+  },
+};

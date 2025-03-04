@@ -55,6 +55,19 @@ export type ChainSelectorMap = {
   }
 }
 
+export type NestedMap<T> = {
+  [chain in Chains]?: {
+    [network in Networks]?: {
+      [index in NexIndices]?: T;
+    };
+  };
+};
+
+
+export type SideChainMap = NestedMap<ChainNetwork>;
+export type FeeMap = NestedMap<number>;
+
+
 export type TokenAddressMap = {
   [ticker in AllowedTickers]?: {
     [chain in Chains]?: {

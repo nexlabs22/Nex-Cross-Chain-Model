@@ -38,10 +38,10 @@ import {
   weiToNum,
 } from "@/utils/conversionFunctions"
 import {GetContract} from "@/hooks/getContract"
-import { tokenAddresses } from "@/constants/contractAddresses"
+import { feeMap, tokenAddresses } from "@/constants/contractAddresses"
 import { useReadContract, useSendTransaction } from "thirdweb/react"
 import { allowance, balanceOf, totalSupply } from "thirdweb/extensions/erc20"
-import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
+// import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
 import { GetCrossChainPortfolioBalance2 } from "@/hooks/getCrossChainPortfolioBalance2"
 import { GetDefiPortfolioBalance } from "@/hooks/getDefiPortfolioBalance"
 import {
@@ -737,12 +737,12 @@ export default function Swap({ side }: SwapProps) {
                 "function getAmountOut(address[], uint24[], uint256) returns (uint256)",
               params: [
                 [swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address],
-                [3000],
+                [feeMap?.[chainName]?.[network]?.[activeSymbol as NexIndices] || 3000],
                 BigInt(numToWei(firstInputValue, getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token))), // Convert ethAmountOut to bigint                  
               ],
             })
 
-            inputValue = Number(inputEthValue)      
+            inputValue = Number(inputEthValue)
                  
           }
           if (isIndexCryptoAsset(swapToToken) && swapToToken?.smartContractType === "stocks") {
@@ -771,14 +771,11 @@ export default function Swap({ side }: SwapProps) {
           } else if (firstInputValue) {
             let newPortfolioValue: number = 0
             if (isIndexCryptoAsset(swapToToken) && swapToToken?.smartContractType === "crosschain") {
-              console.log('---->',{inputValue})
               const portfolioValue  = await getNewCrossChainPortfolioBalance(Number(currentPortfolioValue), Number(inputValue), chainName, network, swapToToken.symbol)
               newPortfolioValue = portfolioValue
             } else {
               newPortfolioValue = Number(currentPortfolioValue) + Number(inputValue)
             }
-
-            console.log({currentTotalSupply, newPortfolioValue, currentPortfolioValue})
 
             const newTotalSupply = (currentTotalSupply * newPortfolioValue) / Number(currentPortfolioValue)
             const amountToMint = Math.abs(newTotalSupply - currentTotalSupply)
@@ -804,7 +801,8 @@ export default function Swap({ side }: SwapProps) {
     network,
     currentPortfolioValue,
     rpcClient,
-    indexTokenStorageContract
+    indexTokenStorageContract,
+    activeSymbol
   ])
 
   /**
@@ -886,19 +884,19 @@ export default function Swap({ side }: SwapProps) {
           const ethAmountOut = (Number(currentPortfolioValue2) - newPortfolioValue) * 0.999
           if (isWETH(swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address, chainName, network)) {
             outputValue = ethAmountOut
-          } else {
+          } else {            
             const outPutTokenValue = await readContract({
               contract: indexTokenStorageContract,
               method:
-                "function getAmountOut(address[], uint24[], uint256 ) returns (uint256)",
+              "function getAmountOut(address[], uint24[], uint256 ) returns (uint256)",
               params: [
                 [tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address, swapToToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address],
-                [3000],
+                [feeMap?.[chainName]?.[network]?.[activeSymbol as NexIndices] || 3000],
                 BigInt(Math.floor(ethAmountOut)), // Convert ethAmountOut to bigint                  
               ],
             })
-
-            outputValue = Number(outPutTokenValue)
+            
+            outputValue = Number(outPutTokenValue)            
           }
           if (isIndexCryptoAsset(swapFromToken) && swapFromToken?.smartContractType === "stocks") {
             const outAmount = await readContract({
