@@ -23,6 +23,8 @@ const GenericTable = ({ rows, columns, rowHeight, autoSizeOptions }: GenericTabl
           rowSelection={false}
           resizeThrottleMs={100}
           isRowSelectable={() => false}
+          disableColumnSelector
+
           disableRowSelectionOnClick
           sx={{
             width: '100%',
@@ -52,6 +54,14 @@ const GenericTable = ({ rows, columns, rowHeight, autoSizeOptions }: GenericTabl
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               maxWidth: '100%',
+              border: 'none',
+              outline: 'none'
+            },
+            '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
+              outline: 'none',
+            },
+            '& .Mui-selected': {
+              outline: 'none',
             },
             '& .MuiDataGrid-footerContainer': {
               display: 'none',

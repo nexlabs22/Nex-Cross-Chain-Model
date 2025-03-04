@@ -73,7 +73,22 @@ function renderRow(props: ListChildComponentProps<TokenListData>) {
         disabled={isIndexCryptoAsset(token) && token.symbol.toLowerCase() === 'mag7'}
       >
         <ListItemAvatar>
-          {token.logoString ? (
+          {token.logoComponent ? (
+            <Box
+              width={40}
+              height={40}
+              overflow='hidden'
+              display='flex'
+              alignItems='center'
+              justifyContent='center'
+              borderRadius={'50%'}
+              sx={{
+                aspectRatio: 1
+              }}
+            >
+              {token.logoComponent}
+            </Box>
+          ) : token.logoString ? (
             <Avatar
               alt={token.symbol}
               src={token.logoString}
@@ -119,7 +134,7 @@ export default function TokensModal({
     const tokensContent = [
       ...(showNexProducts ? nexTokens : []),
       ...(showTokens ? sepoliaTokens.filter(token => token.symbol !== 'USDT') : [])
-    ];    
+    ];
     setTokens(tokensContent);
     setFilteredTokens(tokensContent);
     setVisibleCount(tokensContent.length)
@@ -147,7 +162,7 @@ export default function TokensModal({
     }
   };
 
-  function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset){
+  function networkCheckpoint(token: CryptoAsset | IndexCryptoAsset) {
     const sepoliaNetwork = allowedChainNetworks[0];
     const tokensNotOnMainnet = nexTokens.filter((token)=> { return token.symbol.toLowerCase() === 'mag7' }).map((token)=> {return token.symbol})
     if(tokensNotOnMainnet.includes(token.symbol)){
@@ -156,7 +171,7 @@ export default function TokensModal({
       setActiveChainSetting(sepoliaNetwork)
     }
   }
-  
+
 
   const handleAutocompleteChange = (
     event: React.SyntheticEvent,
