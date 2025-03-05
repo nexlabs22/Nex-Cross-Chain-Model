@@ -44,6 +44,8 @@ import { feeMap, tokenAddresses } from "@/constants/contractAddresses"
 import { useReadContract, useSendTransaction } from "thirdweb/react"
 import { allowance, balanceOf, totalSupply } from "thirdweb/extensions/erc20"
 // import { GetCrossChainPortfolioBalance } from "@/hooks/getCrossChainPortfolioBalance"
+// import { GetCr5Price } from "@/hooks/getCr5Price"
+import { GetANFIPrice } from "@/hooks/getANFIPrice"
 import { GetCrossChainPortfolioBalance2 } from "@/hooks/getCrossChainPortfolioBalance2"
 import { GetDefiPortfolioBalance } from "@/hooks/getDefiPortfolioBalance"
 import {
@@ -318,8 +320,14 @@ export default function Swap({ side }: SwapProps) {
 
   // const crossChainPortfolioValue = { data: 0 }
   // const crossChainPortfolioValue = GetCrossChainPortfolioBalance(swapFromToken, swapToToken)
+  // const cr5Price = GetCr5Price();
+  const anfiPrice = GetANFIPrice();
   const crossChainPortfolioValue = GetCrossChainPortfolioBalance2(swapFromToken, swapToToken)
   const defiPortfolioValue = GetDefiPortfolioBalance(swapFromToken, swapToToken)
+
+  useEffect(() => {
+    console.log("PRICE", anfiPrice.price)
+  }, [anfiPrice.price])
 
   async function approve() {
     if (
@@ -477,7 +485,8 @@ export default function Swap({ side }: SwapProps) {
               swapFromToken.tokenAddresses?.[chainName]?.[network]?.token?.address as Address,
               tokenAddresses.WETH?.[chainName]?.[network]?.token?.address as Address
             ],
-            [3000],
+            // [3000],
+            [feeMap?.[chainName]?.[network]?.[activeSymbol as NexIndices] || 3000],
             BigInt(numToWei((firstInputValue).toString(), getDecimals(swapFromToken.tokenAddresses?.[chainName]?.[network]?.token)).toString()),
             BigInt(0)
           ]
