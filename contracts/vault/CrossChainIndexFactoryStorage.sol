@@ -72,6 +72,9 @@ contract CrossChainIndexFactoryStorage is
     mapping(uint256 => bytes32) public redemptionMessageIdByNonce;
     mapping(uint256 => bytes32) public issuanceMessageIdByNonce;
 
+    //slipage tolerance
+    uint256 public slippageTolerance; // 2000/10000 = 20%
+
     modifier onlyFactory() {
         require(msg.sender == crossChainFactory, "Only factory can call this function");
         _;
@@ -116,6 +119,7 @@ contract CrossChainIndexFactoryStorage is
         i_link = _chainlinkToken;
         i_maxTokensLength = 5;
 
+        slippageTolerance = 2000; // 20%
         //set addresses
         weth = IWETH(_weth);
         swapRouterV3 = ISwapRouter(_swapRouterV3);
@@ -124,6 +128,11 @@ contract CrossChainIndexFactoryStorage is
         // factoryV2 = IUniswapV2Factory(_factoryV2);
         //oracle
         toUsdPriceFeed = AggregatorV3Interface(_toUsdPriceFeed);
+    }
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
     }
 
     function _toWei(int256 _amount, uint8 _amountDecimals, uint8 _chainDecimals) private pure returns (int256) {
@@ -135,7 +144,17 @@ contract CrossChainIndexFactoryStorage is
     }
 
     function priceInWei() public view returns (uint256) {
-        (, int256 price,,,) = toUsdPriceFeed.latestRoundData();
+        // (, int256 price,,,) = toUsdPriceFeed.latestRoundData();
+        // uint8 priceFeedDecimals = toUsdPriceFeed.decimals();
+        // price = _toWei(price, priceFeedDecimals, 18);
+        // return uint256(price);
+
+        (uint80 roundId,int price,,uint256 _updatedAt,) = toUsdPriceFeed.latestRoundData();
+        require(roundId != 0, "invalid round id");
+        require(_updatedAt != 0 && _updatedAt <= block.timestamp, "invalid updated time");
+        require(price > 0, "invalid price");
+        require(block.timestamp - _updatedAt < 1 days, "invalid updated time");
+
         uint8 priceFeedDecimals = toUsdPriceFeed.decimals();
         price = _toWei(price, priceFeedDecimals, 18);
         return uint256(price);
@@ -143,6 +162,10 @@ contract CrossChainIndexFactoryStorage is
 
     function convertEthToUsd(uint256 _ethAmount) public view returns (uint256) {
         return (_ethAmount * priceInWei()) / 1e18;
+    }
+
+    function setSlippageTolerance(uint256 _slippageTolerance) public onlyOwner {
+        slippageTolerance = _slippageTolerance;
     }
 
     function setCrossChainFactory(address _factory) public onlyOwner {
@@ -218,6 +241,15 @@ contract CrossChainIndexFactoryStorage is
             IERC20(_tokenAddress).balanceOf(address(vault))
         );
         return tokenValue;
+    }
+
+    /**
+     * @dev Gets the minimum amount out.
+     * @return The minimum amount out.
+     */
+    function getMinAmountOut(address[] memory path, uint24[] memory fees, uint256 amountIn) public view returns (uint256) {
+        uint amountOut = getAmountOut(path, fees, amountIn);
+        return (amountOut * (10000 - slippageTolerance)) / 10000;
     }
 
     function getAmountOut(address[] memory path, uint24[] memory fees, uint256 amountIn)

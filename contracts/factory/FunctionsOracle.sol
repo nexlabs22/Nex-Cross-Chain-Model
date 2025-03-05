@@ -135,6 +135,11 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
         urlParams = "?multiplyFunc=18&timesNegFund=true&arrays=true";
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     /**
      * @notice Set the DON ID
      * @param newDonId New DON ID

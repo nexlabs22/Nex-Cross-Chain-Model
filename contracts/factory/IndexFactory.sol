@@ -157,7 +157,8 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
     {
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
-        outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, _recipient);
+        uint256 amountOutMinimum = factoryStorage.getMinAmountOut(path, fees, amountIn);
+        outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, amountOutMinimum, _recipient);
     }
 
     /**

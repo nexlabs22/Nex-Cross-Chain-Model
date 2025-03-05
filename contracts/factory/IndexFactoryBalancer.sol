@@ -99,6 +99,11 @@ contract IndexFactoryBalancer is
         weth = IWETH(_weth);
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     /**
      * @dev Sets the IndexFactoryStorage contract address.
      * @param _factoryStorage The address of the IndexFactoryStorage contract.
@@ -144,12 +149,14 @@ contract IndexFactoryBalancer is
         require(_recipient != address(0), "Invalid recipient address");
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
+        uint256 amountOutMinimum = factoryStorage.getMinAmountOut(path, fees, amountIn);
         outputAmount = SwapHelpers.swap(
             swapRouterV3,
             swapRouterV2,
             path,
             fees,
             amountIn,
+            amountOutMinimum,
             _recipient
         );
     }

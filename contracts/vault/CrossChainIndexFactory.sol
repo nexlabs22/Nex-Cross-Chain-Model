@@ -79,6 +79,11 @@ contract CrossChainIndexFactory is
         IERC20(_chainlinkToken).approve(_router, type(uint256).max);
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     function withdrawLink() external onlyOwner {
         IERC20(factoryStorage.i_link()).transfer(msg.sender, IERC20(factoryStorage.i_link()).balanceOf(address(this)));
     }
@@ -143,8 +148,9 @@ contract CrossChainIndexFactory is
         // Validate input parameters
         require(amountIn > 0, "Amount must be greater than zero");
         require(_recipient != address(0), "Invalid recipient address");
+        uint256 amountOutMinimum = factoryStorage.getMinAmountOut(path, fees, amountIn);
         outputAmount = SwapHelpers.swap(
-            factoryStorage.swapRouterV3(), factoryStorage.swapRouterV2(), path, fees, amountIn, _recipient
+            factoryStorage.swapRouterV3(), factoryStorage.swapRouterV2(), path, fees, amountIn, amountOutMinimum, _recipient
         );
     }
 

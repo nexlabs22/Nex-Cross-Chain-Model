@@ -79,6 +79,11 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
         factoryStorage = IndexFactoryStorage(_factoryStorage);
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     /**
      * @dev Sets the FunctionsOracle contract address.
      * @param _functionsOracle The address of the FunctionsOracle contract.
@@ -115,7 +120,8 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
         require(_recipient != address(0), "Invalid recipient address");
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
-        outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, _recipient);
+        uint256 amountOutMinimum = factoryStorage.getMinAmountOut(path, fees, amountIn);
+        outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, amountOutMinimum, _recipient);
     }
 
     function sendAskValues(uint64 chainSelector) public onlyFactoryBalancer {

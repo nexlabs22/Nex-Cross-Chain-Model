@@ -113,6 +113,10 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
     IQuoter public quoter;
     Vault public vault;
 
+    //slipage tolerance
+    uint256 public slippageTolerance; // 2000/10000 = 20%
+
+
     modifier onlyIndexFactory() {
         require(msg.sender == indexFactory || msg.sender == coreSender, "Caller is not index factory contract.");
         _;
@@ -175,8 +179,18 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         factoryV2 = IUniswapV2Factory(_factoryV2);
         // update fee
         feeRate = 10;
+        slippageTolerance = 2000; // 20%
         latestFeeUpdate = block.timestamp;
         feeReceiver = msg.sender;
+    }
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function setSlippageTolerance(uint256 _slippageTolerance) public onlyOwner {
+        slippageTolerance = _slippageTolerance;
     }
 
     /**
@@ -500,6 +514,8 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         }
     }
 
+    
+
     function getCurrentTokenValue(address tokenAddress) external view returns (uint256) {
         (address[] memory toETHPath, uint24[] memory toETHFees) = functionsOracle.getToETHPathData(tokenAddress);
 
@@ -547,6 +563,15 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         return (toETHPath[_tokenAddress], toETHFees[_tokenAddress]);
     }
 
+    /**
+     * @dev Gets the minimum amount out.
+     * @return The minimum amount out.
+     */
+    function getMinAmountOut(address[] memory path, uint24[] memory fees, uint256 amountIn) public view returns (uint256) {
+        uint amountOut = getAmountOut(path, fees, amountIn);
+        return (amountOut * (10000 - slippageTolerance)) / 10000;
+    }
+    
     /**
      * @dev Returns the amount out for a given swap.
      * @param path The path of the swap.
