@@ -53,6 +53,12 @@ contract IndexFactoryTest is Test, ContractDeployer {
         addLiquidityETH(positionManager, factoryAddress, token4, wethAddress, 100000e18, 100e18);
         addLiquidityETH(positionManager, factoryAddress, crossChainToken, wethAddress, 100000e18, 100e18);
         addLiquidityETH(positionManager, factoryAddress, usdt, wethAddress, 100000e18, 1e18);
+
+        // set Fee
+        mockRouter.setFee(1e16);
+        // send fee to the core sender and cross chain factory
+        payable(address(coreSender)).transfer(1e18);
+        payable(address(crossChainIndexFactory)).transfer(1e18);
         
     }
 

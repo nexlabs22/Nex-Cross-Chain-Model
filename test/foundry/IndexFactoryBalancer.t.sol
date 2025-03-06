@@ -477,13 +477,14 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             1e18,
             0
         );
+        mockRouter.executeAllMessages();
         address[] memory path = new address[](2);
         path[0] = address(weth);
         path[1] = address(usdt);
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
         factory.redemption(indexToken.balanceOf(add1), 0, address(usdt), path, fees);
-
+        mockRouter.executeAllMessages();
         vm.stopPrank();
 
         token0.transfer(address(vault), 20e18);
@@ -496,6 +497,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         vm.startPrank(owner);
         factoryBalancer.transferOwnership(owner);
         factoryBalancer.askValues();
+        mockRouter.executeAllMessages();
         vm.stopPrank();
         showTokenBalances();
 
@@ -556,8 +558,10 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
 
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
+        mockRouter.executeAllMessages();
         
         factoryBalancer.secondReweightAction();
+        mockRouter.executeAllMessages();
         
         showPercentages();
        
@@ -578,13 +582,14 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             1e18,
             0
         );
+        mockRouter.executeAllMessages();
         address[] memory path = new address[](2);
         path[0] = address(weth);
         path[1] = address(usdt);
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
         factory.redemption(indexToken.balanceOf(add1), 0, address(usdt), path, fees);
-
+        mockRouter.executeAllMessages();
         vm.stopPrank();
 
         token0.transfer(address(vault), 20e18);
@@ -597,6 +602,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         vm.startPrank(owner);
         factoryBalancer.transferOwnership(owner);
         factoryBalancer.askValues();
+        mockRouter.executeAllMessages();
         vm.stopPrank();
         showTokenBalances();
 
@@ -657,9 +663,9 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
 
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
-        
+        mockRouter.executeAllMessages();
         factoryBalancer.secondReweightAction();
-        
+        mockRouter.executeAllMessages();
         showPercentages();
         
         // token shares
