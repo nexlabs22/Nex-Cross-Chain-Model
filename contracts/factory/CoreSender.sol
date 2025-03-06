@@ -293,7 +293,6 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         factoryStorage.setRedemptionMessageId(_redemptionNonce, messageId);
     }
 
-    uint256 public testData;
 
     function completeRedemptionRequest(uint256 nonce, bytes32 _messageId) internal {
         uint256 wethAmount = factoryStorage.getRedemptionTotalValue(nonce);
@@ -301,7 +300,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         address requester = factoryStorage.getRedemptionRequester(nonce);
         address outputToken = factoryStorage.getRedemptionOutputToken(nonce);
         uint256 fee = FeeCalculation.calculateFee(wethAmount, factoryStorage.feeRate());
-        testData = fee;
+        
         require(weth.transfer(address(factoryStorage.feeReceiver()), fee), "Fee transfer failed");
         uint256 indexTokenPrice =
             indexToken.totalSupply() != 0 ? (totalPortfolioValues * 1e18) / indexToken.totalSupply() : 0;
@@ -339,7 +338,6 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         }
     }
 
-    uint256 public testData2;
 
     function _handleReceivedRedemption(
         uint256 nonce,
@@ -358,7 +356,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         uint256 wethAmount = swap(toETHPath, toETHFees, amount, address(this));
 
         factoryStorage.increaseRedemptionTotalValue(requestRedemptionNonce, wethAmount);
-        testData2 = factoryStorage.getRedemptionTotalValue(requestRedemptionNonce);
+        
         factoryStorage.increaseRedemptionTotalPortfolioValues(requestRedemptionNonce, crossChainPortfolioValue);
         factoryStorage.increaseRedemptionCompletedTokensCount(requestRedemptionNonce, tokenAddresses.length);
         if (factoryStorage.getRedemptionCompletedTokensCount(requestRedemptionNonce) == totalCurrentList) {

@@ -232,6 +232,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         // factory.sendMessageTest(2, address(crossChainIndexFactory));
         console.log(indexToken.balanceOf(add1));
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
+        mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
     }
 
@@ -251,6 +252,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         
         console.log(indexToken.balanceOf(add1));
         factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000}(1e18, 0);
+        mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
         // redemption input token path data
         address[] memory path = new address[](2);
@@ -259,6 +261,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
         factory.redemption(indexToken.balanceOf(address(add1)), 0, address(weth), path, fees);
+        mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
     }
     
@@ -286,6 +289,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
         factory.issuanceIndexTokens(address(usdt), path, fees, 1000e18, 0);
+        mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
     }
     
@@ -313,6 +317,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
         factory.issuanceIndexTokens(address(usdt), path, fees, 1000e18, 0);
+        mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
         // redemption input token path data
         address[] memory path2 = new address[](2);
@@ -321,9 +326,8 @@ contract IndexFactoryTest is Test, ContractDeployer {
         uint24[] memory fees2 = new uint24[](1);
         fees2[0] = 3000;
         factory.redemption(indexToken.balanceOf(address(add1)), 0, address(usdt), path2, fees2);
+        mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
-        console.log(coreSender.testData());
-        console.log(coreSender.testData2());
     }
 
     

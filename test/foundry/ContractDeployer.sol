@@ -10,6 +10,7 @@ import "../../contracts/test/MockApiOracle.sol";
 import "../../contracts/test/LinkToken.sol";
 import "../../contracts/test/MockRouter.sol";
 import "../../contracts/test/MockRouter2.sol";
+import "../../contracts/test/MockRouter3.sol";
 import "../../contracts/test/UniswapFactoryByteCode.sol";
 import "../../contracts/test/PriceOracleByteCode.sol";
 import "../../contracts/test/UniswapWETHByteCode.sol";
@@ -111,11 +112,11 @@ contract ContractDeployer is
     IUniswapV3Factory public factoryV3 = IUniswapV3Factory(factoryAddress);
     ISwapRouter public swapRouter = ISwapRouter(router);
     // MockRouter mockRouter;
-    MockRouter2 mockRouter;
-    MockRouter2 mockRouter1;
-    MockRouter2 mockRouter2;
-    MockRouter2 mockRouter3;
-    MockRouter2 mockRouter4;
+    MockRouter3 mockRouter;
+    MockRouter3 mockRouter1;
+    MockRouter3 mockRouter2;
+    MockRouter3 mockRouter3;
+    MockRouter3 mockRouter4;
 
     function getMinTick(int24 tickSpacing) public pure returns (int24) {
         return
@@ -153,7 +154,7 @@ contract ContractDeployer is
 
     function deployInternalContracts()
         public
-        returns (LinkToken, MockApiOracle, MockV3Aggregator, MockRouter2)
+        returns (LinkToken, MockApiOracle, MockV3Aggregator, MockRouter3)
     {
         LinkToken link = new LinkToken();
         MockApiOracle oracle = new MockApiOracle();
@@ -163,7 +164,7 @@ contract ContractDeployer is
             2000e18 //initial data
         );
 
-        MockRouter2 mockRouter = new MockRouter2();
+        MockRouter3 mockRouter = new MockRouter3();
 
         return (link, oracle, ethPriceOracle, mockRouter);
     }
