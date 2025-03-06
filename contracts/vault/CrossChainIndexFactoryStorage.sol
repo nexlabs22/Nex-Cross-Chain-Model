@@ -257,6 +257,7 @@ contract CrossChainIndexFactoryStorage is
         view
         returns (uint256 finalAmountOut)
     {
+        require(amountIn < type(uint128).max, "AmountIn exceeds uint128");
         if (amountIn > 0) {
             if (fees.length > 0) {
                 finalAmountOut = estimateAmountOutWithPath(path, fees, amountIn);

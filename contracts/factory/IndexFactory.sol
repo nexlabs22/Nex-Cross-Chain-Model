@@ -215,7 +215,7 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
 
         uint256 feeAmount = FeeCalculation.calculateFee(_inputAmount, factoryStorage.feeRate());
         uint256 finalAmount = _inputAmount + feeAmount + _crossChainFee;
-        require(msg.value >= finalAmount, "lower than required amount");
+        require(msg.value == finalAmount, "lower than required amount");
         //transfer fee to the owner
         weth.deposit{value: finalAmount}();
         // Transfer fee to the fee receiver and check the result

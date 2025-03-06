@@ -584,6 +584,7 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         view
         returns (uint256 finalAmountOutValue)
     {
+        require(amountIn < type(uint128).max, "AmountIn exceeds uint128");
         uint256 finalAmountOut;
         if (amountIn > 0) {
             if (fees.length > 0) {

@@ -1,19 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "../token/IndexToken.sol";
 import "../proposable/ProposableOwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
-import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
-import "../ccip/CCIPReceiver.sol";
 import "./IndexFactoryStorage.sol";
 import "./FunctionsOracle.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../libraries/SwapHelpers.sol";
 import "../interfaces/IWETH.sol";
-import "../libraries/MessageSender.sol";
 import "./BalancerSender.sol";
 
 /// @title Index Token
@@ -125,11 +120,6 @@ contract IndexFactoryBalancer is
     }
 
     
-    /**
-     * @dev Fallback function to receive ETH.
-     */
-    receive() external payable {}
-
     /**
      * @dev Swaps tokens.
      * @param path The path of the swap.
