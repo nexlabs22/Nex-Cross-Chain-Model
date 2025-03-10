@@ -446,6 +446,7 @@ contract IndexFactoryBalancer is
         );
 
         factoryStorage.increaseExtraWethByNonce(nonce, extraWethAmount);
+        factoryStorage.increasePendingExtraWethByNonce(nonce, extraWethAmount);
         factoryStorage.increaseReweightExtraPercentage(nonce, chainCurrentRealShare - oracleChainSelectorTotalShares);
     }
 
@@ -527,6 +528,7 @@ contract IndexFactoryBalancer is
                 }
             }
         }
+        factoryStorage.decreasePendingExtraWethByNonce(nonce);
     }
 
     function _swapLowerValueCurrentChainToWETH(

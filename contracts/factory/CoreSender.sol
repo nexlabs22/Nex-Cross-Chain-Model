@@ -213,7 +213,44 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         factoryStorage.setIssuanceMessageId(_issuanceNonce, messageId);
     }
 
+    function calculateIssuanceFee(uint64 _chainSelector, uint _wethAmount) public view returns (uint256 totalFee) {
+        
+        // get cross chain token amount
+        (address[] memory fromETHPath, uint24[] memory fromETHFees) =
+            factoryStorage.getFromETHPathData(factoryStorage.crossChainToken(_chainSelector));
+        uint256 crossChainTokenAmount = factoryStorage.getAmountOut(fromETHPath, fromETHFees, _wethAmount);
+        // get cross chain factory
+        address crossChainFactory = factoryStorage.crossChainFactoryBySelector(_chainSelector);
+        uint256[] memory totalSharesArr = new uint256[](1);
+        totalSharesArr[0] = functionsOracle.getCurrentChainSelectorTotalShares(functionsOracle.currentFilledCount(), _chainSelector);
+        address crossChainIndexFactory = factoryStorage.crossChainFactoryBySelector(_chainSelector);
+
+        //encode data
+        bytes memory data = _encodeIssuanceData(
+            factoryStorage.issuanceNonce(),
+            functionsOracle.allCurrentChainSelectorTokens(_chainSelector),
+            functionsOracle.allCurrentChainSelectorTokenShares(_chainSelector),
+            totalSharesArr
+        );
+
+        // send issuance request
+        Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+        tokensToSendArray[0].token = factoryStorage.crossChainToken(_chainSelector);
+        tokensToSendArray[0].amount = crossChainTokenAmount;
+
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(crossChainFactory),
+            data: data,
+            tokenAmounts: tokensToSendArray,
+            feeToken: address(0),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 3_000_000}))
+        });
+
+        return IRouterClient(i_router).getFee(_chainSelector, message);
+    }
+
     function completeIssuanceRequest(uint256 _issuanceNonce, bytes32 _messageId) internal {
+        factoryStorage.decreasePendingIssuanceInputByNonce(_issuanceNonce);
         uint256 totalOldVaules;
         uint256 totalNewVaules;
         uint256 totalCurrentList = functionsOracle.totalCurrentList();
@@ -293,8 +330,39 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         factoryStorage.setRedemptionMessageId(_redemptionNonce, messageId);
     }
 
+    function calculateRedemptionFee(uint64 _chainSelector) public view returns (uint256 totalFee) {
+        // get data
+        address crossChainIndexFactory = factoryStorage.crossChainFactoryBySelector(_chainSelector);
+        address[] memory tokenAddresses = functionsOracle.allCurrentChainSelectorTokens(_chainSelector);
+        uint256[] memory burnPercentages = new uint256[](1);
+        burnPercentages[0] = 0;
+        //encode data
+        bytes memory data = abi.encode(
+            1,
+            tokenAddresses,
+            new address[](0),
+            functionsOracle.getFromETHPathBytesForTokens(tokenAddresses),
+            new bytes[](0),
+            factoryStorage.redemptionNonce(),
+            new uint256[](0),
+            burnPercentages
+        );
+        // send message
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(crossChainIndexFactory),
+            data: data,
+            tokenAmounts: new Client.EVMTokenAmount[](0),
+            feeToken: address(0),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 3_000_000}))
+        });
+
+        return IRouterClient(i_router).getFee(_chainSelector, message);
+    }
+
 
     function completeRedemptionRequest(uint256 nonce, bytes32 _messageId) internal {
+        factoryStorage.decreasePendingRedemptionInputByNonce(nonce);
+        factoryStorage.decreasePendingRedemptionHoldValueByNonce(nonce);
         uint256 wethAmount = factoryStorage.getRedemptionTotalValue(nonce);
         uint256 totalPortfolioValues = factoryStorage.getRedemptionTotalPortfolioValues(nonce);
         address requester = factoryStorage.getRedemptionRequester(nonce);
@@ -380,6 +448,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         MessageSender.PayFeesIn payFeesIn
     ) internal nonReentrant returns (bytes32) {
+        factoryStorage.increaseTotalSentAmount(tokensToSendDetails[0].token, tokensToSendDetails[0].amount);
         bytes32 messageId = MessageSender.sendToken(
             getRouter(),
             factoryStorage.linkToken(),
@@ -443,6 +512,9 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         ) = abi.decode(
             any2EvmMessage.data, (uint256, address[], address[], bytes[], bytes[], uint256, uint256[], uint256[])
         );
+        if(any2EvmMessage.destTokenAmounts.length > 0) {
+            factoryStorage.increaseTotalReceivedAmount(any2EvmMessage.destTokenAmounts[0].token, any2EvmMessage.destTokenAmounts[0].amount);
+        }
         if (actionType == 0) {
             _handleReceivedIssuance(nonce, tokenAddresses, value1, value2, totalCurrentList, messageId);
         } else if (actionType == 1) {

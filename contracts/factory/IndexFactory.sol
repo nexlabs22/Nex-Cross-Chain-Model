@@ -161,6 +161,58 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, amountOutMinimum, _recipient);
     }
 
+    function getIssuanceFee(
+        address _tokenIn,
+        address[] memory _tokenInPath,
+        uint24[] memory _tokenInFees,
+        uint256 _inputAmount
+    ) public view returns (uint256) {
+        // get weth amount
+        uint wethAmount;
+        if(_tokenIn == address(weth)){
+            wethAmount = _inputAmount;
+        } else {
+            wethAmount = factoryStorage.getAmountOut(_tokenInPath, _tokenInFees, _inputAmount);
+        }
+
+        // get fee for other chains
+        uint256 totalChains = functionsOracle.currentChainSelectorsCount();
+        uint256 latestCount = functionsOracle.currentFilledCount();
+        (,, uint64[] memory chainSelectors) = functionsOracle.getCurrentData(latestCount);
+
+        uint256 totalCrossChainFee;
+        for (uint256 i = 0; i < totalChains; i++) {
+            uint64 chainSelector = chainSelectors[i];
+            uint256 chainSelectorTokensCount = functionsOracle.currentChainSelectorTokensCount(chainSelector);
+            if (chainSelector != currentChainSelector) {
+               uint256 totalShares = functionsOracle.getCurrentChainSelectorTotalShares(latestCount, chainSelector);
+               uint256 chainWethAmount = (wethAmount * totalShares) / 100e18;
+               //get the fee
+                uint256 fee = coreSender.calculateIssuanceFee(chainSelector, chainWethAmount);
+                totalCrossChainFee += fee;
+            }
+        }
+
+        return totalCrossChainFee;
+    }
+
+    function getRedemptionFee(uint256 amountIn) public view returns (uint256) {
+        uint256 burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
+        uint256 totalChains = functionsOracle.currentChainSelectorsCount();
+        uint256 latestCount = functionsOracle.currentFilledCount();
+        (,, uint64[] memory chainSelectors) = functionsOracle.getCurrentData(latestCount);
+        uint256 totalCrossChainFee;
+        for (uint256 i = 0; i < totalChains; i++) {
+            uint64 chainSelector = chainSelectors[i];
+            if (chainSelector != currentChainSelector) {
+                //get the fee
+                uint256 fee = coreSender.calculateRedemptionFee(chainSelector);
+                totalCrossChainFee += fee;
+            }
+        }
+        return totalCrossChainFee;
+    }
+
     /**
      * @dev Issues index tokens.
      * @param _tokenIn The address of the input token.
@@ -174,12 +226,13 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         uint24[] memory _tokenInFees,
         uint256 _inputAmount,
         uint256 _crossChainFee
-    ) public whenNotPaused {
+    ) public payable whenNotPaused {
         // Validate input parameters
         require(_tokenIn != address(0), "Invalid input token address");
         require(_inputAmount > 0, "Input amount must be greater than zero");
         require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
-
+        require(getIssuanceFee(_tokenIn, _tokenInPath, _tokenInFees, _inputAmount) >= msg.value, "Insufficient ETH sent for cross chain fee");
+        require(payable(factoryStorage.coreSender()).send(msg.value), "Cross chain fee transfer failed");
         IWETH weth = factoryStorage.weth();
         Vault vault = factoryStorage.vault();
 
@@ -212,14 +265,17 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         require(_inputAmount > 0, "Input amount must be greater than zero");
         require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
         require(msg.value >= _inputAmount, "Insufficient ETH sent");
-
+        
         uint256 feeAmount = FeeCalculation.calculateFee(_inputAmount, factoryStorage.feeRate());
-        uint256 finalAmount = _inputAmount + feeAmount + _crossChainFee;
+        uint256 crossChainFee = getIssuanceFee(address(weth), new address[](0), new uint24[](0), _inputAmount);
+        uint256 finalAmount = _inputAmount + feeAmount + crossChainFee;
         require(msg.value == finalAmount, "lower than required amount");
+        require(payable(factoryStorage.coreSender()).send(crossChainFee), "Cross chain fee transfer failed");
         //transfer fee to the owner
-        weth.deposit{value: finalAmount}();
+        weth.deposit{value: finalAmount - crossChainFee}();
         // Transfer fee to the fee receiver and check the result
         require(weth.transfer(address(factoryStorage.feeReceiver()), feeAmount), "Fee transfer failed");
+
         //set mappings
         factoryStorage.increaseIssuanceNonce();
         factoryStorage.setIssuanceData(
@@ -237,7 +293,7 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
      */
     function _issuance(address _tokenIn, uint256 _inputAmount, uint256 _crossChainFee) internal {
         uint256 wethAmount = _inputAmount;
-
+        factoryStorage.increasePendingIssuanceInputByNonce(factoryStorage.issuanceNonce(), wethAmount);
         // swap to underlying assets on all chain
         uint256 totalChains = functionsOracle.currentChainSelectorsCount();
         uint256 latestCount = functionsOracle.currentFilledCount();
@@ -329,13 +385,16 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         address _tokenOut,
         address[] memory _tokenOutPath,
         uint24[] memory _tokenOutFees
-    ) public whenNotPaused {
+    ) public payable whenNotPaused {
         // Validate input parameters
         require(amountIn > 0, "Amount must be greater than zero");
         require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
         require(_tokenOut != address(0), "Invalid output token address");
+        require(getRedemptionFee(amountIn) >= msg.value, "Insufficient ETH sent for cross chain fee");
+        require(payable(factoryStorage.coreSender()).send(msg.value), "Cross chain fee transfer failed");
         uint256 burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         factoryStorage.increaseRedemptionNonce();
+        factoryStorage.increasePendingRedemptionInputByNonce(factoryStorage.redemptionNonce(), amountIn);
         factoryStorage.setRedemptionData(
             factoryStorage.redemptionNonce(), msg.sender, _tokenOut, amountIn, _tokenOutPath, _tokenOutFees, bytes32(0)
         );
@@ -394,6 +453,7 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
             if (tokenAddress == address(weth)) {
                 weth.transfer(address(coreSender), swapAmount);
             }
+            factoryStorage.increasePendingRedemptionHoldValueByNonce(_redemptionNonce, swapAmountOut);
             factoryStorage.increaseRedemptionTotalValue(_redemptionNonce, swapAmountOut);
             factoryStorage.increaseRedemptionTotalPortfolioValues(
                 _redemptionNonce,
@@ -412,4 +472,6 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
     {
         coreSender.sendRedemptionRequest(_burnPercent, _redemptionNonce, _chainSelector);
     }
+
+    
 }

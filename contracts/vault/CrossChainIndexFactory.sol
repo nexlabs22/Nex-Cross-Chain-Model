@@ -161,6 +161,7 @@ contract CrossChainIndexFactory is
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         MessageSender.PayFeesIn payFeesIn
     ) internal returns (bytes32) {
+        factoryStorage.increaseTotalSentAmount(tokensToSendDetails[0].token, tokensToSendDetails[0].amount);
         bytes32 messageId = MessageSender.sendToken(
             factoryStorage.i_router(),
             factoryStorage.i_link(),
@@ -196,7 +197,9 @@ contract CrossChainIndexFactory is
         ) = abi.decode(
             any2EvmMessage.data, (uint256, address[], address[], bytes[], bytes[], uint256, uint256[], uint256[])
         ); // abi-decoding of the sent string message
-
+        if(any2EvmMessage.destTokenAmounts.length > 0) {
+            factoryStorage.increaseTotalReceivedAmount(any2EvmMessage.destTokenAmounts[0].token, any2EvmMessage.destTokenAmounts[0].amount);
+        }
         if (actionType == 0) {
             Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage.destTokenAmounts;
             _handleIssuance(

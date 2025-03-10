@@ -75,6 +75,9 @@ contract CrossChainIndexFactoryStorage is
     //slipage tolerance
     uint256 public slippageTolerance; // 2000/10000 = 20%
 
+    mapping(address => uint) public totalSentAmount;
+    mapping(address => uint) public totalReceivedAmount;
+
     modifier onlyFactory() {
         require(msg.sender == crossChainFactory, "Only factory can call this function");
         _;
@@ -212,6 +215,13 @@ contract CrossChainIndexFactoryStorage is
 
     function setToUsdPriceFeed(address _newToUsdPriceFeed) public onlyOwner {
         toUsdPriceFeed = AggregatorV3Interface(_newToUsdPriceFeed);
+    }
+
+    function increaseTotalSentAmount(address _tokenAddress, uint _amount) public onlyFactory {
+        totalSentAmount[_tokenAddress] += _amount;
+    }
+    function increaseTotalReceivedAmount(address _tokenAddress, uint _amount) public onlyFactory {
+        totalReceivedAmount[_tokenAddress] += _amount;
     }
 
     function getAllFromETHPath(address _tokenAddress) public view returns (address[] memory) {

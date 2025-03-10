@@ -250,6 +250,7 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         MessageSender.PayFeesIn payFeesIn
     ) internal returns (bytes32) {
+        factoryStorage.increaseTotalSentAmount(tokensToSendDetails[0].token, tokensToSendDetails[0].amount);
         bytes32 messageId = MessageSender.sendToken(
             // i_router,
             getRouter(),
@@ -313,6 +314,9 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
         ) = abi.decode(
             any2EvmMessage.data, (uint256, address[], address[], bytes[], bytes[], uint256, uint256[], uint256[])
         ); // abi-decoding of the sent string message
+        if(any2EvmMessage.destTokenAmounts.length > 0) {
+            factoryStorage.increaseTotalReceivedAmount(any2EvmMessage.destTokenAmounts[0].token, any2EvmMessage.destTokenAmounts[0].amount);
+        }
         if (actionType == 0) {} else if (actionType == 1) {} else if (actionType == 2) {
             for (uint256 i = 0; i < value1.length; i++) {
                 factoryStorage.increasePortfolioTotalValueByNonce(nonce, value1[i]);
@@ -327,6 +331,7 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
             (address[] memory toETHPath, uint24[] memory toETHFees) = factoryStorage.getToETHPathData(token);
             uint256 wethAmount = swap(toETHPath, toETHFees, amount, address(this));
             factoryStorage.increaseExtraWethByNonce(nonce, wethAmount);
+            factoryStorage.increasePendingExtraWethByNonce(nonce, wethAmount);
             weth.transfer(factoryStorage.indexFactoryBalancer(), wethAmount);
         } else if (actionType == 4) {
             functionsOracle.updateCurrentList();

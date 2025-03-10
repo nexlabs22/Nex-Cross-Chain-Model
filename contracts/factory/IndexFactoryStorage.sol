@@ -116,6 +116,17 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
     //slipage tolerance
     uint256 public slippageTolerance; // 2000/10000 = 20%
 
+    uint256 public totalPendingIssuanceInput;
+    uint256 public totalPendingRedemptionInput;
+    uint256 public totalPendingRedemptionHoldValue;
+    uint256 public totalPendingExtraWeth;
+    mapping(uint => uint) public pendingIssuanceInputByNonce;
+    mapping(uint => uint) public pendingRedemptionInputByNonce;
+    mapping(uint => uint) public pendingRedemptionHoldValueByNonce;
+    mapping(uint => uint) public pendingExtraWethByNonce;
+    mapping(address => uint) public totalSentAmount;
+    mapping(address => uint) public totalReceivedAmount;
+
 
     modifier onlyIndexFactory() {
         require(msg.sender == indexFactory || msg.sender == coreSender, "Caller is not index factory contract.");
@@ -126,6 +137,14 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         require(
             msg.sender == indexFactoryBalancer || msg.sender == balancerSender,
             "Caller is not index factory balancer contract."
+        );
+        _;
+    }
+
+    modifier onlySenders() {
+        require(
+            msg.sender == coreSender || msg.sender == balancerSender,
+            "Caller is not core sender or balancer sender."
         );
         _;
     }
@@ -492,6 +511,53 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         chainValueByNonce[_updatePortfolioNonce][_chainSelector] += _value;
     }
 
+    function increaseTotalSentAmount(address _tokenAddress, uint _amount) public onlySenders {
+        totalSentAmount[_tokenAddress] += _amount;
+    }
+    function increaseTotalReceivedAmount(address _tokenAddress, uint _amount) public onlySenders {
+        totalReceivedAmount[_tokenAddress] += _amount;
+    }
+
+    function increasePendingIssuanceInputByNonce(uint _issuanceNonce, uint _amount) public onlyIndexFactory {
+        pendingIssuanceInputByNonce[_issuanceNonce] += _amount;
+        totalPendingIssuanceInput += _amount;
+    }
+
+    function increasePendingRedemptionInputByNonce(uint _redemptionNonce, uint _amount) public onlyIndexFactory {
+        pendingRedemptionInputByNonce[_redemptionNonce] += _amount;
+        totalPendingRedemptionInput += _amount;
+    }
+
+    function decreasePendingIssuanceInputByNonce(uint _issuanceNonce) public onlyIndexFactory {
+        totalPendingIssuanceInput -= pendingIssuanceInputByNonce[_issuanceNonce];
+        pendingIssuanceInputByNonce[_issuanceNonce] = 0;
+    }
+
+    function decreasePendingRedemptionInputByNonce(uint _redemptionNonce) public onlyIndexFactory {
+        totalPendingRedemptionInput -= pendingRedemptionInputByNonce[_redemptionNonce];
+        pendingRedemptionInputByNonce[_redemptionNonce] = 0;
+    }
+
+    function increasePendingRedemptionHoldValueByNonce(uint _redemptionNonce, uint _amount) public onlyIndexFactory {
+        pendingRedemptionHoldValueByNonce[_redemptionNonce] += _amount;
+        totalPendingRedemptionHoldValue += _amount;
+    }
+
+    function decreasePendingRedemptionHoldValueByNonce(uint _redemptionNonce) public onlyIndexFactory {
+        totalPendingRedemptionHoldValue -= pendingRedemptionHoldValueByNonce[_redemptionNonce];
+        pendingRedemptionHoldValueByNonce[_redemptionNonce] = 0;
+    }
+
+    function increasePendingExtraWethByNonce(uint _updatePortfolioNonce, uint _amount) public onlyIndexFactoryBalancer {
+        pendingExtraWethByNonce[_updatePortfolioNonce] += _amount;
+        totalPendingExtraWeth += _amount;
+    }
+
+    function decreasePendingExtraWethByNonce(uint _updatePortfolioNonce) public onlyIndexFactoryBalancer {
+        totalPendingExtraWeth -= pendingExtraWethByNonce[_updatePortfolioNonce];
+        pendingExtraWethByNonce[_updatePortfolioNonce] = 0;
+    }
+
     function increaseReweightExtraPercentage(uint256 _reweightNonce, uint256 _extraPercentage)
         public
         onlyIndexFactoryBalancer
@@ -652,4 +718,10 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         }
         amountOut = lastAmount;
     }
+
+
+   
+
+   
+    
 }
