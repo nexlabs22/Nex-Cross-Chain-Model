@@ -147,10 +147,6 @@ contract CrossChainIndexFactoryStorage is
     }
 
     function priceInWei() public view returns (uint256) {
-        // (, int256 price,,,) = toUsdPriceFeed.latestRoundData();
-        // uint8 priceFeedDecimals = toUsdPriceFeed.decimals();
-        // price = _toWei(price, priceFeedDecimals, 18);
-        // return uint256(price);
 
         (uint80 roundId,int price,,uint256 _updatedAt,) = toUsdPriceFeed.latestRoundData();
         require(roundId != 0, "invalid round id");
