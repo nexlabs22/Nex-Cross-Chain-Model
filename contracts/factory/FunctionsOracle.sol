@@ -375,20 +375,7 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
         insertOracleData(_tokens, _pathBytes, _marketShares, _chainSelectors);
     }
 
-    /**
-     * @dev Mocks the fulfillment of asset data.
-     * @param _tokens The addresses of the tokens.
-     * @param _marketShares The market shares of the tokens.
-     * @param _chainSelectors The chain selectors of the tokens.
-     */
-    function mockFillAssetsList(
-        address[] memory _tokens,
-        bytes[] memory _pathBytes,
-        uint256[] memory _marketShares,
-        uint64[] memory _chainSelectors
-    ) public onlyOwner {
-        insertOracleData(_tokens, _pathBytes, _marketShares, _chainSelectors);
-    }
+   
 
     /**
      * @dev Inserts oracle data into the contract.
@@ -554,12 +541,7 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
         _updateCurrenctList();
     }
 
-    /**
-     * @dev Mocks the update of the current list of tokens.
-     */
-    function mockUpdateCurrentList() public onlyOwner {
-        _updateCurrenctList();
-    }
+    
 
     function getFromETHPathData(
         address _tokenAddress
