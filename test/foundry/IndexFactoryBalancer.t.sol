@@ -725,6 +725,9 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         token3.transfer(address(vault), 20e18);
         token4.transfer(address(crossChainVault), 20e18);
 
+        indexToken.setMinter(address(this), true);
+        indexToken.mint(address(this), 20e18);
+
         factoryBalancer.proposeOwner(owner);
         vm.startPrank(owner);
         factoryBalancer.transferOwnership(owner);
@@ -788,11 +791,45 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
 
         updateOracleList(assetList, pathData, tokenShares, chains);
 
+        //check prices
+        uint indexTokenPrice = getIndexTokenPrice();
+        uint indexTokenPrice2 = getIndexTokenPrice2();
+        console.log(indexTokenPrice);
+        console.log(indexTokenPrice2);
+
         vm.startPrank(owner);
         factoryBalancer.firstReweightAction();
+
+        //check prices
+        indexTokenPrice = getIndexTokenPrice();
+        indexTokenPrice2 = getIndexTokenPrice2();
+        console.log(indexTokenPrice);
+        console.log(indexTokenPrice2);
+
         mockRouter.executeAllMessages();
+
+        //check prices
+        indexTokenPrice = getIndexTokenPrice();
+        indexTokenPrice2 = getIndexTokenPrice2();
+        console.log(indexTokenPrice);
+        console.log(indexTokenPrice2);
+
         factoryBalancer.secondReweightAction();
+
+        //check prices
+        indexTokenPrice = getIndexTokenPrice();
+        indexTokenPrice2 = getIndexTokenPrice2();
+        console.log(indexTokenPrice);
+        console.log(indexTokenPrice2);
+
         mockRouter.executeAllMessages();
+
+        //check prices
+        indexTokenPrice = getIndexTokenPrice();
+        indexTokenPrice2 = getIndexTokenPrice2();
+        console.log(indexTokenPrice);
+        console.log(indexTokenPrice2);
+
         showPercentages();
         
         // token shares

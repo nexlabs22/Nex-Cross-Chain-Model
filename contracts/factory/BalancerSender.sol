@@ -262,7 +262,7 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
             receiver,
             tokensToSendDetails,
             payFeesIn,
-            3_000_000
+            2_000_000
         );
         emit MessageSent(messageId);
         return messageId;
@@ -286,7 +286,7 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
         require(receiver != address(0), "Invalid receiver address");
         require(_data.length > 0, "Data cannot be empty");
         return MessageSender.sendMessage(
-            getRouter(), factoryStorage.linkToken(), destinationChainSelector, receiver, _data, payFeesIn, 3_000_000
+            getRouter(), factoryStorage.linkToken(), destinationChainSelector, receiver, _data, payFeesIn, 2_000_000
         );
     }
 
