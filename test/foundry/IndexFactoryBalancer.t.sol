@@ -552,8 +552,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             1e18
         );
         factory.issuanceIndexTokensWithEth{value: (1e18 * 1001) / 1000 + issuanceFee}(
-            1e18,
-            0
+            1e18
         );
         mockRouter.executeAllMessages();
         address[] memory path = new address[](2);
@@ -565,7 +564,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         uint redemptionFee = factory.getRedemptionFee(
             indexToken.balanceOf(add1)
         );
-        factory.redemption{value: redemptionFee}(indexToken.balanceOf(add1), 0, address(usdt), path, fees);
+        factory.redemption{value: redemptionFee}(indexToken.balanceOf(add1), address(usdt), path, fees);
         mockRouter.executeAllMessages();
         vm.stopPrank();
 
@@ -701,8 +700,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             1e18
         );
         factory.issuanceIndexTokensWithEth{value: (1e18 * 1001) / 1000 + issuanceFee}(
-            1e18,
-            0
+            1e18
         );
         mockRouter.executeAllMessages();
         address[] memory path = new address[](2);
@@ -715,7 +713,7 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         uint redemptionFee = factory.getRedemptionFee(
             indexToken.balanceOf(add1)
         );
-        factory.redemption{value: redemptionFee}(indexToken.balanceOf(add1), 0, address(usdt), path, fees);
+        factory.redemption{value: redemptionFee}(indexToken.balanceOf(add1), address(usdt), path, fees);
         mockRouter.executeAllMessages();
         vm.stopPrank();
 

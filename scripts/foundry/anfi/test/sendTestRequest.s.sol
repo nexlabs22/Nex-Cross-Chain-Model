@@ -1,24 +1,38 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity 0.8.19;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
 import "../../../../contracts/test/FunctionsTest.sol";
 import "../../../../contracts/test/FunctionsTest2.sol";
+import "../../../../contracts/test/FunctionsTest3.sol";
+import "../../../../contracts/test/GettingStartedFunctionsConsumer.sol";
 
 /**
+//testnet
 forge script scripts/foundry/anfi/test/sendTestRequest.s.sol:SendTestRequest  --rpc-url $ETHEREUM_SEPOLIA_RPC_URL   --private-key $PRIVATE_KEY   --broadcast
+
+//mainnet
+forge script scripts/foundry/anfi/test/sendTestRequest.s.sol:SendTestRequest  --rpc-url $ARBITRUM_RPC_URL --private-key $PRIVATE_KEY --broadcast
 */
 
+
+
 contract SendTestRequest is Script {
+
+    
     // Mainnet
     address functionsAddress = 0xd8E685ac3AE16789e9000af6bE8a19080d15d267;
     // address functionsAddress2 = 0x0eb01bA9d5eF84103474Dc999Cf91b22221AE3cf;
     // address functionsAddress2 = 0xD926c6AB9607868580D64A09E218530C23E4B685;
-    address functionsAddress2 = 0xeD8349467d45E2c678C6160Ac19E1Add3eFb9539;
+    address functionsAddress2 = 0xeD8349467d45E2c678C6160Ac19E1Add3eFb9539; //testnet
+    address functionsAddress3 = 0xAbBA08355e0FD63878916EDc73115917747Bb7AB; // arbitrum
+    address gettingStartedFunctionsConsumerAddress = 0x67ffDe79f5717d76cCF67717698c8653C7806e0e; // arbitrum
     FunctionsTest functions = FunctionsTest(functionsAddress);
     FunctionsTest2 functions2 = FunctionsTest2(functionsAddress2);
+    FunctionsTest3 functions3 = FunctionsTest3(functionsAddress3);
+    GettingStartedFunctionsConsumer gettingStartedFunctionsConsumer = GettingStartedFunctionsConsumer(gettingStartedFunctionsConsumerAddress);
 
     string source =
         "const characterId = args[0];"
@@ -73,15 +87,15 @@ contract SendTestRequest is Script {
         vm.stopBroadcast();
     }
 
-    // function sendRequest() internal {
-    //     string[] memory args = new string[](1); 
-    //     args[0] = "1";
-    //     functions.sendRequest(
-    //         4300,
-    //         args
-    //     );
-    //     console.log("Request sent");
-    // }
+    function sendRequest() internal {
+        string[] memory args = new string[](1); 
+        args[0] = "1";
+        gettingStartedFunctionsConsumer.sendRequest(
+            37,
+            args
+        );
+        console.log("Request sent");
+    }
 
     function getData() internal {
         bytes32 requestId = functions.s_lastRequestId();
@@ -108,10 +122,12 @@ contract SendTestRequest is Script {
     function sendRequest3() internal {
         string[] memory args = new string[](1); 
         args[0] = "2";
-        functions2.sendRequest(
-            source3,
-            4300,
+        functions3.sendRequest(
+            " ",
+            // 4300,
+            37,
             1000000,
+            // 500000,
             args
         );
         console.log("Request sent");

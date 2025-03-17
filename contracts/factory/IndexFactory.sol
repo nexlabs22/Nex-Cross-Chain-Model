@@ -118,6 +118,11 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         weth = IWETH(_weth);
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     /**
      * @dev Sets the IndexFactoryStorage contract address.
      * @param _factoryStorage The address of the IndexFactoryStorage contract.
@@ -218,20 +223,18 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
      * @param _tokenIn The address of the input token.
      * @param _tokenInPath The path of the input token.
      * @param _inputAmount The amount of input token.
-     * @param _crossChainFee The cross-chain fee.
      */
     function issuanceIndexTokens(
         address _tokenIn,
         address[] memory _tokenInPath,
         uint24[] memory _tokenInFees,
-        uint256 _inputAmount,
-        uint256 _crossChainFee
+        uint256 _inputAmount
     ) public payable whenNotPaused {
         // Validate input parameters
         require(_tokenIn != address(0), "Invalid input token address");
         require(_inputAmount > 0, "Input amount must be greater than zero");
-        require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
-        require(getIssuanceFee(_tokenIn, _tokenInPath, _tokenInFees, _inputAmount) >= msg.value, "Insufficient ETH sent for cross chain fee");
+        require(_tokenInPath[_tokenInPath.length - 1] == address(weth), "Invalid token path");
+        require(getIssuanceFee(_tokenIn, _tokenInPath, _tokenInFees, _inputAmount) == msg.value, "Insufficient ETH sent for cross chain fee");
         require(payable(factoryStorage.coreSender()).send(msg.value), "Cross chain fee transfer failed");
         IWETH weth = factoryStorage.weth();
         Vault vault = factoryStorage.vault();
@@ -252,18 +255,16 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         require(weth.transfer(address(factoryStorage.feeReceiver()), feeWethAmount), "Fee transfer failed");
 
         //run issuance
-        _issuance(_tokenIn, wethAmount, _crossChainFee);
+        _issuance(_tokenIn, wethAmount);
     }
 
     /**
      * @dev Issues index tokens with ETH.
      * @param _inputAmount The amount of input token.
-     * @param _crossChainFee The cross-chain fee.
      */
-    function issuanceIndexTokensWithEth(uint256 _inputAmount, uint256 _crossChainFee) external whenNotPaused payable {
+    function issuanceIndexTokensWithEth(uint256 _inputAmount) external whenNotPaused payable {
         // Validate input parameters
         require(_inputAmount > 0, "Input amount must be greater than zero");
-        require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
         require(msg.value >= _inputAmount, "Insufficient ETH sent");
         
         uint256 feeAmount = FeeCalculation.calculateFee(_inputAmount, factoryStorage.feeRate());
@@ -282,16 +283,15 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
             factoryStorage.issuanceNonce(), msg.sender, address(weth), _inputAmount, bytes32(0)
         );
         //run issuance
-        _issuance(address(weth), _inputAmount, _crossChainFee);
+        _issuance(address(weth), _inputAmount);
     }
 
     /**
      * @dev Internal function to handle issuance.
      * @param _tokenIn The address of the input token.
      * @param _inputAmount The amount of input token.
-     * @param _crossChainFee The cross-chain fee.
      */
-    function _issuance(address _tokenIn, uint256 _inputAmount, uint256 _crossChainFee) internal {
+    function _issuance(address _tokenIn, uint256 _inputAmount) internal {
         uint256 wethAmount = _inputAmount;
         factoryStorage.increasePendingIssuanceInputByNonce(factoryStorage.issuanceNonce(), wethAmount);
         // swap to underlying assets on all chain
@@ -376,20 +376,18 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
     /**
      * @dev Redeems tokens.
      * @param amountIn The amount of input tokens.
-     * @param _crossChainFee The cross-chain fee.
      * @param _tokenOut The address of the output token.
      */
     function redemption(
         uint256 amountIn,
-        uint256 _crossChainFee,
         address _tokenOut,
         address[] memory _tokenOutPath,
         uint24[] memory _tokenOutFees
     ) public payable whenNotPaused {
         // Validate input parameters
         require(amountIn > 0, "Amount must be greater than zero");
-        require(_crossChainFee >= 0, "Cross-chain fee must be non-negative");
         require(_tokenOut != address(0), "Invalid output token address");
+        require(_tokenOutPath[0] == address(weth), "Invalid token path");
         require(getRedemptionFee(amountIn) >= msg.value, "Insufficient ETH sent for cross chain fee");
         require(payable(factoryStorage.coreSender()).send(msg.value), "Cross chain fee transfer failed");
         uint256 burnPercent = (amountIn * 1e18) / indexToken.totalSupply();

@@ -263,7 +263,7 @@ contract CombinedSetValuesScript is Script, Test {
         path1[2] = assetList[1];
         pathData[1] = abi.encode(path1, feesData1);
 
-        FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
+        // FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
         console.log("Called mockFillAssetsList() [mainnet style].");
     }
 
@@ -302,7 +302,7 @@ contract CombinedSetValuesScript is Script, Test {
         path1[1] = assetList[1];
         pathData[1] = abi.encode(path1, feesData);
 
-        FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
+        // FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
         console.log("Called mockFillAssetsList() [testnet style].");
     }
 
