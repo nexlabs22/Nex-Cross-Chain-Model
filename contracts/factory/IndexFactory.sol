@@ -235,7 +235,8 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         require(_inputAmount > 0, "Input amount must be greater than zero");
         require(_tokenInPath[_tokenInPath.length - 1] == address(weth), "Invalid token path");
         require(getIssuanceFee(_tokenIn, _tokenInPath, _tokenInFees, _inputAmount) == msg.value, "Insufficient ETH sent for cross chain fee");
-        require(payable(factoryStorage.coreSender()).send(msg.value), "Cross chain fee transfer failed");
+        (bool success, ) = factoryStorage.coreSender().call{value: msg.value}("");
+        require(success, "Cross chain fee transfer failed");
         IWETH weth = factoryStorage.weth();
         Vault vault = factoryStorage.vault();
 
@@ -271,7 +272,8 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         uint256 crossChainFee = getIssuanceFee(address(weth), new address[](0), new uint24[](0), _inputAmount);
         uint256 finalAmount = _inputAmount + feeAmount + crossChainFee;
         require(msg.value == finalAmount, "lower than required amount");
-        require(payable(factoryStorage.coreSender()).send(crossChainFee), "Cross chain fee transfer failed");
+        (bool success, ) = factoryStorage.coreSender().call{value: crossChainFee}("");
+        require(success, "Cross chain fee transfer failed");
         //transfer fee to the owner
         weth.deposit{value: finalAmount - crossChainFee}();
         // Transfer fee to the fee receiver and check the result
@@ -389,7 +391,8 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         require(_tokenOut != address(0), "Invalid output token address");
         require(_tokenOutPath[0] == address(weth), "Invalid token path");
         require(getRedemptionFee(amountIn) >= msg.value, "Insufficient ETH sent for cross chain fee");
-        require(payable(factoryStorage.coreSender()).send(msg.value), "Cross chain fee transfer failed");
+        (bool success, ) = factoryStorage.coreSender().call{value: msg.value}("");
+        require(success, "Cross chain fee transfer failed");
         uint256 burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         factoryStorage.increaseRedemptionNonce();
         factoryStorage.increasePendingRedemptionInputByNonce(factoryStorage.redemptionNonce(), amountIn);
