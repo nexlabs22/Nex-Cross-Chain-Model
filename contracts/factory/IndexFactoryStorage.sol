@@ -113,6 +113,21 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
     IQuoter public quoter;
     Vault public vault;
 
+    //slipage tolerance
+    uint256 public slippageTolerance; // 2000/10000 = 20%
+
+    uint256 public totalPendingIssuanceInput;
+    uint256 public totalPendingRedemptionInput;
+    uint256 public totalPendingRedemptionHoldValue;
+    uint256 public totalPendingExtraWeth;
+    mapping(uint => uint) public pendingIssuanceInputByNonce;
+    mapping(uint => uint) public pendingRedemptionInputByNonce;
+    mapping(uint => uint) public pendingRedemptionHoldValueByNonce;
+    mapping(uint => uint) public pendingExtraWethByNonce;
+    mapping(address => uint) public totalSentAmount;
+    mapping(address => uint) public totalReceivedAmount;
+
+
     modifier onlyIndexFactory() {
         require(msg.sender == indexFactory || msg.sender == coreSender, "Caller is not index factory contract.");
         _;
@@ -122,6 +137,14 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         require(
             msg.sender == indexFactoryBalancer || msg.sender == balancerSender,
             "Caller is not index factory balancer contract."
+        );
+        _;
+    }
+
+    modifier onlySenders() {
+        require(
+            msg.sender == coreSender || msg.sender == balancerSender,
+            "Caller is not core sender or balancer sender."
         );
         _;
     }
@@ -175,8 +198,18 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         factoryV2 = IUniswapV2Factory(_factoryV2);
         // update fee
         feeRate = 10;
+        slippageTolerance = 2000; // 20%
         latestFeeUpdate = block.timestamp;
         feeReceiver = msg.sender;
+    }
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function setSlippageTolerance(uint256 _slippageTolerance) public onlyOwner {
+        slippageTolerance = _slippageTolerance;
     }
 
     /**
@@ -478,6 +511,53 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         chainValueByNonce[_updatePortfolioNonce][_chainSelector] += _value;
     }
 
+    function increaseTotalSentAmount(address _tokenAddress, uint _amount) public onlySenders {
+        totalSentAmount[_tokenAddress] += _amount;
+    }
+    function increaseTotalReceivedAmount(address _tokenAddress, uint _amount) public onlySenders {
+        totalReceivedAmount[_tokenAddress] += _amount;
+    }
+
+    function increasePendingIssuanceInputByNonce(uint _issuanceNonce, uint _amount) public onlyIndexFactory {
+        pendingIssuanceInputByNonce[_issuanceNonce] += _amount;
+        totalPendingIssuanceInput += _amount;
+    }
+
+    function increasePendingRedemptionInputByNonce(uint _redemptionNonce, uint _amount) public onlyIndexFactory {
+        pendingRedemptionInputByNonce[_redemptionNonce] += _amount;
+        totalPendingRedemptionInput += _amount;
+    }
+
+    function decreasePendingIssuanceInputByNonce(uint _issuanceNonce) public onlyIndexFactory {
+        totalPendingIssuanceInput -= pendingIssuanceInputByNonce[_issuanceNonce];
+        pendingIssuanceInputByNonce[_issuanceNonce] = 0;
+    }
+
+    function decreasePendingRedemptionInputByNonce(uint _redemptionNonce) public onlyIndexFactory {
+        totalPendingRedemptionInput -= pendingRedemptionInputByNonce[_redemptionNonce];
+        pendingRedemptionInputByNonce[_redemptionNonce] = 0;
+    }
+
+    function increasePendingRedemptionHoldValueByNonce(uint _redemptionNonce, uint _amount) public onlyIndexFactory {
+        pendingRedemptionHoldValueByNonce[_redemptionNonce] += _amount;
+        totalPendingRedemptionHoldValue += _amount;
+    }
+
+    function decreasePendingRedemptionHoldValueByNonce(uint _redemptionNonce) public onlyIndexFactory {
+        totalPendingRedemptionHoldValue -= pendingRedemptionHoldValueByNonce[_redemptionNonce];
+        pendingRedemptionHoldValueByNonce[_redemptionNonce] = 0;
+    }
+
+    function increasePendingExtraWethByNonce(uint _updatePortfolioNonce, uint _amount) public onlyIndexFactoryBalancer {
+        pendingExtraWethByNonce[_updatePortfolioNonce] += _amount;
+        totalPendingExtraWeth += _amount;
+    }
+
+    function decreasePendingExtraWethByNonce(uint _updatePortfolioNonce) public onlyIndexFactoryBalancer {
+        totalPendingExtraWeth -= pendingExtraWethByNonce[_updatePortfolioNonce];
+        pendingExtraWethByNonce[_updatePortfolioNonce] = 0;
+    }
+
     function increaseReweightExtraPercentage(uint256 _reweightNonce, uint256 _extraPercentage)
         public
         onlyIndexFactoryBalancer
@@ -499,6 +579,8 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
             return _amount * int256(10 ** (_amountDecimals - _chainDecimals));
         }
     }
+
+    
 
     function getCurrentTokenValue(address tokenAddress) external view returns (uint256) {
         (address[] memory toETHPath, uint24[] memory toETHFees) = functionsOracle.getToETHPathData(tokenAddress);
@@ -524,7 +606,12 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
      * @return The price in Wei.
      */
     function priceInWei() public view returns (uint256) {
-        (, int256 price,,,) = toUsdPriceFeed.latestRoundData();
+        (uint80 roundId,int price,,uint256 _updatedAt,) = toUsdPriceFeed.latestRoundData();
+        require(roundId != 0, "invalid round id");
+        require(_updatedAt != 0 && _updatedAt <= block.timestamp, "invalid updated time");
+        require(price > 0, "invalid price");
+        require(block.timestamp - _updatedAt < 1 days, "invalid updated time");
+
         uint8 priceFeedDecimals = toUsdPriceFeed.decimals();
         price = _toWei(price, priceFeedDecimals, 18);
         return uint256(price);
@@ -539,6 +626,15 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
     }
 
     /**
+     * @dev Gets the minimum amount out.
+     * @return The minimum amount out.
+     */
+    function getMinAmountOut(address[] memory path, uint24[] memory fees, uint256 amountIn) public view returns (uint256) {
+        uint amountOut = getAmountOut(path, fees, amountIn);
+        return (amountOut * (10000 - slippageTolerance)) / 10000;
+    }
+    
+    /**
      * @dev Returns the amount out for a given swap.
      * @param path The path of the swap.
      * @param fees The fees of the swap.
@@ -550,6 +646,7 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         view
         returns (uint256 finalAmountOutValue)
     {
+        require(amountIn < type(uint128).max, "AmountIn exceeds uint128");
         uint256 finalAmountOut;
         if (amountIn > 0) {
             if (fees.length > 0) {
@@ -617,4 +714,10 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         }
         amountOut = lastAmount;
     }
+
+
+   
+
+   
+    
 }

@@ -22,7 +22,6 @@ async function main() {
     console.log("sending data...")
     const result = await cotract.connect(deployer).redemption(
         ethers.utils.parseEther("0.01"),
-        "0",
         WethAddresses['sepolia'],
         "3",
         {gasLimit: 2000000}

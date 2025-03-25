@@ -52,7 +52,7 @@ contract OnchainTest is Script {
         uint24[] memory fees = new uint24[](1);
         fees[0] = 100;
 
-        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens(address(usdc), path, fees, 10e6, 0);
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens(address(usdc), path, fees, 10e6);
     }
 
     function issuanceAndRedemptionWithEth() public {
@@ -69,7 +69,7 @@ contract OnchainTest is Script {
 
         // IndexFactory(payable(indexFactoryProxy)).redemption(200000000000000000000, 0, address(weth), path, fees);
         IndexFactory(payable(indexFactoryProxy)).redemption(
-            IERC20(indexTokenProxy).balanceOf(user), 0, address(weth), path, fees
+            IERC20(indexTokenProxy).balanceOf(user), address(weth), path, fees
         );
     }
 
