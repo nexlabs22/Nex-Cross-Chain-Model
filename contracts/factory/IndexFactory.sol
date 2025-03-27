@@ -124,6 +124,11 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         weth = IWETH(_weth);
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     // set WETH address
     function setWethAddress(address _weth) public onlyOwner {
         require(_weth != address(0), "Invalid WETH address");
