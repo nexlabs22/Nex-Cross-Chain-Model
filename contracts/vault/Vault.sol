@@ -21,6 +21,11 @@ contract Vault is Initializable, OwnableUpgradeable {
         __Ownable_init();
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     function setOperator(address _operator, bool _status) external onlyOwner {
         require(_operator != address(0), "NexVault: operator address is zero");
         isOperator[_operator] = _status;

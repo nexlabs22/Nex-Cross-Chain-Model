@@ -8,6 +8,10 @@ import "../../../../../contracts/factory/IndexFactoryStorage.sol";
 import "../../../../../contracts/vault/CrossChainIndexFactoryStorage.sol";
 import "../../../../../contracts/token/IndexToken.sol";
 
+/**
+forge script scripts/foundry/anfi/hooks/utils/getIndexTokenPrice.s.sol
+*/
+
 contract getIndexTokenPrice is Script {
     string public arbitrumRpc;
     string public ethRpc;
@@ -42,7 +46,7 @@ contract getIndexTokenPrice is Script {
         address[] memory arbTokens = getArbitrumUnderlyingAsset();
 
         uint256 wethValuesOnArb =
-            testCheckMultipleTokenBalancesForArbitrum(arbTokens, vaultOnArb, indexFactoryStorage, wethOnArbitrum);
+            checkMultipleTokenBalancesForArbitrum(arbTokens, vaultOnArb, indexFactoryStorage, wethOnArbitrum);
 
         uint256 totalSupply = IndexToken(payable(indexToken)).totalSupply();
 
@@ -52,7 +56,7 @@ contract getIndexTokenPrice is Script {
         address[] memory ethTokens = getEthUnderlyingAsset();
 
         uint256 wethValuesOnEth =
-            testCheckMultipleTokenBalancesForEth(ethTokens, vaultOnEth, crossChainFactoryStorage, wethOnEthereum, usdt);
+            checkMultipleTokenBalancesForEth(ethTokens, vaultOnEth, crossChainFactoryStorage, wethOnEthereum, usdt);
 
         uint256 totalValue = wethValuesOnArb + wethValuesOnEth;
 
@@ -72,7 +76,7 @@ contract getIndexTokenPrice is Script {
         console.log("New price: ", newPrice);
     }
 
-    function testCheckMultipleTokenBalancesForArbitrum(
+    function checkMultipleTokenBalancesForArbitrum(
         address[] memory tokens,
         address vaultAddress,
         address sourceAddress,
@@ -112,7 +116,7 @@ contract getIndexTokenPrice is Script {
         return totalValueInUsd;
     }
 
-    function testCheckMultipleTokenBalancesForEth(
+    function checkMultipleTokenBalancesForEth(
         address[] memory tokens,
         address vaultAddress,
         address sourceAddress,

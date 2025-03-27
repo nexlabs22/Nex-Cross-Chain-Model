@@ -56,7 +56,7 @@ contract OnchainTest is Script {
     }
 
     function issuanceAndRedemptionWithEth() public {
-        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e16 * 1001) / 1000}(1e16, 0);
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e16 * 1001) / 1000}(1e16);
         // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e14 * 1001) / 1000}(1e14, 0);
         // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (3700000000000000 * 1001) / 1000}(
         //     3700000000000000, 0

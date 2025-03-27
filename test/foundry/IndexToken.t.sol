@@ -230,12 +230,17 @@ contract CounterTest is Test, ContractDeployer {
         uint feePerDay = indexToken.feeRatePerDayScaled();
         uint totalSupply = indexToken.totalSupply();
         uint supply = totalSupply;
-        for (uint256 i; i < _days; ) {
-                supply += ((supply * feePerDay) / SCALAR);
-                unchecked {
-                    ++i;
-                }
-        }
+        // for (uint256 i; i < _days; ) {
+        //         supply += ((supply * feePerDay) / SCALAR);
+        //         unchecked {
+        //             ++i;
+        //         }
+        // }
+         // Use a logarithmic approximation for compounding
+        uint256 compoundedFeeRate = SCALAR + (feePerDay * _days);
+        // Calculate the compounded supply
+        supply = (supply * compoundedFeeRate) / SCALAR;
+        
         uint expectedFeeAmount = supply - totalSupply;
         //mint another 1000 token and check fee
         indexToken.mint(address(this), 1000e18);

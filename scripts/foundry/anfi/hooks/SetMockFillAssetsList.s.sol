@@ -69,7 +69,7 @@ contract SetMockFillAssetsList is Script {
             pathData[i] = abi.encode(path, feesData);
         }
 
-        FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
+        // FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
 
         console.log("Called mockFillAssetsList() with your 2 assets data.");
     }
@@ -99,7 +99,7 @@ contract SetMockFillAssetsList is Script {
             pathData[i] = abi.encode(path, feesData);
         }
 
-        FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
+        // FunctionsOracle(functionsOracleProxy).mockFillAssetsList(assetList, pathData, marketShares, chainSelectors);
 
         console.log("Called mockFillAssetsList() with your 2 assets data.");
     }
