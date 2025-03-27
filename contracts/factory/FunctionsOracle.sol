@@ -94,10 +94,23 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
     mapping(uint => OracleData) internal oracleData;
     mapping(uint => CurrentData) internal currentData;
 
+    mapping(address => bool) public isOperator;
+
+    event RequestFulFilled(bytes32 indexed requestId, uint time);
+    event PathDataUpdated(uint time);
+
     modifier onlyIndexFactoryBalancer() {
         require(
             msg.sender == indexFactoryBalancer || msg.sender == balancerSender,
             "Caller is not index factory balancer contract."
+        );
+        _;
+    }
+
+    modifier onlyOwnerOrOperator() {
+        require(
+            msg.sender == owner() || isOperator[msg.sender],
+            "Caller is not the owner or operator."
         );
         _;
     }
@@ -138,6 +151,14 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
+    }
+
+    //set operator
+    function setOperator(address _operator, bool _status)
+        external
+        onlyOwner
+    {
+        isOperator[_operator] = _status;
     }
 
     /**
@@ -313,35 +334,12 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
 
     function requestAssetsData(
         string calldata source,
-        // FunctionsRequest.Location secretsLocation,
-        bytes calldata encryptedSecretsReference,
-        string[] calldata args,
-        bytes[] calldata bytesArgs,
         uint64 subscriptionId,
         uint32 callbackGasLimit
-    ) public returns (bytes32) {
+    ) public onlyOwnerOrOperator returns (bytes32) {
         FunctionsRequest.Request memory req;
-        req.initializeRequest(
-            FunctionsRequest.Location.Inline,
-            FunctionsRequest.CodeLanguage.JavaScript,
-            source
-        );
-        // req.secretsLocation = secretsLocation;
-        req.secretsLocation = FunctionsRequest.Location.Remote;
-        req.encryptedSecretsReference = encryptedSecretsReference;
-        if (args.length > 0) {
-            req.setArgs(args);
-        }
-        if (bytesArgs.length > 0) {
-            req.setBytesArgs(bytesArgs);
-        }
-        return
-            _sendRequest(
-                req.encodeCBOR(),
-                subscriptionId,
-                callbackGasLimit,
-                donId
-            );
+        req.initializeRequestForInlineJavaScript(source);
+        return _sendRequest(req.encodeCBOR(), subscriptionId, callbackGasLimit, donId);
     }
 
     /**
@@ -358,10 +356,9 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
     ) internal override {
         (
             address[] memory _tokens,
-            bytes[] memory _pathBytes,
             uint256[] memory _marketShares,
             uint64[] memory _chainSelectors
-        ) = abi.decode(response, (address[], bytes[], uint256[], uint64[]));
+        ) = abi.decode(response, (address[], uint256[], uint64[]));
         require(_tokens.length > 0, "Tokens array cannot be empty");
         require(
             _marketShares.length == _tokens.length,
@@ -372,7 +369,8 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
             "Chain selectors array length must match tokens array length"
         );
 
-        insertOracleData(_tokens, _pathBytes, _marketShares, _chainSelectors);
+        insertOracleData(_tokens, _marketShares, _chainSelectors);
+        emit RequestFulFilled(requestId, block.timestamp);
     }
 
    
@@ -385,12 +383,10 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
      */
     function insertOracleData(
         address[] memory _tokens,
-        bytes[] memory _pathBytes,
         uint256[] memory _marketShares,
         uint64[] memory _chainSelectors
     ) private {
         address[] memory tokens0 = _tokens;
-        bytes[] memory pathBytes0 = _pathBytes;
         uint[] memory marketShares0 = _marketShares;
         uint64[] memory chainSelectors0 = _chainSelectors;
 
@@ -400,8 +396,6 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
         }
         //save mappings
         for (uint i = 0; i < tokens0.length; i++) {
-            //update path
-            _initPathData(tokens0[i], pathBytes0[i]);
             //update token data
             oracleList[i] = tokens0[i];
             tokenOracleListIndex[tokens0[i]] = i;
@@ -467,6 +461,18 @@ contract FunctionsOracle is Initializable, FunctionsClient, ConfirmedOwner {
             totalCurrentList = tokens0.length;
         }
         lastUpdateTime = block.timestamp;
+    }
+
+    function updatePathData(address[] memory tokens, bytes[] memory pathBytes) public onlyOwnerOrOperator {
+        require(
+            tokens.length == pathBytes.length,
+            "The length of the tokens and pathBytes arrays should be the same"
+        );
+        for(uint256 i = 0; i < tokens.length; i++) {
+            _initPathData(tokens[i], pathBytes[i]);
+        }
+
+        emit PathDataUpdated(block.timestamp);
     }
 
     function _initPathData(

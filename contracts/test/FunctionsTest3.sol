@@ -8,7 +8,7 @@ import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/l
 /**
  * Request testnet LINK and ETH here: https://faucets.chain.link/
  * Find information on LINK Token Contracts and get the latest ETH and LINK faucets here: https://docs.chain.link/resources/link-token-contracts/
- */
+*/
 
 /**
  * @title GettingStartedFunctionsConsumer

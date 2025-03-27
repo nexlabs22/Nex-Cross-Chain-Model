@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../libraries/SwapHelpers.sol";
 import "../interfaces/IWETH.sol";
 import "./BalancerSender.sol";
+import "./IndexFactory.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
@@ -47,6 +48,10 @@ contract IndexFactoryBalancer is
         uint swapWethAmount;
     }
 
+    event RequestedAskValues(uint time);
+    event RequestedFirstReweightAction(uint time);
+    event RequestedSecondReweightAction(uint time);
+
     
     /**
      * @dev Pauses the contract.
@@ -62,6 +67,14 @@ contract IndexFactoryBalancer is
         _unpause();
     }
 
+
+    modifier onlyOwnerOrOperator() {
+        require(
+            msg.sender == owner() || functionsOracle.isOperator(msg.sender),
+            "Caller is not the owner or operator"
+        );
+        _;
+    }
 
     /**
      * @dev Initializes the contract with the given parameters.
@@ -117,6 +130,24 @@ contract IndexFactoryBalancer is
 
     function setBalancerSender(address payable _balancerSender) public onlyOwner {
         balancerSender = BalancerSender(_balancerSender);
+    }
+
+    // pause index factory when rebalance happens
+    function pauseIndexFactory() public onlyOwnerOrOperator {
+        address indexFactoryAddress = factoryStorage.indexFactory();
+        IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
+        if(!indexFactory.paused()){
+        indexFactory.pause();
+        }
+    }
+
+    // unpause index factory when rebalance is done
+    function unpauseIndexFactory() public onlyOwnerOrOperator {
+        address indexFactoryAddress = factoryStorage.indexFactory();
+        IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
+        if(indexFactory.paused()){
+        indexFactory.unpause();
+        }
     }
 
     
@@ -193,7 +224,8 @@ contract IndexFactoryBalancer is
     /**
      * @dev Requests values for the portfolio.
      */
-    function askValues() public whenNotPaused onlyOwner {
+    function askValues() public whenNotPaused onlyOwnerOrOperator {
+        pauseIndexFactory();
         factoryStorage.increaseUpdatePortfolioNonce();
 
         uint totalChains = functionsOracle.currentChainSelectorsCount();
@@ -214,12 +246,14 @@ contract IndexFactoryBalancer is
                 _checkValuesOtherChains(chainSelector);
             }
         }
+
+        emit RequestedAskValues(block.timestamp);
     }
 
     /**
      * @dev Performs the first reweight action.
      */
-    function firstReweightAction() public whenNotPaused onlyOwner {
+    function firstReweightAction() public whenNotPaused onlyOwnerOrOperator {
         uint nonce = factoryStorage.updatePortfolioNonce();
         uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
@@ -278,6 +312,8 @@ contract IndexFactoryBalancer is
                 }
             }
         }
+
+        emit RequestedFirstReweightAction(block.timestamp);
     }
 
     function _swapTokensToWETHFirstRebalance(
@@ -471,7 +507,7 @@ contract IndexFactoryBalancer is
     /**
      * @dev Performs the second reweight action.
      */
-    function secondReweightAction() public whenNotPaused onlyOwner {
+    function secondReweightAction() public whenNotPaused onlyOwnerOrOperator {
         uint nonce = factoryStorage.updatePortfolioNonce();
         uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
@@ -529,6 +565,7 @@ contract IndexFactoryBalancer is
             }
         }
         factoryStorage.decreasePendingExtraWethByNonce(nonce);
+        emit RequestedSecondReweightAction(block.timestamp);
     }
 
     function _swapLowerValueCurrentChainToWETH(
