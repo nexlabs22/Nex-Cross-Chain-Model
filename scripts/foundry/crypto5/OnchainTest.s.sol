@@ -11,16 +11,16 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract OnchainTest is Script {
     IndexToken indexToken;
 
-    // Mainnet
+    // // Mainnet
     address user = vm.envAddress("USER");
     address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-    // address usdt = vm.envAddress("SEPOLIA_USDC_ADDRESS");
+    address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
     address indexFactoryProxy = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
     address indexTokenProxy = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
 
     // Testnet
     // address user = vm.envAddress("USER");
-    // address weth = vm.envAddress("CR5_SEPOLIA_WETH_ADDRESS");
+    // address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
     // address usdt = vm.envAddress("SEPOLIA_USDT_ADDRESS");
     // address indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
     // address indexTokenProxy = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
@@ -33,7 +33,9 @@ contract OnchainTest is Script {
         // string memory targetChain = "sepolia";
 
         // Issuance With ETH
-        issuanceAndRedemptionWithEth();
+        // issuanceAndRedemptionWithEth();
+
+        issuanceIndexTokens();
 
         // Issuance with ERC20 Token
         // issuanceAndRedemptionWithUsdt();
@@ -41,19 +43,34 @@ contract OnchainTest is Script {
         vm.stopBroadcast();
     }
 
-    function issuanceAndRedemptionWithEth() public {
-        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (2000000000000000 * 1001) / 1000}(
-            2000000000000000, 0
-        );
-        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e15 * 1001) / 1000}(1e15, 0);
+    function issuanceIndexTokens() public {
+        IERC20(usdc).approve(address(indexFactoryProxy), (10e6 * 1001) / 1000);
+        // redemption input token path data
+        address[] memory path = new address[](2);
+        path[0] = address(usdc);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 100;
 
-        // address[] memory path = new address[](2);
-        // path[0] = address(weth);
-        // path[1] = address(weth);
-        // uint24[] memory fees = new uint24[](1);
-        // fees[0] = 3000;
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens(address(usdc), path, fees, 10e6);
+    }
+
+    function issuanceAndRedemptionWithEth() public {
+        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (2000000000000000 * 1001) / 1000}(
+        //     2000000000000000, 0
+        // );
+        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e17 * 1001) / 1000}(1e17, 0);
+
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
 
         // IndexFactory(payable(indexFactoryProxy)).redemption(200000000000000000000, 0, address(weth), path, fees);
+        IndexFactory(payable(indexFactoryProxy)).redemption(
+            IERC20(indexTokenProxy).balanceOf(user), address(weth), path, fees
+        );
     }
 
     // function issuanceAndRedemptionWithUsdt() public {

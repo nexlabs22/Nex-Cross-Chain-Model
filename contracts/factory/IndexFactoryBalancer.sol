@@ -1,20 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "../token/IndexToken.sol";
 import "../proposable/ProposableOwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
-import "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
-import "../ccip/CCIPReceiver.sol";
 import "./IndexFactoryStorage.sol";
 import "./FunctionsOracle.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../libraries/SwapHelpers.sol";
 import "../interfaces/IWETH.sol";
-import "../libraries/MessageSender.sol";
 import "./BalancerSender.sol";
+import "./IndexFactory.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
@@ -22,7 +18,8 @@ import "./BalancerSender.sol";
 /// @dev This contract uses an upgradeable pattern
 contract IndexFactoryBalancer is
     Initializable,
-    ProposableOwnableUpgradeable
+    ProposableOwnableUpgradeable,
+    PausableUpgradeable
 {
 
     IndexFactoryStorage public factoryStorage;
@@ -51,9 +48,33 @@ contract IndexFactoryBalancer is
         uint swapWethAmount;
     }
 
+    event RequestedAskValues(uint time);
+    event RequestedFirstReweightAction(uint time);
+    event RequestedSecondReweightAction(uint time);
+
     
+    /**
+     * @dev Pauses the contract.
+     */
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /**
+     * @dev Unpauses the contract.
+     */
+    function unpause() external onlyOwner {
+        _unpause();
+    }
 
 
+    modifier onlyOwnerOrOperator() {
+        require(
+            msg.sender == owner() || functionsOracle.isOperator(msg.sender),
+            "Caller is not the owner or operator"
+        );
+        _;
+    }
 
     /**
      * @dev Initializes the contract with the given parameters.
@@ -86,6 +107,11 @@ contract IndexFactoryBalancer is
         weth = IWETH(_weth);
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     /**
      * @dev Sets the IndexFactoryStorage contract address.
      * @param _factoryStorage The address of the IndexFactoryStorage contract.
@@ -106,12 +132,25 @@ contract IndexFactoryBalancer is
         balancerSender = BalancerSender(_balancerSender);
     }
 
-    
-    /**
-     * @dev Fallback function to receive ETH.
-     */
-    receive() external payable {}
+    // pause index factory when rebalance happens
+    function pauseIndexFactory() public onlyOwnerOrOperator {
+        address indexFactoryAddress = factoryStorage.indexFactory();
+        IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
+        if(!indexFactory.paused()){
+        indexFactory.pause();
+        }
+    }
 
+    // unpause index factory when rebalance is done
+    function unpauseIndexFactory() public onlyOwnerOrOperator {
+        address indexFactoryAddress = factoryStorage.indexFactory();
+        IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
+        if(indexFactory.paused()){
+        indexFactory.unpause();
+        }
+    }
+
+    
     /**
      * @dev Swaps tokens.
      * @param path The path of the swap.
@@ -131,12 +170,14 @@ contract IndexFactoryBalancer is
         require(_recipient != address(0), "Invalid recipient address");
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
+        uint256 amountOutMinimum = factoryStorage.getMinAmountOut(path, fees, amountIn);
         outputAmount = SwapHelpers.swap(
             swapRouterV3,
             swapRouterV2,
             path,
             fees,
             amountIn,
+            amountOutMinimum,
             _recipient
         );
     }
@@ -183,7 +224,8 @@ contract IndexFactoryBalancer is
     /**
      * @dev Requests values for the portfolio.
      */
-    function askValues() public onlyOwner {
+    function askValues() public whenNotPaused onlyOwnerOrOperator {
+        pauseIndexFactory();
         factoryStorage.increaseUpdatePortfolioNonce();
 
         uint totalChains = functionsOracle.currentChainSelectorsCount();
@@ -204,12 +246,14 @@ contract IndexFactoryBalancer is
                 _checkValuesOtherChains(chainSelector);
             }
         }
+
+        emit RequestedAskValues(block.timestamp);
     }
 
     /**
      * @dev Performs the first reweight action.
      */
-    function firstReweightAction() public onlyOwner {
+    function firstReweightAction() public whenNotPaused onlyOwnerOrOperator {
         uint nonce = factoryStorage.updatePortfolioNonce();
         uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
@@ -268,6 +312,8 @@ contract IndexFactoryBalancer is
                 }
             }
         }
+
+        emit RequestedFirstReweightAction(block.timestamp);
     }
 
     function _swapTokensToWETHFirstRebalance(
@@ -436,6 +482,7 @@ contract IndexFactoryBalancer is
         );
 
         factoryStorage.increaseExtraWethByNonce(nonce, extraWethAmount);
+        factoryStorage.increasePendingExtraWethByNonce(nonce, extraWethAmount);
         factoryStorage.increaseReweightExtraPercentage(nonce, chainCurrentRealShare - oracleChainSelectorTotalShares);
     }
 
@@ -460,7 +507,7 @@ contract IndexFactoryBalancer is
     /**
      * @dev Performs the second reweight action.
      */
-    function secondReweightAction() public onlyOwner {
+    function secondReweightAction() public whenNotPaused onlyOwnerOrOperator {
         uint nonce = factoryStorage.updatePortfolioNonce();
         uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
@@ -517,6 +564,8 @@ contract IndexFactoryBalancer is
                 }
             }
         }
+        factoryStorage.decreasePendingExtraWethByNonce(nonce);
+        emit RequestedSecondReweightAction(block.timestamp);
     }
 
     function _swapLowerValueCurrentChainToWETH(

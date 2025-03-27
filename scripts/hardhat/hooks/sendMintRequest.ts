@@ -29,7 +29,6 @@ async function main() {
     console.log("sending data...")
     const result = await cotract.connect(deployer).issuanceIndexTokensWithEth(
         ethers.utils.parseEther("0.001"),
-        "0",
         {value: ethers.utils.parseEther("0.0011"), gasLimit: 2000000}
     )
     console.log("waiting for results...")

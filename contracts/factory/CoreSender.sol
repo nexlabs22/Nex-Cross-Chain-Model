@@ -61,6 +61,14 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         _;
     }
 
+    modifier onlyOwnerOrOperator() {
+        require(
+            msg.sender == owner() || functionsOracle.isOperator(msg.sender),
+            "Only owner or operator can call this function"
+        );
+        _;
+    }
+
     /**
      * @dev Initializes the contract with the given parameters.
      * @param _token The address of the IndexToken contract.
@@ -97,6 +105,11 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         weth = IWETH(_weth);
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     /**
      * @dev Sets the IndexFactoryStorage contract address.
      * @param _factoryStorage The address of the IndexFactoryStorage contract.
@@ -113,7 +126,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         functionsOracle = FunctionsOracle(_functionsOracle);
     }
 
-    function withdrawLink() external onlyOwner {
+    function withdrawLink() external onlyOwnerOrOperator {
         IERC20(factoryStorage.linkToken()).transfer(
             msg.sender, IERC20(factoryStorage.linkToken()).balanceOf(address(this))
         );
@@ -124,11 +137,11 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
      */
     receive() external payable {}
 
-    function withdrawEther() external onlyOwner {
+    function withdrawEther() external onlyOwnerOrOperator {
         uint256 balance = address(this).balance;
         require(balance > 0, "No Ether to withdraw");
 
-        (bool success,) = payable(owner()).call{value: balance}("");
+        (bool success,) = payable(msg.sender).call{value: balance}("");
         require(success, "Ether transfer failed");
     }
 
@@ -146,7 +159,8 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
     {
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
-        outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, _recipient);
+        uint256 amountOutMinimum = factoryStorage.getMinAmountOut(path, fees, amountIn);
+        outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, amountOutMinimum, _recipient);
     }
 
     function _encodeIssuanceData(
@@ -207,7 +221,44 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         factoryStorage.setIssuanceMessageId(_issuanceNonce, messageId);
     }
 
+    function calculateIssuanceFee(uint64 _chainSelector, uint _wethAmount) public view returns (uint256 totalFee) {
+        
+        // get cross chain token amount
+        (address[] memory fromETHPath, uint24[] memory fromETHFees) =
+            factoryStorage.getFromETHPathData(factoryStorage.crossChainToken(_chainSelector));
+        uint256 crossChainTokenAmount = factoryStorage.getAmountOut(fromETHPath, fromETHFees, _wethAmount);
+        // get cross chain factory
+        address crossChainFactory = factoryStorage.crossChainFactoryBySelector(_chainSelector);
+        uint256[] memory totalSharesArr = new uint256[](1);
+        totalSharesArr[0] = functionsOracle.getCurrentChainSelectorTotalShares(functionsOracle.currentFilledCount(), _chainSelector);
+        address crossChainIndexFactory = factoryStorage.crossChainFactoryBySelector(_chainSelector);
+
+        //encode data
+        bytes memory data = _encodeIssuanceData(
+            factoryStorage.issuanceNonce(),
+            functionsOracle.allCurrentChainSelectorTokens(_chainSelector),
+            functionsOracle.allCurrentChainSelectorTokenShares(_chainSelector),
+            totalSharesArr
+        );
+
+        // send issuance request
+        Client.EVMTokenAmount[] memory tokensToSendArray = new Client.EVMTokenAmount[](1);
+        tokensToSendArray[0].token = factoryStorage.crossChainToken(_chainSelector);
+        tokensToSendArray[0].amount = crossChainTokenAmount;
+
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(crossChainFactory),
+            data: data,
+            tokenAmounts: tokensToSendArray,
+            feeToken: address(0),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 2_000_000}))
+        });
+
+        return IRouterClient(i_router).getFee(_chainSelector, message);
+    }
+
     function completeIssuanceRequest(uint256 _issuanceNonce, bytes32 _messageId) internal {
+        factoryStorage.decreasePendingIssuanceInputByNonce(_issuanceNonce);
         uint256 totalOldVaules;
         uint256 totalNewVaules;
         uint256 totalCurrentList = functionsOracle.totalCurrentList();
@@ -287,15 +338,45 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         factoryStorage.setRedemptionMessageId(_redemptionNonce, messageId);
     }
 
-    uint256 public testData;
+    function calculateRedemptionFee(uint64 _chainSelector) public view returns (uint256 totalFee) {
+        // get data
+        address crossChainIndexFactory = factoryStorage.crossChainFactoryBySelector(_chainSelector);
+        address[] memory tokenAddresses = functionsOracle.allCurrentChainSelectorTokens(_chainSelector);
+        uint256[] memory burnPercentages = new uint256[](1);
+        burnPercentages[0] = 0;
+        //encode data
+        bytes memory data = abi.encode(
+            1,
+            tokenAddresses,
+            new address[](0),
+            functionsOracle.getFromETHPathBytesForTokens(tokenAddresses),
+            new bytes[](0),
+            factoryStorage.redemptionNonce(),
+            new uint256[](0),
+            burnPercentages
+        );
+        // send message
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(crossChainIndexFactory),
+            data: data,
+            tokenAmounts: new Client.EVMTokenAmount[](0),
+            feeToken: address(0),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 2_000_000}))
+        });
+
+        return IRouterClient(i_router).getFee(_chainSelector, message);
+    }
+
 
     function completeRedemptionRequest(uint256 nonce, bytes32 _messageId) internal {
+        factoryStorage.decreasePendingRedemptionInputByNonce(nonce);
+        factoryStorage.decreasePendingRedemptionHoldValueByNonce(nonce);
         uint256 wethAmount = factoryStorage.getRedemptionTotalValue(nonce);
         uint256 totalPortfolioValues = factoryStorage.getRedemptionTotalPortfolioValues(nonce);
         address requester = factoryStorage.getRedemptionRequester(nonce);
         address outputToken = factoryStorage.getRedemptionOutputToken(nonce);
         uint256 fee = FeeCalculation.calculateFee(wethAmount, factoryStorage.feeRate());
-        testData = fee;
+        
         require(weth.transfer(address(factoryStorage.feeReceiver()), fee), "Fee transfer failed");
         uint256 indexTokenPrice =
             indexToken.totalSupply() != 0 ? (totalPortfolioValues * 1e18) / indexToken.totalSupply() : 0;
@@ -333,7 +414,6 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         }
     }
 
-    uint256 public testData2;
 
     function _handleReceivedRedemption(
         uint256 nonce,
@@ -352,7 +432,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         uint256 wethAmount = swap(toETHPath, toETHFees, amount, address(this));
 
         factoryStorage.increaseRedemptionTotalValue(requestRedemptionNonce, wethAmount);
-        testData2 = factoryStorage.getRedemptionTotalValue(requestRedemptionNonce);
+        
         factoryStorage.increaseRedemptionTotalPortfolioValues(requestRedemptionNonce, crossChainPortfolioValue);
         factoryStorage.increaseRedemptionCompletedTokensCount(requestRedemptionNonce, tokenAddresses.length);
         if (factoryStorage.getRedemptionCompletedTokensCount(requestRedemptionNonce) == totalCurrentList) {
@@ -376,6 +456,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         Client.EVMTokenAmount[] memory tokensToSendDetails,
         MessageSender.PayFeesIn payFeesIn
     ) internal nonReentrant returns (bytes32) {
+        factoryStorage.increaseTotalSentAmount(tokensToSendDetails[0].token, tokensToSendDetails[0].amount);
         bytes32 messageId = MessageSender.sendToken(
             getRouter(),
             factoryStorage.linkToken(),
@@ -385,7 +466,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
             receiver,
             tokensToSendDetails,
             payFeesIn,
-            3_000_000
+            2_000_000
         );
         emit MessageSent(messageId);
         return messageId;
@@ -410,7 +491,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         require(receiver != address(0), "Invalid receiver address");
         require(_data.length > 0, "Data cannot be empty");
         return MessageSender.sendMessage(
-            getRouter(), factoryStorage.linkToken(), destinationChainSelector, receiver, _data, payFeesIn, 3_000_000
+            getRouter(), factoryStorage.linkToken(), destinationChainSelector, receiver, _data, payFeesIn, 2_000_000
         );
     }
     /**
@@ -439,6 +520,9 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         ) = abi.decode(
             any2EvmMessage.data, (uint256, address[], address[], bytes[], bytes[], uint256, uint256[], uint256[])
         );
+        if(any2EvmMessage.destTokenAmounts.length > 0) {
+            factoryStorage.increaseTotalReceivedAmount(any2EvmMessage.destTokenAmounts[0].token, any2EvmMessage.destTokenAmounts[0].amount);
+        }
         if (actionType == 0) {
             _handleReceivedIssuance(nonce, tokenAddresses, value1, value2, totalCurrentList, messageId);
         } else if (actionType == 1) {
