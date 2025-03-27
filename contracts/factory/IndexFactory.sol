@@ -104,6 +104,30 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         weth = IWETH(_weth);
     }
 
+    // set WETH address
+    function setWethAddress(address _weth) public onlyOwner {
+        require(_weth != address(0), "Invalid WETH address");
+        weth = IWETH(_weth);
+    }
+
+    /**
+     * @dev Sets the IndexToken contract address.
+     * @param _token The address of the IndexToken contract.
+     */
+    function setIndexToken(address _token) public onlyOwner {
+        require(_token != address(0), "Invalid token address");
+        indexToken = IndexToken(payable(_token));
+    }
+
+    /**
+     * @dev Sets the current chain selector.
+     * @param _currentChainSelector The current chain selector.
+     */
+    function setCurrentChainSelector(uint64 _currentChainSelector) public onlyOwner {
+        require(_currentChainSelector > 0, "Invalid chain selector");
+        currentChainSelector = _currentChainSelector;
+    }
+
     /**
      * @dev Sets the IndexFactoryStorage contract address.
      * @param _factoryStorage The address of the IndexFactoryStorage contract.
