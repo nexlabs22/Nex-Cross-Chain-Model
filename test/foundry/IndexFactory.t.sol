@@ -137,16 +137,14 @@ contract IndexFactoryTest is Test, ContractDeployer {
         // bytes32 requestId = functionsOracle.requestAssetsData();
         bytes32 requestId = functionsOracle.requestAssetsData(
             "console.log('Hello, World!');",
-            // FunctionsConsumer.Location.Inline, // Use the imported enum directly
-            abi.encodePacked("default"),
-            new string[](1), // Convert to dynamic array
-            new bytes[](1),  // Convert to dynamic array
             0,
             0
         );
-        bytes memory data = abi.encode(assetList, pathData, tokenShares, chains);
+        bytes memory data = abi.encode(assetList, tokenShares, chains);
         bool success = oracle.fulfillRequest(address(functionsOracle), requestId, data);
         require(success, "oracle request failed");
+        // update path data
+        functionsOracle.updatePathData(assetList, pathData);
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }
     function testOracleList() public {

@@ -173,16 +173,11 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         // );
         bytes32 requestId = functionsOracle.requestAssetsData(
             "console.log('Hello, World!');",
-            // FunctionsConsumer.Location.Inline, // Use the imported enum directly
-            abi.encodePacked("default"),
-            new string[](1), // Convert to dynamic array
-            new bytes[](1), // Convert to dynamic array
             0,
             0
         );
         bytes memory data = abi.encode(
             assetList,
-            pathData,
             tokenShares,
             chains
         );
@@ -192,6 +187,9 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             data
         );
         require(success, "fulfillRequest failed");
+
+        // update path data
+        functionsOracle.updatePathData(assetList, pathData);
     }
 
     function updateOracleList(
@@ -206,16 +204,11 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
         bytes32 requestId = functionsOracle.requestAssetsData(
             "console.log('Hello, World!');",
-            // FunctionsConsumer.Location.Inline, // Use the imported enum directly
-            abi.encodePacked("default"),
-            new string[](1), // Convert to dynamic array
-            new bytes[](1), // Convert to dynamic array
             0,
             0
         );
         bytes memory data = abi.encode(
             assetList,
-            pathData,
             tokenShares,
             chains
         );
@@ -225,6 +218,8 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
             data
         );
         require(success, "fulfillRequest failed");
+        // update path data
+        functionsOracle.updatePathData(assetList, pathData);
         return success;
     }
 
@@ -578,7 +573,9 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         factoryBalancer.proposeOwner(owner);
         vm.startPrank(owner);
         factoryBalancer.transferOwnership(owner);
+        assertEq(factory.paused(), false);
         factoryBalancer.askValues();
+        assertEq(factory.paused(), true);
         mockRouter.executeAllMessages();
         vm.stopPrank();
         showTokenBalances();
@@ -668,9 +665,10 @@ contract IndexFactoryBalancerTest is Test, ContractDeployer {
         indexTokenPrice2 = getIndexTokenPrice2();
         console.log(indexTokenPrice);
         console.log(indexTokenPrice2);
-
+        // factoryBalancer.pauseIndexFactory();
+        // factoryBalancer.unpauseIndexFactory();
         mockRouter.executeAllMessages();
-
+        // assertEq(factory.paused(), false);
         //check prices
         indexTokenPrice = getIndexTokenPrice();
         indexTokenPrice2 = getIndexTokenPrice2();
