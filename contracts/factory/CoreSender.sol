@@ -272,7 +272,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         if (indexToken.totalSupply() > 0) {
             amountToMint = (indexToken.totalSupply() * totalNewVaules) / totalOldVaules - indexToken.totalSupply();
         } else {
-            amountToMint = (totalNewVaules) * 100;
+            amountToMint = (totalNewVaules) / 100;
         }
         indexToken.mint(factoryStorage.getIssuanceRequester(_issuanceNonce), amountToMint);
         uint256 indexTokenPrice = (totalNewVaules * 1e18) / indexToken.totalSupply();
