@@ -25,7 +25,12 @@ import "../interfaces/IWETH.sol";
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
 
-contract IndexFactory is Initializable, ProposableOwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
+contract IndexFactory is
+    Initializable,
+    ProposableOwnableUpgradeable,
+    ReentrancyGuardUpgradeable,
+    PausableUpgradeable
+{
     // using MessageSender for *;
 
     struct IssuanceSendLocalVars {
@@ -35,7 +40,6 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         address[] zeroAddresses;
         uint256[] zeroNumbers;
     }
-
 
     IndexToken public indexToken;
     IndexFactoryStorage public factoryStorage;
@@ -68,7 +72,9 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
 
     modifier onlyOwnerOrBalancers() {
         require(
-            msg.sender == owner() || functionsOracle.isOperator(msg.sender) || msg.sender == address(factoryStorage.balancerSender()) || msg.sender == address(factoryStorage.indexFactoryBalancer()),
+            msg.sender == owner() || functionsOracle.isOperator(msg.sender)
+                || msg.sender == address(factoryStorage.balancerSender())
+                || msg.sender == address(factoryStorage.indexFactoryBalancer()),
             "Not owner or balancer"
         );
         _;
@@ -87,8 +93,6 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
     function unpause() external onlyOwnerOrBalancers {
         _unpause();
     }
-
-    
 
     /**
      * @dev Initializes the contract with the given parameters.
@@ -179,8 +183,8 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         uint256 _inputAmount
     ) public view returns (uint256) {
         // get weth amount
-        uint wethAmount;
-        if(_tokenIn == address(weth)){
+        uint256 wethAmount;
+        if (_tokenIn == address(weth)) {
             wethAmount = _inputAmount;
         } else {
             wethAmount = factoryStorage.getAmountOut(_tokenInPath, _tokenInFees, _inputAmount);
@@ -196,9 +200,9 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
             uint64 chainSelector = chainSelectors[i];
             uint256 chainSelectorTokensCount = functionsOracle.currentChainSelectorTokensCount(chainSelector);
             if (chainSelector != currentChainSelector) {
-               uint256 totalShares = functionsOracle.getCurrentChainSelectorTotalShares(latestCount, chainSelector);
-               uint256 chainWethAmount = (wethAmount * totalShares) / 100e18;
-               //get the fee
+                uint256 totalShares = functionsOracle.getCurrentChainSelectorTotalShares(latestCount, chainSelector);
+                uint256 chainWethAmount = (wethAmount * totalShares) / 100e18;
+                //get the fee
                 uint256 fee = coreSender.calculateIssuanceFee(chainSelector, chainWethAmount);
                 totalCrossChainFee += fee;
             }
@@ -240,8 +244,11 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         require(_tokenIn != address(0), "Invalid input token address");
         require(_inputAmount > 0, "Input amount must be greater than zero");
         require(_tokenInPath[_tokenInPath.length - 1] == address(weth), "Invalid token path");
-        require(getIssuanceFee(_tokenIn, _tokenInPath, _tokenInFees, _inputAmount) == msg.value, "Insufficient ETH sent for cross chain fee");
-        (bool success, ) = factoryStorage.coreSender().call{value: msg.value}("");
+        require(
+            getIssuanceFee(_tokenIn, _tokenInPath, _tokenInFees, _inputAmount) == msg.value,
+            "Insufficient ETH sent for cross chain fee"
+        );
+        (bool success,) = factoryStorage.coreSender().call{value: msg.value}("");
         require(success, "Cross chain fee transfer failed");
         IWETH weth = factoryStorage.weth();
         Vault vault = factoryStorage.vault();
@@ -269,16 +276,16 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
      * @dev Issues index tokens with ETH.
      * @param _inputAmount The amount of input token.
      */
-    function issuanceIndexTokensWithEth(uint256 _inputAmount) external whenNotPaused payable {
+    function issuanceIndexTokensWithEth(uint256 _inputAmount) external payable whenNotPaused {
         // Validate input parameters
         require(_inputAmount > 0, "Input amount must be greater than zero");
         require(msg.value >= _inputAmount, "Insufficient ETH sent");
-        
+
         uint256 feeAmount = FeeCalculation.calculateFee(_inputAmount, factoryStorage.feeRate());
         uint256 crossChainFee = getIssuanceFee(address(weth), new address[](0), new uint24[](0), _inputAmount);
         uint256 finalAmount = _inputAmount + feeAmount + crossChainFee;
         require(msg.value == finalAmount, "lower than required amount");
-        (bool success, ) = factoryStorage.coreSender().call{value: crossChainFee}("");
+        (bool success,) = factoryStorage.coreSender().call{value: crossChainFee}("");
         require(success, "Cross chain fee transfer failed");
         //transfer fee to the owner
         weth.deposit{value: finalAmount - crossChainFee}();
@@ -397,7 +404,7 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         require(_tokenOut != address(0), "Invalid output token address");
         require(_tokenOutPath[0] == address(weth), "Invalid token path");
         require(getRedemptionFee(amountIn) >= msg.value, "Insufficient ETH sent for cross chain fee");
-        (bool success, ) = factoryStorage.coreSender().call{value: msg.value}("");
+        (bool success,) = factoryStorage.coreSender().call{value: msg.value}("");
         require(success, "Cross chain fee transfer failed");
         uint256 burnPercent = (amountIn * 1e18) / indexToken.totalSupply();
         factoryStorage.increaseRedemptionNonce();
@@ -479,6 +486,4 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
     {
         coreSender.sendRedemptionRequest(_burnPercent, _redemptionNonce, _chainSelector);
     }
-
-    
 }

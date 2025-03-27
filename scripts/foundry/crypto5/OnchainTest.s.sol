@@ -12,18 +12,18 @@ contract OnchainTest is Script {
     IndexToken indexToken;
 
     // // Mainnet
-    address user = vm.envAddress("USER");
-    address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-    address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
-    address indexFactoryProxy = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
-    address indexTokenProxy = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+    // address user = vm.envAddress("USER");
+    // address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+    // address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
+    // address indexFactoryProxy = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+    // address indexTokenProxy = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
 
     // Testnet
-    // address user = vm.envAddress("USER");
-    // address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-    // address usdc = vm.envAddress("SEPOLIA_USDT_ADDRESS");
-    // address indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
-    // address indexTokenProxy = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+    address user = vm.envAddress("USER");
+    address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+    address usdc = vm.envAddress("SEPOLIA_USDT_ADDRESS");
+    address indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+    address indexTokenProxy = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
