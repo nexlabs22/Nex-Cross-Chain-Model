@@ -52,7 +52,7 @@ contract OnchainTest is Script {
         uint24[] memory fees = new uint24[](1);
         fees[0] = 100;
 
-        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens(address(usdc), path, fees, 10e6, 0);
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens(address(usdc), path, fees, 10e6);
     }
 
     function issuanceAndRedemptionWithEth() public {

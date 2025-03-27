@@ -61,7 +61,7 @@ contract OnchainTest is Script {
         // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (2000000000000000 * 1001) / 1000}(
         //     2000000000000000, 0
         // );
-        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e16 * 1001) / 1000}(1e16, 0);
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e16 * 1001) / 1000}(1e16);
     }
 
     function redemption() public {
