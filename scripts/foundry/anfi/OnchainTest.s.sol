@@ -65,21 +65,35 @@ contract OnchainTest is Script {
     }
 
     function issuanceAndRedemptionWithEth() public {
-        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e16 * 1001) / 1000}(1e16);
+        // uint256 inputAmount = 1e16;
+        // address[] memory path = new address[](2);
+        // path[0] = address(usdt);
+        // path[1] = address(weth);
+        // uint24[] memory fees = new uint24[](1);
+        // fees[0] = 3000;
+        // uint256 issuanceFee =
+        //     IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(weth), path, fees, inputAmount);
+        // console.log("Issuance fee", issuanceFee);
+        // uint256 finalInputAmount = (inputAmount * 1001) / 1000 + issuanceFee;
+        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: finalInputAmount}(inputAmount);
+
         // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e14 * 1001) / 1000}(1e14, 0);
         // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (3700000000000000 * 1001) / 1000}(
         //     3700000000000000, 0
         // );
 
-        // address[] memory path = new address[](2);
-        // path[0] = address(weth);
-        // path[1] = address(weth);
-        // uint24[] memory fees = new uint24[](1);
-        // fees[0] = 3000;
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
 
-        // IndexFactory(payable(indexFactoryProxy)).redemption(
-        //     indexToken.balanceOf(address(user)), 0, address(weth), path, fees
-        // );
+        uint256 redemptionFee =
+            IndexFactory(payable(indexFactoryProxy)).getRedemptionFee((indexToken.balanceOf(address(user)) * 90) / 100);
+
+        IndexFactory(payable(indexFactoryProxy)).redemption{value: redemptionFee}(
+            (indexToken.balanceOf(address(user)) * 90) / 100, address(weth), path, fees
+        );
     }
 
     function issuanceAndRedemptionWithUsdt() public {
