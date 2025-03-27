@@ -61,6 +61,14 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         _;
     }
 
+    modifier onlyOwnerOrOperator() {
+        require(
+            msg.sender == owner() || functionsOracle.isOperator(msg.sender),
+            "Only owner or operator can call this function"
+        );
+        _;
+    }
+
     /**
      * @dev Initializes the contract with the given parameters.
      * @param _token The address of the IndexToken contract.
@@ -118,7 +126,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         functionsOracle = FunctionsOracle(_functionsOracle);
     }
 
-    function withdrawLink() external onlyOwner {
+    function withdrawLink() external onlyOwnerOrOperator {
         IERC20(factoryStorage.linkToken()).transfer(
             msg.sender, IERC20(factoryStorage.linkToken()).balanceOf(address(this))
         );
@@ -129,11 +137,11 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
      */
     receive() external payable {}
 
-    function withdrawEther() external onlyOwner {
+    function withdrawEther() external onlyOwnerOrOperator {
         uint256 balance = address(this).balance;
         require(balance > 0, "No Ether to withdraw");
 
-        (bool success,) = payable(owner()).call{value: balance}("");
+        (bool success,) = payable(msg.sender).call{value: balance}("");
         require(success, "Ether transfer failed");
     }
 

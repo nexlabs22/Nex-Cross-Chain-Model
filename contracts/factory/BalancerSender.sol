@@ -13,6 +13,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../libraries/SwapHelpers.sol";
 import "../interfaces/IWETH.sol";
 import "../libraries/MessageSender.sol";
+import "./IndexFactory.sol";
 
 /// @title Index Token
 /// @author NEX Labs Protocol
@@ -29,11 +30,17 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
     IWETH public weth;
 
     event MessageSent(bytes32 messageId);
+    event AskValuesCompleted(uint time);
+    event FirstReweightActionCompleted(uint time);
+    event SecondReweightActionCompleted(uint time);
 
     modifier onlyFactoryBalancer() {
         require(msg.sender == factoryStorage.indexFactoryBalancer(), "Only factory balancer can call this function");
         _;
     }
+
+    
+
 
     /**
      * @dev Initializes the contract with the given parameters.
@@ -102,6 +109,23 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
      * @dev Fallback function to receive ETH.
      */
     receive() external payable {}
+
+    function pauseIndexFactory() internal {
+        address indexFactoryAddress = factoryStorage.indexFactory();
+        IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
+        if(!indexFactory.paused()){
+        indexFactory.pause();
+        }
+    }
+
+    // unpause index factory when rebalance is done
+    function unpauseIndexFactory() internal {
+        address indexFactoryAddress = factoryStorage.indexFactory();
+        IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
+        if(indexFactory.paused()){
+        indexFactory.unpause();
+        }
+    }
 
     /**
      * @dev Swaps tokens.
@@ -323,6 +347,7 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
                 factoryStorage.increaseTokenValueByNonce(nonce, tokenAddresses[i], value1[i]);
                 factoryStorage.increaseChainValueByNonce(nonce, sourceChainSelector, value1[i]);
                 factoryStorage.increaseUpdatedTokensValueCount(nonce);
+                emit AskValuesCompleted(block.timestamp);
             }
         } else if (actionType == 3) {
             Client.EVMTokenAmount[] memory tokenAmounts = any2EvmMessage.destTokenAmounts;
@@ -333,8 +358,11 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
             factoryStorage.increaseExtraWethByNonce(nonce, wethAmount);
             factoryStorage.increasePendingExtraWethByNonce(nonce, wethAmount);
             weth.transfer(factoryStorage.indexFactoryBalancer(), wethAmount);
+            emit FirstReweightActionCompleted(block.timestamp);
         } else if (actionType == 4) {
             functionsOracle.updateCurrentList();
+            unpauseIndexFactory();
+            emit SecondReweightActionCompleted(block.timestamp);
         }
     }
 }

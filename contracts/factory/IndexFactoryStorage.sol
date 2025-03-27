@@ -88,6 +88,8 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
 
     mapping(uint256 => uint256) public reweightExtraPercentage;
 
+    
+
     // uint256 public fee;
     uint8 public feeRate; // 10/10000 = 0.1%
     uint256 public latestFeeUpdate;

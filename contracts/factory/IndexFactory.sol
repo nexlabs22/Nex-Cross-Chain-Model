@@ -36,10 +36,6 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         uint256[] zeroNumbers;
     }
 
-    // enum PayFeesIn {
-    //     Native,
-    //     LINK
-    // }
 
     IndexToken public indexToken;
     IndexFactoryStorage public factoryStorage;
@@ -70,19 +66,29 @@ contract IndexFactory is Initializable, ProposableOwnableUpgradeable, Reentrancy
         uint256 time
     );
 
+    modifier onlyOwnerOrBalancers() {
+        require(
+            msg.sender == owner() || functionsOracle.isOperator(msg.sender) || msg.sender == address(factoryStorage.balancerSender()) || msg.sender == address(factoryStorage.indexFactoryBalancer()),
+            "Not owner or balancer"
+        );
+        _;
+    }
+
     /**
      * @dev Pauses the contract.
      */
-    function pause() external onlyOwner {
+    function pause() external onlyOwnerOrBalancers {
         _pause();
     }
 
     /**
      * @dev Unpauses the contract.
      */
-    function unpause() external onlyOwner {
+    function unpause() external onlyOwnerOrBalancers {
         _unpause();
     }
+
+    
 
     /**
      * @dev Initializes the contract with the given parameters.
