@@ -21,7 +21,7 @@ contract OnchainTest is Script {
     // Testnet
     // address user = vm.envAddress("USER");
     // address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-    // address usdt = vm.envAddress("SEPOLIA_USDT_ADDRESS");
+    // address usdc = vm.envAddress("SEPOLIA_USDT_ADDRESS");
     // address indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
     // address indexTokenProxy = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
 
@@ -35,10 +35,12 @@ contract OnchainTest is Script {
         // Issuance With ETH
         // issuanceAndRedemptionWithEth();
 
-        issuanceIndexTokens();
+        // issuanceIndexTokens();
 
         // Issuance with ERC20 Token
         // issuanceAndRedemptionWithUsdt();
+
+        redemption();
 
         vm.stopBroadcast();
     }
@@ -59,8 +61,10 @@ contract OnchainTest is Script {
         // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (2000000000000000 * 1001) / 1000}(
         //     2000000000000000, 0
         // );
-        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e17 * 1001) / 1000}(1e17, 0);
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e16 * 1001) / 1000}(1e16, 0);
+    }
 
+    function redemption() public {
         address[] memory path = new address[](2);
         path[0] = address(weth);
         path[1] = address(weth);

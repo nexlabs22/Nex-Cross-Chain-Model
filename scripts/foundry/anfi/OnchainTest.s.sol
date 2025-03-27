@@ -12,18 +12,18 @@ contract OnchainTest is Script {
     IndexToken indexToken;
 
     // Mainnet
-    // address user = vm.envAddress("USER");
-    // address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-    // // address usdt = vm.envAddress("SEPOLIA_USDC_ADDRESS");
-    // address indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
-    // address indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+    address user = vm.envAddress("USER");
+    address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+    address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
+    address indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+    address indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
 
     // Testnet
-    address user = vm.envAddress("USER");
-    address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-    address usdt = vm.envAddress("SEPOLIA_USDT_ADDRESS");
-    address indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
-    address indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+    // address user = vm.envAddress("USER");
+    // address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+    // address usdt = vm.envAddress("SEPOLIA_USDT_ADDRESS");
+    // address indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+    // address indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -33,12 +33,26 @@ contract OnchainTest is Script {
         // string memory targetChain = "sepolia";
 
         // Issuance With ETH
-        issuanceAndRedemptionWithEth();
+        // issuanceAndRedemptionWithEth();
+
+        issuanceIndexTokens();
 
         // Issuance with ERC20 Token
         // issuanceAndRedemptionWithUsdt();
 
         vm.stopBroadcast();
+    }
+
+    function issuanceIndexTokens() public {
+        IERC20(usdc).approve(address(indexFactoryProxy), (10e6 * 1001) / 1000);
+        // redemption input token path data
+        address[] memory path = new address[](2);
+        path[0] = address(usdc);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 100;
+
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens(address(usdc), path, fees, 10e6, 0);
     }
 
     function issuanceAndRedemptionWithEth() public {

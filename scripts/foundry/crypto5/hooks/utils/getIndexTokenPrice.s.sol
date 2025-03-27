@@ -37,6 +37,8 @@ contract getIndexTokenPrice is Script {
         arbFork = vm.createFork(arbitrumRpc);
         vm.selectFork(arbFork);
 
+        // uint256 totalSupply = IndexToken(payable(indexToken)).totalSupply();
+
         address[] memory arbTokens = getArbitrumUnderlyingAsset();
 
         uint256 wethValuesOnArb =
@@ -56,7 +58,16 @@ contract getIndexTokenPrice is Script {
         // uint256 indexTokenPrice = totalValue / totalSupply * 1e18;
         uint256 indexTokenPrice = (totalValue * 1e18) / totalSupply;
 
+        console.log("Real total values: ", totalValue);
+        console.log("Total supply: ", totalSupply);
         console.log("Index Token price: ", indexTokenPrice);
+
+        uint256 burnAmount = totalSupply - (totalValue / 100);
+        console.log("Burn Amount: ", burnAmount);
+        uint256 newTotalSupply = totalSupply - burnAmount;
+        console.log("New total supply: ", newTotalSupply);
+        uint256 newPrice = (totalValue * 1e18) / newTotalSupply;
+        console.log("New price: ", newPrice);
     }
 
     function testCheckMultipleTokenBalancesForArbitrum(
