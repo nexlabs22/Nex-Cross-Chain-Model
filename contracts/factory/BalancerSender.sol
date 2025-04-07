@@ -110,6 +110,14 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
      */
     receive() external payable {}
 
+    function emitFirstReweightActionCompleted() external onlyFactoryBalancer {
+        emit FirstReweightActionCompleted(block.timestamp);
+    }
+
+    function emitSecondReweightActionCompleted() external onlyFactoryBalancer {
+        emit SecondReweightActionCompleted(block.timestamp);
+    }
+    
     function pauseIndexFactory() internal {
         address indexFactoryAddress = factoryStorage.indexFactory();
         IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));

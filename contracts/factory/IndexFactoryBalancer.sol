@@ -232,12 +232,12 @@ contract IndexFactoryBalancer is Initializable, ProposableOwnableUpgradeable, Pa
         uint256 nonce = factoryStorage.updatePortfolioNonce();
         uint256 portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
-        uint256 totalChains = functionsOracle.currentChainSelectorsCount();
         uint256 latestCurrentCount = functionsOracle.currentFilledCount();
         uint256 latestOracleCount = functionsOracle.oracleFilledCount();
 
         (,, uint64[] memory chainSelectors) = functionsOracle.getCurrentData(latestCurrentCount);
-        for (uint256 i = 0; i < totalChains; i++) {
+        bool isCrossChain = false;
+        for (uint256 i = 0; i < functionsOracle.currentChainSelectorsCount(); i++) {
             uint64 chainSelector = chainSelectors[i];
 
             uint256 chainSelectorCurrentTokensCount = functionsOracle.currentChainSelectorTokensCount(chainSelector);
@@ -262,6 +262,7 @@ contract IndexFactoryBalancer is Initializable, ProposableOwnableUpgradeable, Pa
                         oracleChainSelectorTotalShares
                     );
                 } else {
+                    isCrossChain = true;
                     _sendExtraValueOtherChains(
                         nonce,
                         portfolioValue,
@@ -275,6 +276,9 @@ contract IndexFactoryBalancer is Initializable, ProposableOwnableUpgradeable, Pa
         }
 
         emit RequestedFirstReweightAction(block.timestamp);
+        if (!isCrossChain) {
+            balancerSender.emitFirstReweightActionCompleted();
+        }
     }
 
     function _swapTokensToWETHFirstRebalance(
@@ -469,6 +473,10 @@ contract IndexFactoryBalancer is Initializable, ProposableOwnableUpgradeable, Pa
         }
         factoryStorage.decreasePendingExtraWethByNonce(nonce);
         emit RequestedSecondReweightAction(block.timestamp);
+        if (isOnlyOnCurrentChain) {
+            balancerSender.emitSecondReweightActionCompleted();
+            unpauseIndexFactory();
+        }
     }
 
     function _swapLowerValueCurrentChainToWETH(
