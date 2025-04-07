@@ -16,6 +16,9 @@ contract UpgradeCrossChainIndexFactory is Script {
         address proxyAdminAddress = vm.envAddress("BSC_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
         address crossChainIndexFactoryProxyAddress = vm.envAddress("BSC_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
 
+        // address proxyAdminAddress = vm.envAddress("BSC_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
+        // address crossChainIndexFactoryProxyAddress = vm.envAddress("BSC_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
+
         CrossChainIndexFactory newCrossChainIndexFactoryImplementation = new CrossChainIndexFactory();
         console.log(
             "New CrossChainIndexFactory implementation deployed at:", address(newCrossChainIndexFactoryImplementation)

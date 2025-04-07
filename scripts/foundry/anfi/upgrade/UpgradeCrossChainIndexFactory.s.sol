@@ -13,9 +13,13 @@ contract UpgradeCrossChainIndexFactory is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        // Testnet
-        address proxyAdminAddress = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
-        address crossChainIndexFactoryProxyAddress = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
+        // Mainnet
+        address proxyAdminAddress = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
+        address crossChainIndexFactoryProxyAddress = vm.envAddress("ETHEREUM_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
+
+        // // Testnet
+        // address proxyAdminAddress = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADMIN_ADDRESS");
+        // address crossChainIndexFactoryProxyAddress = vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_FACTORY_PROXY_ADDRESS");
 
         CrossChainIndexFactory newCrossChainIndexFactoryImplementation = new CrossChainIndexFactory();
         console.log(

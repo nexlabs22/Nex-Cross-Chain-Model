@@ -13,18 +13,20 @@ contract UpgradeBalancerSender is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
-        address BalancerSenderProxyAddress = vm.envAddress("CR5_ARBITRUM_BALANCER_SENDER_PROXY_ADDRESS");
+        // Mainnet
+        address proxyAdminAddress = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
+        address balancerSenderProxyAddress = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADDRESS");
 
-        // address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
-        // address BalancerSenderProxyAddress = vm.envAddress("CR5_SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
+        // Testnet
+        // address proxyAdminAddress = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
+        // address balancerSenderProxyAddress = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
 
         BalancerSender newBalancerSenderImplementation = new BalancerSender();
         console.log("New BalancerSender implementation deployed at:", address(newBalancerSenderImplementation));
 
         ProxyAdmin proxyAdmin = ProxyAdmin(proxyAdminAddress);
         proxyAdmin.upgrade(
-            ITransparentUpgradeableProxy(payable(BalancerSenderProxyAddress)), address(newBalancerSenderImplementation)
+            ITransparentUpgradeableProxy(payable(balancerSenderProxyAddress)), address(newBalancerSenderImplementation)
         );
 
         console.log("BalancerSender proxy upgraded to new implementation at:", address(newBalancerSenderImplementation));
