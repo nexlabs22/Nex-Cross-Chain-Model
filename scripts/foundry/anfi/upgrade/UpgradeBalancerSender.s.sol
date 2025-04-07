@@ -14,12 +14,12 @@ contract UpgradeBalancerSender is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // Mainnet
-        // address proxyAdminAddress = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
-        // address balancerSenderProxyAddress = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADDRESS");
+        address proxyAdminAddress = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
+        address balancerSenderProxyAddress = vm.envAddress("ARBITRUM_BALANCER_SENDER_PROXY_ADDRESS");
 
         // Testnet
-        address proxyAdminAddress = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
-        address balancerSenderProxyAddress = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
+        // address proxyAdminAddress = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
+        // address balancerSenderProxyAddress = vm.envAddress("SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
 
         BalancerSender newBalancerSenderImplementation = new BalancerSender();
         console.log("New BalancerSender implementation deployed at:", address(newBalancerSenderImplementation));

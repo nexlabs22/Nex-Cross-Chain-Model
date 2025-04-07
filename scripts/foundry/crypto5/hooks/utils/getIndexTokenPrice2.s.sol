@@ -85,24 +85,31 @@ contract getIndexTokenPrice is Script {
     function calculatePrice(uint256 totalPortfolioValue, uint256 totalSupply) public returns (uint256) {
         // uint256 netReceivedAmount = IndexFactory(indexFactory).getNetSentAndReceivedAmounts();
         uint256 ethPrice = IndexFactoryStorage(indexFactoryStorage).priceInWei();
-        uint256 totalValue = (ethPrice / totalPortfolioValue) * 1e18;
-        // uint256 totalValue = (totalPortfolioValue / ethPrice) / 1e18;
+        uint256 totalValue = (totalPortfolioValue * 1e18) / ethPrice;
+        console.log("total value in eth: ", totalValue);
         uint256 netReceivedAmount = getNetSentAndReceivedAmounts();
+        console.log("netReceivedAmount", netReceivedAmount);
         vm.selectFork(arbFork);
 
         (address[] memory path, uint24[] memory fees) =
             IndexFactoryStorage(indexFactoryStorage).getToETHPathData(address(crossChainTokenArb));
         uint256 crossChainTokenValue =
             IndexFactoryStorage(indexFactoryStorage).getAmountOut(path, fees, netReceivedAmount);
+                console.log("netReceivedAmount", netReceivedAmount);
+
         uint256 numerator = totalValue + crossChainTokenValue
             + IndexFactoryStorage(indexFactoryStorage).totalPendingRedemptionHoldValue()
             + IndexFactoryStorage(indexFactoryStorage).totalPendingExtraWeth()
             - IndexFactoryStorage(indexFactoryStorage).totalPendingIssuanceInput();
+        console.log("numerator", numerator);
+
         // uint256 numerator = totalPortfolioValue + crossChainTokenValue
         //     + IndexFactoryStorage(indexFactoryStorage).totalPendingRedemptionHoldValue()
         //     + IndexFactoryStorage(indexFactoryStorage).totalPendingExtraWeth()
         //     - IndexFactoryStorage(indexFactoryStorage).totalPendingIssuanceInput();
         uint256 denominator = totalSupply + IndexFactoryStorage(indexFactoryStorage).totalPendingRedemptionInput();
+                            console.log("denominator", denominator);
+
         return (numerator * ethPrice) / denominator;
         // return numerator / denominator;
     }

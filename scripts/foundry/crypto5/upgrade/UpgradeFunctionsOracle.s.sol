@@ -14,12 +14,12 @@ contract UpgradeFunctionsOracle is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // Mainnet
-        // address proxyAdminAddress = vm.envAddress("ARBITRUM_FUNCTIONS_ORACLE_PROXY_ADMIN_ADDRESS");
-        // address functionsOracleBalancerProxyAddress = vm.envAddress("ARBITRUM_FUNCTIONS_ORACLE_PROXY_ADDRESS");
+        address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_FUNCTIONS_ORACLE_PROXY_ADMIN_ADDRESS");
+        address functionsOracleBalancerProxyAddress = vm.envAddress("CR5_ARBITRUM_FUNCTIONS_ORACLE_PROXY_ADDRESS");
 
         // Testnet
-        address proxyAdminAddress = vm.envAddress("SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADMIN_ADDRESS");
-        address functionsOracleBalancerProxyAddress = vm.envAddress("SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADDRESS");
+        // address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADMIN_ADDRESS");
+        // address functionsOracleBalancerProxyAddress = vm.envAddress("CR5_SEPOLIA_FUNCTIONS_ORACLE_PROXY_ADDRESS");
 
         FunctionsOracle newFunctionsOracleImplementation = new FunctionsOracle();
         console.log("New FunctionsOracle implementation deployed at:", address(newFunctionsOracleImplementation));

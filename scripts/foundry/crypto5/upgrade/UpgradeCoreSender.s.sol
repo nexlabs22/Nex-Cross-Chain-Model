@@ -16,6 +16,9 @@ contract UpgradeCoreSender is Script {
         address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_CORE_SENDER_PROXY_ADMIN_ADDRESS");
         address coreSenderStorageProxyAddress = vm.envAddress("CR5_ARBITRUM_CORE_SENDER_PROXY_ADDRESS");
 
+        // address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_CORE_SENDER_PROXY_ADMIN_ADDRESS");
+        // address coreSenderStorageProxyAddress = vm.envAddress("CR5_SEPOLIA_CORE_SENDER_PROXY_ADDRESS");
+
         CoreSender newCoreSenderImplementation = new CoreSender();
         console.log("New CoreSender implementation deployed at:", address(newCoreSenderImplementation));
 

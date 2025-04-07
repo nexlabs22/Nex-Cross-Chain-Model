@@ -17,6 +17,11 @@ contract UpgradeCrossChainIndexFactoryStorage is Script {
         address crossChainIndexFactoryStorageProxyAddress =
             vm.envAddress("BSC_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
 
+        // address proxyAdminAddress =
+        //     vm.envAddress("CR5_ARBITRUM_SEPOLIA_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADMIN_ADDRESS");
+        // address crossChainIndexFactoryStorageProxyAddress =
+        //     vm.envAddress("CR5_ARBITRUM_SEPOLIA_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+
         CrossChainIndexFactoryStorage newCrossChainIndexFactoryStorageImplementation =
             new CrossChainIndexFactoryStorage();
         console.log(

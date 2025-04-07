@@ -76,18 +76,6 @@ contract getIndexTokenPrice is Script {
 
         uint256 indexTokenPrice = calculatePrice(totalValue, totalSupply);
         console.log("New Price: ", indexTokenPrice);
-        // uint256 indexTokenPrice = totalValue / totalSupply * 1e18;
-        // uint256 indexTokenPrice = (totalValue * 1e18) / totalSupply;
-
-        // console.log("Real total values: ", totalValue);
-        // console.log("Index Token price: ", indexTokenPrice);
-
-        // uint256 burnAmount = totalSupply - (totalValue / 100);
-        // console.log("Burn Amount: ", burnAmount);
-        // uint256 newTotalSupply = totalSupply - burnAmount;
-        // console.log("New total supply: ", newTotalSupply);
-        // uint256 newPrice = (totalValue * 1e18) / newTotalSupply;
-        // console.log("New price: ", newPrice);
     }
 
     function calculatePrice(uint256 totalPortfolioValue, uint256 totalSupply) public returns (uint256) {

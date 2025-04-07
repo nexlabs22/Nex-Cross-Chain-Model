@@ -16,6 +16,9 @@ contract UpgradeBalancerSender is Script {
         address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
         address BalancerSenderProxyAddress = vm.envAddress("CR5_ARBITRUM_BALANCER_SENDER_PROXY_ADDRESS");
 
+        // address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_BALANCER_SENDER_PROXY_ADMIN_ADDRESS");
+        // address BalancerSenderProxyAddress = vm.envAddress("CR5_SEPOLIA_BALANCER_SENDER_PROXY_ADDRESS");
+
         BalancerSender newBalancerSenderImplementation = new BalancerSender();
         console.log("New BalancerSender implementation deployed at:", address(newBalancerSenderImplementation));
 

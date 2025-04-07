@@ -14,12 +14,12 @@ contract UpgradeIndexToken is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // Mainnet
-        address proxyAdminAddress = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADMIN_ADDRESS");
-        address indexTokenProxyAddress = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+        address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADMIN_ADDRESS");
+        address indexTokenProxyAddress = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
 
         // Testnet
-        // address proxyAdminAddress = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADMIN_ADDRESS");
-        // address indexTokenProxyAddress = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+        // address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADMIN_ADDRESS");
+        // address indexTokenProxyAddress = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
 
         IndexToken newIndexTokenImplementation = new IndexToken();
         console.log("New IndexToken implementation deployed at:", address(newIndexTokenImplementation));
