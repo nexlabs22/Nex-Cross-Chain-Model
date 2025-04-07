@@ -257,14 +257,14 @@ contract IndexFactoryBalancer is
         uint nonce = factoryStorage.updatePortfolioNonce();
         uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
-        uint totalChains = functionsOracle.currentChainSelectorsCount();
         uint latestCurrentCount = functionsOracle.currentFilledCount();
         uint latestOracleCount = functionsOracle.oracleFilledCount();
 
         (, , uint64[] memory chainSelectors) = functionsOracle.getCurrentData(
             latestCurrentCount
         );
-        for (uint i = 0; i < totalChains; i++) {
+        bool isCrossChain = false;
+        for (uint i = 0; i < functionsOracle.currentChainSelectorsCount(); i++) {
             uint64 chainSelector = chainSelectors[i];
 
             uint chainSelectorCurrentTokensCount = functionsOracle
@@ -301,6 +301,7 @@ contract IndexFactoryBalancer is
                         oracleChainSelectorTotalShares
                     );
                 } else {
+                    isCrossChain = true;
                     _sendExtraValueOtherChains(
                         nonce,
                         portfolioValue,
@@ -314,6 +315,9 @@ contract IndexFactoryBalancer is
         }
 
         emit RequestedFirstReweightAction(block.timestamp);
+        if (!isCrossChain) {
+            balancerSender.emitFirstReweightActionCompleted();
+        }
     }
 
     function _swapTokensToWETHFirstRebalance(
@@ -566,6 +570,10 @@ contract IndexFactoryBalancer is
         }
         factoryStorage.decreasePendingExtraWethByNonce(nonce);
         emit RequestedSecondReweightAction(block.timestamp);
+        if (isOnlyOnCurrentChain) {
+            balancerSender.emitSecondReweightActionCompleted();
+            unpauseIndexFactory();
+        }
     }
 
     function _swapLowerValueCurrentChainToWETH(
