@@ -490,6 +490,35 @@ contract IndexFactoryTest is Test, ContractDeployer {
         console.log(indexToken.balanceOf(add1));
     }
 
+
+    function testCrossChainFeeSender() public {
+        mockRouter.setFee(1e14);
+        console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
+        // send cross chain fee
+        uint256 wethAmount = 1e16;
+        uint crossChainFee = crossChainFeeSender.calculateCrossChainFee(2, wethAmount, address(crossChainFeeReceiver));
+        console.log("crossChainFee", crossChainFee);
+        crossChainFeeSender.sendCrossChainToken{value: wethAmount}(2, address(crossChainFeeReceiver));
+        mockRouter.executeAllMessages();
+        console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
+        console.log("calledCount", crossChainFeeReceiver.calledCount());
+
+        // set operator
+        functionsOracle.setOperator(address(crossChainFeeSender), true);
+        // transfer eth to the core sender
+        (bool success, ) = payable(address(coreSender)).call{value: 1e16}("");
+        require(success, "Ether transfer failed");
+        uint256 balance = address(coreSender).balance;
+        console.log("coreSenderBalance", balance);
+        // withdraw eth from the core sender
+        crossChainFeeSender.withdrawAndCrossChainToken(2, address(crossChainFeeReceiver));
+        uint256 senderBalance = address(crossChainFeeSender).balance;
+        console.log("crossChainFeeSenderBalance", senderBalance);
+        mockRouter.executeAllMessages();
+        console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
+        console.log("calledCount", crossChainFeeReceiver.calledCount());
+
+    }
     
     
 

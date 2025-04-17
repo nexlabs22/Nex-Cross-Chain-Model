@@ -26,6 +26,9 @@ import "../../contracts/vault/Vault.sol";
 import "../../contracts/vault/CrossChainIndexFactory.sol";
 import "../../contracts/vault/CrossChainIndexFactoryStorage.sol";
 import "../../contracts/test/Token.sol";
+import "../../contracts/ccip/CrossChainFeeSender.sol";
+import "../../contracts/ccip/CrossChainFeeReceiver.sol";
+
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
@@ -81,6 +84,8 @@ contract ContractDeployer is
     BalancerSender public balancerSender;
     IndexFactory public factory;
     IndexFactoryBalancer public factoryBalancer;
+    CrossChainFeeSender public crossChainFeeSender;
+    CrossChainFeeReceiver public crossChainFeeReceiver;
 
     CrossChainIndexFactoryStorage public crossChainIndexFactoryStorage;
     CrossChainIndexFactoryStorage public crossChainIndexFactoryStorage1;
@@ -414,6 +419,43 @@ contract ContractDeployer is
         return (coreSender, indexFactory, balancerSender, indexFactoryBalancer);
     }
 
+    function deployContracts3() public returns (CrossChainFeeSender, CrossChainFeeReceiver) {
+        CrossChainFeeSender crossChainFeeSenderImpl = new CrossChainFeeSender();
+        crossChainFeeSender = CrossChainFeeSender(
+            payable(
+                address(
+                    new ERC1967Proxy(
+                        address(crossChainFeeSenderImpl),
+                        abi.encodeCall(CrossChainFeeSender.initialize, (
+                            address(indexFactoryStorage),
+                            address(link),
+                            address(mockRouter), // ccip router
+                            wethAddress
+                        ))
+                    )
+                )
+            )
+        );
+
+        CrossChainFeeReceiver crossChainFeeReceiverImpl = new CrossChainFeeReceiver();
+        crossChainFeeReceiver = CrossChainFeeReceiver(
+            payable(
+                address(
+                    new ERC1967Proxy(
+                        address(crossChainFeeReceiverImpl),
+                        abi.encodeCall(CrossChainFeeReceiver.initialize, (
+                            address(crossChainIndexFactoryStorage),
+                            address(mockRouter), // ccip router
+                            address(link)
+                        ))
+                    )
+                )
+            )
+        );
+
+        return (crossChainFeeSender, crossChainFeeReceiver);
+    }
+
     function linkAllContracts() public {
         indexToken.setMinter(address(factory), true);
         indexToken.setMinter(address(coreSender), true);
@@ -478,6 +520,8 @@ contract ContractDeployer is
         mockRouter.setFactoryChainSelector(1, address(factoryBalancer));
         mockRouter.setFactoryChainSelector(1, address(balancerSender));
         mockRouter.setFactoryChainSelector(2, address(crossChainIndexFactory));
+        mockRouter.setFactoryChainSelector(1, address(crossChainFeeSender));
+        mockRouter.setFactoryChainSelector(2, address(crossChainFeeReceiver));
 
         link.transfer(address(coreSender), 10e18);
         // link.transfer(address(factory), 10e18);
@@ -572,6 +616,10 @@ contract ContractDeployer is
             balancerSender,
             factoryBalancer
         ) = deployContracts2();
+        (
+            crossChainFeeSender,
+            crossChainFeeReceiver
+        ) = deployContracts3();
 
         linkAllContracts();
     }
