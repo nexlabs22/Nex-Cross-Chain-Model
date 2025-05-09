@@ -16,43 +16,34 @@ import "./IndexFactory.sol";
 /// @author NEX Labs Protocol
 /// @notice The main token contract for Index Token (NEX Labs Protocol)
 /// @dev This contract uses an upgradeable pattern
-contract IndexFactoryBalancer is
-    Initializable,
-    ProposableOwnableUpgradeable,
-    PausableUpgradeable
-{
-
+contract IndexFactoryBalancer is Initializable, ProposableOwnableUpgradeable, PausableUpgradeable {
     IndexFactoryStorage public factoryStorage;
     FunctionsOracle public functionsOracle;
     BalancerSender public balancerSender;
-
 
     uint64 public currentChainSelector;
 
     IWETH public weth;
 
-    
-
     struct LowSwapVariables {
         address tokenAddress;
-        uint tokenMarketShare;
-        uint chainValue;
-        uint swapWethAmount;
-        uint wethAmount;
+        uint256 tokenMarketShare;
+        uint256 chainValue;
+        uint256 swapWethAmount;
+        uint256 wethAmount;
     }
 
     struct ExtraSwapVariables {
         address tokenAddress;
-        uint tokenMarketShare;
-        uint chainValue;
-        uint swapWethAmount;
+        uint256 tokenMarketShare;
+        uint256 chainValue;
+        uint256 swapWethAmount;
     }
 
-    event RequestedAskValues(uint time);
-    event RequestedFirstReweightAction(uint time);
-    event RequestedSecondReweightAction(uint time);
+    event RequestedAskValues(uint256 time);
+    event RequestedFirstReweightAction(uint256 time);
+    event RequestedSecondReweightAction(uint256 time);
 
-    
     /**
      * @dev Pauses the contract.
      */
@@ -67,12 +58,8 @@ contract IndexFactoryBalancer is
         _unpause();
     }
 
-
     modifier onlyOwnerOrOperator() {
-        require(
-            msg.sender == owner() || functionsOracle.isOperator(msg.sender),
-            "Caller is not the owner or operator"
-        );
+        require(msg.sender == owner() || functionsOracle.isOperator(msg.sender), "Caller is not the owner or operator");
         _;
     }
 
@@ -92,10 +79,7 @@ contract IndexFactoryBalancer is
     ) external initializer {
         // Validate input parameters
         require(_currentChainSelector > 0, "Invalid chain selector");
-        require(
-            _factoryStorage != address(0),
-            "Invalid factory storage address"
-        );
+        require(_factoryStorage != address(0), "Invalid factory storage address");
         require(_weth != address(0), "Invalid WETH address");
         __Ownable_init();
         //set chain selector
@@ -132,12 +116,27 @@ contract IndexFactoryBalancer is
         balancerSender = BalancerSender(_balancerSender);
     }
 
+    // set WETH address
+    function setWethAddress(address _weth) public onlyOwner {
+        require(_weth != address(0), "Invalid WETH address");
+        weth = IWETH(_weth);
+    }
+
+    /**
+     * @dev Sets the current chain selector.
+     * @param _currentChainSelector The current chain selector.
+     */
+    function setCurrentChainSelector(uint64 _currentChainSelector) public onlyOwner {
+        require(_currentChainSelector > 0, "Invalid chain selector");
+        currentChainSelector = _currentChainSelector;
+    }
+
     // pause index factory when rebalance happens
     function pauseIndexFactory() public onlyOwnerOrOperator {
         address indexFactoryAddress = factoryStorage.indexFactory();
         IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
-        if(!indexFactory.paused()){
-        indexFactory.pause();
+        if (!indexFactory.paused()) {
+            indexFactory.pause();
         }
     }
 
@@ -145,12 +144,11 @@ contract IndexFactoryBalancer is
     function unpauseIndexFactory() public onlyOwnerOrOperator {
         address indexFactoryAddress = factoryStorage.indexFactory();
         IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
-        if(indexFactory.paused()){
-        indexFactory.unpause();
+        if (indexFactory.paused()) {
+            indexFactory.unpause();
         }
     }
 
-    
     /**
      * @dev Swaps tokens.
      * @param path The path of the swap.
@@ -159,63 +157,45 @@ contract IndexFactoryBalancer is
      * @param _recipient The address of the recipient.
      * @return outputAmount The amount of output token.
      */
-    function swap(
-        address[] memory path,
-        uint24[] memory fees,
-        uint amountIn,
-        address _recipient
-    ) public returns (uint outputAmount) {
+    function swap(address[] memory path, uint24[] memory fees, uint256 amountIn, address _recipient)
+        public
+        returns (uint256 outputAmount)
+    {
         // Validate input parameters
         require(amountIn > 0, "Amount must be greater than zero");
         require(_recipient != address(0), "Invalid recipient address");
         ISwapRouter swapRouterV3 = factoryStorage.swapRouterV3();
         IUniswapV2Router02 swapRouterV2 = factoryStorage.swapRouterV2();
         uint256 amountOutMinimum = factoryStorage.getMinAmountOut(path, fees, amountIn);
-        outputAmount = SwapHelpers.swap(
-            swapRouterV3,
-            swapRouterV2,
-            path,
-            fees,
-            amountIn,
-            amountOutMinimum,
-            _recipient
-        );
+        outputAmount = SwapHelpers.swap(swapRouterV3, swapRouterV2, path, fees, amountIn, amountOutMinimum, _recipient);
     }
 
-    
-
-    function _checkValuesCurrentChain(
-        uint64 chainSelector,
-        uint chainSelectorTokensCount
-    ) internal {
-        address[] memory tokens = functionsOracle.allCurrentChainSelectorTokens(
-            chainSelector
-        );
+    function _checkValuesCurrentChain(uint64 chainSelector, uint256 chainSelectorTokensCount) internal {
+        address[] memory tokens = functionsOracle.allCurrentChainSelectorTokens(chainSelector);
         Vault vault = factoryStorage.vault();
-        for (uint j = 0; j < chainSelectorTokensCount; j++) {
+        for (uint256 j = 0; j < chainSelectorTokensCount; j++) {
             address tokenAddress = tokens[j];
-            (
-                address[] memory toETHPath,
-                uint24[] memory toETHFees
-            ) = functionsOracle.getToETHPathData(tokenAddress);
-            uint value;
+            (address[] memory toETHPath, uint24[] memory toETHFees) = functionsOracle.getToETHPathData(tokenAddress);
+            uint256 value;
             if (tokenAddress == address(weth)) {
                 value = IERC20(tokenAddress).balanceOf(address(vault));
             } else {
-                value = factoryStorage.getAmountOut(
-                    toETHPath,
-                    toETHFees,
-                    IERC20(tokenAddress).balanceOf(address(vault))
-                );
+                value =
+                    factoryStorage.getAmountOut(toETHPath, toETHFees, IERC20(tokenAddress).balanceOf(address(vault)));
             }
-            
-            factoryStorage.increasePortfolioTotalValueByNonce(factoryStorage.updatePortfolioNonce(), factoryStorage.convertEthToUsd(value));
-            factoryStorage.increaseTokenValueByNonce(factoryStorage.updatePortfolioNonce(), tokenAddress, factoryStorage.convertEthToUsd(value));
+
+            factoryStorage.increasePortfolioTotalValueByNonce(
+                factoryStorage.updatePortfolioNonce(), factoryStorage.convertEthToUsd(value)
+            );
+            factoryStorage.increaseTokenValueByNonce(
+                factoryStorage.updatePortfolioNonce(), tokenAddress, factoryStorage.convertEthToUsd(value)
+            );
             factoryStorage.increaseUpdatedTokensValueCount(factoryStorage.updatePortfolioNonce());
-            factoryStorage.increaseChainValueByNonce(factoryStorage.updatePortfolioNonce(), currentChainSelector, factoryStorage.convertEthToUsd(value));
+            factoryStorage.increaseChainValueByNonce(
+                factoryStorage.updatePortfolioNonce(), currentChainSelector, factoryStorage.convertEthToUsd(value)
+            );
         }
     }
-
 
     function _checkValuesOtherChains(uint64 chainSelector) internal {
         balancerSender.sendAskValues(chainSelector);
@@ -228,20 +208,15 @@ contract IndexFactoryBalancer is
         pauseIndexFactory();
         factoryStorage.increaseUpdatePortfolioNonce();
 
-        uint totalChains = functionsOracle.currentChainSelectorsCount();
-        uint latestCount = functionsOracle.currentFilledCount();
+        uint256 totalChains = functionsOracle.currentChainSelectorsCount();
+        uint256 latestCount = functionsOracle.currentFilledCount();
 
-        for (uint i = 0; i < totalChains; i++) {
-            (, , uint64[] memory chainSelectors) = functionsOracle
-                .getCurrentData(latestCount);
+        for (uint256 i = 0; i < totalChains; i++) {
+            (,, uint64[] memory chainSelectors) = functionsOracle.getCurrentData(latestCount);
             uint64 chainSelector = chainSelectors[i];
-            uint chainSelectorTokensCount = functionsOracle
-                .currentChainSelectorTokensCount(chainSelector);
+            uint256 chainSelectorTokensCount = functionsOracle.currentChainSelectorTokensCount(chainSelector);
             if (chainSelector == currentChainSelector) {
-                _checkValuesCurrentChain(
-                    chainSelector,
-                    chainSelectorTokensCount
-                );
+                _checkValuesCurrentChain(chainSelector, chainSelectorTokensCount);
             } else {
                 _checkValuesOtherChains(chainSelector);
             }
@@ -254,41 +229,27 @@ contract IndexFactoryBalancer is
      * @dev Performs the first reweight action.
      */
     function firstReweightAction() public whenNotPaused onlyOwnerOrOperator {
-        uint nonce = factoryStorage.updatePortfolioNonce();
-        uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
+        uint256 nonce = factoryStorage.updatePortfolioNonce();
+        uint256 portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
-        uint latestCurrentCount = functionsOracle.currentFilledCount();
-        uint latestOracleCount = functionsOracle.oracleFilledCount();
+        uint256 latestCurrentCount = functionsOracle.currentFilledCount();
+        uint256 latestOracleCount = functionsOracle.oracleFilledCount();
 
-        (, , uint64[] memory chainSelectors) = functionsOracle.getCurrentData(
-            latestCurrentCount
-        );
+        (,, uint64[] memory chainSelectors) = functionsOracle.getCurrentData(latestCurrentCount);
         bool isCrossChain = false;
-        for (uint i = 0; i < functionsOracle.currentChainSelectorsCount(); i++) {
+        for (uint256 i = 0; i < functionsOracle.currentChainSelectorsCount(); i++) {
             uint64 chainSelector = chainSelectors[i];
 
-            uint chainSelectorCurrentTokensCount = functionsOracle
-                .currentChainSelectorTokensCount(chainSelector);
-            uint chainSelectorOracleTokensCount = functionsOracle
-                .oracleChainSelectorTokensCount(chainSelector);
-            uint currentChainSelectorTotalShares = functionsOracle
-                .getCurrentChainSelectorTotalShares(
-                    latestOracleCount,
-                    chainSelector
-                );
-            uint oracleChainSelectorTotalShares = functionsOracle
-                .getOracleChainSelectorTotalShares(
-                    latestOracleCount,
-                    chainSelector
-                );
-            uint chainValue = factoryStorage.chainValueByNonce(nonce, chainSelector);
-            uint[] memory oracleTokenShares = functionsOracle
-                .allOracleChainSelectorTokenShares(chainSelector);
+            uint256 chainSelectorCurrentTokensCount = functionsOracle.currentChainSelectorTokensCount(chainSelector);
+            uint256 chainSelectorOracleTokensCount = functionsOracle.oracleChainSelectorTokensCount(chainSelector);
+            uint256 currentChainSelectorTotalShares =
+                functionsOracle.getCurrentChainSelectorTotalShares(latestOracleCount, chainSelector);
+            uint256 oracleChainSelectorTotalShares =
+                functionsOracle.getOracleChainSelectorTotalShares(latestOracleCount, chainSelector);
+            uint256 chainValue = factoryStorage.chainValueByNonce(nonce, chainSelector);
+            uint256[] memory oracleTokenShares = functionsOracle.allOracleChainSelectorTokenShares(chainSelector);
 
-            if (
-                (chainValue * 100e18) / portfolioValue >
-                oracleChainSelectorTotalShares
-            ) {
+            if ((chainValue * 100e18) / portfolioValue > oracleChainSelectorTotalShares) {
                 if (chainSelector == currentChainSelector) {
                     _swapExtraValueCurrentChain(
                         i,
@@ -322,88 +283,56 @@ contract IndexFactoryBalancer is
 
     function _swapTokensToWETHFirstRebalance(
         uint64 chainSelector,
-        uint portfolioValue,
-        uint chainSelectorCurrentTokensCount,
-        uint currentChainSelectorTotalShares,
-        uint oracleChainSelectorTotalShares,
+        uint256 portfolioValue,
+        uint256 chainSelectorCurrentTokensCount,
+        uint256 currentChainSelectorTotalShares,
+        uint256 oracleChainSelectorTotalShares,
         Vault vault,
-        uint chainValue,
-        uint initialWethBalance
-    )
-        internal
-        returns (
-            uint chainCurrentRealShare,
-            uint wethAmountToSwap,
-            uint extraWethAmount
-        )
-    {
-        uint swapWethAmount;
-        address[] memory currentTokens = functionsOracle
-            .allCurrentChainSelectorTokens(chainSelector);
-        for (uint j = 0; j < currentTokens.length; j++) {
+        uint256 chainValue,
+        uint256 initialWethBalance
+    ) internal returns (uint256 chainCurrentRealShare, uint256 wethAmountToSwap, uint256 extraWethAmount) {
+        uint256 swapWethAmount;
+        address[] memory currentTokens = functionsOracle.allCurrentChainSelectorTokens(chainSelector);
+        for (uint256 j = 0; j < currentTokens.length; j++) {
             ExtraSwapVariables memory swapVars;
             swapVars.tokenAddress = currentTokens[j];
-            (
-                address[] memory toETHPath,
-                uint24[] memory toETHFees
-            ) = functionsOracle.getToETHPathData(swapVars.tokenAddress);
-            uint wethAmount;
+            (address[] memory toETHPath, uint24[] memory toETHFees) =
+                functionsOracle.getToETHPathData(swapVars.tokenAddress);
+            uint256 wethAmount;
             if (swapVars.tokenAddress == address(weth)) {
-                vault.withdrawFunds(
-                    swapVars.tokenAddress,
-                    address(this),
-                    initialWethBalance
-                );
+                vault.withdrawFunds(swapVars.tokenAddress, address(this), initialWethBalance);
                 wethAmount = initialWethBalance;
             } else {
-                uint tokenAmount = IERC20(swapVars.tokenAddress).balanceOf(
-                    address(vault)
-                );
-                vault.withdrawFunds(
-                    swapVars.tokenAddress,
-                    address(this),
-                    tokenAmount
-                );
-                wethAmount = swap(
-                    toETHPath,
-                    toETHFees,
-                    tokenAmount,
-                    address(this)
-                );
+                uint256 tokenAmount = IERC20(swapVars.tokenAddress).balanceOf(address(vault));
+                vault.withdrawFunds(swapVars.tokenAddress, address(this), tokenAmount);
+                wethAmount = swap(toETHPath, toETHFees, tokenAmount, address(this));
             }
             swapWethAmount += wethAmount;
         }
 
         chainCurrentRealShare = (chainValue * 100e18) / portfolioValue;
-        wethAmountToSwap =
-            (swapWethAmount * oracleChainSelectorTotalShares) /
-            chainCurrentRealShare;
+        wethAmountToSwap = (swapWethAmount * oracleChainSelectorTotalShares) / chainCurrentRealShare;
         extraWethAmount = swapWethAmount - wethAmountToSwap;
     }
 
     function _internalSwapsWETHToTokensForFirstRebalance(
         address _newTokenAddress,
-        uint _wethAmountToSwap,
-        uint _newTokenMarketShare,
-        uint _oracleChainSelectorTotalShares,
+        uint256 _wethAmountToSwap,
+        uint256 _newTokenMarketShare,
+        uint256 _oracleChainSelectorTotalShares,
         Vault _vault
-    ) internal returns (uint) {
-        uint wethAmount;
+    ) internal returns (uint256) {
+        uint256 wethAmount;
         if (_newTokenAddress == address(weth)) {
-            wethAmount =
-                (_wethAmountToSwap * _newTokenMarketShare) /
-                _oracleChainSelectorTotalShares;
+            wethAmount = (_wethAmountToSwap * _newTokenMarketShare) / _oracleChainSelectorTotalShares;
             weth.transfer(address(_vault), wethAmount);
         } else {
-            (
-                address[] memory fromETHPath,
-                uint24[] memory fromETHFees
-            ) = functionsOracle.getFromETHPathData(_newTokenAddress);
+            (address[] memory fromETHPath, uint24[] memory fromETHFees) =
+                functionsOracle.getFromETHPathData(_newTokenAddress);
             wethAmount = swap(
                 fromETHPath,
                 fromETHFees,
-                (_wethAmountToSwap * _newTokenMarketShare) /
-                    _oracleChainSelectorTotalShares,
+                (_wethAmountToSwap * _newTokenMarketShare) / _oracleChainSelectorTotalShares,
                 address(_vault)
             );
         }
@@ -412,27 +341,20 @@ contract IndexFactoryBalancer is
 
     function _swapWETHToTokensForFirstRebalance(
         uint64 chainSelector,
-        uint wethAmountToSwap,
-        uint chainSelectorOracleTokensCount,
-        uint currentChainSelectorTotalShares,
-        uint oracleChainSelectorTotalShares,
+        uint256 wethAmountToSwap,
+        uint256 chainSelectorOracleTokensCount,
+        uint256 currentChainSelectorTotalShares,
+        uint256 oracleChainSelectorTotalShares,
         Vault vault
     ) internal {
-        address[] memory oracleTokens = functionsOracle
-            .allOracleChainSelectorTokens(chainSelector);
-        for (uint k = 0; k < oracleTokens.length; k++) {
+        address[] memory oracleTokens = functionsOracle.allOracleChainSelectorTokens(chainSelector);
+        for (uint256 k = 0; k < oracleTokens.length; k++) {
             address newTokenAddress = oracleTokens[k];
 
-            uint newTokenMarketShare = functionsOracle.tokenOracleMarketShare(
-                newTokenAddress
-            );
+            uint256 newTokenMarketShare = functionsOracle.tokenOracleMarketShare(newTokenAddress);
 
-            uint wethAmount = _internalSwapsWETHToTokensForFirstRebalance(
-                newTokenAddress,
-                wethAmountToSwap,
-                newTokenMarketShare,
-                oracleChainSelectorTotalShares,
-                vault
+            uint256 wethAmount = _internalSwapsWETHToTokensForFirstRebalance(
+                newTokenAddress, wethAmountToSwap, newTokenMarketShare, oracleChainSelectorTotalShares, vault
             );
         }
     }
@@ -448,33 +370,30 @@ contract IndexFactoryBalancer is
      * @param currentChainSelectorTotalShares The total shares in the chain selector.
      */
     function _swapExtraValueCurrentChain(
-        uint i,
-        uint nonce,
-        uint portfolioValue,
+        uint256 i,
+        uint256 nonce,
+        uint256 portfolioValue,
         uint64 chainSelector,
-        uint chainSelectorCurrentTokensCount,
-        uint chainSelectorOracleTokensCount,
-        uint currentChainSelectorTotalShares,
-        uint oracleChainSelectorTotalShares
+        uint256 chainSelectorCurrentTokensCount,
+        uint256 chainSelectorOracleTokensCount,
+        uint256 currentChainSelectorTotalShares,
+        uint256 oracleChainSelectorTotalShares
     ) internal {
         ExtraSwapVariables memory swapVars;
         Vault vault = factoryStorage.vault();
         swapVars.chainValue = factoryStorage.chainValueByNonce(nonce, chainSelector);
-        uint initialWethBalance = weth.balanceOf(address(vault));
-        (
-            uint chainCurrentRealShare,
-            uint wethAmountToSwap,
-            uint extraWethAmount
-        ) = _swapTokensToWETHFirstRebalance(
-                chainSelector,
-                portfolioValue,
-                chainSelectorCurrentTokensCount,
-                currentChainSelectorTotalShares,
-                oracleChainSelectorTotalShares,
-                vault,
-                swapVars.chainValue,
-                initialWethBalance
-            );
+        uint256 initialWethBalance = weth.balanceOf(address(vault));
+        (uint256 chainCurrentRealShare, uint256 wethAmountToSwap, uint256 extraWethAmount) =
+        _swapTokensToWETHFirstRebalance(
+            chainSelector,
+            portfolioValue,
+            chainSelectorCurrentTokensCount,
+            currentChainSelectorTotalShares,
+            oracleChainSelectorTotalShares,
+            vault,
+            swapVars.chainValue,
+            initialWethBalance
+        );
 
         _swapWETHToTokensForFirstRebalance(
             chainSelector,
@@ -491,20 +410,15 @@ contract IndexFactoryBalancer is
     }
 
     function _sendExtraValueOtherChains(
-        uint nonce,
-        uint portfolioValue,
+        uint256 nonce,
+        uint256 portfolioValue,
         uint64 chainSelector,
-        uint oracleChainSelectorTotalShares,
-        uint chainValue,
-        uint[] memory oracleTokenShares
+        uint256 oracleChainSelectorTotalShares,
+        uint256 chainValue,
+        uint256[] memory oracleTokenShares
     ) internal {
         balancerSender.sendFirstReweightAction(
-            nonce,
-            portfolioValue,
-            chainSelector,
-            oracleChainSelectorTotalShares,
-            chainValue,
-            oracleTokenShares
+            nonce, portfolioValue, chainSelector, oracleChainSelectorTotalShares, chainValue, oracleTokenShares
         );
     }
 
@@ -512,36 +426,25 @@ contract IndexFactoryBalancer is
      * @dev Performs the second reweight action.
      */
     function secondReweightAction() public whenNotPaused onlyOwnerOrOperator {
-        uint nonce = factoryStorage.updatePortfolioNonce();
-        uint portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
+        uint256 nonce = factoryStorage.updatePortfolioNonce();
+        uint256 portfolioValue = factoryStorage.portfolioTotalValueByNonce(nonce);
 
-        uint totalChains = functionsOracle.oracleChainSelectorsCount();
-        uint latestOracleCount = functionsOracle.oracleFilledCount();
+        uint256 totalChains = functionsOracle.oracleChainSelectorsCount();
+        uint256 latestOracleCount = functionsOracle.oracleFilledCount();
 
         bool isOnlyOnCurrentChain = true;
-        for (uint i = 0; i < totalChains; i++) {
-            (, , uint64[] memory chainSelectors) = functionsOracle.getOracleData(
-                latestOracleCount
-            );
+        for (uint256 i = 0; i < totalChains; i++) {
+            (,, uint64[] memory chainSelectors) = functionsOracle.getOracleData(latestOracleCount);
             uint64 chainSelector = chainSelectors[i];
 
-            uint chainSelectorCurrentTokensCount = functionsOracle
-                .currentChainSelectorTokensCount(chainSelector);
-            uint chainSelectorOracleTokensCount = functionsOracle
-                .oracleChainSelectorTokensCount(chainSelector);
-            uint oracleChainSelectorTotalShares = functionsOracle
-                .getOracleChainSelectorTotalShares(
-                    latestOracleCount,
-                    chainSelector
-                );
-            uint chainValue = factoryStorage.chainValueByNonce(nonce, chainSelector);
-            uint[] memory oracleTokenShares = functionsOracle
-                .allOracleChainSelectorTokenShares(chainSelector);
+            uint256 chainSelectorCurrentTokensCount = functionsOracle.currentChainSelectorTokensCount(chainSelector);
+            uint256 chainSelectorOracleTokensCount = functionsOracle.oracleChainSelectorTokensCount(chainSelector);
+            uint256 oracleChainSelectorTotalShares =
+                functionsOracle.getOracleChainSelectorTotalShares(latestOracleCount, chainSelector);
+            uint256 chainValue = factoryStorage.chainValueByNonce(nonce, chainSelector);
+            uint256[] memory oracleTokenShares = functionsOracle.allOracleChainSelectorTokenShares(chainSelector);
 
-            if (
-                (chainValue * 100e18) / portfolioValue <
-                oracleChainSelectorTotalShares
-            ) {
+            if ((chainValue * 100e18) / portfolioValue < oracleChainSelectorTotalShares) {
                 if (chainSelector == currentChainSelector) {
                     _swapLowerValueCurrentChain(
                         i,
@@ -579,44 +482,26 @@ contract IndexFactoryBalancer is
     function _swapLowerValueCurrentChainToWETH(
         Vault vault,
         uint64 chainSelector,
-        uint chainSelectorTokensCount,
-        uint portfolioValue,
-        uint chainValue
-    ) internal returns (uint swapWethAmount) {
+        uint256 chainSelectorTokensCount,
+        uint256 portfolioValue,
+        uint256 chainValue
+    ) internal returns (uint256 swapWethAmount) {
         LowSwapVariables memory swapVars;
         Vault vault = factoryStorage.vault();
-        uint initialWethBalance = weth.balanceOf(address(vault));
-        address[] memory currentTokens = functionsOracle
-            .allCurrentChainSelectorTokens(chainSelector);
-        for (uint j = 0; j < currentTokens.length; j++) {
+        uint256 initialWethBalance = weth.balanceOf(address(vault));
+        address[] memory currentTokens = functionsOracle.allCurrentChainSelectorTokens(chainSelector);
+        for (uint256 j = 0; j < currentTokens.length; j++) {
             swapVars.tokenAddress = currentTokens[j];
-            (
-                address[] memory toETHPath,
-                uint24[] memory toETHFees
-            ) = functionsOracle.getToETHPathData(swapVars.tokenAddress);
+            (address[] memory toETHPath, uint24[] memory toETHFees) =
+                functionsOracle.getToETHPathData(swapVars.tokenAddress);
 
             if (swapVars.tokenAddress == address(weth)) {
-                vault.withdrawFunds(
-                    swapVars.tokenAddress,
-                    address(this),
-                    initialWethBalance
-                );
+                vault.withdrawFunds(swapVars.tokenAddress, address(this), initialWethBalance);
                 swapVars.wethAmount = initialWethBalance;
             } else {
-                uint tokenAmount = IERC20(swapVars.tokenAddress).balanceOf(
-                    address(vault)
-                );
-                vault.withdrawFunds(
-                    swapVars.tokenAddress,
-                    address(this),
-                    tokenAmount
-                );
-                swapVars.wethAmount = swap(
-                    toETHPath,
-                    toETHFees,
-                    tokenAmount,
-                    address(this)
-                );
+                uint256 tokenAmount = IERC20(swapVars.tokenAddress).balanceOf(address(vault));
+                vault.withdrawFunds(swapVars.tokenAddress, address(this), tokenAmount);
+                swapVars.wethAmount = swap(toETHPath, toETHFees, tokenAmount, address(this));
             }
             swapVars.swapWethAmount += swapVars.wethAmount;
         }
@@ -626,34 +511,26 @@ contract IndexFactoryBalancer is
     function _swapLowerValueCurrentChainFromWETH(
         Vault vault,
         uint64 chainSelector,
-        uint swapWethAmount,
-        uint oracleChainSelectorTotalShares
+        uint256 swapWethAmount,
+        uint256 oracleChainSelectorTotalShares
     ) internal {
         LowSwapVariables memory swapVars;
         swapVars.swapWethAmount = swapWethAmount;
-        address[] memory oracleTokens = functionsOracle
-            .allOracleChainSelectorTokens(chainSelector);
-        for (uint k = 0; k < oracleTokens.length; k++) {
+        address[] memory oracleTokens = functionsOracle.allOracleChainSelectorTokens(chainSelector);
+        for (uint256 k = 0; k < oracleTokens.length; k++) {
             address newTokenAddress = oracleTokens[k];
-            (
-                address[] memory fromETHPath,
-                uint24[] memory fromETHFees
-            ) = functionsOracle.getFromETHPathData(newTokenAddress);
+            (address[] memory fromETHPath, uint24[] memory fromETHFees) =
+                functionsOracle.getFromETHPathData(newTokenAddress);
 
-            uint newTokenMarketShare = functionsOracle.tokenOracleMarketShare(
-                newTokenAddress
-            );
+            uint256 newTokenMarketShare = functionsOracle.tokenOracleMarketShare(newTokenAddress);
             if (newTokenAddress == address(weth)) {
-                swapVars.wethAmount =
-                    (swapVars.swapWethAmount * newTokenMarketShare) /
-                    oracleChainSelectorTotalShares;
+                swapVars.wethAmount = (swapVars.swapWethAmount * newTokenMarketShare) / oracleChainSelectorTotalShares;
                 weth.transfer(address(vault), swapVars.wethAmount);
             } else {
                 swapVars.wethAmount = swap(
                     fromETHPath,
                     fromETHFees,
-                    (swapVars.swapWethAmount * newTokenMarketShare) /
-                        oracleChainSelectorTotalShares,
+                    (swapVars.swapWethAmount * newTokenMarketShare) / oracleChainSelectorTotalShares,
                     address(vault)
                 );
             }
@@ -669,87 +546,68 @@ contract IndexFactoryBalancer is
      * @param chainSelectorOracleTokensCount The number of oracle tokens in the chain selector.
      * @param oracleChainSelectorTotalShares The total shares in the chain selector.
      */
+
     function _swapLowerValueCurrentChain(
-        uint i,
-        uint nonce,
-        uint portfolioValue,
+        uint256 i,
+        uint256 nonce,
+        uint256 portfolioValue,
         uint64 chainSelector,
-        uint chainSelectorCurrentTokensCount,
-        uint chainSelectorOracleTokensCount,
-        uint oracleChainSelectorTotalShares
+        uint256 chainSelectorCurrentTokensCount,
+        uint256 chainSelectorOracleTokensCount,
+        uint256 oracleChainSelectorTotalShares
     ) internal {
         Vault vault = factoryStorage.vault();
         LowSwapVariables memory swapVars;
         swapVars.chainValue = factoryStorage.chainValueByNonce(nonce, chainSelector);
 
         swapVars.swapWethAmount = _swapLowerValueCurrentChainToWETH(
-            vault,
-            chainSelector,
-            chainSelectorCurrentTokensCount,
-            portfolioValue,
-            swapVars.chainValue
+            vault, chainSelector, chainSelectorCurrentTokensCount, portfolioValue, swapVars.chainValue
         );
-        uint chainCurrentRealShare = (swapVars.chainValue * 100e18) /
-            portfolioValue;
-        uint negativePercentage = oracleChainSelectorTotalShares -
-            chainCurrentRealShare;
-        uint extraWethAmount = (factoryStorage.extraWethByNonce(nonce) * negativePercentage) /
-            factoryStorage.reweightExtraPercentage(nonce);
+        uint256 chainCurrentRealShare = (swapVars.chainValue * 100e18) / portfolioValue;
+        uint256 negativePercentage = oracleChainSelectorTotalShares - chainCurrentRealShare;
+        uint256 extraWethAmount = (factoryStorage.extraWethByNonce(nonce) * negativePercentage)
+            / factoryStorage.reweightExtraPercentage(nonce);
         swapVars.swapWethAmount += extraWethAmount;
 
         _swapLowerValueCurrentChainFromWETH(
-            vault,
-            chainSelector,
-            swapVars.swapWethAmount,
-            oracleChainSelectorTotalShares
+            vault, chainSelector, swapVars.swapWethAmount, oracleChainSelectorTotalShares
         );
     }
 
     struct SendLowerValueOtherChainVars {
         address[] currentTokenAddresses;
         address[] newTokenAddresses;
-        uint[] extraData;
+        uint256[] extraData;
     }
 
-
     function _calculateExtraAmountForLowerValue(
-        uint _nonce,
-        uint _portfolioValue,
-        uint _chainValue,
-        uint _oracleChainSelectorTotalShares
-    ) internal view returns (uint) {
-        uint chainCurrentRealShare = (_chainValue * 100e18) / _portfolioValue;
-        uint negativePercentage = _oracleChainSelectorTotalShares -
-            chainCurrentRealShare;
-        uint extraWethAmount = (factoryStorage.extraWethByNonce(_nonce) * negativePercentage) /
-            factoryStorage.reweightExtraPercentage(_nonce);
+        uint256 _nonce,
+        uint256 _portfolioValue,
+        uint256 _chainValue,
+        uint256 _oracleChainSelectorTotalShares
+    ) internal view returns (uint256) {
+        uint256 chainCurrentRealShare = (_chainValue * 100e18) / _portfolioValue;
+        uint256 negativePercentage = _oracleChainSelectorTotalShares - chainCurrentRealShare;
+        uint256 extraWethAmount = (factoryStorage.extraWethByNonce(_nonce) * negativePercentage)
+            / factoryStorage.reweightExtraPercentage(_nonce);
 
         return extraWethAmount;
     }
 
     function _sendLowerValueOtherChain(
-        uint nonce,
-        uint portfolioValue,
+        uint256 nonce,
+        uint256 portfolioValue,
         uint64 chainSelector,
-        uint oracleChainSelectorTotalShares,
-        uint chainValue,
-        uint[] memory oracleTokenShares
+        uint256 oracleChainSelectorTotalShares,
+        uint256 chainValue,
+        uint256[] memory oracleTokenShares
     ) internal {
-        uint extraWethAmount = _calculateExtraAmountForLowerValue(
-            nonce,
-            portfolioValue,
-            chainValue,
-            oracleChainSelectorTotalShares
-        );
+        uint256 extraWethAmount =
+            _calculateExtraAmountForLowerValue(nonce, portfolioValue, chainValue, oracleChainSelectorTotalShares);
 
         weth.approve(address(balancerSender), extraWethAmount);
         balancerSender.sendSecondReweightAction(
-            nonce,
-            portfolioValue,
-            chainSelector,
-            oracleChainSelectorTotalShares,
-            oracleTokenShares,
-            extraWethAmount
+            nonce, portfolioValue, chainSelector, oracleChainSelectorTotalShares, oracleTokenShares, extraWethAmount
         );
     }
 }
