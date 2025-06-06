@@ -205,29 +205,25 @@ Below are the mainnet addresses (Arbitrum, Ethereum, BSC) for ANFI and CRYPTO5.
 1. **Clone & Install**
 
    ```bash
-   git clone <your-git-url>/cross-chain-index-protocol.git
-   cd cross-chain-index-protocol
+   git clone git@github.com:nexlabs22/Nex-Cross-Chain-Model.git
+   cd Nex-Cross-Chain-Model
    npm install
+   forge install
    ```
 
 2. **Environment Variables**
    Create a `.env` with your node URLs and private key, for example:
 
    ```env
-   RPC_URL_ARBITRUM_MAINNET="https://arb1.arbitrum.io/rpc"
-   RPC_URL_ETHEREUM_MAINNET="https://mainnet.infura.io/v3/YOUR_INFURA_KEY"
-   RPC_URL_BSC_MAINNET="https://bsc-dataseed.binance.org/"
-   PRIVATE_KEY="0xYOUR_KEY"
-   CCIP_ROUTER_ADDRESS_ARBITRUM=0x...
-   CCIP_ROUTER_ADDRESS_ETHEREUM=0x...
-   CCIP_LINK_TOKEN_ADDRESS=0x..."
+   ARBITRUM_RPC_URL="https://arb1.arbitrum.io/rpc"
+   ETHEREUM_RPC_URL="https://mainnet.infura.io/v3/YOUR_INFURA_KEY"
    ```
 
 3. **Compile & Test**
 
    ```bash
-   npx hardhat compile
-   npx hardhat test
+   forge compile
+   forge build
    ```
 
 4. **Deploy on Each Chain**
