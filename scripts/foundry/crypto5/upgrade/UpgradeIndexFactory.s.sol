@@ -16,6 +16,9 @@ contract UpgradeIndexFactory is Script {
         address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADMIN_ADDRESS");
         address indexFactoryProxyAddress = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
 
+        // address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADMIN_ADDRESS");
+        // address indexFactoryProxyAddress = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+
         IndexFactory newIndexFactoryImplementation = new IndexFactory();
         console.log("New IndexFactory implementation deployed at:", address(newIndexFactoryImplementation));
 

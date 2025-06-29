@@ -7,11 +7,12 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../../../../contracts/factory/IndexFactoryStorage.sol";
 import "../../../../../contracts/vault/CrossChainIndexFactoryStorage.sol";
 import "../../../../../contracts/token/IndexToken.sol";
+import "../../../../../contracts/factory/IndexFactoryBalancer.sol";
+import "../../../../../contracts/factory/IndexFactory.sol";
 
 /**
-forge script scripts/foundry/anfi/hooks/utils/getIndexTokenPrice.s.sol
-*/
-
+ * forge script scripts/foundry/anfi/hooks/utils/getIndexTokenPrice.s.sol
+ */
 contract getIndexTokenPrice is Script {
     string public arbitrumRpc;
     string public ethRpc;
@@ -19,6 +20,10 @@ contract getIndexTokenPrice is Script {
     uint256 ethFork;
 
     address indexFactoryStorage;
+    address indexFactoryBalancer;
+    address indexFactory;
+    address crossChainTokenArb;
+    address crossChainTokenEth;
     address wethOnArbitrum;
     address wethOnEthereum;
     address vaultOnArb;
@@ -32,6 +37,10 @@ contract getIndexTokenPrice is Script {
         ethRpc = vm.envString("ETHEREUM_RPC_URL");
 
         indexFactoryStorage = vm.envAddress("ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+        indexFactoryBalancer = vm.envAddress("ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+        indexFactory = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+        crossChainTokenArb = vm.envAddress("ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
+        crossChainTokenEth = vm.envAddress("ETHEREUM_CROSS_CHAIN_TOKEN_ADDRESS");
         crossChainFactoryStorage = vm.envAddress("ETHEREUM_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
         wethOnArbitrum = vm.envAddress("ARBITRUM_WETH_ADDRESS");
         wethOnEthereum = vm.envAddress("ETHEREUM_WETH_ADDRESS");
@@ -61,19 +70,30 @@ contract getIndexTokenPrice is Script {
         uint256 totalValue = wethValuesOnArb + wethValuesOnEth;
 
         console.log("Total Value on both chains: ", totalValue);
-        // uint256 indexTokenPrice = totalValue / totalSupply * 1e18;
-        uint256 indexTokenPrice = (totalValue * 1e18) / totalSupply;
-
-        console.log("Real total values: ", totalValue);
         console.log("Total supply: ", totalSupply);
-        console.log("Index Token price: ", indexTokenPrice);
 
-        uint256 burnAmount = totalSupply - (totalValue / 100);
-        console.log("Burn Amount: ", burnAmount);
-        uint256 newTotalSupply = totalSupply - burnAmount;
-        console.log("New total supply: ", newTotalSupply);
-        uint256 newPrice = (totalValue * 1e18) / newTotalSupply;
-        console.log("New price: ", newPrice);
+        vm.selectFork(arbFork);
+
+        uint256 indexTokenPrice = calculatePrice(totalValue, totalSupply);
+        console.log("New Price: ", indexTokenPrice);
+    }
+
+    function calculatePrice(uint256 totalPortfolioValue, uint256 totalSupply) public returns (uint256) {
+        // uint256 netReceivedAmount = IndexFactory(indexFactory).getNetSentAndReceivedAmounts();
+        uint256 ethPrice = IndexFactoryStorage(indexFactoryStorage).priceInWei();
+        uint256 netReceivedAmount = getNetSentAndReceivedAmounts();
+        vm.selectFork(arbFork);
+
+        (address[] memory path, uint24[] memory fees) =
+            IndexFactoryStorage(indexFactoryStorage).getToETHPathData(address(crossChainTokenArb));
+        uint256 crossChainTokenValue =
+            IndexFactoryStorage(indexFactoryStorage).getAmountOut(path, fees, netReceivedAmount);
+        uint256 numerator = totalPortfolioValue + crossChainTokenValue
+            + IndexFactoryStorage(indexFactoryStorage).totalPendingRedemptionHoldValue()
+            + IndexFactoryStorage(indexFactoryStorage).totalPendingExtraWeth()
+            - IndexFactoryStorage(indexFactoryStorage).totalPendingIssuanceInput();
+        uint256 denominator = totalSupply + IndexFactoryStorage(indexFactoryStorage).totalPendingRedemptionInput();
+        return (numerator * ethPrice) / denominator;
     }
 
     function checkMultipleTokenBalancesForArbitrum(
@@ -109,7 +129,8 @@ contract getIndexTokenPrice is Script {
             console.log("-------------------------------------");
         }
 
-        uint256 totalValueInUsd = totalValue * ethPrice / 1e18;
+        // uint256 totalValueInUsd = totalValue * ethPrice / 1e18;
+        uint256 totalValueInUsd = totalValue;
 
         console.log("Total Values: ", totalValueInUsd);
 
@@ -153,7 +174,8 @@ contract getIndexTokenPrice is Script {
             console.log("-------------------------------------");
         }
 
-        uint256 totalValueInUsd = totalValue * ethPrice / 1e18;
+        // uint256 totalValueInUsd = totalValue * ethPrice / 1e18;
+        uint256 totalValueInUsd = totalValue;
 
         console.log("Total Values: ", totalValueInUsd);
 
@@ -172,5 +194,25 @@ contract getIndexTokenPrice is Script {
         tokens[0] = vm.envAddress("ETHEREUM_XAUT_ADDRESS");
 
         return tokens;
+    }
+
+    function getNetSentAndReceivedAmounts() public returns (uint256) {
+        vm.selectFork(arbFork);
+
+        uint256 sentAmount = IndexFactoryStorage(indexFactoryStorage).totalSentAmount(address(crossChainTokenArb));
+        uint256 receivedAmount =
+            IndexFactoryStorage(indexFactoryStorage).totalReceivedAmount(address(crossChainTokenArb));
+
+        vm.selectFork(ethFork);
+
+        uint256 sentAmount2 =
+            CrossChainIndexFactoryStorage(crossChainFactoryStorage).totalSentAmount(address(crossChainTokenEth));
+        uint256 receivedAmount2 =
+            CrossChainIndexFactoryStorage(crossChainFactoryStorage).totalReceivedAmount(address(crossChainTokenEth));
+        if (sentAmount + receivedAmount > sentAmount2 + receivedAmount2) {
+            return ((sentAmount + receivedAmount) - (sentAmount2 + receivedAmount2));
+        } else {
+            return ((sentAmount2 + receivedAmount2) - (sentAmount + receivedAmount));
+        }
     }
 }

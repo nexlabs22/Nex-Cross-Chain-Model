@@ -13,14 +13,16 @@ contract UpgradeCrossChainIndexFactoryStorage is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        address proxyAdminAddress = vm.envAddress("BSC_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADMIN_ADDRESS");
+        // Mainnet
+        address proxyAdminAddress = vm.envAddress("ETHEREUM_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADMIN_ADDRESS");
         address crossChainIndexFactoryStorageProxyAddress =
-            vm.envAddress("BSC_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+            vm.envAddress("ETHEREUM_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
 
+        // // Testnet
         // address proxyAdminAddress =
-        //     vm.envAddress("CR5_ARBITRUM_SEPOLIA_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADMIN_ADDRESS");
+        //     vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADMIN_ADDRESS");
         // address crossChainIndexFactoryStorageProxyAddress =
-        //     vm.envAddress("CR5_ARBITRUM_SEPOLIA_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+        //     vm.envAddress("ARBITRUM_SEPOLIA_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
 
         CrossChainIndexFactoryStorage newCrossChainIndexFactoryStorageImplementation =
             new CrossChainIndexFactoryStorage();

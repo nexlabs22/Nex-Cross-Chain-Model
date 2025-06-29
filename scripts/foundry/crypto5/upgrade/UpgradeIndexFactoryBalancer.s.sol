@@ -14,12 +14,12 @@ contract UpgradeIndexFactoryBalancer is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // // Mainnet
-        address proxyAdminAddress = vm.envAddress("ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADMIN_ADDRESS");
-        address indexFactoryBalancerProxyAddress = vm.envAddress("ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+        // address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADMIN_ADDRESS");
+        // address indexFactoryBalancerProxyAddress = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
 
         // Testnet
-        // address proxyAdminAddress = vm.envAddress("SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADMIN_ADDRESS");
-        // address indexFactoryBalancerProxyAddress = vm.envAddress("SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+        address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADMIN_ADDRESS");
+        address indexFactoryBalancerProxyAddress = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
 
         IndexFactoryBalancer newIndexFactoryBalanacerImplementation = new IndexFactoryBalancer();
         console.log(

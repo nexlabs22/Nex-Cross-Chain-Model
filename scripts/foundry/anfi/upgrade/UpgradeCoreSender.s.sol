@@ -13,18 +13,20 @@ contract UpgradeCoreSender is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_CORE_SENDER_PROXY_ADMIN_ADDRESS");
-        address coreSenderStorageProxyAddress = vm.envAddress("CR5_ARBITRUM_CORE_SENDER_PROXY_ADDRESS");
+        // Mainnet
+        // address proxyAdminAddress = vm.envAddress("ARBITRUM_CORE_SENDER_PROXY_ADMIN_ADDRESS");
+        // address coreSenderProxyAddress = vm.envAddress("ARBITRUM_CORE_SENDER_PROXY_ADDRESS");
 
-        // address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_CORE_SENDER_PROXY_ADMIN_ADDRESS");
-        // address coreSenderStorageProxyAddress = vm.envAddress("CR5_SEPOLIA_CORE_SENDER_PROXY_ADDRESS");
+        // Testnet
+        address proxyAdminAddress = vm.envAddress("SEPOLIA_CORE_SENDER_PROXY_ADMIN_ADDRESS");
+        address coreSenderProxyAddress = vm.envAddress("SEPOLIA_CORE_SENDER_PROXY_ADDRESS");
 
         CoreSender newCoreSenderImplementation = new CoreSender();
         console.log("New CoreSender implementation deployed at:", address(newCoreSenderImplementation));
 
         ProxyAdmin proxyAdmin = ProxyAdmin(proxyAdminAddress);
         proxyAdmin.upgrade(
-            ITransparentUpgradeableProxy(payable(coreSenderStorageProxyAddress)), address(newCoreSenderImplementation)
+            ITransparentUpgradeableProxy(payable(coreSenderProxyAddress)), address(newCoreSenderImplementation)
         );
 
         console.log("CoreSender proxy upgraded to new implementation at:", address(newCoreSenderImplementation));

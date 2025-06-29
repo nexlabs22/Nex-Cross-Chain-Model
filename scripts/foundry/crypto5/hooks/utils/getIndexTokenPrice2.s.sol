@@ -9,8 +9,8 @@ import "../../../../../contracts/vault/CrossChainIndexFactoryStorage.sol";
 import "../../../../../contracts/token/IndexToken.sol";
 
 /**
-    forge script scripts/foundry/crypto5/hooks/utils/getIndexTokenPrice.s.sol
-*/
+ * forge script scripts/foundry/crypto5/hooks/utils/getIndexTokenPrice.s.sol
+ */
 contract getIndexTokenPrice is Script {
     string public arbitrumRpc;
     string public bscRpc;
@@ -20,6 +20,8 @@ contract getIndexTokenPrice is Script {
     address indexFactoryStorage;
     address weth;
     address wbnb;
+    address crossChainTokenArb;
+    address crossChainTokenBsc;
     address vaultOnArb;
     address vaultOnBsc;
     address crossChainFactoryStorage;
@@ -31,6 +33,8 @@ contract getIndexTokenPrice is Script {
 
         indexFactoryStorage = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
         crossChainFactoryStorage = vm.envAddress("BSC_CROSS_CHAIN_INDEX_FACTORY_STORAGE_PROXY_ADDRESS");
+        crossChainTokenArb = vm.envAddress("CR5_ARBITRUM_CROSS_CHAIN_TOKEN_ADDRESS");
+        crossChainTokenBsc = vm.envAddress("BSC_CROSS_CHAIN_TOKEN_ADDRESS");
         weth = vm.envAddress("CR5_WETH_ADDRESS");
         wbnb = vm.envAddress("CR5_WBNB_ADDRESS");
         vaultOnArb = vm.envAddress("CR5_ARBITRUM_VAULT_PROXY_ADDRESS");
@@ -58,19 +62,56 @@ contract getIndexTokenPrice is Script {
             checkMultipleTokenBalancesForBsc(bscTokens, vaultOnBsc, crossChainFactoryStorage, wbnb);
 
         uint256 totalValue = wethValuesOnArb + wethValuesOnBsc;
+
+        vm.selectFork(arbFork);
+
+        uint256 indexTokenPrice = calculatePrice(totalValue, totalSupply);
+        console.log("New Price: ", indexTokenPrice);
         // uint256 indexTokenPrice = totalValue / totalSupply * 1e18;
-        uint256 indexTokenPrice = (totalValue * 1e18) / totalSupply;
+        // uint256 indexTokenPrice = (totalValue * 1e18) / totalSupply;
 
-        console.log("Real total values: ", totalValue);
-        console.log("Total supply: ", totalSupply);
-        console.log("Index Token price: ", indexTokenPrice);
+        // console.log("Real total values: ", totalValue);
+        // console.log("Total supply: ", totalSupply);
+        // console.log("Index Token price: ", indexTokenPrice);
 
-        uint256 burnAmount = totalSupply - (totalValue / 100);
-        console.log("Burn Amount: ", burnAmount);
-        uint256 newTotalSupply = totalSupply - burnAmount;
-        console.log("New total supply: ", newTotalSupply);
-        uint256 newPrice = (totalValue * 1e18) / newTotalSupply;
-        console.log("New price: ", newPrice);
+        // uint256 burnAmount = totalSupply - (totalValue / 100);
+        // console.log("Burn Amount: ", burnAmount);
+        // uint256 newTotalSupply = totalSupply - burnAmount;
+        // console.log("New total supply: ", newTotalSupply);
+        // uint256 newPrice = (totalValue * 1e18) / newTotalSupply;
+        // console.log("New price: ", newPrice);
+    }
+
+    function calculatePrice(uint256 totalPortfolioValue, uint256 totalSupply) public returns (uint256) {
+        // uint256 netReceivedAmount = IndexFactory(indexFactory).getNetSentAndReceivedAmounts();
+        uint256 ethPrice = IndexFactoryStorage(indexFactoryStorage).priceInWei();
+        uint256 totalValue = (totalPortfolioValue * 1e18) / ethPrice;
+        console.log("total value in eth: ", totalValue);
+        uint256 netReceivedAmount = getNetSentAndReceivedAmounts();
+        console.log("netReceivedAmount", netReceivedAmount);
+        vm.selectFork(arbFork);
+
+        (address[] memory path, uint24[] memory fees) =
+            IndexFactoryStorage(indexFactoryStorage).getToETHPathData(address(crossChainTokenArb));
+        uint256 crossChainTokenValue =
+            IndexFactoryStorage(indexFactoryStorage).getAmountOut(path, fees, netReceivedAmount);
+                console.log("netReceivedAmount", netReceivedAmount);
+
+        uint256 numerator = totalValue + crossChainTokenValue
+            + IndexFactoryStorage(indexFactoryStorage).totalPendingRedemptionHoldValue()
+            + IndexFactoryStorage(indexFactoryStorage).totalPendingExtraWeth()
+            - IndexFactoryStorage(indexFactoryStorage).totalPendingIssuanceInput();
+        console.log("numerator", numerator);
+
+        // uint256 numerator = totalPortfolioValue + crossChainTokenValue
+        //     + IndexFactoryStorage(indexFactoryStorage).totalPendingRedemptionHoldValue()
+        //     + IndexFactoryStorage(indexFactoryStorage).totalPendingExtraWeth()
+        //     - IndexFactoryStorage(indexFactoryStorage).totalPendingIssuanceInput();
+        uint256 denominator = totalSupply + IndexFactoryStorage(indexFactoryStorage).totalPendingRedemptionInput();
+                            console.log("denominator", denominator);
+
+        return (numerator * ethPrice) / denominator;
+        // return numerator / denominator;
     }
 
     function checkMultipleTokenBalancesForArbitrum(
@@ -107,6 +148,7 @@ contract getIndexTokenPrice is Script {
         }
 
         uint256 totalValueInUsd = totalValue * ethPrice / 1e18;
+        // uint256 totalValueInUsd = totalValue;
 
         console.log("Total Values: ", totalValueInUsd);
 
@@ -148,6 +190,7 @@ contract getIndexTokenPrice is Script {
         }
 
         uint256 totalValueInUsd = totalValue * ethPrice / 1e18;
+        // uint256 totalValueInUsd = totalValue;
 
         console.log("Total Values: ", totalValueInUsd);
 
@@ -169,5 +212,25 @@ contract getIndexTokenPrice is Script {
         tokens[2] = vm.envAddress("CR5_WBNB_ADDRESS");
 
         return tokens;
+    }
+
+    function getNetSentAndReceivedAmounts() public returns (uint256) {
+        vm.selectFork(arbFork);
+
+        uint256 sentAmount = IndexFactoryStorage(indexFactoryStorage).totalSentAmount(address(crossChainTokenArb));
+        uint256 receivedAmount =
+            IndexFactoryStorage(indexFactoryStorage).totalReceivedAmount(address(crossChainTokenArb));
+
+        vm.selectFork(bscFork);
+
+        uint256 sentAmount2 =
+            CrossChainIndexFactoryStorage(crossChainFactoryStorage).totalSentAmount(address(crossChainTokenBsc));
+        uint256 receivedAmount2 =
+            CrossChainIndexFactoryStorage(crossChainFactoryStorage).totalReceivedAmount(address(crossChainTokenBsc));
+        if (sentAmount + receivedAmount > sentAmount2 + receivedAmount2) {
+            return ((sentAmount + receivedAmount) - (sentAmount2 + receivedAmount2));
+        } else {
+            return ((sentAmount2 + receivedAmount2) - (sentAmount + receivedAmount));
+        }
     }
 }
