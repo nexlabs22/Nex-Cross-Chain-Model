@@ -51,9 +51,7 @@ contract getIndexTokenPrice is Script {
         uint256 wethValuesOnArb =
             checkMultipleTokenBalancesForArbitrum(arbTokens, vaultOnArb, indexFactoryStorage, weth);
 
-        // uint256 totalSupply = IndexToken(payable(indexToken)).totalSupply();
-        uint256 totalSupply = 5370098139673049000;
-        // uint256 totalSupply = 3113954452800500700;
+        uint256 totalSupply = IndexToken(payable(indexToken)).totalSupply();
         // uint256 totalSupply = 4000000000000000000;
 
         bscFork = vm.createFork(bscRpc);
@@ -125,23 +123,11 @@ contract getIndexTokenPrice is Script {
     ) public view returns (uint256) {
         uint256 totalValue;
 
-        // uint256 ethPrice = IndexFactoryStorage(sourceAddress).priceInWei();
-        uint256 ethPrice = 2676000000000000000000;
-
-        uint256[] memory vaultBalance = new uint256[](2);
-        vaultBalance[0] = 499343;
-        // vaultBalance[0] = 506607;
-        vaultBalance[1] = 27807558711912560;
-        // vaultBalance[0] = 49934300000000;
-        // vaultBalance[1] = 27807558711912560000000000000000000;
-        // vaultBalance[0] = 14837081479475622000000000000000000000;
-        // vaultBalance[1] = 37113844151532520000000000000000000;
-        // vaultBalance[2] = 127803413748833440000000000000000000;
+        uint256 ethPrice = IndexFactoryStorage(sourceAddress).priceInWei();
 
         for (uint256 i = 0; i < tokens.length; i++) {
             IERC20 token = IERC20(tokens[i]);
-            // uint256 balance = token.balanceOf(vaultAddress);
-            uint256 balance = vaultBalance[i];
+            uint256 balance = token.balanceOf(vaultAddress);
 
             address[] memory path = new address[](2);
             path[0] = address(token);
@@ -163,7 +149,7 @@ contract getIndexTokenPrice is Script {
         }
 
         uint256 totalValueInUsd = totalValue * ethPrice / 1e18;
-        // uint256 totalValueInUsd = 110639 + 2656;
+        // uint256 totalValueInUsd = totalValue;
 
         console.log("Total Values: ", totalValueInUsd);
 
@@ -178,28 +164,11 @@ contract getIndexTokenPrice is Script {
     ) public view returns (uint256) {
         uint256 totalValue;
 
-        uint256[] memory vaultBalance = new uint256[](3);
-        // vaultBalance[0] = 49934300000000;
-        // vaultBalance[1] = 27807558711912560000000000000000000;
-        vaultBalance[0] = 14837081479475622000;
-        vaultBalance[1] = 127803413748833440;
-        vaultBalance[2] = 37113844151532520;
-
-        //  [
-        //     49934300000000,
-        //     27807558711912560000000000000000000,
-        //     14837081479475622000000000000000000000,
-        //     37113844151532520000000000000000000,
-        //     127803413748833440000000000000000000
-        // ];
-
-        // uint256 ethPrice = CrossChainIndexFactoryStorage(sourceAddress).priceInWei();
-        uint256 ethPrice = 684000000000000000000;
+        uint256 ethPrice = CrossChainIndexFactoryStorage(sourceAddress).priceInWei();
 
         for (uint256 i = 0; i < tokens.length; i++) {
             IERC20 token = IERC20(tokens[i]);
-            // uint256 balance = token.balanceOf(vaultAddress);
-            uint256 balance = vaultBalance[i];
+            uint256 balance = token.balanceOf(vaultAddress);
 
             address[] memory path = new address[](2);
             path[0] = address(token);
@@ -222,6 +191,7 @@ contract getIndexTokenPrice is Script {
         }
 
         uint256 totalValueInUsd = totalValue * ethPrice / 1e18;
+        // uint256 totalValueInUsd = totalValue;
 
         console.log("Total Values: ", totalValueInUsd);
 

@@ -30,17 +30,22 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
     IWETH public weth;
 
     event MessageSent(bytes32 messageId);
-    event AskValuesCompleted(uint time);
-    event FirstReweightActionCompleted(uint time);
-    event SecondReweightActionCompleted(uint time);
+    event AskValuesCompleted(uint256 time);
+    event FirstReweightActionCompleted(uint256 time);
+    event SecondReweightActionCompleted(uint256 time);
 
     modifier onlyFactoryBalancer() {
         require(msg.sender == factoryStorage.indexFactoryBalancer(), "Only factory balancer can call this function");
         _;
     }
 
-    
-
+    modifier onlyOwnerOrOperator() {
+        require(
+            msg.sender == owner() || functionsOracle.isOperator(msg.sender),
+            "Only owner or operator can call this function"
+        );
+        _;
+    }
 
     /**
      * @dev Initializes the contract with the given parameters.
@@ -105,6 +110,14 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
         );
     }
 
+    function withdrawEther() external onlyOwnerOrOperator {
+        uint256 balance = address(this).balance;
+        require(balance > 0, "No Ether to withdraw");
+
+        (bool success,) = payable(msg.sender).call{value: balance}("");
+        require(success, "Ether transfer failed");
+    }
+
     /**
      * @dev Fallback function to receive ETH.
      */
@@ -117,12 +130,12 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
     function emitSecondReweightActionCompleted() external onlyFactoryBalancer {
         emit SecondReweightActionCompleted(block.timestamp);
     }
-    
+
     function pauseIndexFactory() internal {
         address indexFactoryAddress = factoryStorage.indexFactory();
         IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
-        if(!indexFactory.paused()){
-        indexFactory.pause();
+        if (!indexFactory.paused()) {
+            indexFactory.pause();
         }
     }
 
@@ -130,8 +143,8 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
     function unpauseIndexFactory() internal {
         address indexFactoryAddress = factoryStorage.indexFactory();
         IndexFactory indexFactory = IndexFactory(payable(indexFactoryAddress));
-        if(indexFactory.paused()){
-        indexFactory.unpause();
+        if (indexFactory.paused()) {
+            indexFactory.unpause();
         }
     }
 
@@ -346,8 +359,10 @@ contract BalancerSender is Initializable, CCIPReceiver, ProposableOwnableUpgrade
         ) = abi.decode(
             any2EvmMessage.data, (uint256, address[], address[], bytes[], bytes[], uint256, uint256[], uint256[])
         ); // abi-decoding of the sent string message
-        if(any2EvmMessage.destTokenAmounts.length > 0) {
-            factoryStorage.increaseTotalReceivedAmount(any2EvmMessage.destTokenAmounts[0].token, any2EvmMessage.destTokenAmounts[0].amount);
+        if (any2EvmMessage.destTokenAmounts.length > 0) {
+            factoryStorage.increaseTotalReceivedAmount(
+                any2EvmMessage.destTokenAmounts[0].token, any2EvmMessage.destTokenAmounts[0].amount
+            );
         }
         if (actionType == 0) {} else if (actionType == 1) {} else if (actionType == 2) {
             for (uint256 i = 0; i < value1.length; i++) {

@@ -13,19 +13,19 @@ contract OnchainTest is Script {
     IndexToken indexToken;
 
     // // Mainnet
-    // address user = vm.envAddress("USER");
-    // address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-    // address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
-    // address indexFactoryProxy = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
-    // address indexTokenProxy = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+    address user = vm.envAddress("USER");
+    address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+    address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
+    address indexFactoryProxy = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+    address indexTokenProxy = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
 
     // Testnet
-    address user = vm.envAddress("USER");
-    address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-    address usdc = vm.envAddress("SEPOLIA_USDT_ADDRESS");
-    address indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
-    address indexTokenProxy = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
-    address indexFactoryBalancer = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+    // address user = vm.envAddress("USER");
+    // address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+    // address usdc = vm.envAddress("SEPOLIA_USDT_ADDRESS");
+    // address indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+    // address indexTokenProxy = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+    // address indexFactoryBalancer = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -37,24 +37,24 @@ contract OnchainTest is Script {
         // Issuance With ETH
         // issuanceAndRedemptionWithEth();
 
-        // issuanceIndexTokens();
+        issuanceIndexTokens();
 
         // Issuance with ERC20 Token
         // issuanceAndRedemptionWithUsdt();
 
         // redemption();
 
-        askValue();
+        // askValue();
 
         vm.stopBroadcast();
     }
 
-    function askValue() public {
-        IndexFactoryBalancer(indexFactoryBalancer).askValues();
-    }
+    // function askValue() public {
+    //     IndexFactoryBalancer(indexFactoryBalancer).askValues();
+    // }
 
     function issuanceIndexTokens() public {
-        uint256 inputAmount = 3e6;
+        uint256 inputAmount = 2e5;
         address[] memory path = new address[](2);
         path[0] = address(usdc);
         path[1] = address(weth);

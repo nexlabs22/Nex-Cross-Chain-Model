@@ -37,14 +37,14 @@ contract OnchainTest is Script {
         // Issuance With ETH
         // issuanceAndRedemptionWithEth();
 
-        // issuanceIndexTokens();
+        issuanceIndexTokens();
 
         // redemption();
 
         // Issuance with ERC20 Token
         // issuanceAndRedemptionWithUsdt();
 
-        askValue();
+        // askValue();
 
         vm.stopBroadcast();
     }
@@ -54,7 +54,7 @@ contract OnchainTest is Script {
     }
 
     function issuanceIndexTokens() public {
-        uint256 inputAmount = 3e6;
+        uint256 inputAmount = 1e6;
         address[] memory path = new address[](2);
         path[0] = address(usdc);
         path[1] = address(weth);
