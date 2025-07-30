@@ -152,6 +152,8 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
     }
 
     bool public isCrossChainFeeSponsered;
+    uint public coreSenderGasLimit;
+    uint public balancerSenderGasLimit;
 
     /**
      * @dev Initializes the contract with the given parameters.
@@ -210,6 +212,17 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
+    }
+
+    /**
+     * @dev Modifier to restrict access to only the IndexFactory contract.
+     * @param _coreSenderGasLimit The gas limit for the core sender.
+     * @param _balancerSenderGasLimit The gas limit for the balancer sender.
+     */
+    function setCoreSenderAndBalancerSenderGasLimits(uint _coreSenderGasLimit, uint _balancerSenderGasLimit) public {
+        require(msg.sender == owner() || functionsOracle.isOperator(msg.sender));
+        coreSenderGasLimit = _coreSenderGasLimit;
+        balancerSenderGasLimit = _balancerSenderGasLimit;
     }
 
     function setIsCrossChainFeeSponsered(bool _isCrossChainFeeSponsered) public {

@@ -486,7 +486,8 @@ contract ContractDeployer is
         indexFactoryStorage.setVault(address(vault));
         indexFactoryStorage.setBalancerSender(address(balancerSender));
         indexFactoryStorage.setIndexFactoryBalancer(address(factoryBalancer));
-
+        indexFactoryStorage.setCoreSenderAndBalancerSenderGasLimits(2000000, 2000000);
+        
         vault.setOperator(address(factory), true);
         vault.setOperator(address(factoryBalancer), true);
 
@@ -527,7 +528,8 @@ contract ContractDeployer is
         // link.transfer(address(factory), 10e18);
         link.transfer(address(crossChainIndexFactory), 10e18);
 
-        // for cross chain index factory
+        // set corsender gas limit and balancer sender gas limit
+
         
     }
 
