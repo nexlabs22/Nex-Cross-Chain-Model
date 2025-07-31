@@ -13,19 +13,20 @@ contract OnchainTest is Script {
     IndexToken indexToken;
 
     // // Mainnet
-    address user = vm.envAddress("USER");
-    address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-    address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
-    address indexFactoryProxy = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
-    address indexTokenProxy = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+    // address user = vm.envAddress("USER");
+    // address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+    // address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
+    // address indexFactoryProxy = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+    // address indexTokenProxy = vm.envAddress("CR5_ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+    // address indexFactoryBalancer = vm.envAddress("CR5_ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
 
     // Testnet
-    // address user = vm.envAddress("USER");
-    // address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-    // address usdc = vm.envAddress("SEPOLIA_USDT_ADDRESS");
-    // address indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
-    // address indexTokenProxy = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
-    // address indexFactoryBalancer = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+    address user = vm.envAddress("USER");
+    address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+    address usdc = vm.envAddress("SEPOLIA_USDT_ADDRESS");
+    address indexFactoryProxy = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+    address indexTokenProxy = vm.envAddress("CR5_SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+    address indexFactoryBalancer = vm.envAddress("CR5_SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -37,7 +38,7 @@ contract OnchainTest is Script {
         // Issuance With ETH
         // issuanceAndRedemptionWithEth();
 
-        issuanceIndexTokens();
+        // issuanceIndexTokens();
 
         // Issuance with ERC20 Token
         // issuanceAndRedemptionWithUsdt();
@@ -46,42 +47,72 @@ contract OnchainTest is Script {
 
         // askValue();
 
+        // firstRebalance();
+
+        // secondRebalance();
+
         vm.stopBroadcast();
     }
 
+    function firstRebalance() public {
+        IndexFactoryBalancer(indexFactoryBalancer).firstReweightAction();
+    }
+
+    function secondRebalance() public {
+        IndexFactoryBalancer(indexFactoryBalancer).secondReweightAction();
+    }
     // function askValue() public {
     //     IndexFactoryBalancer(indexFactoryBalancer).askValues();
     // }
 
     function issuanceIndexTokens() public {
-        uint256 inputAmount = 2e5;
+        uint256 inputAmount = 20e6;
         address[] memory path = new address[](2);
         path[0] = address(usdc);
         path[1] = address(weth);
         uint24[] memory fees = new uint24[](1);
-        fees[0] = 100;
+        // fees[0] = 100;
+        fees[0] = 3000;
         uint256 issuanceFee =
             IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(usdc), path, fees, inputAmount);
         IERC20(usdc).approve(address(indexFactoryProxy), (inputAmount * 1001) / 1000);
         // redemption input token path data
 
+        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens{value: 0}(address(usdc), path, fees, inputAmount);
         IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens{value: issuanceFee}(
             address(usdc), path, fees, inputAmount
         );
     }
+    // function issuanceIndexTokens() public {
+    //     uint256 inputAmount = 20e6;
+    //     address[] memory path = new address[](2);
+    //     path[0] = address(usdc);
+    //     path[1] = address(weth);
+    //     uint24[] memory fees = new uint24[](1);
+    //     // fees[0] = 100;
+    //     fees[0] = 3000;
+    //     uint256 issuanceFee =
+    //         IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(usdc), path, fees, inputAmount);
+    //     IERC20(usdc).approve(address(indexFactoryProxy), (inputAmount * 1001) / 1000);
+    //     // redemption input token path data
+
+    //     IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens{value: issuanceFee}(
+    //         address(usdc), path, fees, inputAmount
+    //     );
+    // }
 
     function issuanceAndRedemptionWithEth() public {
-        // uint256 inputAmount = 1e16;
-        // address[] memory path = new address[](2);
-        // path[0] = address(usdc);
-        // path[1] = address(weth);
-        // uint24[] memory fees = new uint24[](1);
-        // fees[0] = 3000;
-        // uint256 issuanceFee =
-        //     IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(weth), path, fees, inputAmount);
-        // console.log("Issuance fee", issuanceFee);
-        // uint256 finalInputAmount = (inputAmount * 1001) / 1000 + issuanceFee;
-        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: finalInputAmount}(inputAmount);
+        uint256 inputAmount = 1e16;
+        address[] memory path = new address[](2);
+        path[0] = address(usdc);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
+        uint256 issuanceFee =
+            IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(weth), path, fees, inputAmount);
+        console.log("Issuance fee", issuanceFee);
+        uint256 finalInputAmount = (inputAmount * 1001) / 1000 + issuanceFee;
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: finalInputAmount}(inputAmount);
 
         // address[] memory path = new address[](2);
         // path[0] = address(weth);

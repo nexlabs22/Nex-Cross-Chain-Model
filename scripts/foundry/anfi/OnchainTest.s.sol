@@ -13,19 +13,19 @@ contract OnchainTest is Script {
     IndexToken indexToken;
 
     // Mainnet
-    address user = vm.envAddress("USER");
-    address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
-    address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
-    address indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
-    address indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
-    address indexFactoryBalancer = vm.envAddress("ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
-
-    // Testnet
     // address user = vm.envAddress("USER");
-    // address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
-    // address usdt = vm.envAddress("SEPOLIA_USDT_ADDRESS");
-    // address indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
-    // address indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+    // address weth = vm.envAddress("ARBITRUM_WETH_ADDRESS");
+    // address usdc = vm.envAddress("ARBITRUM_USDC_ADDRESS");
+    // address indexFactoryProxy = vm.envAddress("ARBITRUM_INDEX_FACTORY_PROXY_ADDRESS");
+    // address indexTokenProxy = vm.envAddress("ARBITRUM_INDEX_TOKEN_PROXY_ADDRESS");
+    // address indexFactoryBalancer = vm.envAddress("ARBITRUM_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
+    // Testnet
+    address user = vm.envAddress("USER");
+    address weth = vm.envAddress("SEPOLIA_WETH_ADDRESS");
+    address usdt = vm.envAddress("SEPOLIA_USDT_ADDRESS");
+    address indexFactoryProxy = vm.envAddress("SEPOLIA_INDEX_FACTORY_PROXY_ADDRESS");
+    address indexTokenProxy = vm.envAddress("SEPOLIA_INDEX_TOKEN_PROXY_ADDRESS");
+    address indexFactoryBalancer = vm.envAddress("SEPOLIA_INDEX_FACTORY_BALANCER_PROXY_ADDRESS");
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -35,9 +35,9 @@ contract OnchainTest is Script {
         // string memory targetChain = "sepolia";
 
         // Issuance With ETH
-        // issuanceAndRedemptionWithEth();
+        issuanceAndRedemptionWithEth();
 
-        issuanceIndexTokens();
+        // issuanceIndexTokens();
 
         // redemption();
 
@@ -54,22 +54,41 @@ contract OnchainTest is Script {
     }
 
     function issuanceIndexTokens() public {
-        uint256 inputAmount = 1e6;
+        uint256 inputAmount = 10e6;
         address[] memory path = new address[](2);
-        path[0] = address(usdc);
+        path[0] = address(usdt);
         path[1] = address(weth);
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
         uint256 issuanceFee =
-            IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(usdc), path, fees, inputAmount);
+            IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(usdt), path, fees, inputAmount);
         console.log("Issuance fee: ", issuanceFee);
-        IERC20(usdc).approve(address(indexFactoryProxy), (inputAmount * 1001) / 1000);
+        IERC20(usdt).approve(address(indexFactoryProxy), (inputAmount * 1001) / 1000);
         // redemption input token path data
 
+        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens{value: 0}(address(usdt), path, fees, inputAmount);
         IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens{value: issuanceFee}(
-            address(usdc), path, fees, inputAmount
+            address(usdt), path, fees, inputAmount
         );
     }
+    // function issuanceIndexTokens() public {
+    //     uint256 inputAmount = 1e6;
+    //     address[] memory path = new address[](2);
+    //     path[0] = address(usdc);
+    //     path[1] = address(weth);
+    //     uint24[] memory fees = new uint24[](1);
+    //     fees[0] = 3000;
+    //     uint256 issuanceFee =
+    //         IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(usdc), path, fees, inputAmount);
+    //     console.log("Issuance fee: ", issuanceFee);
+    //     IERC20(usdc).approve(address(indexFactoryProxy), (inputAmount * 1001) / 1000);
+    //     // redemption input token path data
+
+    //     // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens{value: 0}(address(usdc), path, fees, inputAmount);
+    //     IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokens{value: issuanceFee}(
+    //         address(usdc), path, fees, inputAmount
+    //     );
+    // }
 
     function redemption() public {
         uint256 inputAmount = 28384880072250604;
@@ -88,35 +107,48 @@ contract OnchainTest is Script {
     }
 
     function issuanceAndRedemptionWithEth() public {
-        // uint256 inputAmount = 1e16;
-        // address[] memory path = new address[](2);
-        // path[0] = address(usdt);
-        // path[1] = address(weth);
-        // uint24[] memory fees = new uint24[](1);
-        // fees[0] = 3000;
-        // uint256 issuanceFee =
-        //     IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(weth), path, fees, inputAmount);
-        // console.log("Issuance fee", issuanceFee);
-        // uint256 finalInputAmount = (inputAmount * 1001) / 1000 + issuanceFee;
-        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: finalInputAmount}(inputAmount);
-
-        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e14 * 1001) / 1000}(1e14, 0);
-        // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (3700000000000000 * 1001) / 1000}(
-        //     3700000000000000, 0
-        // );
-
+        uint256 inputAmount = 1e14;
         address[] memory path = new address[](2);
         path[0] = address(weth);
         path[1] = address(weth);
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
+        uint256 issuanceFee =
+            IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(weth), path, fees, inputAmount);
+        console.log("Issuance fee", issuanceFee);
+        uint256 finalInputAmount = (inputAmount * 1001) / 1000 + issuanceFee;
+        console.log("finalInputAmount", finalInputAmount);
+        console.log("inputAmount", inputAmount);
+        IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: finalInputAmount}(inputAmount);
+        //     uint256 inputAmount = 1e16;
+        //     address[] memory path = new address[](2);
+        //     path[0] = address(usdt);
+        //     path[1] = address(weth);
+        //     uint24[] memory fees = new uint24[](1);
+        //     fees[0] = 3000;
+        //     uint256 issuanceFee =
+        //         IndexFactory(payable(indexFactoryProxy)).getIssuanceFee(address(weth), path, fees, inputAmount);
+        //     console.log("Issuance fee", issuanceFee);
+        //     uint256 finalInputAmount = (inputAmount * 1001) / 1000 + issuanceFee;
+        //     IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: finalInputAmount}(inputAmount);
 
-        uint256 redemptionFee =
-            IndexFactory(payable(indexFactoryProxy)).getRedemptionFee((indexToken.balanceOf(address(user)) * 90) / 100);
+        //     // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (1e14 * 1001) / 1000}(1e14, 0);
+        //     // IndexFactory(payable(indexFactoryProxy)).issuanceIndexTokensWithEth{value: (3700000000000000 * 1001) / 1000}(
+        //     //     3700000000000000, 0
+        //     // );
 
-        IndexFactory(payable(indexFactoryProxy)).redemption{value: redemptionFee}(
-            (indexToken.balanceOf(address(user)) * 90) / 100, address(weth), path, fees
-        );
+        //     // address[] memory path = new address[](2);
+        //     // path[0] = address(weth);
+        //     // path[1] = address(weth);
+        //     // uint24[] memory fees = new uint24[](1);
+        //     // fees[0] = 3000;
+
+        //     // uint256 redemptionFee =
+        //     //     IndexFactory(payable(indexFactoryProxy)).getRedemptionFee((indexToken.balanceOf(address(user)) * 90) / 100);
+
+        //     // IndexFactory(payable(indexFactoryProxy)).redemption{value: redemptionFee}(
+        //     //     (indexToken.balanceOf(address(user)) * 90) / 100, address(weth), path, fees
+        //     // );
     }
 
     // function issuanceAndRedemptionWithUsdt() public {

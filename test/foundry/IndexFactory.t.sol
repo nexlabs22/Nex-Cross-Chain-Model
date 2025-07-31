@@ -491,6 +491,56 @@ contract IndexFactoryTest is Test, ContractDeployer {
     }
 
 
+    function testGasSponsoredWithUsdc() public {
+        //set gas sponsor to true
+        indexFactoryStorage.setIsCrossChainFeeSponsered(true);
+        updateOracleList();
+        
+        factory.proposeOwner(owner);
+        vm.startPrank(owner);
+        factory.transferOwnership(owner);
+        vm.stopPrank();
+        payable(add1).transfer(11e18);
+        usdt.transfer(add1, 1001e18);
+        vm.startPrank(add1);
+        
+        console.log(indexToken.balanceOf(add1));
+        usdt.approve(address(factory), 1001e18);
+        // redemption input token path data
+        address[] memory path = new address[](2);
+        path[0] = address(usdt);
+        path[1] = address(weth);
+        uint24[] memory fees = new uint24[](1);
+        fees[0] = 3000;
+        // calculate issuance fee
+        uint issuanceFee = factory.getIssuanceFee(
+            address(usdt),
+            path,
+            fees,
+            1000e18
+        );
+        payable(address(coreSender)).transfer(issuanceFee);
+        factory.issuanceIndexTokens{value: 0}(address(usdt), path, fees, 1000e18);
+        mockRouter.executeAllMessages();
+        console.log(indexToken.balanceOf(add1));
+        // redemption input token path data
+        address[] memory path2 = new address[](2);
+        path2[0] = address(weth);
+        path2[1] = address(usdt);
+        uint24[] memory fees2 = new uint24[](1);
+        fees2[0] = 3000;
+        // calculate redemption fee
+        uint redemptionFee = factory.getRedemptionFee(
+            indexToken.balanceOf(address(add1))
+        );
+        payable(address(coreSender)).transfer(redemptionFee);
+        factory.redemption{value: 0}(indexToken.balanceOf(address(add1)), address(usdt), path2, fees2);
+        mockRouter.executeAllMessages();
+        console.log(indexToken.balanceOf(add1));
+    }
+
+
+
     function testCrossChainFeeSender() public {
         mockRouter.setFee(1e14);
         console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);

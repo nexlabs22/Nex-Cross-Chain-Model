@@ -151,6 +151,8 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         _;
     }
 
+    bool public isCrossChainFeeSponsered;
+
     /**
      * @dev Initializes the contract with the given parameters.
      * @param _currentChainSelector The current chain selector.
@@ -208,6 +210,11 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
+    }
+
+    function setIsCrossChainFeeSponsered(bool _isCrossChainFeeSponsered) public {
+        require(msg.sender == owner() || functionsOracle.isOperator(msg.sender));
+        isCrossChainFeeSponsered = _isCrossChainFeeSponsered;
     }
 
     function setSlippageTolerance(uint256 _slippageTolerance) public onlyOwner {
