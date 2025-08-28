@@ -251,7 +251,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
             data: data,
             tokenAmounts: tokensToSendArray,
             feeToken: address(0),
-            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 2_000_000}))
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: factoryStorage.coreSenderGasLimit()}))
         });
 
         return IRouterClient(i_router).getFee(_chainSelector, message);
@@ -361,7 +361,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
             data: data,
             tokenAmounts: new Client.EVMTokenAmount[](0),
             feeToken: address(0),
-            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 2_000_000}))
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: factoryStorage.balancerSenderGasLimit()}))
         });
 
         return IRouterClient(i_router).getFee(_chainSelector, message);
@@ -466,7 +466,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
             receiver,
             tokensToSendDetails,
             payFeesIn,
-            2_000_000
+            factoryStorage.coreSenderGasLimit()
         );
         emit MessageSent(messageId);
         return messageId;
@@ -491,7 +491,7 @@ contract CoreSender is Initializable, CCIPReceiver, ProposableOwnableUpgradeable
         require(receiver != address(0), "Invalid receiver address");
         require(_data.length > 0, "Data cannot be empty");
         return MessageSender.sendMessage(
-            getRouter(), factoryStorage.linkToken(), destinationChainSelector, receiver, _data, payFeesIn, 2_000_000
+            getRouter(), factoryStorage.linkToken(), destinationChainSelector, receiver, _data, payFeesIn, factoryStorage.coreSenderGasLimit()
         );
     }
     /**

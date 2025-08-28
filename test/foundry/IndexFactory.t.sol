@@ -19,19 +19,13 @@ import "../../contracts/test/MockV3Aggregator.sol";
 import "./ContractDeployer.sol";
 
 contract IndexFactoryTest is Test, ContractDeployer {
-
     using stdStorage for StdStorage;
 
     uint256 internal constant SCALAR = 1e20;
 
-
     uint256 mainnetFork;
 
-    
-
     // string MAINNET_RPC_URL = vm.envString("MAINNET_RPC_URL");
-
-    
 
     event FeeReceiverSet(address indexed feeReceiver);
     event FeeRateSet(uint256 indexed feeRatePerDayScaled);
@@ -42,9 +36,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
     event MintFeeToReceiver(address feeReceiver, uint256 timestamp, uint256 totalSupply, uint256 amount);
     event ToggledRestricted(address indexed account, bool isRestricted);
 
-
     function setUp() public {
-        
         deployAllContracts(1000000e18);
         addLiquidityETH(positionManager, factoryAddress, token0, wethAddress, 100000e18, 100e18);
         addLiquidityETH(positionManager, factoryAddress, token1, wethAddress, 100000e18, 100e18);
@@ -59,7 +51,6 @@ contract IndexFactoryTest is Test, ContractDeployer {
         // send fee to the core sender and cross chain factory
         // payable(address(coreSender)).transfer(1e18);
         payable(address(crossChainIndexFactory)).transfer(1e18);
-        
     }
 
     function testInitialized() public {
@@ -116,14 +107,12 @@ contract IndexFactoryTest is Test, ContractDeployer {
         path4[1] = address(token4);
         pathData[4] = abi.encode(path4, feesData);
 
-        uint[] memory tokenShares = new uint[](5);
+        uint256[] memory tokenShares = new uint256[](5);
         tokenShares[0] = 20e18;
         tokenShares[1] = 20e18;
         tokenShares[2] = 20e18;
         tokenShares[3] = 20e18;
         tokenShares[4] = 20e18;
-
-
 
         uint64[] memory chains = new uint64[](5);
         chains[0] = 1;
@@ -131,15 +120,10 @@ contract IndexFactoryTest is Test, ContractDeployer {
         chains[2] = 1;
         chains[3] = 1;
         chains[4] = 2;
-        
 
         link.transfer(address(functionsOracle), 1e17);
         // bytes32 requestId = functionsOracle.requestAssetsData();
-        bytes32 requestId = functionsOracle.requestAssetsData(
-            "console.log('Hello, World!');",
-            0,
-            0
-        );
+        bytes32 requestId = functionsOracle.requestAssetsData("console.log('Hello, World!');", 0, 0);
         bytes memory data = abi.encode(assetList, tokenShares, chains);
         bool success = oracle.fulfillRequest(address(functionsOracle), requestId, data);
         require(success, "oracle request failed");
@@ -147,6 +131,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         functionsOracle.updatePathData(assetList, pathData);
         // oracle.fulfillOracleFundingRateRequest(requestId, assetList, tokenShares, swapFees, chains);
     }
+
     function testOracleList() public {
         updateOracleList();
         // token  oracle list
@@ -167,8 +152,8 @@ contract IndexFactoryTest is Test, ContractDeployer {
         assertEq(functionsOracle.tokenOracleMarketShare(address(token2)), 20e18);
         assertEq(functionsOracle.tokenOracleMarketShare(address(token3)), 20e18);
         assertEq(functionsOracle.tokenOracleMarketShare(address(token4)), 20e18);
-        
-         // token from eth path data
+
+        // token from eth path data
         (address[] memory path0, uint24[] memory fees0) = functionsOracle.getFromETHPathData(address(token0));
         assertEq(path0[0], address(weth));
         assertEq(path0[1], address(token0));
@@ -211,24 +196,19 @@ contract IndexFactoryTest is Test, ContractDeployer {
         assertEq(path9[0], address(token4));
         assertEq(path9[1], address(weth));
         assertEq(fees9[0], 3000);
-        
     }
 
     function getIndexTokenPrice() public view returns (uint256) {
-        uint totalPortfolioBalance;
-        uint totalSupply = indexToken.totalSupply();
-        uint ethPrice = indexFactoryStorage.priceInWei();
-        for (uint i = 0; i < functionsOracle.totalCurrentList(); i++) {
+        uint256 totalPortfolioBalance;
+        uint256 totalSupply = indexToken.totalSupply();
+        uint256 ethPrice = indexFactoryStorage.priceInWei();
+        for (uint256 i = 0; i < functionsOracle.totalCurrentList(); i++) {
             address token = functionsOracle.currentList(i);
             uint64 tokenChainSelector = functionsOracle.tokenChainSelector(token);
             address vaultAddress = tokenChainSelector == 1 ? address(vault) : address(crossChainVault);
-            uint tokenBalance = IERC20(token).balanceOf(vaultAddress);
+            uint256 tokenBalance = IERC20(token).balanceOf(vaultAddress);
             (address[] memory path, uint24[] memory fees) = functionsOracle.getToETHPathData(token);
-            uint tokenValue = indexFactoryStorage.getAmountOut(
-                path,
-                fees,
-                tokenBalance
-            );
+            uint256 tokenValue = indexFactoryStorage.getAmountOut(path, fees, tokenBalance);
             totalPortfolioBalance += tokenValue;
         }
         return (totalPortfolioBalance * ethPrice) / totalSupply;
@@ -236,43 +216,36 @@ contract IndexFactoryTest is Test, ContractDeployer {
     }
 
     function getIndexTokenPrice2() public view returns (uint256) {
-        uint totalPortfolioBalance;
-        uint totalSupply = indexToken.totalSupply();
-        uint ethPrice = indexFactoryStorage.priceInWei();
-        for (uint i = 0; i < functionsOracle.totalCurrentList(); i++) {
+        uint256 totalPortfolioBalance;
+        uint256 totalSupply = indexToken.totalSupply();
+        uint256 ethPrice = indexFactoryStorage.priceInWei();
+        for (uint256 i = 0; i < functionsOracle.totalCurrentList(); i++) {
             address token = functionsOracle.currentList(i);
             uint64 tokenChainSelector = functionsOracle.tokenChainSelector(token);
             address vaultAddress = tokenChainSelector == 1 ? address(vault) : address(crossChainVault);
-            uint tokenBalance = IERC20(token).balanceOf(vaultAddress);
+            uint256 tokenBalance = IERC20(token).balanceOf(vaultAddress);
             (address[] memory path, uint24[] memory fees) = functionsOracle.getToETHPathData(token);
-            uint tokenValue = indexFactoryStorage.getAmountOut(
-                path,
-                fees,
-                tokenBalance
-            );
+            uint256 tokenValue = indexFactoryStorage.getAmountOut(path, fees, tokenBalance);
             totalPortfolioBalance += tokenValue;
         }
-        uint netReceivedAmount = getNetSentAndReceivedAmounts();
+        uint256 netReceivedAmount = getNetSentAndReceivedAmounts();
         (address[] memory path, uint24[] memory fees) = indexFactoryStorage.getToETHPathData(address(crossChainToken));
-        uint crossChainTokenValue = indexFactoryStorage.getAmountOut(
-            path,
-            fees,
-            netReceivedAmount
-        );
-        uint numerator = totalPortfolioBalance + crossChainTokenValue + indexFactoryStorage.totalPendingRedemptionHoldValue() - indexFactoryStorage.totalPendingIssuanceInput();
-        uint denominator = totalSupply + indexFactoryStorage.totalPendingRedemptionInput();
+        uint256 crossChainTokenValue = indexFactoryStorage.getAmountOut(path, fees, netReceivedAmount);
+        uint256 numerator = totalPortfolioBalance + crossChainTokenValue
+            + indexFactoryStorage.totalPendingRedemptionHoldValue() - indexFactoryStorage.totalPendingIssuanceInput();
+        uint256 denominator = totalSupply + indexFactoryStorage.totalPendingRedemptionInput();
         return (numerator * ethPrice) / denominator;
         // return (totalPortfolioBalance * ethPrice) / totalSupply;
         // return totalSupply;
     }
 
     function getNetSentAndReceivedAmounts() public view returns (uint256) {
-        uint sentAmount = indexFactoryStorage.totalSentAmount(address(crossChainToken));
-        uint receivedAmount = indexFactoryStorage.totalReceivedAmount(address(crossChainToken));
+        uint256 sentAmount = indexFactoryStorage.totalSentAmount(address(crossChainToken));
+        uint256 receivedAmount = indexFactoryStorage.totalReceivedAmount(address(crossChainToken));
 
-        uint sentAmount2 = crossChainIndexFactoryStorage.totalSentAmount(address(crossChainToken));
-        uint receivedAmount2 = crossChainIndexFactoryStorage.totalReceivedAmount(address(crossChainToken));
-        if(sentAmount + receivedAmount > sentAmount2 + receivedAmount2) {
+        uint256 sentAmount2 = crossChainIndexFactoryStorage.totalSentAmount(address(crossChainToken));
+        uint256 receivedAmount2 = crossChainIndexFactoryStorage.totalReceivedAmount(address(crossChainToken));
+        if (sentAmount + receivedAmount > sentAmount2 + receivedAmount2) {
             return ((sentAmount + receivedAmount) - (sentAmount2 + receivedAmount2));
         } else {
             return ((sentAmount2 + receivedAmount2) - (sentAmount + receivedAmount));
@@ -280,55 +253,43 @@ contract IndexFactoryTest is Test, ContractDeployer {
     }
 
     function checkSentAndReceivedAmounts() public returns (uint256, uint256) {
-        uint sentAmount = indexFactoryStorage.totalSentAmount(address(crossChainToken));
-        uint receivedAmount = indexFactoryStorage.totalReceivedAmount(address(crossChainToken));
+        uint256 sentAmount = indexFactoryStorage.totalSentAmount(address(crossChainToken));
+        uint256 receivedAmount = indexFactoryStorage.totalReceivedAmount(address(crossChainToken));
 
-        uint sentAmount2 = crossChainIndexFactoryStorage.totalSentAmount(address(crossChainToken));
-        uint receivedAmount2 = crossChainIndexFactoryStorage.totalReceivedAmount(address(crossChainToken));
+        uint256 sentAmount2 = crossChainIndexFactoryStorage.totalSentAmount(address(crossChainToken));
+        uint256 receivedAmount2 = crossChainIndexFactoryStorage.totalReceivedAmount(address(crossChainToken));
         assertEq(sentAmount + receivedAmount, sentAmount2 + receivedAmount2);
         return (sentAmount + receivedAmount, sentAmount2 + receivedAmount2);
     }
 
-    
     function testIssuanceWithEth() public {
-        uint startAmount = 1e14;
-        
+        uint256 startAmount = 1e14;
 
         updateOracleList();
-        
+
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
         vm.stopPrank();
         payable(add1).transfer(11e18);
         vm.startPrank(add1);
-        
+
         assertEq(indexFactoryStorage.crossChainFactoryBySelector(2), address(crossChainIndexFactory));
         // calculate issuance fee
-        uint issuanceFee = factory.getIssuanceFee(
-            address(weth),
-            new address[](0),
-            new uint24[](0),
-            1e18
-        );
+        uint256 issuanceFee = factory.getIssuanceFee(address(weth), new address[](0), new uint24[](0), 1e18);
         console.log(indexToken.balanceOf(add1));
-        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000 + issuanceFee}(1e18);
+        factory.issuanceIndexTokensWithEth{value: (1e18 * 1001) / 1000 + issuanceFee}(1e18);
         mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
 
-        issuanceFee = factory.getIssuanceFee(
-            address(weth),
-            new address[](0),
-            new uint24[](0),
-            1e17
-        );
+        issuanceFee = factory.getIssuanceFee(address(weth), new address[](0), new uint24[](0), 1e17);
 
-        uint indexTokenPrice = getIndexTokenPrice();
-        uint indexTokenPrice2 = getIndexTokenPrice2();
+        uint256 indexTokenPrice = getIndexTokenPrice();
+        uint256 indexTokenPrice2 = getIndexTokenPrice2();
         console.log(indexTokenPrice);
         console.log(indexTokenPrice2);
         checkSentAndReceivedAmounts();
-        factory.issuanceIndexTokensWithEth{value: (1e17*1001)/1000 + issuanceFee}(1e17);
+        factory.issuanceIndexTokensWithEth{value: (1e17 * 1001) / 1000 + issuanceFee}(1e17);
         indexTokenPrice = getIndexTokenPrice();
         indexTokenPrice2 = getIndexTokenPrice2();
         console.log(indexTokenPrice);
@@ -343,51 +304,41 @@ contract IndexFactoryTest is Test, ContractDeployer {
         checkSentAndReceivedAmounts();
 
         //calculate redemption fee
-        uint redemptionFee = factory.getRedemptionFee(
-            indexToken.balanceOf(address(add1))/2
-        );
+        uint256 redemptionFee = factory.getRedemptionFee(indexToken.balanceOf(address(add1)) / 2);
         address[] memory path = new address[](2);
         path[0] = address(weth);
         path[1] = address(weth);
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
-        factory.redemption{value: redemptionFee}(indexToken.balanceOf(address(add1))/2, address(weth), path, fees);
-         indexTokenPrice = getIndexTokenPrice();
+        factory.redemption{value: redemptionFee}(indexToken.balanceOf(address(add1)) / 2, address(weth), path, fees);
+        indexTokenPrice = getIndexTokenPrice();
         indexTokenPrice2 = getIndexTokenPrice2();
         console.log(indexTokenPrice);
         console.log(indexTokenPrice2);
         mockRouter.executeAllMessages();
-         indexTokenPrice = getIndexTokenPrice();
+        indexTokenPrice = getIndexTokenPrice();
         indexTokenPrice2 = getIndexTokenPrice2();
         console.log(indexTokenPrice);
         console.log(indexTokenPrice2);
-        
     }
 
-    
     function testRedemptionWithEth() public {
-        uint startAmount = 1e14;
-        
+        uint256 startAmount = 1e14;
 
         updateOracleList();
-        
+
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
         vm.stopPrank();
         payable(add1).transfer(11e18);
         vm.startPrank(add1);
-        
+
         // calculate issuance fee
-        uint issuanceFee = factory.getIssuanceFee(
-            address(weth),
-            new address[](0),
-            new uint24[](0),
-            1e18
-        );
+        uint256 issuanceFee = factory.getIssuanceFee(address(weth), new address[](0), new uint24[](0), 1e18);
 
         console.log(indexToken.balanceOf(add1));
-        factory.issuanceIndexTokensWithEth{value: (1e18*1001)/1000 + issuanceFee}(1e18);
+        factory.issuanceIndexTokensWithEth{value: (1e18 * 1001) / 1000 + issuanceFee}(1e18);
         mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
         // redemption input token path data
@@ -398,21 +349,17 @@ contract IndexFactoryTest is Test, ContractDeployer {
         fees[0] = 3000;
 
         //calculate redemption fee
-        uint redemptionFee = factory.getRedemptionFee(
-            indexToken.balanceOf(address(add1))
-        );
+        uint256 redemptionFee = factory.getRedemptionFee(indexToken.balanceOf(address(add1)));
         factory.redemption{value: redemptionFee}(indexToken.balanceOf(address(add1)), address(weth), path, fees);
         mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
     }
-    
-    
+
     function testIssuanceWithUsdc() public {
-        uint startAmount = 1e14;
-        
+        uint256 startAmount = 1e14;
 
         updateOracleList();
-        
+
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
@@ -420,7 +367,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         payable(add1).transfer(11e18);
         usdt.transfer(add1, 1001e18);
         vm.startPrank(add1);
-        
+
         console.log(indexToken.balanceOf(add1));
         usdt.approve(address(factory), 1001e18);
         // redemption input token path data
@@ -431,24 +378,17 @@ contract IndexFactoryTest is Test, ContractDeployer {
         fees[0] = 3000;
 
         //calculate issuance fee
-        uint issuanceFee = factory.getIssuanceFee(
-            address(usdt),
-            path,
-            fees,
-            1000e18
-        );
+        uint256 issuanceFee = factory.getIssuanceFee(address(usdt), path, fees, 1000e18);
         factory.issuanceIndexTokens{value: issuanceFee}(address(usdt), path, fees, 1000e18);
         mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
     }
-    
-    
+
     function testRedemptionWithUsdc() public {
-        uint startAmount = 1e14;
-        
+        uint256 startAmount = 1e14;
 
         updateOracleList();
-        
+
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
@@ -456,7 +396,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         payable(add1).transfer(11e18);
         usdt.transfer(add1, 1001e18);
         vm.startPrank(add1);
-        
+
         console.log(indexToken.balanceOf(add1));
         usdt.approve(address(factory), 1001e18);
         // redemption input token path data
@@ -466,12 +406,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
         // calculate issuance fee
-        uint issuanceFee = factory.getIssuanceFee(
-            address(usdt),
-            path,
-            fees,
-            1000e18
-        );
+        uint256 issuanceFee = factory.getIssuanceFee(address(usdt), path, fees, 1000e18);
         factory.issuanceIndexTokens{value: issuanceFee}(address(usdt), path, fees, 1000e18);
         mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
@@ -482,20 +417,17 @@ contract IndexFactoryTest is Test, ContractDeployer {
         uint24[] memory fees2 = new uint24[](1);
         fees2[0] = 3000;
         // calculate redemption fee
-        uint redemptionFee = factory.getRedemptionFee(
-            indexToken.balanceOf(address(add1))
-        );
+        uint256 redemptionFee = factory.getRedemptionFee(indexToken.balanceOf(address(add1)));
         factory.redemption{value: redemptionFee}(indexToken.balanceOf(address(add1)), address(usdt), path2, fees2);
         mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
     }
 
-
     function testGasSponsoredWithUsdc() public {
         //set gas sponsor to true
         indexFactoryStorage.setIsCrossChainFeeSponsered(true);
         updateOracleList();
-        
+
         factory.proposeOwner(owner);
         vm.startPrank(owner);
         factory.transferOwnership(owner);
@@ -503,7 +435,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         payable(add1).transfer(11e18);
         usdt.transfer(add1, 1001e18);
         vm.startPrank(add1);
-        
+
         console.log(indexToken.balanceOf(add1));
         usdt.approve(address(factory), 1001e18);
         // redemption input token path data
@@ -513,12 +445,7 @@ contract IndexFactoryTest is Test, ContractDeployer {
         uint24[] memory fees = new uint24[](1);
         fees[0] = 3000;
         // calculate issuance fee
-        uint issuanceFee = factory.getIssuanceFee(
-            address(usdt),
-            path,
-            fees,
-            1000e18
-        );
+        uint256 issuanceFee = factory.getIssuanceFee(address(usdt), path, fees, 1000e18);
         payable(address(coreSender)).transfer(issuanceFee);
         factory.issuanceIndexTokens{value: 0}(address(usdt), path, fees, 1000e18);
         mockRouter.executeAllMessages();
@@ -530,50 +457,39 @@ contract IndexFactoryTest is Test, ContractDeployer {
         uint24[] memory fees2 = new uint24[](1);
         fees2[0] = 3000;
         // calculate redemption fee
-        uint redemptionFee = factory.getRedemptionFee(
-            indexToken.balanceOf(address(add1))
-        );
+        uint256 redemptionFee = factory.getRedemptionFee(indexToken.balanceOf(address(add1)));
         payable(address(coreSender)).transfer(redemptionFee);
         factory.redemption{value: 0}(indexToken.balanceOf(address(add1)), address(usdt), path2, fees2);
         mockRouter.executeAllMessages();
         console.log(indexToken.balanceOf(add1));
     }
 
+    // function testCrossChainFeeSender() public {
+    //     mockRouter.setFee(1e14);
+    //     console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
+    //     // send cross chain fee
+    //     uint256 wethAmount = 1e16;
+    //     uint crossChainFee = crossChainFeeSender.calculateCrossChainFee(2, wethAmount, address(crossChainFeeReceiver));
+    //     console.log("crossChainFee", crossChainFee);
+    //     crossChainFeeSender.sendCrossChainToken{value: wethAmount}(2, address(crossChainFeeReceiver));
+    //     mockRouter.executeAllMessages();
+    //     console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
+    //     console.log("calledCount", crossChainFeeReceiver.calledCount());
 
+    //     // set operator
+    //     functionsOracle.setOperator(address(crossChainFeeSender), true);
+    //     // transfer eth to the core sender
+    //     (bool success, ) = payable(address(coreSender)).call{value: 1e16}("");
+    //     require(success, "Ether transfer failed");
+    //     uint256 balance = address(coreSender).balance;
+    //     console.log("coreSenderBalance", balance);
+    //     // withdraw eth from the core sender
+    //     crossChainFeeSender.withdrawAndCrossChainToken(2, address(crossChainFeeReceiver));
+    //     uint256 senderBalance = address(crossChainFeeSender).balance;
+    //     console.log("crossChainFeeSenderBalance", senderBalance);
+    //     mockRouter.executeAllMessages();
+    //     console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
+    //     console.log("calledCount", crossChainFeeReceiver.calledCount());
 
-    function testCrossChainFeeSender() public {
-        mockRouter.setFee(1e14);
-        console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
-        // send cross chain fee
-        uint256 wethAmount = 1e16;
-        uint crossChainFee = crossChainFeeSender.calculateCrossChainFee(2, wethAmount, address(crossChainFeeReceiver));
-        console.log("crossChainFee", crossChainFee);
-        crossChainFeeSender.sendCrossChainToken{value: wethAmount}(2, address(crossChainFeeReceiver));
-        mockRouter.executeAllMessages();
-        console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
-        console.log("calledCount", crossChainFeeReceiver.calledCount());
-
-        // set operator
-        functionsOracle.setOperator(address(crossChainFeeSender), true);
-        // transfer eth to the core sender
-        (bool success, ) = payable(address(coreSender)).call{value: 1e16}("");
-        require(success, "Ether transfer failed");
-        uint256 balance = address(coreSender).balance;
-        console.log("coreSenderBalance", balance);
-        // withdraw eth from the core sender
-        crossChainFeeSender.withdrawAndCrossChainToken(2, address(crossChainFeeReceiver));
-        uint256 senderBalance = address(crossChainFeeSender).balance;
-        console.log("crossChainFeeSenderBalance", senderBalance);
-        mockRouter.executeAllMessages();
-        console.log("crossChainFactoryBalance", payable(address(crossChainIndexFactory)).balance);
-        console.log("calledCount", crossChainFeeReceiver.calledCount());
-
-    }
-    
-    
-
-
-    
-
-    
+    // }
 }

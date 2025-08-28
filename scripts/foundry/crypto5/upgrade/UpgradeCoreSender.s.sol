@@ -13,9 +13,11 @@ contract UpgradeCoreSender is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
+        // Mainnet
         address proxyAdminAddress = vm.envAddress("CR5_ARBITRUM_CORE_SENDER_PROXY_ADMIN_ADDRESS");
         address coreSenderStorageProxyAddress = vm.envAddress("CR5_ARBITRUM_CORE_SENDER_PROXY_ADDRESS");
 
+        // Testnet
         // address proxyAdminAddress = vm.envAddress("CR5_SEPOLIA_CORE_SENDER_PROXY_ADMIN_ADDRESS");
         // address coreSenderStorageProxyAddress = vm.envAddress("CR5_SEPOLIA_CORE_SENDER_PROXY_ADDRESS");
 
