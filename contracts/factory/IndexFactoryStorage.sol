@@ -155,6 +155,9 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
     uint public coreSenderGasLimit;
     uint public balancerSenderGasLimit;
 
+    uint public issuanceFeePercentage;
+    uint public redemptionFeePercentage;
+
     /**
      * @dev Initializes the contract with the given parameters.
      * @param _currentChainSelector The current chain selector.
@@ -223,6 +226,17 @@ contract IndexFactoryStorage is Initializable, ProposableOwnableUpgradeable {
         require(msg.sender == owner() || functionsOracle.isOperator(msg.sender));
         coreSenderGasLimit = _coreSenderGasLimit;
         balancerSenderGasLimit = _balancerSenderGasLimit;
+    }
+
+    /**
+     * @dev Sets the issuance and redemption fee percentages.
+     * @param _issuanceFeePercentage The issuance fee percentage.
+     * @param _redemptionFeePercentage The redemption fee percentage.
+     */
+    function setIssuanceAndRedemptionFeePercentages(uint _issuanceFeePercentage, uint _redemptionFeePercentage) public {
+        require(msg.sender == owner() || functionsOracle.isOperator(msg.sender));
+        issuanceFeePercentage = _issuanceFeePercentage;
+        redemptionFeePercentage = _redemptionFeePercentage;
     }
 
     function setIsCrossChainFeeSponsered(bool _isCrossChainFeeSponsered) public {

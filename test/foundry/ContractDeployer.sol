@@ -487,6 +487,7 @@ contract ContractDeployer is
         indexFactoryStorage.setBalancerSender(address(balancerSender));
         indexFactoryStorage.setIndexFactoryBalancer(address(factoryBalancer));
         indexFactoryStorage.setCoreSenderAndBalancerSenderGasLimits(2000000, 2000000);
+        indexFactoryStorage.setIssuanceAndRedemptionFeePercentages(20, 20);
         
         vault.setOperator(address(factory), true);
         vault.setOperator(address(factoryBalancer), true);

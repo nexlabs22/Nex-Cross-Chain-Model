@@ -232,7 +232,7 @@ contract IndexFactory is
             }
         }
 
-        return (totalCrossChainFee*120)/100;
+        return (totalCrossChainFee*(100 + factoryStorage.issuanceFeePercentage()))/100;
     }
 
     function getRedemptionFee(uint256 amountIn) public view returns (uint256) {
@@ -249,7 +249,7 @@ contract IndexFactory is
                 totalCrossChainFee += fee;
             }
         }
-        return (totalCrossChainFee*120)/100;
+        return (totalCrossChainFee*(100 + factoryStorage.redemptionFeePercentage()))/100;
     }
 
     /**
